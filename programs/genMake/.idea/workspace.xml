@@ -10,44 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5827bbf9-f8e6-401d-a974-8274d662bb64" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile.macos.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile.macos.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbprs.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbprs.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbprs.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbprs.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/genMake.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/genMake.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hdrNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hdrNode.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hdrNode_internal.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hdrNode_object.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libNode.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libNode_internal.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libNode_object.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/objNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/objNode.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/objNode_internal.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/objNode_object.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pgmNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pgmNode.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pgmNode_internal.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pgmNode_object.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/rtnNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/rtnNode.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/rtnNode_internal.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/rtnNode_object.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tstNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tstNode.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tstNode_internal.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tstNode_object.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_hdrNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_libNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_objNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_pgmNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_rtnNode.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_tstNode.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/NodeBase_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/NodeBase_test.c" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -124,6 +89,7 @@
       <updated>1572395583094</updated>
       <workItem from="1572395585964" duration="3977000" />
       <workItem from="1572819520575" duration="10647000" />
+      <workItem from="1572880090167" duration="425000" />
     </task>
     <servers />
   </component>

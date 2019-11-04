@@ -23,6 +23,9 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <hjson.h>
+#include    <nodeHash.h>
+#include    <srcError.h>
 #include    <trace.h>
 #include    <NodeBase_internal.h>
 
@@ -67,6 +70,58 @@ int             tearDown(
     mem_Release( );
     
     return 1; 
+}
+
+
+
+ERESULT         InputStrToJSON(
+    const
+    char            *pStrA,
+    NODE_DATA       **ppNodes
+)
+{
+    HJSON_DATA      *pObj = OBJ_NIL;
+    NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode = OBJ_NIL;
+
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if (NULL == pStrA) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_PARAMETER;
+    }
+#endif
+
+    pObj = hjson_NewA(pStrA, 4);
+    if (pObj) {
+        pFileNode = hjson_ParseFileHash(pObj);
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    srcErrors_ExitOnFatal(OBJ_NIL);
+
+    if (pFileNode) {
+        pHash = node_getData(pFileNode);
+        if (OBJ_NIL == pHash) {
+            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            exit(12);
+        }
+        if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+            fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+            exit(12);
+        }
+    }
+    else {
+        fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+        exit(12);
+    }
+
+    // Return to caller.
+    if (ppNodes) {
+        *ppNodes = pFileNode;
+    }
+    return ERESULT_SUCCESS;
 }
 
 
