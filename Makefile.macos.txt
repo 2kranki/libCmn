@@ -93,6 +93,22 @@ test_AStrC: $(TEST_SRC)/test_AStrC.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+OBJS += $(OBJDIR)/AStrCArray_object.o
+
+$(OBJDIR)/AStrCArray_object.o: $(SRCDIR)/AStrCArray_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/AStrCArray.o
+
+$(OBJDIR)/AStrCArray.o: $(SRCDIR)/AStrCArray.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStrC.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += AStrCArray_test
+
+AStrCArray_test: $(TEST_SRC)/AStrCArray_test.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 OBJS += $(OBJDIR)/AStrCReader_object.o
 
 $(OBJDIR)/AStrCReader_object.o: $(SRCDIR)/AStrCReader_object.c 
