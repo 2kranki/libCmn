@@ -353,56 +353,49 @@ extern "C" {
     //                          A p p e n d
     //---------------------------------------------------------------
 
-    /*!
-     Append a string to the dependencies.
-     @param     this    object pointer
-     @param     pStr    string pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         NodeRtn_AppendDeps (
+    ERESULT_DATA *  NodeRtn_AppendDeps (
         NODERTN_DATA	*this,
         ASTR_DATA       *pStr
     )
     {
-        ERESULT         eRc;
+        ERESULT_DATA    *pErr;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
         if (!NodeRtn_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
     #endif
 
-        eRc = NodeBase_AppendDeps(NodeRtn_getNodeBase(this), pStr);
+        pErr = NodeBase_AppendDeps(NodeRtn_getNodeBase(this), pStr);
 
         // Return to caller.
-        return eRc;
+        return pErr;
     }
 
 
-    ERESULT         NodeRtn_AppendSrcs (
+    ERESULT_DATA *  NodeRtn_AppendSrcs (
         NODERTN_DATA	*this,
         ASTR_DATA       *pStr
     )
     {
-        ERESULT         eRc;
+        ERESULT_DATA    *pErr;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
         if (!NodeRtn_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
     #endif
 
-        eRc = NodeBase_AppendSrcs(NodeRtn_getNodeBase(this), pStr);
+        pErr = NodeBase_AppendSrcs(NodeRtn_getNodeBase(this), pStr);
 
         // Return to caller.
-        return eRc;
+        return pErr;
     }
 
 

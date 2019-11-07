@@ -95,12 +95,13 @@ extern "C" {
      @param     pArray      String array object pointer (Where strings are to be accumulated)
      @return    If successful, a ERESULT_SUCCESS, otherwise an ERESULT_* error code.
      */
-    ERESULT         NodeBase_AccumStrings(
+    ERESULT_DATA *  NodeBase_AccumStrings(
         NODEARRAY_DATA  *pNodes,
         ASTRARRAY_DATA  *pArray
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT_DATA    *pErr = OBJ_NIL;
         NODE_DATA       *pNode;
         uint32_t        i;
         uint32_t        iMax;
@@ -111,11 +112,15 @@ extern "C" {
     #else
         if (OBJ_NIL == pNodes) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Nodes Pointer!");
+            return pErr;
         }
         if (OBJ_NIL == pArray) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Array Pointer!");
+            return pErr;
         }
     #endif
 
@@ -127,14 +132,15 @@ extern "C" {
                 if (pStr) {
                     eRc = AStrArray_AppendStr(pArray, pStr, NULL);
                     if (ERESULT_FAILED(eRc)) {
-                        return eRc;
+                        pErr = eResult_NewStrA(eRc, NULL);
+                        break;
                     }
                 }
             }
         }
 
         // Return to caller.
-        return eRc;
+        return pErr;
     }
 
 
@@ -173,20 +179,21 @@ extern "C" {
 
     /*!
      Dependencies and Extra Source files are common to several
-     different type, so, we parse them here and accumulate
-     them in the given node.
+     different types, so, we parse them here and accumulate
+     them in the given node, ppBase.
      @param     pNode   Input Node to be searched and parsed
      @param     ppBase  Base Node to be filled in with the data or released.
      @param     ppHash  Hash Node if found
      @return    If successful, a ERESULT_SUCCESS, otherwise an ERESULT_* error code.
     */
-    ERESULT         NodeBase_ParseSubObj(
+    ERESULT_DATA *  NodeBase_ParseSubObj(
         NODE_DATA       *pNode,
         NODEBASE_DATA   **ppBase,
         NODEHASH_DATA   **ppHash
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc;
+        ERESULT_DATA    *pErr = OBJ_NIL;
         NODEARRAY_DATA  *pArray;
         NODEHASH_DATA   *pHash;
         NODE_DATA       *pHashItem;
@@ -196,38 +203,43 @@ extern "C" {
     #else
         if (OBJ_NIL == pNode) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing Node!");
+            return pErr;
         }
         if (OBJ_NIL == ppBase) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Base Node Pointer!");
+            return pErr;
         }
         if (OBJ_NIL == *ppBase) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Base Node Pointer!");
+            return pErr;
         }
     #endif
 
         if (jsonIn_CheckNodeForNull(pNode)) {
-            return ERESULT_SUCCESS;
+            return OBJ_NIL;
         }
         else if (jsonIn_CheckNodeForFalse(pNode)) {
             obj_Release(*ppBase);
             *ppBase = OBJ_NIL;
-            return ERESULT_SUCCESS;
+            return OBJ_NIL;
         }
         else if (jsonIn_CheckNodeForTrue(pNode)) {
-            return ERESULT_SUCCESS;
+            return OBJ_NIL;
         }
         pArray = jsonIn_CheckNodeForArray(pNode);
         if (pArray) {
-            // We have an array of Dependencies. So, add them to the base routine.
-            eRc = NodeBase_AccumStrings(node_getData(pNode), NodeBase_getDeps(*ppBase));
-            if (ERESULT_FAILED(eRc)) {
+            // We have an array of Dependencies. So, add them to the base node.
+            pErr = NodeBase_AccumStrings(node_getData(pNode), NodeBase_getDeps(*ppBase));
+            if (pErr) {
                 DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
+                return pErr;
             }
-            return ERESULT_SUCCESS;
+            return OBJ_NIL;
         }
         pHash = jsonIn_CheckNodeForHash(pNode);
         if (pHash) {
@@ -240,9 +252,9 @@ extern "C" {
             if (pHashItem) {
                 pArray = jsonIn_CheckNodeDataForArray(pHashItem);
                 if (pArray) {
-                    eRc = NodeBase_AccumStrings(pArray, NodeBase_getDeps(*ppBase));
-                    if (ERESULT_FAILED(eRc)) {
-                        return eRc;
+                    pErr = NodeBase_AccumStrings(pArray, NodeBase_getDeps(*ppBase));
+                    if (pErr) {
+                        return pErr;
                     }
                 }
             }
@@ -251,9 +263,9 @@ extern "C" {
             if (pHashItem) {
                 pArray = jsonIn_CheckNodeDataForArray(pHashItem);
                 if (pArray) {
-                    eRc = NodeBase_AccumStrings(pArray, NodeBase_getSrcs(*ppBase));
-                    if (ERESULT_FAILED(eRc)) {
-                        return eRc;
+                    pErr = NodeBase_AccumStrings(pArray, NodeBase_getSrcs(*ppBase));
+                    if (pErr) {
+                        return pErr;
                     }
                 }
             }
@@ -264,7 +276,7 @@ extern "C" {
                 if (pStr) {
                     eRc = NodeBase_setReqArch(*ppBase, pStr);
                     if (ERESULT_FAILED(eRc)) {
-                        return eRc;
+                        return eResult_NewStrA(eRc, NULL);
                     }
                 }
             }
@@ -275,7 +287,8 @@ extern "C" {
                 if (pStr) {
                     eRc = NodeBase_setReqOS(*ppBase, pStr);
                     if (ERESULT_FAILED(eRc)) {
-                        return eRc;
+                        pErr = eResult_NewStrA(eRc, NULL);
+                        return pErr;
                     }
                 }
             }
@@ -283,7 +296,7 @@ extern "C" {
         }    // End of Hash Checking
 
         // Return to caller.
-        return eRc;
+        return pErr;
     }
 
 
@@ -662,7 +675,7 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeBase_AppendDeps (
+    ERESULT_DATA *  NodeBase_AppendDeps (
         NODEBASE_DATA   *this,
         ASTR_DATA       *pStr
     )
@@ -674,18 +687,18 @@ extern "C" {
     #else
         if (!NodeBase_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
     #endif
         
         eRc = AStrArray_AppendStr(this->pDeps, pStr, NULL);
 
         // Return to caller.
-        return eRc;
+        return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
     }
 
 
-    ERESULT         NodeBase_AppendSrcs (
+    ERESULT_DATA *  NodeBase_AppendSrcs (
         NODEBASE_DATA   *this,
         ASTR_DATA       *pStr
     )
@@ -697,14 +710,14 @@ extern "C" {
     #else
         if (!NodeBase_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
     #endif
         
         eRc = AStrArray_AppendStr(this->pSrcs, pStr, NULL);
 
         // Return to caller.
-        return eRc;
+        return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
     }
 
 
@@ -727,11 +740,11 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         NodeBase_Assign (
-        NODEBASE_DATA		*this,
-        NODEBASE_DATA     *pOther
+        NODEBASE_DATA   *this,
+        NODEBASE_DATA   *pOther
     )
     {
-        ERESULT     eRc;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -747,26 +760,74 @@ extern "C" {
 #endif
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
+        if (pOther->pDeps) {
+            obj_Release(pOther->pDeps);
+            pOther->pDeps = OBJ_NIL;
         }
-#endif
+        if (pOther->pName) {
+            obj_Release(pOther->pName);
+            pOther->pName = OBJ_NIL;
+        }
+        if (pOther->pReqOS) {
+            obj_Release(pOther->pReqOS);
+            pOther->pReqOS = OBJ_NIL;
+        }
+        if (pOther->pReqArch) {
+            obj_Release(pOther->pReqArch);
+            pOther->pReqArch = OBJ_NIL;
+        }
+        if (pOther->pSrcs) {
+            obj_Release(pOther->pSrcs);
+            pOther->pSrcs = OBJ_NIL;
+        }
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
+        if (this->pDeps) {
+            if (obj_getVtbl(this->pDeps)->pCopy) {
+                pOther->pDeps = obj_getVtbl(this->pDeps)->pCopy(this->pDeps);
             }
             else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
+                obj_Retain(this->pDeps);
+                pOther->pDeps = this->pDeps;
             }
         }
-#endif
+        if (this->pName) {
+            if (obj_getVtbl(this->pName)->pCopy) {
+                pOther->pName = obj_getVtbl(this->pName)->pCopy(this->pName);
+            }
+            else {
+                obj_Retain(this->pName);
+                pOther->pName = this->pName;
+            }
+        }
+        if (this->pReqOS) {
+            if (obj_getVtbl(this->pReqOS)->pCopy) {
+                pOther->pReqOS = obj_getVtbl(this->pReqOS)->pCopy(this->pReqOS);
+            }
+            else {
+                obj_Retain(this->pReqOS);
+                pOther->pReqOS = this->pReqOS;
+            }
+        }
+        if (this->pReqArch) {
+            if (obj_getVtbl(this->pReqArch)->pCopy) {
+                pOther->pReqArch = obj_getVtbl(this->pReqArch)->pCopy(this->pReqArch);
+            }
+            else {
+                obj_Retain(this->pReqArch);
+                pOther->pReqArch = this->pReqArch;
+            }
+        }
+        if (this->pSrcs) {
+            if (obj_getVtbl(this->pSrcs)->pCopy) {
+                pOther->pSrcs = obj_getVtbl(this->pSrcs)->pCopy(this->pSrcs);
+            }
+            else {
+                obj_Retain(this->pSrcs);
+                pOther->pSrcs = this->pSrcs;
+            }
+        }
 
         // Copy other data from this object to other.
         
@@ -775,8 +836,6 @@ extern "C" {
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -1040,8 +1099,18 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeBase_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        this->pDeps = AStrArray_New( );
+        if (OBJ_NIL == this->pDeps) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        this->pSrcs = AStrArray_New( );
+        if (OBJ_NIL == this->pSrcs) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
@@ -1051,7 +1120,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "NodeBase::sizeof(NODEBASE_DATA) = %lu\n", sizeof(NODEBASE_DATA));
+        //fprintf(stderr, "NodeBase::sizeof(NODEBASE_DATA) = %lu\n", sizeof(NODEBASE_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODEBASE_DATA));
     #endif
@@ -1122,7 +1191,7 @@ extern "C" {
         void            *pData
     )
     {
-        NODEBASE_DATA     *this = objId;
+        NODEBASE_DATA   *this = objId;
         const
         char            *pStr = pData;
         
@@ -1218,7 +1287,7 @@ extern "C" {
     //                     S o r t  A r r a y s
     //---------------------------------------------------------------
     
-    ERESULT         NodeBase_SortArrays (
+    ERESULT_DATA *  NodeBase_SortArrays (
         NODEBASE_DATA   *this
     )
     {
@@ -1229,29 +1298,29 @@ extern "C" {
 #else
         if (!NodeBase_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
 #endif
         
         if (this->pDeps) {
             eRc = AStrArray_SortAscending(this->pDeps);
             if (ERESULT_FAILED(eRc)) {
-                return eRc;
+                return eResult_NewStrA(eRc, NULL);
             }
         }
         if (this->pSrcs) {
             eRc = AStrArray_SortAscending(this->pSrcs);
             if (ERESULT_FAILED(eRc)) {
-                return eRc;
+                return eResult_NewStrA(eRc, NULL);
             }
         }
 
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return OBJ_NIL;
     }
         
         
-     //---------------------------------------------------------------
+    //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------
     
@@ -1412,6 +1481,10 @@ extern "C" {
 
         if (this->pName) {
             if (((OBJ_DATA *)(this->pName))->pVtbl->pToDebugString) {
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent, ' ');
+                }
+                AStr_AppendA(pStr, "Name:\n");
                 pWrkStr =   ((OBJ_DATA *)(this->pName))->pVtbl->pToDebugString(
                                                     this->pName,
                                                     indent+3
@@ -1422,6 +1495,10 @@ extern "C" {
         }
         if (this->pReqArch) {
             if (((OBJ_DATA *)(this->pReqArch))->pVtbl->pToDebugString) {
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent, ' ');
+                }
+                AStr_AppendA(pStr, "ReqArch:\n");
                 pWrkStr =   ((OBJ_DATA *)(this->pReqArch))->pVtbl->pToDebugString(
                                                     this->pReqArch,
                                                     indent+3
@@ -1432,6 +1509,10 @@ extern "C" {
         }
         if (this->pReqOS) {
             if (((OBJ_DATA *)(this->pReqOS))->pVtbl->pToDebugString) {
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent, ' ');
+                }
+                AStr_AppendA(pStr, "ReqOS:\n");
                 pWrkStr =   ((OBJ_DATA *)(this->pReqOS))->pVtbl->pToDebugString(
                                                     this->pReqOS,
                                                     indent+3
@@ -1442,6 +1523,10 @@ extern "C" {
         }
         if (this->pDeps) {
             if (((OBJ_DATA *)(this->pDeps))->pVtbl->pToDebugString) {
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent, ' ');
+                }
+                AStr_AppendA(pStr, "Dependencies:\n");
                 pWrkStr =   ((OBJ_DATA *)(this->pDeps))->pVtbl->pToDebugString(
                                                     this->pDeps,
                                                     indent+3
@@ -1452,6 +1537,10 @@ extern "C" {
         }
         if (this->pSrcs) {
             if (((OBJ_DATA *)(this->pSrcs))->pVtbl->pToDebugString) {
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent, ' ');
+                }
+                AStr_AppendA(pStr, "Source Files:\n");
                 pWrkStr =   ((OBJ_DATA *)(this->pSrcs))->pVtbl->pToDebugString(
                                                     this->pSrcs,
                                                     indent+3

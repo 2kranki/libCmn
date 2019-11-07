@@ -262,9 +262,56 @@ extern "C" {
         // Return to caller.
         return( this );
     }
-    
-    
-    
+
+
+
+    ASTR_DATA *     AStr_NewFromPrint(
+        const
+        char            *pFormat,
+        ...
+    )
+    {
+        ASTR_DATA       *this;
+        ERESULT         eRc = ERESULT_INSUFFICIENT_MEMORY;
+        char            str[256];
+        int             size;
+        va_list         arg_ptr;
+        char            *pStr = NULL;
+
+        this = AStr_New( );
+        if (this) {
+            va_start( arg_ptr, pFormat );
+            str[0] = '\0';
+            size = vsnprintf(str, sizeof(str), pFormat, arg_ptr);
+            va_end( arg_ptr );
+            if (size >= sizeof(str)) {
+                ++size;
+                pStr = (char *)mem_Malloc(size);
+                if( pStr == NULL ) {
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                    return this;
+                }
+                va_start( arg_ptr, pFormat );
+                size = vsnprintf( pStr, size, pFormat, arg_ptr );
+                va_end( arg_ptr );
+                eRc = AStr_AppendA(this, pStr);
+                mem_Free( pStr );
+                pStr = NULL;
+            }
+            else {
+                eRc = AStr_AppendA(this, str);
+            }
+        }
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(this);
+            this = OBJ_NIL;
+        }
+        return this;
+    }
+
+
+
     ASTR_DATA *   AStr_NewFromTimeNow(
     )
     {

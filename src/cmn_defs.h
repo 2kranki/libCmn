@@ -154,9 +154,11 @@ extern "C" {
         OBJ_IDENT_ASTR_CLASS,
         OBJ_IDENT_ASTRARRAY,            // an Array of ASCII/UTF-8 Strings
         OBJ_IDENT_ASTRARRAY_CLASS,
-        OBJ_IDENT_ASTRC,                // ASCII String Constant
+        OBJ_IDENT_ASTRC,                // ASCII/UTF-8 String Constant
         OBJ_IDENT_ASTRC_CLASS,
-        OBJ_IDENT_ASTRCREADER,          // ASCII String Constant Reader
+        OBJ_IDENT_ASTRCARRAY,           // an Array of ASCII/UTF-8 String Constants
+        OBJ_IDENT_ASTRCARRAY_CLASS,
+        OBJ_IDENT_ASTRCREADER,          // ASCII/UTF-8 String Constant Reader
         OBJ_IDENT_ASTRCREADER_CLASS,
         OBJ_IDENT_AUDIOCW,              // Morse Code Audio
         OBJ_IDENT_AUDIOCW_CLASS,

@@ -408,9 +408,9 @@ static
 const
 OBJ_INFO        NodeObj_Info = {
     "NodeObj",
-    "NodeObj",	// <-- Fill in description
+    "Object Node",
     (OBJ_DATA *)&NodeObj_ClassObj,
-    (OBJ_DATA *)&node_ClassObj,
+    (OBJ_DATA *)&NodeBase_ClassObj,
     (OBJ_IUNKNOWN *)&NodeObj_Vtbl,
     sizeof(NODEOBJ_DATA)
 };

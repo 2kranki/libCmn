@@ -1240,7 +1240,7 @@ extern "C" {
     //---------------------------------------------------------------
     //                  P a r s e  O b j e c t
     //---------------------------------------------------------------
-    
+
     ERESULT         dbprs_ParseObject(
         DBPRS_DATA      *this,
         NODE_DATA       *pNode,
@@ -1258,6 +1258,7 @@ extern "C" {
         NODERTN_DATA    *pRtnObj = OBJ_NIL;     // Object's Object
         NODERTN_DATA    *pRtnJSON = OBJ_NIL;    // Object's JSON methods
         NODETEST_DATA   *pTst = OBJ_NIL;
+        ERESULT_DATA    *pErr = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1316,12 +1317,14 @@ extern "C" {
             goto errorExit;
         }
         NodeRtn_setName(pRtn, pName);
-        eRc = NodeRtn_AppendDeps(pRtn, pNameH);
+        pErr = NodeRtn_AppendDeps(pRtn, pNameH);
+        //FIXME: Check pErr
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             goto errorExit;
         }
-        eRc = NodeRtn_AppendDeps(pRtn, pNameInternalH);
+        pErr = NodeRtn_AppendDeps(pRtn, pNameInternalH);
+        //FIXME: Check pErr
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             goto errorExit;
@@ -1347,12 +1350,14 @@ extern "C" {
         NodeRtn_setName(pRtnJSON, pStr);
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        eRc = NodeRtn_AppendDeps(pRtnJSON, pNameH);
+        pErr = NodeRtn_AppendDeps(pRtnJSON, pNameH);
+        //FIXME: Check pErr
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             goto errorExit;
         }
-        eRc = NodeRtn_AppendDeps(pRtnJSON, pNameInternalH);
+        pErr = NodeRtn_AppendDeps(pRtnJSON, pNameInternalH);
+        //FIXME: Check pErr
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             goto errorExit;
@@ -1379,12 +1384,14 @@ extern "C" {
         NodeRtn_setName(pRtnObj, pStr);
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        eRc = NodeRtn_AppendDeps(pRtnObj, pNameH);
+        pErr = NodeRtn_AppendDeps(pRtnObj, pNameH);
+        //FIXME: Check pErr
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             goto errorExit;
         }
-        eRc = NodeRtn_AppendDeps(pRtnObj, pNameInternalH);
+        pErr = NodeRtn_AppendDeps(pRtnObj, pNameInternalH);
+        //FIXME: Check pErr
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             goto errorExit;
@@ -1413,12 +1420,14 @@ extern "C" {
         NodeTest_setName(pTst, pStr);
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        eRc = NodeTest_AppendDeps(pTst, pNameH);
-        if (ERESULT_FAILED(eRc)) {
+        pErr = NodeTest_AppendDeps(pTst, pNameH);
+        //FIXME: Check pErr
+        if (pErr) {
             DEBUG_BREAK();
             goto errorExit;
         }
-        eRc = NodeTest_AppendDeps(pTst, pNameInternalH);
+        pErr = NodeTest_AppendDeps(pTst, pNameInternalH);
+        //FIXME: Check pErr
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             goto errorExit;
@@ -1468,14 +1477,19 @@ extern "C" {
             eRc = ERESULT_OUT_OF_MEMORY;
             goto errorExit;
         }
-        eRc = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtn));
+        pErr = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtn));
+        //FIXME: Check pErr
+        if (pErr) {
+            
+        }
         eRc = nodeArray_AppendNode(pNodes, NodeRtn_getNode(pRtn), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(pNodes);
             goto errorExit;
         }
-        eRc = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtnObj));
+        pErr = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtnObj));
+        //FIXME: Check pErr
         eRc = nodeArray_AppendNode(pNodes, NodeRtn_getNode(pRtnObj), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
@@ -1483,7 +1497,8 @@ extern "C" {
             goto errorExit;
         }
         if (pRtnJSON) {
-            eRc = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtnJSON));
+            pErr = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtnJSON));
+            //FIXME: Check pErr
             eRc = nodeArray_AppendNode(pNodes, NodeRtn_getNode(pRtnJSON), NULL);
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
@@ -1492,8 +1507,9 @@ extern "C" {
             }
         }
         if (pTst) {
-            eRc = NodeBase_SortArrays(NodeTest_getNodeBase(pTst));
+            pErr = NodeBase_SortArrays(NodeTest_getNodeBase(pTst));
             eRc = nodeArray_AppendNode(pNodes, NodeTest_getNode(pTst), NULL);
+            //FIXME: Check pErr
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 obj_Release(pNodes);
@@ -1705,6 +1721,7 @@ extern "C" {
         NODERTN_DATA    *pRtn = OBJ_NIL;        // Primary Object
         NODETEST_DATA   *pTst = OBJ_NIL;
         NODEARRAY_DATA  *pNodes = OBJ_NIL;
+        ERESULT_DATA    *pErr = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1758,7 +1775,12 @@ extern "C" {
             eRc = ERESULT_OUT_OF_MEMORY;
             goto errorExit;
         }
-        eRc = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtn));
+        pErr = NodeBase_SortArrays(NodeRtn_getNodeBase(pRtn));
+        if (pErr) {
+            DEBUG_BREAK();
+            obj_Release(pErr);
+            pErr = OBJ_NIL;
+        }
         eRc = nodeArray_AppendNode(pNodes, NodeRtn_getNode(pRtn), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
@@ -1766,7 +1788,12 @@ extern "C" {
             goto errorExit;
         }
         if (pTst) {
-            eRc = NodeBase_SortArrays(NodeTest_getNodeBase(pTst));
+            pErr = NodeBase_SortArrays(NodeTest_getNodeBase(pTst));
+            if (pErr) {
+                DEBUG_BREAK();
+                obj_Release(pErr);
+                pErr = OBJ_NIL;
+            }
             eRc = nodeArray_AppendNode(pNodes, NodeTest_getNode(pTst), NULL);
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();

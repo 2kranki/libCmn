@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'NodeBase'
-//	Generated 11/03/2019 08:11:17
+//	Class Object Metods and Tables for 'AStrCArray'
+//	Generated 11/07/2019 08:58:19
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			NODEBASE_OBJECT_C	    1
-#include        <NodeBase_internal.h>
-#ifdef  NODEBASE_SINGLETON
+#define			ASTRCARRAY_OBJECT_C	    1
+#include        <AStrCArray_internal.h>
+#ifdef  ASTRCARRAY_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct NodeBase_class_data_s	{
+struct AStrCArray_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  NODEBASE_SINGLETON
+#ifdef  ASTRCARRAY_SINGLETON
     volatile
-    NODEBASE_DATA       *pSingleton;
+    ASTRCARRAY_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct NodeBase_class_data_s	{
 
 
 static
-void *          NodeBaseClass_QueryInfo (
+void *          AStrCArrayClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,21 +78,18 @@ void *          NodeBaseClass_QueryInfo (
 
 static
 const
-OBJ_INFO        NodeBase_Info;            // Forward Reference
+OBJ_INFO        AStrCArray_Info;            // Forward Reference
 
 
 
 
 static
-bool            NodeBaseClass_IsKindOf (
+bool            AStrCArrayClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NODEBASE_CLASS == classID) {
+    if (OBJ_IDENT_ASTRCARRAY_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_NODE_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -102,11 +99,11 @@ bool            NodeBaseClass_IsKindOf (
 
 
 static
-uint16_t		NodeBaseClass_WhoAmI (
+uint16_t		AStrCArrayClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEBASE_CLASS;
+    return OBJ_IDENT_ASTRCARRAY_CLASS;
 }
 
 
@@ -118,17 +115,17 @@ uint16_t		NodeBaseClass_WhoAmI (
 
 static
 const
-NODEBASE_CLASS_VTBL    class_Vtbl = {
+ASTRCARRAY_CLASS_VTBL    class_Vtbl = {
     {
-        &NodeBase_Info,
-        NodeBaseClass_IsKindOf,
+        &AStrCArray_Info,
+        AStrCArrayClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        NodeBase_Class,
-        NodeBaseClass_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeBaseClass_QueryInfo,
-        NULL                        // NodeBaseClass_ToDebugString
+        AStrCArray_Class,
+        AStrCArrayClass_WhoAmI,
+        (P_OBJ_QUERYINFO)AStrCArrayClass_QueryInfo,
+        NULL                        // AStrCArrayClass_ToDebugString
     },
 };
 
@@ -138,10 +135,10 @@ NODEBASE_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NODEBASE_CLASS_DATA  NodeBase_ClassObj = {
+ASTRCARRAY_CLASS_DATA  AStrCArray_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(NODEBASE_CLASS_DATA),                  // cbSize
+        sizeof(ASTRCARRAY_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -155,17 +152,17 @@ NODEBASE_CLASS_DATA  NodeBase_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  NODEBASE_SINGLETON
-NODEBASE_DATA *     NodeBase_getSingleton (
+#ifdef  ASTRCARRAY_SINGLETON
+ASTRCARRAY_DATA *     AStrCArray_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(NodeBase_ClassObj.pSingleton);
+    return (OBJ_ID)(AStrCArray_ClassObj.pSingleton);
 }
 
 
-bool            NodeBase_setSingleton (
-    NODEBASE_DATA       *pValue
+bool            AStrCArray_setSingleton (
+    ASTRCARRAY_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -185,10 +182,10 @@ bool            NodeBase_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (NodeBase_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(NodeBase_ClassObj.pSingleton));
+    if (AStrCArray_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(AStrCArray_ClassObj.pSingleton));
     }
-    NodeBase_ClassObj.pSingleton = pValue;
+    AStrCArray_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -198,17 +195,17 @@ bool            NodeBase_setSingleton (
 
 
 
-NODEBASE_DATA *     NodeBase_Shared (
+ASTRCARRAY_DATA *     AStrCArray_Shared (
     void
 )
 {
-    NODEBASE_DATA       *this = (OBJ_ID)(NodeBase_ClassObj.pSingleton);
+    ASTRCARRAY_DATA       *this = (OBJ_ID)(AStrCArray_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = NodeBase_New( );
-        NodeBase_setSingleton(this);
+        this = AStrCArray_New( );
+        AStrCArray_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // NodeBase_ClassObj.pSingleton = OBJ_NIL;
+        // AStrCArray_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -216,15 +213,15 @@ NODEBASE_DATA *     NodeBase_Shared (
 
 
 
-void            NodeBase_SharedReset (
+void            AStrCArray_SharedReset (
     void
 )
 {
-    NODEBASE_DATA       *this = (OBJ_ID)(NodeBase_ClassObj.pSingleton);
+    ASTRCARRAY_DATA       *this = (OBJ_ID)(AStrCArray_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        NodeBase_ClassObj.pSingleton = OBJ_NIL;
+        AStrCArray_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -240,13 +237,13 @@ void            NodeBase_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          NodeBaseClass_QueryInfo (
+void *          AStrCArrayClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODEBASE_CLASS_DATA *this = objId;
+    ASTRCARRAY_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -257,7 +254,7 @@ void *          NodeBaseClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODEBASE_DATA);
+            return (void *)sizeof(ASTRCARRAY_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -272,7 +269,7 @@ void *          NodeBaseClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&NodeBase_Info;
+                        return (void *)&AStrCArray_Info;
                     }
                     break;
                     
@@ -290,13 +287,13 @@ void *          NodeBaseClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return NodeBase_New;
+                        return AStrCArray_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return NodeBaseClass_WhoAmI;
+                        return AStrCArrayClass_WhoAmI;
                     }
                     break;
                     
@@ -316,15 +313,12 @@ void *          NodeBaseClass_QueryInfo (
 
 
 static
-bool            NodeBase_IsKindOf (
+bool            AStrCArray_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NODEBASE == classID) {
+    if (OBJ_IDENT_ASTRCARRAY == classID) {
        return true;
-    }
-    if (OBJ_IDENT_NODE == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -335,25 +329,25 @@ bool            NodeBase_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            NodeBase_Dealloc (
+void            AStrCArray_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          NodeBase_Class (
+OBJ_ID          AStrCArray_Class (
     void
 )
 {
-    return (OBJ_ID)&NodeBase_ClassObj;
+    return (OBJ_ID)&AStrCArray_ClassObj;
 }
 
 
 static
-uint16_t		NodeBase_WhoAmI (
+uint16_t		AStrCArray_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEBASE;
+    return OBJ_IDENT_ASTRCARRAY;
 }
 
 
@@ -365,34 +359,34 @@ uint16_t		NodeBase_WhoAmI (
 //===========================================================
 
 const
-NODEBASE_VTBL     NodeBase_Vtbl = {
+ASTRCARRAY_VTBL     AStrCArray_Vtbl = {
     {
-        &NodeBase_Info,
-        NodeBase_IsKindOf,
-#ifdef  NODEBASE_IS_SINGLETON
+        &AStrCArray_Info,
+        AStrCArray_IsKindOf,
+#ifdef  ASTRCARRAY_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        NodeBase_Dealloc,
-        NodeBase_Class,
-        NodeBase_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeBase_QueryInfo,
-        (P_OBJ_TOSTRING)NodeBase_ToDebugString,
-        NULL,			// NodeBase_Enable,
-        NULL,			// NodeBase_Disable,
-        (P_OBJ_ASSIGN)NodeBase_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodeBase_Compare,
-        (P_OBJ_PTR)NodeBase_Copy,
-        NULL, 			// (P_OBJ_PTR)NodeBase_DeepCopy,
-        NULL 			// (P_OBJ_HASH)NodeBase_Hash,
+        AStrCArray_Dealloc,
+        AStrCArray_Class,
+        AStrCArray_WhoAmI,
+        (P_OBJ_QUERYINFO)AStrCArray_QueryInfo,
+        (P_OBJ_TOSTRING)AStrCArray_ToDebugString,
+        NULL,			// AStrCArray_Enable,
+        NULL,			// AStrCArray_Disable,
+        NULL,			// (P_OBJ_ASSIGN)AStrCArray_Assign,
+        NULL,			// (P_OBJ_COMPARE)AStrCArray_Compare,
+        NULL, 			// (P_OBJ_PTR)AStrCArray_Copy,
+        NULL, 			// (P_OBJ_PTR)AStrCArray_DeepCopy,
+        NULL 			// (P_OBJ_HASH)AStrCArray_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //NodeBase_IsEnabled,
+    //AStrCArray_IsEnabled,
  
 };
 
@@ -400,13 +394,13 @@ NODEBASE_VTBL     NodeBase_Vtbl = {
 
 static
 const
-OBJ_INFO        NodeBase_Info = {
-    "NodeBase",
-    "NodeBase",	// <-- Fill in description
-    (OBJ_DATA *)&NodeBase_ClassObj,
-    (OBJ_DATA *)&node_ClassObj,
-    (OBJ_IUNKNOWN *)&NodeBase_Vtbl,
-    sizeof(NODEBASE_DATA)
+OBJ_INFO        AStrCArray_Info = {
+    "AStrCArray",
+    "Array of AStrC objects",
+    (OBJ_DATA *)&AStrCArray_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&AStrCArray_Vtbl,
+    sizeof(ASTRCARRAY_DATA)
 };
 
 

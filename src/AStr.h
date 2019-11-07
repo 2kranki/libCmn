@@ -136,13 +136,15 @@ extern "C" {
         const
         char            *pString
     );
-    
 
-    ASTR_DATA *    AStr_NewFromW32Str(
-        W32STR_DATA     *pStr
+
+    ASTR_DATA *    AStr_NewFromPrint(
+        const
+        char            *pFormat,
+        ...
     );
-    
-    
+
+
     ASTR_DATA *    AStr_NewFromTimeNow(
         void
     );
@@ -156,8 +158,13 @@ extern "C" {
     ASTR_DATA *    AStr_NewFromUtf8File(
         PATH_DATA       *pPath
     );
-    
-    
+
+
+    ASTR_DATA *    AStr_NewFromW32Str(
+        W32STR_DATA     *pStr
+    );
+
+
     /*!
      Create a new string from a string escaping double parens and backslash
      characters so that the new string may be used directly in a string

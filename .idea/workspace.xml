@@ -10,17 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dcbae2a0-8874-4a9a-8e44-82d9738ed537" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/programs/genMake/.idea/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/genMake/src/NodeBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/programs/genMake/src/NodeBase.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/genMake/src/dbprs.c" beforeDir="false" afterPath="$PROJECT_DIR$/programs/genMake/src/dbprs.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/genMake/src/dbprs.h" beforeDir="false" afterPath="$PROJECT_DIR$/programs/genMake/src/dbprs.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/genMake/tests/Makefile.macos.txt" beforeDir="false" afterPath="$PROJECT_DIR$/programs/genMake/tests/Makefile.macos.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/genMake/tests/NodeBase_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/programs/genMake/tests/NodeBase_test.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/genMake/tests/test_dbprs.c" beforeDir="false" afterPath="$PROJECT_DIR$/programs/genMake/tests/test_dbprs.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/genMake/tests/test_main.c" beforeDir="false" afterPath="$PROJECT_DIR$/programs/genMake/tests/test_main.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/programs/genMake/src/NodeBase.c" beforeDir="false" afterPath="$PROJECT_DIR$/programs/genMake/src/NodeBase.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AStr.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/AStr.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AStr.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/AStr.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/eResult.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/eResult.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/eResult.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/eResult.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_AStr.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_AStr.c" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -71,6 +66,7 @@
       <updated>1572395616751</updated>
       <workItem from="1572395618103" duration="3486000" />
       <workItem from="1572880864506" duration="1118000" />
+      <workItem from="1572891069247" duration="2200000" />
     </task>
     <servers />
   </component>

@@ -140,6 +140,64 @@ extern "C" {
     );
     
     
+    /*!
+     Dependencies and Extra Source files are common to several
+     different type, so, we parse them here and accumulate
+     them in the given node, ppBase. If an object_hash is found,
+     it is optionally returned in ppHash so that other elements
+     could be parsed off.
+     
+     Node Grammar:
+     objectData : '{' object_Hash '}'
+                | '[' deps ']'      // Accumulate the source dependencies.
+                | "null"            // Ignored
+                | "false"           // ppBase is released and success is returned.
+                | "true"            // Ignored
+                ;
+     object_Hash:
+            "deps"  : '[' deps ']'
+                    ;
+            // Generate JSON object compile or not
+            "json"  : "true"
+                    | "null"    // Same as "true"
+                    | "false" (default)
+                    ;
+            // Generate Test compile and execution or not
+            // (optionally with extra compilation source files)
+            "test"  : "true" (default)
+                    | "false"
+                    | '[' source files ']'
+                    | '{' test_Hash '}'
+                    ;
+                ;
+     test_Hash  :
+            "deps"  : '[' deps ']'
+                    ;
+            "srcs"  : '[' source files ']'
+                    ;
+                ;
+     // Additional Dependency Files must be in the same directory
+     // as the primary file that it is associated with.
+     deps       : dependencies_file_name [',' deps]
+                ;
+     // Additional Source Files must be in the same directory
+     // as the primary file that it is associated with.
+     srcs       : source_file_name [',' srcs]
+                ;
+     @param     pNode   Input Node to be searched and parsed
+     @param     ppBase  Base Node to be filled in with the data or released.
+     @param     ppHash  Hash Node if found
+     @return    If successful, OBJ_NIL is returne, otherwise a new
+                ERESULT_DATA error object is returned.
+     @warning   The ERESULT_DATA error object must be released.
+     */
+    ERESULT_DATA *  NodeBase_ParseSubObj(
+        NODE_DATA       *pNode,
+        NODEBASE_DATA   **ppBase,
+        NODEHASH_DATA   **ppHash
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -228,10 +286,11 @@ extern "C" {
      Append a string to the dependencies list.
      @param     this    object pointer
      @param     pStr    string pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
+     @return    If successful, OBJ_NIL is returne, otherwise a new
+                ERESULT_DATA error object is returned.
+     @warning   The ERESULT_DATA error object must be released.
      */
-    ERESULT         NodeTest_AppendDeps (
+    ERESULT_DATA *  NodeTest_AppendDeps (
         NODETEST_DATA   *this,
         ASTR_DATA       *pStr
     );
@@ -241,10 +300,11 @@ extern "C" {
      Append a string to the sources list.
      @param     this    object pointer
      @param     pStr    string pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
+     @return    If successful, OBJ_NIL is returne, otherwise a new
+                ERESULT_DATA error object is returned.
+     @warning   The ERESULT_DATA error object must be released.
      */
-    ERESULT         NodeTest_AppendSrcs (
+    ERESULT_DATA *  NodeTest_AppendSrcs (
         NODETEST_DATA   *this,
         ASTR_DATA       *pStr
     );

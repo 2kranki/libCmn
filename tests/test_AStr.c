@@ -400,6 +400,34 @@ int         test_AStr_AppendPrint01(
 
 
 
+int         test_AStr_AppendPrint02 (
+    const
+    char        *pTestName
+)
+{
+    ERESULT     eRc;
+    ASTR_DATA	*pObj = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = AStr_NewFromPrint("%03d,%03d", 54, 113);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        XCTAssertTrue( (7 == AStr_getLength(pObj)) );
+        fprintf(stderr, "pObj=%s\n", AStr_getData(pObj));
+        XCTAssertTrue( (0 == strcmp("054,113", AStr_getData(pObj))) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_AStr_AssignCopy(
     const
     char        *pTestName
@@ -1577,6 +1605,7 @@ TINYTEST_START_SUITE(test_AStr);
     TINYTEST_ADD_TEST(test_AStr_CharFindPrev,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_CharFindNext,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_AssignCopy,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStr_AppendPrint02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_AppendPrint01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_AppendMid01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_AppendBig,setUp,tearDown);

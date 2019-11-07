@@ -123,6 +123,45 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                           N o d e
+    //---------------------------------------------------------------
+    
+    NODE_DATA *     NodeObj_getNode (
+        NODEOBJ_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeObj_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return (NODE_DATA *)this;
+    }
+
+    NODEBASE_DATA * NodeObj_getNodeBase (
+        NODEOBJ_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeObj_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return (NODEBASE_DATA *)this;
+    }
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -263,6 +302,64 @@ extern "C" {
     //===============================================================
     //                          M e t h o d s
     //===============================================================
+
+
+    //---------------------------------------------------------------
+    //                          A p p e n d
+    //---------------------------------------------------------------
+
+    /*!
+     Append a string to the dependencies.
+     @param     this    object pointer
+     @param     pStr    string pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  NodeObj_AppendDeps (
+        NODEOBJ_DATA    *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeObj_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+    #endif
+
+        pErr = NodeBase_AppendDeps(NodeObj_getNodeBase(this), pStr);
+
+        // Return to caller.
+        return pErr;
+    }
+
+
+    ERESULT_DATA *  NodeObj_AppendSrcs (
+        NODEOBJ_DATA    *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeObj_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+    #endif
+
+        pErr = NodeBase_AppendSrcs(NodeObj_getNodeBase(this), pStr);
+
+        // Return to caller.
+        return pErr;
+    }
+
 
 
     //---------------------------------------------------------------
@@ -592,9 +689,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeObj_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
-
     #ifdef NDEBUG
     #else
         if (!NodeObj_Validate(this)) {
@@ -766,6 +860,32 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                     S o r t  A r r a y s
+    //---------------------------------------------------------------
+    
+    ERESULT_DATA *  NodeObj_SortArrays (
+        NODEOBJ_DATA    *this
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeObj_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+#endif
+        
+        pErr = NodeBase_SortArrays(NodeObj_getNodeBase(this));
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+            
+            
     //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------

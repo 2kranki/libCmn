@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   NodeTest.c
- *	Generated 11/03/2019 08:12:57
+ * File:   AStrCArray.c
+ *	Generated 11/07/2019 08:58:19
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <NodeTest_internal.h>
+#include        <AStrCArray_internal.h>
 #include        <trace.h>
 
 
@@ -64,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            NodeTest_task_body (
+    void            AStrCArray_task_body (
         void            *pData
     )
     {
-        //NODETEST_DATA  *this = pData;
+        //ASTRCARRAY_DATA  *this = pData;
         
     }
 #endif
@@ -84,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODETEST_DATA *     NodeTest_Alloc (
+    ASTRCARRAY_DATA *     AStrCArray_Alloc (
         void
     )
     {
-        NODETEST_DATA       *this;
-        uint32_t        cbSize = sizeof(NODETEST_DATA);
+        ASTRCARRAY_DATA       *this;
+        uint32_t        cbSize = sizeof(ASTRCARRAY_DATA);
         
         // Do initialization.
         
@@ -101,124 +101,158 @@ extern "C" {
 
 
 
-    NODETEST_DATA *     NodeTest_New (
+    ASTRCARRAY_DATA * AStrCArray_New (
         void
     )
     {
-        NODETEST_DATA       *this;
+        ASTRCARRAY_DATA *this;
         
-        this = NodeTest_Alloc( );
+        this = AStrCArray_Alloc( );
         if (this) {
-            this = NodeTest_Init(this);
+            this = AStrCArray_Init(this);
         } 
         return this;
     }
 
 
 
+    ASTRCARRAY_DATA * AStrCArray_NewFromArgV(
+        int             cArgs,
+        const
+        char            *ppArgV[]
+    )
+    {
+        ASTRCARRAY_DATA *pArray = OBJ_NIL;
+        ASTRC_DATA      *pStr = OBJ_NIL;
+        int             i;
+        
+        if ((cArgs < 1) || (NULL == ppArgV)) {
+            return OBJ_NIL;
+        }
+        pArray = AStrCArray_New( );
+        if (pArray) {
+            for (i=0; i<cArgs; ++i) {
+                if (ppArgV[i]) {
+                    pStr = AStrC_NewA(ppArgV[i]);
+                    if (pStr) {
+                        AStrCArray_AppendStr(pArray, pStr, NULL);
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    }
+                    else {
+                        obj_Release(pArray);
+                        pArray = OBJ_NIL;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return pArray;
+    }
     
+    
+    ASTRCARRAY_DATA * AStrCArray_NewFromArrayA(
+        const
+        char            *ppArgV[]
+    )
+    {
+        ASTRCARRAY_DATA *pArray = OBJ_NIL;
+        ASTRC_DATA      *pStr = OBJ_NIL;
+        
+        if (NULL == ppArgV) {
+            return OBJ_NIL;
+        }
+        pArray = AStrCArray_New( );
+        if (pArray) {
+            while (*ppArgV) {
+                pStr = AStrC_NewA(*ppArgV);
+                if (pStr) {
+                    AStrCArray_AppendStr(pArray, pStr, NULL);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+                else {
+                    obj_Release(pArray);
+                    pArray = OBJ_NIL;
+                    break;
+                }
+                ++ppArgV;
+            }
+        }
+        
+        return pArray;
+    }
+    
+    
+    
+
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                        N a m e
+    //                        A r r a y
     //---------------------------------------------------------------
-
-    ASTR_DATA *     NodeTest_getName (
-        NODETEST_DATA   *this
+    
+    OBJARRAY_DATA * AStrCArray_getArray (
+        ASTRCARRAY_DATA *this
     )
     {
-
+        
         // Validate the input parameters.
-    #ifdef NDEBUG
-    #else
-        if (!NodeTest_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-    #endif
-
-        return NodeBase_getName(NodeTest_getNodeBase(this));
+#endif
+        
+        return this->pArray;
     }
-
-
-    bool            NodeTest_setName (
-        NODETEST_DATA   *this,
-        ASTR_DATA       *pValue
+    
+    
+    bool            AStrCArray_setArray (
+        ASTRCARRAY_DATA *this,
+        OBJARRAY_DATA   *pValue
     )
     {
-    #ifdef NDEBUG
-    #else
-        if (!NodeTest_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
-    #endif
+#endif
 
-        return NodeBase_setName(NodeTest_getNodeBase(this), pValue);
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                           N o d e
-    //---------------------------------------------------------------
-
-    NODE_DATA *     NodeTest_getNode (
-        NODETEST_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-    #ifdef NDEBUG
-    #else
-        if (!NodeTest_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
+#ifdef  PROPERTY_ARRAY_OWNED
+        obj_Retain(pValue);
+        if (this->pArray) {
+            obj_Release(this->pArray);
         }
-    #endif
-
-        return (NODE_DATA *)this;
+#endif
+        this->pArray = pValue;
+        
+        return true;
     }
-
-
-    //---------------------------------------------------------------
-    //                       N o d e  B a s e
-    //---------------------------------------------------------------
-
-    NODEBASE_DATA * NodeTest_getNodeBase (
-        NODETEST_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-    #ifdef NDEBUG
-    #else
-        if (!NodeTest_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-    #endif
-
-        return (NODEBASE_DATA *)this;
-    }
-
-
+        
+        
+        
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        NodeTest_getPriority (
-        NODETEST_DATA     *this
+    uint16_t        AStrCArray_getPriority (
+        ASTRCARRAY_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -229,14 +263,14 @@ extern "C" {
     }
 
 
-    bool            NodeTest_setPriority (
-        NODETEST_DATA     *this,
+    bool            AStrCArray_setPriority (
+        ASTRCARRAY_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -253,84 +287,42 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        NodeTest_getSize (
-        NODETEST_DATA       *this
+    uint32_t        AStrCArray_getSize (
+        ASTRCARRAY_DATA       *this
     )
     {
+        uint32_t        i = 0;
+
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return 0;
+        if (this->pArray) {
+            i = objArray_getSize(this->pArray);
+        }
+        
+        return i;
     }
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * NodeTest_getStr (
-        NODETEST_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeTest_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        NodeTest_setStr (
-        NODETEST_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeTest_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  NodeTest_getSuperVtbl (
-        NODETEST_DATA     *this
+    OBJ_IUNKNOWN *  AStrCArray_getSuperVtbl (
+        ASTRCARRAY_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -352,61 +344,50 @@ extern "C" {
     //---------------------------------------------------------------
     //                          A p p e n d
     //---------------------------------------------------------------
-
+    
     /*!
-     Append a string to the dependencies.
-     @param     this    object pointer
-     @param     pStr    string pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
+     Append the given string to the array and return its index.
+     @param     this    Object Pointer
+     @param     pObject String Object to be added
+     @param     pIndex  (Optional) Index Pointer
+     @return    If successful, ERESULT_SUCCESS and the index in pIndex
+                if it is not NULL.  Otherwise, an ERESULT_* error.
      */
-    ERESULT_DATA *  NodeTest_AppendDeps (
-        NODETEST_DATA	*this,
-        ASTR_DATA       *pStr
-    )
-    {
-        ERESULT_DATA    *pErr = OBJ_NIL;
-
-        // Do initialization.
+    ERESULT         AStrCArray_AppendStr(
+        ASTRCARRAY_DATA *this,
+        ASTRC_DATA      *pObject,
+        uint32_t        *pIndex
+        )
+        {
+            ERESULT         eRc;
+            
+            // Do initialization.
+            if (NULL == this) {
+                return false;
+            }
     #ifdef NDEBUG
     #else
-        if (!NodeTest_Validate(this)) {
-            DEBUG_BREAK();
-            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
-        }
+            if( !AStrCArray_Validate(this) ) {
+                DEBUG_BREAK();
+                return false;
+            }
     #endif
-
-        pErr = NodeBase_AppendDeps(NodeTest_getNodeBase(this), pStr);
-
-        // Return to caller.
-        return pErr;
-    }
-
-
-    ERESULT_DATA *  NodeTest_AppendSrcs (
-        NODETEST_DATA	*this,
-        ASTR_DATA       *pStr
-    )
-    {
-        ERESULT_DATA    *pErr = OBJ_NIL;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!NodeTest_Validate(this)) {
-            DEBUG_BREAK();
-            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+            
+            if (OBJ_NIL == this->pArray) {
+                this->pArray = objArray_New();
+                if (OBJ_NIL == this->pArray) {
+                    return ERESULT_OUT_OF_MEMORY;
+                }
+            }
+            
+            eRc = objArray_AppendObj(this->pArray, pObject, pIndex);
+            
+            // Return to caller.
+            return eRc;
         }
-    #endif
 
-        pErr = NodeBase_AppendSrcs(NodeTest_getNodeBase(this), pStr);
-
-        // Return to caller.
-        return pErr;
-    }
-
-
-
+        
+        
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -417,44 +398,40 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = NodeTest_Assign(this,pOther);
+        ERESULT eRc = AStrCArray_Assign(this,pOther);
      @endcode 
-     @param     this    NODETEST object pointer
-     @param     pOther  a pointer to another NODETEST object
+     @param     this    ASTRCARRAY object pointer
+     @param     pOther  a pointer to another ASTRCARRAY object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         NodeTest_Assign (
-        NODETEST_DATA		*this,
-        NODETEST_DATA     *pOther
+    ERESULT         AStrCArray_Assign (
+        ASTRCARRAY_DATA	*this,
+        ASTRCARRAY_DATA *pOther
     )
     {
-        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!NodeTest_Validate(pOther)) {
+        if (!AStrCArray_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
         if (pOther->pArray) {
             obj_Release(pOther->pArray);
             pOther->pArray = OBJ_NIL;
         }
-#endif
-
+        
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
         if (this->pArray) {
             if (obj_getVtbl(this->pArray)->pCopy) {
                 pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
@@ -464,18 +441,11 @@ extern "C" {
                 pOther->pArray = this->pArray;
             }
         }
-#endif
-
+        
         // Copy other data from this object to other.
         
-        //goto eom;
-
         // Return to caller.
-        eRc = ERESULT_SUCCESS;
-    eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
-        return eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -490,9 +460,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         NodeTest_Compare (
-        NODETEST_DATA     *this,
-        NODETEST_DATA     *pOther
+    ERESULT         AStrCArray_Compare (
+        ASTRCARRAY_DATA     *this,
+        ASTRCARRAY_DATA     *pOther
     )
     {
         int             i = 0;
@@ -506,11 +476,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!NodeTest_Validate(pOther)) {
+        if (!AStrCArray_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -548,32 +518,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        NodeTest      *pCopy = NodeTest_Copy(this);
+        AStrCArray      *pCopy = AStrCArray_Copy(this);
      @endcode 
-     @param     this    NODETEST object pointer
-     @return    If successful, a NODETEST object which must be 
+     @param     this    ASTRCARRAY object pointer
+     @return    If successful, a ASTRCARRAY object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    NODETEST_DATA *     NodeTest_Copy (
-        NODETEST_DATA       *this
+    ASTRCARRAY_DATA *     AStrCArray_Copy (
+        ASTRCARRAY_DATA *this
     )
     {
-        NODETEST_DATA       *pOther = OBJ_NIL;
+        ASTRCARRAY_DATA *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = NodeTest_New( );
+        pOther = AStrCArray_New( );
         if (pOther) {
-            eRc = NodeTest_Assign(this, pOther);
+            eRc = AStrCArray_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -591,11 +561,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            NodeTest_Dealloc (
+    void            AStrCArray_Dealloc (
         OBJ_ID          objId
     )
     {
-        NODETEST_DATA   *this = objId;
+        ASTRCARRAY_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -603,7 +573,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -611,11 +581,17 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((NODETEST_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((ASTRCARRAY_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        NodeTest_setStr(this, OBJ_NIL);
+        if (this->pArray) {
+            if (obj_getRetainCount(this->pArray) > 1) {
+                DEBUG_BREAK();
+            }
+            obj_Release(this->pArray);
+            this->pArray = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -629,6 +605,65 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        D e l e t e
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *    AStrCArray_DeleteFirst(
+        ASTRCARRAY_DATA *this
+    )
+    {
+        ASTRC_DATA      *pNode = OBJ_NIL;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return false;
+        }
+#ifdef NDEBUG
+#else
+        if( !AStrCArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (this->pArray) {
+            pNode = objArray_DeleteFirst(this->pArray);
+        }
+        
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    ASTRC_DATA *    AStrCArray_DeleteLast(
+        ASTRCARRAY_DATA *this
+    )
+    {
+        ASTRC_DATA      *pNode = OBJ_NIL;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return false;
+        }
+#ifdef NDEBUG
+#else
+        if( !AStrCArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (this->pArray) {
+            pNode = objArray_DeleteLast(this->pArray);
+        }
+        
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -638,8 +673,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeTest_Disable (
-        NODETEST_DATA		*this
+    ERESULT         AStrCArray_Disable (
+        ASTRCARRAY_DATA        *this
     )
     {
         //ERESULT         eRc;
@@ -647,7 +682,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -673,8 +708,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeTest_Enable (
-        NODETEST_DATA		*this
+    ERESULT         AStrCArray_Enable (
+        ASTRCARRAY_DATA        *this
     )
     {
         //ERESULT         eRc;
@@ -682,7 +717,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -699,14 +734,98 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        G e t
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *     AStrCArray_Get(
+        ASTRCARRAY_DATA *this,
+        uint32_t        index       // Relative to 1
+    )
+    {
+        ASTRC_DATA      *pNode = OBJ_NIL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrCArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (this->pArray) {
+            pNode = objArray_Get(this->pArray,index);
+        }
+        
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    ASTRC_DATA *     AStrCArray_GetFirst(
+        ASTRCARRAY_DATA *this
+    )
+    {
+        ASTRC_DATA      *pNode = OBJ_NIL;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return OBJ_NIL;
+        }
+#ifdef NDEBUG
+#else
+        if( !AStrCArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (this->pArray) {
+            pNode = objArray_GetFirst(this->pArray);
+        }
+        
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    ASTRC_DATA *    AStrCArray_GetLast(
+        ASTRCARRAY_DATA *this
+    )
+    {
+        ASTRC_DATA      *pNode = OBJ_NIL;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return OBJ_NIL;
+        }
+#ifdef NDEBUG
+#else
+        if( !AStrCArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        if (this->pArray) {
+            pNode = objArray_GetLast(this->pArray);
+        }
+        
+        // Return to caller.
+        return pNode;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    NODETEST_DATA *   NodeTest_Init (
-        NODETEST_DATA       *this
+    ASTRCARRAY_DATA *   AStrCArray_Init (
+        ASTRCARRAY_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(NODETEST_DATA);
+        uint32_t        cbSize = sizeof(ASTRCARRAY_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -723,31 +842,31 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)NodeBase_Init((NODEBASE_DATA *)this);    // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODETEST);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_ASTRCARRAY);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                        // Needed for Inheritance
+        //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeTest_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&AStrCArray_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "NodeTest::sizeof(NODETEST_DATA) = %lu\n", sizeof(NODETEST_DATA));
+        //fprintf(stderr, "AStrCArray::sizeof(ASTRCARRAY_DATA) = %lu\n", sizeof(ASTRCARRAY_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(NODETEST_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(ASTRCARRAY_DATA));
     #endif
 
         return this;
@@ -756,11 +875,49 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                          I n s e r t
+    //---------------------------------------------------------------
+    
+    ERESULT         AStrCArray_InsertStr(
+        ASTRCARRAY_DATA *this,
+        uint32_t        index,
+        ASTRC_DATA      *pObject
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return false;
+        }
+#ifdef NDEBUG
+#else
+        if( !AStrCArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pArray) {
+            this->pArray = objArray_New();
+            if (OBJ_NIL == this->pArray) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        eRc = objArray_InsertObj(this->pArray, index, pObject);
+        
+        // Return to caller.
+        return eRc;
+    }
+        
+        
+    //---------------------------------------------------------------
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         NodeTest_IsEnabled (
-        NODETEST_DATA		*this
+    ERESULT         AStrCArray_IsEnabled (
+        ASTRCARRAY_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -768,7 +925,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -795,14 +952,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = NodeTest_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = AStrCArray_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "NodeTest", prefix,
+                        the object name, "AStrCArray", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -810,13 +967,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          NodeTest_QueryInfo (
+    void *          AStrCArray_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        NODETEST_DATA     *this = objId;
+        ASTRCARRAY_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -825,7 +982,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -834,11 +991,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODETEST_DATA);
+            return (void *)sizeof(ASTRCARRAY_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)NodeTest_Class();
+                return (void *)AStrCArray_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -868,22 +1025,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return NodeTest_Disable;
+                            return AStrCArray_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return NodeTest_Enable;
+                            return AStrCArray_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return NodeTest_ToDebugString;
+                            return AStrCArray_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return NodeTest_ToJSON;
+                            return AStrCArray_ToJSON;
                         }
                         break;
                         
@@ -893,9 +1050,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == NodeTest_ToDebugString)
+                if (pData == AStrCArray_ToDebugString)
                     return "ToDebugString";
-                if (pData == NodeTest_ToJSON)
+                if (pData == AStrCArray_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -909,11 +1066,43 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                         S o r t
+    //---------------------------------------------------------------
+    
+    ERESULT         AStrCArray_SortAscending(
+        ASTRCARRAY_DATA *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return false;
+        }
+#ifdef NDEBUG
+#else
+        if( !AStrCArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        if (this->pArray) {
+            eRc = objArray_SortAscending(this->pArray, (OBJ_COMPARE)&AStrC_Compare);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+        
+        
+        
+    //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------
     
-     ASTR_DATA *     NodeTest_ToJSON (
-        NODETEST_DATA      *this
+     ASTR_DATA *     AStrCArray_ToJSON (
+        ASTRCARRAY_DATA      *this
     )
     {
         ERESULT         eRc;
@@ -924,7 +1113,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -955,32 +1144,30 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = NodeTest_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = AStrCArray_ToDebugString(this,4);
      @endcode 
-     @param     this    NODETEST object pointer
+     @param     this    ASTRCARRAY object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NodeTest_ToDebugString (
-        NODETEST_DATA      *this,
+    ASTR_DATA *     AStrCArray_ToDebugString (
+        ASTRCARRAY_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeTest_Validate(this)) {
+        if (!AStrCArray_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1001,22 +1188,17 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    NodeTest_getSize(this)
+                    AStrCArray_getSize(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
+        if (this->pArray) {
+            pWrkStr = objArray_ToDebugString(this->pArray, indent+4);
+            if (pWrkStr) {
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
-#endif
-        
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
@@ -1038,15 +1220,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            NodeTest_Validate (
-        NODETEST_DATA      *this
+    bool            AStrCArray_Validate (
+        ASTRCARRAY_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_NODETEST))
+            if (obj_IsKindOf(this, OBJ_IDENT_ASTRCARRAY))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1062,7 +1244,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(NODETEST_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(ASTRCARRAY_DATA))) {
             return false;
         }
 

@@ -113,7 +113,6 @@ extern "C" {
     /*!
      Parse the given file into a JSON Node structure and
      perform some cursory checks on the structure.
-     @param     this    object pointer
      @param     pPath   File Path of UTF-8 file to be parsed
      @param     ppNodes Converted Nodes object pointer
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
@@ -127,7 +126,6 @@ extern "C" {
     /*!
      Parse the given string into a JSON Node structure and
      perform some cursory checks on the structure.
-     @param     this    object pointer
      @param     pStr    UTF-8 String to be parsed
      @param     ppNodes Converted Nodes object pointer
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*

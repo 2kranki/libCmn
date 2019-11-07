@@ -201,7 +201,8 @@ extern "C" {
         ERESULT_HEX_SYNTAX                  = -144,
         ERESULT_OCT_SYNTAX                  = -145,
         ERESULT_OVERFLOW                    = -146,
-        ERESULT_SPECIFICATION               = -147,
+        ERESULT_UNDERFLOW                   = -147,
+        ERESULT_SPECIFICATION               = -148,
 
         ERESULT_BUSY                        = -256,
         ERESULT_NOT_BUSY                    = -257,
@@ -258,6 +259,14 @@ extern "C" {
     );
     
     
+    /*!
+     Create a new eResult object that contains an error code and an error message. If
+     pValue is OBJ_NIL, then an error message will be contructed from the error code.
+     @param     eRc     Error Code
+     @param     pValue  A string object pointer or OBJ_NIL
+     @return    If successful, an eResult object pointer. Otherwise, OBJ_NIL.
+     @warning  Remember to release the returned eResult object if present.
+     */
     ERESULT_DATA *  eResult_NewAStr(
         ERESULT         eRc,
         ASTR_DATA       *pValue
@@ -274,6 +283,23 @@ extern "C" {
     );
     
 
+    /*!
+     Create a new eResult object that contains an error code and an error message. If
+     pValue is NULL, then an error message will be contructed from the error code.
+     @param     eRc     Error Code
+     @param     pValue  A string object pointer or OBJ_NIL
+     @return    If successful, an eResult object pointer. Otherwise, OBJ_NIL.
+     @warning  Remember to release the returned eResult object if present.
+     */
+    ERESULT_DATA *  eResult_NewStrA(
+        ERESULT         eRc,
+        const
+        char            *pValue
+    );
+
+
+
+
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
@@ -286,7 +312,13 @@ extern "C" {
         ERESULT_DATA    *this,
         ASTR_DATA       *pValue
     );
-    
+
+    const
+    char *          eResult_getErrorA(
+        ERESULT_DATA    *this
+    );
+
+
     /*!
      Shared Result is the ERESULT which is a part of the shared singleton
      and can be used as a process result code.

@@ -227,10 +227,11 @@ extern "C" {
      Append a string to the dependencies list.
      @param     this    object pointer
      @param     pStr    string pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
+     @return    If successful, OBJ_NIL is returne, otherwise a new
+                ERESULT_DATA error object is returned.
+     @warning   The ERESULT_DATA error object must be released.
      */
-    ERESULT         NodeRtn_AppendDeps (
+    ERESULT_DATA *  NodeRtn_AppendDeps (
         NODERTN_DATA    *this,
         ASTR_DATA       *pStr
     );
@@ -240,10 +241,11 @@ extern "C" {
      Append a string to the sources list.
      @param     this    object pointer
      @param     pStr    string pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
+     @return    If successful, OBJ_NIL is returne, otherwise a new
+                ERESULT_DATA error object is returned.
+     @warning   The ERESULT_DATA error object must be released.
      */
-    ERESULT         NodeRtn_AppendSrcs (
+    ERESULT_DATA *  NodeRtn_AppendSrcs (
         NODERTN_DATA    *this,
         ASTR_DATA       *pStr
     );

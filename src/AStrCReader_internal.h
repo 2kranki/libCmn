@@ -118,7 +118,7 @@ struct AStrCReader_data_s	{
     );
 
 
-    ASTRCREADER_DATA *       AStrCReader_ParseObject (
+    ASTRCREADER_DATA * AStrCReader_ParseObject (
         JSONIN_DATA     *pParser
     );
 

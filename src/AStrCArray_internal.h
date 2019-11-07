@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   NodeBase_internal.h
- *	Generated 11/03/2019 08:11:17
+ * File:   AStrCArray_internal.h
+ *	Generated 11/07/2019 08:58:19
  *
  * Notes:
  *  --	N/A
@@ -39,23 +39,18 @@
 
 
 
-#include        <node_internal.h>
-#include        <NodeBase.h>
-#include        <nodeArray.h>
-#include        <nodeHash.h>
+#include        <AStrCArray.h>
 #include        <jsonIn.h>
+#include        <objArray.h>
 
 
-#ifndef NODEBASE_INTERNAL_H
-#define	NODEBASE_INTERNAL_H
+#ifndef ASTRCARRAY_INTERNAL_H
+#define	ASTRCARRAY_INTERNAL_H
 
 
 
-#define     PROPERTY_DEPS_OWNED 1
-#define     PROPERTY_NAME_OWNED 1
-#define     PROPERTY_REQARCH_OWNED 1
-#define     PROPERTY_REQOS_OWNED 1
-#define     PROPERTY_SRCS_OWNED 1
+#define     PROPERTY_ARRAY_OWNED 1
+
 
 
 #ifdef	__cplusplus
@@ -70,30 +65,24 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct NodeBase_data_s	{
+struct AStrCArray_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    NODE_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTRARRAY_DATA  *pDeps;
-    ASTR_DATA       *pName;
-    ASTR_DATA       *pReqOS;
-    ASTR_DATA       *pReqArch;
-    ASTRARRAY_DATA  *pSrcs;
+    OBJARRAY_DATA   *pArray;
 
 };
 #pragma pack(pop)
 
     extern
-    struct NodeBase_class_data_s  NodeBase_ClassObj;
+    struct AStrCArray_class_data_s  AStrCArray_ClassObj;
 
     extern
     const
-    NODEBASE_VTBL         NodeBase_Vtbl;
+    ASTRCARRAY_VTBL         AStrCArray_Vtbl;
 
 
 
@@ -101,13 +90,13 @@ struct NodeBase_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NODEBASE_SINGLETON
-    NODEBASE_DATA * NodeBase_getSingleton (
+#ifdef  ASTRCARRAY_SINGLETON
+    ASTRCARRAY_DATA * AStrCArray_getSingleton (
         void
     );
 
-    bool            NodeBase_setSingleton (
-     NODEBASE_DATA       *pValue
+    bool            AStrCArray_setSingleton (
+     ASTRCARRAY_DATA       *pValue
 );
 #endif
 
@@ -117,30 +106,30 @@ struct NodeBase_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  NodeBase_getSuperVtbl (
-        NODEBASE_DATA     *this
+    OBJ_IUNKNOWN *  AStrCArray_getSuperVtbl (
+        ASTRCARRAY_DATA     *this
     );
 
 
-    void            NodeBase_Dealloc (
+    void            AStrCArray_Dealloc (
         OBJ_ID          objId
     );
 
 
-    NODEBASE_DATA * NodeBase_ParseObject (
+    ASTRCARRAY_DATA * AStrCArray_ParseObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          NodeBase_QueryInfo (
+    void *          AStrCArray_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     NodeBase_ToJSON (
-        NODEBASE_DATA      *this
+    ASTR_DATA *     AStrCArray_ToJSON (
+        ASTRCARRAY_DATA      *this
     );
 
 
@@ -148,8 +137,8 @@ struct NodeBase_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			NodeBase_Validate (
-        NODEBASE_DATA       *this
+    bool			AStrCArray_Validate (
+        ASTRCARRAY_DATA       *this
     );
 #endif
 
@@ -159,5 +148,5 @@ struct NodeBase_data_s	{
 }
 #endif
 
-#endif	/* NODEBASE_INTERNAL_H */
+#endif	/* ASTRCARRAY_INTERNAL_H */
 

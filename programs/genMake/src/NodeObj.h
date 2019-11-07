@@ -75,7 +75,8 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct NodeObj_data_s	NODEOBJ_DATA;            // Inherits from OBJ
+    typedef struct NodeObj_data_s	NODEOBJ_DATA;
+    // Inherits from NodeBase
     typedef struct NodeObj_class_data_s NODEOBJ_CLASS_DATA;   // Inherits from OBJ
 
     typedef struct NodeObj_vtbl_s	{
@@ -223,13 +224,22 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         NodeObj_Disable (
-        NODEOBJ_DATA    *this
+    /*!
+     Append a string to the dependencies.
+     @param     this    object pointer
+     @param     pStr    string pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  NodeObj_AppendDeps (
+        NODEOBJ_DATA    *this,
+        ASTR_DATA       *pStr
     );
 
 
-    ERESULT         NodeObj_Enable (
-        NODEOBJ_DATA	*this
+    ERESULT_DATA *  NodeObj_AppendSrcs (
+        NODEOBJ_DATA    *this,
+        ASTR_DATA       *pStr
     );
 
    
@@ -238,11 +248,11 @@ extern "C" {
     );
 
 
-    ERESULT         NodeObj_IsEnabled (
-        NODEOBJ_DATA	*this
+    ERESULT_DATA *  NodeObj_SortArrays (
+        NODEOBJ_DATA    *this
     );
-    
- 
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

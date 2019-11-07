@@ -1,16 +1,14 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          ASTRCREADER Console Transmit Task (AStrCReader) Header
+//              AStrC Reader (AStrCReader) Header
 //****************************************************************
 /*
  * Program
- *			Separate AStrCReader (AStrCReader)
+ *			AStrC Reader (AStrCReader)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate AStrCReader to run things without complications
- *          of interfering with the main AStrCReader. A AStrCReader may be 
- *          called a AStrCReader on other O/S's.
+ *			This object provides an AStrC Reader which allows an
+ *          AStrC to read one UTF-8 character at a time.
  *
  * Remarks
  *	1.      None
@@ -168,11 +166,11 @@ extern "C" {
     );
     
     
-    ASTRC_DATA * AStrCReader_getStr (
+    ASTRC_DATA *    AStrCReader_getStr (
         ASTRCREADER_DATA *this
     );
 
-    bool        AStrCReader_setStr (
+    bool            AStrCReader_setStr (
         ASTRCREADER_DATA *this,
         ASTRC_DATA      *pValue
     );
@@ -190,7 +188,8 @@ extern "C" {
 
 
     /*!
-     Next() scans the next charater from the data.
+     Next() reads the next charater from the data advancing
+     the read pointer.
      @param     this    object pointer
      @return    the next UTF-32 character or -1 for EOF
      */
@@ -212,7 +211,8 @@ extern "C" {
     
     
     /*!
-     Rescan() restarts the scan to the beginning of the data.
+     Rescan() resets the read pointer to the beginning of the string
+     which restarts the scan to the beginning of the data.
      @param     this    object pointer
      @return    An ERESULT result code
      */
