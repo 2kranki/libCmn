@@ -223,28 +223,6 @@ extern "C" {
                 }
             }
             
-            pHashItem = nodeHash_FindA(pHash, 0, "reqArch");
-            if (pHashItem) {
-                ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
-                if (pStr) {
-                    eRc = NodeBase_setReqArch(*ppBase, pStr);
-                    if (ERESULT_FAILED(eRc)) {
-                        return eRc;
-                    }
-                }
-            }
-            
-            pHashItem = nodeHash_FindA(pHash, 0, "reqOS");
-            if (pHashItem) {
-                ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
-                if (pStr) {
-                    eRc = NodeBase_setReqOS(*ppBase, pStr);
-                    if (ERESULT_FAILED(eRc)) {
-                        return eRc;
-                    }
-                }
-            }
-            
         }    // End of Hash Checking
 
         // Return to caller.
@@ -1824,7 +1802,7 @@ extern "C" {
         NODEARRAY_DATA  *pArray
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         NODE_DATA       *pNode = OBJ_NIL;
         //ASTR_DATA       *pStr = OBJ_NIL;
         uint32_t        i;
@@ -1879,7 +1857,7 @@ extern "C" {
         NODEARRAY_DATA  *pSrcsObj = OBJ_NIL;
         char            *pNameA;
         ASTR_DATA       *pStr = OBJ_NIL;
-        NODETEST_DATA   *pTest = OBJ_NIL;
+        //NODETEST_DATA   *pTest = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -2002,7 +1980,7 @@ extern "C" {
         NODEARRAY_DATA  *pArray
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         NODE_DATA       *pNode = OBJ_NIL;
         //ASTR_DATA       *pStr = OBJ_NIL;
         uint32_t        i;

@@ -11,13 +11,13 @@
         "genBase":{"srcDeps":["genMake.h"], "test":null},
         "genOSX":{"srcDeps":["genMake.h"], "test":null},
         "genWIN":{"srcDeps":["genMake.h"], "test":null},
-        "hdrNode":{"srcDeps":["genMake.h"], "test":null},
-        "libNode":{"srcDeps":["genMake.h"], "test":null},
-        "objNode":{"srcDeps":["genMake.h"], "test":null},
-        "pgmNode":{"srcDeps":["genMake.h"], "test":null},
-        "rtnNode":{"srcDeps":["genMake.h"], "test":null},
+        "NodeHdr":{"srcDeps":["genMake.h"], "test":null},
+        "NodeLib":{"srcDeps":["genMake.h"], "test":null},
+        "NodeObj":{"srcDeps":["NodeBase.h","NodeRtn.h","NodeTest.h"]},
+        "NodePgm":{"srcDeps":["genMake.h"], "test":null},
+        "NodeRtn":{"srcDeps":["NodeBase.h","NodeTest.h"]},
+        "NodeTest":{"srcDeps":["NodeBase.h"]},
         "srcParse":{"srcDeps":["genMake.h"], "test":null},
-        "tstNode":{"srcDeps":["genMake.h"], "test":null},
         "main":{"srcDeps":["genMake.h"], "test":null}
     }
 }

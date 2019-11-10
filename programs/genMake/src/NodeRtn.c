@@ -116,11 +116,188 @@ extern "C" {
 
 
 
-    
+    ERESULT_DATA *  NodeRtn_Parse (
+        NODE_DATA       *pNode,
+        NODERTN_DATA    **ppBase,
+        NODEHASH_DATA   **ppHash
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        NODEARRAY_DATA  *pArray;
+        NODEHASH_DATA   *pHash;
+        NODE_DATA       *pHashItem;
+        NODERTN_DATA    *pRtn;
+        ASTR_DATA       *pName;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing Input Node!");
+            return pErr;
+        }
+        if (OBJ_NIL == ppBase) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Base Node Pointer!");
+            return pErr;
+        }
+    #endif
+        pRtn = NodeRtn_New();
+        if (OBJ_NIL == pRtn) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+            return pErr;
+        }
+        pName = node_getNameStr(pNode);
+        if (pName) {
+            NodeRtn_setName(pRtn, pName);
+            obj_Release(pName);
+            pName = OBJ_NIL;
+        }
+        *ppBase = OBJ_NIL;
+
+        pArray = jsonIn_CheckNodeDataForArray(pNode);
+        if (pArray) {
+            // We have an array of Dependencies. So, add them to the base node.
+            pErr = NodeBase_AccumStrings(node_getData(pNode), NodeRtn_getDeps(pRtn));
+            if (pErr) {
+                DEBUG_BREAK();
+                obj_Release(pRtn);
+                return pErr;
+            }
+            *ppBase = pRtn;
+            return OBJ_NIL;
+        }
+        
+        pHash = jsonIn_CheckNodeDataForHash(pNode);
+        if (pHash) {
+            // Ok, we have a hash, so there might a lot to parse here.
+            if (ppHash) {
+                *ppHash = pHash;
+            }
+
+            // Scan off the base parameters.
+            pErr = NodeBase_Parse(node_getData(pNode), (NODEBASE_DATA **)&pRtn, OBJ_NIL);
+            if (pErr) {
+                DEBUG_BREAK();
+                obj_Release(pRtn);
+                return pErr;
+            }
+
+            // Scan off the test stuff if present.
+            pHashItem = nodeHash_FindA(pHash, 0, "test");
+            if (pHashItem) {
+                FALSE_DATA      *pFalse;
+                pFalse = jsonIn_CheckNodeDataForFalse(pHashItem);
+                if (pFalse)
+                    ;
+                else {
+                    pHashItem = node_getData(pHashItem);
+                    // NodeTest::Parse will provide the NodeTest.
+                    pErr = NodeTest_Parse(pHashItem, &pRtn->pTest, OBJ_NIL);
+                    if (pErr) {
+                        DEBUG_BREAK();
+                        obj_Release(pRtn);
+                        return pErr;
+                    }
+                }
+            }
+            *ppBase = pRtn;
+        }
+
+        // Return to caller.
+        return pErr;
+    }
+
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //                  A r c h i t e c t u r e s
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodeRtn_getArches (
+        NODERTN_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getArches(NodeRtn_getNodeBase(this));
+    }
+
+
+    bool            NodeRtn_setArches (
+        NODERTN_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setArches(NodeRtn_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        D e p s
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodeRtn_getDeps (
+        NODERTN_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+    #endif
+
+        return NodeBase_getDeps(NodeRtn_getNodeBase(this));
+    }
+
+
+    bool            NodeRtn_setDeps (
+        NODERTN_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+    #ifdef NDEBUG
+    #else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+    #endif
+
+        return NodeBase_setDeps(NodeRtn_getNodeBase(this), pValue);
+    }
+
+
 
     //---------------------------------------------------------------
     //                        N a m e
@@ -207,6 +384,46 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        O S
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodeRtn_getOSs (
+        NODERTN_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getOSs(NodeRtn_getNodeBase(this));
+    }
+
+
+    bool            NodeRtn_setOSs (
+        NODERTN_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setOSs(NodeRtn_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -250,6 +467,46 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          S r c s
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodeRtn_getSrcs (
+        NODERTN_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+    #endif
+
+        return NodeBase_getSrcs(NodeRtn_getNodeBase(this));
+    }
+
+
+    bool            NodeRtn_setSrcs (
+        NODERTN_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+    #ifdef NDEBUG
+    #else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+    #endif
+
+        return NodeBase_setSrcs(NodeRtn_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -270,54 +527,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * NodeRtn_getStr (
-        NODERTN_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        NodeRtn_setStr (
-        NODERTN_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -342,7 +551,55 @@ extern "C" {
     
   
 
+    //---------------------------------------------------------------
+    //                          T e s t
+    //---------------------------------------------------------------
     
+    NODETEST_DATA * NodeRtn_getTest (
+        NODERTN_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pTest;
+    }
+    
+    
+    bool            NodeRtn_setTest (
+        NODERTN_DATA    *this,
+        NODETEST_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_TEST_OWNED
+        obj_Retain(pValue);
+        if (this->pTest) {
+            obj_Release(this->pTest);
+        }
+#endif
+        this->pTest = pValue;
+        
+        return true;
+    }
+            
+            
+            
+
 
     //===============================================================
     //                          M e t h o d s
@@ -608,7 +865,7 @@ extern "C" {
         }
 #endif
 
-        NodeRtn_setStr(this, OBJ_NIL);
+        NodeRtn_setTest(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -738,7 +995,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "NodeRtn::sizeof(NODERTN_DATA) = %lu\n", sizeof(NODERTN_DATA));
+        //fprintf(stderr, "NodeRtn::sizeof(NODERTN_DATA) = %lu\n", sizeof(NODERTN_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODERTN_DATA));
     #endif
@@ -964,9 +1221,7 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         const
         OBJ_INFO        *pInfo;
         
@@ -997,18 +1252,24 @@ extern "C" {
                     NodeRtn_getSize(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
+        pWrkStr =   NodeBase_ToDebugString(NodeRtn_getNodeBase(this), indent+3);
+        AStr_Append(pStr, pWrkStr);
+        obj_Release(pWrkStr);
+
+        if (this->pTest) {
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent, ' ');
+            }
+            eRc = AStr_AppendPrint(pStr, "==>Test:\n");
+            if (((OBJ_DATA *)(this->pTest))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pTest))->pVtbl->pToDebugString(
+                                                    this->pTest,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
-#endif
         
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');

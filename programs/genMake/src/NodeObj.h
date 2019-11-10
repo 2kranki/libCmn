@@ -1,16 +1,25 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODEOBJ Console Transmit Task (NodeObj) Header
+//                  Object Node (NodeObj) Header
 //****************************************************************
 /*
  * Program
- *			Separate NodeObj (NodeObj)
+ *			Object Node (NodeObj)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate NodeObj to run things without complications
- *          of interfering with the main NodeObj. A NodeObj may be 
- *          called a NodeObj on other O/S's.
+ *			An Object Node contains the information to generate an
+ *          object's various makefile parameters. An object consists
+ *          two header files, object routines file, an object's
+ *          class routines file, and a test program file. These
+ *          correlate to the following file names:
+ *
+ *              <name>.h
+ *              <name>_internal.h
+ *              <name>.c
+ *              <name>_object.c
+ *              <name>_test.c           // Optional
+ *              <name>_json.c           // Optional
+ *
  *
  * Remarks
  *	1.      None
@@ -53,6 +62,8 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <NodeRtn.h>
+#include        <NodeTest.h>
 
 
 #ifndef         NODEOBJ_H
@@ -110,7 +121,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  NODEOBJ_SINGLETON
-    NODEOBJ_DATA *     NodeObj_Shared (
+    NODEOBJ_DATA *  NodeObj_Shared (
         void
     );
 
@@ -141,10 +152,80 @@ extern "C" {
     );
     
     
+    /*!
+     Parse an object and generate its components. An object consists
+     of two routines, object and object_object, an optional JSON routine
+     and an optional test program.
+     Node Grammar:
+     object     : string                // Object's Name
+                | node ':' objectData   // Node's Name == Object's Name
+                ;
+     
+     objectData : '{' object_Hash '}'
+                | '[' deps ']'
+                ;
+     object_Hash:
+            "deps"  : '[' deps ']'
+                    ;
+            // Generate JSON object compile or not
+            "json"  : "true"
+                    | "null"    // Same as "true"
+                    | "false" (default)
+                    ;
+            // Generate Test compile and execution or not
+            // (optionally with extra compilation source files)
+            "test"  : "true" (default)
+                    | "false"
+                    | '[' source files ']'
+                    | '{' test_Hash '}'
+                    ;
+                ;
+     test_Hash  :
+            "deps"  : '[' deps ']'
+                    ;
+            "srcs"  : '[' source files ']'
+                    ;
+                ;
+     // Additional Dependency Files must be in the same directory
+     // as the primary file that it is associated with.
+     deps       : dependencies_file_name [',' deps]
+                ;
+     // Additional Source Files must be in the same directory
+     // as the primary file that it is associated with.
+     srcs       : source_file_name [',' srcs]
+                ;
+
+     @param     pNode   JSON Input Node to be searced and parsed. This node
+                        should the one that has as its name that of the object.
+     @param     ppBase  Object Node pointer which will be filled in.
+     @param     ppHash  Hash Node if found
+     @return    If successful, OBJ_NIL is returne, otherwise a new
+                ERESULT_DATA error object is returned.
+     @warning   The ERESULT_DATA error object must be released.
+     */
+    ERESULT_DATA *  NodeObj_Parse(
+        NODE_DATA       *pNode,
+        NODEOBJ_DATA    **ppBase,
+        NODEHASH_DATA   **ppHash
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    /*! Property: (Optional) Required Computer Architecture(s)
+     */
+    ASTRARRAY_DATA * NodeObj_getArches (
+        NODEOBJ_DATA    *this
+    );
+
+    bool             NodeObj_setArches (
+        NODEOBJ_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    );
+
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
@@ -153,13 +234,25 @@ extern "C" {
         NODEOBJ_DATA    *this
     );
 
-    bool            NodeObj_setDeps (
+    bool             NodeObj_setDeps (
         NODEOBJ_DATA    *this,
         ASTRARRAY_DATA  *pValue
     );
 
 
-    /*! Property: Test program file name including file extension
+    /*! Property: Optional JSON file name
+     */
+    NODERTN_DATA *  NodeObj_getJson (
+        NODEOBJ_DATA    *this
+    );
+
+    bool            NodeObj_setJson (
+        NODEOBJ_DATA    *this,
+        NODERTN_DATA    *pValue
+    );
+
+
+    /*! Property: object file name
      */
     ASTR_DATA *     NodeObj_getName (
         NODEOBJ_DATA    *this
@@ -181,27 +274,15 @@ extern "C" {
     );
 
 
-    /*! Property: (Optional) Required Computer Architecture
+    /*! Property: (Optional) Required Operating System(s)
      */
-    ASTR_DATA *     NodeObj_getReqArch (
+    ASTRARRAY_DATA * NodeObj_getOSs (
         NODEOBJ_DATA    *this
     );
 
-    bool            NodeObj_setReqArch (
+    bool            NodeObj_setOSs (
         NODEOBJ_DATA    *this,
-        ASTR_DATA       *pValue
-    );
-
-
-    /*! Property: (Optional) Required Operating System
-     */
-    ASTR_DATA *     NodeObj_getReqOS (
-        NODEOBJ_DATA    *this
-    );
-
-    bool            NodeObj_setReqOS (
-        NODEOBJ_DATA    *this,
-        ASTR_DATA       *pValue
+        ASTRARRAY_DATA  *pValue
     );
 
 
@@ -215,6 +296,18 @@ extern "C" {
     bool            NodeObj_setSrcs (
         NODEOBJ_DATA    *this,
         ASTRARRAY_DATA  *pValue
+    );
+
+
+    /*! Property: Optional test program file name
+     */
+    NODETEST_DATA * NodeObj_getTest (
+        NODEOBJ_DATA    *this
+    );
+
+    bool            NodeObj_setTest (
+        NODEOBJ_DATA    *this,
+        NODETEST_DATA   *pValue
     );
 
 

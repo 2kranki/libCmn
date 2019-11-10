@@ -49,7 +49,7 @@
 
 
 
-#define     PROPERTY_STR_OWNED 1
+#define     PROPERTY_TEST_OWNED 1
 
 
 
@@ -72,9 +72,7 @@ struct NodeRtn_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    NODETEST_DATA   *pTest;
 
 };
 #pragma pack(pop)

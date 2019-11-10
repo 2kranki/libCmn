@@ -175,24 +175,19 @@ extern "C" {
             "deps"  : '[' deps ']'
                     ;
             // Generate JSON object compile or not
-            "json"  : "true"
-                    | "null"    // Same as "true"
-                    | "false" (default)
-                    ;
-            // Generate Test compile and execution or not
-            // (optionally with extra compilation source files)
-            "test"  : "true" (default)
-                    | "false"
-                    | '[' source files ']'
-                    | '{' test_Hash '}'
-                    ;
-                ;
-     test_Hash  :
-            "deps"  : '[' deps ']'
-                    ;
-            "srcs"  : '[' source files ']'
-                    ;
-                ;
+            "json"      : "true"
+                        | "null"    // Same as "true"
+                        | "false" (default)
+                        ;
+            // Optional Name
+            "name"      :   string
+                        ;
+            // Required Architecture (ie X86, MIPS, ARM, etc)
+            "reqArch"   :   string
+                        ;
+            // Required Operating System (ie linux, macos, win64, etc)
+            "reqOS"     :   string
+                        ;
      // Additional Dependency Files must be in the same directory
      // as the primary file that it is associated with.
      deps       : dependencies_file_name [',' deps]
@@ -201,14 +196,14 @@ extern "C" {
      // as the primary file that it is associated with.
      srcs       : source_file_name [',' srcs]
                 ;
-     @param     pNode   Input Node to be searched and parsed
+     @param     pNode   JSON Input Node, "hash", to be searched and parsed
      @param     ppBase  Base Node to be filled in with the data or released.
      @param     ppHash  Hash Node if found
      @return    If successful, OBJ_NIL is returne, otherwise a new
                 ERESULT_DATA error object is returned.
      @warning   The ERESULT_DATA error object must be released.
      */
-    ERESULT_DATA *  NodeBase_ParseSubObj(
+    ERESULT_DATA *  NodeBase_Parse(
         NODE_DATA       *pNode,
         NODEBASE_DATA   **ppBase,
         NODEHASH_DATA   **ppHash
@@ -218,6 +213,18 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    /*! Property: (Optional) Required Computer Architecture(s)
+     */
+    ASTRARRAY_DATA *    NodeBase_getArches (
+            NODEBASE_DATA       *this
+    );
+
+    bool                NodeBase_setArches (
+            NODEBASE_DATA       *this,
+            ASTRARRAY_DATA      *pValue
+    );
+
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
@@ -232,7 +239,7 @@ extern "C" {
     );
 
 
-    /*! Property: Test program file name including file extension
+    /*! Property: Test program file name
      */
     ASTR_DATA *         NodeBase_getName (
             NODEBASE_DATA       *this
@@ -249,27 +256,15 @@ extern "C" {
     );
 
 
-    /*! Property: (Optional) Required Computer Architecture
+    /*! Property: (Optional) Required Operating System(s)
      */
-    ASTR_DATA *         NodeBase_getReqArch (
+    ASTRARRAY_DATA *    NodeBase_getOSs (
             NODEBASE_DATA       *this
     );
 
-    bool                NodeBase_setReqArch (
+    bool                NodeBase_setOSs (
             NODEBASE_DATA       *this,
-            ASTR_DATA           *pValue
-    );
-
-
-    /*! Property: (Optional) Required Operating System
-     */
-    ASTR_DATA *         NodeBase_getReqOS (
-            NODEBASE_DATA       *this
-    );
-
-    bool                NodeBase_setReqOS (
-            NODEBASE_DATA       *this,
-            ASTR_DATA           *pValue
+            ASTRARRAY_DATA      *pValue
     );
 
 
@@ -286,11 +281,37 @@ extern "C" {
     );
 
 
+    /*! Property: file name suffix
+     */
+    ASTR_DATA *         NodeBase_getSuffix (
+            NODEBASE_DATA       *this
+    );
+
+    bool                NodeBase_setSuffix (
+            NODEBASE_DATA       *this,
+            ASTR_DATA           *pValue
+    );
+
+
 
 
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Append a string to the architeture list.
+     @param     this    object pointer
+     @param     pStr    string pointer
+     @return    If successful, OBJ_NIL is returne, otherwise a new
+                ERESULT_DATA error object is returned.
+     @warning   The ERESULT_DATA error object must be released.
+     */
+    ERESULT_DATA *  NodeBase_AppendArches (
+        NODEBASE_DATA   *this,
+        ASTR_DATA       *pStr
+    );
+
 
     /*!
      Append a string to the dependencies list.
@@ -301,6 +322,20 @@ extern "C" {
      @warning   The ERESULT_DATA error object must be released.
      */
     ERESULT_DATA *  NodeBase_AppendDeps (
+        NODEBASE_DATA   *this,
+        ASTR_DATA       *pStr
+    );
+
+
+    /*!
+     Append a string to the OS list.
+     @param     this    object pointer
+     @param     pStr    string pointer
+     @return    If successful, OBJ_NIL is returne, otherwise a new
+                ERESULT_DATA error object is returned.
+     @warning   The ERESULT_DATA error object must be released.
+     */
+    ERESULT_DATA *  NodeBase_AppendOSs (
         NODEBASE_DATA   *this,
         ASTR_DATA       *pStr
     );

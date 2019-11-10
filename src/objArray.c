@@ -1353,9 +1353,10 @@ extern "C" {
             }
         }
         
-        j = snprintf( str, sizeof(str), " %p(objArray)}\n", this );
-        BREAK_FALSE( (j < sizeof(str)) );
-        AStr_AppendA(pStr, str);
+        if (indent) {
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        }
+        AStr_AppendPrint(pStr, " %p(objArray)}\n", this);
         
         this->eRc = ERESULT_SUCCESS;
         return pStr;

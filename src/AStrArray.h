@@ -93,7 +93,7 @@ extern "C" {
     );
     
     
-    ASTRARRAY_DATA *    AStrArray_NewFromArgV(
+    ASTRARRAY_DATA * AStrArray_NewFromArgV(
         int             cArgs,
         const
         char            *ppArgV[]
@@ -107,7 +107,7 @@ extern "C" {
                 containing the array of strings, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTRARRAY_DATA *    AStrArray_NewFromArrayA(
+    ASTRARRAY_DATA * AStrArray_NewFromArrayA(
         const
         char            *ppArgV[]
     );

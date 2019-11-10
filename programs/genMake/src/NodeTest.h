@@ -149,33 +149,22 @@ extern "C" {
      
      Node Grammar:
      objectData : '{' object_Hash '}'
-                | '[' deps ']'      // Accumulate the source dependencies.
-                | "null"            // Ignored
-                | "false"           // ppBase is released and success is returned.
-                | "true"            // Ignored
+                | string            // Name of the Test program
                 ;
      object_Hash:
+            "name"  : string        // Name of the Test program
+                    ;
             "deps"  : '[' deps ']'
-                    ;
-            // Generate JSON object compile or not
-            "json"  : "true"
-                    | "null"    // Same as "true"
-                    | "false" (default)
-                    ;
-            // Generate Test compile and execution or not
-            // (optionally with extra compilation source files)
-            "test"  : "true" (default)
-                    | "false"
-                    | '[' source files ']'
-                    | '{' test_Hash '}'
                     ;
                 ;
-     test_Hash  :
-            "deps"  : '[' deps ']'
-                    ;
             "srcs"  : '[' source files ']'
                     ;
-                ;
+            // Required Architecture (ie X86, MIPS, ARM, etc)
+            "reqArch"   :   string
+                        ;
+            // Required Operating System (ie linux, macos, win64, etc)
+            "reqOS"     :   string
+                        ;
      // Additional Dependency Files must be in the same directory
      // as the primary file that it is associated with.
      deps       : dependencies_file_name [',' deps]
@@ -184,16 +173,18 @@ extern "C" {
      // as the primary file that it is associated with.
      srcs       : source_file_name [',' srcs]
                 ;
-     @param     pNode   Input Node to be searched and parsed
-     @param     ppBase  Base Node to be filled in with the data or released.
+     
+     @param     pNode   JSON Input Node to be searched and parsed
+     @param     ppBase  Test Node to be filled in with the data or released.
      @param     ppHash  Hash Node if found
-     @return    If successful, OBJ_NIL is returne, otherwise a new
-                ERESULT_DATA error object is returned.
+     @return    If successful, OBJ_NIL is returned and a new Test Node
+                is returned in ppBase, otherwise a new ERESULT_DATA error
+                object is returned.
      @warning   The ERESULT_DATA error object must be released.
      */
-    ERESULT_DATA *  NodeBase_ParseSubObj(
+    ERESULT_DATA *  NodeTest_Parse(
         NODE_DATA       *pNode,
-        NODEBASE_DATA   **ppBase,
+        NODETEST_DATA   **ppBase,
         NODEHASH_DATA   **ppHash
     );
 
@@ -202,6 +193,18 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    /*! Property: (Optional) Required Computer Architecture(s)
+     */
+    ASTRARRAY_DATA * NodeTest_getArches (
+        NODETEST_DATA   *this
+    );
+
+    bool             NodeTest_setArches (
+        NODETEST_DATA   *this,
+        ASTRARRAY_DATA  *pValue
+    );
+
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
@@ -238,27 +241,15 @@ extern "C" {
     );
 
 
-    /*! Property: (Optional) Required Computer Architecture
+    /*! Property: (Optional) Required Operating System(s)
      */
-    ASTR_DATA *     NodeTest_getReqArch (
+    ASTRARRAY_DATA * NodeTest_getOSs (
         NODETEST_DATA   *this
     );
 
-    bool            NodeTest_setReqArch (
+    bool            NodeTest_setOSs (
         NODETEST_DATA   *this,
-        ASTR_DATA       *pValue
-    );
-
-
-    /*! Property: (Optional) Required Operating System
-     */
-    ASTR_DATA *     NodeTest_getReqOS (
-        NODETEST_DATA   *this
-    );
-
-    bool            NodeTest_setReqOS (
-        NODETEST_DATA   *this,
-        ASTR_DATA       *pValue
+        ASTRARRAY_DATA  *pValue
     );
 
 
@@ -310,23 +301,13 @@ extern "C" {
     );
 
 
-    ERESULT         NodeTest_Disable (
-        NODETEST_DATA	*this
-    );
-
-
-    ERESULT         NodeTest_Enable (
-        NODETEST_DATA	*this
-    );
-
-   
     NODETEST_DATA * NodeTest_Init (
         NODETEST_DATA   *this
     );
 
 
-    ERESULT     NodeTest_IsEnabled (
-        NODETEST_DATA		*this
+    ERESULT_DATA *  NodeTest_SortArrays (
+        NODETEST_DATA   *this
     );
     
  

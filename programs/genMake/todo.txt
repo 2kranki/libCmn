@@ -1,0 +1,26 @@
+# vi:nu:et:sts=4 ts=4 sw=4
+
+
+X Finish NodeTest::Parse (used in NodeObj)
+X Finish NodeTest_test
+X Finish NodeRtn::Parse (which can include a 'test' Rtn as well)
+X Finish NodeRtn_test
+X Finish NodeObj::Parse
+    X Implement NodeBase::Parse
+	X Update name, etc  in Test node after parse.
+* Finish NodeHdr::Parse (which can include a 'test' Rtn as well)
+* Finish NodeHdr_test
+* Finish NodePgm::Parse
+* Finish NodePgm_test
+* Finish NodeLib::Parse 
+* Finish NodeLib_test
+
+* Create Rtn and Test arrays that will be used to generate programs.
+    * Write Hdr/Rtn/Test expansions for NodeObj 
+    * Write HdrRtn/Test expansions for NodeRtn
+
+* Write code generation from arrays and Pgm or Lib Nodes from prior step. 
+    * macos
+    * win32 
+    * win64
+

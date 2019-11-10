@@ -1,3 +1,5 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+
 {
     "library":{
         "name":"Cmn",
@@ -182,7 +184,7 @@
         "uint128":["cmn_defs.h"],
         "utf8":{srcDeps:["cmn_defs.h"], json:true},
         "value":{srcDeps:["cmn_defs.h"], json:true},
-        "visitor":["cmn_defs.h"],
+        "visitor":{srcDeps:["cmn_defs.h"], json:true},
         "W32Str":{srcDeps:["cmn_defs.h"], json:true},
         "W32StrC":["cmn_defs.h"],
         "wav":["cmn_defs.h"],
@@ -209,9 +211,5 @@
         "memWin32_object.c"
     ],
     "programs": ["genGetterSetter", "genMake", "jsonPP", "lexFileToJSON", "md5Util"],
-    "tests": [
-        "listdl.c",
-        "rbt_tree.c",
-        "str.c"
-     ]
+    "tests": [ "listdl.c", "rbt_tree.c", "str.c" ]
 }

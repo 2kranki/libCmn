@@ -53,8 +53,8 @@
 
 #define     PROPERTY_DEPS_OWNED 1
 #define     PROPERTY_NAME_OWNED 1
-#define     PROPERTY_REQARCH_OWNED 1
-#define     PROPERTY_REQOS_OWNED 1
+#define     PROPERTY_REQARCHES_OWNED 1
+#define     PROPERTY_REQOSS_OWNED 1
 #define     PROPERTY_SRCS_OWNED 1
 
 
@@ -81,9 +81,10 @@ struct NodeBase_data_s	{
     uint16_t        rsvd16;
     ASTRARRAY_DATA  *pDeps;
     ASTR_DATA       *pName;
-    ASTR_DATA       *pReqOS;
-    ASTR_DATA       *pReqArch;
+    ASTRARRAY_DATA  *pOSs;
+    ASTRARRAY_DATA  *pArches;
     ASTRARRAY_DATA  *pSrcs;
+    ASTR_DATA       *pSuffix;       // Name Suffix (optional)
 
 };
 #pragma pack(pop)

@@ -3175,11 +3175,16 @@ extern "C" {
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
         }
-        
+        if (ERESULT_SUCCESS_EQUAL == AStr_CompareRightA(pStr, "\n"))
+            ;
+        else {
+            AStr_AppendCharRepeatW32(pStr, 1, '\n');
+        }
+
         if (indent) {
             AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        eRc =   AStr_AppendPrint(pStr, "\n   %p(AStr)}\n", this);
+        eRc =   AStr_AppendPrint(pStr, " %p(AStr)}\n", this);
         
         return pStr;
     }

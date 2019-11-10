@@ -53,6 +53,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <NodeTest.h>
 
 
 #ifndef         NODERTN_H
@@ -109,7 +110,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  NODERTN_SINGLETON
-    NODERTN_DATA *     NodeRtn_Shared (
+    NODERTN_DATA *  NodeRtn_Shared (
         void
     );
 
@@ -140,10 +141,80 @@ extern "C" {
     );
     
     
+    /*!
+     Parse an object and generate its components. An object consists
+     of two routines, object and object_object, an optional JSON routine
+     and an optional test program.
+     Node Grammar:
+     object     : string                // Object's Name
+                | node ':' objectData   // Node's Name == Object's Name
+                ;
+     
+     objectData : '{' object_Hash '}'
+                | '[' deps ']'
+                ;
+     object_Hash:
+            "deps"  : '[' deps ']'
+                    ;
+            // Generate JSON object compile or not
+            "json"  : "true"
+                    | "null"    // Same as "true"
+                    | "false" (default)
+                    ;
+            // Generate Test compile and execution or not
+            // (optionally with extra compilation source files)
+            "test"  : "true" (default)
+                    | "false"
+                    | '[' source files ']'
+                    | '{' test_Hash '}'
+                    ;
+                ;
+     test_Hash  :
+            "deps"  : '[' deps ']'
+                    ;
+            "srcs"  : '[' source files ']'
+                    ;
+                ;
+     // Additional Dependency Files must be in the same directory
+     // as the primary file that it is associated with.
+     deps       : dependencies_file_name [',' deps]
+                ;
+     // Additional Source Files must be in the same directory
+     // as the primary file that it is associated with.
+     srcs       : source_file_name [',' srcs]
+                ;
+
+     @param     pNode   JSON Input Node to be searced and parsed. This node
+                        should the one that has as its name that of the object.
+     @param     ppBase  Object Node pointer which will be filled in.
+     @param     ppHash  Hash Node if found
+     @return    If successful, OBJ_NIL is returne, otherwise a new
+                ERESULT_DATA error object is returned.
+     @warning   The ERESULT_DATA error object must be released.
+     */
+    ERESULT_DATA *  NodeRtn_Parse(
+        NODE_DATA       *pNode,
+        NODERTN_DATA    **ppBase,
+        NODEHASH_DATA   **ppHash
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    /*! Property: (Optional) Required Computer Architecture(s)
+     */
+    ASTRARRAY_DATA * NodeRtn_getArches (
+        NODERTN_DATA    *this
+    );
+
+    bool             NodeRtn_setArches (
+        NODERTN_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    );
+
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
@@ -180,27 +251,15 @@ extern "C" {
     );
 
 
-    /*! Property: (Optional) Required Computer Architecture
+    /*! Property: (Optional) Required Operating System(s)
      */
-    ASTR_DATA *     NodeRtn_getReqArch (
+    ASTRARRAY_DATA * NodeRtn_getOSs (
         NODERTN_DATA    *this
     );
 
-    bool            NodeRtn_setReqArch (
+    bool            NodeRtn_setOSs (
         NODERTN_DATA    *this,
-        ASTR_DATA       *pValue
-    );
-
-
-    /*! Property: (Optional) Required Operating System
-     */
-    ASTR_DATA *     NodeRtn_getReqOS (
-        NODERTN_DATA    *this
-    );
-
-    bool            NodeRtn_setReqOS (
-        NODERTN_DATA    *this,
-        ASTR_DATA       *pValue
+        ASTRARRAY_DATA  *pValue
     );
 
 
@@ -214,6 +273,18 @@ extern "C" {
     bool            NodeRtn_setSrcs (
         NODERTN_DATA    *this,
         ASTRARRAY_DATA  *pValue
+    );
+
+
+    /*! Property: Optional Test Node
+    */
+    NODETEST_DATA * NodeRtn_getTest (
+        NODERTN_DATA    *this
+    );
+
+    bool            NodeRtn_setTest (
+        NODERTN_DATA    *this,
+        NODETEST_DATA   *pValue
     );
 
 

@@ -186,7 +186,7 @@ int             test_NodeBase_Parse01(
         "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
         "\"srcs\":[\"str.c\",\"ascii.c\"],"
         "\"json\":true,"
-        "\"test\":{\"reqArch\":\"X86\",\"reqOS\":\"macos\",srcs:[\"abc.c\"]}"
+        "\"test\":{\"arch\":\"X86\",\"os\":\"macos\",srcs:[\"abc.c\"]}"
         "}\n"
         "}\n";
 
@@ -219,7 +219,7 @@ int             test_NodeBase_Parse01(
         pNode = node_getData(pNodeAStr);
         TINYTEST_FALSE( (OBJ_NIL == pNode) );
         TINYTEST_TRUE((obj_IsKindOf(pNode, OBJ_IDENT_NODE)));
-        pErr = NodeBase_ParseSubObj(pNode, &pBase, &pHashOut);
+        pErr = NodeBase_Parse(pNode, &pBase, &pHashOut);
         if (pErr) {
             fprintf(stderr, "%s\n", eResult_getErrorA(pErr));
         }
@@ -243,10 +243,16 @@ int             test_NodeBase_Parse01(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         pStr = NodeBase_getName(pBase);
         TINYTEST_TRUE( (OBJ_NIL == pStr) );
-        pStr = NodeBase_getReqArch(pBase);
-        TINYTEST_TRUE( (OBJ_NIL == pStr) );
-        pStr = NodeBase_getReqOS(pBase);
-        TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        pStrArray = NodeBase_getArches(pBase);
+        TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
+        if (pStrArray) {
+            TINYTEST_TRUE((0 == AStrArray_getSize(pStrArray)));
+        }
+        pStrArray = NodeBase_getOSs(pBase);
+        TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
+        if (pStrArray) {
+            TINYTEST_TRUE((0 == AStrArray_getSize(pStrArray)));
+        }
         pStrArray = NodeBase_getDeps(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
         if (pStrArray) {
@@ -301,7 +307,7 @@ int             test_NodeBase_Parse02(
         "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
         "\"srcs\":[\"str.c\",\"ascii.c\"],"
         "\"json\":true,"
-        "\"test\":{\"reqArch\":\"X86\",\"reqOS\":\"macos\",srcs:[\"abc.c\"]}"
+        "\"test\":{\"arch\":\"X86\",os:\"macos\",srcs:[\"abc.c\"]}"
         "}\n"
         "}\n";
 
@@ -338,7 +344,7 @@ int             test_NodeBase_Parse02(
         TINYTEST_FALSE( (OBJ_NIL == pNodeTest) );
         TINYTEST_TRUE((obj_IsKindOf(pNodeTest, OBJ_IDENT_NODE)));
         pNode = node_getData(pNodeTest);
-        pErr = NodeBase_ParseSubObj(pNode, &pBase, &pHashOut);
+        pErr = NodeBase_Parse(pNode, &pBase, &pHashOut);
         if (pErr) {
             fprintf(stderr, "%s\n", eResult_getErrorA(pErr));
         }
@@ -362,12 +368,20 @@ int             test_NodeBase_Parse02(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         pStr = NodeBase_getName(pBase);
         TINYTEST_TRUE( (OBJ_NIL == pStr) );
-        pStr = NodeBase_getReqArch(pBase);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"X86")));
-        pStr = NodeBase_getReqOS(pBase);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"macos")));
+        pStrArray = NodeBase_getArches(pBase);
+        TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
+        if (pStrArray) {
+            TINYTEST_TRUE((1 == AStrArray_getSize(pStrArray)));
+            pStr = AStrArray_Get(pStrArray, 1);
+            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"X86")));
+        }
+        pStrArray = NodeBase_getOSs(pBase);
+        TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
+        if (pStrArray) {
+            TINYTEST_TRUE((1 == AStrArray_getSize(pStrArray)));
+            pStr = AStrArray_Get(pStrArray, 1);
+            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"macos")));
+        }
         pStrArray = NodeBase_getDeps(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
         if (pStrArray) {
