@@ -176,7 +176,6 @@ extern "C" {
      
      @param     pNode   JSON Input Node to be searched and parsed
      @param     ppBase  Test Node to be filled in with the data or released.
-     @param     ppHash  Hash Node if found
      @return    If successful, OBJ_NIL is returned and a new Test Node
                 is returned in ppBase, otherwise a new ERESULT_DATA error
                 object is returned.
@@ -184,8 +183,7 @@ extern "C" {
      */
     ERESULT_DATA *  NodeTest_Parse(
         NODE_DATA       *pNode,
-        NODETEST_DATA   **ppBase,
-        NODEHASH_DATA   **ppHash
+        NODETEST_DATA   **ppBase
     );
 
 

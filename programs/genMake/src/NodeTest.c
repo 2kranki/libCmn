@@ -118,8 +118,7 @@ extern "C" {
 
     ERESULT_DATA *  NodeTest_Parse (
         NODE_DATA       *pNode,
-        NODETEST_DATA   **ppBase,
-        NODEHASH_DATA   **ppHash
+        NODETEST_DATA   **ppBase
     )
     {
         ERESULT_DATA    *pErr = OBJ_NIL;
@@ -172,12 +171,9 @@ extern "C" {
         pHash = jsonIn_CheckNodeForHash(pNode);
         if (pHash) {
             // Ok, we have a hash, so there might a lot to parse here.
-            if (ppHash) {
-                *ppHash = pHash;
-            }
 
             // Scan off the base parameters.
-            pErr = NodeBase_Parse(pNode, (NODEBASE_DATA **)&pTest, OBJ_NIL);
+            pErr = NodeBase_Parse(pNode, (NODEBASE_DATA **)&pTest);
             if (pErr) {
                 DEBUG_BREAK();
                 obj_Release(pTest);

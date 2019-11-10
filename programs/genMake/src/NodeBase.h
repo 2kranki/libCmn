@@ -198,15 +198,13 @@ extern "C" {
                 ;
      @param     pNode   JSON Input Node, "hash", to be searched and parsed
      @param     ppBase  Base Node to be filled in with the data or released.
-     @param     ppHash  Hash Node if found
      @return    If successful, OBJ_NIL is returne, otherwise a new
                 ERESULT_DATA error object is returned.
      @warning   The ERESULT_DATA error object must be released.
      */
     ERESULT_DATA *  NodeBase_Parse(
         NODE_DATA       *pNode,
-        NODEBASE_DATA   **ppBase,
-        NODEHASH_DATA   **ppHash
+        NODEBASE_DATA   **ppBase
     );
 
 

@@ -187,15 +187,13 @@ extern "C" {
      @param     pNode   JSON Input Node to be searced and parsed. This node
                         should the one that has as its name that of the object.
      @param     ppBase  Object Node pointer which will be filled in.
-     @param     ppHash  Hash Node if found
      @return    If successful, OBJ_NIL is returne, otherwise a new
                 ERESULT_DATA error object is returned.
      @warning   The ERESULT_DATA error object must be released.
      */
     ERESULT_DATA *  NodeRtn_Parse(
         NODE_DATA       *pNode,
-        NODERTN_DATA    **ppBase,
-        NODEHASH_DATA   **ppHash
+        NODERTN_DATA    **ppBase
     );
 
 

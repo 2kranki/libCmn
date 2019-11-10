@@ -3,6 +3,8 @@
 The following are things that are being throught about. Whether they get done or not
 will depend upon time and resources.
 
+-- Finish program, genMake. See its todo.
+
 -- Add "man 3 backtrace" to any routines segmenting.
          #include <execinfo.h>
          #include <stdio.h>

@@ -118,16 +118,13 @@ extern "C" {
 
     ERESULT_DATA *  NodeRtn_Parse (
         NODE_DATA       *pNode,
-        NODERTN_DATA    **ppBase,
-        NODEHASH_DATA   **ppHash
+        NODERTN_DATA    **ppBase
     )
     {
         ERESULT_DATA    *pErr = OBJ_NIL;
-        NODEARRAY_DATA  *pArray;
         NODEHASH_DATA   *pHash;
         NODE_DATA       *pHashItem;
         NODERTN_DATA    *pRtn;
-        ASTR_DATA       *pName;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -150,36 +147,14 @@ extern "C" {
             pErr = eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
             return pErr;
         }
-        pName = node_getNameStr(pNode);
-        if (pName) {
-            NodeRtn_setName(pRtn, pName);
-            obj_Release(pName);
-            pName = OBJ_NIL;
-        }
         *ppBase = OBJ_NIL;
 
-        pArray = jsonIn_CheckNodeDataForArray(pNode);
-        if (pArray) {
-            // We have an array of Dependencies. So, add them to the base node.
-            pErr = NodeBase_AccumStrings(node_getData(pNode), NodeRtn_getDeps(pRtn));
-            if (pErr) {
-                DEBUG_BREAK();
-                obj_Release(pRtn);
-                return pErr;
-            }
-            *ppBase = pRtn;
-            return OBJ_NIL;
-        }
-        
-        pHash = jsonIn_CheckNodeDataForHash(pNode);
+        pHash = jsonIn_CheckNodeForHash(pNode);
         if (pHash) {
             // Ok, we have a hash, so there might a lot to parse here.
-            if (ppHash) {
-                *ppHash = pHash;
-            }
 
             // Scan off the base parameters.
-            pErr = NodeBase_Parse(node_getData(pNode), (NODEBASE_DATA **)&pRtn, OBJ_NIL);
+            pErr = NodeBase_Parse(pNode, (NODEBASE_DATA **)&pRtn);
             if (pErr) {
                 DEBUG_BREAK();
                 obj_Release(pRtn);
@@ -196,7 +171,7 @@ extern "C" {
                 else {
                     pHashItem = node_getData(pHashItem);
                     // NodeTest::Parse will provide the NodeTest.
-                    pErr = NodeTest_Parse(pHashItem, &pRtn->pTest, OBJ_NIL);
+                    pErr = NodeTest_Parse(pHashItem, &pRtn->pTest);
                     if (pErr) {
                         DEBUG_BREAK();
                         obj_Release(pRtn);

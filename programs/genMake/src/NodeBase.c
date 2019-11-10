@@ -179,8 +179,7 @@ extern "C" {
 
     ERESULT_DATA *  NodeBase_Parse (
         NODE_DATA       *pNode,
-        NODEBASE_DATA   **ppBase,
-        NODEHASH_DATA   **ppHash
+        NODEBASE_DATA   **ppBase
     )
     {
         ERESULT         eRc;
@@ -236,9 +235,6 @@ extern "C" {
         pHash = jsonIn_CheckNodeForHash(pNode);
         if (pHash) {
             // Ok, we have a hash, so there might a lot to parse here.
-            if (ppHash) {
-                *ppHash = pHash;
-            }
 
             pHashItem = nodeHash_FindA(pHash, 0, "arch");
             if (pHashItem) {
@@ -1689,7 +1685,7 @@ extern "C" {
                 if (indent) {
                     AStr_AppendCharRepeatA(pStr, indent, ' ');
                 }
-                AStr_AppendA(pStr, "ReqOS:\n");
+                AStr_AppendA(pStr, "OSs:\n");
                 pWrkStr =   ((OBJ_DATA *)(this->pOSs))->pVtbl->pToDebugString(
                                                     this->pOSs,
                                                     indent+3
