@@ -115,12 +115,374 @@ extern "C" {
     }
 
 
+    ERESULT_DATA *  NodePgm_Parse (
+        NODE_DATA       *pNode,
+        NODEPGM_DATA    **ppBase
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        NODEHASH_DATA   *pHash;
+        NODE_DATA       *pHashItem;
+        NODEPGM_DATA    *pPgm;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing Input Node!");
+            return pErr;
+        }
+        if (OBJ_NIL == ppBase) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Base Node Pointer!");
+            return pErr;
+        }
+    #endif
+        pPgm = NodePgm_New();
+        if (OBJ_NIL == pPgm) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+            return pErr;
+        }
+        *ppBase = OBJ_NIL;
+
+        pHash = jsonIn_CheckNodeForHash(pNode);
+        if (pHash) {
+            // Ok, we have a hash, so there might a lot to parse here.
+
+            // Scan off the base parameters.
+            pErr = NodeBase_Parse(pNode, (NODEBASE_DATA **)&pPgm);
+            if (pErr) {
+                DEBUG_BREAK();
+                obj_Release(pPgm);
+                return pErr;
+            }
+
+            // Scan off the main program name if present.
+            pHashItem = nodeHash_FindA(pHash, 0, "main");
+            if (pHashItem) {
+                ASTR_DATA       *pStr;
+                pStr = jsonIn_CheckNodeDataForString(pHashItem);
+                if (pStr) {
+                    NodePgm_setMain(pPgm, pStr);
+                } else {
+                    return eResult_NewStrA(ERESULT_INVALID_SYNTAX,
+                                           "Main Program Name must be a string!");
+                }
+            }
+            else {
+                return eResult_NewStrA(ERESULT_INVALID_SYNTAX,
+                                       "Missing Node Hash for Pgm Node!");
+            }
+            *ppBase = pPgm;
+        }
+
+        // Return to caller.
+        return pErr;
+    }
+
+
+
 
     
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //                  A r c h i t e c t u r e s
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodePgm_getArches (
+        NODEPGM_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getArches(NodePgm_getNodeBase(this));
+    }
+
+
+    bool            NodePgm_setArches (
+        NODEPGM_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setArches(NodePgm_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        D e p s
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodePgm_getDeps (
+        NODEPGM_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getDeps(NodePgm_getNodeBase(this));
+    }
+
+
+    bool            NodePgm_setDeps (
+        NODEPGM_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setDeps(NodePgm_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        H d r s
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodePgm_getHdrs (
+        NODEPGM_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getHdrs(NodePgm_getNodeBase(this));
+    }
+
+
+    bool            NodePgm_setHdrs (
+        NODEPGM_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setHdrs(NodePgm_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        M a i n
+    //---------------------------------------------------------------
+    
+    ASTR_DATA * NodePgm_getMain (
+        NODEPGM_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pMain;
+    }
+    
+    
+    bool        NodePgm_setMain (
+        NODEPGM_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_STR_OWNED
+        obj_Retain(pValue);
+        if (this->pMain) {
+            obj_Release(this->pMain);
+        }
+#endif
+        this->pMain = pValue;
+        
+        return true;
+    }
+        
+        
+        
+    //---------------------------------------------------------------
+    //                        N a m e
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodePgm_getName (
+        NODEPGM_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getName(NodePgm_getNodeBase(this));
+    }
+
+
+    bool            NodePgm_setName (
+        NODEPGM_DATA    *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setName(NodePgm_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                           N o d e
+    //---------------------------------------------------------------
+
+    NODE_DATA *     NodePgm_getNode (
+        NODEPGM_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (NODE_DATA *)this;
+    }
+
+
+    //---------------------------------------------------------------
+    //                       N o d e  B a s e
+    //---------------------------------------------------------------
+
+    NODEBASE_DATA *     NodePgm_getNodeBase (
+        NODEPGM_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (NODEBASE_DATA *)this;
+    }
+
+
+    //---------------------------------------------------------------
+    //                        O S
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodePgm_getOSs (
+        NODEPGM_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getOSs(NodePgm_getNodeBase(this));
+    }
+
+
+    bool            NodePgm_setOSs (
+        NODEPGM_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setOSs(NodePgm_getNodeBase(this), pValue);
+    }
+
+
 
     //---------------------------------------------------------------
     //                          P r i o r i t y
@@ -187,14 +549,14 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
+    //                          S r c s
     //---------------------------------------------------------------
-    
-    ASTR_DATA * NodePgm_getStr (
-        NODEPGM_DATA     *this
+
+    ASTRARRAY_DATA * NodePgm_getSrcs (
+        NODEPGM_DATA    *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -203,14 +565,14 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
-        return this->pStr;
+
+        return NodeBase_getSrcs(NodePgm_getNodeBase(this));
     }
-    
-    
-    bool        NodePgm_setStr (
-        NODEPGM_DATA     *this,
-        ASTR_DATA   *pValue
+
+
+    bool            NodePgm_setSrcs (
+        NODEPGM_DATA    *this,
+        ASTRARRAY_DATA  *pValue
     )
     {
 #ifdef NDEBUG
@@ -221,19 +583,11 @@ extern "C" {
         }
 #endif
 
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
+        return NodeBase_setSrcs(NodePgm_getNodeBase(this), pValue);
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -473,7 +827,7 @@ extern "C" {
         }
 #endif
 
-        NodePgm_setStr(this, OBJ_NIL);
+        NodePgm_setMain(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -603,7 +957,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "NodePgm::sizeof(NODEPGM_DATA) = %lu\n", sizeof(NODEPGM_DATA));
+        //fprintf(stderr, "NodePgm::sizeof(NODEPGM_DATA) = %lu\n", sizeof(NODEPGM_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODEPGM_DATA));
     #endif
@@ -829,9 +1183,7 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         const
         OBJ_INFO        *pInfo;
         
@@ -862,19 +1214,10 @@ extern "C" {
                     NodePgm_getSize(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-            }
-        }
-#endif
-        
+        pWrkStr =   NodeBase_ToDebugString(NodePgm_getNodeBase(this), indent+3);
+        AStr_Append(pStr, pWrkStr);
+        obj_Release(pWrkStr);
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }

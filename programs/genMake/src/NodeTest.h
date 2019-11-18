@@ -53,6 +53,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <NodeBase.h>
 
 
 #ifndef         NODETEST_H

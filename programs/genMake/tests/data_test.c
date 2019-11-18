@@ -1,3 +1,4 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
  *	Generated 07/17/2017 14:59:49
  */
@@ -35,25 +36,24 @@ char    *pGoodJson01 =
             "\"libDeps\":null,\n"
             "\"headers\":null,\n"
         "}\n,"
-        "\"objects\": {\n"
-            "\"AStr\":{\"srcDeps\":[\"libCmn.h\"], \"json\":true, \"test\":true},\n"
-            "\"appl\":{\"srcDeps\":[\"libCmn.h\"], \"test\":true},\n"
-        "},\n"
+        "\"objects\": [\n"
+            "{name:\"AStr\", \"srcDeps\":[\"libCmn.h\"], \"json\":true},\n"
+            "{name:\"appl\", \"srcDeps\":[\"libCmn.h\"]},\n"
+        "],\n"
         "\"routines\": [\n"
-                "\"dllist.c\",\n"
+                "{name:\"dllist.c\"}\n"
         "],\n"
     "}\n";
 
 
 static
 const
-char    *pGoodJsonObject1 = "{\n"
-            "\"AStr\":{"
-                "\"libDeps\":[\"cmn\",\"array\"],"
-                "\"json\":true,"
-                "\"test\":true"
-            "}\n"
-        "}\n";
+char    *pGoodJsonObject1 = 
+		"{\n"
+            		"name:\"AStr\", "
+                	"\"libDeps\":[\"cmn\",\"array\"],"
+                	"\"json\":true,"
+        	"}\n";
 
 
 

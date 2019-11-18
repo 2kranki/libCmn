@@ -410,7 +410,7 @@ OBJ_INFO        NodeTest_Info = {
     "NodeTest",
     "NodeTest",	// <-- Fill in description
     (OBJ_DATA *)&NodeTest_ClassObj,
-    (OBJ_DATA *)&node_ClassObj,
+    (OBJ_DATA *)&NodeBase_ClassObj,
     (OBJ_IUNKNOWN *)&NodeTest_Vtbl,
     sizeof(NODETEST_DATA)
 };

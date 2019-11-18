@@ -219,6 +219,9 @@ extern "C" {
                     return pErr;
                 }
             }
+            else {
+                pObj->pTest = NodeTest_New();
+            }
             endTest:
 
             *ppBase = pObj;

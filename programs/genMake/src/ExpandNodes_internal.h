@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   NodeBase_internal.h
- *	Generated 11/03/2019 08:11:17
+ * File:   ExpandNodes_internal.h
+ *	Generated 11/10/2019 17:43:09
  *
  * Notes:
  *  --	N/A
@@ -39,24 +39,17 @@
 
 
 
-#include        <node_internal.h>
-#include        <NodeBase.h>
-#include        <nodeArray.h>
-#include        <nodeHash.h>
+#include        <ExpandNodes.h>
 #include        <jsonIn.h>
 
 
-#ifndef NODEBASE_INTERNAL_H
-#define	NODEBASE_INTERNAL_H
+#ifndef EXPANDNODES_INTERNAL_H
+#define	EXPANDNODES_INTERNAL_H
 
 
 
-#define     PROPERTY_DEPS_OWNED 1
-#define     PROPERTY_HDRS_OWNED 1
-#define     PROPERTY_NAME_OWNED 1
-#define     PROPERTY_REQARCHES_OWNED 1
-#define     PROPERTY_REQOSS_OWNED 1
-#define     PROPERTY_SRCS_OWNED 1
+#define     PROPERTY_STR_OWNED 1
+
 
 
 #ifdef	__cplusplus
@@ -71,32 +64,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct NodeBase_data_s	{
+struct ExpandNodes_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    NODE_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
-    ASTRARRAY_DATA  *pDeps;
-    ASTRARRAY_DATA  *pHdrs;
-    ASTR_DATA       *pName;
-    ASTRARRAY_DATA  *pOSs;
-    ASTRARRAY_DATA  *pArches;
-    ASTRARRAY_DATA  *pSrcs;
-    ASTR_DATA       *pSuffix;       // Name Suffix (optional)
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct NodeBase_class_data_s  NodeBase_ClassObj;
+    struct ExpandNodes_class_data_s  ExpandNodes_ClassObj;
 
     extern
     const
-    NODEBASE_VTBL         NodeBase_Vtbl;
+    EXPANDNODES_VTBL         ExpandNodes_Vtbl;
 
 
 
@@ -104,13 +91,13 @@ struct NodeBase_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NODEBASE_SINGLETON
-    NODEBASE_DATA * NodeBase_getSingleton (
+#ifdef  EXPANDNODES_SINGLETON
+    EXPANDNODES_DATA *     ExpandNodes_getSingleton (
         void
     );
 
-    bool            NodeBase_setSingleton (
-     NODEBASE_DATA       *pValue
+    bool            ExpandNodes_setSingleton (
+     EXPANDNODES_DATA       *pValue
 );
 #endif
 
@@ -120,30 +107,30 @@ struct NodeBase_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  NodeBase_getSuperVtbl (
-        NODEBASE_DATA     *this
+    OBJ_IUNKNOWN *  ExpandNodes_getSuperVtbl (
+        EXPANDNODES_DATA     *this
     );
 
 
-    void            NodeBase_Dealloc (
+    void            ExpandNodes_Dealloc (
         OBJ_ID          objId
     );
 
 
-    NODEBASE_DATA * NodeBase_ParseObject (
+    EXPANDNODES_DATA *       ExpandNodes_ParseObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          NodeBase_QueryInfo (
+    void *          ExpandNodes_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     NodeBase_ToJSON (
-        NODEBASE_DATA      *this
+    ASTR_DATA *     ExpandNodes_ToJSON (
+        EXPANDNODES_DATA      *this
     );
 
 
@@ -151,8 +138,8 @@ struct NodeBase_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			NodeBase_Validate (
-        NODEBASE_DATA       *this
+    bool			ExpandNodes_Validate (
+        EXPANDNODES_DATA       *this
     );
 #endif
 
@@ -162,5 +149,5 @@ struct NodeBase_data_s	{
 }
 #endif
 
-#endif	/* NODEBASE_INTERNAL_H */
+#endif	/* EXPANDNODES_INTERNAL_H */
 

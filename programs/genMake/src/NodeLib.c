@@ -84,11 +84,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODELIB_DATA *     NodeLib_Alloc (
+    NODELIB_DATA *  NodeLib_Alloc (
         void
     )
     {
-        NODELIB_DATA       *this;
+        NODELIB_DATA    *this;
         uint32_t        cbSize = sizeof(NODELIB_DATA);
         
         // Do initialization.
@@ -101,11 +101,11 @@ extern "C" {
 
 
 
-    NODELIB_DATA *     NodeLib_New (
+    NODELIB_DATA *  NodeLib_New (
         void
     )
     {
-        NODELIB_DATA       *this;
+        NODELIB_DATA    *this;
         
         this = NodeLib_Alloc( );
         if (this) {
@@ -116,11 +116,308 @@ extern "C" {
 
 
 
-    
+    ERESULT_DATA *  NodeLib_Parse (
+        NODE_DATA       *pNode,
+        NODELIB_DATA    **ppBase
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        NODEHASH_DATA   *pHash;
+        NODELIB_DATA    *pLib;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing Input Node!");
+            return pErr;
+        }
+        if (OBJ_NIL == ppBase) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Base Node Pointer!");
+            return pErr;
+        }
+    #endif
+        pLib = NodeLib_New();
+        if (OBJ_NIL == pLib) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+            return pErr;
+        }
+        *ppBase = OBJ_NIL;
+
+        pHash = jsonIn_CheckNodeForHash(pNode);
+        if (pHash) {
+            // Ok, we have a hash, so there might a lot to parse here.
+
+            // Scan off the base parameters.
+            pErr = NodeBase_Parse(pNode, (NODEBASE_DATA **)&pLib);
+            if (pErr) {
+                DEBUG_BREAK();
+                obj_Release(pLib);
+                return pErr;
+            }
+
+            *ppBase = pLib;
+        }
+
+        // Return to caller.
+        return pErr;
+    }
+
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //                  A r c h i t e c t u r e s
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodeLib_getArches (
+        NODELIB_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getArches(NodeLib_getNodeBase(this));
+    }
+
+
+    bool            NodeLib_setArches (
+        NODELIB_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setArches(NodeLib_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        D e p s
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodeLib_getDeps (
+        NODELIB_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getDeps(NodeLib_getNodeBase(this));
+    }
+
+
+    bool            NodeLib_setDeps (
+        NODELIB_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setDeps(NodeLib_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        H d r s
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodeLib_getHdrs (
+        NODELIB_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getHdrs(NodeLib_getNodeBase(this));
+    }
+
+
+    bool            NodeLib_setHdrs (
+        NODELIB_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setHdrs(NodeLib_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        N a m e
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeLib_getName (
+        NODELIB_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+    #endif
+
+        return NodeBase_getName(NodeLib_getNodeBase(this));
+    }
+
+
+    bool            NodeLib_setName (
+        NODELIB_DATA    *this,
+        ASTR_DATA       *pValue
+    )
+    {
+    #ifdef NDEBUG
+    #else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+    #endif
+
+        return NodeBase_setName(NodeLib_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                           N o d e
+    //---------------------------------------------------------------
+
+    NODE_DATA *     NodeLib_getNode (
+        NODELIB_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+    #endif
+
+        return (NODE_DATA *)this;
+    }
+
+
+    //---------------------------------------------------------------
+    //                       N o d e  B a s e
+    //---------------------------------------------------------------
+
+    NODEBASE_DATA *     NodeLib_getNodeBase (
+        NODELIB_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+    #endif
+
+        return (NODEBASE_DATA *)this;
+    }
+
+
+    //---------------------------------------------------------------
+    //                        O S
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodeLib_getOSs (
+        NODELIB_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getOSs(NodeLib_getNodeBase(this));
+    }
+
+
+    bool            NodeLib_setOSs (
+        NODELIB_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setOSs(NodeLib_getNodeBase(this), pValue);
+    }
+
+
 
     //---------------------------------------------------------------
     //                          P r i o r i t y
@@ -182,6 +479,46 @@ extern "C" {
 #endif
 
         return 0;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S r c s
+    //---------------------------------------------------------------
+
+    ASTRARRAY_DATA * NodeLib_getSrcs (
+        NODELIB_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getSrcs(NodeLib_getNodeBase(this));
+    }
+
+
+    bool            NodeLib_setSrcs (
+        NODELIB_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setSrcs(NodeLib_getNodeBase(this), pValue);
     }
 
 
@@ -829,9 +1166,7 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         const
         OBJ_INFO        *pInfo;
         
@@ -862,19 +1197,11 @@ extern "C" {
                     NodeLib_getSize(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-            }
-        }
-#endif
-        
+        pWrkStr =   NodeBase_ToDebugString(NodeLib_getNodeBase(this), indent+3);
+        AStr_Append(pStr, pWrkStr);
+        obj_Release(pWrkStr);
+
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }

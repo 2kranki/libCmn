@@ -125,7 +125,7 @@ extern "C" {
      released.
      @return    pointer to NodePgm object if successful, otherwise OBJ_NIL.
      */
-    NODEPGM_DATA *     NodePgm_Alloc (
+    NODEPGM_DATA *  NodePgm_Alloc (
         void
     );
     
@@ -135,15 +135,141 @@ extern "C" {
     );
     
     
-    NODEPGM_DATA *     NodePgm_New (
+    NODEPGM_DATA *  NodePgm_New (
         void
     );
     
     
 
+
+    /*!
+     Parse the header portion of definition file and set up its components.
+     Node Grammar:
+     header  : "program" ':' '{' components '}'
+     ;
+     components
+     : "name" ':' string
+     | "deps" ':' deps
+     | "libdir" ':' string   // Path to where object library will be created
+     | "objdir" ':' string   // Path to where temporary object files will be
+     // created
+     ;
+     deps       : "null"
+     | '[' string* ']'       // Library dependencies as needed for gcc/clang
+     ;
+     Note: See ParseObject() for definition of objectNode.
+     
+     @param     pNode   Node Pointer w/data
+     @param     ppBase  Returned Object Pointer area
+     @return    If successful, a NodePgm object in ppBase which must be released con-
+                taining the description and OBJ_NIL, otherwise an ERESULT_DATA object
+                which must be also be released.
+     @warning   Remember to release the returned NodePgm or ERESULT_DATA object.
+     */
+    ERESULT_DATA *  NodePgm_Parse (
+        NODE_DATA       *pNode,
+        NODEPGM_DATA    **ppBase
+    );
+
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    /*! Property: (Optional) Required Computer Architecture(s)
+     */
+    ASTRARRAY_DATA * NodePgm_getArches (
+        NODEPGM_DATA    *this
+    );
+
+    bool             NodePgm_setArches (
+        NODEPGM_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    );
+
+
+    /*! Property: Source Dependencies, zero or more file paths that
+        compilation depends on.
+    */
+    ASTRARRAY_DATA * NodePgm_getDeps (
+        NODEPGM_DATA    *this
+    );
+
+    bool            NodePgm_setDeps (
+        NODEPGM_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    );
+
+
+    /*! Property: Headers
+    */
+    ASTRARRAY_DATA * NodePgm_getHdrs (
+        NODEPGM_DATA    *this
+    );
+
+    bool            NodePgm_setHdrs (
+        NODEPGM_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    );
+
+
+    /*! Property: Main program file name
+     */
+    ASTR_DATA *     NodePgm_getMain (
+        NODEPGM_DATA    *this
+    );
+
+    bool            NodePgm_setMain (
+        NODEPGM_DATA    *this,
+        ASTR_DATA       *pValue
+    );
+
+
+    /*! Property: Test program file name including file extension
+     */
+    ASTR_DATA *     NodePgm_getName (
+        NODEPGM_DATA    *this
+    );
+
+    bool            NodePgm_setName (
+        NODEPGM_DATA    *this,
+        ASTR_DATA       *pValue
+    );
+
+
+    NODE_DATA *     NodePgm_getNode (
+        NODEPGM_DATA    *this
+    );
+
+
+    NODEBASE_DATA * NodePgm_getNodeBase (
+        NODEPGM_DATA    *this
+    );
+
+
+    /*! Property: (Optional) Required Operating System(s)
+     */
+    ASTRARRAY_DATA * NodePgm_getOSs (
+        NODEPGM_DATA    *this
+    );
+
+    bool            NodePgm_setOSs (
+        NODEPGM_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    );
+
+
+    /*! Property: Extra Sources, zero or more file paths that
+        are needed to compile with Name property.
+    */
+    ASTRARRAY_DATA * NodePgm_getSrcs (
+        NODEPGM_DATA    *this
+    );
+
+    bool            NodePgm_setSrcs (
+        NODEPGM_DATA    *this,
+        ASTRARRAY_DATA  *pValue
+    );
+
 
 
 

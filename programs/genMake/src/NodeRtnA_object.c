@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'NodePgm'
-//	Generated 11/03/2019 08:11:49
+//	Class Object Metods and Tables for 'NodeRtnA'
+//	Generated 11/10/2019 10:31:05
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			NODEPGM_OBJECT_C	    1
-#include        <NodePgm_internal.h>
-#ifdef  NODEPGM_SINGLETON
+#define			NODERTNA_OBJECT_C	    1
+#include        <NodeRtnA_internal.h>
+#ifdef  NODERTNA_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct NodePgm_class_data_s	{
+struct NodeRtnA_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  NODEPGM_SINGLETON
+#ifdef  NODERTNA_SINGLETON
     volatile
-    NODEPGM_DATA       *pSingleton;
+    NODERTNA_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct NodePgm_class_data_s	{
 
 
 static
-void *          NodePgmClass_QueryInfo (
+void *          NodeRtnAClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,17 +78,17 @@ void *          NodePgmClass_QueryInfo (
 
 static
 const
-OBJ_INFO        NodePgm_Info;            // Forward Reference
+OBJ_INFO        NodeRtnA_Info;            // Forward Reference
 
 
 
 
 static
-bool            NodePgmClass_IsKindOf (
+bool            NodeRtnAClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NODEPGM_CLASS == classID) {
+    if (OBJ_IDENT_NODERTNA_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_NODEBASE_CLASS == classID) {
@@ -105,11 +105,11 @@ bool            NodePgmClass_IsKindOf (
 
 
 static
-uint16_t		NodePgmClass_WhoAmI (
+uint16_t		NodeRtnAClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEPGM_CLASS;
+    return OBJ_IDENT_NODERTNA_CLASS;
 }
 
 
@@ -121,17 +121,17 @@ uint16_t		NodePgmClass_WhoAmI (
 
 static
 const
-NODEPGM_CLASS_VTBL    class_Vtbl = {
+NODERTNA_CLASS_VTBL    class_Vtbl = {
     {
-        &NodePgm_Info,
-        NodePgmClass_IsKindOf,
+        &NodeRtnA_Info,
+        NodeRtnAClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        NodePgm_Class,
-        NodePgmClass_WhoAmI,
-        (P_OBJ_QUERYINFO)NodePgmClass_QueryInfo,
-        NULL                        // NodePgmClass_ToDebugString
+        NodeRtnA_Class,
+        NodeRtnAClass_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeRtnAClass_QueryInfo,
+        NULL                        // NodeRtnAClass_ToDebugString
     },
 };
 
@@ -141,10 +141,10 @@ NODEPGM_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NODEPGM_CLASS_DATA  NodePgm_ClassObj = {
+NODERTNA_CLASS_DATA  NodeRtnA_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(NODEPGM_CLASS_DATA),                  // cbSize
+        sizeof(NODERTNA_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -158,17 +158,17 @@ NODEPGM_CLASS_DATA  NodePgm_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  NODEPGM_SINGLETON
-NODEPGM_DATA *     NodePgm_getSingleton (
+#ifdef  NODERTNA_SINGLETON
+NODERTNA_DATA *     NodeRtnA_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(NodePgm_ClassObj.pSingleton);
+    return (OBJ_ID)(NodeRtnA_ClassObj.pSingleton);
 }
 
 
-bool            NodePgm_setSingleton (
-    NODEPGM_DATA       *pValue
+bool            NodeRtnA_setSingleton (
+    NODERTNA_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -188,10 +188,10 @@ bool            NodePgm_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (NodePgm_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(NodePgm_ClassObj.pSingleton));
+    if (NodeRtnA_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(NodeRtnA_ClassObj.pSingleton));
     }
-    NodePgm_ClassObj.pSingleton = pValue;
+    NodeRtnA_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -201,17 +201,17 @@ bool            NodePgm_setSingleton (
 
 
 
-NODEPGM_DATA *     NodePgm_Shared (
+NODERTNA_DATA *     NodeRtnA_Shared (
     void
 )
 {
-    NODEPGM_DATA       *this = (OBJ_ID)(NodePgm_ClassObj.pSingleton);
+    NODERTNA_DATA       *this = (OBJ_ID)(NodeRtnA_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = NodePgm_New( );
-        NodePgm_setSingleton(this);
+        this = NodeRtnA_New( );
+        NodeRtnA_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // NodePgm_ClassObj.pSingleton = OBJ_NIL;
+        // NodeRtnA_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -219,15 +219,15 @@ NODEPGM_DATA *     NodePgm_Shared (
 
 
 
-void            NodePgm_SharedReset (
+void            NodeRtnA_SharedReset (
     void
 )
 {
-    NODEPGM_DATA       *this = (OBJ_ID)(NodePgm_ClassObj.pSingleton);
+    NODERTNA_DATA       *this = (OBJ_ID)(NodeRtnA_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        NodePgm_ClassObj.pSingleton = OBJ_NIL;
+        NodeRtnA_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -243,13 +243,13 @@ void            NodePgm_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          NodePgmClass_QueryInfo (
+void *          NodeRtnAClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODEPGM_CLASS_DATA *this = objId;
+    NODERTNA_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -260,7 +260,7 @@ void *          NodePgmClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODEPGM_DATA);
+            return (void *)sizeof(NODERTNA_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -275,7 +275,7 @@ void *          NodePgmClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&NodePgm_Info;
+                        return (void *)&NodeRtnA_Info;
                     }
                     break;
                     
@@ -293,13 +293,13 @@ void *          NodePgmClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return NodePgm_New;
+                        return NodeRtnA_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return NodePgmClass_WhoAmI;
+                        return NodeRtnAClass_WhoAmI;
                     }
                     break;
                     
@@ -319,11 +319,11 @@ void *          NodePgmClass_QueryInfo (
 
 
 static
-bool            NodePgm_IsKindOf (
+bool            NodeRtnA_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NODEPGM == classID) {
+    if (OBJ_IDENT_NODERTNA == classID) {
        return true;
     }
     if (OBJ_IDENT_NODEBASE == classID) {
@@ -341,25 +341,25 @@ bool            NodePgm_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            NodePgm_Dealloc (
+void            NodeRtnA_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          NodePgm_Class (
+OBJ_ID          NodeRtnA_Class (
     void
 )
 {
-    return (OBJ_ID)&NodePgm_ClassObj;
+    return (OBJ_ID)&NodeRtnA_ClassObj;
 }
 
 
 static
-uint16_t		NodePgm_WhoAmI (
+uint16_t		NodeRtnA_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEPGM;
+    return OBJ_IDENT_NODERTNA;
 }
 
 
@@ -371,34 +371,34 @@ uint16_t		NodePgm_WhoAmI (
 //===========================================================
 
 const
-NODEPGM_VTBL     NodePgm_Vtbl = {
+NODERTNA_VTBL     NodeRtnA_Vtbl = {
     {
-        &NodePgm_Info,
-        NodePgm_IsKindOf,
-#ifdef  NODEPGM_IS_SINGLETON
+        &NodeRtnA_Info,
+        NodeRtnA_IsKindOf,
+#ifdef  NODERTNA_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        NodePgm_Dealloc,
-        NodePgm_Class,
-        NodePgm_WhoAmI,
-        (P_OBJ_QUERYINFO)NodePgm_QueryInfo,
-        (P_OBJ_TOSTRING)NodePgm_ToDebugString,
-        NULL,			// NodePgm_Enable,
-        NULL,			// NodePgm_Disable,
-        NULL,			// (P_OBJ_ASSIGN)NodePgm_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodePgm_Compare,
-        NULL, 			// (P_OBJ_PTR)NodePgm_Copy,
-        NULL, 			// (P_OBJ_PTR)NodePgm_DeepCopy,
-        NULL 			// (P_OBJ_HASH)NodePgm_Hash,
+        NodeRtnA_Dealloc,
+        NodeRtnA_Class,
+        NodeRtnA_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeRtnA_QueryInfo,
+        (P_OBJ_TOSTRING)NodeRtnA_ToDebugString,
+        NULL,			// NodeRtnA_Enable,
+        NULL,			// NodeRtnA_Disable,
+        NULL,			// (P_OBJ_ASSIGN)NodeRtnA_Assign,
+        NULL,			// (P_OBJ_COMPARE)NodeRtnA_Compare,
+        NULL, 			// (P_OBJ_PTR)NodeRtnA_Copy,
+        NULL, 			// (P_OBJ_PTR)NodeRtnA_DeepCopy,
+        NULL 			// (P_OBJ_HASH)NodeRtnA_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //NodePgm_IsEnabled,
+    //NodeRtnA_IsEnabled,
  
 };
 
@@ -406,13 +406,13 @@ NODEPGM_VTBL     NodePgm_Vtbl = {
 
 static
 const
-OBJ_INFO        NodePgm_Info = {
-    "NodePgm",
-    "NodePgm",	// <-- Fill in description
-    (OBJ_DATA *)&NodePgm_ClassObj,
+OBJ_INFO        NodeRtnA_Info = {
+    "NodeRtnA",
+    "Routine Node",
+    (OBJ_DATA *)&NodeRtnA_ClassObj,
     (OBJ_DATA *)&NodeBase_ClassObj,
-    (OBJ_IUNKNOWN *)&NodePgm_Vtbl,
-    sizeof(NODEPGM_DATA)
+    (OBJ_IUNKNOWN *)&NodeRtnA_Vtbl,
+    sizeof(NODERTNA_DATA)
 };
 
 

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'NodePgm'
-//	Generated 11/03/2019 08:11:49
+//	Class Object Metods and Tables for 'NodeTstA'
+//	Generated 11/10/2019 17:54:48
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			NODEPGM_OBJECT_C	    1
-#include        <NodePgm_internal.h>
-#ifdef  NODEPGM_SINGLETON
+#define			NODETSTA_OBJECT_C	    1
+#include        <NodeTstA_internal.h>
+#ifdef  NODETSTA_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct NodePgm_class_data_s	{
+struct NodeTstA_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  NODEPGM_SINGLETON
+#ifdef  NODETSTA_SINGLETON
     volatile
-    NODEPGM_DATA       *pSingleton;
+    NODETSTA_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct NodePgm_class_data_s	{
 
 
 static
-void *          NodePgmClass_QueryInfo (
+void *          NodeTstAClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,24 +78,18 @@ void *          NodePgmClass_QueryInfo (
 
 static
 const
-OBJ_INFO        NodePgm_Info;            // Forward Reference
+OBJ_INFO        NodeTstA_Info;            // Forward Reference
 
 
 
 
 static
-bool            NodePgmClass_IsKindOf (
+bool            NodeTstAClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NODEPGM_CLASS == classID) {
+    if (OBJ_IDENT_NODETSTA_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_NODEBASE_CLASS == classID) {
-        return true;
-    }
-    if (OBJ_IDENT_NODE_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -105,11 +99,11 @@ bool            NodePgmClass_IsKindOf (
 
 
 static
-uint16_t		NodePgmClass_WhoAmI (
+uint16_t		NodeTstAClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEPGM_CLASS;
+    return OBJ_IDENT_NODETSTA_CLASS;
 }
 
 
@@ -121,17 +115,17 @@ uint16_t		NodePgmClass_WhoAmI (
 
 static
 const
-NODEPGM_CLASS_VTBL    class_Vtbl = {
+NODETSTA_CLASS_VTBL    class_Vtbl = {
     {
-        &NodePgm_Info,
-        NodePgmClass_IsKindOf,
+        &NodeTstA_Info,
+        NodeTstAClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        NodePgm_Class,
-        NodePgmClass_WhoAmI,
-        (P_OBJ_QUERYINFO)NodePgmClass_QueryInfo,
-        NULL                        // NodePgmClass_ToDebugString
+        NodeTstA_Class,
+        NodeTstAClass_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeTstAClass_QueryInfo,
+        NULL                        // NodeTstAClass_ToDebugString
     },
 };
 
@@ -141,10 +135,10 @@ NODEPGM_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NODEPGM_CLASS_DATA  NodePgm_ClassObj = {
+NODETSTA_CLASS_DATA  NodeTstA_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(NODEPGM_CLASS_DATA),                  // cbSize
+        sizeof(NODETSTA_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -158,17 +152,17 @@ NODEPGM_CLASS_DATA  NodePgm_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  NODEPGM_SINGLETON
-NODEPGM_DATA *     NodePgm_getSingleton (
+#ifdef  NODETSTA_SINGLETON
+NODETSTA_DATA *     NodeTstA_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(NodePgm_ClassObj.pSingleton);
+    return (OBJ_ID)(NodeTstA_ClassObj.pSingleton);
 }
 
 
-bool            NodePgm_setSingleton (
-    NODEPGM_DATA       *pValue
+bool            NodeTstA_setSingleton (
+    NODETSTA_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -188,10 +182,10 @@ bool            NodePgm_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (NodePgm_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(NodePgm_ClassObj.pSingleton));
+    if (NodeTstA_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(NodeTstA_ClassObj.pSingleton));
     }
-    NodePgm_ClassObj.pSingleton = pValue;
+    NodeTstA_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -201,17 +195,17 @@ bool            NodePgm_setSingleton (
 
 
 
-NODEPGM_DATA *     NodePgm_Shared (
+NODETSTA_DATA *     NodeTstA_Shared (
     void
 )
 {
-    NODEPGM_DATA       *this = (OBJ_ID)(NodePgm_ClassObj.pSingleton);
+    NODETSTA_DATA       *this = (OBJ_ID)(NodeTstA_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = NodePgm_New( );
-        NodePgm_setSingleton(this);
+        this = NodeTstA_New( );
+        NodeTstA_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // NodePgm_ClassObj.pSingleton = OBJ_NIL;
+        // NodeTstA_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -219,15 +213,15 @@ NODEPGM_DATA *     NodePgm_Shared (
 
 
 
-void            NodePgm_SharedReset (
+void            NodeTstA_SharedReset (
     void
 )
 {
-    NODEPGM_DATA       *this = (OBJ_ID)(NodePgm_ClassObj.pSingleton);
+    NODETSTA_DATA       *this = (OBJ_ID)(NodeTstA_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        NodePgm_ClassObj.pSingleton = OBJ_NIL;
+        NodeTstA_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -243,13 +237,13 @@ void            NodePgm_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          NodePgmClass_QueryInfo (
+void *          NodeTstAClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODEPGM_CLASS_DATA *this = objId;
+    NODETSTA_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -260,7 +254,7 @@ void *          NodePgmClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODEPGM_DATA);
+            return (void *)sizeof(NODETSTA_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -275,7 +269,7 @@ void *          NodePgmClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&NodePgm_Info;
+                        return (void *)&NodeTstA_Info;
                     }
                     break;
                     
@@ -293,13 +287,13 @@ void *          NodePgmClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return NodePgm_New;
+                        return NodeTstA_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return NodePgmClass_WhoAmI;
+                        return NodeTstAClass_WhoAmI;
                     }
                     break;
                     
@@ -319,18 +313,12 @@ void *          NodePgmClass_QueryInfo (
 
 
 static
-bool            NodePgm_IsKindOf (
+bool            NodeTstA_IsKindOf (
     uint16_t		classID
 )
 {
-    if (OBJ_IDENT_NODEPGM == classID) {
+    if (OBJ_IDENT_NODETSTA == classID) {
        return true;
-    }
-    if (OBJ_IDENT_NODEBASE == classID) {
-        return true;
-    }
-    if (OBJ_IDENT_NODE == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -341,25 +329,25 @@ bool            NodePgm_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            NodePgm_Dealloc (
+void            NodeTstA_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          NodePgm_Class (
+OBJ_ID          NodeTstA_Class (
     void
 )
 {
-    return (OBJ_ID)&NodePgm_ClassObj;
+    return (OBJ_ID)&NodeTstA_ClassObj;
 }
 
 
 static
-uint16_t		NodePgm_WhoAmI (
+uint16_t		NodeTstA_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEPGM;
+    return OBJ_IDENT_NODETSTA;
 }
 
 
@@ -371,34 +359,34 @@ uint16_t		NodePgm_WhoAmI (
 //===========================================================
 
 const
-NODEPGM_VTBL     NodePgm_Vtbl = {
+NODETSTA_VTBL     NodeTstA_Vtbl = {
     {
-        &NodePgm_Info,
-        NodePgm_IsKindOf,
-#ifdef  NODEPGM_IS_SINGLETON
+        &NodeTstA_Info,
+        NodeTstA_IsKindOf,
+#ifdef  NODETSTA_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        NodePgm_Dealloc,
-        NodePgm_Class,
-        NodePgm_WhoAmI,
-        (P_OBJ_QUERYINFO)NodePgm_QueryInfo,
-        (P_OBJ_TOSTRING)NodePgm_ToDebugString,
-        NULL,			// NodePgm_Enable,
-        NULL,			// NodePgm_Disable,
-        NULL,			// (P_OBJ_ASSIGN)NodePgm_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodePgm_Compare,
-        NULL, 			// (P_OBJ_PTR)NodePgm_Copy,
-        NULL, 			// (P_OBJ_PTR)NodePgm_DeepCopy,
-        NULL 			// (P_OBJ_HASH)NodePgm_Hash,
+        NodeTstA_Dealloc,
+        NodeTstA_Class,
+        NodeTstA_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeTstA_QueryInfo,
+        (P_OBJ_TOSTRING)NodeTstA_ToDebugString,
+        NULL,			// NodeTstA_Enable,
+        NULL,			// NodeTstA_Disable,
+        NULL,			// (P_OBJ_ASSIGN)NodeTstA_Assign,
+        NULL,			// (P_OBJ_COMPARE)NodeTstA_Compare,
+        NULL, 			// (P_OBJ_PTR)NodeTstA_Copy,
+        NULL, 			// (P_OBJ_PTR)NodeTstA_DeepCopy,
+        NULL 			// (P_OBJ_HASH)NodeTstA_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //NodePgm_IsEnabled,
+    //NodeTstA_IsEnabled,
  
 };
 
@@ -406,13 +394,13 @@ NODEPGM_VTBL     NodePgm_Vtbl = {
 
 static
 const
-OBJ_INFO        NodePgm_Info = {
-    "NodePgm",
-    "NodePgm",	// <-- Fill in description
-    (OBJ_DATA *)&NodePgm_ClassObj,
+OBJ_INFO        NodeTstA_Info = {
+    "NodeTstA",
+    "Node Test A",
+    (OBJ_DATA *)&NodeTstA_ClassObj,
     (OBJ_DATA *)&NodeBase_ClassObj,
-    (OBJ_IUNKNOWN *)&NodePgm_Vtbl,
-    sizeof(NODEPGM_DATA)
+    (OBJ_IUNKNOWN *)&NodeTstA_Vtbl,
+    sizeof(NODETSTA_DATA)
 };
 
 

@@ -1,3 +1,4 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
  *	Generated 04/18/2018 09:07:15
  */

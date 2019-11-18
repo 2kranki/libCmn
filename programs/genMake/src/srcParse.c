@@ -42,6 +42,14 @@
 
 /* Header File Inclusion */
 #include        <srcParse_internal.h>
+#include        <hjson.h>
+#include        <NodeHdr.h>
+#include        <NodeLib.h>
+#include        <NodeObj.h>
+#include        <NodePgm.h>
+#include        <NodeRtn.h>
+#include        <NodeTest.h>
+#include        <srcErrors.h>
 #include        <trace.h>
 
 
@@ -123,6 +131,150 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                       L i b r a r y
+    //---------------------------------------------------------------
+    
+    NODELIB_DATA *  srcParse_getLib (
+        SRCPARSE_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pLib;
+    }
+    
+    
+    bool            srcParse_setLib (
+        SRCPARSE_DATA   *this,
+        NODELIB_DATA    *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_LIB_OWNED
+        obj_Retain(pValue);
+        if (this->pLib) {
+            obj_Release(this->pLib);
+        }
+#endif
+        this->pLib = pValue;
+        
+        return true;
+    }
+            
+            
+            
+    //---------------------------------------------------------------
+    //                       N o d e s
+    //---------------------------------------------------------------
+    
+    NODE_DATA *  srcParse_getNodes (
+        SRCPARSE_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pNodes;
+    }
+    
+    
+    bool            srcParse_setNodes (
+        SRCPARSE_DATA   *this,
+        NODE_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_NODES_OWNED
+        obj_Retain(pValue);
+        if (this->pNodes) {
+            obj_Release(this->pNodes);
+        }
+#endif
+        this->pNodes = pValue;
+        
+        return true;
+    }
+                
+                
+                
+    //---------------------------------------------------------------
+    //                        O b j e c t s
+    //---------------------------------------------------------------
+    
+    OBJARRAY_DATA * srcParse_getObjs (
+        SRCPARSE_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pObjs;
+    }
+    
+    
+    bool            srcParse_setObjs (
+        SRCPARSE_DATA   *this,
+        OBJARRAY_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_OBJS_OWNED
+        obj_Retain(pValue);
+        if (this->pObjs) {
+            obj_Release(this->pObjs);
+        }
+#endif
+        this->pObjs = pValue;
+        
+        return true;
+    }
+        
+        
+        
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -166,6 +318,102 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       L i b r a r y
+    //---------------------------------------------------------------
+    
+    NODEPGM_DATA *  srcParse_getPgm (
+        SRCPARSE_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pPgm;
+    }
+    
+    
+    bool            srcParse_setPgm (
+        SRCPARSE_DATA   *this,
+        NODEPGM_DATA    *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_PGM_OWNED
+        obj_Retain(pValue);
+        if (this->pPgm) {
+            obj_Release(this->pPgm);
+        }
+#endif
+        this->pPgm = pValue;
+        
+        return true;
+    }
+                
+                
+                
+    //---------------------------------------------------------------
+    //                        R o u t i n e s
+    //---------------------------------------------------------------
+    
+    OBJARRAY_DATA * srcParse_getRtns (
+        SRCPARSE_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pRtns;
+    }
+    
+    
+    bool            srcParse_setRtns (
+        SRCPARSE_DATA   *this,
+        OBJARRAY_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_RTNS_OWNED
+        obj_Retain(pValue);
+        if (this->pRtns) {
+            obj_Release(this->pRtns);
+        }
+#endif
+        this->pRtns = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -186,54 +434,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * srcParse_getStr (
-        SRCPARSE_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!srcParse_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        srcParse_setStr (
-        SRCPARSE_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!srcParse_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -473,7 +673,10 @@ extern "C" {
         }
 #endif
 
-        srcParse_setStr(this, OBJ_NIL);
+        srcParse_setLib(this, OBJ_NIL);
+        srcParse_setObjs(this, OBJ_NIL);
+        srcParse_setPgm(this, OBJ_NIL);
+        srcParse_setRtns(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -592,8 +795,18 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcParse_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        this->pObjs = objArray_New( );
+        if (OBJ_NIL == this->pObjs) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        this->pRtns = objArray_New( );
+        if (OBJ_NIL == this->pRtns) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
@@ -618,7 +831,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         srcParse_IsEnabled (
-        SRCPARSE_DATA		*this
+        SRCPARSE_DATA	*this
     )
     {
         //ERESULT         eRc;
@@ -642,6 +855,440 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //              P a r s e  J s o n  I n p u t
+    //---------------------------------------------------------------
+    
+    ERESULT_DATA *  srcParse_ParseJsonFile(
+        SRCPARSE_DATA   *this,
+        PATH_DATA       *pPath,
+        NODE_DATA       **ppNodes
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        HJSON_DATA      *pObj = OBJ_NIL;
+        NODEHASH_DATA   *pHash;
+        NODE_DATA       *pFileNode = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !srcParse_Validate(this) ) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (OBJ_NIL == ppNodes) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        *ppNodes = OBJ_NIL;
+
+        pObj = hjson_NewFromPath(pPath, 4);
+        if (pObj) {
+            pFileNode = hjson_ParseFileHash(pObj);
+            srcErrors_ExitOnFatal(OBJ_NIL);
+            obj_Release(pObj);
+            pObj = OBJ_NIL;
+        }
+        
+        if (pFileNode) {
+            pHash = node_getData(pFileNode);
+            if (OBJ_NIL == pHash) {
+                fprintf(stderr, "ERROR - No JSON Hash to process\n\n\n");
+                exit(12);
+            }
+            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+                exit(12);
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            exit(12);
+        }
+        
+        // Return to caller.
+        if (OBJ_NIL == pErr)
+            *ppNodes = pFileNode;
+        return pErr;
+    }
+    
+    
+    ERESULT_DATA *  srcParse_ParseJsonStr(
+        SRCPARSE_DATA   *this,
+        const
+        char            *pStrA,
+        NODE_DATA       **ppNodes
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        HJSON_DATA      *pObj = OBJ_NIL;
+        NODE_DATA       *pFileNode = OBJ_NIL;
+        NODEHASH_DATA   *pHash = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !srcParse_Validate(this) ) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (NULL == pStrA) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (OBJ_NIL == ppNodes) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        *ppNodes = OBJ_NIL;
+        
+        pObj = hjson_NewA(pStrA, 4);
+        if (pObj) {
+            pFileNode = hjson_ParseFileHash(pObj);
+            srcErrors_ExitOnFatal(OBJ_NIL);
+            obj_Release(pObj);
+            pObj = OBJ_NIL;
+        }
+
+        if (pFileNode) {
+            pHash = node_getData(pFileNode);
+            if (OBJ_NIL == pHash) {
+                fprintf(stderr, "ERROR - No JSON Hash to process\n\n\n");
+                exit(12);
+            }
+            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+                exit(12);
+            }
+        }
+        else {
+            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            exit(12);
+        }
+
+        // Return to caller.
+        if (OBJ_NIL == pErr)
+            *ppNodes = pFileNode;
+        return pErr;
+    }
+    
+    
+
+    //---------------------------------------------------------------
+    //                  P a r s e  L i b r a r y
+    //---------------------------------------------------------------
+    
+    ERESULT_DATA *  srcParse_ParseLibrary(
+        SRCPARSE_DATA   *this,
+        NODE_DATA       *pNode
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        NODELIB_DATA    *pLib = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !srcParse_Validate(this) ) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if(OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if(!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        //BREAK_NULL(this->pDict);
+#endif
+        
+        // We cheat and let NodeLib parse the Object.
+        pErr = NodeLib_Parse(pNode, &pLib);
+        if (pErr) {
+            DEBUG_BREAK();
+            return pErr;
+        }
+        this->pLib = pLib;
+
+        // Return to caller.
+        return pErr;
+    }
+    
+            
+            
+        //---------------------------------------------------------------
+        //                  P a r s e  O b j e c t
+        //---------------------------------------------------------------
+
+        ERESULT_DATA *  srcParse_ParseObject(
+            SRCPARSE_DATA   *this,
+            NODE_DATA       *pNode
+        )
+        {
+            ERESULT         eRc;
+            NODEOBJ_DATA    *pObj = OBJ_NIL;        // Primary Object
+            ERESULT_DATA    *pErr = OBJ_NIL;
+
+            // Do initialization.
+    #ifdef NDEBUG
+    #else
+            if (!srcParse_Validate(this)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+            }
+            if (OBJ_NIL == pNode) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+            }
+            if (!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+            }
+    #endif
+            
+            // We cheat and let NodeObj parse the Object.
+            pErr = NodeObj_Parse(pNode, &pObj);
+            if (pErr) {
+                DEBUG_BREAK();
+                return pErr;
+            }
+            
+            eRc = objArray_AppendObj(this->pObjs, pObj, NULL);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(pObj);
+                return eResult_NewStrA(eRc, NULL);
+            }
+            obj_Release(pObj);
+            pObj = OBJ_NIL;
+
+            // Return to caller.
+            return pErr;
+        }
+        
+        
+        
+        //---------------------------------------------------------------
+        //                  P a r s e  O b j e c t s
+        //---------------------------------------------------------------
+        
+        ERESULT_DATA *  srcParse_ParseObjects(
+            SRCPARSE_DATA   *this,
+            NODE_DATA       *pNodes
+        )
+        {
+            ERESULT_DATA    *pErr = OBJ_NIL;
+            NODEARRAY_DATA  *pArray = OBJ_NIL;
+            NODE_DATA       *pNode = OBJ_NIL;
+            uint32_t        i;
+            uint32_t        iMax;
+
+            // Do initialization.
+    #ifdef NDEBUG
+    #else
+            if( !srcParse_Validate(this) ) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+            }
+            if (OBJ_NIL == pNodes) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+            }
+            if (!obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+            }
+    #endif
+            
+            pArray = jsonIn_CheckNodeForArray(pNodes);
+            if (pArray) {
+                iMax = nodeArray_getSize(pArray);
+                for(i=0; i<iMax; ++i) {
+                    pNode = nodeArray_Get(pArray, (i+1));
+                    if (pNode) {
+                        pErr = srcParse_ParseObject(this, pNode);
+                        if (pErr) {
+                            DEBUG_BREAK();
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_SYNTAX,
+                                       "Objects must be found in an array!");
+            }
+
+            // Return to caller.
+            return pErr;
+        }
+        
+        
+        
+        //---------------------------------------------------------------
+        //                  P a r s e  L i b r a r y
+        //---------------------------------------------------------------
+        
+        ERESULT_DATA *  srcParse_ParseProgram(
+            SRCPARSE_DATA   *this,
+            NODE_DATA       *pNode
+        )
+        {
+            ERESULT_DATA    *pErr = OBJ_NIL;
+            NODEPGM_DATA    *pPgm = OBJ_NIL;
+
+            // Do initialization.
+    #ifdef NDEBUG
+    #else
+            if( !srcParse_Validate(this) ) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+            }
+            if(OBJ_NIL == pNode) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+            }
+            if(!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+            }
+            //BREAK_NULL(this->pDict);
+    #endif
+            
+            // We cheat and let NodeLib parse the Object.
+            pErr = NodePgm_Parse(pNode, &pPgm);
+            if (pErr) {
+                DEBUG_BREAK();
+                return pErr;
+            }
+            this->pPgm = pPgm;
+
+            // Return to caller.
+            return pErr;
+        }
+        
+                
+                
+    //---------------------------------------------------------------
+    //                  P a r s e  R o u t i n e
+    //---------------------------------------------------------------
+
+    ERESULT_DATA *  srcParse_ParseRoutine(
+        SRCPARSE_DATA   *this,
+        NODE_DATA       *pNode
+    )
+    {
+        ERESULT         eRc;
+        NODERTN_DATA    *pRtn = OBJ_NIL;
+        ERESULT_DATA    *pErr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        
+        // We cheat and let NodeRtn parse the Object.
+        pErr = NodeRtn_Parse(pNode, &pRtn);
+        if (pErr) {
+            DEBUG_BREAK();
+            return pErr;
+        }
+        
+        eRc = objArray_AppendObj(this->pRtns, pRtn, NULL);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(pRtn);
+            return eResult_NewStrA(eRc, NULL);
+        }
+        obj_Release(pRtn);
+        pRtn = OBJ_NIL;
+
+        // Return to caller.
+        return pErr;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  P a r s e  R o u t i n e s
+    //---------------------------------------------------------------
+    
+    ERESULT_DATA *  srcParse_ParseRoutines(
+        SRCPARSE_DATA   *this,
+        NODE_DATA       *pNodes
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !srcParse_Validate(this) ) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pNodes) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        
+        pArray = jsonIn_CheckNodeForArray(pNodes);
+        if (pArray) {
+            iMax = nodeArray_getSize(pArray);
+            for(i=0; i<iMax; ++i) {
+                pNode = nodeArray_Get(pArray, (i+1));
+                if (pNode) {
+                    pErr = srcParse_ParseRoutine(this, pNode);
+                    if (pErr) {
+                        DEBUG_BREAK();
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_SYNTAX,
+                                   "Objects must be found in an array!");
+        }
+
+        // Return to caller.
+        return pErr;
+    }
+        
+        
+        
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -740,9 +1387,6 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return srcParse_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return srcParse_ToJSON;
-                        }
                         break;
                         
                     default:
@@ -753,8 +1397,6 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == srcParse_ToDebugString)
                     return "ToDebugString";
-                if (pData == srcParse_ToJSON)
-                    return "ToJSON";
                 break;
                 
             default:
@@ -762,45 +1404,6 @@ extern "C" {
         }
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-     ASTR_DATA *     srcParse_ToJSON (
-        SRCPARSE_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!srcParse_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
     }
     
     
@@ -822,7 +1425,7 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     srcParse_ToDebugString (
-        SRCPARSE_DATA      *this,
+        SRCPARSE_DATA   *this,
         int             indent
     )
     {

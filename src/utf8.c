@@ -505,6 +505,40 @@ extern "C" {
     
     
     
+    W32CHR_T *      utf8_ChrConToW32Str(
+        const
+        char            *pSrc
+    )
+    {
+        W32CHR_T        *pW32Str = NULL;
+        W32CHR_T        *pW32Wrk = NULL;
+        W32CHR_T        ch = 0;
+        uint32_t        len;
+        uint32_t        i;
+
+        
+        if (pSrc == NULL)
+            return NULL;
+        len = (uint32_t)utf8_StrLenA(pSrc);
+
+        pW32Str = mem_Malloc((len + 1) * sizeof(W32CHR_T));
+        if (NULL == pW32Str) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+        
+        pW32Wrk = pW32Str;
+        for (i=0; i<len; ++i) {
+            ch = utf8_Utf8ToW32_Scan(&pSrc);
+            *pW32Wrk++ = ch;
+        }
+        *pW32Wrk = '\0';
+
+        return pW32Str;
+    }
+    
+    
+    
     int             utf8_Utf16beToW32(
         const
         char            *pSrc,
@@ -989,7 +1023,9 @@ extern "C" {
             }
             return 4;
         }
-        pDest[0] = '\0';
+        if (pDest) {
+            pDest[0] = '\0';
+        }
         return 0;
     }
     

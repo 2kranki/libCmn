@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODELIB Console Transmit Task (NodeLib) Header
+//          NODETSTA Console Transmit Task (NodeTstA) Header
 //****************************************************************
 /*
  * Program
- *			Separate NodeLib (NodeLib)
+ *			Separate NodeTstA (NodeTstA)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate NodeLib to run things without complications
- *          of interfering with the main NodeLib. A NodeLib may be 
- *          called a NodeLib on other O/S's.
+ *          a separate NodeTstA to run things without complications
+ *          of interfering with the main NodeTstA. A NodeTstA may be 
+ *          called a NodeTstA on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	11/03/2019 Generated
+ *	11/10/2019 Generated
  */
 
 
@@ -56,11 +56,11 @@
 #include        <NodeBase.h>
 
 
-#ifndef         NODELIB_H
-#define         NODELIB_H
+#ifndef         NODETSTA_H
+#define         NODETSTA_H
 
 
-//#define   NODELIB_SINGLETON    1
+//#define   NODETSTA_SINGLETON    1
 
 
 
@@ -76,26 +76,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct NodeLib_data_s	NODELIB_DATA;            // Inherits from OBJ
-    typedef struct NodeLib_class_data_s NODELIB_CLASS_DATA;   // Inherits from OBJ
+    typedef struct NodeTstA_data_s	NODETSTA_DATA;            // Inherits from OBJ
+    typedef struct NodeTstA_class_data_s NODETSTA_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct NodeLib_vtbl_s	{
+    typedef struct NodeTstA_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in NodeLib_object.c.
+        // method names to the vtbl definition in NodeTstA_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODELIB_DATA *);
-    } NODELIB_VTBL;
+        //bool        (*pIsEnabled)(NODETSTA_DATA *);
+    } NODETSTA_VTBL;
 
-    typedef struct NodeLib_class_vtbl_s	{
+    typedef struct NodeTstA_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in NodeLib_object.c.
+        // method names to the vtbl definition in NodeTstA_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODELIB_DATA *);
-    } NODELIB_CLASS_VTBL;
+        //bool        (*pIsEnabled)(NODETSTA_DATA *);
+    } NODETSTA_CLASS_VTBL;
 
 
 
@@ -109,12 +109,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  NODELIB_SINGLETON
-    NODELIB_DATA *     NodeLib_Shared (
+#ifdef  NODETSTA_SINGLETON
+    NODETSTA_DATA *     NodeTstA_Shared (
         void
     );
 
-    bool            NodeLib_SharedReset (
+    bool            NodeTstA_SharedReset (
         void
     );
 #endif
@@ -124,54 +124,23 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to NodeLib object if successful, otherwise OBJ_NIL.
+     @return    pointer to NodeTstA object if successful, otherwise OBJ_NIL.
      */
-    NODELIB_DATA *  NodeLib_Alloc (
+    NODETSTA_DATA * NodeTstA_Alloc (
         void
     );
     
     
-    OBJ_ID          NodeLib_Class (
+    OBJ_ID          NodeTstA_Class (
         void
     );
     
     
-    NODELIB_DATA *  NodeLib_New (
+    NODETSTA_DATA * NodeTstA_New (
         void
     );
     
     
-    /*!
-     Parse the header portion of definition file and set up its components.
-     Node Grammar:
-        header  : "library" ':' '{' components '}'
-                ;
-        components
-                : "name" ':' string
-                | "deps" ':' deps
-                | "libdir" ':' string   // Path to where object library will be created
-                | "objdir" ':' string   // Path to where temporary object files will be
-                                        // created
-                ;
-     deps       : "null"
-                | '[' string* ']'       // Library dependencies as needed for gcc/clang
-                ;
-     Note: See ParseObject() for definition of objectNode.
-     
-     @param     pNode   Node Pointer w/data
-     @param     ppBase  Returned Object Pointer area
-     @return    If successful, a NodePgm object in ppBase which must be released con-
-                taining the description and OBJ_NIL, otherwise an ERESULT_DATA object
-                which must be also be released.
-     @warning   Remember to release the returned NodePgm or ERESULT_DATA object.
-     */
-    ERESULT_DATA *  NodeLib_Parse (
-        NODE_DATA       *pNode,
-        NODELIB_DATA    **ppBase
-    );
-
-
-
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -179,12 +148,12 @@ extern "C" {
 
     /*! Property: (Optional) Required Computer Architecture(s)
      */
-    ASTRARRAY_DATA * NodeLib_getArches (
-        NODELIB_DATA    *this
+    ASTRARRAY_DATA * NodeTstA_getArches (
+        NODETSTA_DATA   *this
     );
 
-    bool             NodeLib_setArches (
-        NODELIB_DATA    *this,
+    bool             NodeTstA_setArches (
+        NODETSTA_DATA   *this,
         ASTRARRAY_DATA  *pValue
     );
 
@@ -192,58 +161,46 @@ extern "C" {
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
     */
-    ASTRARRAY_DATA * NodeLib_getDeps (
-        NODELIB_DATA    *this
+    ASTRARRAY_DATA * NodeTstA_getDeps (
+        NODETSTA_DATA   *this
     );
 
-    bool            NodeLib_setDeps (
-        NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
-    );
-
-
-    /*! Property: Headers
-    */
-    ASTRARRAY_DATA * NodeLib_getHdrs (
-        NODELIB_DATA    *this
-    );
-
-    bool            NodeLib_setHdrs (
-        NODELIB_DATA    *this,
+    bool            NodeTstA_setDeps (
+        NODETSTA_DATA   *this,
         ASTRARRAY_DATA  *pValue
     );
 
 
     /*! Property: Test program file name including file extension
      */
-    ASTR_DATA *     NodeLib_getName (
-        NODELIB_DATA    *this
+    ASTR_DATA *     NodeTstA_getName (
+        NODETSTA_DATA   *this
     );
 
-    bool            NodeLib_setName (
-        NODELIB_DATA    *this,
+    bool            NodeTstA_setName (
+        NODETSTA_DATA   *this,
         ASTR_DATA       *pValue
     );
 
 
-    NODE_DATA *     NodeLib_getNode (
-        NODELIB_DATA    *this
+    NODE_DATA *     NodeTstA_getNode (
+        NODETSTA_DATA   *this
     );
 
 
-    NODEBASE_DATA * NodeLib_getNodeBase (
-        NODELIB_DATA    *this
+    NODEBASE_DATA * NodeTstA_getNodeBase (
+        NODETSTA_DATA   *this
     );
 
 
     /*! Property: (Optional) Required Operating System(s)
      */
-    ASTRARRAY_DATA * NodeLib_getOSs (
-        NODELIB_DATA    *this
+    ASTRARRAY_DATA * NodeTstA_getOSs (
+        NODETSTA_DATA   *this
     );
 
-    bool            NodeLib_setOSs (
-        NODELIB_DATA    *this,
+    bool            NodeTstA_setOSs (
+        NODETSTA_DATA   *this,
         ASTRARRAY_DATA  *pValue
     );
 
@@ -251,12 +208,12 @@ extern "C" {
     /*! Property: Extra Sources, zero or more file paths that
         are needed to compile with Name property.
     */
-    ASTRARRAY_DATA * NodeLib_getSrcs (
-        NODELIB_DATA    *this
+    ASTRARRAY_DATA * NodeTstA_getSrcs (
+        NODETSTA_DATA   *this
     );
 
-    bool            NodeLib_setSrcs (
-        NODELIB_DATA    *this,
+    bool            NodeTstA_setSrcs (
+        NODETSTA_DATA   *this,
         ASTRARRAY_DATA  *pValue
     );
 
@@ -268,23 +225,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         NodeLib_Disable (
-        NODELIB_DATA	*this
+    ERESULT     NodeTstA_Disable (
+        NODETSTA_DATA		*this
     );
 
 
-    ERESULT         NodeLib_Enable (
-        NODELIB_DATA	*this
+    ERESULT     NodeTstA_Enable (
+        NODETSTA_DATA		*this
     );
 
    
-    NODELIB_DATA *   NodeLib_Init (
-        NODELIB_DATA    *this
+    NODETSTA_DATA *   NodeTstA_Init (
+        NODETSTA_DATA     *this
     );
 
 
-    ERESULT         NodeLib_IsEnabled (
-        NODELIB_DATA	*this
+    ERESULT     NodeTstA_IsEnabled (
+        NODETSTA_DATA		*this
     );
     
  
@@ -292,16 +249,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = NodeLib_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = NodeTstA_ToDebugString(this,4);
      @endcode 
-     @param     this    NODELIB object pointer
+     @param     this    NODETSTA object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NodeLib_ToDebugString (
-        NODELIB_DATA    *this,
+    ASTR_DATA *    NodeTstA_ToDebugString (
+        NODETSTA_DATA     *this,
         int             indent
     );
     
@@ -312,5 +269,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* NODELIB_H */
+#endif	/* NODETSTA_H */
 

@@ -299,7 +299,109 @@ int             test_appl_Args01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_appl_Parse01(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    ASTRCARRAY_DATA *pArgV = OBJ_NIL;
+    char            *ppArgs1[] = {
+        "./program_name",
+        "--debug",
+        "-v",
+        "1st_Arg",
+        "2nd_Arg",
+        NULL
+    };
+    int             cArgs1 = 5;
+    const
+    char            *pCmd = "./program_name --debug -v 1st_Arg 2nd_Arg";
+    uint32_t        i;
+
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    eRc = appl_ParseProgramLine(pCmd, &pArgV);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+    TINYTEST_FALSE( (OBJ_NIL == pArgV) );
+
+    fprintf(stderr, "\tNum Args = %d\n", AStrCArray_getSize(pArgV));
+    {
+        ASTR_DATA           *pStr = AStrCArray_ToDebugString(pArgV, 4);
+        fprintf(stderr, "%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
+    
+    i = AStrCArray_getSize(pArgV);
+    TINYTEST_TRUE( (cArgs1 == i) );
+    for (i=0; i<cArgs1; i++) {
+        eRc = AStrC_CompareA(AStrCArray_Get(pArgV, i+1), ppArgs1[i]);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+    }
+        
+    obj_Release(pArgV);
+    pArgV = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_appl_Parse02(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    ASTRCARRAY_DATA *pArgV = OBJ_NIL;
+    char            *ppArgs1[] = {
+        "./program_name",
+        "--debug='true'",
+        "-v",
+        "1st_Arg",
+        "\"2nd_Arg\"",
+        NULL
+    };
+    int             cArgs1 = 5;
+    const
+    char            *pCmd = "./program_name --debug='true' -v 1st_Arg \"2nd_Arg\"";
+    uint32_t        i;
+
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    eRc = appl_ParseProgramLine(pCmd, &pArgV);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+    TINYTEST_FALSE( (OBJ_NIL == pArgV) );
+
+    fprintf(stderr, "\tNum Args = %d\n", AStrCArray_getSize(pArgV));
+    {
+        ASTR_DATA           *pStr = AStrCArray_ToDebugString(pArgV, 4);
+        fprintf(stderr, "%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
+    
+    i = AStrCArray_getSize(pArgV);
+    TINYTEST_TRUE( (cArgs1 == i) );
+    for (i=0; i<cArgs1; i++) {
+        eRc = AStrC_CompareA(AStrCArray_Get(pArgV, i+1), ppArgs1[i]);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+    }
+        
+    obj_Release(pArgV);
+    pArgV = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -331,7 +433,7 @@ int         test_appl_Usage01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -340,6 +442,8 @@ int         test_appl_Usage01(
 
 TINYTEST_START_SUITE(test_appl);
     TINYTEST_ADD_TEST(test_appl_Usage01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_appl_Parse02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_appl_Parse01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_appl_Args01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_appl_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

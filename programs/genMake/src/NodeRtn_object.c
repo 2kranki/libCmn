@@ -410,7 +410,7 @@ OBJ_INFO        NodeRtn_Info = {
     "NodeRtn",
     "NodeRtn",	// <-- Fill in description
     (OBJ_DATA *)&NodeRtn_ClassObj,
-    (OBJ_DATA *)&node_ClassObj,
+    (OBJ_DATA *)&NodeBase_ClassObj,
     (OBJ_IUNKNOWN *)&NodeRtn_Vtbl,
     sizeof(NODERTN_DATA)
 };

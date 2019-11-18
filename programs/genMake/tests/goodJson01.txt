@@ -1,14 +1,15 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 {
     "library": {
         "name":"Cmn",
         "libDeps":null,
         "headers":null,
     }
-    "objects": {
-        "AStr":{"deps":["libCmn.h"], "json":true, "test":true},
-    },
+    "objects": [
+        {name:"AStr", "deps":["libCmn.h"], "json":true},
+    ],
     "routines": [
-        "dllist.c",
+        {name:"dllist.c"},
     ],
 }
 

@@ -40,6 +40,7 @@
 
 
 #include    <appl.h>
+#include    <AStrCArray.h>
 #include    <nodeHash.h>
 
 

@@ -410,7 +410,7 @@ OBJ_INFO        NodeHdr_Info = {
     "NodeHdr",
     "NodeHdr",	// <-- Fill in description
     (OBJ_DATA *)&NodeHdr_ClassObj,
-    (OBJ_DATA *)&node_ClassObj,
+    (OBJ_DATA *)&NodeBase_ClassObj,
     (OBJ_IUNKNOWN *)&NodeHdr_Vtbl,
     sizeof(NODEHDR_DATA)
 };

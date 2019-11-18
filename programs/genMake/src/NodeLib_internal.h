@@ -93,7 +93,7 @@ struct NodeLib_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  NODELIB_SINGLETON
-    NODELIB_DATA *     NodeLib_getSingleton (
+    NODELIB_DATA *  NodeLib_getSingleton (
         void
     );
 
@@ -118,7 +118,7 @@ struct NodeLib_data_s	{
     );
 
 
-    NODELIB_DATA *       NodeLib_ParseObject (
+    NODELIB_DATA *  NodeLib_ParseObject (
         JSONIN_DATA     *pParser
     );
 

@@ -81,6 +81,7 @@
 #include    <scanner.h>
 #include    <str.h>
 #include    <trace.h>
+#include    <utf8.h>
 
 
 
@@ -213,6 +214,110 @@ extern "C" {
     
     
     
+        //---------------------------------------------------------------
+        //              P a r s e  P r o g r a m  L i n e
+        //---------------------------------------------------------------
+        
+        ERESULT         appl_ParseProgramLine(
+            const
+            char            *pCmdStr,           // UTF-8 Command String
+            ASTRCARRAY_DATA **ppArgV
+        )
+        {
+            ERESULT         eRc = ERESULT_SUCCESS;
+            char            quote;
+            uint32_t        iMax;
+            W32CHR_T        *pW32Str = NULL;
+            W32CHR_T        *pW32Start = NULL;
+            W32CHR_T        *pW32Cur = NULL;
+            ASTRCARRAY_DATA *pArgV;
+
+            // Do initialization.
+    #ifdef NDEBUG
+    #else
+            if(NULL == pCmdStr) {
+                DEBUG_BREAK();
+                return ERESULT_INVALID_PARAMETER;
+            }
+    #endif
+            if (ppArgV) {
+                *ppArgV = OBJ_NIL;
+            }
+
+            //TODO: Convert this process from ascii to UTF-8. Easiest would
+            // be to create W32Str.
+            iMax = (uint32_t)utf8_StrLenA(pCmdStr);
+            pW32Str = utf8_ChrConToW32Str(pCmdStr);
+            if (NULL == pW32Str) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+            pW32Cur = pW32Str;
+
+            // Set up to scan the parameters.
+            pArgV = AStrCArray_New( );
+            if(NULL == pArgV) {
+                DEBUG_BREAK();
+                mem_Free(pW32Str);
+                return ERESULT_OUT_OF_MEMORY;
+            }
+
+            // Scan off the each parameter.
+            while( *pW32Cur ) {
+                pW32Start = NULL;
+                
+                // Pass over white space.
+                while( *pW32Cur && ascii_isWhiteSpaceW32(*pW32Cur) )
+                    pW32Cur++;
+                if (*pW32Cur == '\0') {
+                    break;
+                }
+                
+                pW32Start = pW32Cur;
+                while( *pW32Cur ) {
+                    // Scan off quoted Arguments.
+                    if( (*pW32Cur == '"') || (*pW32Cur == '\'') ) {
+                        quote = *pW32Cur++;
+                        while( *pW32Cur && (*pW32Cur != quote) ) {
+                            pW32Cur++;
+                        }
+                        pW32Cur++;      // Keep the quote.
+                    }
+                    // Scan until white space.
+                    if ((*pW32Cur == '\0') || ascii_isWhiteSpaceW32(*pW32Cur)) {
+                        break;
+                    }
+                    // Accumulate non-quoted char.
+                    pW32Cur++;
+                }
+                if (!(*pW32Cur == '\0')) {
+                    *pW32Cur = '\0';    // Mark the end of the argument.
+                    pW32Cur++;
+                }
+
+                // Add the argument to the array.
+                if( pW32Start && *pW32Start) {
+                    ASTRC_DATA          *pStr = AStrC_NewW32(pW32Start);
+                    eRc = AStrCArray_AppendStr(pArgV, pStr, NULL);
+                    if (ERESULT_FAILED(eRc)) {
+                        break;
+                    }
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+
+            // Return to caller.
+            mem_Free(pW32Str);
+            pW32Str = NULL;
+            if (ppArgV) {
+                *ppArgV = pArgV;
+            }
+            return eRc;
+        }
+        
+        
+        
 
 
     
@@ -1779,7 +1884,8 @@ extern "C" {
     
     bool            appl_SetupFromStr(
         APPL_DATA       *this,
-        char            *pCmdStr
+        const
+        char            *pCmdStr            // UTF-8 Command String
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -1794,12 +1900,15 @@ extern "C" {
         int             cArg = 1;
         char            **pArgV = NULL;
 #endif
+        uint32_t        iMax;
+        W32CHR_T        *pW32Str = NULL;
+        W32CHR_T        *pW32Wrk = NULL;
         ASTRARRAY_DATA  *pArgs;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !appl_Validate(this) ) {
+        if(!appl_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1809,13 +1918,23 @@ extern "C" {
         }
 #endif
         
+        //TODO: Convert this process from ascii to UTF-8. Easiest would
+        // be to create W32Str.
+        iMax = (uint32_t)utf8_StrLenA(pCmdStr);
+        pW32Str = utf8_ChrConToW32Str(pCmdStr);
+        if (NULL == pW32Str) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        pW32Wrk = pW32Str;
+
         // Set up to scan the parameters.
         pArgs = AStrArray_New( );
         if(NULL == pArgs) {
             DEBUG_BREAK();
             return ERESULT_OUT_OF_MEMORY;
         }
-        pCurChr = pCmdStr;
+        //FIXME: pCurChr = pCmdStr;
 
         // Set program defaults here;
         this->fDebug = 0;

@@ -54,11 +54,29 @@ OBJS += $(OBJDIR)/dbprs.o
 $(OBJDIR)/dbprs.o: $(SRCDIR)/dbprs.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_dbprs
+TESTS += dbprs_test
 
-test_dbprs: $(TEST_SRC)/test_dbprs.c 
+dbprs_test: $(TEST_SRC)/dbprs_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
+
+OBJS += $(OBJDIR)/ExpandNodes_object.o
+
+$(OBJDIR)/ExpandNodes_object.o: $(SRCDIR)/ExpandNodes_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/ExpandNodes.o
+
+$(OBJDIR)/ExpandNodes.o: $(SRCDIR)/ExpandNodes.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += ExpandNodes_test
+
+ExpandNodes_test: $(TEST_SRC)/ExpandNodes_test.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/genBase_object.o
 
@@ -227,6 +245,23 @@ NodeRtn_test: $(TEST_SRC)/NodeRtn_test.c
 	$(TEST_OBJ)/$(@F)
 
 
+OBJS += $(OBJDIR)/NodeRtnA_object.o
+
+$(OBJDIR)/NodeRtnA_object.o: $(SRCDIR)/NodeRtnA_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/NodeRtnA.o
+
+$(OBJDIR)/NodeRtnA.o: $(SRCDIR)/NodeRtnA.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += NodeRtnA_test
+
+NodeRtnA_test: $(TEST_SRC)/NodeRtnA_test.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+
 OBJS += $(OBJDIR)/NodeTest_object.o
 
 $(OBJDIR)/NodeTest_object.o: $(SRCDIR)/NodeTest_object.c 
@@ -244,6 +279,23 @@ NodeTest_test: $(TEST_SRC)/NodeTest_test.c
 	$(TEST_OBJ)/$(@F)
 
 
+OBJS += $(OBJDIR)/NodeTstA_object.o
+
+$(OBJDIR)/NodeTstA_object.o: $(SRCDIR)/NodeTstA_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/NodeTstA.o
+
+$(OBJDIR)/NodeTstA.o: $(SRCDIR)/NodeTstA.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += NodeTstA_test
+
+NodeTstA_test: $(TEST_SRC)/NodeTstA_test.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+
 OBJS += $(OBJDIR)/srcParse_object.o
 
 $(OBJDIR)/srcParse_object.o: $(SRCDIR)/srcParse_object.c 
@@ -254,9 +306,9 @@ OBJS += $(OBJDIR)/srcParse.o
 $(OBJDIR)/srcParse.o: $(SRCDIR)/srcParse.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_srcParse
+TESTS += srcParse_test
 
-test_srcParse: $(TEST_SRC)/test_srcParse.c 
+srcParse_test: $(TEST_SRC)/srcParse_test.c $(TEST_SRC)/data_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 

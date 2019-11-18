@@ -62,6 +62,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <NodeHdr.h>
 #include        <NodeRtn.h>
 #include        <NodeTest.h>
 

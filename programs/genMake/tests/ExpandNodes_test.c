@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 11/03/2019 08:11:54
+ *	Generated 11/10/2019 17:43:09
  */
 
 
@@ -25,7 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <NodeHdr_internal.h>
+#include    <ExpandNodes_internal.h>
 
 
 
@@ -75,19 +75,19 @@ int             tearDown(
 
 
 
-int             test_NodeHdr_OpenClose(
+int             test_ExpandNodes_OpenClose(
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    NODEHDR_DATA	    *pObj = OBJ_NIL;
+    EXPANDNODES_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = NodeHdr_Alloc( );
+    pObj = ExpandNodes_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = NodeHdr_Init( pObj );
+    pObj = ExpandNodes_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -107,11 +107,11 @@ int             test_NodeHdr_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_NodeHdr);
-    TINYTEST_ADD_TEST(test_NodeHdr_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_ExpandNodes);
+    TINYTEST_ADD_TEST(test_ExpandNodes_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_NodeHdr);
+TINYTEST_MAIN_SINGLE_SUITE(test_ExpandNodes);
 
 
 

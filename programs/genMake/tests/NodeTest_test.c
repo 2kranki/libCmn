@@ -1,3 +1,4 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
  *	Generated 11/03/2019 08:12:57
  */
@@ -170,8 +171,6 @@ int             test_NodeTest_Parse01(
 )
 {
     ERESULT_DATA    *pErr = OBJ_NIL;
-    //NODE_DATA       *pNode = OBJ_NIL;
-    NODE_DATA       *pNodeAStr = OBJ_NIL;
     NODE_DATA       *pNodeTest = OBJ_NIL;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash;

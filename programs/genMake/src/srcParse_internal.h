@@ -48,7 +48,11 @@
 
 
 
-#define     PROPERTY_STR_OWNED 1
+#define     PROPERTY_LIB_OWNED 1
+#define     PROPERTY_NODES_OWNED 1
+#define     PROPERTY_OBJS_OWNED 1
+#define     PROPERTY_PGM_OWNED 1
+#define     PROPERTY_RTNS_OWNED 1
 
 
 
@@ -71,9 +75,11 @@ struct srcParse_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    NODELIB_DATA    *pLib;
+    OBJARRAY_DATA   *pObjs;
+    NODEPGM_DATA    *pPgm;
+    OBJARRAY_DATA   *pRtns;
+    NODE_DATA       *pNodes;
 
 };
 #pragma pack(pop)
@@ -114,11 +120,6 @@ struct srcParse_data_s	{
 
     void            srcParse_Dealloc (
         OBJ_ID          objId
-    );
-
-
-    SRCPARSE_DATA *       srcParse_ParseObject (
-        JSONIN_DATA     *pParser
     );
 
 

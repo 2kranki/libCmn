@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 08/19/2019 01:17:17
+ *	Generated 11/10/2019 17:54:48
  */
 
 
@@ -24,7 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <srcParse_internal.h>
+#include    <NodeTstA_internal.h>
 
 
 
@@ -74,19 +75,19 @@ int             tearDown(
 
 
 
-int             test_srcParse_OpenClose(
+int             test_NodeTstA_OpenClose(
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SRCPARSE_DATA	    *pObj = OBJ_NIL;
+    NODETSTA_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = srcParse_Alloc( );
+    pObj = NodeTstA_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = srcParse_Init( pObj );
+    pObj = NodeTstA_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -106,11 +107,11 @@ int             test_srcParse_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_srcParse);
-    TINYTEST_ADD_TEST(test_srcParse_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_NodeTstA);
+    TINYTEST_ADD_TEST(test_NodeTstA_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_srcParse);
+TINYTEST_MAIN_SINGLE_SUITE(test_NodeTstA);
 
 
 

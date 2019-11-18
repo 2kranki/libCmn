@@ -179,6 +179,9 @@ extern "C" {
                     }
                 }
             }
+            else {
+                pRtn->pTest = NodeTest_New();
+            }
             *ppBase = pRtn;
         }
 
@@ -244,13 +247,13 @@ extern "C" {
     {
 
         // Validate the input parameters.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeRtn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-    #endif
+#endif
 
         return NodeBase_getDeps(NodeRtn_getNodeBase(this));
     }
@@ -261,13 +264,13 @@ extern "C" {
         ASTRARRAY_DATA  *pValue
     )
     {
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeRtn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
-    #endif
+#endif
 
         return NodeBase_setDeps(NodeRtn_getNodeBase(this), pValue);
     }
@@ -284,13 +287,13 @@ extern "C" {
     {
 
         // Validate the input parameters.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeRtn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-    #endif
+#endif
 
         return NodeBase_getName(NodeRtn_getNodeBase(this));
     }
@@ -301,13 +304,13 @@ extern "C" {
         ASTR_DATA       *pValue
     )
     {
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeRtn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
-    #endif
+#endif
 
         return NodeBase_setName(NodeRtn_getNodeBase(this), pValue);
     }
@@ -324,13 +327,13 @@ extern "C" {
     {
 
         // Validate the input parameters.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeRtn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-    #endif
+#endif
 
         return (NODE_DATA *)this;
     }
@@ -346,13 +349,13 @@ extern "C" {
     {
 
         // Validate the input parameters.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeRtn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-    #endif
+#endif
 
         return (NODEBASE_DATA *)this;
     }
@@ -451,13 +454,13 @@ extern "C" {
     {
 
         // Validate the input parameters.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeRtn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-    #endif
+#endif
 
         return NodeBase_getSrcs(NodeRtn_getNodeBase(this));
     }
@@ -468,13 +471,13 @@ extern "C" {
         ASTRARRAY_DATA  *pValue
     )
     {
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeRtn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
-    #endif
+#endif
 
         return NodeBase_setSrcs(NodeRtn_getNodeBase(this), pValue);
     }

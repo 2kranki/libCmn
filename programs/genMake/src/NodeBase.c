@@ -274,6 +274,25 @@ extern "C" {
                 }
             }
 
+            pHashItem = nodeHash_FindA(pHash, 0, "hdrs");
+            if (pHashItem) {
+                pStr = jsonIn_CheckNodeDataForString(pHashItem);
+                if (pStr) {
+                    eRc = AStrArray_AppendStr(NodeBase_getHdrs(*ppBase), pStr, NULL);
+                    if (ERESULT_FAILED(eRc)) {
+                        return eResult_NewStrA(eRc, NULL);
+                    }
+                } else {
+                    pArray = jsonIn_CheckNodeDataForArray(pHashItem);
+                    if (pArray) {
+                        pErr = NodeBase_AccumStrings(pArray, NodeBase_getHdrs(*ppBase));
+                        if (pErr) {
+                            return pErr;
+                        }
+                    }
+                }
+            }
+
             pHashItem = nodeHash_FindA(pHash, 0, "srcs");
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
@@ -441,6 +460,54 @@ extern "C" {
         }
 #endif
         this->pDeps = pValue;
+        
+        return true;
+    }
+        
+        
+        
+    //---------------------------------------------------------------
+    //                  S o u r c e  H e a d e r s
+    //---------------------------------------------------------------
+    
+    ASTRARRAY_DATA *    NodeBase_getHdrs (
+        NODEBASE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pHdrs;
+    }
+    
+    
+    bool                NodeBase_setHdrs (
+        NODEBASE_DATA       *this,
+        ASTRARRAY_DATA      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_HDRS_OWNED
+        obj_Retain(pValue);
+        if (this->pHdrs) {
+            obj_Release(this->pHdrs);
+        }
+#endif
+        this->pHdrs = pValue;
         
         return true;
     }
@@ -1109,6 +1176,7 @@ extern "C" {
 
         NodeBase_setArches(this, OBJ_NIL);
         NodeBase_setDeps(this, OBJ_NIL);
+        NodeBase_setHdrs(this, OBJ_NIL);
         NodeBase_setName(this, OBJ_NIL);
         NodeBase_setOSs(this, OBJ_NIL);
         NodeBase_setSrcs(this, OBJ_NIL);
@@ -1233,6 +1301,12 @@ extern "C" {
         
         this->pDeps = AStrArray_New( );
         if (OBJ_NIL == this->pDeps) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        this->pHdrs = AStrArray_New( );
+        if (OBJ_NIL == this->pHdrs) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -1702,6 +1776,20 @@ extern "C" {
                 AStr_AppendA(pStr, "Dependencies:\n");
                 pWrkStr =   ((OBJ_DATA *)(this->pDeps))->pVtbl->pToDebugString(
                                                     this->pDeps,
+                                                    indent+3
+                            );
+                AStr_Append(pStr, pWrkStr);
+                obj_Release(pWrkStr);
+            }
+        }
+        if (this->pHdrs) {
+            if (((OBJ_DATA *)(this->pHdrs))->pVtbl->pToDebugString) {
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent, ' ');
+                }
+                AStr_AppendA(pStr, "Headers:\n");
+                pWrkStr =   ((OBJ_DATA *)(this->pHdrs))->pVtbl->pToDebugString(
+                                                    this->pHdrs,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);

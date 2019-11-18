@@ -341,11 +341,11 @@
 		C4BED99B23009C40006DF1C1 /* scanReader.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BED99723009C3F006DF1C1 /* scanReader.c */; };
 		C4C0504123745AB600D7BB36 /* AStrCArray.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C0503E23745AB500D7BB36 /* AStrCArray.c */; };
 		C4C0504223745AB600D7BB36 /* AStrCArray_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C0503F23745AB600D7BB36 /* AStrCArray_object.c */; };
-		C4C05044237466BA00D7BB36 /* AStrCArray_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C05043237466BA00D7BB36 /* AStrCArray_test.c */; };
 		C4E02E8821FA0E4C003DA92E /* memOSX_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E02E8321FA0E49003DA92E /* memOSX_object.c */; };
 		C4E02E8921FA0E4C003DA92E /* cmn_osx.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E02E8621FA0E4B003DA92E /* cmn_osx.c */; };
 		C4E02E8A21FA0E4C003DA92E /* memOSX.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E02E8721FA0E4B003DA92E /* memOSX.c */; };
 		C4E23D9322F9FA790048FECD /* stackTraces.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E23D9222F9FA780048FECD /* stackTraces.c */; };
+		C4E4CA802382D133004D3225 /* test_appl.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E4CA7F2382D133004D3225 /* test_appl.c */; };
 		C4F1BFC421A2EA7D0048474D /* nodeLnkP_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F1BFC021A2EA7A0048474D /* nodeLnkP_object.c */; };
 		C4F1BFC521A2EA7D0048474D /* nodeLnkP.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F1BFC121A2EA7B0048474D /* nodeLnkP.c */; };
 		C4F1BFCA21A7B7D80048474D /* nodeBTP.c in Sources */ = {isa = PBXBuildFile; fileRef = C4F1BFC621A7B7D00048474D /* nodeBTP.c */; };
@@ -1016,7 +1016,6 @@
 		C4C0503E23745AB500D7BB36 /* AStrCArray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AStrCArray.c; sourceTree = "<group>"; };
 		C4C0503F23745AB600D7BB36 /* AStrCArray_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AStrCArray_object.c; sourceTree = "<group>"; };
 		C4C0504023745AB600D7BB36 /* AStrCArray_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AStrCArray_internal.h; sourceTree = "<group>"; };
-		C4C05043237466BA00D7BB36 /* AStrCArray_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AStrCArray_test.c; sourceTree = "<group>"; };
 		C4E02E8221FA0E48003DA92E /* cmn_osx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmn_osx.h; sourceTree = "<group>"; };
 		C4E02E8321FA0E49003DA92E /* memOSX_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memOSX_object.c; sourceTree = "<group>"; };
 		C4E02E8421FA0E49003DA92E /* memOSX_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memOSX_internal.h; sourceTree = "<group>"; };
@@ -1024,6 +1023,7 @@
 		C4E02E8621FA0E4B003DA92E /* cmn_osx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmn_osx.c; sourceTree = "<group>"; };
 		C4E02E8721FA0E4B003DA92E /* memOSX.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memOSX.c; sourceTree = "<group>"; };
 		C4E23D9222F9FA780048FECD /* stackTraces.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stackTraces.c; sourceTree = "<group>"; };
+		C4E4CA7F2382D133004D3225 /* test_appl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test_appl.c; sourceTree = "<group>"; };
 		C4EA0E3C22FF7C5A00DED0AF /* ioInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioInterface.h; sourceTree = "<group>"; };
 		C4F1BFC021A2EA7A0048474D /* nodeLnkP_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeLnkP_object.c; sourceTree = "<group>"; };
 		C4F1BFC121A2EA7B0048474D /* nodeLnkP.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodeLnkP.c; sourceTree = "<group>"; };
@@ -1079,7 +1079,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C4C05043237466BA00D7BB36 /* AStrCArray_test.c */,
+				C4E4CA7F2382D133004D3225 /* test_appl.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
 			);
@@ -2088,7 +2088,6 @@
 				C4359AE01FC9C3D800CA858E /* msgData.c in Sources */,
 				C4359B491FC9C42700CA858E /* psxSem.c in Sources */,
 				C42123421FE82A8C00F45294 /* pplex.c in Sources */,
-				C4C05044237466BA00D7BB36 /* AStrCArray_test.c in Sources */,
 				C4E02E8A21FA0E4C003DA92E /* memOSX.c in Sources */,
 				C459802C21B02298001B8375 /* rbt_tree.c in Sources */,
 				C4359B001FC9C3D800CA858E /* msgData_object.c in Sources */,
@@ -2114,6 +2113,7 @@
 				C4359AEC1FC9C3D800CA858E /* name_object.c in Sources */,
 				C49ADE0B201448030056FADD /* i32Array.c in Sources */,
 				C42123081FE6351700F45294 /* srcErrors.c in Sources */,
+				C4E4CA802382D133004D3225 /* test_appl.c in Sources */,
 				C4359A651FC9C38800CA858E /* hex.c in Sources */,
 				C4AA73AA1FE2B740001FACEC /* dbCsv.c in Sources */,
 				C4359A3A1FC9C38800CA858E /* dirEntry_object.c in Sources */,

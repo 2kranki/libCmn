@@ -1141,11 +1141,12 @@ OBJS += $(OBJDIR)/md5ChkSum.o
 $(OBJDIR)/md5ChkSum.o: $(SRCDIR)/md5ChkSum.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_md5ChkSum
+TESTS += md5ChkSum_test
 
-test_md5ChkSum: $(TEST_SRC)/test_md5ChkSum.c 
+md5ChkSum_test: $(TEST_SRC)/md5ChkSum_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/memFile_object.o
 

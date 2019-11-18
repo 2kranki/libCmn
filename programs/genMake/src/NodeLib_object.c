@@ -410,7 +410,7 @@ OBJ_INFO        NodeLib_Info = {
     "NodeLib",
     "NodeLib",	// <-- Fill in description
     (OBJ_DATA *)&NodeLib_ClassObj,
-    (OBJ_DATA *)&node_ClassObj,
+    (OBJ_DATA *)&NodeBase_ClassObj,
     (OBJ_IUNKNOWN *)&NodeLib_Vtbl,
     sizeof(NODELIB_DATA)
 };

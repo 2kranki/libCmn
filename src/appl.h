@@ -74,6 +74,8 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <AStrArray.h>
+#include        <AStrC.h>
+#include        <AStrCArray.h>
 #include        <cmdutl.h>
 #include        <dateTime.h>
 #include        <node.h>
@@ -273,7 +275,24 @@ extern "C" {
     );
     
     
-    
+    /*! ParseProgramLine parses the program command line breaking it
+     up into substrings forming an argv/argc structure. Arguments are
+     separated by whitespace. An AStrC Array is used for argv/argc.
+     We don't have to completely parse the command line, just break
+     it up being coznizant of the quoted strings which assumes that
+     they should either be by themselves or at the end of an argument.
+     Note: we currently do not handle embedded quotes.
+     @param     pCmdStr UTF-8 Command String
+     @param     ppArgV  An eresult success/failure code (see eresult.h)
+     */
+    ERESULT         appl_ParseProgramLine(
+        const
+        char            *pCmdStr,           // UTF-8 Command String
+        ASTRCARRAY_DATA **ppArgV            // Output ArgV Array
+    );
+
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***

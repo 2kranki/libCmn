@@ -275,6 +275,17 @@ extern "C" {
     
     
     /*!
+     Convert a character constant to a Unicode Character string.
+     @return    NULL for error; otherwise, a new Unicode Character
+                String which must be released with mem_Free().
+     */
+    W32CHR_T *      utf8_ChrConToW32Str(
+        const
+        char            *pSrc
+    );
+
+
+    /*!
      Convert a character constant to a Unicode Character incrementing
      the source pointer as data is used.
      @return    -1 for EOL or error; otherwise, a Unicode Character

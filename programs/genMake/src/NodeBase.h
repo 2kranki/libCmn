@@ -1,16 +1,16 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODEBASE Console Transmit Task (NodeBase) Header
+//          Base Node (NodeBase) Header
 //****************************************************************
 /*
  * Program
- *			Separate NodeBase (NodeBase)
+ *			Base Node (NodeBase)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate NodeBase to run things without complications
- *          of interfering with the main NodeBase. A NodeBase may be 
- *          called a NodeBase on other O/S's.
+ *			This object provides the common node data needed by most
+ *          nodes. The data consists of string data only. All the
+ *          data is optional. Some of it is accumulated in arrays of
+ *          strings.
  *
  * Remarks
  *	1.      None
@@ -174,28 +174,41 @@ extern "C" {
      object_Hash:
             "deps"  : '[' deps ']'
                     ;
-            // Generate JSON object compile or not
-            "json"      : "true"
-                        | "null"    // Same as "true"
-                        | "false" (default)
-                        ;
+            "srcs"  : '[' srcs ']'
+                    ;
             // Optional Name
             "name"      :   string
                         ;
+            // Optional Name Suffix
+            "suffix"    :   string
+                        ;
             // Required Architecture (ie X86, MIPS, ARM, etc)
-            "reqArch"   :   string
+            "arch"      :   '[' arches ']'
                         ;
             // Required Operating System (ie linux, macos, win64, etc)
-            "reqOS"     :   string
+            "os"        :   '[' oss ']'
                         ;
      // Additional Dependency Files must be in the same directory
      // as the primary file that it is associated with.
      deps       : dependencies_file_name [',' deps]
+                |
                 ;
      // Additional Source Files must be in the same directory
      // as the primary file that it is associated with.
      srcs       : source_file_name [',' srcs]
+                |
                 ;
+     arches     :   "X86"
+                |   "X86_64"
+                |   "MIPS"
+                |   "ARM"
+                ;
+     oss        :   "linux"
+                |   "macos"
+                |   "win32"
+                |   "win64"
+                ;
+
      @param     pNode   JSON Input Node, "hash", to be searched and parsed
      @param     ppBase  Base Node to be filled in with the data or released.
      @return    If successful, OBJ_NIL is returne, otherwise a new
@@ -213,6 +226,8 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*! Property: (Optional) Required Computer Architecture(s)
+        This node will be restricted to the specified architectures
+        if present.
      */
     ASTRARRAY_DATA *    NodeBase_getArches (
             NODEBASE_DATA       *this
@@ -225,7 +240,9 @@ extern "C" {
 
 
     /*! Property: Source Dependencies, zero or more file paths that
-        compilation depends on.
+        compilation depends on. These are normally header files and
+        will be listed in the first line of the makefile for this
+        object.
     */
     ASTRARRAY_DATA *    NodeBase_getDeps (
             NODEBASE_DATA       *this
@@ -237,7 +254,24 @@ extern "C" {
     );
 
 
-    /*! Property: Test program file name
+    /*! Property: Source Dependencies, zero or more file paths that
+        compilation depends on. These are normally header files and
+        will be listed in the first line of the makefile for this
+        object.
+    */
+    ASTRARRAY_DATA *    NodeBase_getHdrs (
+            NODEBASE_DATA       *this
+    );
+
+    bool                NodeBase_setHdrs (
+            NODEBASE_DATA       *this,
+            ASTRARRAY_DATA      *pValue
+    );
+
+
+    /*! Property: file name
+        This is normally optional and will be filled in a later
+        process. By specifying it here, you are over-riding that.
      */
     ASTR_DATA *         NodeBase_getName (
             NODEBASE_DATA       *this
@@ -249,12 +283,18 @@ extern "C" {
     );
 
 
+    /*! Property: Node
+        This object inherits from Node and this is simply a
+        helper function to access the underlying node.
+     */
     NODE_DATA *         NodeBase_getNode (
             NODEBASE_DATA       *this
     );
 
 
     /*! Property: (Optional) Required Operating System(s)
+     *  This node will be restricted to the specified operating
+     *  systems if present.
      */
     ASTRARRAY_DATA *    NodeBase_getOSs (
             NODEBASE_DATA       *this
@@ -267,7 +307,8 @@ extern "C" {
 
 
     /*! Property: Extra Sources, zero or more file paths that
-        are needed to compile with Name property.
+        are needed to compile with the Name property for the
+        object to be complete.
     */
     ASTRARRAY_DATA *    NodeBase_getSrcs (
             NODEBASE_DATA       *this
@@ -279,7 +320,8 @@ extern "C" {
     );
 
 
-    /*! Property: file name suffix
+    /*! Property: file name suffix (optional)
+        The optional file extension suffix to be used with name.
      */
     ASTR_DATA *         NodeBase_getSuffix (
             NODEBASE_DATA       *this

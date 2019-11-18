@@ -349,8 +349,38 @@ int         test_utf8_StrW32_01(
 
 
 
+int         test_utf8_StrW32_02(
+    const
+    char        *pTestName
+)
+{
+    int32_t     len = 0;
+    W32CHR_T    *pW32Str = NULL;
+    int         rc;
+
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    len = utf8_StrLenA(string1A);
+    XCTAssertTrue( (4 == len) );
+    pW32Str = utf8_ChrConToW32Str(string1A);
+    XCTAssertFalse( (NULL == pW32Str) );
+    len = utf8_StrLenW32(pW32Str);
+    XCTAssertTrue( (4 == len) );
+    rc = utf8_StrCmpAW32(string1A, pW32Str);
+    XCTAssertTrue( (0 == rc) );
+    mem_Free(pW32Str);
+    pW32Str = NULL;
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_utf8);
+  TINYTEST_ADD_TEST(test_utf8_StrW32_02,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_StrW32_01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_JSON02,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_JSON01,setUp,tearDown);

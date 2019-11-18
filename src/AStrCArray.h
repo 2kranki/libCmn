@@ -251,11 +251,11 @@ extern "C" {
         uint32_t        index       // Relative to 1
     );
     
-    ASTR_DATA *     AStrArray_GetFirst(
-        ASTRARRAY_DATA  *this
+    ASTRC_DATA *    AStrCArray_GetFirst(
+        ASTRCARRAY_DATA *this
     );
     
-    ASTRC_DATA *    AStrArray_GetLast(
+    ASTRC_DATA *    AStrCArray_GetLast(
         ASTRCARRAY_DATA *this
     );
     
