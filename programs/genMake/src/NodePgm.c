@@ -84,11 +84,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODEPGM_DATA *     NodePgm_Alloc (
+    NODEPGM_DATA *  NodePgm_Alloc (
         void
     )
     {
-        NODEPGM_DATA       *this;
+        NODEPGM_DATA    *this;
         uint32_t        cbSize = sizeof(NODEPGM_DATA);
         
         // Do initialization.
@@ -101,11 +101,11 @@ extern "C" {
 
 
 
-    NODEPGM_DATA *     NodePgm_New (
+    NODEPGM_DATA *  NodePgm_New (
         void
     )
     {
-        NODEPGM_DATA       *this;
+        NODEPGM_DATA    *this;
         
         this = NodePgm_Alloc( );
         if (this) {
@@ -116,7 +116,7 @@ extern "C" {
 
 
     ERESULT_DATA *  NodePgm_Parse (
-        NODE_DATA       *pNode,
+        NODE_DATA       *pNode,             // Hash Data Node
         NODEPGM_DATA    **ppBase
     )
     {
@@ -128,9 +128,16 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (OBJ_NIL == pNode) {
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             DEBUG_BREAK();
-            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing Input Node!");
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Invalid Input Node!");
+            return pErr;
+        }
+        if (!obj_IsKindOf(node_getData(pNode), OBJ_IDENT_NODEHASH)) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Input Hash Node!");
             return pErr;
         }
         if (OBJ_NIL == ppBase) {
@@ -164,17 +171,17 @@ extern "C" {
             pHashItem = nodeHash_FindA(pHash, 0, "main");
             if (pHashItem) {
                 ASTR_DATA       *pStr;
+                ASTRC_DATA      *pStrC;
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                    NodePgm_setMain(pPgm, pStr);
+                    pStrC = AStrC_NewFromAStr(pStr);
+                    NodePgm_setMain(pPgm, pStrC);
+                    obj_Release(pStrC);
+                    pStrC = OBJ_NIL;
                 } else {
                     return eResult_NewStrA(ERESULT_INVALID_SYNTAX,
                                            "Main Program Name must be a string!");
                 }
-            }
-            else {
-                return eResult_NewStrA(ERESULT_INVALID_SYNTAX,
-                                       "Missing Node Hash for Pgm Node!");
             }
             *ppBase = pPgm;
         }
@@ -196,7 +203,7 @@ extern "C" {
     //                  A r c h i t e c t u r e s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodePgm_getArches (
+    ASTRCARRAY_DATA * NodePgm_getArches (
         NODEPGM_DATA    *this
     )
     {
@@ -216,7 +223,7 @@ extern "C" {
 
     bool            NodePgm_setArches (
         NODEPGM_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -236,7 +243,7 @@ extern "C" {
     //                        D e p s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodePgm_getDeps (
+    ASTRCARRAY_DATA * NodePgm_getDeps (
         NODEPGM_DATA    *this
     )
     {
@@ -256,7 +263,7 @@ extern "C" {
 
     bool            NodePgm_setDeps (
         NODEPGM_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -276,7 +283,7 @@ extern "C" {
     //                        H d r s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodePgm_getHdrs (
+    ASTRCARRAY_DATA * NodePgm_getHdrs (
         NODEPGM_DATA    *this
     )
     {
@@ -296,7 +303,7 @@ extern "C" {
 
     bool            NodePgm_setHdrs (
         NODEPGM_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -316,8 +323,8 @@ extern "C" {
     //                        M a i n
     //---------------------------------------------------------------
     
-    ASTR_DATA * NodePgm_getMain (
-        NODEPGM_DATA     *this
+    ASTRC_DATA *    NodePgm_getMain (
+        NODEPGM_DATA    *this
     )
     {
         
@@ -334,9 +341,9 @@ extern "C" {
     }
     
     
-    bool        NodePgm_setMain (
-        NODEPGM_DATA     *this,
-        ASTR_DATA   *pValue
+    bool            NodePgm_setMain (
+        NODEPGM_DATA    *this,
+        ASTRC_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -364,7 +371,7 @@ extern "C" {
     //                        N a m e
     //---------------------------------------------------------------
 
-    ASTR_DATA *     NodePgm_getName (
+    ASTRC_DATA *     NodePgm_getName (
         NODEPGM_DATA    *this
     )
     {
@@ -384,7 +391,7 @@ extern "C" {
 
     bool            NodePgm_setName (
         NODEPGM_DATA    *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -448,7 +455,7 @@ extern "C" {
     //                        O S
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodePgm_getOSs (
+    ASTRCARRAY_DATA * NodePgm_getOSs (
         NODEPGM_DATA    *this
     )
     {
@@ -468,7 +475,7 @@ extern "C" {
 
     bool            NodePgm_setOSs (
         NODEPGM_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -552,7 +559,7 @@ extern "C" {
     //                          S r c s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodePgm_getSrcs (
+    ASTRCARRAY_DATA * NodePgm_getSrcs (
         NODEPGM_DATA    *this
     )
     {
@@ -572,7 +579,7 @@ extern "C" {
 
     bool            NodePgm_setSrcs (
         NODEPGM_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -946,8 +953,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodePgm_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        this->pMain = AStrC_NewA("mainProgram.c");
 
     #ifdef NDEBUG
     #else

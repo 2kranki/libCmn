@@ -24,6 +24,8 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <srcErrors.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <NodeTstA_internal.h>
 
@@ -52,6 +54,8 @@ int             tearDown(
     // test method in the class.
 
     
+    szTbl_SharedReset( );
+    srcErrors_SharedReset( );
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

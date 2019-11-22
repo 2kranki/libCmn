@@ -112,7 +112,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  SRCPARSE_SINGLETON
-    SRCPARSE_DATA *     srcParse_Shared (
+    SRCPARSE_DATA * srcParse_Shared (
         void
     );
 
@@ -215,52 +215,58 @@ extern "C" {
     );
 
 
+    /*! Property: Tests
+     Tests contains the accumulated NodeTest's which were parsed by
+     ParseTest() or ParseTests().
+     */
+    OBJARRAY_DATA * srcParse_getTests (
+        SRCPARSE_DATA   *this
+    );
+
+    bool            srcParse_setTests (
+        SRCPARSE_DATA   *this,
+        OBJARRAY_DATA   *pValue
+    );
+
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         srcParse_Disable (
-        SRCPARSE_DATA	*this
-    );
-
-
-    ERESULT         srcParse_Enable (
-        SRCPARSE_DATA	*this
-    );
-
-   
     SRCPARSE_DATA * srcParse_Init (
         SRCPARSE_DATA   *this
     );
 
 
     /*!
-     Parse the given file into a JSON Node structure and
-     perform some cursory checks on the structure.
+     Parse the given file path into a JSON Node structure,
+     store it for further processing and perform some cursory
+     checks on the structure.
      @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
+     @param     pPath   Path object pointer (required)
+     @return    If successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error message.
      */
-    ERESULT_DATA *  srcParse_ParseJsonFile(
+    ERESULT_DATA *  srcParse_ParseJsonFile (
         SRCPARSE_DATA   *this,
-        PATH_DATA       *pPath,
-        NODE_DATA       **ppNodes
+        PATH_DATA       *pPath
     );
     
     /*!
-     Parse the given string into a JSON Node structure and
-     perform some cursory checks on the structure.
+     Parse the given string into a JSON Node structure, store
+     it for further processing and perform some cursory checks
+     on the structure.
      @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
+     @param     pStrA   String pointer (required)
+     @return    If successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error message.
      */
-    ERESULT_DATA *  srcParse_ParseJsonStr(
+    ERESULT_DATA *  srcParse_ParseJsonStr (
         SRCPARSE_DATA   *this,
         const
-        char            *pStrA,
-        NODE_DATA       **ppNodes
+        char            *pStrA
     );
     
     /*!
@@ -284,12 +290,17 @@ extern "C" {
      description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ERESULT_DATA *  srcParse_ParseLibrary(
+    ERESULT_DATA *  srcParse_ParseLibrary (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
     
     
+    ERESULT_DATA *  srcParse_ParseNodes (
+        SRCPARSE_DATA   *this
+    );
+
+
     /*!
      Parse an object and generate its components. An object consists
      of two routines, object and object_object, an optional JSON routine
@@ -358,7 +369,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ERESULT_DATA *  srcParse_ParseObject(
+    ERESULT_DATA *  srcParse_ParseObject (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
@@ -381,13 +392,13 @@ extern "C" {
                 an array of routine/test nodes, otherwise OBJ_NIL.
      @warning   Remember to release the returned Array object.
      */
-    ERESULT_DATA *  srcParse_ParseObjects(
+    ERESULT_DATA *  srcParse_ParseObjects (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
     
     
-    ERESULT_DATA *  srcParse_ParseProgram(
+    ERESULT_DATA *  srcParse_ParseProgram (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
@@ -441,7 +452,7 @@ extern "C" {
      description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ERESULT_DATA *  srcParse_ParseRoutine(
+    ERESULT_DATA *  srcParse_ParseRoutine (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
@@ -462,7 +473,82 @@ extern "C" {
                 routines scanned. Otherwise, an ERESULT_DATA object error.
      @warning   Remember to release the returned ERESULT_DATA object error.
      */
-    ERESULT_DATA *  srcParse_ParseRoutines(
+    ERESULT_DATA *  srcParse_ParseRoutines (
+        SRCPARSE_DATA   *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Parse a routine and generate its components
+     Node Grammar:
+     object     : string                // Object's Name
+                | node ':' objectData   // Node's Name == Object's Name
+                ;
+     
+     objectData : '{' object_Hash '}'
+                | '[' deps ']'
+                | "null"
+                ;
+     object_Hash:
+            "deps"  : '[' deps ']'
+                    ;
+            // Generate JSON object compile or not
+             "json"  : "true"
+                     | "null"    // Same as "true"
+                     | "false" (default)
+                     ;
+             // Generate Test compile and execution or not
+             // (optionally with extra compilation source files)
+             "test"  : "true" (default)
+                     | "false"
+                     | '[' source files ']'
+                     | '{' test_Hash '}'
+                     ;
+                ;
+     test_Hash  :
+            "deps"  : '[' deps ']'
+                    ;
+            "srcs"  : '[' deps ']'
+                    ;
+                ;
+     // Additional Dependency Files must be in the same directory
+     // as the primary file that it is associated with.
+     deps       : dependencies_file_name [',' deps]
+                ;
+     // Additional Source Files must be in the same directory
+     // as the primary file that it is associated with.
+     srcs       : source_file_name [',' srcs]
+                ;
+     
+     @param     this    Object Pointer
+     @param     pNode   Object Node Pointer
+     @return    If successful, an AStr object which must be released containing the
+     description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ERESULT_DATA *  srcParse_ParseTest (
+        SRCPARSE_DATA   *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    /*!
+     Parse an object and generate its components
+     Node Grammar:
+     routines    : '[' routine_Array ']'
+                 ;
+     routine_Array: routine (',' routine_Array)
+                 |
+                 ;
+     Note: See ParseRoutine() for routine definition.
+     @param     this    Object Pointer
+     @param     pNode   Node w/data of Node Array
+     @return    If successful, OBJ_NIL and the property, Rtns, holds the
+                routines scanned. Otherwise, an ERESULT_DATA object error.
+     @warning   Remember to release the returned ERESULT_DATA object error.
+     */
+    ERESULT_DATA *  srcParse_ParseTests (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );

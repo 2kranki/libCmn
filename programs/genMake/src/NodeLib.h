@@ -158,7 +158,7 @@ extern "C" {
                 ;
      Note: See ParseObject() for definition of objectNode.
      
-     @param     pNode   Node Pointer w/data
+     @param     pNode   Node Pointer w/data being hash node
      @param     ppBase  Returned Object Pointer area
      @return    If successful, a NodePgm object in ppBase which must be released con-
                 taining the description and OBJ_NIL, otherwise an ERESULT_DATA object
@@ -179,50 +179,50 @@ extern "C" {
 
     /*! Property: (Optional) Required Computer Architecture(s)
      */
-    ASTRARRAY_DATA * NodeLib_getArches (
+    ASTRCARRAY_DATA * NodeLib_getArches (
         NODELIB_DATA    *this
     );
 
     bool             NodeLib_setArches (
         NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
     */
-    ASTRARRAY_DATA * NodeLib_getDeps (
+    ASTRCARRAY_DATA * NodeLib_getDeps (
         NODELIB_DATA    *this
     );
 
     bool            NodeLib_setDeps (
         NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Headers
     */
-    ASTRARRAY_DATA * NodeLib_getHdrs (
+    ASTRCARRAY_DATA * NodeLib_getHdrs (
         NODELIB_DATA    *this
     );
 
     bool            NodeLib_setHdrs (
         NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Test program file name including file extension
      */
-    ASTR_DATA *     NodeLib_getName (
+    ASTRC_DATA *    NodeLib_getName (
         NODELIB_DATA    *this
     );
 
     bool            NodeLib_setName (
         NODELIB_DATA    *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     );
 
 
@@ -238,26 +238,26 @@ extern "C" {
 
     /*! Property: (Optional) Required Operating System(s)
      */
-    ASTRARRAY_DATA * NodeLib_getOSs (
+    ASTRCARRAY_DATA * NodeLib_getOSs (
         NODELIB_DATA    *this
     );
 
     bool            NodeLib_setOSs (
         NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Extra Sources, zero or more file paths that
         are needed to compile with Name property.
     */
-    ASTRARRAY_DATA * NodeLib_getSrcs (
+    ASTRCARRAY_DATA * NodeLib_getSrcs (
         NODELIB_DATA    *this
     );
 
     bool            NodeLib_setSrcs (
         NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
@@ -268,26 +268,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         NodeLib_Disable (
-        NODELIB_DATA	*this
-    );
-
-
-    ERESULT         NodeLib_Enable (
-        NODELIB_DATA	*this
-    );
-
-   
     NODELIB_DATA *   NodeLib_Init (
         NODELIB_DATA    *this
     );
 
 
-    ERESULT         NodeLib_IsEnabled (
-        NODELIB_DATA	*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:

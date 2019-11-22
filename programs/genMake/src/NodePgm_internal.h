@@ -74,7 +74,7 @@ struct NodePgm_data_s	{
     // Common Data
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
-    ASTR_DATA       *pMain;
+    ASTRC_DATA      *pMain;
 
 };
 #pragma pack(pop)

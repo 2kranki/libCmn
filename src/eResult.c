@@ -123,7 +123,7 @@ extern "C" {
         {ERESULT_INVALID_ENVIRONMENT,       NULL},
         {ERESULT_INVALID_FORMAT,            NULL},
         {ERESULT_INVALID_ACCESS_CODE,       NULL},
-        {ERESULT_INVALID_DATA,              NULL},
+        {ERESULT_INVALID_DATA,              "Invalid Data"},
         {ERESULT_INVALID_FILE,              NULL},
         {ERESULT_INVALID_OPCODE,            NULL},
         {ERESULT_OUT_OF_RANGE,              NULL},
@@ -813,7 +813,7 @@ void            eResult_ErrorFatalOn(
     //---------------------------------------------------------------
 
     ERESULT_DATA *   eResult_Init(
-        ERESULT_DATA       *this
+        ERESULT_DATA    *this
     )
     {
         
@@ -840,6 +840,45 @@ void            eResult_ErrorFatalOn(
     #endif
 
         return this;
+    }
+
+     
+
+    //---------------------------------------------------------------
+    //                          P r i n t
+    //---------------------------------------------------------------
+
+    void            eResult_Fprint(
+        ERESULT_DATA    *this,
+        FILE            *pFile
+    )
+    {
+        ERROR_ENTRY     *pErrMsg;
+        const
+        char            *pMsg = NULL;
+
+#ifdef NDEBUG
+#else
+        if( !eResult_Validate( this ) ) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
+
+        pMsg = "";
+        pErrMsg = SearchErrors(this->eRc);
+        if (pErrMsg) {
+            if (pErrMsg->errorCode == this->eRc)
+                pMsg = pErrMsg->pError;
+        }
+
+        if (this->pMsg) {
+            fprintf(pFile, "Error: %s (%d) - %s\n\n", pMsg, this->eRc,
+                    AStr_getData(this->pMsg));
+        } else {
+            fprintf(pFile, "Error: %s (%d)\n\n", pMsg, this->eRc);
+        }
+        
     }
 
      

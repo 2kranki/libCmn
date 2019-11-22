@@ -28,7 +28,7 @@
 #include    <genBase_internal.h>
 
 
-#include    <test_data.c>
+#include    <data_test.c>
 
 
 

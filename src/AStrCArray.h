@@ -188,7 +188,13 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS and the index in pIndex
                 if it is not NULL.  Otherwise, an ERESULT_* error.
      */
-    ERESULT         AStrCArray_AppendStr(
+    ERESULT         AStrCArray_AppendAStr(
+        ASTRCARRAY_DATA *this,
+        ASTR_DATA       *pObject,
+        uint32_t        *pIndex
+    );
+
+    ERESULT         AStrCArray_AppendAStrC(
         ASTRCARRAY_DATA *this,
         ASTRC_DATA      *pObject,
         uint32_t        *pIndex

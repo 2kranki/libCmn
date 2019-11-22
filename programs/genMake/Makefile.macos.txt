@@ -44,23 +44,6 @@ TESTS =
 
 
 
-OBJS += $(OBJDIR)/dbprs_object.o
-
-$(OBJDIR)/dbprs_object.o: $(SRCDIR)/dbprs_object.c 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-OBJS += $(OBJDIR)/dbprs.o
-
-$(OBJDIR)/dbprs.o: $(SRCDIR)/dbprs.c $(SRCDIR)/genMake.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-TESTS += dbprs_test
-
-dbprs_test: $(TEST_SRC)/dbprs_test.c 
-	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
-	$(TEST_OBJ)/$(@F)
-
-
 OBJS += $(OBJDIR)/ExpandNodes_object.o
 
 $(OBJDIR)/ExpandNodes_object.o: $(SRCDIR)/ExpandNodes_object.c 

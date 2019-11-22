@@ -148,38 +148,38 @@ extern "C" {
 
     /*! Property: (Optional) Required Computer Architecture(s)
      */
-    ASTRARRAY_DATA * NodeRtnA_getArches (
+    ASTRCARRAY_DATA * NodeRtnA_getArches (
         NODERTNA_DATA   *this
     );
 
     bool             NodeRtnA_setArches (
         NODERTNA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
     */
-    ASTRARRAY_DATA * NodeRtnA_getDeps (
+    ASTRCARRAY_DATA * NodeRtnA_getDeps (
         NODERTNA_DATA   *this
     );
 
     bool            NodeRtnA_setDeps (
         NODERTNA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Test program file name including file extension
      */
-    ASTR_DATA *     NodeRtnA_getName (
+    ASTRC_DATA *    NodeRtnA_getName (
         NODERTNA_DATA   *this
     );
 
     bool            NodeRtnA_setName (
         NODERTNA_DATA   *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     );
 
 
@@ -195,26 +195,26 @@ extern "C" {
 
     /*! Property: (Optional) Required Operating System(s)
      */
-    ASTRARRAY_DATA * NodeRtnA_getOSs (
+    ASTRCARRAY_DATA * NodeRtnA_getOSs (
         NODERTNA_DATA   *this
     );
 
     bool            NodeRtnA_setOSs (
         NODERTNA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Extra Sources, zero or more file paths that
         are needed to compile with Name property.
     */
-    ASTRARRAY_DATA * NodeRtnA_getSrcs (
+    ASTRCARRAY_DATA * NodeRtnA_getSrcs (
         NODERTNA_DATA   *this
     );
 
     bool            NodeRtnA_setSrcs (
         NODERTNA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
@@ -223,26 +223,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     NodeRtnA_Disable (
-        NODERTNA_DATA		*this
-    );
-
-
-    ERESULT     NodeRtnA_Enable (
-        NODERTNA_DATA		*this
-    );
-
-   
     NODERTNA_DATA *   NodeRtnA_Init (
         NODERTNA_DATA     *this
     );
 
 
-    ERESULT     NodeRtnA_IsEnabled (
-        NODERTNA_DATA		*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:

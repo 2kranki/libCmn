@@ -53,6 +53,7 @@
 #define     PROPERTY_OBJS_OWNED 1
 #define     PROPERTY_PGM_OWNED 1
 #define     PROPERTY_RTNS_OWNED 1
+#define     PROPERTY_TESTS_OWNED 1
 
 
 
@@ -79,6 +80,7 @@ struct srcParse_data_s	{
     OBJARRAY_DATA   *pObjs;
     NODEPGM_DATA    *pPgm;
     OBJARRAY_DATA   *pRtns;
+    OBJARRAY_DATA   *pTests;
     NODE_DATA       *pNodes;
 
 };

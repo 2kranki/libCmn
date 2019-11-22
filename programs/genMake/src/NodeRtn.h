@@ -204,38 +204,38 @@ extern "C" {
 
     /*! Property: (Optional) Required Computer Architecture(s)
      */
-    ASTRARRAY_DATA * NodeRtn_getArches (
+    ASTRCARRAY_DATA * NodeRtn_getArches (
         NODERTN_DATA    *this
     );
 
     bool             NodeRtn_setArches (
         NODERTN_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
     */
-    ASTRARRAY_DATA * NodeRtn_getDeps (
+    ASTRCARRAY_DATA * NodeRtn_getDeps (
         NODERTN_DATA    *this
     );
 
     bool            NodeRtn_setDeps (
         NODERTN_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Test program file name including file extension
      */
-    ASTR_DATA *     NodeRtn_getName (
+    ASTRC_DATA *    NodeRtn_getName (
         NODERTN_DATA    *this
     );
 
     bool            NodeRtn_setName (
         NODERTN_DATA    *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     );
 
 
@@ -251,26 +251,26 @@ extern "C" {
 
     /*! Property: (Optional) Required Operating System(s)
      */
-    ASTRARRAY_DATA * NodeRtn_getOSs (
+    ASTRCARRAY_DATA * NodeRtn_getOSs (
         NODERTN_DATA    *this
     );
 
     bool            NodeRtn_setOSs (
         NODERTN_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Extra Sources, zero or more file paths that
         are needed to compile with Name property.
     */
-    ASTRARRAY_DATA * NodeRtn_getSrcs (
+    ASTRCARRAY_DATA * NodeRtn_getSrcs (
         NODERTN_DATA    *this
     );
 
     bool            NodeRtn_setSrcs (
         NODERTN_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
@@ -320,26 +320,11 @@ extern "C" {
     );
 
 
-    ERESULT         NodeRtn_Disable (
-        NODERTN_DATA    *this
-    );
-
-
-    ERESULT         NodeRtn_Enable (
-        NODERTN_DATA	*this
-    );
-
-   
     NODERTN_DATA *  NodeRtn_Init (
         NODERTN_DATA    *this
     );
 
 
-    ERESULT         NodeRtn_IsEnabled (
-        NODERTN_DATA	*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:

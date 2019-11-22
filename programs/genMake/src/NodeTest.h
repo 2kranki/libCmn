@@ -110,7 +110,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  NODETEST_SINGLETON
-    NODETEST_DATA *     NodeTest_Shared (
+    NODETEST_DATA * NodeTest_Shared (
         void
     );
 
@@ -195,38 +195,38 @@ extern "C" {
 
     /*! Property: (Optional) Required Computer Architecture(s)
      */
-    ASTRARRAY_DATA * NodeTest_getArches (
+    ASTRCARRAY_DATA * NodeTest_getArches (
         NODETEST_DATA   *this
     );
 
     bool             NodeTest_setArches (
         NODETEST_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
     */
-    ASTRARRAY_DATA * NodeTest_getDeps (
+    ASTRCARRAY_DATA * NodeTest_getDeps (
         NODETEST_DATA   *this
     );
 
     bool            NodeTest_setDeps (
         NODETEST_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Test program file name including file extension
      */
-    ASTR_DATA *     NodeTest_getName (
+    ASTRC_DATA *    NodeTest_getName (
         NODETEST_DATA   *this
     );
 
     bool            NodeTest_setName (
         NODETEST_DATA   *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     );
 
 
@@ -242,26 +242,26 @@ extern "C" {
 
     /*! Property: (Optional) Required Operating System(s)
      */
-    ASTRARRAY_DATA * NodeTest_getOSs (
+    ASTRCARRAY_DATA * NodeTest_getOSs (
         NODETEST_DATA   *this
     );
 
     bool            NodeTest_setOSs (
         NODETEST_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Extra Sources, zero or more file paths that
         are needed to compile with Name property.
     */
-    ASTRARRAY_DATA * NodeTest_getSrcs (
+    ASTRCARRAY_DATA * NodeTest_getSrcs (
         NODETEST_DATA   *this
     );
 
     bool            NodeTest_setSrcs (
         NODETEST_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 

@@ -135,7 +135,7 @@ extern "C" {
                 if (ppArgV[i]) {
                     pStr = AStrC_NewA(ppArgV[i]);
                     if (pStr) {
-                        AStrCArray_AppendStr(pArray, pStr, NULL);
+                        AStrCArray_AppendAStrC(pArray, pStr, NULL);
                         obj_Release(pStr);
                         pStr = OBJ_NIL;
                     }
@@ -168,7 +168,7 @@ extern "C" {
             while (*ppArgV) {
                 pStr = AStrC_NewA(*ppArgV);
                 if (pStr) {
-                    AStrCArray_AppendStr(pArray, pStr, NULL);
+                    AStrCArray_AppendAStrC(pArray, pStr, NULL);
                     obj_Release(pStr);
                     pStr = OBJ_NIL;
                 }
@@ -353,7 +353,47 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS and the index in pIndex
                 if it is not NULL.  Otherwise, an ERESULT_* error.
      */
-    ERESULT         AStrCArray_AppendStr(
+    ERESULT         AStrCArray_AppendAStr(
+        ASTRCARRAY_DATA *this,
+        ASTR_DATA       *pObject,
+        uint32_t        *pIndex
+        )
+        {
+            ERESULT         eRc;
+            ASTRC_DATA      *pStrC;
+            
+            // Do initialization.
+            if (NULL == this) {
+                return ERESULT_INVALID_OBJECT;
+            }
+    #ifdef NDEBUG
+    #else
+            if( !AStrCArray_Validate(this) ) {
+                DEBUG_BREAK();
+                return ERESULT_INVALID_OBJECT;
+            }
+    #endif
+            
+            if (OBJ_NIL == this->pArray) {
+                this->pArray = objArray_New();
+                if (OBJ_NIL == this->pArray) {
+                    return ERESULT_OUT_OF_MEMORY;
+                }
+            }
+            
+            pStrC = AStrC_NewFromAStr(pObject);
+            if (OBJ_NIL == pStrC)
+                return ERESULT_OUT_OF_MEMORY;
+            eRc = objArray_AppendObj(this->pArray, pStrC, pIndex);
+            obj_Release(pStrC);
+            pStrC = OBJ_NIL;
+            
+            // Return to caller.
+            return eRc;
+        }
+
+        
+    ERESULT         AStrCArray_AppendAStrC(
         ASTRCARRAY_DATA *this,
         ASTRC_DATA      *pObject,
         uint32_t        *pIndex
@@ -363,13 +403,13 @@ extern "C" {
             
             // Do initialization.
             if (NULL == this) {
-                return false;
+                return ERESULT_INVALID_OBJECT;
             }
     #ifdef NDEBUG
     #else
             if( !AStrCArray_Validate(this) ) {
                 DEBUG_BREAK();
-                return false;
+                return ERESULT_INVALID_OBJECT;
             }
     #endif
             

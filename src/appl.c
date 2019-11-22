@@ -298,7 +298,7 @@ extern "C" {
                 // Add the argument to the array.
                 if( pW32Start && *pW32Start) {
                     ASTRC_DATA          *pStr = AStrC_NewW32(pW32Start);
-                    eRc = AStrCArray_AppendStr(pArgV, pStr, NULL);
+                    eRc = AStrCArray_AppendAStrC(pArgV, pStr, NULL);
                     if (ERESULT_FAILED(eRc)) {
                         break;
                     }

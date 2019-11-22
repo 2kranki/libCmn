@@ -70,9 +70,9 @@ extern "C" {
             int64_t         integer;            // Integer
             uint32_t        strToken;           // String Index Token
             W32CHR_T        w32chr[2];          // Unicode Character followed by NUL
-            char            *pStrA;
+            char            *pStrA;             // UTF-8 String
             const
-            char            *pStrConA;
+            char            *pStrConA;          // UTF-8 String Constant
         };
         // Do NOT declare any variables here, put them above the union.
     } TOKEN;

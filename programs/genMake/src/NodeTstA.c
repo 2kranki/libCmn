@@ -126,7 +126,7 @@ extern "C" {
     //                  A r c h i t e c t u r e s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeTstA_getArches (
+    ASTRCARRAY_DATA * NodeTstA_getArches (
         NODETSTA_DATA   *this
     )
     {
@@ -146,7 +146,7 @@ extern "C" {
 
     bool            NodeTstA_setArches (
         NODETSTA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -166,7 +166,7 @@ extern "C" {
     //                        D e p s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeTstA_getDeps (
+    ASTRCARRAY_DATA * NodeTstA_getDeps (
         NODETSTA_DATA   *this
     )
     {
@@ -186,7 +186,7 @@ extern "C" {
 
     bool            NodeTstA_setDeps (
         NODETSTA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -206,7 +206,7 @@ extern "C" {
     //                        N a m e
     //---------------------------------------------------------------
 
-    ASTR_DATA *     NodeTstA_getName (
+    ASTRC_DATA *    NodeTstA_getName (
         NODETSTA_DATA   *this
     )
     {
@@ -226,7 +226,7 @@ extern "C" {
 
     bool            NodeTstA_setName (
         NODETSTA_DATA   *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -290,7 +290,7 @@ extern "C" {
     //                        O S
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeTstA_getOSs (
+    ASTRCARRAY_DATA * NodeTstA_getOSs (
         NODETSTA_DATA   *this
     )
     {
@@ -310,7 +310,7 @@ extern "C" {
 
     bool            NodeTstA_setOSs (
         NODETSTA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -394,7 +394,7 @@ extern "C" {
     //                          S r c s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeTstA_getSrcs (
+    ASTRCARRAY_DATA * NodeTstA_getSrcs (
         NODETSTA_DATA   *this
     )
     {
@@ -414,7 +414,7 @@ extern "C" {
 
     bool            NodeTstA_setSrcs (
         NODETSTA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
     #ifdef NDEBUG
@@ -826,7 +826,7 @@ extern "C" {
         }
 
         this = (OBJ_ID)NodeBase_Init((NODEBASE_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODETSTA);
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODETSTA);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);

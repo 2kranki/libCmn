@@ -344,7 +344,11 @@ extern "C" {
     );
 
 
-    
+    void            eResult_Fprint(
+        ERESULT_DATA    *this,
+        FILE            *pFile
+    );
+
 #ifdef	__cplusplus
 }
 #endif

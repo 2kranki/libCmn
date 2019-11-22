@@ -188,7 +188,7 @@ int             test_srcParse_Object01(
         "{name:\"AStr\",  deps:[\"array.h\"]},\n"
         "{name:\"AStrC\", deps:[\"array.h\"]}\n"
     "]\n";
-    bool            fDumpNodes = true;
+    bool            fDumpNodes = false;
     uint32_t        i;
     uint32_t        iMax;
     NODEOBJ_DATA    *pObj;
@@ -267,7 +267,7 @@ int             test_srcParse_Object02(
         "{name:\"AStr\",  deps:[\"array.h\"], json:true},\n"
         "{name:\"AStrC\", deps:[\"array.h\"], json:{name:\"AStrC_jsonPlus.c\"}}\n"
     "]\n";
-    bool            fDumpNodes = true;
+    bool            fDumpNodes = false;
     uint32_t        i;
     uint32_t        iMax;
     NODEOBJ_DATA    *pObj;
@@ -305,7 +305,7 @@ int             test_srcParse_Object02(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Display the Output.
-        if (pArray) {
+        if (pArray && fDumpNodes) {
             fprintf(stderr, "\n\n===> Object Array:\n\n");
             ASTR_DATA   *pStr = objArray_ToDebugString(pArray, 0);
             fprintf(stderr, "%s\n", AStr_getData(pStr));
@@ -355,7 +355,7 @@ int             test_srcParse_Object03(
         "{name:\"AStr\"},\n"
         "{name:\"AStrC\"}\n"
     "]\n";
-    bool            fDumpNodes = true;
+    bool            fDumpNodes = false;
     uint32_t        i;
     uint32_t        iMax;
     NODEOBJ_DATA    *pObj;
@@ -434,7 +434,7 @@ int             test_srcParse_Routine01(
         "{name:\"AStr\",  deps:[\"array.h\"]},\n"
         "{name:\"AStrC\", deps:[\"array.h\"]}\n"
     "]\n";
-    bool            fDumpNodes = true;
+    bool            fDumpNodes = false;
     uint32_t        i;
     uint32_t        iMax;
     NODERTN_DATA    *pRtn;
@@ -510,7 +510,7 @@ int             test_srcParse_Routine02(
         "{name:\"AStr\"},\n"
         "{name:\"AStrC\"}\n"
     "]\n";
-    bool            fDumpNodes = true;
+    bool            fDumpNodes = false;
     uint32_t        i;
     uint32_t        iMax;
     NODERTN_DATA    *pRtn;
@@ -570,8 +570,377 @@ int             test_srcParse_Routine02(
 
 
 
+int             test_srcParse_Test01(
+    const
+    char            *pTestName
+)
+{
+    SRCPARSE_DATA   *pPrs = OBJ_NIL;
+    ERESULT_DATA    *pErr;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    NODEHASH_DATA   *pHash = OBJ_NIL;
+    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    const
+    char            *pGoodJsonObject1 =
+    "["
+        "{name:\"AStr\"},\n"
+        "{name:\"AStrC\"}\n"
+    "]\n";
+    bool            fDumpNodes = false;
+    uint32_t        i;
+    uint32_t        iMax;
+    NODETEST_DATA   *pTest;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pPrs = srcParse_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pPrs) );
+    if (pPrs) {
+        
+        //obj_TraceSet(pObj, true);
+        pErr = InputStrToJSON(pGoodJsonObject1, &pNodes);
+        TINYTEST_TRUE( (OBJ_NIL == pErr) );
+        TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+        TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
+        pHash = node_getData(pNodes);
+        TINYTEST_FALSE( (OBJ_NIL == pHash) );
+        TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
+                        || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
+
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = node_ToDebugString(pNodes, 0);
+            fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+
+        pErr = srcParse_ParseTests(pPrs, pNodes);
+        TINYTEST_TRUE((OBJ_NIL == pErr));
+
+        pArray = srcParse_getTests(pPrs);
+        TINYTEST_FALSE( (OBJ_NIL == pArray) );
+
+        // Validate the results.
+        iMax = objArray_getSize(pArray);
+        fprintf(stderr, "# of Objects: %d\n", iMax);
+        TINYTEST_TRUE( (2 == iMax) );
+        for (i=0; i<iMax; i++) {
+            pTest = objArray_Get(pArray, i+1);
+            TINYTEST_FALSE( (OBJ_NIL == pTest) );
+        }
+
+        obj_Release(pNodes);
+        pNodes = OBJ_NIL;
+
+        obj_Release(pPrs);
+        pPrs = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_srcParse_Nodes01(
+    const
+    char            *pTestName
+)
+{
+    SRCPARSE_DATA   *pPrs = OBJ_NIL;
+    ERESULT_DATA    *pErr;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    NODEHASH_DATA   *pHash = OBJ_NIL;
+    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODELIB_DATA    *pLib;
+    NODEPGM_DATA    *pPgm;
+    const
+    char            *pGoodJson1 =
+    "{\n"
+        "\"program\":{\n"
+            "\"name\":\"genMake\",\n"
+            "\"deps\":[\"Cmd\"]\n"
+        "}\n,"
+        "\"objects\": [\n"
+            "{name:\"AStr\", \"srcDeps\":[\"libCmn.h\"], \"json\":true},\n"
+            "{name:\"appl\", \"srcDeps\":[\"libCmn.h\"]},\n"
+        "],\n"
+        "\"routines\": [\n"
+                "{name:\"dllist.c\"}\n"
+        "],\n"
+    "}\n";
+    bool            fDumpNodes = false;
+    uint32_t        i;
+    uint32_t        iMax;
+    NODEOBJ_DATA    *pObj;
+    NODERTN_DATA    *pRtn;
+    ASTR_DATA       *pStr;
+    ASTRC_DATA      *pStrC;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pPrs = srcParse_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pPrs) );
+    if (pPrs) {
+        
+        //obj_TraceSet(pObj, true);
+        pErr = srcParse_ParseJsonStr(pPrs, pGoodJson1);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+        }
+        TINYTEST_TRUE( (OBJ_NIL == pErr) );
+        TINYTEST_FALSE( (OBJ_NIL == pPrs->pNodes) );
+        TINYTEST_TRUE( (obj_IsKindOf(pPrs->pNodes, OBJ_IDENT_NODE)) );
+        pHash = node_getData(pPrs->pNodes);
+        TINYTEST_FALSE( (OBJ_NIL == pHash) );
+        TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
+                        || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
+
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = node_ToDebugString(pPrs->pNodes, 0);
+            fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+
+        pErr = srcParse_ParseNodes(pPrs);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+        }
+        TINYTEST_TRUE((OBJ_NIL == pErr));
+
+        // Validate Library vs Program.
+        pLib = srcParse_getLib(pPrs);
+        TINYTEST_TRUE( (OBJ_NIL == pLib) );
+        pPgm = srcParse_getPgm(pPrs);
+        TINYTEST_FALSE( (OBJ_NIL == pPgm) );
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = NodePgm_ToDebugString(pPgm, 0);
+            fprintf(stderr, "\n====> PGM Node:\n%s\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+        pStrC = NodePgm_getMain(pPgm);
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"mainProgram.c")));
+
+        // Validate Objects.
+        pArray = srcParse_getObjs(pPrs);
+        TINYTEST_FALSE( (OBJ_NIL == pArray) );
+        iMax = objArray_getSize(pArray);
+        fprintf(stderr, "\tNumber of Objects: %d\n", iMax);
+        TINYTEST_TRUE( (2 == iMax) );
+        pObj = objArray_Get(pArray, 1);
+        TINYTEST_FALSE( (OBJ_NIL == pObj) );
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = NodeObj_ToDebugString(pObj, 0);
+            fprintf(stderr, "\n====> OBJ 1 Node:\n%s\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+        pStrC = NodeObj_getName(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr")));
+        pObj = objArray_Get(pArray, 2);
+        TINYTEST_FALSE( (OBJ_NIL == pObj) );
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = NodeObj_ToDebugString(pObj, 0);
+            fprintf(stderr, "\n====> OBJ 2 Node:\n%s\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+        pStrC = NodeObj_getName(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"appl")));
+
+        // Validate Routines.
+        pArray = srcParse_getRtns(pPrs);
+        TINYTEST_FALSE( (OBJ_NIL == pArray) );
+        iMax = objArray_getSize(pArray);
+        fprintf(stderr, "\tNumber of Routines: %d\n", iMax);
+        TINYTEST_TRUE( (1 == iMax) );
+        pRtn = objArray_Get(pArray, 1);
+        TINYTEST_FALSE( (OBJ_NIL == pRtn) );
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = NodeRtn_ToDebugString(pRtn, 0);
+            fprintf(stderr, "\n====> RTN 1 Node:\n%s\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+        pStrC = NodeRtn_getName(pRtn);
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"dllist.c")));
+
+        obj_Release(pNodes);
+        pNodes = OBJ_NIL;
+
+        obj_Release(pPrs);
+        pPrs = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_srcParse_Nodes02(
+    const
+    char            *pTestName
+)
+{
+    SRCPARSE_DATA   *pPrs = OBJ_NIL;
+    ERESULT_DATA    *pErr;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    NODEHASH_DATA   *pHash = OBJ_NIL;
+    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODELIB_DATA    *pLib;
+    NODEPGM_DATA    *pPgm;
+    const
+    char            *pGoodJson1 =
+    "{\n"
+        "\"library\":{\n"
+            "\"name\":\"Cmn\",\n"
+        "}\n,"
+        "\"objects\": [\n"
+            "{name:\"AStr\", \"srcDeps\":[\"libCmn.h\"], \"json\":true},\n"
+            "{name:\"appl\", \"srcDeps\":[\"libCmn.h\"]},\n"
+        "],\n"
+        "\"routines\": [\n"
+                "{name:\"dllist.c\"}\n"
+        "],\n"
+    "}\n";
+    bool            fDumpNodes = false;
+    uint32_t        i;
+    uint32_t        iMax;
+    NODEOBJ_DATA    *pObj;
+    NODERTN_DATA    *pRtn;
+    ASTR_DATA       *pStr;
+    ASTRC_DATA      *pStrC;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pPrs = srcParse_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pPrs) );
+    if (pPrs) {
+        
+        //obj_TraceSet(pObj, true);
+        pErr = srcParse_ParseJsonStr(pPrs, pGoodJson1);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+        }
+        TINYTEST_TRUE( (OBJ_NIL == pErr) );
+        TINYTEST_FALSE( (OBJ_NIL == pPrs->pNodes) );
+        TINYTEST_TRUE( (obj_IsKindOf(pPrs->pNodes, OBJ_IDENT_NODE)) );
+        pHash = node_getData(pPrs->pNodes);
+        TINYTEST_FALSE( (OBJ_NIL == pHash) );
+        TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
+                        || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
+
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = node_ToDebugString(pPrs->pNodes, 0);
+            fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+
+        pErr = srcParse_ParseNodes(pPrs);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+        }
+        TINYTEST_TRUE((OBJ_NIL == pErr));
+
+        // Validate Library vs Program.
+        pPgm = srcParse_getPgm(pPrs);
+        TINYTEST_TRUE( (OBJ_NIL == pPgm) );
+        pLib = srcParse_getLib(pPrs);
+        TINYTEST_FALSE( (OBJ_NIL == pLib) );
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = NodeLib_ToDebugString(pLib, 0);
+            fprintf(stderr, "\n====> PGM Node:\n%s\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+        pStrC = NodeLib_getName(pLib);
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"Cmn")));
+
+        // Validate Objects.
+        pArray = srcParse_getObjs(pPrs);
+        TINYTEST_FALSE( (OBJ_NIL == pArray) );
+        iMax = objArray_getSize(pArray);
+        fprintf(stderr, "\tNumber of Objects: %d\n", iMax);
+        TINYTEST_TRUE( (2 == iMax) );
+        pObj = objArray_Get(pArray, 1);
+        TINYTEST_FALSE( (OBJ_NIL == pObj) );
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = NodeObj_ToDebugString(pObj, 0);
+            fprintf(stderr, "\n====> OBJ 1 Node:\n%s\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+        pStrC = NodeObj_getName(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr")));
+        pObj = objArray_Get(pArray, 2);
+        TINYTEST_FALSE( (OBJ_NIL == pObj) );
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = NodeObj_ToDebugString(pObj, 0);
+            fprintf(stderr, "\n====> OBJ 2 Node:\n%s\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+        pStrC = NodeObj_getName(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"appl")));
+
+        // Validate Routines.
+        pArray = srcParse_getRtns(pPrs);
+        TINYTEST_FALSE( (OBJ_NIL == pArray) );
+        iMax = objArray_getSize(pArray);
+        fprintf(stderr, "\tNumber of Routines: %d\n", iMax);
+        TINYTEST_TRUE( (1 == iMax) );
+        pRtn = objArray_Get(pArray, 1);
+        TINYTEST_FALSE( (OBJ_NIL == pRtn) );
+        if (fDumpNodes) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = NodeRtn_ToDebugString(pRtn, 0);
+            fprintf(stderr, "\n====> RTN 1 Node:\n%s\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+        pStrC = NodeRtn_getName(pRtn);
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"dllist.c")));
+
+        obj_Release(pNodes);
+        pNodes = OBJ_NIL;
+
+        obj_Release(pPrs);
+        pPrs = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_srcParse);
+    TINYTEST_ADD_TEST(test_srcParse_Nodes02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_srcParse_Nodes01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_srcParse_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_srcParse_Routine02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_srcParse_Routine01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_srcParse_Object03,setUp,tearDown);

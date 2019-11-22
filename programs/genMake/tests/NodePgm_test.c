@@ -178,6 +178,8 @@ int             test_NodePgm_Parse01(
     ASTRARRAY_DATA  *pStrArray = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODEPGM_DATA    *pPgm = OBJ_NIL;
+    ASTRCARRAY_DATA *pStrCArray = OBJ_NIL;
+    ASTRC_DATA      *pStrC = OBJ_NIL;
     const
     char            *pGoodJsonObject1 =
         "{name:\"genMake\", "
@@ -224,36 +226,36 @@ int             test_NodePgm_Parse01(
     }
 
     // Validate the output.
-    pStr = NodePgm_getName(pPgm);
-    TINYTEST_FALSE( (OBJ_NIL == pStr) );
-    TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"genMake")));
-    pStrArray = NodePgm_getArches(pPgm);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((0 == AStrArray_getSize(pStrArray)));
+    pStrC = NodePgm_getName(pPgm);
+    TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+    TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"genMake")));
+    pStrCArray = NodePgm_getArches(pPgm);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((0 == AStrCArray_getSize(pStrCArray)));
     }
-    pStrArray = NodePgm_getOSs(pPgm);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((0 == AStrArray_getSize(pStrArray)));
+    pStrCArray = NodePgm_getOSs(pPgm);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((0 == AStrCArray_getSize(pStrCArray)));
     }
-    pStrArray = NodePgm_getDeps(pPgm);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((1 == AStrArray_getSize(pStrArray)));
-        pStr = AStrArray_Get(pStrArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"Cmn")));
+    pStrCArray = NodePgm_getDeps(pPgm);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
+        pStrC = AStrCArray_Get(pStrCArray, 1);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"Cmn")));
     }
-    pStrArray = NodePgm_getHdrs(pPgm);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((1 == AStrArray_getSize(pStrArray)));
-        pStr = AStrArray_Get(pStrArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"genMake.h")));
+    pStrCArray = NodePgm_getHdrs(pPgm);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
+        pStrC = AStrCArray_Get(pStrCArray, 1);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"genMake.h")));
     }
-    pStr = NodePgm_getMain(pPgm);
-    TINYTEST_FALSE( (OBJ_NIL == pStr) );
-    TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"mainProgram.c")));
+    pStrC = NodePgm_getMain(pPgm);
+    TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+    TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"mainProgram.c")));
 
     obj_Release(pNodes);
     pNodes = OBJ_NIL;

@@ -1014,6 +1014,9 @@ extern "C" {
     //                          G e t  L i n e
     //---------------------------------------------------------------
     
+    //TODO: Think about returning an AStrC or W32StrC instead of the
+    // buffer to allow for long lines.
+    //TODO: Terminate line with '\0'.
     ERESULT         textIn_GetLine (
         TEXTIN_DATA     *this,
         char            *pBuffer,

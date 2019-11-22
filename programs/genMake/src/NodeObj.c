@@ -246,7 +246,7 @@ extern "C" {
     //                  A r c h i t e c t u r e s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeObj_getArches (
+    ASTRCARRAY_DATA * NodeObj_getArches (
         NODEOBJ_DATA    *this
     )
     {
@@ -266,7 +266,7 @@ extern "C" {
 
     bool            NodeObj_setArches (
         NODEOBJ_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -286,7 +286,7 @@ extern "C" {
     //                        D e p s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeObj_getDeps (
+    ASTRCARRAY_DATA * NodeObj_getDeps (
         NODEOBJ_DATA    *this
     )
     {
@@ -306,7 +306,7 @@ extern "C" {
 
     bool            NodeObj_setDeps (
         NODEOBJ_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -374,7 +374,7 @@ extern "C" {
     //                        N a m e
     //---------------------------------------------------------------
 
-    ASTR_DATA *     NodeObj_getName (
+    ASTRC_DATA *    NodeObj_getName (
         NODEOBJ_DATA    *this
     )
     {
@@ -394,7 +394,7 @@ extern "C" {
 
     bool            NodeObj_setName (
         NODEOBJ_DATA    *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -453,7 +453,7 @@ extern "C" {
     //                        O S
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeObj_getOSs (
+    ASTRCARRAY_DATA * NodeObj_getOSs (
         NODEOBJ_DATA    *this
     )
     {
@@ -473,7 +473,7 @@ extern "C" {
 
     bool            NodeObj_setOSs (
         NODEOBJ_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -557,7 +557,7 @@ extern "C" {
     //                          S r c s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeObj_getSrcs (
+    ASTRCARRAY_DATA * NodeObj_getSrcs (
         NODEOBJ_DATA    *this
     )
     {
@@ -577,7 +577,7 @@ extern "C" {
 
     bool            NodeObj_setSrcs (
         NODEOBJ_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
     #ifdef NDEBUG
@@ -689,6 +689,7 @@ extern "C" {
     )
     {
         ERESULT_DATA    *pErr = OBJ_NIL;
+        ASTRC_DATA      *pStrC;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -699,7 +700,14 @@ extern "C" {
         }
     #endif
 
-        pErr = NodeBase_AppendDeps(NodeObj_getNodeBase(this), pStr);
+        pStrC = AStrC_NewFromAStr(pStr);
+        if (OBJ_NIL == pStrC) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+        pErr = NodeBase_AppendDeps(NodeObj_getNodeBase(this), pStrC);
+        obj_Release(pStrC);
+        pStrC = OBJ_NIL;
 
         // Return to caller.
         return pErr;
@@ -712,6 +720,7 @@ extern "C" {
     )
     {
         ERESULT_DATA    *pErr = OBJ_NIL;
+        ASTRC_DATA      *pStrC;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -722,7 +731,14 @@ extern "C" {
         }
     #endif
 
-        pErr = NodeBase_AppendSrcs(NodeObj_getNodeBase(this), pStr);
+        pStrC = AStrC_NewFromAStr(pStr);
+        if (OBJ_NIL == pStrC) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+        pErr = NodeBase_AppendSrcs(NodeObj_getNodeBase(this), pStrC);
+        obj_Release(pStrC);
+        pStrC = OBJ_NIL;
 
         // Return to caller.
         return pErr;

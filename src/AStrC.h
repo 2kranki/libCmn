@@ -189,6 +189,18 @@ extern "C" {
     
     /*!
      Create a new string that is the current string concatenated with
+     the contents of the provided string.
+     @return:   If successful, an AStrC object which must be released,
+                 otherwise OBJ_NIL and an Error Code is set.
+     */
+    ASTRC_DATA *    AStrC_AppendAStr(
+        ASTRC_DATA      *this,
+        ASTR_DATA       *pStr
+    );
+
+
+    /*!
+     Create a new string that is the current string concatenated with
      the contents of the UTF8 File.
      @return:   If successful, an AStrC object which must be released,
                  otherwise OBJ_NIL and an Error Code is set.

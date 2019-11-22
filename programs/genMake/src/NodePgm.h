@@ -159,7 +159,7 @@ extern "C" {
      ;
      Note: See ParseObject() for definition of objectNode.
      
-     @param     pNode   Node Pointer w/data
+     @param     pNode   Node Pointer w/data being hash node
      @param     ppBase  Returned Object Pointer area
      @return    If successful, a NodePgm object in ppBase which must be released con-
                 taining the description and OBJ_NIL, otherwise an ERESULT_DATA object
@@ -177,62 +177,62 @@ extern "C" {
 
     /*! Property: (Optional) Required Computer Architecture(s)
      */
-    ASTRARRAY_DATA * NodePgm_getArches (
+    ASTRCARRAY_DATA * NodePgm_getArches (
         NODEPGM_DATA    *this
     );
 
     bool             NodePgm_setArches (
         NODEPGM_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
     */
-    ASTRARRAY_DATA * NodePgm_getDeps (
+    ASTRCARRAY_DATA * NodePgm_getDeps (
         NODEPGM_DATA    *this
     );
 
     bool            NodePgm_setDeps (
         NODEPGM_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Headers
     */
-    ASTRARRAY_DATA * NodePgm_getHdrs (
+    ASTRCARRAY_DATA * NodePgm_getHdrs (
         NODEPGM_DATA    *this
     );
 
     bool            NodePgm_setHdrs (
         NODEPGM_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Main program file name
      */
-    ASTR_DATA *     NodePgm_getMain (
+    ASTRC_DATA *    NodePgm_getMain (
         NODEPGM_DATA    *this
     );
 
     bool            NodePgm_setMain (
         NODEPGM_DATA    *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     );
 
 
     /*! Property: Test program file name including file extension
      */
-    ASTR_DATA *     NodePgm_getName (
+    ASTRC_DATA *    NodePgm_getName (
         NODEPGM_DATA    *this
     );
 
     bool            NodePgm_setName (
         NODEPGM_DATA    *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     );
 
 
@@ -248,26 +248,26 @@ extern "C" {
 
     /*! Property: (Optional) Required Operating System(s)
      */
-    ASTRARRAY_DATA * NodePgm_getOSs (
+    ASTRCARRAY_DATA * NodePgm_getOSs (
         NODEPGM_DATA    *this
     );
 
     bool            NodePgm_setOSs (
         NODEPGM_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Extra Sources, zero or more file paths that
         are needed to compile with Name property.
     */
-    ASTRARRAY_DATA * NodePgm_getSrcs (
+    ASTRCARRAY_DATA * NodePgm_getSrcs (
         NODEPGM_DATA    *this
     );
 
     bool            NodePgm_setSrcs (
         NODEPGM_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
@@ -278,26 +278,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     NodePgm_Disable (
-        NODEPGM_DATA		*this
-    );
-
-
-    ERESULT     NodePgm_Enable (
-        NODEPGM_DATA		*this
-    );
-
-   
     NODEPGM_DATA *   NodePgm_Init (
         NODEPGM_DATA     *this
     );
 
 
-    ERESULT     NodePgm_IsEnabled (
-        NODEPGM_DATA		*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:

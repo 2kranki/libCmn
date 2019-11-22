@@ -97,7 +97,7 @@ extern "C" {
      */
     ERESULT_DATA *  NodeBase_AccumStrings(
         NODEARRAY_DATA  *pNodes,
-        ASTRARRAY_DATA  *pArray
+        ASTRCARRAY_DATA *pArray
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -106,6 +106,7 @@ extern "C" {
         uint32_t        i;
         uint32_t        iMax;
         ASTR_DATA       *pStr;
+        ASTRC_DATA      *pStrC;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -130,7 +131,10 @@ extern "C" {
             if (pNode) {
                 pStr = jsonIn_CheckNodeForString(pNode);
                 if (pStr) {
-                    eRc = AStrArray_AppendStr(pArray, pStr, NULL);
+                    pStrC = AStrC_NewFromAStr(pStr);
+                    eRc = AStrCArray_AppendAStrC(pArray, pStrC, NULL);
+                    obj_Release(pStrC);
+                    pStrC = OBJ_NIL;
                     if (ERESULT_FAILED(eRc)) {
                         pErr = eResult_NewStrA(eRc, NULL);
                         break;
@@ -192,9 +196,16 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (OBJ_NIL == pNode) {
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             DEBUG_BREAK();
-            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing Node!");
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Invalid Input Node!");
+            return pErr;
+        }
+        if (!obj_IsKindOf(node_getData(pNode), OBJ_IDENT_NODEHASH)) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Input Hash Node!");
             return pErr;
         }
         if (OBJ_NIL == ppBase) {
@@ -240,7 +251,7 @@ extern "C" {
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                   eRc = AStrArray_AppendStr(NodeBase_getArches(*ppBase), pStr, NULL);
+                   eRc = AStrCArray_AppendAStr(NodeBase_getArches(*ppBase), pStr, NULL);
                    if (ERESULT_FAILED(eRc)) {
                        return eResult_NewStrA(eRc, NULL);
                    }
@@ -259,7 +270,7 @@ extern "C" {
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                    eRc = AStrArray_AppendStr(NodeBase_getDeps(*ppBase), pStr, NULL);
+                    eRc = AStrCArray_AppendAStr(NodeBase_getDeps(*ppBase), pStr, NULL);
                     if (ERESULT_FAILED(eRc)) {
                         return eResult_NewStrA(eRc, NULL);
                     }
@@ -278,7 +289,7 @@ extern "C" {
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                    eRc = AStrArray_AppendStr(NodeBase_getHdrs(*ppBase), pStr, NULL);
+                    eRc = AStrCArray_AppendAStr(NodeBase_getHdrs(*ppBase), pStr, NULL);
                     if (ERESULT_FAILED(eRc)) {
                         return eResult_NewStrA(eRc, NULL);
                     }
@@ -297,7 +308,7 @@ extern "C" {
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                    eRc = AStrArray_AppendStr(NodeBase_getSrcs(*ppBase), pStr, NULL);
+                    eRc = AStrCArray_AppendAStr(NodeBase_getSrcs(*ppBase), pStr, NULL);
                     if (ERESULT_FAILED(eRc)) {
                         return eResult_NewStrA(eRc, NULL);
                     }
@@ -315,22 +326,24 @@ extern "C" {
             pHashItem = nodeHash_FindA(pHash, 0, "name");
             if (pHashItem) {
                 ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
+                ASTRC_DATA      *pStrC;
                 if (pStr) {
-                    eRc = NodeBase_setName(*ppBase, pStr);
-                    if (ERESULT_FAILED(eRc)) {
-                        return eResult_NewStrA(eRc, NULL);
-                    }
+                    pStrC = AStrC_NewFromAStr(pStr);
+                    NodeBase_setName(*ppBase, pStrC);
+                    obj_Release(pStrC);
+                    pStrC = OBJ_NIL;
                 }
             }
 
             pHashItem = nodeHash_FindA(pHash, 0, "suffix");
             if (pHashItem) {
                 ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
+                ASTRC_DATA      *pStrC;
                 if (pStr) {
-                    eRc = NodeBase_setSuffix(*ppBase, pStr);
-                    if (ERESULT_FAILED(eRc)) {
-                        return eResult_NewStrA(eRc, NULL);
-                    }
+                    pStrC = AStrC_NewFromAStr(pStr);
+                    NodeBase_setSuffix(*ppBase, pStrC);
+                    obj_Release(pStrC);
+                    pStrC = OBJ_NIL;
                 }
             }
 
@@ -338,7 +351,7 @@ extern "C" {
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                    eRc = AStrArray_AppendStr(NodeBase_getOSs(*ppBase), pStr, NULL);
+                    eRc = AStrCArray_AppendAStr(NodeBase_getOSs(*ppBase), pStr, NULL);
                     if (ERESULT_FAILED(eRc)) {
                         return eResult_NewStrA(eRc, NULL);
                     }
@@ -374,7 +387,7 @@ extern "C" {
     //                      A r c h e s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA *    NodeBase_getArches (
+    ASTRCARRAY_DATA *   NodeBase_getArches (
         NODEBASE_DATA       *this
     )
     {
@@ -394,7 +407,7 @@ extern "C" {
     
     bool                NodeBase_setArches (
         NODEBASE_DATA       *this,
-        ASTRARRAY_DATA      *pValue
+        ASTRCARRAY_DATA     *pValue
     )
     {
 #ifdef NDEBUG
@@ -422,7 +435,7 @@ extern "C" {
     //           S o u r c e  D e p e n d e n c i e s
     //---------------------------------------------------------------
     
-    ASTRARRAY_DATA *    NodeBase_getDeps (
+    ASTRCARRAY_DATA *   NodeBase_getDeps (
         NODEBASE_DATA       *this
     )
     {
@@ -442,7 +455,7 @@ extern "C" {
     
     bool                NodeBase_setDeps (
         NODEBASE_DATA       *this,
-        ASTRARRAY_DATA      *pValue
+        ASTRCARRAY_DATA     *pValue
     )
     {
 #ifdef NDEBUG
@@ -470,7 +483,7 @@ extern "C" {
     //                  S o u r c e  H e a d e r s
     //---------------------------------------------------------------
     
-    ASTRARRAY_DATA *    NodeBase_getHdrs (
+    ASTRCARRAY_DATA *   NodeBase_getHdrs (
         NODEBASE_DATA       *this
     )
     {
@@ -490,7 +503,7 @@ extern "C" {
     
     bool                NodeBase_setHdrs (
         NODEBASE_DATA       *this,
-        ASTRARRAY_DATA      *pValue
+        ASTRCARRAY_DATA     *pValue
     )
     {
 #ifdef NDEBUG
@@ -518,7 +531,7 @@ extern "C" {
     //                        N a m e
     //---------------------------------------------------------------
     
-    ASTR_DATA *     NodeBase_getName (
+    ASTRC_DATA *    NodeBase_getName (
         NODEBASE_DATA   *this
     )
     {
@@ -538,7 +551,7 @@ extern "C" {
     
     bool            NodeBase_setName (
         NODEBASE_DATA   *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -588,7 +601,7 @@ extern "C" {
     //                          O S
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA *    NodeBase_getOSs (
+    ASTRCARRAY_DATA *   NodeBase_getOSs (
         NODEBASE_DATA       *this
     )
     {
@@ -608,7 +621,7 @@ extern "C" {
     
     bool                NodeBase_setOSs (
         NODEBASE_DATA       *this,
-        ASTRARRAY_DATA      *pValue
+        ASTRCARRAY_DATA     *pValue
     )
     {
 #ifdef NDEBUG
@@ -700,7 +713,7 @@ extern "C" {
     //                          S o u r c e s
     //---------------------------------------------------------------
     
-    ASTRARRAY_DATA *    NodeBase_getSrcs (
+    ASTRCARRAY_DATA *   NodeBase_getSrcs (
         NODEBASE_DATA       *this
     )
     {
@@ -720,7 +733,7 @@ extern "C" {
     
     bool                NodeBase_setSrcs (
         NODEBASE_DATA       *this,
-        ASTRARRAY_DATA      *pValue
+        ASTRCARRAY_DATA     *pValue
     )
     {
 #ifdef NDEBUG
@@ -748,7 +761,7 @@ extern "C" {
     //                        S u f f i x
     //---------------------------------------------------------------
     
-    ASTR_DATA *     NodeBase_getSuffix (
+    ASTRC_DATA *    NodeBase_getSuffix (
         NODEBASE_DATA   *this
     )
     {
@@ -768,7 +781,7 @@ extern "C" {
     
     bool            NodeBase_setSuffix (
         NODEBASE_DATA   *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -829,7 +842,7 @@ extern "C" {
 
     ERESULT_DATA *  NodeBase_AppendArches (
         NODEBASE_DATA   *this,
-        ASTR_DATA       *pStr
+        ASTRC_DATA      *pStrC
     )
     {
         ERESULT         eRc;
@@ -843,7 +856,7 @@ extern "C" {
         }
 #endif
         
-        eRc = AStrArray_AppendStr(this->pArches, pStr, NULL);
+        eRc = AStrCArray_AppendAStrC(this->pArches, pStrC, NULL);
 
         // Return to caller.
         return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
@@ -852,7 +865,7 @@ extern "C" {
 
     ERESULT_DATA *  NodeBase_AppendDeps (
         NODEBASE_DATA   *this,
-        ASTR_DATA       *pStr
+        ASTRC_DATA      *pStrC
     )
     {
         ERESULT         eRc;
@@ -866,7 +879,7 @@ extern "C" {
         }
 #endif
         
-        eRc = AStrArray_AppendStr(this->pDeps, pStr, NULL);
+        eRc = AStrCArray_AppendAStrC(this->pDeps, pStrC, NULL);
 
         // Return to caller.
         return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
@@ -875,7 +888,7 @@ extern "C" {
 
     ERESULT_DATA *  NodeBase_AppendOSs (
         NODEBASE_DATA   *this,
-        ASTR_DATA       *pStr
+        ASTRC_DATA      *pStrC
     )
     {
         ERESULT         eRc;
@@ -889,7 +902,7 @@ extern "C" {
         }
 #endif
         
-        eRc = AStrArray_AppendStr(this->pOSs, pStr, NULL);
+        eRc = AStrCArray_AppendAStrC(this->pOSs, pStrC, NULL);
 
         // Return to caller.
         return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
@@ -898,7 +911,7 @@ extern "C" {
 
     ERESULT_DATA *  NodeBase_AppendSrcs (
         NODEBASE_DATA   *this,
-        ASTR_DATA       *pStr
+        ASTRC_DATA      *pStrC
     )
     {
         ERESULT         eRc;
@@ -912,7 +925,7 @@ extern "C" {
         }
     #endif
         
-        eRc = AStrArray_AppendStr(this->pSrcs, pStr, NULL);
+        eRc = AStrCArray_AppendAStrC(this->pSrcs, pStrC, NULL);
 
         // Return to caller.
         return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
@@ -1299,31 +1312,31 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeBase_Vtbl);
         
-        this->pDeps = AStrArray_New( );
+        this->pDeps = AStrCArray_New( );
         if (OBJ_NIL == this->pDeps) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pHdrs = AStrArray_New( );
+        this->pHdrs = AStrCArray_New( );
         if (OBJ_NIL == this->pHdrs) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pArches = AStrArray_New( );
+        this->pArches = AStrCArray_New( );
         if (OBJ_NIL == this->pArches) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pOSs = AStrArray_New( );
+        this->pOSs = AStrCArray_New( );
         if (OBJ_NIL == this->pOSs) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pSrcs = AStrArray_New( );
+        this->pSrcs = AStrCArray_New( );
         if (OBJ_NIL == this->pSrcs) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1520,14 +1533,32 @@ extern "C" {
         }
 #endif
         
+        if (this->pArches) {
+            eRc = AStrCArray_SortAscending(this->pArches);
+            if (ERESULT_FAILED(eRc)) {
+                return eResult_NewStrA(eRc, NULL);
+            }
+        }
         if (this->pDeps) {
-            eRc = AStrArray_SortAscending(this->pDeps);
+            eRc = AStrCArray_SortAscending(this->pDeps);
+            if (ERESULT_FAILED(eRc)) {
+                return eResult_NewStrA(eRc, NULL);
+            }
+        }
+        if (this->pHdrs) {
+            eRc = AStrCArray_SortAscending(this->pHdrs);
+            if (ERESULT_FAILED(eRc)) {
+                return eResult_NewStrA(eRc, NULL);
+            }
+        }
+        if (this->pOSs) {
+            eRc = AStrCArray_SortAscending(this->pOSs);
             if (ERESULT_FAILED(eRc)) {
                 return eResult_NewStrA(eRc, NULL);
             }
         }
         if (this->pSrcs) {
-            eRc = AStrArray_SortAscending(this->pSrcs);
+            eRc = AStrCArray_SortAscending(this->pSrcs);
             if (ERESULT_FAILED(eRc)) {
                 return eResult_NewStrA(eRc, NULL);
             }
@@ -1616,44 +1647,44 @@ extern "C" {
                 );
 
             if (this->pName) {
-                AStr_AppendPrint(pStr, "\tname: %s\n", AStr_getData(this->pName));
+                AStr_AppendPrint(pStr, "\tname: %s\n", AStrC_getData(this->pName));
             }
             if (this->pSuffix) {
-                AStr_AppendPrint(pStr, "\tsuffix: %s\n", AStr_getData(this->pSuffix));
+                AStr_AppendPrint(pStr, "\tsuffix: %s\n", AStrC_getData(this->pSuffix));
             }
             if (this->pArches) {
                 AStr_AppendPrint(pStr, "\tarches[\n");
-                iMax = AStrArray_getSize(this->pArches);
+                iMax = AStrCArray_getSize(this->pArches);
                 for (i=0; i<iMax; i++) {
                     AStr_AppendPrint(pStr, "\t\t%s\n",
-                                     AStr_getData(AStrArray_Get(this->pArches, i+1)));
+                                     AStrC_getData(AStrCArray_Get(this->pArches, i+1)));
                 }
                 AStr_AppendPrint(pStr, "\t]\n");
             }
             if (this->pOSs) {
                 AStr_AppendPrint(pStr, "\tOSs[\n");
-                iMax = AStrArray_getSize(this->pOSs);
+                iMax = AStrCArray_getSize(this->pOSs);
                 for (i=0; i<iMax; i++) {
                     AStr_AppendPrint(pStr, "\t\t%s\n",
-                                     AStr_getData(AStrArray_Get(this->pOSs, i+1)));
+                                     AStrC_getData(AStrCArray_Get(this->pOSs, i+1)));
                 }
                 AStr_AppendPrint(pStr, "\t]\n");
             }
             if (this->pDeps) {
                 AStr_AppendPrint(pStr, "\tdeps[\n");
-                iMax = AStrArray_getSize(this->pDeps);
+                iMax = AStrCArray_getSize(this->pDeps);
                 for (i=0; i<iMax; i++) {
                     AStr_AppendPrint(pStr, "\t\t%s\n",
-                                     AStr_getData(AStrArray_Get(this->pDeps, i+1)));
+                                     AStrC_getData(AStrCArray_Get(this->pDeps, i+1)));
                 }
                 AStr_AppendPrint(pStr, "\t]\n");
             }
             if (this->pSrcs) {
                 AStr_AppendPrint(pStr, "\tsrcs[\n");
-                iMax = AStrArray_getSize(this->pSrcs);
+                iMax = AStrCArray_getSize(this->pSrcs);
                 for (i=0; i<iMax; i++) {
                     AStr_AppendPrint(pStr, "\t\t%s\n",
-                                     AStr_getData(AStrArray_Get(this->pSrcs, i+1)));
+                                     AStrC_getData(AStrCArray_Get(this->pSrcs, i+1)));
                 }
                 AStr_AppendPrint(pStr, "\t]\n");
             }

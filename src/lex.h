@@ -219,12 +219,12 @@ extern "C" {
      * propriate default is chosen. The stack size is passed to Init()
      * via obj_misc1.
      */
-    LEX_DATA *     lex_Alloc (
+    LEX_DATA *      lex_Alloc (
         void
     );
     
     
-    LEX_DATA *     lex_New (
+    LEX_DATA *      lex_New (
         uint16_t        k
     );
     

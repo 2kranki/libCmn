@@ -177,6 +177,8 @@ int             test_NodeTest_Parse01(
     ASTRARRAY_DATA  *pStrArray = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODETEST_DATA   *pTest = OBJ_NIL;
+    ASTRCARRAY_DATA *pStrCArray = OBJ_NIL;
+    ASTRC_DATA      *pStrC = OBJ_NIL;
     const
     char            *pGoodJsonObject1 =
         "{\n"
@@ -230,31 +232,31 @@ int             test_NodeTest_Parse01(
     }
 
     // Validate the output.
-    pStrArray = NodeTest_getArches(pTest);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((1 == AStrArray_getSize(pStrArray)));
-        pStr = AStrArray_Get(pStrArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"X86")));
+    pStrCArray = NodeTest_getArches(pTest);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
+        pStrC = AStrCArray_Get(pStrCArray, 1);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"X86")));
     }
-    pStrArray = NodeTest_getOSs(pTest);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((1 == AStrArray_getSize(pStrArray)));
-        pStr = AStrArray_Get(pStrArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"macos")));
+    pStrCArray = NodeTest_getOSs(pTest);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
+        pStrC = AStrCArray_Get(pStrCArray, 1);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"macos")));
     }
-    pStrArray = NodeTest_getDeps(pTest);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((0 == AStrArray_getSize(pStrArray)));
+    pStrCArray = NodeTest_getDeps(pTest);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((0 == AStrCArray_getSize(pStrCArray)));
     }
-    pStrArray = NodeTest_getSrcs(pTest);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((1 == AStrArray_getSize(pStrArray)));
-        pStr = AStrArray_Get(pStrArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"abc.c")));
+    pStrCArray = NodeTest_getSrcs(pTest);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
+        pStrC = AStrCArray_Get(pStrCArray, 1);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"abc.c")));
     }
 
     obj_Release(pNodes);

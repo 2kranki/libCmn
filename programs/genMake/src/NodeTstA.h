@@ -148,38 +148,38 @@ extern "C" {
 
     /*! Property: (Optional) Required Computer Architecture(s)
      */
-    ASTRARRAY_DATA * NodeTstA_getArches (
+    ASTRCARRAY_DATA * NodeTstA_getArches (
         NODETSTA_DATA   *this
     );
 
     bool             NodeTstA_setArches (
         NODETSTA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
     */
-    ASTRARRAY_DATA * NodeTstA_getDeps (
+    ASTRCARRAY_DATA * NodeTstA_getDeps (
         NODETSTA_DATA   *this
     );
 
     bool            NodeTstA_setDeps (
         NODETSTA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Test program file name including file extension
      */
-    ASTR_DATA *     NodeTstA_getName (
+    ASTRC_DATA *    NodeTstA_getName (
         NODETSTA_DATA   *this
     );
 
     bool            NodeTstA_setName (
         NODETSTA_DATA   *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     );
 
 
@@ -195,26 +195,26 @@ extern "C" {
 
     /*! Property: (Optional) Required Operating System(s)
      */
-    ASTRARRAY_DATA * NodeTstA_getOSs (
+    ASTRCARRAY_DATA * NodeTstA_getOSs (
         NODETSTA_DATA   *this
     );
 
     bool            NodeTstA_setOSs (
         NODETSTA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Extra Sources, zero or more file paths that
         are needed to compile with Name property.
     */
-    ASTRARRAY_DATA * NodeTstA_getSrcs (
+    ASTRCARRAY_DATA * NodeTstA_getSrcs (
         NODETSTA_DATA   *this
     );
 
     bool            NodeTstA_setSrcs (
         NODETSTA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
@@ -225,26 +225,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     NodeTstA_Disable (
-        NODETSTA_DATA		*this
-    );
-
-
-    ERESULT     NodeTstA_Enable (
-        NODETSTA_DATA		*this
-    );
-
-   
     NODETSTA_DATA *   NodeTstA_Init (
         NODETSTA_DATA     *this
     );
 
 
-    ERESULT     NodeTstA_IsEnabled (
-        NODETSTA_DATA		*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:

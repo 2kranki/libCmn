@@ -216,26 +216,26 @@ extern "C" {
 
     /*! Property: (Optional) Required Computer Architecture(s)
      */
-    ASTRARRAY_DATA * NodeObj_getArches (
+    ASTRCARRAY_DATA * NodeObj_getArches (
         NODEOBJ_DATA    *this
     );
 
     bool             NodeObj_setArches (
         NODEOBJ_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on.
     */
-    ASTRARRAY_DATA * NodeObj_getDeps (
+    ASTRCARRAY_DATA * NodeObj_getDeps (
         NODEOBJ_DATA    *this
     );
 
     bool             NodeObj_setDeps (
         NODEOBJ_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
@@ -253,13 +253,13 @@ extern "C" {
 
     /*! Property: object file name
      */
-    ASTR_DATA *     NodeObj_getName (
+    ASTRC_DATA *    NodeObj_getName (
         NODEOBJ_DATA    *this
     );
 
     bool            NodeObj_setName (
         NODEOBJ_DATA    *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     );
 
 
@@ -275,26 +275,26 @@ extern "C" {
 
     /*! Property: (Optional) Required Operating System(s)
      */
-    ASTRARRAY_DATA * NodeObj_getOSs (
+    ASTRCARRAY_DATA * NodeObj_getOSs (
         NODEOBJ_DATA    *this
     );
 
     bool            NodeObj_setOSs (
         NODEOBJ_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 
     /*! Property: Extra Sources, zero or more file paths that
         are needed to compile with Name property.
     */
-    ASTRARRAY_DATA * NodeObj_getSrcs (
+    ASTRCARRAY_DATA * NodeObj_getSrcs (
         NODEOBJ_DATA    *this
     );
 
     bool            NodeObj_setSrcs (
         NODEOBJ_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     );
 
 

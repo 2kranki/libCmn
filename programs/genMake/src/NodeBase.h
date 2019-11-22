@@ -54,6 +54,8 @@
 #include        <genMake.h>
 #include        <node.h>
 #include        <AStr.h>
+#include        <AStrC.h>
+#include        <AStrCArray.h>
 
 
 #ifndef         NODEBASE_H
@@ -132,7 +134,7 @@ extern "C" {
      */
     ERESULT_DATA *  NodeBase_AccumStrings(
         NODEARRAY_DATA  *pNodes,
-        ASTRARRAY_DATA  *pArray
+        ASTRCARRAY_DATA *pArray
     );
 
 
@@ -229,13 +231,13 @@ extern "C" {
         This node will be restricted to the specified architectures
         if present.
      */
-    ASTRARRAY_DATA *    NodeBase_getArches (
+    ASTRCARRAY_DATA *   NodeBase_getArches (
             NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setArches (
             NODEBASE_DATA       *this,
-            ASTRARRAY_DATA      *pValue
+            ASTRCARRAY_DATA     *pValue
     );
 
 
@@ -244,13 +246,13 @@ extern "C" {
         will be listed in the first line of the makefile for this
         object.
     */
-    ASTRARRAY_DATA *    NodeBase_getDeps (
+    ASTRCARRAY_DATA *   NodeBase_getDeps (
             NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setDeps (
             NODEBASE_DATA       *this,
-            ASTRARRAY_DATA      *pValue
+            ASTRCARRAY_DATA     *pValue
     );
 
 
@@ -259,13 +261,13 @@ extern "C" {
         will be listed in the first line of the makefile for this
         object.
     */
-    ASTRARRAY_DATA *    NodeBase_getHdrs (
+    ASTRCARRAY_DATA *   NodeBase_getHdrs (
             NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setHdrs (
             NODEBASE_DATA       *this,
-            ASTRARRAY_DATA      *pValue
+            ASTRCARRAY_DATA     *pValue
     );
 
 
@@ -273,13 +275,13 @@ extern "C" {
         This is normally optional and will be filled in a later
         process. By specifying it here, you are over-riding that.
      */
-    ASTR_DATA *         NodeBase_getName (
+    ASTRC_DATA *        NodeBase_getName (
             NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setName (
             NODEBASE_DATA       *this,
-            ASTR_DATA           *pValue
+            ASTRC_DATA          *pValue
     );
 
 
@@ -296,13 +298,13 @@ extern "C" {
      *  This node will be restricted to the specified operating
      *  systems if present.
      */
-    ASTRARRAY_DATA *    NodeBase_getOSs (
+    ASTRCARRAY_DATA *   NodeBase_getOSs (
             NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setOSs (
             NODEBASE_DATA       *this,
-            ASTRARRAY_DATA      *pValue
+            ASTRCARRAY_DATA     *pValue
     );
 
 
@@ -310,26 +312,26 @@ extern "C" {
         are needed to compile with the Name property for the
         object to be complete.
     */
-    ASTRARRAY_DATA *    NodeBase_getSrcs (
+    ASTRCARRAY_DATA *   NodeBase_getSrcs (
             NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setSrcs (
             NODEBASE_DATA       *this,
-            ASTRARRAY_DATA      *pValue
+            ASTRCARRAY_DATA     *pValue
     );
 
 
     /*! Property: file name suffix (optional)
         The optional file extension suffix to be used with name.
      */
-    ASTR_DATA *         NodeBase_getSuffix (
+    ASTRC_DATA *        NodeBase_getSuffix (
             NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setSuffix (
             NODEBASE_DATA       *this,
-            ASTR_DATA           *pValue
+            ASTRC_DATA          *pValue
     );
 
 
@@ -342,56 +344,56 @@ extern "C" {
     /*!
      Append a string to the architeture list.
      @param     this    object pointer
-     @param     pStr    string pointer
+     @param     pStrC   string pointer
      @return    If successful, OBJ_NIL is returne, otherwise a new
                 ERESULT_DATA error object is returned.
      @warning   The ERESULT_DATA error object must be released.
      */
     ERESULT_DATA *  NodeBase_AppendArches (
         NODEBASE_DATA   *this,
-        ASTR_DATA       *pStr
+        ASTRC_DATA      *pStrC
     );
 
 
     /*!
      Append a string to the dependencies list.
      @param     this    object pointer
-     @param     pStr    string pointer
+     @param     pStrC   string pointer
      @return    If successful, OBJ_NIL is returne, otherwise a new
                 ERESULT_DATA error object is returned.
      @warning   The ERESULT_DATA error object must be released.
      */
     ERESULT_DATA *  NodeBase_AppendDeps (
         NODEBASE_DATA   *this,
-        ASTR_DATA       *pStr
+        ASTRC_DATA      *pStrC
     );
 
 
     /*!
      Append a string to the OS list.
      @param     this    object pointer
-     @param     pStr    string pointer
+     @param     pStrC   string pointer
      @return    If successful, OBJ_NIL is returne, otherwise a new
                 ERESULT_DATA error object is returned.
      @warning   The ERESULT_DATA error object must be released.
      */
     ERESULT_DATA *  NodeBase_AppendOSs (
         NODEBASE_DATA   *this,
-        ASTR_DATA       *pStr
+        ASTRC_DATA      *pStrC
     );
 
 
     /*!
      Append a string to the sources list.
      @param     this    object pointer
-     @param     pStr    string pointer
+     @param     pStrC   string pointer
      @return    If successful, OBJ_NIL is returne, otherwise a new
                 ERESULT_DATA error object is returned.
      @warning   The ERESULT_DATA error object must be released.
      */
     ERESULT_DATA *  NodeBase_AppendSrcs (
         NODEBASE_DATA   *this,
-        ASTR_DATA       *pStr
+        ASTRC_DATA      *pStrC
     );
 
 

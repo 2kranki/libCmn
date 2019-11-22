@@ -128,9 +128,16 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (OBJ_NIL == pNode) {
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             DEBUG_BREAK();
-            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing Input Node!");
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Invalid Input Node!");
+            return pErr;
+        }
+        if (!obj_IsKindOf(node_getData(pNode), OBJ_IDENT_NODEHASH)) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Input Hash Node!");
             return pErr;
         }
         if (OBJ_NIL == ppBase) {
@@ -179,7 +186,7 @@ extern "C" {
     //                  A r c h i t e c t u r e s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeLib_getArches (
+    ASTRCARRAY_DATA * NodeLib_getArches (
         NODELIB_DATA    *this
     )
     {
@@ -199,7 +206,7 @@ extern "C" {
 
     bool            NodeLib_setArches (
         NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -219,7 +226,7 @@ extern "C" {
     //                        D e p s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeLib_getDeps (
+    ASTRCARRAY_DATA * NodeLib_getDeps (
         NODELIB_DATA    *this
     )
     {
@@ -239,7 +246,7 @@ extern "C" {
 
     bool            NodeLib_setDeps (
         NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -259,7 +266,7 @@ extern "C" {
     //                        H d r s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeLib_getHdrs (
+    ASTRCARRAY_DATA * NodeLib_getHdrs (
         NODELIB_DATA    *this
     )
     {
@@ -279,7 +286,7 @@ extern "C" {
 
     bool            NodeLib_setHdrs (
         NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -299,7 +306,7 @@ extern "C" {
     //                        N a m e
     //---------------------------------------------------------------
 
-    ASTR_DATA *     NodeLib_getName (
+    ASTRC_DATA *    NodeLib_getName (
         NODELIB_DATA    *this
     )
     {
@@ -319,7 +326,7 @@ extern "C" {
 
     bool            NodeLib_setName (
         NODELIB_DATA    *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     )
     {
     #ifdef NDEBUG
@@ -383,7 +390,7 @@ extern "C" {
     //                        O S
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeLib_getOSs (
+    ASTRCARRAY_DATA * NodeLib_getOSs (
         NODELIB_DATA    *this
     )
     {
@@ -403,7 +410,7 @@ extern "C" {
 
     bool            NodeLib_setOSs (
         NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -487,7 +494,7 @@ extern "C" {
     //                          S r c s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeLib_getSrcs (
+    ASTRCARRAY_DATA * NodeLib_getSrcs (
         NODELIB_DATA    *this
     )
     {
@@ -507,7 +514,7 @@ extern "C" {
 
     bool            NodeLib_setSrcs (
         NODELIB_DATA    *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG

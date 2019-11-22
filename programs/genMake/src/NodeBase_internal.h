@@ -80,13 +80,13 @@ struct NodeBase_data_s	{
     // Common Data
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
-    ASTRARRAY_DATA  *pDeps;
-    ASTRARRAY_DATA  *pHdrs;
-    ASTR_DATA       *pName;
-    ASTRARRAY_DATA  *pOSs;
-    ASTRARRAY_DATA  *pArches;
-    ASTRARRAY_DATA  *pSrcs;
-    ASTR_DATA       *pSuffix;       // Name Suffix (optional)
+    ASTRCARRAY_DATA *pArches;
+    ASTRCARRAY_DATA *pDeps;
+    ASTRCARRAY_DATA *pHdrs;
+    ASTRC_DATA      *pName;
+    ASTRCARRAY_DATA *pOSs;
+    ASTRCARRAY_DATA *pSrcs;
+    ASTRC_DATA      *pSuffix;       // Name Suffix (optional)
 
 };
 #pragma pack(pop)

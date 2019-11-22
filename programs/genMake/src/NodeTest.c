@@ -125,6 +125,7 @@ extern "C" {
         NODEHASH_DATA   *pHash;
         NODETEST_DATA   *pTest;
         ASTR_DATA       *pName;
+        ASTRC_DATA      *pStrC;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -163,8 +164,11 @@ extern "C" {
         }
         pName = jsonIn_CheckNodeForString(pNode);
         if (pName) {
-            NodeTest_setName(pTest, pName);
+            pStrC = AStrC_NewFromAStr(pName);
+            NodeTest_setName(pTest, pStrC);
             *ppBase = pTest;
+            obj_Release(pStrC);
+            pStrC = OBJ_NIL;
             return OBJ_NIL;
         }
         
@@ -204,7 +208,7 @@ extern "C" {
     //                  A r c h i t e c t u r e s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeTest_getArches (
+    ASTRCARRAY_DATA * NodeTest_getArches (
         NODETEST_DATA   *this
     )
     {
@@ -224,7 +228,7 @@ extern "C" {
 
     bool            NodeTest_setArches (
         NODETEST_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -244,7 +248,7 @@ extern "C" {
     //                        D e p s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeTest_getDeps (
+    ASTRCARRAY_DATA * NodeTest_getDeps (
         NODETEST_DATA   *this
     )
     {
@@ -264,7 +268,7 @@ extern "C" {
 
     bool            NodeTest_setDeps (
         NODETEST_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -284,7 +288,7 @@ extern "C" {
     //                        N a m e
     //---------------------------------------------------------------
 
-    ASTR_DATA *     NodeTest_getName (
+    ASTRC_DATA *    NodeTest_getName (
         NODETEST_DATA   *this
     )
     {
@@ -304,7 +308,7 @@ extern "C" {
 
     bool            NodeTest_setName (
         NODETEST_DATA   *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -368,7 +372,7 @@ extern "C" {
     //                        O S
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeTest_getOSs (
+    ASTRCARRAY_DATA * NodeTest_getOSs (
         NODETEST_DATA   *this
     )
     {
@@ -388,7 +392,7 @@ extern "C" {
 
     bool            NodeTest_setOSs (
         NODETEST_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -472,7 +476,7 @@ extern "C" {
     //                          S r c s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeTest_getSrcs (
+    ASTRCARRAY_DATA * NodeTest_getSrcs (
         NODETEST_DATA   *this
     )
     {
@@ -492,7 +496,7 @@ extern "C" {
 
     bool            NodeTest_setSrcs (
         NODETEST_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
     #ifdef NDEBUG
@@ -556,6 +560,7 @@ extern "C" {
     )
     {
         ERESULT_DATA    *pErr = OBJ_NIL;
+        ASTRC_DATA      *pStrC;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -566,7 +571,14 @@ extern "C" {
         }
     #endif
 
-        pErr = NodeBase_AppendDeps(NodeTest_getNodeBase(this), pStr);
+        pStrC = AStrC_NewFromAStr(pStr);
+        if (OBJ_NIL == pStrC) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+        pErr = NodeBase_AppendDeps(NodeTest_getNodeBase(this), pStrC);
+        obj_Release(pStrC);
+        pStrC = OBJ_NIL;
 
         // Return to caller.
         return pErr;
@@ -579,6 +591,7 @@ extern "C" {
     )
     {
         ERESULT_DATA    *pErr = OBJ_NIL;
+        ASTRC_DATA      *pStrC;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -589,7 +602,14 @@ extern "C" {
         }
     #endif
 
-        pErr = NodeBase_AppendSrcs(NodeTest_getNodeBase(this), pStr);
+        pStrC = AStrC_NewFromAStr(pStr);
+        if (OBJ_NIL == pStrC) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+        pErr = NodeBase_AppendSrcs(NodeTest_getNodeBase(this), pStrC);
+        obj_Release(pStrC);
+        pStrC = OBJ_NIL;
 
         // Return to caller.
         return pErr;

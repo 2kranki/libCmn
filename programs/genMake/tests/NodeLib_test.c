@@ -177,6 +177,8 @@ int             test_NodeLib_Parse01(
     ASTRARRAY_DATA  *pStrArray = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     NODELIB_DATA    *pLib = OBJ_NIL;
+    ASTRCARRAY_DATA *pStrCArray = OBJ_NIL;
+    ASTRC_DATA      *pStrC = OBJ_NIL;
     const
     char            *pGoodJsonObject1 =
         "{name:\"Cmn\", "
@@ -222,35 +224,35 @@ int             test_NodeLib_Parse01(
     }
 
     // Validate the output.
-    pStr = NodeLib_getName(pLib);
-    TINYTEST_FALSE( (OBJ_NIL == pStr) );
-    TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"Cmn")));
-    pStrArray = NodeLib_getArches(pLib);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((0 == AStrArray_getSize(pStrArray)));
+    pStrC = NodeLib_getName(pLib);
+    TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+    TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"Cmn")));
+    pStrCArray = NodeLib_getArches(pLib);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((0 == AStrCArray_getSize(pStrCArray)));
     }
-    pStrArray = NodeLib_getOSs(pLib);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((0 == AStrArray_getSize(pStrArray)));
+    pStrCArray = NodeLib_getOSs(pLib);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((0 == AStrCArray_getSize(pStrCArray)));
     }
-    pStrArray = NodeLib_getDeps(pLib);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((0 == AStrArray_getSize(pStrArray)));
+    pStrCArray = NodeLib_getDeps(pLib);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((0 == AStrCArray_getSize(pStrCArray)));
     }
-    pStrArray = NodeLib_getHdrs(pLib);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((1 == AStrArray_getSize(pStrArray)));
-        pStr = AStrArray_Get(pStrArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,"cmn_defs.h")));
+    pStrCArray = NodeLib_getHdrs(pLib);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
+        pStrC = AStrCArray_Get(pStrCArray, 1);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"cmn_defs.h")));
     }
-    pStrArray = NodeLib_getSrcs(pLib);
-    TINYTEST_FALSE( (OBJ_NIL == pStrArray) );
-    if (pStrArray) {
-        TINYTEST_TRUE((0 == AStrArray_getSize(pStrArray)));
+    pStrCArray = NodeLib_getSrcs(pLib);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((0 == AStrCArray_getSize(pStrCArray)));
     }
 
     obj_Release(pNodes);

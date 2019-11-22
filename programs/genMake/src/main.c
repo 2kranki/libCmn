@@ -1380,7 +1380,7 @@ extern "C" {
         NODEHASH_DATA   *pHash = OBJ_NIL;
         NODEHASH_DATA   *pHashWrk = OBJ_NIL;
         GENBASE_DATA    *pGen;
-        DBPRS_DATA      *pPrs;
+        //FIXME: DBPRS_DATA      *pPrs;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1434,12 +1434,14 @@ extern "C" {
         }
         
         // Set up a Parser and Generator for the input.
-        pPrs = dbprs_NewWithDictAndGen(this->pDict, pGen);
+        //FIXME: pPrs = dbprs_NewWithDictAndGen(this->pDict, pGen);
+        /*
         if (OBJ_NIL == pPrs) {
             fprintf(stderr, "FATAL - Could not create database parser object!\n\n\n");
             exit(12);
         }
-        dbprs_setNodes(pPrs, this->pNodes);
+         */
+        //FIXME: dbprs_setNodes(pPrs, this->pNodes);
         
         pHash = node_getData(this->pNodes);
         if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
@@ -1456,7 +1458,7 @@ extern "C" {
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
                 genBase_setMakeType(pGen, GENMAKE_TYPE_LIB);
-                eRc = dbprs_ParseLibrary(pPrs, pHashWrk);
+                //FIXME: eRc = dbprs_ParseLibrary(pPrs, pHashWrk);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -1485,7 +1487,7 @@ extern "C" {
                 pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
                 if (pHashWrk) {
                     genBase_setMakeType(pGen, GENMAKE_TYPE_PGM);
-                    eRc = dbprs_ParseProgram(pPrs, pHashWrk);
+                    //FIXME: eRc = dbprs_ParseProgram(pPrs, pHashWrk);
                     if (ERESULT_FAILED(eRc)) {
                         fprintf(
                                 stderr,
@@ -1524,7 +1526,7 @@ extern "C" {
             }
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
-                eRc = dbprs_ParseObjects(pPrs, pHashWrk, &pArray);
+                //FIXME: eRc = dbprs_ParseObjects(pPrs, pHashWrk, &pArray);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -1553,7 +1555,7 @@ extern "C" {
             }
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
-                eRc = dbprs_ParseRoutines(pPrs, pArray);
+                //FIXME: eRc = dbprs_ParseRoutines(pPrs, pArray);
             }
             else {
                 fprintf(
@@ -1573,7 +1575,7 @@ extern "C" {
             }
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
-                eRc = dbprs_ParseTests(pPrs, pArray);
+                //FIXME: eRc = dbprs_ParseTests(pPrs, pArray);
             }
             else {
                 fprintf(
@@ -1596,7 +1598,7 @@ extern "C" {
                     }
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
-                        eRc = dbprs_ParseRoutines(pPrs, pArray);
+                        //FIXME: eRc = dbprs_ParseRoutines(pPrs, pArray);
                     }
                     else {
                         fprintf(
@@ -1618,7 +1620,7 @@ extern "C" {
                     }
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
-                        eRc = dbprs_ParseRoutines(pPrs, pArray);
+                        //FIXME: eRc = dbprs_ParseRoutines(pPrs, pArray);
                     }
                     else {
                         fprintf(
@@ -1639,7 +1641,7 @@ extern "C" {
                     }
                     pArray = jsonIn_CheckNodeDataForArray(pNode);
                     if (pArray) {
-                        eRc = dbprs_ParseRoutines(pPrs, pArray);
+                        //FIXME: eRc = dbprs_ParseRoutines(pPrs, pArray);
                     }
                     else {
                         fprintf(
@@ -1661,16 +1663,16 @@ extern "C" {
         }
         
         // Generate the trailing part of the Makefile.
-        eRc = dbprs_Finalize(pPrs);
+        //FIXME: eRc = dbprs_Finalize(pPrs);
         
-        pStr = dbprs_getStr(pPrs);
+        //FIXME: pStr = dbprs_getStr(pPrs);
         if (pStr) {
             textOut_PutA(this->pOutput, AStr_getData(pStr));
         }
         
         // Return to caller.
-        obj_Release(pPrs);
-        pPrs = OBJ_NIL;
+        //FIXME: obj_Release(pPrs);
+        //FIXME: pPrs = OBJ_NIL;
         obj_Release(pGen);
         pGen = OBJ_NIL;
         return eRc;

@@ -126,7 +126,7 @@ extern "C" {
     //                  A r c h i t e c t u r e s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeRtnA_getArches (
+    ASTRCARRAY_DATA * NodeRtnA_getArches (
         NODERTNA_DATA   *this
     )
     {
@@ -146,7 +146,7 @@ extern "C" {
 
     bool            NodeRtnA_setArches (
         NODERTNA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -166,7 +166,7 @@ extern "C" {
     //                        D e p s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeRtnA_getDeps (
+    ASTRCARRAY_DATA * NodeRtnA_getDeps (
         NODERTNA_DATA    *this
     )
     {
@@ -186,7 +186,7 @@ extern "C" {
 
     bool            NodeRtnA_setDeps (
         NODERTNA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -206,7 +206,7 @@ extern "C" {
     //                        N a m e
     //---------------------------------------------------------------
 
-    ASTR_DATA *     NodeRtnA_getName (
+    ASTRC_DATA *    NodeRtnA_getName (
         NODERTNA_DATA   *this
     )
     {
@@ -226,7 +226,7 @@ extern "C" {
 
     bool            NodeRtnA_setName (
         NODERTNA_DATA   *this,
-        ASTR_DATA       *pValue
+        ASTRC_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -290,7 +290,7 @@ extern "C" {
     //                        O S
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeRtnA_getOSs (
+    ASTRCARRAY_DATA * NodeRtnA_getOSs (
         NODERTNA_DATA   *this
     )
     {
@@ -310,7 +310,7 @@ extern "C" {
 
     bool            NodeRtnA_setOSs (
         NODERTNA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
 #ifdef NDEBUG
@@ -394,7 +394,7 @@ extern "C" {
     //                          S r c s
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * NodeRtnA_getSrcs (
+    ASTRCARRAY_DATA * NodeRtnA_getSrcs (
         NODERTNA_DATA   *this
     )
     {
@@ -414,7 +414,7 @@ extern "C" {
 
     bool            NodeRtnA_setSrcs (
         NODERTNA_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        ASTRCARRAY_DATA *pValue
     )
     {
     #ifdef NDEBUG
