@@ -10,17 +10,21 @@ X Finish NodeObj::Parse
 	X Update name, etc  in Test node after parse.
 * Finish NodeHdr::Parse (which can include a 'test' Rtn as well)
 * Finish NodeHdr_test
-* Finish NodePgm::Parse
-* Finish NodePgm_test
-* Finish NodeLib::Parse 
-* Finish NodeLib_test
+X Finish NodePgm::Parse
+X Finish NodePgm_test
+X Finish NodeLib::Parse 
+X Finish NodeLib_test
 
-* Create Rtn and Test arrays that will be used to generate programs.
+* ExpandNodes will create Rtns array for RtnA objects and Tests array for 
+    TstA objects that will be used to generate programs:
     * Write Hdr/Rtn/Test expansions for NodeObj 
     * Write HdrRtn/Test expansions for NodeRtn
 
 * Write code generation from arrays and Pgm or Lib Nodes from prior step. 
-    * macos
+    * macos64
     * win32 
     * win64
 
+* HJSon now puts a SrcLoc object in each node for error messages. Expand
+    the error messages to include it.
+ 

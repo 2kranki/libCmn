@@ -76,7 +76,8 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
         OBJ_ID          pChild = OBJ_NIL;
         //bool            fRc;
-        
+        SRCLOC_DATA     *pLoc = OBJ_NIL;
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -91,6 +92,9 @@ extern "C" {
         tokenClass = token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_LBRACKET ) {
             TRC_OBJ(this,"\t[ - found\n");
+            if (OBJ_NIL == pLoc) {
+                pLoc = token_ToSrcLoc(pToken);
+            }
             lexj_TokenAdvance(this->pLexJ, 1);
         }
         else {
@@ -100,6 +104,7 @@ extern "C" {
         pArray = nodeArray_New( );
         if (pArray == OBJ_NIL) {
             srcErrors_AddFatalFromTokenA(OBJ_NIL, pToken, "Out of Memory");
+            obj_Release(pLoc);
             return pNode;
         }
         
@@ -155,7 +160,8 @@ extern "C" {
                                              AStr_getData(pStr)
                                              );
                 obj_Release(pStr);
-                return pNode;
+                obj_Release(pLoc);
+                return OBJ_NIL;
             }
         }
         
@@ -163,9 +169,15 @@ extern "C" {
         obj_Release(pArray);
         if (pNode == OBJ_NIL) {
             srcErrors_AddFatalA(OBJ_NIL, NULL, "Out of Memory");
-            return pNode;
+            obj_Release(pLoc);
+            return OBJ_NIL;
         }
-        
+        if (pLoc && pNode) {
+            node_setExtra(pNode, pLoc);
+        }
+        obj_Release(pLoc);
+        pLoc = OBJ_NIL;
+
         return pNode;
     }
     
@@ -185,7 +197,8 @@ extern "C" {
         NODEHASH_DATA   *pHash = OBJ_NIL;
         NODE_DATA       *pChild;
         ERESULT         eRc;
-        
+        SRCLOC_DATA     *pLoc = OBJ_NIL;
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -200,15 +213,19 @@ extern "C" {
         tokenClass = token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_LBRACE ) {
             TRC_OBJ(this,"\t{ - found\n");
+            if (OBJ_NIL == pLoc) {
+                pLoc = token_ToSrcLoc(pToken);
+            }
             lexj_TokenAdvance(this->pLexJ, 1);
         }
         else {
-            return pNode;
+            return OBJ_NIL;
         }
         
         pHash = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
         if (pHash == OBJ_NIL) {
             DEBUG_BREAK();
+            obj_Release(pLoc);
             return OBJ_NIL;
         }
 
@@ -267,19 +284,25 @@ extern "C" {
                 AStr_getData(pStr)
             );
             obj_Release(pStr);
+            obj_Release(pLoc);
             obj_Release(pNode);
             pNode = OBJ_NIL;
             return pNode;
         }
         
         pNode = jsonIn_NodeFromHash(pHash);
+        if (pLoc && pNode) {
+            node_setExtra(pNode, pLoc);
+        }
+        obj_Release(pLoc);
+        pLoc = OBJ_NIL;
         obj_Release(pHash);
         pHash = OBJ_NIL;
         if (pNode == OBJ_NIL) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
-        
+
         return pNode;
     }
     
@@ -299,7 +322,8 @@ extern "C" {
         FALSE_DATA      *pFalse = OBJ_NIL;
         NULL_DATA       *pNull = null_New();
         TRUE_DATA       *pTrue = true_New();
-        
+        SRCLOC_DATA     *pLoc = OBJ_NIL;
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -312,6 +336,9 @@ extern "C" {
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
         tokenClass = token_getClass(pToken);
+        if (OBJ_NIL == pLoc) {
+            pLoc = token_ToSrcLoc(pToken);
+        }
 
         switch (tokenClass) {
                 
@@ -321,6 +348,11 @@ extern "C" {
                 obj_Release(pFalse);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\tfalse\n");
+                if (pLoc && pNode) {
+                    node_setExtra(pNode, pLoc);
+                    obj_Release(pLoc);
+                    pLoc = OBJ_NIL;
+                }
                 break;
                 
             case LEXJ_KWD_NULL:
@@ -329,6 +361,11 @@ extern "C" {
                 obj_Release(pNull);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\tnull\n");
+                if (pLoc && pNode) {
+                    node_setExtra(pNode, pLoc);
+                    obj_Release(pLoc);
+                    pLoc = OBJ_NIL;
+                }
                 break;
                 
             case LEXJ_KWD_TRUE:
@@ -337,12 +374,19 @@ extern "C" {
                 obj_Release(pTrue);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\ttrue\n");
+                if (pLoc && pNode) {
+                    node_setExtra(pNode, pLoc);
+                    obj_Release(pLoc);
+                    pLoc = OBJ_NIL;
+                }
                 break;
                 
             default:
                 break;
         }
         
+        obj_Release(pLoc);
+        pLoc = OBJ_NIL;
         return pNode;
     }
     
@@ -360,7 +404,8 @@ extern "C" {
         int32_t         tokenClass;
         NODE_DATA       *pNode = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
-        
+        SRCLOC_DATA     *pLoc = OBJ_NIL;
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -375,12 +420,16 @@ extern "C" {
         tokenClass = token_getClass(pToken);
         pStr = token_ToDataString(pToken);
         AStr_Trim(pStr);
+        if (OBJ_NIL == pLoc) {
+            pLoc = token_ToSrcLoc(pToken);
+        }
         if( tokenClass == LEXJ_CONSTANT_STRING ) {
             lexj_TokenAdvance(this->pLexJ, 1);
         }
         else {
             obj_Release(pStr);
-            return pNode;
+            obj_Release(pLoc);
+            return OBJ_NIL;
         }
         
         if (pStr) {
@@ -388,8 +437,13 @@ extern "C" {
             pNode = node_NewWithUTF8ConAndClass(0, "name", pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
+            if (pLoc && pNode) {
+                node_setExtra(pNode, pLoc);
+            }
         }
         
+        obj_Release(pLoc);
+        pLoc = OBJ_NIL;
         return pNode;
     }
     
@@ -486,15 +540,12 @@ extern "C" {
             }
             lexj_TokenAdvance(this->pLexJ, 1);
         }
-        else {
-            return OBJ_NIL;
-        }
         
         if (pLoc && pNode) {
             node_setExtra(pNode, pLoc);
-            obj_Release(pLoc);
-            pLoc = OBJ_NIL;
         }
+        obj_Release(pLoc);
+        pLoc = OBJ_NIL;
         return pNode;
     }
     
@@ -519,7 +570,8 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
         const
         char            *pszName;
-        
+        SRCLOC_DATA     *pLoc = OBJ_NIL;
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -536,6 +588,8 @@ extern "C" {
         if (pName == OBJ_NIL) {
             return OBJ_NIL;
         }
+        pLoc = node_getExtra(pName);
+        obj_Retain(pLoc);
 
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
@@ -548,9 +602,10 @@ extern "C" {
             srcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
-                "Expecting ':'"
+                "Expecting ':' or '='"
             );
             obj_Release(pName);
+            obj_Release(pLoc);
             return OBJ_NIL;
         }
         
@@ -562,6 +617,7 @@ extern "C" {
                 "Expecting \"value\""
             );
             obj_Release(pName);
+            obj_Release(pLoc);
             return OBJ_NIL;
         }
         
@@ -585,7 +641,12 @@ extern "C" {
         pData = OBJ_NIL;
         obj_Release(pName);
         pName = OBJ_NIL;
-        
+        if (pLoc) {
+            node_setExtra(pNode, pLoc);
+        }
+        obj_Release(pLoc);
+        pLoc = OBJ_NIL;
+
         return pNode;
     }
     
@@ -638,11 +699,11 @@ extern "C" {
             pStr = OBJ_NIL;
             if (pLoc) {
                 node_setExtra(pNode, pLoc);
-                obj_Release(pLoc);
-                pLoc = OBJ_NIL;
             }
         }
-        
+        obj_Release(pLoc);
+        pLoc = OBJ_NIL;
+
         return pNode;
     }
     
