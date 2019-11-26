@@ -1651,7 +1651,20 @@ extern "C" {
             if (this->pProperties) {
                 pVtbl = obj_getVtbl(this->pProperties);
                 if (pVtbl && pVtbl->pToDebugString) {
-                    pWrkStr = pVtbl->pToDebugString(this->pData, indent+6);
+                    pWrkStr = pVtbl->pToDebugString(this->pProperties, indent+6);
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
+            }
+        }
+        
+        if (this->pExtra) {
+            AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+            AStr_AppendA(pStr, "Extra:\n");
+            if (this->pExtra) {
+                pVtbl = obj_getVtbl(this->pExtra);
+                if (pVtbl && pVtbl->pToDebugString) {
+                    pWrkStr = pVtbl->pToDebugString(this->pExtra, indent+6);
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
                 }
@@ -1664,7 +1677,7 @@ extern "C" {
             if (this->pOther) {
                 pVtbl = obj_getVtbl(this->pOther);
                 if (pVtbl && pVtbl->pToDebugString) {
-                    pWrkStr = pVtbl->pToDebugString(this->pData, indent+6);
+                    pWrkStr = pVtbl->pToDebugString(this->pOther, indent+6);
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
                 }

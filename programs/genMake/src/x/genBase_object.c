@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'dbprs'
-//	Generated 09/04/2018 13:50:27
+//	Class Object Metods and Tables for 'genBase'
+//	Generated 04/10/2018 10:49:33
 
 
 /*
@@ -33,10 +33,10 @@
 
 
 
-//#define   DBPRS_IS_SINGLETON     1
+//#define   GENBASE_IS_SINGLETON     1
 
-#define			DBPRS_OBJECT_C	    1
-#include        <dbprs_internal.h>
+#define			GENBASE_OBJECT_C	    1
+#include        <genBase_internal.h>
 
 
 
@@ -44,7 +44,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct dbprs_class_data_s	{
+struct genBase_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -52,7 +52,7 @@ struct dbprs_class_data_s	{
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct dbprs_class_data_s DBPRS_CLASS_DATA;
+typedef struct genBase_class_data_s GENBASE_CLASS_DATA;
 
 
 
@@ -64,7 +64,7 @@ typedef struct dbprs_class_data_s DBPRS_CLASS_DATA;
 
 
 static
-void *          dbprsClass_QueryInfo(
+void *          genBaseClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,17 +73,17 @@ void *          dbprsClass_QueryInfo(
 
 static
 const
-OBJ_INFO        dbprs_Info;            // Forward Reference
+OBJ_INFO        genBase_Info;            // Forward Reference
 
 
 
 
 static
-bool            dbprsClass_IsKindOf(
+bool            genBaseClass_IsKindOf(
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_DBPRS_CLASS == classID) {
+    if (MAIN_IDENT_GENBASE_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -94,25 +94,25 @@ bool            dbprsClass_IsKindOf(
 
 
 static
-uint16_t		dbprsClass_WhoAmI(
+uint16_t		genBaseClass_WhoAmI(
     void
 )
 {
-    return MAIN_IDENT_DBPRS_CLASS;
+    return MAIN_IDENT_GENBASE_CLASS;
 }
 
 
 static
 const
 OBJ_IUNKNOWN    class_Vtbl = {
-	&dbprs_Info,
-    dbprsClass_IsKindOf,
+	&genBase_Info,
+    genBaseClass_IsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    dbprs_Class,
-    dbprsClass_WhoAmI,
-    (P_OBJ_QUERYINFO)dbprsClass_QueryInfo
+    genBase_Class,
+    genBaseClass_WhoAmI,
+    (P_OBJ_QUERYINFO)genBaseClass_QueryInfo
 };
 
 
@@ -122,12 +122,12 @@ OBJ_IUNKNOWN    class_Vtbl = {
 //-----------------------------------------------------------
 
 const
-DBPRS_CLASS_DATA  dbprs_ClassObj = {
+GENBASE_CLASS_DATA  genBase_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
-        sizeof(DBPRS_CLASS_DATA),           // cbSize
+        sizeof(GENBASE_CLASS_DATA),         // cbSize
         0,                                  // cbFlags
-        0,                                  // eRc
+        1,                                  // cbRetainCount
         {0}                                 // cbMisc
     },
 	//0
@@ -140,13 +140,13 @@ DBPRS_CLASS_DATA  dbprs_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          dbprsClass_QueryInfo(
+void *          genBaseClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    DBPRS_CLASS_DATA *this = objId;
+    GENBASE_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -160,7 +160,7 @@ void *          dbprsClass_QueryInfo(
             return this;
             break;
             
-        // Query for an address to specific data within the object.  
+        // Query for an address to specific data within the object.
         // This should be used very sparingly since it breaks the 
         // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -168,7 +168,7 @@ void *          dbprsClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&dbprs_Info;
+                        return (void *)&genBase_Info;
                     }
                     break;
                     
@@ -185,15 +185,9 @@ void *          dbprsClass_QueryInfo(
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
-                case 'P':
-                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return dbprs_ParseObject;
-                    }
-                    break;
-
-                 case 'W':
+                case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return dbprsClass_WhoAmI;
+                        return genBaseClass_WhoAmI;
                     }
                     break;
                     
@@ -219,11 +213,11 @@ void *          dbprsClass_QueryInfo(
 //===========================================================
 
 static
-bool            dbprs_IsKindOf(
+bool            genBase_IsKindOf(
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_DBPRS == classID) {
+    if (MAIN_IDENT_GENBASE == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -235,70 +229,74 @@ bool            dbprs_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            dbprs_Dealloc(
+void            genBase_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          dbprs_Class(
+OBJ_ID          genBase_Class(
     void
 )
 {
-    return (OBJ_ID)&dbprs_ClassObj;
+    return (OBJ_ID)&genBase_ClassObj;
 }
 
 
 static
-uint16_t		dbprs_WhoAmI(
+uint16_t		genBase_WhoAmI(
     void
 )
 {
-    return MAIN_IDENT_DBPRS;
+    return MAIN_IDENT_GENBASE;
 }
 
 
 const
-DBPRS_VTBL     dbprs_Vtbl = {
+GENBASE_VTBL     genBase_Vtbl = {
     {
-        &dbprs_Info,
-        dbprs_IsKindOf,
-#ifdef  DBPRS_IS_SINGLETON
+        &genBase_Info,
+        genBase_IsKindOf,
+#ifdef  GENMAKE_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        dbprs_Dealloc,
-        dbprs_Class,
-        dbprs_WhoAmI,
-        (P_OBJ_QUERYINFO)dbprs_QueryInfo,
-        (P_OBJ_TOSTRING)dbprs_ToDebugString,
-        NULL,			// dbprs_Enable,
-        NULL,			// dbprs_Disable,
-        NULL,			// (P_OBJ_ASSIGN)dbprs_Assign,
-        NULL,			// (P_OBJ_COMPARE)dbprs_Compare,
-        NULL, 			// (P_OBJ_PTR)dbprs_Copy,
-        NULL, 			// (P_OBJ_PTR)dbprs_DeepCopy,
-        NULL 			// (P_OBJ_HASH)dbprs_Hash,
+        genBase_Dealloc,
+        genBase_Class,
+        genBase_WhoAmI,
+        (P_OBJ_QUERYINFO)genBase_QueryInfo,
+        (P_OBJ_TOSTRING)genBase_ToDebugString,
+        NULL,			// genBase_Enable,
+        NULL,			// genBase_Disable,
+        NULL,			// (P_OBJ_ASSIGN)genBase_Assign,
+        NULL,			// (P_OBJ_COMPARE)genBase_Compare,
+        NULL, 			// (P_OBJ_PTR)genBase_Copy,
+        NULL, 			// (P_OBJ_PTR)genBase_DeepCopy,
+        NULL 			// (P_OBJ_HASH)genBase_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //dbprs_IsEnabled,
- 
+    NULL,               // pGenCompileRoutine
+    NULL,               // pGenCompileJson
+    NULL,               // pGenCompileObject
+    NULL,               // pGenCompileTest
+    (void *)genBase_GenFinal,
+    (void *)genBase_GenInitial
 };
 
 
 
 static
 const
-OBJ_INFO        dbprs_Info = {
-    "dbprs",
-    "genMake Database Parser",
-    (OBJ_DATA *)&dbprs_ClassObj,
+OBJ_INFO        genBase_Info = {
+    "genBase",
+    "Generate portions of a Makefile",
+    (OBJ_DATA *)&genBase_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&dbprs_Vtbl
+    (OBJ_IUNKNOWN *)&genBase_Vtbl
 };
 
 

@@ -62,7 +62,7 @@ struct psxSem_data_s	{
     int32_t         count;
     int32_t         max;
     int32_t         wakeups;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
     pthread_mutex_t mutex;
     pthread_cond_t  cond;
 #endif

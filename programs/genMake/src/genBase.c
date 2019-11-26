@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   genBase.c
- *	Generated 04/10/2018 10:49:33
+ * File:   GenBase.c
+ *	Generated 11/23/2019 12:07:15
  *
  */
 
@@ -41,10 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <genBase_internal.h>
-#include <ascii.h>
-#include <path.h>
-#include <trace.h>
+#include        <GenBase_internal.h>
+#include        <trace.h>
+
+
+
 
 
 
@@ -63,7 +64,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            genBase_task_body(
+    void            GenBase_task_body (
         void            *pData
     )
     {
@@ -83,15 +84,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    GENBASE_DATA *     genBase_Alloc(
+    GENBASE_DATA *     GenBase_Alloc (
+        void
     )
     {
-        GENBASE_DATA    *this;
+        GENBASE_DATA       *this;
         uint32_t        cbSize = sizeof(GENBASE_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -99,14 +101,15 @@ extern "C" {
 
 
 
-    GENBASE_DATA *     genBase_New(
+    GENBASE_DATA *     GenBase_New (
+        void
     )
     {
         GENBASE_DATA       *this;
         
-        this = genBase_Alloc( );
+        this = GenBase_Alloc( );
         if (this) {
-            this = genBase_Init(this);
+            this = GenBase_Init(this);
         } 
         return this;
     }
@@ -120,414 +123,10 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                  D a t e  T i m e
-    //---------------------------------------------------------------
-    
-    DATETIME_DATA * genBase_getDateTime(
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pDateTime;
-    }
-    
-    
-    bool            genBase_setDateTime(
-        GENBASE_DATA    *this,
-        DATETIME_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pDateTime) {
-            obj_Release(this->pDateTime);
-        }
-        this->pDateTime = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  D i c t i o n a r y
-    //---------------------------------------------------------------
-    
-    NODEHASH_DATA * genBase_getDict(
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pDict;
-    }
-    
-    
-    bool            genBase_setDict(
-        GENBASE_DATA    *this,
-        NODEHASH_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pDict) {
-            obj_Release(this->pDict);
-        }
-        this->pDict = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      L i b D e p s
-    //---------------------------------------------------------------
-    
-    NODEARRAY_DATA * genBase_getLibDeps(
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pLibDeps;
-    }
-    
-    
-    bool            genBase_setLibDeps(
-        GENBASE_DATA    *this,
-        NODEARRAY_DATA  *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pLibDeps) {
-            obj_Release(this->pLibDeps);
-        }
-        this->pLibDeps = pValue;
-        
-        return true;
-    }
-    
-    
-
-    //---------------------------------------------------------------
-    //          L i b r a r y  I n c l u d e  P a t h
-    //---------------------------------------------------------------
-    
-    ERESULT         genBase_setLibIncludePath(
-        GENBASE_DATA    *this,
-        PATH_DATA *     (*pLibIncludePath)(
-                            GENBASE_DATA *,
-                            const char *,
-                            const char *,
-                            const char *
-                        )
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        this->pLibIncludePath = pLibIncludePath;
-        
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //          L i b r a r y  I n s t a l l e d  P a t h
-    //---------------------------------------------------------------
-    
-    ERESULT         genBase_setLibInstalledPath(
-        GENBASE_DATA    *this,
-        PATH_DATA *     (*pLibInstalledPath)(
-                             GENBASE_DATA *,
-                             const char *,
-                             const char *,
-                             const char *
-                        )
-        )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        this->pLibInstalledPath = pLibInstalledPath;
-        
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //          L i b r a r y  N a m e
-    //---------------------------------------------------------------
-    
-    ERESULT         genBase_setLibName(
-        GENBASE_DATA    *this,
-        ASTR_DATA *     (*pLibName)(
-                            GENBASE_DATA *,
-                            const char *,
-                            const char *
-                        )
-        )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        this->pLibName = pLibName;
-        
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       M a k e  T y p e
-    //---------------------------------------------------------------
-    
-    uint16_t        genBase_getMakeType(
-        GENBASE_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->makeType;
-    }
-    
-    
-    bool            genBase_setMakeType(
-        GENBASE_DATA    *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->makeType = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //         S c a n n e d  D a t a b a s e  N o d e s
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     genBase_getNodes(
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pNodes;
-    }
-    
-    
-    bool            genBase_setNodes(
-        GENBASE_DATA    *this,
-        NODE_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pNodes) {
-            obj_Release(this->pNodes);
-        }
-        this->pNodes = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      O b j  D i r s
-    //---------------------------------------------------------------
-    
-    NODEHASH_DATA * genBase_getObjDirs(
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pObjDirs;
-    }
-    
-    
-    bool            genBase_setObjDirs(
-        GENBASE_DATA    *this,
-        NODEHASH_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pObjDirs) {
-            obj_Release(this->pObjDirs);
-        }
-        this->pObjDirs = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      O u t p u t
-    //---------------------------------------------------------------
-    
-    TEXTOUT_DATA *  genBase_getOutput(
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pOutput;
-    }
-    
-
-    bool            genBase_setOutput(
-        GENBASE_DATA    *this,
-        TEXTOUT_DATA    *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pOutput) {
-            obj_Release(this->pOutput);
-        }
-        this->pOutput = pValue;
-        
-        return true;
-    }
-    
-    
-
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        genBase_getPriority(
+    uint16_t        GenBase_getPriority (
         GENBASE_DATA     *this
     )
     {
@@ -535,7 +134,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -546,14 +145,14 @@ extern "C" {
     }
 
 
-    bool            genBase_setPriority(
+    bool            GenBase_setPriority (
         GENBASE_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -566,17 +165,17 @@ extern "C" {
 
 
 
-   //---------------------------------------------------------------
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        genBase_getSize(
+    uint32_t        GenBase_getSize (
         GENBASE_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -588,45 +187,47 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      S r c D e p s
+    //                              S t r
     //---------------------------------------------------------------
     
-    NODEARRAY_DATA * genBase_getSrcDeps(
-        GENBASE_DATA    *this
+    ASTR_DATA * GenBase_getStr (
+        GENBASE_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        return this->pSrcDeps;
+        return this->pStr;
     }
     
     
-    bool            genBase_setSrcDeps(
-        GENBASE_DATA    *this,
-        NODEARRAY_DATA  *pValue
+    bool        GenBase_setStr (
+        GENBASE_DATA     *this,
+        ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
+#ifdef  PROPERTY_STR_OWNED
         obj_Retain(pValue);
-        if (this->pSrcDeps) {
-            obj_Release(this->pSrcDeps);
+        if (this->pStr) {
+            obj_Release(this->pStr);
         }
-        this->pSrcDeps = pValue;
+#endif
+        this->pStr = pValue;
         
         return true;
     }
@@ -637,7 +238,7 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  genBase_getSuperVtbl(
+    OBJ_IUNKNOWN *  GenBase_getSuperVtbl (
         GENBASE_DATA     *this
     )
     {
@@ -645,7 +246,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -657,7 +258,7 @@ extern "C" {
     
   
 
-
+    
 
     //===============================================================
     //                          M e t h o d s
@@ -674,28 +275,28 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = genBase__Assign(this,pOther);
+        ERESULT eRc = GenBase_Assign(this,pOther);
      @endcode 
-     @param     this    GENMAKE object pointer
-     @param     pOther  a pointer to another GENMAKE object
+     @param     this    GENBASE object pointer
+     @param     pOther  a pointer to another GENBASE object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         genBase_Assign(
-        GENBASE_DATA	*this,
-        GENBASE_DATA    *pOther
+    ERESULT         GenBase_Assign (
+        GENBASE_DATA		*this,
+        GENBASE_DATA     *pOther
     )
     {
-        ERESULT         eRc;
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !genBase_Validate(pOther) ) {
+        if (!GenBase_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -747,7 +348,7 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         genBase_Compare(
+    ERESULT         GenBase_Compare (
         GENBASE_DATA     *this,
         GENBASE_DATA     *pOther
     )
@@ -763,11 +364,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !genBase_Validate(pOther) ) {
+        if (!GenBase_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -775,6 +376,7 @@ extern "C" {
 
 #ifdef  xyzzy        
         if (this->token == pOther->token) {
+            this->eRc = eRc;
             return eRc;
         }
         
@@ -794,7 +396,8 @@ extern "C" {
         return eRc;
     }
     
-    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -803,32 +406,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        genBase      *pCopy = genBase_Copy(this);
+        GenBase      *pCopy = GenBase_Copy(this);
      @endcode 
-     @param     this    GENMAKE object pointer
-     @return    If successful, a GENMAKE object which must be released,
-                otherwise OBJ_NIL.
-     @warning  Remember to release the returned the GENMAKE object.
+     @param     this    GENBASE object pointer
+     @return    If successful, a GENBASE object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    GENBASE_DATA *  genBase_Copy(
-        GENBASE_DATA    *this
+    GENBASE_DATA *     GenBase_Copy (
+        GENBASE_DATA       *this
     )
     {
-        GENBASE_DATA    *pOther = OBJ_NIL;
+        GENBASE_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = genBase_New( );
+        pOther = GenBase_New( );
         if (pOther) {
-            eRc = genBase_Assign(this, pOther);
+            eRc = GenBase_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -846,7 +449,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            genBase_Dealloc(
+    void            GenBase_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -858,19 +461,19 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        genBase_setDateTime(this, OBJ_NIL);
-        genBase_setDict(this, OBJ_NIL);
-        genBase_setLibDeps(this, OBJ_NIL);
-        genBase_setNodes(this, OBJ_NIL);
-        genBase_setObjDirs(this, OBJ_NIL);
-        genBase_setOutput(this, OBJ_NIL);
-        genBase_setSrcDeps(this, OBJ_NIL);
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((GENBASE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+        }
+#endif
+
+        GenBase_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -884,332 +487,25 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //             D i c t i o n a r y  M e t h o d s
-    //---------------------------------------------------------------
-    
-    ERESULT         genBase_DictAdd(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
-            if (OBJ_NIL == this->pDict) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        
-        eRc = nodeHash_AddA(this->pDict, 0, pName, (void *)pData);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    ERESULT         genBase_DictAddA(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,
-        const
-        char            *pData
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == pData) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        pStr = AStr_NewA(pData);
-        if (OBJ_NIL == pStr) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        
-        if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
-            if (OBJ_NIL == this->pDict) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        
-        eRc = nodeHash_AddA(this->pDict, 0, pName, pStr);
-        
-        // Return to caller.
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        return eRc;
-    }
-    
-    
-    ERESULT         genBase_DictAddUpdate(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
-            if (OBJ_NIL == this->pDict) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        
-        if (nodeHash_FindA(this->pDict, 0, pName)) {
-            eRc = nodeHash_DeleteA(this->pDict, 0, pName);
-        }
-        eRc = nodeHash_AddA(this->pDict, 0, pName, (void *)pData);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    ERESULT         genBase_DictAddUpdateA(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,
-        const
-        char            *pData
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pStr = AStr_NewA(pData);
-        if (OBJ_NIL == pStr) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-
-        if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_SMALL);
-            if (OBJ_NIL == this->pDict) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        
-        if (nodeHash_FindA(this->pDict, 0, pName)) {
-            eRc = nodeHash_DeleteA(this->pDict, 0, pName);
-        }
-        eRc = nodeHash_AddA(this->pDict, 0, pName, pStr);
-        
-        // Return to caller.
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //     E x p a n d  E n v i r o n m e n t  V a r i a b l e s
-    //---------------------------------------------------------------
-    
-    /*!
-     Substitute environment variables into the current string using a BASH-like
-     syntax.  Variable names should have the syntax of:
-     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
-     Substitutions are not rescanned after insertion.
-     @param     this    object pointer
-     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
-     is returned.
-     */
-    ERESULT         genBase_DictExpand(
-        GENBASE_DATA    *this,
-        ASTR_DATA       *pStr
-    )
-    {
-        ERESULT         eRc;
-        uint32_t        i = 0;
-        uint32_t        iBegin;
-        uint32_t        len;
-        uint32_t        lenPrefix;
-        uint32_t        lenSuffix;
-        int32_t         chr;
-        bool            fMore = true;
-        //PATH_DATA       *pPath = OBJ_NIL;
-        ASTR_DATA       *pName = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
-        ASTR_DATA       *pData = OBJ_NIL;
-        const
-        char            *pEnvVar = NULL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if(!genBase_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        if (0 == AStr_getLength(pStr)) {
-            return ERESULT_SUCCESS;
-        }
-        
-        // Expand Environment variables.
-        while (fMore) {
-            fMore = false;
-            eRc = AStr_CharFindNextW32(pStr, &i, '$');
-            if (ERESULT_FAILED(eRc)) {
-                break;
-            }
-            else {
-                chr = AStr_CharGetW32(pStr, i+1);
-                if (chr == '{') {
-                    i += 2;
-                    iBegin = i;
-                    eRc = AStr_CharFindNextW32(pStr, &i, '}');
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_PARSE_ERROR;
-                    }
-                    len = i - iBegin;
-                    eRc = AStr_Mid(pStr, iBegin, len, &pName);
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_OUT_OF_MEMORY;
-                    }
-                    lenPrefix = 2;
-                    lenSuffix = 1;
-
-                    // Find the name from the Dictionary.
-                do_replace:
-                    pNode = nodeHash_FindA(this->pDict, 0, AStr_getData(pName));
-                    if (OBJ_NIL == pNode) {
-                        obj_Release(pName);
-                        return ERESULT_DATA_NOT_FOUND;
-                    }
-                    obj_Release(pName);
-                    pName = OBJ_NIL;
-                    pData = node_getData(pNode);
-                    if((OBJ_NIL == pData) || !obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
-                        DEBUG_BREAK();
-                        return ERESULT_DATA_MISSING;
-                    }
-
-                    // Substitute the name from the Dictionary.
-                    eRc =   AStr_Remove(
-                                pStr,
-                                (iBegin - lenPrefix),
-                                (len + lenPrefix + lenSuffix)
-                            );
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_OUT_OF_MEMORY;
-                    }
-                    eRc = AStr_InsertA(pStr, (iBegin - lenPrefix), AStr_getData(pData));
-                    if (ERESULT_FAILED(eRc)) {
-                        return ERESULT_OUT_OF_MEMORY;
-                    }
-                    i = iBegin - lenPrefix + AStr_getSize(pData);
-                    pEnvVar = NULL;
-                    pData = OBJ_NIL;
-                    pNode = OBJ_NIL;
-                    fMore = true;
-                }
-                else if (chr == '$') {
-                    eRc = AStr_Remove(pStr, i, 1);
-                    ++i;
-                    fMore = true;
-                    continue;
-                }
-                else {
-                    //chr = AStr_CharGetW32(pStr, i+1);
-                    if (ascii_isLabelFirstCharW32(chr)) {
-                        ++i;
-                        iBegin = i;
-                        for (;;) {
-                            ++i;
-                            chr = AStr_CharGetW32(pStr, i);
-                            if (!ascii_isLabelCharW32(chr)) {
-                                break;
-                            }
-                        }
-                        len = i - iBegin;
-                        eRc = AStr_Mid(pStr, iBegin, len, &pName);
-                        if (ERESULT_FAILED(eRc)) {
-                            return ERESULT_OUT_OF_MEMORY;
-                        }
-                        lenPrefix = 1;
-                        lenSuffix = 0;
-                        
-                        goto do_replace;
-
-                    }
-                    else
-                        return ERESULT_PARSE_ERROR;
-                }
-            }
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         genBase_Disable(
-        GENBASE_DATA    *this
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         GenBase_Disable (
+        GENBASE_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1229,15 +525,22 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         genBase_Enable(
-        GENBASE_DATA    *this
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         GenBase_Enable (
+        GENBASE_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1254,503 +557,15 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //  G e n e r a t e  L i b r a r y  I n c l u d e  P a t h
-    //---------------------------------------------------------------
-    
-    /*!
-     Library Include paths can be used for different purposes and
-     can refer to different types of subdirectories. This requires
-     dictionay entries for "LibIncludePath" and "LibIncludePrefix".
-     */
-    
-    ASTR_DATA *     genBase_CFlagsLibIncludePath(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,             // Library Name
-        const
-        char            *pLibIncludePath,
-        const
-        char            *pLibNamePrefix
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr =  OBJ_NIL;
-        PATH_DATA       *pLib = OBJ_NIL;
-        ASTR_DATA       *pFullName =  OBJ_NIL;
-
-        // Do initialization.
-        TRC_OBJ(
-                this,
-                "genBase_CFlagsLibIncludePath(\"%s\", %s",
-                pName
-        );
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-        pFullName = this->pLibName(this, pName, pLibNamePrefix);
-        if (pLib) {
-            return OBJ_NIL;
-        }
-        pLib = this->pLibIncludePath(this, pName, pLibIncludePath, pLibNamePrefix);
-        if (pLib) {
-            return OBJ_NIL;
-        }
-        pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            return OBJ_NIL;
-        }
-
-        switch (this->osType) {
-                
-            case GENMAKE_OS_MACOSX:
-                eRc =   AStr_AppendPrint(
-                                         pStr,
-                                         "CFLAGS += -I%s/src -I%s/src/$(SYS)\n",
-                                         path_getData(pLib),
-                                         path_getData(pLib)
-                        );
-                break;
-                
-            case GENMAKE_OS_MSC32:
-                eRc =   AStr_AppendPrint(
-                                         pStr,
-                                         "CFLAGS = $(CFLAGS) /I%s\\src /I%s\\src\\$(SYS)\n",
-                                         path_getData(pLib),
-                                         path_getData(pLib)
-                        );
-                break;
-                
-            default:
-                break;
-        }
-        
-        // Return to caller.
-        return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //  G e n e r a t e  L i b r a r y  O b j e c t  P a t h
-    //---------------------------------------------------------------
-    
-    /*!
-     Library Include paths can be used for different purposes and
-     can refer to different types of subdirectories.
-     */
-    
-    ASTR_DATA *     genBase_CFlagsLibObjectPath(
-        GENBASE_DATA    *this,
-        const
-        char            *pName              // Library Name
-    )
-    {
-        //ERESULT         eRc;
-        ASTR_DATA       *pStr =  OBJ_NIL;
-        //char            *pLibObjectPath = NULL;
-        //char            *pLibObjectPrefix = NULL;
-        
-        // Do initialization.
-        TRC_OBJ(
-                this,
-                "genBase_CFlagsLibObjectPath(\"%s\", %s",
-                pName
-                );
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-        
-        //FIXME: get data To_String ??? or To_PATH ????
-#ifdef XYZZY
-        pLibObjectPath   = nodeHash_FindA(this->pDict, "LibObjectPath");
-        if (NULL == pLibObjectPath) {
-            return OBJ_NIL;
-        }
-        TRC_OBJ(this, "\tLibObjectPath=\"%s\"", pLibObjectPath);
-        pLibObjectPrefix = szHash_FindA(this->pDict, "LibObjectPrefix");
-        TRC_OBJ(this, "\tLibObjectPrefix=\"%s\"", (pLibObjectPrefix ? pLibObjectPrefix : ""));
-        pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            return OBJ_NIL;
-        }
-        
-        switch (this->osType) {
-                
-            case GENMAKE_OS_MACOSX:
-                eRc =   AStr_AppendPrint(
-                                         pStr,
-                                         "CFLAGS_LIBS += -l%s%s -L%s/%s%s\n",
-                                         pLibObjectPrefix,
-                                         pName,
-                                         pLibObjectPath,
-                                         (pLibObjectPrefix ? pLibObjectPrefix : ""),
-                                         pName
-                                         );
-                break;
-                
-            case GENMAKE_OS_MSC32:
-                eRc =   AStr_AppendPrint(
-                                         pStr,
-                                         "LIBS = $(LIBS) "
-                                         "$(INSTALL_BASE)\\%s%s\\%s%s.lib\n",
-                                         (pLibObjectPrefix ? pLibObjectPrefix : ""),
-                                         pName,
-                                         (pLibObjectPrefix ? pLibObjectPrefix : ""),
-                                         pName
-                                         );
-                break;
-                
-            default:
-                break;
-        }
-#endif
-        
-        // Return to caller.
-        return pStr;
-    }
-    
-    
-    
-//---------------------------------------------------------------
-//         G e n e r a t e  F i n a l
-//---------------------------------------------------------------
-
-ERESULT         genBase_GenFinal(
-    GENBASE_DATA    *this
-)
-{
-    
-    // Do initialization.
-#ifdef NDEBUG
-#else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        return ERESULT_INVALID_OBJECT;
-    }
-#endif
-    
-    //obj_Enable(this);
-    
-    // Put code here...
-    
-    // Return to caller.
-    return ERESULT_SUCCESS;
-}
-
-
-
-//---------------------------------------------------------------
-//         G e n e r a t e  I n i t i a l  D a t a
-//---------------------------------------------------------------
-
-ASTR_DATA *     genBase_GenInitial(
-    GENBASE_DATA    *this
-)
-{
-    ASTR_DATA       *pStr = OBJ_NIL;
-    
-    // Do initialization.
-#ifdef NDEBUG
-#else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        return pStr;
-    }
-#endif
-    
-    //obj_Enable(this);
-    
-    // Put code here...
-    
-    // Return to caller.
-    return pStr;
-}
-
-
-
-//---------------------------------------------------------------
-//  G e n e r a t e  C o m p i l a t i o n  R u l e s
-//---------------------------------------------------------------
-
-ASTR_DATA *     genBase_CompileRules(
-    GENBASE_DATA    *this,
-    const
-    char            *pSrcDir,
-    const
-    char            *pObjDir
-)
-{
-    ERESULT         eRc;
-    ASTR_DATA       *pStr =  OBJ_NIL;
-    
-    // Do initialization.
-    TRC_OBJ(this, "genBase_CompileRules( )");
-#ifdef NDEBUG
-#else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        //return ERESULT_INVALID_OBJECT;
-        return OBJ_NIL;
-    }
-#endif
-    if (NULL == pSrcDir) {
-        pSrcDir = "SRCDIR";
-    }
-    if (NULL == pObjDir) {
-        pObjDir = "OBJDIR";
-    }
-    pStr = AStr_New();
-    if (OBJ_NIL == pStr) {
-        //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
-        return OBJ_NIL;
-    }
-    
-    switch (this->osType) {
-            
-        case GENMAKE_OS_MACOSX:
-            break;
-            
-        case GENMAKE_OS_MSC32:
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{src}.asm{$(%s)}.obj:\n",
-                        pObjDir
-                    );
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "\t$(AS) $(AFLAGS) /c /Fo$(%s)\\$(@F) $<\n\n\n",
-                        pObjDir
-                    );
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{src}.c{$(%s)}.obj:\n",
-                        pObjDir
-                    );
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "\t$(CC) $(CFLAGS) /c /Fo$(%s)\\$(@F) $<\n\n\n",
-                        pObjDir
-                    );
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{src\\$(SYS)}.asm{$(%s)}.obj:\n",
-                        pObjDir
-                    );
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "\t$(AS) $(AFLAGS) /c /Fo$(%s)\\$(@F) $<\n\n\n",
-                        pObjDir
-                    );
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{src\\$(SYS)}.c{$(%s)}.obj:\n",
-                        pObjDir
-                    );
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "\t$(CC) $(CFLAGS) /c /Fo$(%s)\\$(@F) $<\n\n\n",
-                        pObjDir
-                    );
-            break;
-    
-        default:
-            break;
-    }
-
-    // Return to caller.
-    return pStr;
-}
-
-
-
-//---------------------------------------------------------------
-//              G e n e r a t e  M a k e f i l e
-//---------------------------------------------------------------
-
-ERESULT         genBase_GenMakefile(
-    GENBASE_DATA        *this,
-    NODE_DATA           *pNodes,
-    NODEHASH_DATA       *pDict,
-    DATETIME_DATA       *pDateTime,
-    TEXTOUT_DATA        *pOutput
-)
-{
-    //ERESULT             eRc = ERESULT_SUCCESS;
-    //NODE_DATA           *pNode;
-    //NODEHASH_DATA       *pPrimaryHash = OBJ_NIL;
-
-    // Do initialization.
-#ifdef NDEBUG
-#else
-    if( !genBase_Validate(this) ) {
-        DEBUG_BREAK();
-        return ERESULT_INVALID_OBJECT;
-    }
-#endif
-    genBase_setDateTime(this, pDateTime);
-    genBase_setDict(this, pDict);
-    genBase_setNodes(this, pNodes);
-    genBase_setOutput(this, pOutput);
-
-#ifdef XYZZY
-    pPrimaryHash = node_getData(pNodes);
-    BREAK_FALSE((obj_IsKindOf(pPrimaryHash, OBJ_IDENT_NODEHASH)));
-    if (pPrimaryHash) {
-        pNode = nodeHash_FindA(pPrimaryHash, "name");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            this->pName = node_getData(pNode);
-            if (obj_IsKindOf(this->pName, OBJ_IDENT_NULL)) {
-                this->pName = OBJ_NIL;
-            }
-            else if (obj_IsKindOf(this->pName, OBJ_IDENT_ASTR)) {
-            }
-            else {
-                DEBUG_BREAK();
-            }
-        }
-        pNode = nodeHash_FindA(pPrimaryHash, "deps");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            this->pLibDeps = node_getData(pNode);
-            if (obj_IsKindOf(this->pLibDeps, OBJ_IDENT_NULL)) {
-                this->pLibDeps = OBJ_NIL;
-            }
-            else if (obj_IsKindOf(this->pLibDeps, OBJ_IDENT_NODEARRAY)) {
-            }
-            else {
-                DEBUG_BREAK();
-            }
-        }
-        pNode = nodeHash_FindA(pPrimaryHash, "objects");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            this->pObjects = node_getData(pNode);
-            if (obj_IsKindOf(this->pObjects, OBJ_IDENT_NULL)) {
-                this->pObjects = OBJ_NIL;
-            }
-            else if (obj_IsKindOf(this->pObjects, OBJ_IDENT_NODEHASH)) {
-            }
-            else {
-                DEBUG_BREAK();
-            }
-        }
-        pNode = nodeHash_FindA(pPrimaryHash, "routines");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            this->pRoutines = node_getData(pNode);
-            if (obj_IsKindOf(this->pRoutines, OBJ_IDENT_NULL)) {
-                this->pRoutines = OBJ_NIL;
-            }
-            else if (obj_IsKindOf(this->pRoutines, OBJ_IDENT_NODEARRAY)) {
-            }
-            else {
-                DEBUG_BREAK();
-            }
-        }
-        pNode = nodeHash_FindA(pPrimaryHash, "programs");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            this->pPrograms = node_getData(pNode);
-            if (obj_IsKindOf(this->pPrograms, OBJ_IDENT_NULL)) {
-                this->pPrograms = OBJ_NIL;
-            }
-            else if (obj_IsKindOf(this->pPrograms, OBJ_IDENT_NODEHASH)) {
-            }
-            else {
-                DEBUG_BREAK();
-            }
-        }
-        pNode = nodeHash_FindA(pPrimaryHash, "tests");
-        if (NULL == pNode) {
-        }
-        else {
-            pNode = node_getData(pNode);
-            this->pTests = node_getData(pNode);
-            if (obj_IsKindOf(this->pTests, OBJ_IDENT_NULL)) {
-                this->pTests = OBJ_NIL;
-            }
-            else if (obj_IsKindOf(this->pTests, OBJ_IDENT_NODEHASH)) {
-            }
-            else {
-                DEBUG_BREAK();
-            }
-        }
-        //TODO: Find O/S Specific data.
-    }
-    
-    //FIXME: eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenInitial(this);
-    if (ERESULT_FAILED(eRc)) {
-        DEBUG_BREAK();
-        exit(100);
-    }
-
-    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenObjects(this);
-    if (ERESULT_FAILED(eRc)) {
-        DEBUG_BREAK();
-        exit(101);
-    }
-    
-    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenRoutines(this);
-    if (ERESULT_FAILED(eRc)) {
-        DEBUG_BREAK();
-        exit(102);
-    }
-    
-    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenTests(this);
-    if (ERESULT_FAILED(eRc)) {
-        DEBUG_BREAK();
-        exit(102);
-    }
-    
-    eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenPrograms(this);
-    if (ERESULT_FAILED(eRc)) {
-        DEBUG_BREAK();
-        exit(102);
-    }
-
-    //FIXME: eRc = ((GENBASE_VTBL *)obj_getVtbl(this))->pGenFinal(this);
-    if (ERESULT_FAILED(eRc)) {
-        DEBUG_BREAK();
-        exit(102);
-    }
-#endif
-    
-    // Return to caller.
-    return ERESULT_SUCCESS_FALSE;
-}
-
-
-
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    GENBASE_DATA *   genBase_Init(
-        GENBASE_DATA    *this
+    GENBASE_DATA *   GenBase_Init (
+        GENBASE_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(GENBASE_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1767,29 +582,34 @@ ERESULT         genBase_GenMakefile(
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, MAIN_IDENT_GENBASE);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_GENBASE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_GENMAKE);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&genBase_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&GenBase_Vtbl);
         
-        this->pLibIncludePath = genBase_LibIncludePath;
-        this->pLibName = genBase_LibName;
-        
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        */
+
     #ifdef NDEBUG
     #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "genBase::sizeof(GENBASE_DATA) = %lu\n", sizeof(GENBASE_DATA));
+        //fprintf(stderr, "GenBase::sizeof(GENBASE_DATA) = %lu\n", sizeof(GENBASE_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(GENBASE_DATA));
     #endif
@@ -1803,15 +623,16 @@ ERESULT         genBase_GenMakefile(
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         genBase_IsEnabled(
+    ERESULT         GenBase_IsEnabled (
         GENBASE_DATA		*this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1828,220 +649,6 @@ ERESULT         genBase_GenMakefile(
     
     
     //---------------------------------------------------------------
-    //  G e n e r a t e  L i b r a r y  I n c l u d e  P a t h
-    //---------------------------------------------------------------
-
-    /*!
-     Generate the Library Path given a name, the libraries super
-     directory and an optional prefix.  The library super directory
-     and optional library prefix name can either be supplied as a
-     parameter of the method or they can be provided by the internal
-     dictionary.  The dictionary will be accessed for "LibIncludePath"
-     or "LibNamePrefix" if their respective method parameter is NULL.
-     The diotionary entries for either can be over-ridden by passing
-     "" instead of NULL.
-     @param     this    object pointer
-     @param     pName   library name
-     @param     pLibIncludePath Optional directory which contains the
-                        library.  If NULL, then "LibIncludePath" must
-                        be present in the dictionary.
-     @param     pLibNamePrefix  Optional prefix to the library name
-                        such as "lib".  If NULL, then "LibNamePrefix"
-                        will be used if present in the dictionary.
-     */
-
-    PATH_DATA *     genBase_LibIncludePath(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,             // Library Name
-        const
-        char            *pLibIncludePath,
-        const
-        char            *pLibNamePrefix
-    )
-    {
-        ERESULT         eRc;
-        PATH_DATA       *pPath =  OBJ_NIL;
-        ASTR_DATA       *pFullName = OBJ_NIL;
-
-        // Do initialization.
-        TRC_OBJ(
-                this,
-                "genBase_LibIncludePath(\"%s\", %s",
-                pName
-                );
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-        pFullName = this->pLibName(this, pName, pLibNamePrefix);
-        if ( OBJ_NIL == pFullName) {
-            return OBJ_NIL;
-        }
-        TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
-        if ((OBJ_NIL == pLibIncludePath) && this->pDict) {
-            //FIXME: pLibIncludePath = szHash_FindA(this->pDict, "LibIncludePath");
-        }
-        TRC_OBJ(this, "\tLibIncludePath=\"%s\"", (pLibIncludePath ? pLibIncludePath : ""));
-
-        if (pLibIncludePath) {
-            pPath = path_NewA(pLibIncludePath);
-            if (OBJ_NIL == pPath) {
-                return OBJ_NIL;
-            }
-            eRc = path_AppendDirA(pPath, AStr_getData(pFullName));
-        }
-        else {
-            pPath = path_NewA(AStr_getData(pFullName));
-            if (OBJ_NIL == pPath) {
-                return OBJ_NIL;
-            }
-            eRc = ERESULT_SUCCESS;
-        }
-
-        // Return to caller.
-        obj_Release(pFullName);
-        pFullName = OBJ_NIL;
-        return pPath;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //  G e n e r a t e  L i b r a r y  I n s t a l l e d  P a t h
-    //---------------------------------------------------------------
-
-    PATH_DATA *     genBase_LibInstalledPath(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,             // Library Name
-        const
-        char            *pLibInstalledPath,
-        const
-        char            *pLibNamePrefix
-    )
-    {
-        ERESULT         eRc;
-        PATH_DATA       *pPath =  OBJ_NIL;
-        ASTR_DATA       *pFullName = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
-        
-        // Do initialization.
-        TRC_OBJ(
-                this,
-                "genBase_LibInstalledPath(\"%s\", %s",
-                pName
-                );
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-        pFullName = this->pLibName(this, pName, pLibNamePrefix);
-        if ( OBJ_NIL == pFullName) {
-            //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
-            return OBJ_NIL;
-        }
-        TRC_OBJ(this, "\tLibName=\"%s\"", AStr_getData(pFullName));
-        if ((OBJ_NIL == pLibInstalledPath) && this->pDict) {
-            pNode = nodeHash_FindA(this->pDict, 0, "LibInstalledPath");
-            pLibInstalledPath = AStr_getData(node_getData(pNode));
-        }
-        TRC_OBJ(this, "\tLibInstalledPath=\"%s\"", (pLibInstalledPath ? pLibInstalledPath : ""));
-        
-        if (pLibInstalledPath) {
-            pPath = path_NewA(pLibInstalledPath);
-            if (OBJ_NIL == pPath) {
-                //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
-                return OBJ_NIL;
-            }
-            eRc = path_AppendDirA(pPath, AStr_getData(pFullName));
-        }
-        else {
-            pPath = path_NewA(AStr_getData(pFullName));
-            if (OBJ_NIL == pPath) {
-                //obj_setLastError(this, ERESULT_OUT_OF_MEMORY);
-                return OBJ_NIL;
-            }
-            eRc = ERESULT_SUCCESS;
-        }
-        
-        // Return to caller.
-        obj_Release(pFullName);
-        pFullName = OBJ_NIL;
-        //obj_setLastError(this, eRc);
-        return pPath;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //  G e n e r a t e  t h e  f u l l  L i b r a r y  N a m e
-    //---------------------------------------------------------------
-
-    ASTR_DATA *     genBase_LibName(
-        GENBASE_DATA    *this,
-        const
-        char            *pName,             // Library Name
-        const
-        char            *pLibNamePrefix
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pFullName = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
-
-        // Do initialization.
-        TRC_OBJ(
-                this,
-                "genBase_LibIncludePath(\"%s\", %s",
-                pName
-                );
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-        if ((OBJ_NIL == pLibNamePrefix) && this->pDict) {
-            pNode = nodeHash_FindA(genBase_getDict((GENBASE_DATA *)this), 0, "LibNamePrefix");
-            pLibNamePrefix = AStr_getData(node_getData(pNode));
-        }
-        TRC_OBJ(this, "\tLibNamePrefix=\"%s\"", (pLibNamePrefix ? pLibNamePrefix : ""));
-        
-        if (pLibNamePrefix) {
-            pFullName = AStr_NewA(pLibNamePrefix);
-            if (OBJ_NIL == pFullName) {
-                //obj_setLastError(this, ERESULT_GENERAL_FAILURE);
-                return OBJ_NIL;
-            }
-            eRc = AStr_AppendA(pFullName, pName);
-        }
-        else {
-            pFullName = AStr_NewA(pName);
-            if (OBJ_NIL == pFullName) {
-                //obj_setLastError(this, ERESULT_GENERAL_FAILURE);
-                return OBJ_NIL;
-            }
-        }
-        
-        // Return to caller.
-        //obj_setLastError(this, ERESULT_SUCCESS);
-        return pFullName;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -2052,14 +659,14 @@ ERESULT         genBase_GenMakefile(
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = genBase_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = GenBase_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "genBase", prefix,
+                        the object name, "GenBase", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -2067,7 +674,7 @@ ERESULT         genBase_GenMakefile(
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          genBase_QueryInfo(
+    void *          GenBase_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -2082,7 +689,7 @@ ERESULT         genBase_GenMakefile(
         }
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -2090,8 +697,12 @@ ERESULT         genBase_GenMakefile(
         
         switch (type) {
                 
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(GENBASE_DATA);
+            break;
+            
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)genBase_Class();
+                return (void *)GenBase_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -2121,22 +732,22 @@ ERESULT         genBase_GenMakefile(
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return genBase_Disable;
+                            return GenBase_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return genBase_Enable;
+                            return GenBase_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return genBase_ToDebugString;
+                            return GenBase_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return genBase_ToJSON;
+                            return GenBase_ToJSON;
                         }
                         break;
                         
@@ -2146,9 +757,9 @@ ERESULT         genBase_GenMakefile(
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == genBase_ToDebugString)
+                if (pData == GenBase_ToDebugString)
                     return "ToDebugString";
-                if (pData == genBase_ToJSON)
+                if (pData == GenBase_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -2162,56 +773,40 @@ ERESULT         genBase_GenMakefile(
     
     
     //---------------------------------------------------------------
-    //  G e n e r a t e  t h e  f u l l  L i b r a r y  N a m e
+    //                       T o  J S O N
     //---------------------------------------------------------------
     
-    /*!
-     Take the dictionary entries from the defaults and over-rides to
-     create base directories and file paths needed to build the
-     library or program.
-     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_*
-                error code is returned.
-     */
-    ERESULT         genBase_SetupDictionary(
-        GENBASE_DATA    *this
+     ASTR_DATA *     GenBase_ToJSON (
+        GENBASE_DATA      *this
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        //ASTR_DATA       *pStr = OBJ_NIL;
+        ERESULT         eRc;
+        //int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
         
-        // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
 #endif
-
-#ifdef xyzzz
-        if ((OBJ_NIL == pLibNamePrefix) && this->pDict) {
-            pLibNamePrefix = szHash_FindA(this->pDict, "LibNamePrefix");
-        }
-        TRC_OBJ(this, "\tLibNamePrefix=\"%s\"", (pLibNamePrefix ? pLibNamePrefix : ""));
+        pInfo = obj_getInfo(this);
         
-        if (pLibNamePrefix) {
-            pFullName = AStr_NewA(pLibNamePrefix);
-            if (OBJ_NIL == pFullName) {
-                return ERESULT_GENERAL_FAILURE;
-            }
-            eRc = AStr_AppendA(pFullName, pName);
+        pStr = AStr_New();
+        if (pStr) {
+            eRc =   AStr_AppendPrint(
+                        pStr,
+                        "{\"objectType\":\"%s\"",
+                        pInfo->pClassName
+                    );
+            
+            AStr_AppendA(pStr, "}\n");
         }
-        else {
-            pFullName = AStr_NewA(pName);
-            if (OBJ_NIL == pFullName) {
-                return ERESULT_GENERAL_FAILURE;
-            }
-        }
-#endif
         
-        
-        // Return to caller.
-        return eRc;
+        return pStr;
     }
     
     
@@ -2224,15 +819,15 @@ ERESULT         genBase_GenMakefile(
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = genBase_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = GenBase_ToDebugString(this,4);
      @endcode 
-     @param     this    GENMAKE object pointer
+     @param     this    GENBASE object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     genBase_ToDebugString(
+    ASTR_DATA *     GenBase_ToDebugString (
         GENBASE_DATA      *this,
         int             indent
     )
@@ -2240,16 +835,14 @@ ERESULT         genBase_GenMakefile(
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !genBase_Validate(this) ) {
+        if (!GenBase_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -2257,6 +850,11 @@ ERESULT         genBase_GenMakefile(
               
         pInfo = obj_getInfo(this);
         pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
@@ -2265,7 +863,7 @@ ERESULT         genBase_GenMakefile(
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    genBase_getSize(this)
+                    GenBase_getSize(this)
             );
 
 #ifdef  XYZZY        
@@ -2296,53 +894,21 @@ ERESULT         genBase_GenMakefile(
     
     
     
-    ASTR_DATA *     genBase_ToJSON(
-        GENBASE_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !genBase_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        return pStr;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
     #ifdef NDEBUG
     #else
-    bool            genBase_Validate(
+    bool            GenBase_Validate (
         GENBASE_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this, MAIN_IDENT_GENBASE) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_GENBASE))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -2358,13 +924,11 @@ ERESULT         genBase_GenMakefile(
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(GENBASE_DATA)) ) {
-            //this->eRc = ERESULT_INVALID_OBJECT;
+        if (!(obj_getSize(this) >= sizeof(GENBASE_DATA))) {
             return false;
         }
 
         // Return to caller.
-        //this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

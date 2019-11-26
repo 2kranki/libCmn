@@ -59,7 +59,7 @@ struct psxMutex_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
     pthread_mutex_t mutex;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)

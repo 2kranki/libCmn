@@ -35,7 +35,7 @@
 
 
 #define			SRCPARSE_OBJECT_C	    1
-#include        <srcParse_internal.h>
+#include        <SrcParse_internal.h>
 #ifdef  SRCPARSE_SINGLETON
 #include        <psxLock.h>
 #endif
@@ -46,7 +46,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct srcParse_class_data_s	{
+struct SrcParse_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -69,7 +69,7 @@ struct srcParse_class_data_s	{
 
 
 static
-void *          srcParseClass_QueryInfo (
+void *          SrcParseClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,17 +78,17 @@ void *          srcParseClass_QueryInfo (
 
 static
 const
-OBJ_INFO        srcParse_Info;            // Forward Reference
+OBJ_INFO        SrcParse_Info;            // Forward Reference
 
 
 
 
 static
-bool            srcParseClass_IsKindOf (
+bool            SrcParseClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_SRCPARSE_CLASS == classID) {
+    if (OBJ_IDENT_SRCPARSE_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
@@ -99,11 +99,11 @@ bool            srcParseClass_IsKindOf (
 
 
 static
-uint16_t		srcParseClass_WhoAmI (
+uint16_t		SrcParseClass_WhoAmI (
     void
 )
 {
-    return MAIN_IDENT_SRCPARSE_CLASS;
+    return OBJ_IDENT_SRCPARSE_CLASS;
 }
 
 
@@ -117,14 +117,14 @@ static
 const
 SRCPARSE_CLASS_VTBL    class_Vtbl = {
     {
-        &srcParse_Info,
-        srcParseClass_IsKindOf,
+        &SrcParse_Info,
+        SrcParseClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        srcParse_Class,
-        srcParseClass_WhoAmI,
-        (P_OBJ_QUERYINFO)srcParseClass_QueryInfo,
+        SrcParse_Class,
+        SrcParseClass_WhoAmI,
+        (P_OBJ_QUERYINFO)SrcParseClass_QueryInfo,
         NULL                        // srcParseClass_ToDebugString
     },
 };
@@ -135,7 +135,7 @@ SRCPARSE_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-SRCPARSE_CLASS_DATA  srcParse_ClassObj = {
+SRCPARSE_CLASS_DATA  SrcParse_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
         sizeof(SRCPARSE_CLASS_DATA),                  // cbSize
@@ -153,15 +153,15 @@ SRCPARSE_CLASS_DATA  srcParse_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  SRCPARSE_SINGLETON
-SRCPARSE_DATA *     srcParse_getSingleton (
+SRCPARSE_DATA *     SrcParse_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(srcParse_ClassObj.pSingleton);
+    return (OBJ_ID)(SrcParse_ClassObj.pSingleton);
 }
 
 
-bool            srcParse_setSingleton (
+bool            SrcParse_setSingleton (
     SRCPARSE_DATA       *pValue
 )
 {
@@ -182,10 +182,10 @@ bool            srcParse_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (srcParse_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(srcParse_ClassObj.pSingleton));
+    if (SrcParse_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(SrcParse_ClassObj.pSingleton));
     }
-    srcParse_ClassObj.pSingleton = pValue;
+    SrcParse_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -195,17 +195,17 @@ bool            srcParse_setSingleton (
 
 
 
-SRCPARSE_DATA *     srcParse_Shared (
+SRCPARSE_DATA *     SrcParse_Shared (
     void
 )
 {
-    SRCPARSE_DATA       *this = (OBJ_ID)(srcParse_ClassObj.pSingleton);
+    SRCPARSE_DATA       *this = (OBJ_ID)(SrcParse_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = srcParse_New( );
-        srcParse_setSingleton(this);
+        this = SrcParse_New( );
+        SrcParse_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // srcParse_ClassObj.pSingleton = OBJ_NIL;
+        // SrcParse_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -213,15 +213,15 @@ SRCPARSE_DATA *     srcParse_Shared (
 
 
 
-void            srcParse_SharedReset (
+void            SrcParse_SharedReset (
     void
 )
 {
-    SRCPARSE_DATA       *this = (OBJ_ID)(srcParse_ClassObj.pSingleton);
+    SRCPARSE_DATA       *this = (OBJ_ID)(SrcParse_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        srcParse_ClassObj.pSingleton = OBJ_NIL;
+        SrcParse_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -237,7 +237,7 @@ void            srcParse_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          srcParseClass_QueryInfo (
+void *          SrcParseClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -269,7 +269,7 @@ void *          srcParseClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&srcParse_Info;
+                        return (void *)&SrcParse_Info;
                     }
                     break;
                     
@@ -287,13 +287,13 @@ void *          srcParseClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return srcParse_New;
+                        return SrcParse_New;
                     }
                     break;
                     
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return srcParseClass_WhoAmI;
+                        return SrcParseClass_WhoAmI;
                     }
                     break;
                     
@@ -313,11 +313,11 @@ void *          srcParseClass_QueryInfo (
 
 
 static
-bool            srcParse_IsKindOf (
+bool            SrcParse_IsKindOf (
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_SRCPARSE == classID) {
+    if (OBJ_IDENT_SRCPARSE == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
@@ -329,25 +329,25 @@ bool            srcParse_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            srcParse_Dealloc (
+void            SrcParse_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          srcParse_Class (
+OBJ_ID          SrcParse_Class (
     void
 )
 {
-    return (OBJ_ID)&srcParse_ClassObj;
+    return (OBJ_ID)&SrcParse_ClassObj;
 }
 
 
 static
-uint16_t		srcParse_WhoAmI (
+uint16_t		SrcParse_WhoAmI (
     void
 )
 {
-    return MAIN_IDENT_SRCPARSE;
+    return OBJ_IDENT_SRCPARSE;
 }
 
 
@@ -359,10 +359,10 @@ uint16_t		srcParse_WhoAmI (
 //===========================================================
 
 const
-SRCPARSE_VTBL     srcParse_Vtbl = {
+SRCPARSE_VTBL     SrcParse_Vtbl = {
     {
-        &srcParse_Info,
-        srcParse_IsKindOf,
+        &SrcParse_Info,
+        SrcParse_IsKindOf,
 #ifdef  SRCPARSE_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
@@ -370,23 +370,23 @@ SRCPARSE_VTBL     srcParse_Vtbl = {
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        srcParse_Dealloc,
-        srcParse_Class,
-        srcParse_WhoAmI,
-        (P_OBJ_QUERYINFO)srcParse_QueryInfo,
-        (P_OBJ_TOSTRING)srcParse_ToDebugString,
-        NULL,			// srcParse_Enable,
-        NULL,			// srcParse_Disable,
-        NULL,			// (P_OBJ_ASSIGN)srcParse_Assign,
-        NULL,			// (P_OBJ_COMPARE)srcParse_Compare,
-        NULL, 			// (P_OBJ_PTR)srcParse_Copy,
-        NULL, 			// (P_OBJ_PTR)srcParse_DeepCopy,
-        NULL 			// (P_OBJ_HASH)srcParse_Hash,
+        SrcParse_Dealloc,
+        SrcParse_Class,
+        SrcParse_WhoAmI,
+        (P_OBJ_QUERYINFO)SrcParse_QueryInfo,
+        (P_OBJ_TOSTRING)SrcParse_ToDebugString,
+        NULL,			// SrcParse_Enable,
+        NULL,			// SrcParse_Disable,
+        NULL,			// (P_OBJ_ASSIGN)SrcParse_Assign,
+        NULL,			// (P_OBJ_COMPARE)SrcParse_Compare,
+        NULL, 			// (P_OBJ_PTR)SrcParse_Copy,
+        NULL, 			// (P_OBJ_PTR)SrcParse_DeepCopy,
+        NULL 			// (P_OBJ_HASH)SrcParse_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //srcParse_IsEnabled,
+    //SrcParse_IsEnabled,
  
 };
 
@@ -394,12 +394,12 @@ SRCPARSE_VTBL     srcParse_Vtbl = {
 
 static
 const
-OBJ_INFO        srcParse_Info = {
-    "srcParse",
+OBJ_INFO        SrcParse_Info = {
+    "SrcParse",
     "Parse the JSON Source creating internal node tree",	
-    (OBJ_DATA *)&srcParse_ClassObj,
+    (OBJ_DATA *)&SrcParse_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&srcParse_Vtbl,
+    (OBJ_IUNKNOWN *)&SrcParse_Vtbl,
     sizeof(SRCPARSE_DATA)
 };
 

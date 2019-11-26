@@ -81,7 +81,7 @@ int         test_token_OpenClose(
 )
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
-    SRCLOC      loc = {1,2,3,4};
+    SRCLOC      loc = {1,2,0,3,4};
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = token_NewInteger(&loc, 11, 64);
@@ -111,7 +111,7 @@ int         test_token_JSON01(
 )
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
-    SRCLOC      loc = {1,2,3,4};
+    SRCLOC      loc = {1,2,0,3,4};
     ASTR_DATA   *pStr;
     const
     char        *pJSON_Con =    "{\"objectType\":\"token\", "
@@ -198,7 +198,7 @@ int         test_token_JSON02(
 )
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
-    SRCLOC      loc = {1,2,3,4};
+    SRCLOC      loc = {1,2,0,3,4};
     ASTR_DATA   *pStr;
     const
     char        *pJSON_Con =    "{\"objectType\":\"token\", "
@@ -283,7 +283,7 @@ int         test_token_JSON03(
 )
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
-    SRCLOC      loc = {1,2,3,4};
+    SRCLOC      loc = {1,2,0,3,4};
     ASTR_DATA   *pStr;
     const
     char        *pJSON_Con =    "{\"objectType\":\"token\", "
@@ -382,7 +382,7 @@ int         test_token_JSON04(
 )
 {
     TOKEN_DATA	*pObj = OBJ_NIL;
-    SRCLOC      loc = {1,2,3,4};
+    SRCLOC      loc = {1,2,0,3,4};
     ASTR_DATA   *pStr;
     const
     char        *pJSON_Con =    "{\"objectType\":\"token\", "

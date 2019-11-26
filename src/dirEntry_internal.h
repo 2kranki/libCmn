@@ -70,7 +70,10 @@ struct dirEntry_data_s	{
     uint8_t         reserved8;
     uint16_t        reserved16;
     uint32_t        attr;           // File Attributes (ie Read-Only, Hidden, ...)
-#if     defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+    uint64_t        fileSize;
+#endif
+#if     defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     uint64_t        fileSize;
 #endif
     uint32_t        userID;

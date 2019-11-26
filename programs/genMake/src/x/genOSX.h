@@ -51,6 +51,7 @@
 
 
 
+#include        <Dict.h>
 #include        <genMake.h>
 #include        <genBase.h>
 #include        <AStr.h>

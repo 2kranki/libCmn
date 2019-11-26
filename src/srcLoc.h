@@ -1,25 +1,24 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SRCLOC Console Transmit Task (srcLoc) Header
+//          Source File Location (srcLoc) Header
 //****************************************************************
 /*
  * Program
- *			Separate srcLoc (srcLoc)
+ *			Source File Location (srcLoc)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate srcLoc to run things without complications
- *          of interfering with the main srcLoc. A srcLoc may be 
- *          called a srcLoc on other O/S's.
+ *			This object provides a means of handing a location
+ *          within a source/text file.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal srcLoc. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      The fileIndex is consistent with the index into the
+ *          szTbl. So, the file path can be stored in the shared
+ *          szTbl and then retrieved from it when needed.
  *
  * History
- *	01/01/2016 Generated
+ *	01/01/2016  Generated
+ *  11/25/2019  Changed fileIndex to uint32_t from uint16_t to make
+ *              it compatible with szTbl.
  */
 
 
@@ -77,10 +76,11 @@ extern "C" {
 
 #pragma pack(push, 1)
     typedef struct srcLoc_s    {
-        uint16_t        fileIndex;          // File Name Index
+        uint32_t        fileIndex;          // File Name Index
         //                                  // Note: If zero, then the entire
         //                                  //      location is ignored.
         uint16_t        colNo;              // Source Input Column Number
+        uint16_t        unused;
         uint32_t        lineNo;             // Source Input Line Number
         int64_t         offset;             // File Offset
     } SRCLOC;
@@ -99,7 +99,7 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    SRCLOC_DATA *     srcLoc_Alloc(
+    SRCLOC_DATA *   srcLoc_Alloc(
         void
     );
     
@@ -109,15 +109,15 @@ extern "C" {
     );
     
     
-    SRCLOC_DATA *     srcLoc_NewFLC(
-        uint16_t        fileIndex,              // File Index
+    SRCLOC_DATA *   srcLoc_NewFLC(
+        uint32_t        fileIndex,              // File Index
         int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo
     );
     
     
-    SRCLOC_DATA *     srcLoc_NewSrcLoc(
+    SRCLOC_DATA *   srcLoc_NewSrcLoc(
         SRCLOC          *pSrc
     );
     
@@ -149,13 +149,13 @@ extern "C" {
     );
     
     
-    uint16_t        srcLoc_getFileIndex(
+    uint32_t        srcLoc_getFileIndex(
         SRCLOC_DATA      *this
     );
     
     bool            srcLoc_setFileIndex(
         SRCLOC_DATA      *this,
-        uint16_t         value
+        uint32_t         value
     );
     
     
@@ -206,7 +206,7 @@ extern "C" {
 
     SRCLOC_DATA *   srcLoc_InitFLC(
         SRCLOC_DATA     *this,
-        uint16_t        fileIndex,              // File Index
+        uint32_t        fileIndex,              // File Index
         int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo

@@ -78,13 +78,14 @@
         !defined(__PIC32MX_ENV__) && !defined(__PIC32MX_TNEO_ENV__) &&\
         !defined(__PIC32MZ_ENV__) &&\
         !defined(__WIN16_ENV__) && !defined(__WIN32_ENV__) && !defined(__WIN64_ENV__) &&\
-        !defined(__MACOSX_ENV__)
+        !defined(__MACOSX_ENV__) && !defined(__MACOS32_ENV__) && !defined(__MACOS64_ENV__)
 #   error  No execution environment specified!!!
 #endif
 
 
 
-#if             defined(__MACOSX_ENV__)
+#if             defined(__MACOSX_ENV__) || defined(__MACOS32_ENV__) ||\
+                defined(__MACOS64_ENV__)
 #   include        <dirent.h>
 #   include        <errno.h>
 #   include        <pthread.h>
@@ -806,8 +807,12 @@ typedef struct W32StrC_vtbl_s	{
 #include    <eResult.h>
 
 
-#if defined(__MACOSX_ENV__)
-#	include     <cmn_osx.h>
+#if             defined(__MACOS32_ENV__)
+#   include     <cmnMac32.h>
+#   include     <memMac32.h>
+#endif
+#if             defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#	include     <cmnMac64.h>
 #   include     <memOSX.h>
 #endif
 #if defined(__WIN32_ENV__)
@@ -819,10 +824,10 @@ typedef struct W32StrC_vtbl_s	{
 #   include     <win64/memWin64.h>
 #endif
 #if defined(__PIC32MX_ENV__)
-#	include    <pic32mx/cmn_pic32mx.h>
+#	include    <cmnPic32mx.h>
 #endif
 #if defined( __PIC32MZ_ENV__ )
-#	include    <pic32mz/cmn_pic32mz.h>
+#	include    <cmnPic32mz.h>
 #endif
 
 

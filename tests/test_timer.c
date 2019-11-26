@@ -95,7 +95,7 @@ int         test_timer_OpenClose(
 {
     TIMER_DATA      *pObj = OBJ_NIL;
     uint32_t        status;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
     struct timeval  startTime;
     struct timeval  endTime;
     int             iRc;
@@ -110,7 +110,7 @@ int         test_timer_OpenClose(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         if (0 == gettimeofday(&startTime, NULL)) {
         }
         else {
@@ -140,7 +140,7 @@ int         test_timer_OpenClose(
             XCTAssertTrue( ((save >= 1) && (save < 3)) );
         }
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         if (0 == gettimeofday(&startTime, NULL)) {
         }
         else {
@@ -164,7 +164,7 @@ int         test_timer_OpenClose(
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         Sleep(10000);
 #endif
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         if (0 == gettimeofday(&startTime, NULL)) {
         }
         else {
@@ -192,7 +192,7 @@ int         test_timer_OpenClose(
             fprintf(stderr, "Count = %d\n", save);
             XCTAssertTrue( ((save > 18) && (save < 24)) );
         }
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         if (0 == gettimeofday(&startTime, NULL)) {
         }
         else {

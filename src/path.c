@@ -182,7 +182,7 @@ extern "C" {
         char            *pBuffer = NULL;
         
         // Do initialization.
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         pBuffer = getcwd(data, sizeof(data));
 #endif
         if (NULL == pBuffer)
@@ -939,7 +939,7 @@ extern "C" {
     )
     {
         char            *pStr = NULL;
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -959,7 +959,7 @@ extern "C" {
 #endif
         
         pStr = (char *)AStr_getData((ASTR_DATA *)this);
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             pTime = dateTime_NewFromTimeT(statBuffer.st_mtimespec.tv_sec);
@@ -1024,7 +1024,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         const
         char            *pStrA = NULL;
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -1046,7 +1046,7 @@ extern "C" {
             return ERESULT_INTERNAL_ERROR;
         }
         
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pStrA, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
@@ -1204,7 +1204,7 @@ extern "C" {
     )
     {
         char            *pStr = NULL;
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -1220,7 +1220,7 @@ extern "C" {
 #endif
 
         pStr = (char *)path_getData(this);
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
@@ -1245,7 +1245,7 @@ extern "C" {
     {
         const
         char            *pStr = NULL;
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -1261,7 +1261,7 @@ extern "C" {
 #endif
         
         pStr = (char *)path_getData(this);
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             eRc = ERESULT_SUCCESS;
@@ -1284,7 +1284,7 @@ extern "C" {
     {
         const
         char            *pStr = NULL;
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
         //int             ourErrno;
@@ -1301,7 +1301,7 @@ extern "C" {
 #endif
         
         pStr = (char *)path_getData(this);
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pStr, &statBuffer);
 #ifdef XYZZY
         ourErrno = errno;
@@ -1332,7 +1332,7 @@ extern "C" {
     {
         const
         char            *pStr = NULL;
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -1348,7 +1348,7 @@ extern "C" {
 #endif
         
         pStr = (char *)path_getData(this);
-#ifdef __MACOSX_ENV__
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pStr, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {

@@ -1131,7 +1131,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&textIn_Vtbl);
         
-#if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         this->pSidx = sidxe_NewWithMax(3072);
         if (OBJ_NIL == this->pSidx) {
             DEBUG_BREAK();
@@ -1139,7 +1139,15 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        this->pSidx = sidxe_NewWithMax(3072);
+        if (OBJ_NIL == this->pSidx) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+
     #ifdef NDEBUG
     #else
         if( !textIn_Validate(this) ) {
@@ -1283,7 +1291,10 @@ extern "C" {
                         case '\n':
                             ++this->curChr.loc.lineNo;
                             this->curChr.loc.colNo = 0;
-#if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+                            sidxe_Add(this->pSidx, &this->curChr.loc);
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
                             sidxe_Add(this->pSidx, &this->curChr.loc);
 #endif
                             if (this->fStripNL && ('\n' == chr))

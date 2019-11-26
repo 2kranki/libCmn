@@ -263,8 +263,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    lexj_ToDebugString(
-        LEXJ_DATA     *this,
+    ASTR_DATA *     lexj_ToDebugString(
+        LEXJ_DATA       *this,
         int             indent
     );
     

@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   srcParse.c
+ * File:   SrcParse.c
  *	Generated 08/19/2019 01:17:17
  *
  */
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <srcParse_internal.h>
+#include        <SrcParse_internal.h>
 #include        <hjson.h>
 #include        <NodeHdr.h>
 #include        <NodeLib.h>
@@ -72,7 +72,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            srcParse_task_body (
+    void            SrcParse_task_body (
         void            *pData
     )
     {
@@ -92,7 +92,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SRCPARSE_DATA *     srcParse_Alloc (
+    SRCPARSE_DATA *     SrcParse_Alloc (
         void
     )
     {
@@ -109,15 +109,15 @@ extern "C" {
 
 
 
-    SRCPARSE_DATA *     srcParse_New (
+    SRCPARSE_DATA *     SrcParse_New (
         void
     )
     {
         SRCPARSE_DATA       *this;
         
-        this = srcParse_Alloc( );
+        this = SrcParse_Alloc( );
         if (this) {
-            this = srcParse_Init(this);
+            this = SrcParse_Init(this);
         } 
         return this;
     }
@@ -134,7 +134,7 @@ extern "C" {
     //                       L i b r a r y
     //---------------------------------------------------------------
     
-    NODELIB_DATA *  srcParse_getLib (
+    NODELIB_DATA *  SrcParse_getLib (
         SRCPARSE_DATA   *this
     )
     {
@@ -142,7 +142,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -152,14 +152,14 @@ extern "C" {
     }
     
     
-    bool            srcParse_setLib (
+    bool            SrcParse_setLib (
         SRCPARSE_DATA   *this,
         NODELIB_DATA    *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -182,7 +182,7 @@ extern "C" {
     //                       N o d e s
     //---------------------------------------------------------------
     
-    NODE_DATA *  srcParse_getNodes (
+    NODE_DATA *  SrcParse_getNodes (
         SRCPARSE_DATA   *this
     )
     {
@@ -190,7 +190,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -200,14 +200,14 @@ extern "C" {
     }
     
     
-    bool            srcParse_setNodes (
+    bool            SrcParse_setNodes (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -230,7 +230,7 @@ extern "C" {
     //                        O b j e c t s
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * srcParse_getObjs (
+    OBJARRAY_DATA * SrcParse_getObjs (
         SRCPARSE_DATA   *this
     )
     {
@@ -238,7 +238,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -248,14 +248,14 @@ extern "C" {
     }
     
     
-    bool            srcParse_setObjs (
+    bool            SrcParse_setObjs (
         SRCPARSE_DATA   *this,
         OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -278,7 +278,7 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        srcParse_getPriority (
+    uint16_t        SrcParse_getPriority (
         SRCPARSE_DATA     *this
     )
     {
@@ -286,7 +286,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -297,14 +297,14 @@ extern "C" {
     }
 
 
-    bool            srcParse_setPriority (
+    bool            SrcParse_setPriority (
         SRCPARSE_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -321,7 +321,7 @@ extern "C" {
     //                       L i b r a r y
     //---------------------------------------------------------------
     
-    NODEPGM_DATA *  srcParse_getPgm (
+    NODEPGM_DATA *  SrcParse_getPgm (
         SRCPARSE_DATA   *this
     )
     {
@@ -329,7 +329,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -339,14 +339,14 @@ extern "C" {
     }
     
     
-    bool            srcParse_setPgm (
+    bool            SrcParse_setPgm (
         SRCPARSE_DATA   *this,
         NODEPGM_DATA    *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -369,7 +369,7 @@ extern "C" {
     //                        R o u t i n e s
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * srcParse_getRtns (
+    OBJARRAY_DATA * SrcParse_getRtns (
         SRCPARSE_DATA   *this
     )
     {
@@ -377,7 +377,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -387,14 +387,14 @@ extern "C" {
     }
     
     
-    bool            srcParse_setRtns (
+    bool            SrcParse_setRtns (
         SRCPARSE_DATA   *this,
         OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -417,13 +417,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        srcParse_getSize (
+    uint32_t        SrcParse_getSize (
         SRCPARSE_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -438,7 +438,7 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  srcParse_getSuperVtbl (
+    OBJ_IUNKNOWN *  SrcParse_getSuperVtbl (
         SRCPARSE_DATA     *this
     )
     {
@@ -446,7 +446,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -462,7 +462,7 @@ extern "C" {
     //                        R o u t i n e s
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * srcParse_getTests (
+    OBJARRAY_DATA * SrcParse_getTests (
         SRCPARSE_DATA   *this
     )
     {
@@ -470,7 +470,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -480,14 +480,14 @@ extern "C" {
     }
     
     
-    bool            srcParse_setTests (
+    bool            SrcParse_setTests (
         SRCPARSE_DATA   *this,
         OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -523,14 +523,14 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = srcParse_Assign(this,pOther);
+        ERESULT eRc = SrcParse_Assign(this,pOther);
      @endcode 
      @param     this    SRCPARSE object pointer
      @param     pOther  a pointer to another SRCPARSE object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         srcParse_Assign (
+    ERESULT         SrcParse_Assign (
         SRCPARSE_DATA		*this,
         SRCPARSE_DATA     *pOther
     )
@@ -540,11 +540,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!srcParse_Validate(pOther)) {
+        if (!SrcParse_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -596,7 +596,7 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         srcParse_Compare (
+    ERESULT         SrcParse_Compare (
         SRCPARSE_DATA     *this,
         SRCPARSE_DATA     *pOther
     )
@@ -612,11 +612,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!srcParse_Validate(pOther)) {
+        if (!SrcParse_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -654,14 +654,14 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        srcParse      *pCopy = srcParse_Copy(this);
+        srcParse      *pCopy = SrcParse_Copy(this);
      @endcode 
      @param     this    SRCPARSE object pointer
      @return    If successful, a SRCPARSE object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SRCPARSE_DATA *     srcParse_Copy (
+    SRCPARSE_DATA *     SrcParse_Copy (
         SRCPARSE_DATA       *this
     )
     {
@@ -671,15 +671,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = srcParse_New( );
+        pOther = SrcParse_New( );
         if (pOther) {
-            eRc = srcParse_Assign(this, pOther);
+            eRc = SrcParse_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -697,7 +697,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            srcParse_Dealloc (
+    void            SrcParse_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -709,7 +709,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -721,12 +721,12 @@ extern "C" {
         }
 #endif
 
-        srcParse_setLib(this, OBJ_NIL);
-        srcParse_setObjs(this, OBJ_NIL);
-        srcParse_setPgm(this, OBJ_NIL);
-        srcParse_setRtns(this, OBJ_NIL);
-        srcParse_setTests(this, OBJ_NIL);
-        srcParse_setNodes(this, OBJ_NIL);
+        SrcParse_setLib(this, OBJ_NIL);
+        SrcParse_setObjs(this, OBJ_NIL);
+        SrcParse_setPgm(this, OBJ_NIL);
+        SrcParse_setRtns(this, OBJ_NIL);
+        SrcParse_setTests(this, OBJ_NIL);
+        SrcParse_setNodes(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -749,7 +749,7 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         srcParse_Disable (
+    ERESULT         SrcParse_Disable (
         SRCPARSE_DATA		*this
     )
     {
@@ -758,7 +758,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -784,7 +784,7 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         srcParse_Enable (
+    ERESULT         SrcParse_Enable (
         SRCPARSE_DATA		*this
     )
     {
@@ -793,7 +793,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -813,7 +813,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    SRCPARSE_DATA *   srcParse_Init (
+    SRCPARSE_DATA *   SrcParse_Init (
         SRCPARSE_DATA       *this
     )
     {
@@ -835,7 +835,7 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, MAIN_IDENT_SRCPARSE);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SRCPARSE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -843,7 +843,7 @@ extern "C" {
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcParse_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SrcParse_Vtbl);
         
         this->pObjs = objArray_New( );
         if (OBJ_NIL == this->pObjs) {
@@ -866,7 +866,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -886,7 +886,7 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         srcParse_IsEnabled (
+    ERESULT         SrcParse_IsEnabled (
         SRCPARSE_DATA	*this
     )
     {
@@ -895,7 +895,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -915,7 +915,7 @@ extern "C" {
     //              P a r s e  J s o n  I n p u t
     //---------------------------------------------------------------
     
-    ERESULT_DATA *  srcParse_ParseJsonFile (
+    ERESULT_DATA *  SrcParse_ParseJsonFile (
         SRCPARSE_DATA   *this,
         PATH_DATA       *pPath
     )
@@ -928,7 +928,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcParse_Validate(this) ) {
+        if( !SrcParse_Validate(this) ) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
@@ -970,7 +970,7 @@ extern "C" {
     }
     
     
-    ERESULT_DATA *  srcParse_ParseJsonStr (
+    ERESULT_DATA *  SrcParse_ParseJsonStr (
         SRCPARSE_DATA   *this,
         const
         char            *pStrA
@@ -984,7 +984,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcParse_Validate(this) ) {
+        if( !SrcParse_Validate(this) ) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
@@ -1031,7 +1031,7 @@ extern "C" {
     //                  P a r s e  L i b r a r y
     //---------------------------------------------------------------
     
-    ERESULT_DATA *  srcParse_ParseLibrary (
+    ERESULT_DATA *  SrcParse_ParseLibrary (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     )
@@ -1042,7 +1042,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcParse_Validate(this) ) {
+        if( !SrcParse_Validate(this) ) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
@@ -1063,7 +1063,7 @@ extern "C" {
             DEBUG_BREAK();
             return pErr;
         }
-        srcParse_setLib(this, pLib);
+        SrcParse_setLib(this, pLib);
         obj_Release(pLib);
         pLib = OBJ_NIL;
 
@@ -1077,7 +1077,7 @@ extern "C" {
     //                  P a r s e  N o d e s
     //---------------------------------------------------------------
     
-    ERESULT_DATA *  srcParse_ParseNodes (
+    ERESULT_DATA *  SrcParse_ParseNodes (
         SRCPARSE_DATA   *this
     )
     {
@@ -1090,7 +1090,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcParse_Validate(this) ) {
+        if( !SrcParse_Validate(this) ) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
@@ -1120,7 +1120,7 @@ extern "C" {
         if (pNode) {
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
-                pErr = srcParse_ParseLibrary(this, node_getData(pNode));
+                pErr = SrcParse_ParseLibrary(this, node_getData(pNode));
                 if (pErr)
                     return pErr;
             } else {
@@ -1133,7 +1133,7 @@ extern "C" {
             if (pNode) {
                 pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
                 if (pHashWrk) {
-                    pErr = srcParse_ParseProgram(this, node_getData(pNode));
+                    pErr = SrcParse_ParseProgram(this, node_getData(pNode));
                     if (pErr)
                         return pErr;
                 } else {
@@ -1150,7 +1150,7 @@ extern "C" {
         if (pNode) {
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
-                pErr = srcParse_ParseObjects(this, node_getData(pNode));
+                pErr = SrcParse_ParseObjects(this, node_getData(pNode));
                 if (pErr)
                     return pErr;
             } else {
@@ -1166,7 +1166,7 @@ extern "C" {
         if (pNode) {
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
-                pErr = srcParse_ParseRoutines(this, node_getData(pNode));
+                pErr = SrcParse_ParseRoutines(this, node_getData(pNode));
                 if (pErr)
                     return pErr;
             } else {
@@ -1185,7 +1185,7 @@ extern "C" {
     //                  P a r s e  O b j e c t
     //---------------------------------------------------------------
 
-    ERESULT_DATA *  srcParse_ParseObject (
+    ERESULT_DATA *  SrcParse_ParseObject (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     )
@@ -1197,7 +1197,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
@@ -1237,7 +1237,7 @@ extern "C" {
         //                  P a r s e  O b j e c t s
         //---------------------------------------------------------------
         
-        ERESULT_DATA *  srcParse_ParseObjects (
+        ERESULT_DATA *  SrcParse_ParseObjects (
             SRCPARSE_DATA   *this,
             NODE_DATA       *pNodes
         )
@@ -1251,7 +1251,7 @@ extern "C" {
             // Do initialization.
     #ifdef NDEBUG
     #else
-            if( !srcParse_Validate(this) ) {
+            if( !SrcParse_Validate(this) ) {
                 DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
             }
@@ -1271,7 +1271,7 @@ extern "C" {
                 for(i=0; i<iMax; ++i) {
                     pNode = nodeArray_Get(pArray, (i+1));
                     if (pNode) {
-                        pErr = srcParse_ParseObject(this, pNode);
+                        pErr = SrcParse_ParseObject(this, pNode);
                         if (pErr) {
                             DEBUG_BREAK();
                             break;
@@ -1295,7 +1295,7 @@ extern "C" {
         //                  P a r s e  P r o g r a m
         //---------------------------------------------------------------
         
-        ERESULT_DATA *  srcParse_ParseProgram (
+        ERESULT_DATA *  SrcParse_ParseProgram (
             SRCPARSE_DATA   *this,
             NODE_DATA       *pNode
         )
@@ -1306,7 +1306,7 @@ extern "C" {
             // Do initialization.
     #ifdef NDEBUG
     #else
-            if( !srcParse_Validate(this) ) {
+            if( !SrcParse_Validate(this) ) {
                 DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
             }
@@ -1327,7 +1327,7 @@ extern "C" {
                 DEBUG_BREAK();
                 return pErr;
             }
-            srcParse_setPgm(this, pPgm);
+            SrcParse_setPgm(this, pPgm);
             obj_Release(pPgm);
             pPgm = OBJ_NIL;
 
@@ -1341,7 +1341,7 @@ extern "C" {
     //                  P a r s e  R o u t i n e
     //---------------------------------------------------------------
 
-    ERESULT_DATA *  srcParse_ParseRoutine (
+    ERESULT_DATA *  SrcParse_ParseRoutine (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     )
@@ -1353,7 +1353,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
@@ -1393,7 +1393,7 @@ extern "C" {
     //                  P a r s e  R o u t i n e s
     //---------------------------------------------------------------
     
-    ERESULT_DATA *  srcParse_ParseRoutines (
+    ERESULT_DATA *  SrcParse_ParseRoutines (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNodes
     )
@@ -1407,7 +1407,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcParse_Validate(this) ) {
+        if( !SrcParse_Validate(this) ) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
@@ -1427,7 +1427,7 @@ extern "C" {
             for(i=0; i<iMax; ++i) {
                 pNode = nodeArray_Get(pArray, (i+1));
                 if (pNode) {
-                    pErr = srcParse_ParseRoutine(this, pNode);
+                    pErr = SrcParse_ParseRoutine(this, pNode);
                     if (pErr) {
                         DEBUG_BREAK();
                         break;
@@ -1458,7 +1458,7 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = srcParse_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = SrcParse_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
@@ -1473,7 +1473,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          srcParse_QueryInfo (
+    void *          SrcParse_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -1488,7 +1488,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1501,7 +1501,7 @@ extern "C" {
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)srcParse_Class();
+                return (void *)SrcParse_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -1531,19 +1531,19 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return srcParse_Disable;
+                            return SrcParse_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return srcParse_Enable;
+                            return SrcParse_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return srcParse_ToDebugString;
+                            return SrcParse_ToDebugString;
                         }
                         break;
                         
@@ -1553,7 +1553,7 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == srcParse_ToDebugString)
+                if (pData == SrcParse_ToDebugString)
                     return "ToDebugString";
                 break;
                 
@@ -1570,7 +1570,7 @@ extern "C" {
     //                  P a r s e  T e s t
     //---------------------------------------------------------------
 
-    ERESULT_DATA *  srcParse_ParseTest (
+    ERESULT_DATA *  SrcParse_ParseTest (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     )
@@ -1582,7 +1582,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
@@ -1622,7 +1622,7 @@ extern "C" {
     //                  P a r s e  T e s t s
     //---------------------------------------------------------------
     
-    ERESULT_DATA *  srcParse_ParseTests (
+    ERESULT_DATA *  SrcParse_ParseTests (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNodes
     )
@@ -1636,7 +1636,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcParse_Validate(this) ) {
+        if( !SrcParse_Validate(this) ) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
@@ -1656,7 +1656,7 @@ extern "C" {
             for(i=0; i<iMax; ++i) {
                 pNode = nodeArray_Get(pArray, (i+1));
                 if (pNode) {
-                    pErr = srcParse_ParseTest(this, pNode);
+                    pErr = SrcParse_ParseTest(this, pNode);
                     if (pErr) {
                         DEBUG_BREAK();
                         break;
@@ -1684,7 +1684,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = srcParse_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SrcParse_ToDebugString(this,4);
      @endcode 
      @param     this    SRCPARSE object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1692,7 +1692,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     srcParse_ToDebugString (
+    ASTR_DATA *     SrcParse_ToDebugString (
         SRCPARSE_DATA   *this,
         int             indent
     )
@@ -1709,7 +1709,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!srcParse_Validate(this)) {
+        if (!SrcParse_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1730,7 +1730,7 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    srcParse_getSize(this)
+                    SrcParse_getSize(this)
             );
 
 #ifdef  XYZZY        
@@ -1767,7 +1767,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            srcParse_Validate (
+    bool            SrcParse_Validate (
         SRCPARSE_DATA      *this
     )
     {
@@ -1775,7 +1775,7 @@ extern "C" {
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, MAIN_IDENT_SRCPARSE))
+            if (obj_IsKindOf(this, OBJ_IDENT_SRCPARSE))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't

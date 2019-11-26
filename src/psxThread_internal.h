@@ -67,7 +67,7 @@ struct psxThread_data_s	{
     PSXSEM_DATA     *pWorkerWait;
     PSXSEM_DATA     *pOwnerWait;
     PSXSEM_DATA     *pWorkerEnded;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
     pthread_t       worker;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)

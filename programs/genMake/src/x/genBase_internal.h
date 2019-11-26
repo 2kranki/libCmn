@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   dbprs_internal.h
- *	Generated 09/04/2018 13:50:27
+ * File:   genBase_internal.h
+ *	Generated 04/10/2018 10:49:33
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,13 @@
 
 
 
-#include        <dbprs.h>
-#include        <hjson.h>
-#include        <jsonIn.h>
+#include    <genBase.h>
+#include    <fbso.h>
+#include    <nodeHash.h>
 
 
-#ifndef DBPRS_INTERNAL_H
-#define	DBPRS_INTERNAL_H
+#ifndef GENBASE_INTERNAL_H
+#define	GENBASE_INTERNAL_H
 
 
 
@@ -61,7 +61,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct dbprs_data_s	{
+struct genBase_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -69,25 +69,34 @@ struct dbprs_data_s	{
 
     // Common Data
     uint16_t        size;		    // maximum number of elements
-    uint16_t        reserved;
-    GENBASE_DATA    *pGen;
-    JSONIN_DATA     *pJson;
+    uint16_t        makeType;       // Program, Library, etc
+    uint16_t        osType;         // OSX, Win32, Win64, etc
+    uint16_t        rsvd16;
+    DATETIME_DATA   *pDateTime;
     NODEHASH_DATA   *pDict;
     NODE_DATA       *pNodes;
-    ASTR_DATA       *pStr;
-    uint8_t         fLib;           // true == library, false == program
-    uint8_t         rsvd8[3];
+    NODEHASH_DATA   *pObjDirs;      // Object Directories
+    TEXTOUT_DATA    *pOutput;
+    // The following are filled in from sections of the Node Tree.
+    NODEARRAY_DATA  *pLibDeps;
+    NODEARRAY_DATA  *pSrcDeps;
+
+    PATH_DATA *     (*pLibIncludePath)(GENBASE_DATA *, const char *, const char *, const char *);
+    PATH_DATA *     (*pLibInstalledPath)(GENBASE_DATA *, const char *, const char *, const char *);
+    ASTR_DATA *     (*pLibName)(GENBASE_DATA *, const char *, const char *);
+    PATH_DATA *     (*pLibObjectPath)(GENBASE_DATA *, const char *, const char *, const char *);
+    OBJ_ID          pLibObj;
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct dbprs_class_data_s  dbprs_ClassObj;
+    struct genBase_class_data_s  genBase_ClassObj;
 
     extern
     const
-    DBPRS_VTBL         dbprs_Vtbl;
+    GENBASE_VTBL         genBase_Vtbl;
 
 
 
@@ -95,25 +104,41 @@ struct dbprs_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  dbprs_getSuperVtbl(
-        DBPRS_DATA     *this
+    bool            genBase_setObjDirs(
+        GENBASE_DATA    *this,
+        NODEHASH_DATA   *pValue
+    );
+    
+    
+    OBJ_IUNKNOWN *  genBase_getSuperVtbl(
+        GENBASE_DATA     *this
     );
 
 
-    void            dbprs_Dealloc(
+    void            genBase_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          dbprs_QueryInfo(
+    ERESULT         genBase_GenFinal(
+        GENBASE_DATA    *this
+    );
+    
+    
+    ASTR_DATA *     genBase_GenInitial(
+        GENBASE_DATA    *this
+    );
+    
+    
+    void *          genBase_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     dbprs_ToJSON(
-        DBPRS_DATA      *this
+    ASTR_DATA *     genBase_ToJSON(
+        GENBASE_DATA      *this
     );
 
 
@@ -121,8 +146,8 @@ struct dbprs_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			dbprs_Validate(
-        DBPRS_DATA       *this
+    bool			genBase_Validate(
+        GENBASE_DATA       *this
     );
 #endif
 
@@ -132,5 +157,5 @@ struct dbprs_data_s	{
 }
 #endif
 
-#endif	/* DBPRS_INTERNAL_H */
+#endif	/* GENBASE_INTERNAL_H */
 

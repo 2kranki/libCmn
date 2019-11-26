@@ -41,6 +41,14 @@
 
 #include        <ExpandNodes.h>
 #include        <jsonIn.h>
+#include        <NodeHdr.h>
+#include        <NodeLib.h>
+#include        <NodeObj.h>
+#include        <NodePgm.h>
+#include        <NodeRtn.h>
+#include        <NodeRtnA.h>
+#include        <NodeTest.h>
+#include        <NodeTstA.h>
 
 
 #ifndef EXPANDNODES_INTERNAL_H
@@ -48,6 +56,10 @@
 
 
 
+#define     PROPERTY_LIB_OWNED 1
+#define     PROPERTY_PGM_OWNED 1
+#define     PROPERTY_RTNS_OWNED 1
+#define     PROPERTY_TESTS_OWNED 1
 #define     PROPERTY_STR_OWNED 1
 
 
@@ -74,6 +86,11 @@ struct ExpandNodes_data_s	{
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
+    DICT_DATA       *pDict;
+    NODELIB_DATA    *pLib;
+    NODEPGM_DATA    *pPgm;
+    OBJARRAY_DATA   *pRtns;
+    OBJARRAY_DATA   *pTests;
 
 };
 #pragma pack(pop)
@@ -92,7 +109,7 @@ struct ExpandNodes_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  EXPANDNODES_SINGLETON
-    EXPANDNODES_DATA *     ExpandNodes_getSingleton (
+    EXPANDNODES_DATA * ExpandNodes_getSingleton (
         void
     );
 
@@ -117,8 +134,14 @@ struct ExpandNodes_data_s	{
     );
 
 
-    EXPANDNODES_DATA *       ExpandNodes_ParseObject (
-        JSONIN_DATA     *pParser
+    ERESULT_DATA *      ExpandNodes_ExpandRtn (
+        EXPANDNODES_DATA    *this,
+        NODERTN_DATA        *pRtn
+    );
+
+
+    EXPANDNODES_DATA *  ExpandNodes_ParseObject (
+        JSONIN_DATA         *pParser
     );
 
 

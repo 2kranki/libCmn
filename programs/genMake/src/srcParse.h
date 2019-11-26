@@ -1,16 +1,16 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SRCPARSE Console Transmit Task (srcParse) Header
+//          JSON Input Source Parser (SrcParse) Header
 //****************************************************************
 /*
  * Program
- *			Separate srcParse (srcParse)
+ *			JSON Input Source Parser (SrcParse)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate srcParse to run things without complications
- *          of interfering with the main srcParse. A srcParse may be 
- *          called a srcParse on other O/S's.
+ *			This object parses the JSON input building a node tree.
+ *			It also provides the routines to parse the node tree
+ *			creating specific node type like NodeObj for the various
+ *			node definitions.
  *
  * Remarks
  *	1.      None
@@ -52,10 +52,10 @@
 
 
 #include        <genMake.h>
-#include        <objArray.h>
 #include        <AStr.h>
 #include        <NodeLib.h>
 #include        <NodePgm.h>
+#include        <objArray.h>
 
 
 #ifndef         SRCPARSE_H
@@ -78,22 +78,22 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct srcParse_data_s	SRCPARSE_DATA;            // Inherits from OBJ
-    typedef struct srcParse_class_data_s SRCPARSE_CLASS_DATA;   // Inherits from OBJ
+    typedef struct SrcParse_data_s	SRCPARSE_DATA;            // Inherits from OBJ
+    typedef struct SrcParse_class_data_s SRCPARSE_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct srcParse_vtbl_s	{
+    typedef struct SrcParse_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in srcParse_object.c.
+        // method names to the vtbl definition in SrcParse_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(SRCPARSE_DATA *);
     } SRCPARSE_VTBL;
 
-    typedef struct srcParse_class_vtbl_s	{
+    typedef struct SrcParse_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in srcParse_object.c.
+        // method names to the vtbl definition in SrcParse_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(SRCPARSE_DATA *);
@@ -112,11 +112,11 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  SRCPARSE_SINGLETON
-    SRCPARSE_DATA * srcParse_Shared (
+    SRCPARSE_DATA * SrcParse_Shared (
         void
     );
 
-    bool            srcParse_SharedReset (
+    bool            SrcParse_SharedReset (
         void
     );
 #endif
@@ -128,17 +128,17 @@ extern "C" {
      released.
      @return    pointer to srcParse object if successful, otherwise OBJ_NIL.
      */
-    SRCPARSE_DATA * srcParse_Alloc (
+    SRCPARSE_DATA * SrcParse_Alloc (
         void
     );
     
     
-    OBJ_ID          srcParse_Class (
+    OBJ_ID          SrcParse_Class (
         void
     );
     
     
-    SRCPARSE_DATA * srcParse_New (
+    SRCPARSE_DATA * SrcParse_New (
         void
     );
     
@@ -151,11 +151,11 @@ extern "C" {
     /*! Property: Lib
      Lib contains the Library data
      */
-    NODELIB_DATA *  srcParse_getLib (
+    NODELIB_DATA *  SrcParse_getLib (
         SRCPARSE_DATA   *this
     );
 
-    bool            srcParse_setLib (
+    bool            SrcParse_setLib (
         SRCPARSE_DATA   *this,
         NODELIB_DATA    *pValue
     );
@@ -164,11 +164,11 @@ extern "C" {
     /*! Property: Nodes
      Nodes contains the raw nodes parsed from a JSON input.
      */
-    NODE_DATA *     srcParse_getNodes (
+    NODE_DATA *     SrcParse_getNodes (
         SRCPARSE_DATA   *this
     );
 
-    bool            srcParse_setNodes (
+    bool            SrcParse_setNodes (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pValue
     );
@@ -178,11 +178,11 @@ extern "C" {
      Objects contains the accumulated NodeObj's which were parsed by
      ParseObject() or ParseObjects().
      */
-    OBJARRAY_DATA * srcParse_getObjs (
+    OBJARRAY_DATA * SrcParse_getObjs (
         SRCPARSE_DATA   *this
     );
 
-    bool            srcParse_setObjs (
+    bool            SrcParse_setObjs (
         SRCPARSE_DATA   *this,
         OBJARRAY_DATA   *pValue
     );
@@ -191,11 +191,11 @@ extern "C" {
     /*! Property: Pgm
      Pgm contains the Program data
      */
-    NODEPGM_DATA *  srcParse_getPgm (
+    NODEPGM_DATA *  SrcParse_getPgm (
         SRCPARSE_DATA   *this
     );
 
-    bool            srcParse_setPgm (
+    bool            SrcParse_setPgm (
         SRCPARSE_DATA   *this,
         NODEPGM_DATA    *pValue
     );
@@ -205,11 +205,11 @@ extern "C" {
      Routines contains the accumulated NodeRtn's which were parsed by
      ParseRoutine() or ParseRoutines().
      */
-    OBJARRAY_DATA * srcParse_getRtns (
+    OBJARRAY_DATA * SrcParse_getRtns (
         SRCPARSE_DATA   *this
     );
 
-    bool            srcParse_setRtns (
+    bool            SrcParse_setRtns (
         SRCPARSE_DATA   *this,
         OBJARRAY_DATA   *pValue
     );
@@ -219,11 +219,11 @@ extern "C" {
      Tests contains the accumulated NodeTest's which were parsed by
      ParseTest() or ParseTests().
      */
-    OBJARRAY_DATA * srcParse_getTests (
+    OBJARRAY_DATA * SrcParse_getTests (
         SRCPARSE_DATA   *this
     );
 
-    bool            srcParse_setTests (
+    bool            SrcParse_setTests (
         SRCPARSE_DATA   *this,
         OBJARRAY_DATA   *pValue
     );
@@ -235,7 +235,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    SRCPARSE_DATA * srcParse_Init (
+    SRCPARSE_DATA * SrcParse_Init (
         SRCPARSE_DATA   *this
     );
 
@@ -249,7 +249,7 @@ extern "C" {
      @return    If successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
                 error message.
      */
-    ERESULT_DATA *  srcParse_ParseJsonFile (
+    ERESULT_DATA *  SrcParse_ParseJsonFile (
         SRCPARSE_DATA   *this,
         PATH_DATA       *pPath
     );
@@ -263,7 +263,7 @@ extern "C" {
      @return    If successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
                 error message.
      */
-    ERESULT_DATA *  srcParse_ParseJsonStr (
+    ERESULT_DATA *  SrcParse_ParseJsonStr (
         SRCPARSE_DATA   *this,
         const
         char            *pStrA
@@ -290,13 +290,13 @@ extern "C" {
      description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ERESULT_DATA *  srcParse_ParseLibrary (
+    ERESULT_DATA *  SrcParse_ParseLibrary (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
     
     
-    ERESULT_DATA *  srcParse_ParseNodes (
+    ERESULT_DATA *  SrcParse_ParseNodes (
         SRCPARSE_DATA   *this
     );
 
@@ -369,7 +369,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ERESULT_DATA *  srcParse_ParseObject (
+    ERESULT_DATA *  SrcParse_ParseObject (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
@@ -392,13 +392,13 @@ extern "C" {
                 an array of routine/test nodes, otherwise OBJ_NIL.
      @warning   Remember to release the returned Array object.
      */
-    ERESULT_DATA *  srcParse_ParseObjects (
+    ERESULT_DATA *  SrcParse_ParseObjects (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
     
     
-    ERESULT_DATA *  srcParse_ParseProgram (
+    ERESULT_DATA *  SrcParse_ParseProgram (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
@@ -452,7 +452,7 @@ extern "C" {
      description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ERESULT_DATA *  srcParse_ParseRoutine (
+    ERESULT_DATA *  SrcParse_ParseRoutine (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
@@ -473,7 +473,7 @@ extern "C" {
                 routines scanned. Otherwise, an ERESULT_DATA object error.
      @warning   Remember to release the returned ERESULT_DATA object error.
      */
-    ERESULT_DATA *  srcParse_ParseRoutines (
+    ERESULT_DATA *  SrcParse_ParseRoutines (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
@@ -527,7 +527,7 @@ extern "C" {
      description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ERESULT_DATA *  srcParse_ParseTest (
+    ERESULT_DATA *  SrcParse_ParseTest (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
@@ -548,7 +548,7 @@ extern "C" {
                 routines scanned. Otherwise, an ERESULT_DATA object error.
      @warning   Remember to release the returned ERESULT_DATA object error.
      */
-    ERESULT_DATA *  srcParse_ParseTests (
+    ERESULT_DATA *  SrcParse_ParseTests (
         SRCPARSE_DATA   *this,
         NODE_DATA       *pNode
     );
@@ -558,7 +558,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = srcParse_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SrcParse_ToDebugString(this,4);
      @endcode 
      @param     this    SRCPARSE object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -566,7 +566,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     srcParse_ToDebugString (
+    ASTR_DATA *     SrcParse_ToDebugString (
         SRCPARSE_DATA   *this,
         int             indent
     );

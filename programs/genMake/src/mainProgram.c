@@ -8,7 +8,7 @@
 
 //#include        <stdio.h>
 #include        <genMake.h>
-#include        <main.h>
+#include        <Main.h>
 
 
 
@@ -33,19 +33,19 @@ int             main(
     fprintf(stderr, "\n\n");
 #endif
 
-    pMain = main_Shared( );
+    pMain = Main_Shared( );
     if (pMain == OBJ_NIL) {
         fprintf(stderr, "FATAL ERROR - \n");
         exit(EXIT_FAILURE);
     }
     
-    eRc = main_SetupFromArgV(pMain, cArgs, ppArgV, ppEnv);
+    eRc = Main_SetupFromArgV(pMain, cArgs, ppArgV, ppEnv);
     if (ERESULT_FAILED(eRc)) {
         fprintf(stderr, "FATAL - Failed to set up arguments!\n\n\n");
         return 8;
     }
     
-    iRc = main_Exec(pMain);
+    iRc = Main_Exec(pMain);
 
     //obj_SharedReset( );
     pMain = OBJ_NIL;

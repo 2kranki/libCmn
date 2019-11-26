@@ -183,7 +183,7 @@ extern "C" {
         PSXCOND_DATA    *this
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         bool            fRc;
         int             iRc;
 #endif
@@ -202,7 +202,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         fRc = psxMutex_IsLocked(this->pMutex);
         if (!fRc) {
             DEBUG_BREAK();
@@ -244,7 +244,7 @@ extern "C" {
     )
     {
         PSXCOND_DATA    *this = objId;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -266,7 +266,7 @@ extern "C" {
 #endif
 
         if (obj_IsFlag(this, PSXCOND_FLAG_COND_INIT)) {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
             iRc = pthread_cond_destroy(&this->cond);
             if (iRc) {
                 DEBUG_BREAK();
@@ -361,7 +361,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(PSXCOND_DATA);
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -397,7 +397,7 @@ extern "C" {
         
         obj_Retain(pMutex);
         this->pMutex = pMutex;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         // this->cond = PTHREAD_COND_INITIALIZER;
         iRc = pthread_cond_init(&this->cond, NULL);
         if (iRc) {
@@ -472,7 +472,7 @@ extern "C" {
         PSXCOND_DATA    *this
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         bool            fRc;
         int             iRc;
 #endif
@@ -491,7 +491,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         fRc = psxMutex_IsLocked(this->pMutex);
         if (!fRc) {
             DEBUG_BREAK();
@@ -612,7 +612,7 @@ extern "C" {
         PSXCOND_DATA    *this
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         bool            fRc;
         int             iRc;
 #endif
@@ -631,7 +631,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         fRc = psxMutex_IsLocked(this->pMutex);
         if (!fRc) {
             DEBUG_BREAK();

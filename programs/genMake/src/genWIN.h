@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          GENWIN Console Transmit Task (genWIN) Header
+//          GENWIN Console Transmit Task (GenWin) Header
 //****************************************************************
 /*
  * Program
- *			Separate genWIN (genWIN)
+ *			Separate GenWin (GenWin)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate genWIN to run things without complications
- *          of interfering with the main genWIN. A genWIN may be 
- *          called a genWIN on other O/S's.
+ *          a separate GenWin to run things without complications
+ *          of interfering with the main GenWin. A GenWin may be 
+ *          called a GenWin on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	04/18/2018 Generated
+ *	11/23/2019 Generated
  */
 
 
@@ -52,16 +52,16 @@
 
 
 #include        <genMake.h>
-#include        <genBase.h>
 #include        <AStr.h>
-#include        <node.h>
-#include        <nodeArray.h>
-#include        <nodeHash.h>
-#include        <szHash.h>
 
 
 #ifndef         GENWIN_H
 #define         GENWIN_H
+
+
+//#define   GENWIN_SINGLETON    1
+
+
 
 
 
@@ -75,16 +75,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct genWIN_data_s	GENWIN_DATA;    // Inherits from GENBASE.
+    typedef struct GenWin_data_s	GENWIN_DATA;            // Inherits from OBJ
+    typedef struct GenWin_class_data_s GENWIN_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct genWIN_vtbl_s	{
-        GENBASE_VTBL    iVtbl;              // Inherited Vtbl.
+    typedef struct GenWin_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in genWIN_object.c.
+        // method names to the vtbl definition in GenWin_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(GENWIN_DATA *);
     } GENWIN_VTBL;
+
+    typedef struct GenWin_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in GenWin_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(GENWIN_DATA *);
+    } GENWIN_CLASS_VTBL;
+
 
 
 
@@ -97,24 +108,35 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  GENWIN_SINGLETON
+    GENWIN_DATA *     GenWin_Shared (
+        void
+    );
+
+    bool            GenWin_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to genWIN object if successful, otherwise OBJ_NIL.
+     @return    pointer to GenWin object if successful, otherwise OBJ_NIL.
      */
-    GENWIN_DATA *     genWIN_Alloc(
+    GENWIN_DATA *     GenWin_Alloc (
         void
     );
     
     
-    OBJ_ID            genWIN_Class(
+    OBJ_ID          GenWin_Class (
         void
     );
     
     
-    GENWIN_DATA *     genWIN_New(
-        NODEHASH_DATA   *pDict
+    GENWIN_DATA *     GenWin_New (
+        void
     );
     
     
@@ -130,115 +152,31 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ASTR_DATA *     genWIN_GenCompileJson(
-        GENWIN_DATA     *this,
-        const
-        char            *pNameA,            // Routine File Name including extension
-        const
-        char            *pSrcDir,           // Default - "SRCDIR"
-        const
-        char            *pObjDir,           // Default - "OBJDIR"
-        const
-        char            *pObjVar,           // Default - "OBJS"
-        const
-        char            *pFlgVar,
-        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
-        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
-                                            // included in the compile statement, file
-                                            // extension must match that of pName above)
+    ERESULT     GenWin_Disable (
+        GENWIN_DATA		*this
     );
-    
-    
-    ASTR_DATA *     genWIN_GenCompileObject(
-        GENWIN_DATA     *this,
-        const
-        char            *pName,             // Object Name
-        const
-        char            *pSrcDir,           // Default - "SRCDIR"
-        const
-        char            *pObjDir,           // Default - "OBJDIR"
-        const
-        char            *pObjVar,           // Default - "OBJS"
-        const
-        char            *pFlgVar,
-        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
-        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
-                                            // included in the compile statement, file
-                                            // extension must match that of pName above)
+
+
+    ERESULT     GenWin_Enable (
+        GENWIN_DATA		*this
     );
-    
-    
-    ASTR_DATA *     genWIN_GenCompileRoutine(
-        GENWIN_DATA    *this,
-        const
-        char            *pName,             // Routine File Name including extension
-        const
-        char            *pSrcDir,           // Default - "SRCDIR"
-        const
-        char            *pObjDir,           // Default - "OBJDIR"
-        const
-        char            *pObjVar,           // Default - "OBJS"
-        const
-        char            *pFlgVar,           // If present, adds another Make Flag
-        // variable in addition to CFLAGS
-        // (Default - none)
-        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
-        NODEARRAY_DATA  *pObjDeps,          // Object Dependencies (ie files to be
-        // included in the compile statement, file
-        // extension must match that of pName above)
-        bool            fCO,                // true == compile only
-        bool            fExec               // true == execute the newly compiled
-                                            //          program
-    );
-    
-    
-    ASTR_DATA *     genWIN_GenCompileTest(
-        GENWIN_DATA     *this,
-        const
-        char            *pNameA,            // Routine File Name including extension
-        const
-        char            *pSrcDir,           // Default - "SRCDIR"
-        const
-        char            *pObjDir,           // Default - "OBJDIR"
-        const
-        char            *pObjVar,           // Default - "OBJS"
-        const
-        char            *pFlgVar,
-        NODEARRAY_DATA  *pSrcDeps,          // Source Dependencies (normally .h files)
-        NODEARRAY_DATA  *pObjDeps           // Object Dependencies (ie files to be
-                                            // included in the compile statement, file
-                                            // extension must match that of pName above)
-    );
-    
-    
-    /*!
-     Generate the Make File writing it to the output file.
-     @param     this    GENWIN object pointer
-     @param     pNodes  The scanned JSON nodes
-     @param     pDict   Dictionary for various substitutions
-     @param     pOutput An open FILE in writeable mode
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         genWIN_GenMakefile(
-        GENWIN_DATA     *this,
-        NODE_DATA       *pNodes,
-        SZHASH_DATA     *pDict,
-        DATETIME_DATA   *pDateTime,
-        FILE            *pOutput
-    );
-    
-    
-    GENWIN_DATA *   genWIN_Init(
+
+   
+    GENWIN_DATA *   GenWin_Init (
         GENWIN_DATA     *this
     );
 
 
+    ERESULT     GenWin_IsEnabled (
+        GENWIN_DATA		*this
+    );
+    
+ 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = genWIN_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = GenWin_ToDebugString(this,4);
      @endcode 
      @param     this    GENWIN object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -246,7 +184,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    genWIN_ToDebugString(
+    ASTR_DATA *    GenWin_ToDebugString (
         GENWIN_DATA     *this,
         int             indent
     );

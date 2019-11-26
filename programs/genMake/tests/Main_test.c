@@ -26,7 +26,7 @@
 #include    <cmn_defs.h>
 #include    <srcErrors.h>
 #include    <trace.h>
-#include    <main_internal.h>
+#include    <Main_internal.h>
 
 
 
@@ -84,7 +84,7 @@ int         tearDown(
 
 
 
-int         test_main_OpenClose(
+int         test_Main_OpenClose(
     const
     char        *pTestName
 )
@@ -93,9 +93,9 @@ int         test_main_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = main_Alloc( );
+    pObj = Main_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = main_Init( pObj );
+    pObj = Main_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -112,7 +112,7 @@ int         test_main_OpenClose(
 
 
 #ifdef XYZZY
-int         test_main_MakeFile01(
+int         test_Main_MakeFile01(
     const
     char        *pTestName
 )
@@ -233,24 +233,24 @@ int         test_main_MakeFile01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = main_NewFromArgV(2, pArgs, NULL);
+    pObj = Main_NewFromArgV(2, pArgs, NULL);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
         //appl_setDebug((APPL_DATA *)pObj, true);
-        eRc = main_ParseInputStr(pObj, pGoodJsonA);
+        eRc = Main_ParseInputStr(pObj, pGoodJsonA);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        eRc = main_ParseArgsDefault(pObj);
+        eRc = Main_ParseArgsDefault(pObj);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
         pObj->pOutput = textOut_NewAStr();
         TINYTEST_FALSE( (OBJ_NIL == pObj->pOutput) );
 
-        eRc = main_GenMakefile(pObj);
+        eRc = Main_GenMakefile(pObj);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        pStr = main_getStr(pObj);
+        pStr = Main_getStr(pObj);
         fprintf(stderr, "GEN_BEGIN:\n%sGEN_END:\n\n\n", AStr_getData(pStr));
         pWrk = AStr_ToDebugString(pStr, 4);
         fprintf(stderr, "%s\n\n\n", AStr_getData(pWrk));
@@ -270,7 +270,7 @@ int         test_main_MakeFile01(
 
 
 
-int         test_main_MakeFile02(
+int         test_Main_MakeFile02(
     const
     char        *pTestName
 )
@@ -290,18 +290,18 @@ int         test_main_MakeFile02(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = main_New( );
+    pObj = Main_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
         //appl_setDebug((APPL_DATA *)pObj, true);
-        eRc = main_SetupFromArgV(pObj, 2, pArgs, NULL);
+        eRc = Main_SetupFromArgV(pObj, 2, pArgs, NULL);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        iRc = main_Exec(pObj);
+        iRc = Main_Exec(pObj);
         TINYTEST_TRUE( (0 == iRc) );
         
-        pStr = main_getStr(pObj);
+        pStr = Main_getStr(pObj);
         if (pStr) {
             fprintf(stderr, "GEN_BEGIN:\n%sGEN_END:\n\n\n", AStr_getData(pStr));
         }
@@ -316,7 +316,7 @@ int         test_main_MakeFile02(
 
 
 
-int         test_main_MakeFile03(
+int         test_Main_MakeFile03(
     const
     char        *pTestName
 )
@@ -336,18 +336,18 @@ int         test_main_MakeFile03(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = main_New( );
+    pObj = Main_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
         //appl_setDebug((APPL_DATA *)pObj, true);
-        eRc = main_SetupFromArgV(pObj, 2, pArgs, NULL);
+        eRc = Main_SetupFromArgV(pObj, 2, pArgs, NULL);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        iRc = main_Exec(pObj);
+        iRc = Main_Exec(pObj);
         TINYTEST_TRUE( (0 == iRc) );
         
-        pStr = main_getStr(pObj);
+        pStr = Main_getStr(pObj);
         if (pStr) {
             fprintf(stderr, "GEN_BEGIN:\n%sGEN_END:\n\n\n", AStr_getData(pStr));
         }
@@ -362,7 +362,7 @@ int         test_main_MakeFile03(
 
 
 
-int         test_main_MakeFile04(
+int         test_Main_MakeFile04(
     const
     char        *pTestName
 )
@@ -382,18 +382,18 @@ int         test_main_MakeFile04(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = main_New( );
+    pObj = Main_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
         //appl_setDebug((APPL_DATA *)pObj, true);
-        eRc = main_SetupFromArgV(pObj, 2, pArgs, NULL);
+        eRc = Main_SetupFromArgV(pObj, 2, pArgs, NULL);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        iRc = main_Exec(pObj);
+        iRc = Main_Exec(pObj);
         TINYTEST_TRUE( (0 == iRc) );
         
-        pStr = main_getStr(pObj);
+        pStr = Main_getStr(pObj);
         if (pStr) {
             fprintf(stderr, "GEN_BEGIN:\n%sGEN_END:\n\n\n", AStr_getData(pStr));
         }
@@ -410,17 +410,17 @@ int         test_main_MakeFile04(
 
 
 
-TINYTEST_START_SUITE(test_main);
+TINYTEST_START_SUITE(test_Main);
 #ifdef XYZZY
-    TINYTEST_ADD_TEST(test_main_MakeFile04,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_main_MakeFile03,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_main_MakeFile02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_main_MakeFile01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Main_MakeFile04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Main_MakeFile03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Main_MakeFile02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Main_MakeFile01,setUp,tearDown);
 #endif
-    TINYTEST_ADD_TEST(test_main_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Main_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_main);
+TINYTEST_MAIN_SINGLE_SUITE(test_Main);
 
 
 

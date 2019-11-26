@@ -1089,7 +1089,7 @@ extern "C" {
                                  this
         );
 
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         this->recordTerm = RRDS_RCD_TRM_NL;
         this->recordSize = 81;
 #endif

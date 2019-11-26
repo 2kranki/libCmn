@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <disks_internal.h>
 #include        <trace.h>
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
 #   include        <sys/param.h>
 #   include        <sys/ucred.h>
 #   include        <sys/mount.h>
@@ -85,7 +85,7 @@ extern "C" {
         DISKS_DATA      *this
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             numStats = 0;
         int             bufSize = 0;
         int             i;
@@ -94,7 +94,7 @@ extern "C" {
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
 
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         numStats = getfsstat(NULL, 0, MNT_NOWAIT);
         if (numStats) {
             bufSize = numStats * sizeof(struct statfs);

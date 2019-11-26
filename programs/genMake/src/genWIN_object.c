@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'genWIN'
-//	Generated 04/18/2018 09:07:15
+//	Class Object Metods and Tables for 'GenWin'
+//	Generated 11/23/2019 12:07:31
 
 
 /*
@@ -33,10 +33,12 @@
 
 
 
-//#define   GENWIN_IS_SINGLETON     1
 
 #define			GENWIN_OBJECT_C	    1
-#include        <genWIN_internal.h>
+#include        <GenWin_internal.h>
+#ifdef  GENWIN_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
@@ -44,15 +46,18 @@
 //                  Class Object Definition
 //===========================================================
 
-struct genWIN_class_data_s	{
+struct GenWin_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  GENWIN_SINGLETON
+    volatile
+    GENWIN_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct genWIN_class_data_s GENWIN_CLASS_DATA;
 
 
 
@@ -64,7 +69,7 @@ typedef struct genWIN_class_data_s GENWIN_CLASS_DATA;
 
 
 static
-void *          genWINClass_QueryInfo(
+void *          GenWinClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,21 +78,18 @@ void *          genWINClass_QueryInfo(
 
 static
 const
-OBJ_INFO        genWIN_Info;            // Forward Reference
+OBJ_INFO        GenWin_Info;            // Forward Reference
 
 
 
 
 static
-bool            genWINClass_IsKindOf(
+bool            GenWinClass_IsKindOf (
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_GENWIN_CLASS == classID) {
+    if (OBJ_IDENT_GENWIN_CLASS == classID) {
        return true;
-    }
-    if (MAIN_IDENT_GENBASE_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
@@ -97,25 +99,34 @@ bool            genWINClass_IsKindOf(
 
 
 static
-uint16_t		genWINClass_WhoAmI(
+uint16_t		GenWinClass_WhoAmI (
     void
 )
 {
-    return MAIN_IDENT_GENWIN_CLASS;
+    return OBJ_IDENT_GENWIN_CLASS;
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
 static
 const
-OBJ_IUNKNOWN    class_Vtbl = {
-	&genWIN_Info,
-    genWINClass_IsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    genWIN_Class,
-    genWINClass_WhoAmI,
-    (P_OBJ_QUERYINFO)genWINClass_QueryInfo
+GENWIN_CLASS_VTBL    class_Vtbl = {
+    {
+        &GenWin_Info,
+        GenWinClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        GenWin_Class,
+        GenWinClass_WhoAmI,
+        (P_OBJ_QUERYINFO)GenWinClass_QueryInfo,
+        NULL                        // GenWinClass_ToDebugString
+    },
 };
 
 
@@ -124,17 +135,100 @@ OBJ_IUNKNOWN    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
-GENWIN_CLASS_DATA  genWIN_ClassObj = {
+GENWIN_CLASS_DATA  GenWin_ClassObj = {
     {
-        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
-        sizeof(GENWIN_CLASS_DATA),          // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(GENWIN_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
     },
 	//0
 };
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  GENWIN_SINGLETON
+GENWIN_DATA *     GenWin_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(GenWin_ClassObj.pSingleton);
+}
+
+
+bool            GenWin_setSingleton (
+    GENWIN_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (GenWin_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(GenWin_ClassObj.pSingleton));
+    }
+    GenWin_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+GENWIN_DATA *     GenWin_Shared (
+    void
+)
+{
+    GENWIN_DATA       *this = (OBJ_ID)(GenWin_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = GenWin_New( );
+        GenWin_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // GenWin_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            GenWin_SharedReset (
+    void
+)
+{
+    GENWIN_DATA       *this = (OBJ_ID)(GenWin_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        GenWin_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
 
 
 
@@ -143,7 +237,7 @@ GENWIN_CLASS_DATA  genWIN_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          genWINClass_QueryInfo(
+void *          GenWinClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -159,19 +253,23 @@ void *          genWINClass_QueryInfo(
     
     switch (type) {
       
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(GENWIN_DATA);
+            break;
+            
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
             return this;
             break;
             
-        // Query for an address to specific data within the object.
+        // Query for an address to specific data within the object.  
         // This should be used very sparingly since it breaks the 
         // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
                 case 'C':
-                    if (str_Compare("ClassObject", (char *)pStr) == 0) {
-                        return (void *)&genWIN_ClassObj;
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&GenWin_Info;
                     }
                     break;
                     
@@ -184,13 +282,18 @@ void *          genWINClass_QueryInfo(
             return (void *)obj_getInfo(this);
             break;
             
-#ifdef XYZZY
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
-                case 'W':
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return GenWin_New;
+                    }
+                    break;
+                    
+                 case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return genWINClass_WhoAmI;
+                        return GenWinClass_WhoAmI;
                     }
                     break;
                     
@@ -198,7 +301,6 @@ void *          genWINClass_QueryInfo(
                     break;
             }
             break;
-#endif
             
         default:
             break;
@@ -210,21 +312,13 @@ void *          genWINClass_QueryInfo(
 
 
 
-
-//===========================================================
-//                  Object Vtbl Definition
-//===========================================================
-
 static
-bool            genWIN_IsKindOf(
+bool            GenWin_IsKindOf (
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_GENWIN == classID) {
+    if (OBJ_IDENT_GENWIN == classID) {
        return true;
-    }
-    if (MAIN_IDENT_GENBASE == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
@@ -235,75 +329,78 @@ bool            genWIN_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            genWIN_Dealloc(
+void            GenWin_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          genWIN_Class(
+OBJ_ID          GenWin_Class (
     void
 )
 {
-    return (OBJ_ID)&genWIN_ClassObj;
+    return (OBJ_ID)&GenWin_ClassObj;
 }
 
 
 static
-uint16_t		genWIN_WhoAmI(
+uint16_t		GenWin_WhoAmI (
     void
 )
 {
-    return MAIN_IDENT_GENWIN;
+    return OBJ_IDENT_GENWIN;
 }
 
 
-const
-GENWIN_VTBL     genWIN_Vtbl = {
-    {
-        {
-            &genWIN_Info,
-            genWIN_IsKindOf,
-    #ifdef  GENWIN_IS_SINGLETON
-            obj_RetainNull,
-            obj_ReleaseNull,
-    #else
-            obj_RetainStandard,
-            obj_ReleaseStandard,
-    #endif
-            genWIN_Dealloc,
-            genWIN_Class,
-            genWIN_WhoAmI,
-            (P_OBJ_QUERYINFO)genWIN_QueryInfo,
-            (P_OBJ_TOSTRING)genWIN_ToDebugString,
-            NULL,			// genWIN_Enable,
-            NULL,			// genWIN_Disable,
-            NULL,			// (P_OBJ_ASSIGN)genWIN_Assign,
-            NULL,			// (P_OBJ_COMPARE)genWIN_Compare,
-            NULL, 			// (P_OBJ_PTR)genWIN_Copy,
-            NULL, 			// (P_OBJ_PTR)genWIN_DeepCopy,
-            NULL 			// (P_OBJ_HASH)genWIN_Hash,
-        },
-        // Put other object method names below this.
-        // Properties:
-        // Methods:
-        (void *)genWIN_GenCompileRoutine,
-        (void *)genWIN_GenCompileJson,
-        (void *)genWIN_GenCompileObject,
-        (void *)genWIN_GenCompileTest,
-    }
 
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
+const
+GENWIN_VTBL     GenWin_Vtbl = {
+    {
+        &GenWin_Info,
+        GenWin_IsKindOf,
+#ifdef  GENWIN_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+#endif
+        GenWin_Dealloc,
+        GenWin_Class,
+        GenWin_WhoAmI,
+        (P_OBJ_QUERYINFO)GenWin_QueryInfo,
+        (P_OBJ_TOSTRING)GenWin_ToDebugString,
+        NULL,			// GenWin_Enable,
+        NULL,			// GenWin_Disable,
+        NULL,			// (P_OBJ_ASSIGN)GenWin_Assign,
+        NULL,			// (P_OBJ_COMPARE)GenWin_Compare,
+        NULL, 			// (P_OBJ_PTR)GenWin_Copy,
+        NULL, 			// (P_OBJ_PTR)GenWin_DeepCopy,
+        NULL 			// (P_OBJ_HASH)GenWin_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //GenWin_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        genWIN_Info = {
-    "genWIN",
-    "Generate Makefile for WIN32",
-    (OBJ_DATA *)&genWIN_ClassObj,
-    (OBJ_DATA *)&genBase_ClassObj,
-    (OBJ_IUNKNOWN *)&genWIN_Vtbl
+OBJ_INFO        GenWin_Info = {
+    "GenWin",
+    "Windows Makefile Generation",
+    (OBJ_DATA *)&GenWin_ClassObj,
+    (OBJ_DATA *)&GenBase_ClassObj,
+    (OBJ_IUNKNOWN *)&GenWin_Vtbl,
+    sizeof(GENWIN_DATA)
 };
 
 

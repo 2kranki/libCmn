@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   srcParse_internal.h
+ * File:   SrcParse_internal.h
  *	Generated 08/19/2019 01:17:17
  *
  * Notes:
@@ -39,7 +39,7 @@
 
 
 
-#include        <srcParse.h>
+#include        <SrcParse.h>
 #include        <jsonIn.h>
 
 
@@ -69,7 +69,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct srcParse_data_s	{
+struct SrcParse_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -87,11 +87,11 @@ struct srcParse_data_s	{
 #pragma pack(pop)
 
     extern
-    struct srcParse_class_data_s  srcParse_ClassObj;
+    struct SrcParse_class_data_s  SrcParse_ClassObj;
 
     extern
     const
-    SRCPARSE_VTBL         srcParse_Vtbl;
+    SRCPARSE_VTBL         SrcParse_Vtbl;
 
 
 
@@ -100,11 +100,11 @@ struct srcParse_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  SRCPARSE_SINGLETON
-    SRCPARSE_DATA *     srcParse_getSingleton (
+    SRCPARSE_DATA *     SrcParse_getSingleton (
         void
     );
 
-    bool            srcParse_setSingleton (
+    bool            SrcParse_setSingleton (
      SRCPARSE_DATA       *pValue
 );
 #endif
@@ -115,24 +115,24 @@ struct srcParse_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  srcParse_getSuperVtbl (
+    OBJ_IUNKNOWN *  SrcParse_getSuperVtbl (
         SRCPARSE_DATA     *this
     );
 
 
-    void            srcParse_Dealloc (
+    void            SrcParse_Dealloc (
         OBJ_ID          objId
     );
 
 
-    void *          srcParse_QueryInfo (
+    void *          SrcParse_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     srcParse_ToJSON (
+    ASTR_DATA *     SrcParse_ToJSON (
         SRCPARSE_DATA      *this
     );
 
@@ -141,7 +141,7 @@ struct srcParse_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			srcParse_Validate (
+    bool			SrcParse_Validate (
         SRCPARSE_DATA       *this
     );
 #endif

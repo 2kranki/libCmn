@@ -32,7 +32,7 @@
 #include    <srcErrors.h>
 #include    <szTbl.h>
 #include    <trace.h>
-#include    <srcParse_internal.h>
+#include    <SrcParse_internal.h>
 
 
 
@@ -141,7 +141,7 @@ ERESULT_DATA *  InputStrToJSON(
 
 
 
-int             test_srcParse_OpenClose(
+int             test_SrcParse_OpenClose(
     const
     char            *pTestName
 )
@@ -151,9 +151,9 @@ int             test_srcParse_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = srcParse_Alloc( );
+    pObj = SrcParse_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = srcParse_Init( pObj );
+    pObj = SrcParse_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -172,7 +172,7 @@ int             test_srcParse_OpenClose(
 
 
 
-int             test_srcParse_Object01(
+int             test_SrcParse_Object01(
     const
     char            *pTestName
 )
@@ -197,7 +197,7 @@ int             test_srcParse_Object01(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPrs = srcParse_New( );
+    pPrs = SrcParse_New( );
     TINYTEST_FALSE( (OBJ_NIL == pPrs) );
     if (pPrs) {
         
@@ -219,10 +219,10 @@ int             test_srcParse_Object01(
             pWrk = OBJ_NIL;
         }
 
-        pErr = srcParse_ParseObjects(pPrs, pNodes);
+        pErr = SrcParse_ParseObjects(pPrs, pNodes);
         TINYTEST_TRUE((OBJ_NIL == pErr));
 
-        pArray = srcParse_getObjs(pPrs);
+        pArray = SrcParse_getObjs(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
@@ -251,7 +251,7 @@ int             test_srcParse_Object01(
 
 
 
-int             test_srcParse_Object02(
+int             test_SrcParse_Object02(
     const
     char            *pTestName
 )
@@ -276,7 +276,7 @@ int             test_srcParse_Object02(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPrs = srcParse_New( );
+    pPrs = SrcParse_New( );
     TINYTEST_FALSE( (OBJ_NIL == pPrs) );
     if (pPrs) {
         
@@ -298,10 +298,10 @@ int             test_srcParse_Object02(
             pWrk = OBJ_NIL;
         }
 
-        pErr = srcParse_ParseObjects(pPrs, pNodes);
+        pErr = SrcParse_ParseObjects(pPrs, pNodes);
         TINYTEST_TRUE((OBJ_NIL == pErr));
 
-        pArray = srcParse_getObjs(pPrs);
+        pArray = SrcParse_getObjs(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Display the Output.
@@ -339,7 +339,7 @@ int             test_srcParse_Object02(
 
 
 
-int             test_srcParse_Object03(
+int             test_SrcParse_Object03(
     const
     char            *pTestName
 )
@@ -364,7 +364,7 @@ int             test_srcParse_Object03(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPrs = srcParse_New( );
+    pPrs = SrcParse_New( );
     TINYTEST_FALSE( (OBJ_NIL == pPrs) );
     if (pPrs) {
         
@@ -386,10 +386,10 @@ int             test_srcParse_Object03(
             pWrk = OBJ_NIL;
         }
 
-        pErr = srcParse_ParseObjects(pPrs, pNodes);
+        pErr = SrcParse_ParseObjects(pPrs, pNodes);
         TINYTEST_TRUE((OBJ_NIL == pErr));
 
-        pArray = srcParse_getObjs(pPrs);
+        pArray = SrcParse_getObjs(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
@@ -418,7 +418,7 @@ int             test_srcParse_Object03(
 
 
 
-int             test_srcParse_Routine01(
+int             test_SrcParse_Routine01(
     const
     char            *pTestName
 )
@@ -442,7 +442,7 @@ int             test_srcParse_Routine01(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPrs = srcParse_New( );
+    pPrs = SrcParse_New( );
     TINYTEST_FALSE( (OBJ_NIL == pPrs) );
     if (pPrs) {
         
@@ -464,10 +464,10 @@ int             test_srcParse_Routine01(
             pWrk = OBJ_NIL;
         }
 
-        pErr = srcParse_ParseRoutines(pPrs, pNodes);
+        pErr = SrcParse_ParseRoutines(pPrs, pNodes);
         TINYTEST_TRUE((OBJ_NIL == pErr));
 
-        pArray = srcParse_getRtns(pPrs);
+        pArray = SrcParse_getRtns(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
@@ -494,7 +494,7 @@ int             test_srcParse_Routine01(
 
 
 
-int             test_srcParse_Routine02(
+int             test_SrcParse_Routine02(
     const
     char            *pTestName
 )
@@ -518,7 +518,7 @@ int             test_srcParse_Routine02(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPrs = srcParse_New( );
+    pPrs = SrcParse_New( );
     TINYTEST_FALSE( (OBJ_NIL == pPrs) );
     if (pPrs) {
         
@@ -540,10 +540,10 @@ int             test_srcParse_Routine02(
             pWrk = OBJ_NIL;
         }
 
-        pErr = srcParse_ParseRoutines(pPrs, pNodes);
+        pErr = SrcParse_ParseRoutines(pPrs, pNodes);
         TINYTEST_TRUE((OBJ_NIL == pErr));
 
-        pArray = srcParse_getRtns(pPrs);
+        pArray = SrcParse_getRtns(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
@@ -570,7 +570,7 @@ int             test_srcParse_Routine02(
 
 
 
-int             test_srcParse_Test01(
+int             test_SrcParse_Test01(
     const
     char            *pTestName
 )
@@ -593,7 +593,7 @@ int             test_srcParse_Test01(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPrs = srcParse_New( );
+    pPrs = SrcParse_New( );
     TINYTEST_FALSE( (OBJ_NIL == pPrs) );
     if (pPrs) {
         
@@ -615,10 +615,10 @@ int             test_srcParse_Test01(
             pWrk = OBJ_NIL;
         }
 
-        pErr = srcParse_ParseTests(pPrs, pNodes);
+        pErr = SrcParse_ParseTests(pPrs, pNodes);
         TINYTEST_TRUE((OBJ_NIL == pErr));
 
-        pArray = srcParse_getTests(pPrs);
+        pArray = SrcParse_getTests(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
@@ -643,7 +643,7 @@ int             test_srcParse_Test01(
 
 
 
-int             test_srcParse_Nodes01(
+int             test_SrcParse_Nodes01(
     const
     char            *pTestName
 )
@@ -671,21 +671,19 @@ int             test_srcParse_Nodes01(
         "],\n"
     "}\n";
     bool            fDumpNodes = false;
-    uint32_t        i;
     uint32_t        iMax;
     NODEOBJ_DATA    *pObj;
     NODERTN_DATA    *pRtn;
-    ASTR_DATA       *pStr;
     ASTRC_DATA      *pStrC;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPrs = srcParse_New( );
+    pPrs = SrcParse_New( );
     TINYTEST_FALSE( (OBJ_NIL == pPrs) );
     if (pPrs) {
         
         //obj_TraceSet(pObj, true);
-        pErr = srcParse_ParseJsonStr(pPrs, pGoodJson1);
+        pErr = SrcParse_ParseJsonStr(pPrs, pGoodJson1);
         if (pErr) {
             eResult_Fprint(pErr, stderr);
         }
@@ -705,16 +703,16 @@ int             test_srcParse_Nodes01(
             pWrk = OBJ_NIL;
         }
 
-        pErr = srcParse_ParseNodes(pPrs);
+        pErr = SrcParse_ParseNodes(pPrs);
         if (pErr) {
             eResult_Fprint(pErr, stderr);
         }
         TINYTEST_TRUE((OBJ_NIL == pErr));
 
         // Validate Library vs Program.
-        pLib = srcParse_getLib(pPrs);
+        pLib = SrcParse_getLib(pPrs);
         TINYTEST_TRUE( (OBJ_NIL == pLib) );
-        pPgm = srcParse_getPgm(pPrs);
+        pPgm = SrcParse_getPgm(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pPgm) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -728,7 +726,7 @@ int             test_srcParse_Nodes01(
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"mainProgram.c")));
 
         // Validate Objects.
-        pArray = srcParse_getObjs(pPrs);
+        pArray = SrcParse_getObjs(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         iMax = objArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Objects: %d\n", iMax);
@@ -759,7 +757,7 @@ int             test_srcParse_Nodes01(
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"appl")));
 
         // Validate Routines.
-        pArray = srcParse_getRtns(pPrs);
+        pArray = SrcParse_getRtns(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         iMax = objArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Routines: %d\n", iMax);
@@ -790,7 +788,7 @@ int             test_srcParse_Nodes01(
 
 
 
-int             test_srcParse_Nodes02(
+int             test_SrcParse_Nodes02(
     const
     char            *pTestName
 )
@@ -817,21 +815,19 @@ int             test_srcParse_Nodes02(
         "],\n"
     "}\n";
     bool            fDumpNodes = false;
-    uint32_t        i;
     uint32_t        iMax;
     NODEOBJ_DATA    *pObj;
     NODERTN_DATA    *pRtn;
-    ASTR_DATA       *pStr;
     ASTRC_DATA      *pStrC;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPrs = srcParse_New( );
+    pPrs = SrcParse_New( );
     TINYTEST_FALSE( (OBJ_NIL == pPrs) );
     if (pPrs) {
         
         //obj_TraceSet(pObj, true);
-        pErr = srcParse_ParseJsonStr(pPrs, pGoodJson1);
+        pErr = SrcParse_ParseJsonStr(pPrs, pGoodJson1);
         if (pErr) {
             eResult_Fprint(pErr, stderr);
         }
@@ -851,16 +847,16 @@ int             test_srcParse_Nodes02(
             pWrk = OBJ_NIL;
         }
 
-        pErr = srcParse_ParseNodes(pPrs);
+        pErr = SrcParse_ParseNodes(pPrs);
         if (pErr) {
             eResult_Fprint(pErr, stderr);
         }
         TINYTEST_TRUE((OBJ_NIL == pErr));
 
         // Validate Library vs Program.
-        pPgm = srcParse_getPgm(pPrs);
+        pPgm = SrcParse_getPgm(pPrs);
         TINYTEST_TRUE( (OBJ_NIL == pPgm) );
-        pLib = srcParse_getLib(pPrs);
+        pLib = SrcParse_getLib(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pLib) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -874,7 +870,7 @@ int             test_srcParse_Nodes02(
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"Cmn")));
 
         // Validate Objects.
-        pArray = srcParse_getObjs(pPrs);
+        pArray = SrcParse_getObjs(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         iMax = objArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Objects: %d\n", iMax);
@@ -905,7 +901,7 @@ int             test_srcParse_Nodes02(
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"appl")));
 
         // Validate Routines.
-        pArray = srcParse_getRtns(pPrs);
+        pArray = SrcParse_getRtns(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         iMax = objArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Routines: %d\n", iMax);
@@ -938,15 +934,15 @@ int             test_srcParse_Nodes02(
 
 
 TINYTEST_START_SUITE(test_srcParse);
-    TINYTEST_ADD_TEST(test_srcParse_Nodes02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcParse_Nodes01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcParse_Test01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcParse_Routine02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcParse_Routine01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcParse_Object03,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcParse_Object02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcParse_Object01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcParse_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcParse_Nodes02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcParse_Nodes01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcParse_Test01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcParse_Routine02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcParse_Routine01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcParse_Object03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcParse_Object02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcParse_Object01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcParse_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_srcParse);

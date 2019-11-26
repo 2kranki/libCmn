@@ -133,7 +133,7 @@ extern "C" {
         }
 #endif
 
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         count = this->count;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -220,7 +220,7 @@ extern "C" {
     )
     {
         PSXSEM_DATA     *this = objId;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -241,7 +241,7 @@ extern "C" {
         }
 #endif
 
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = pthread_cond_destroy(&this->cond);
         if (iRc) {
             DEBUG_BREAK();
@@ -292,7 +292,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -321,7 +321,7 @@ extern "C" {
         
         this->count = start;
         this->max = max;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         this->wakeups = 0;
         iRc = pthread_cond_init(&this->cond,NULL);
         if (iRc) {
@@ -395,7 +395,7 @@ extern "C" {
     )
     {
         bool            fRc = false;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
 //        int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -413,7 +413,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         pthread_mutex_lock(&this->mutex);
         if (this->count < this->max) {
             ++this->count;
@@ -467,7 +467,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         fRc = psxSem_Post(this);
         return fRc;
 #endif
@@ -594,7 +594,7 @@ extern "C" {
             AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
         str[0] = '\0';
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         pthread_mutex_lock(&this->mutex);
 #endif
         j = snprintf(
@@ -606,7 +606,7 @@ extern "C" {
                      this->wakeups,
                      this->max
             );
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         pthread_mutex_unlock(&this->mutex);
 #endif
         AStr_AppendA(pStr, str);
@@ -669,7 +669,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         pthread_mutex_lock(&this->mutex);
         if (this->count <= 0) {
             fRc = false;
@@ -721,7 +721,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         fRc = psxSem_Wait(this);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -760,7 +760,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         pthread_mutex_lock(&this->mutex);
         --this->count;
         if (this->count < 0) {

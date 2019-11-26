@@ -794,7 +794,10 @@ extern "C" {
 
         // Copy other data from this object to other.
         pOther->type     = this->type;
-#if     defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        pOther->fileSize = this->fileSize;
+#endif
+#if     defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         pOther->fileSize = this->fileSize;
 #endif
         pOther->attr     = this->attr;
@@ -1000,7 +1003,7 @@ extern "C" {
     {
         const
         char            *pStr = NULL;
-#if     defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -1031,7 +1034,7 @@ extern "C" {
         dirEntry_setFullPath(this, pPath);
         pStr = path_getData(pPath);
         if (pStr) {
-#if     defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
             iRc = stat(pStr, &statBuffer);
             if (0 == iRc) {
                 pTime = dateTime_NewFromTimeT(statBuffer.st_birthtimespec.tv_sec);

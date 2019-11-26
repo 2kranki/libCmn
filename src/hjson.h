@@ -48,11 +48,14 @@
  *          less strings. If any of those characters needs to be
  *          added to a string, then simply quote the string.
  *  2.      We do not support multi-line strings at this point.
+ *  3.      A data node's extra field will contain the SrcLoc Object
+ *          defining the start of the data in the source file.
  *
  *
  * History
  *	07/08/2017 Generated
  *  10/08/2018 Changed to allow empty arrays and hashes.
+ *  11/26/2019 Added SrcLoc object to data node's extra field.
  */
 
 

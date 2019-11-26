@@ -259,6 +259,10 @@ int             test_NodeRtn_Parse01(
     }
     pTest = NodeRtn_getTest(pRtn);
     TINYTEST_FALSE( (OBJ_NIL == pTest) );
+    if (pTest) {
+        pStrC = NodeTest_getName(pTest);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr_test")));
+    }
     pStrCArray = NodeTest_getArches(pTest);
     TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
     if (pStrCArray) {

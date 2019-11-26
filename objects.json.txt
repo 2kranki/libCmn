@@ -201,7 +201,7 @@
         "str.c",
     ],
     "macosx": [
-        "cmn_osx.c",
+        "cmnMac64.c",
         "memOSX.c",
         "memOSX_object.c"
     ],

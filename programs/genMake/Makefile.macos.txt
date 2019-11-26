@@ -1,7 +1,7 @@
 # Generated file - edits may be discarded!
 
 PGMNAM=genMake
-SYS=macosx
+SYS=macos
 TEMP=/tmp
 BASEDIR = $(TEMP)/$(PGMNAM)
 
@@ -11,7 +11,7 @@ LIB_BASE = $(HOME)/Support/lib/$(SYS)
 LIBCMN_BASE = $(LIB_BASE)/libCmn
 CFLAGS += -I$(LIBCMN_BASE)/include
 CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)
-CFLAGS += -D__MACOSX_ENV__
+CFLAGS += -D__MACOS64_ENV__
 
 TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses
 
@@ -44,6 +44,23 @@ TESTS =
 
 
 
+OBJS += $(OBJDIR)/Dict_object.o
+
+$(OBJDIR)/Dict_object.o: $(SRCDIR)/Dict_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/Dict.o
+
+$(OBJDIR)/Dict.o: $(SRCDIR)/Dict.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += Dict_test
+
+Dict_test: $(TEST_SRC)/Dict_test.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+
 OBJS += $(OBJDIR)/ExpandNodes_object.o
 
 $(OBJDIR)/ExpandNodes_object.o: $(SRCDIR)/ExpandNodes_object.c 
@@ -61,67 +78,70 @@ ExpandNodes_test: $(TEST_SRC)/ExpandNodes_test.c
 	$(TEST_OBJ)/$(@F)
 
 
-OBJS += $(OBJDIR)/genBase_object.o
+OBJS += $(OBJDIR)/GenBase_object.o
 
-$(OBJDIR)/genBase_object.o: $(SRCDIR)/genBase_object.c 
+$(OBJDIR)/GenBase_object.o: $(SRCDIR)/GenBase_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/genBase.o
+OBJS += $(OBJDIR)/GenBase.o
 
-$(OBJDIR)/genBase.o: $(SRCDIR)/genBase.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/GenBase.o: $(SRCDIR)/GenBase.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_genBase
+TESTS += GenBase_test
 
-test_genBase: $(TEST_SRC)/test_genBase.c 
+GenBase_test: $(TEST_SRC)/GenBase_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/genOSX_object.o
 
-$(OBJDIR)/genOSX_object.o: $(SRCDIR)/genOSX_object.c 
+OBJS += $(OBJDIR)/GenMac_object.o
+
+$(OBJDIR)/GenMac_object.o: $(SRCDIR)/GenMac_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/genOSX.o
+OBJS += $(OBJDIR)/GenMac.o
 
-$(OBJDIR)/genOSX.o: $(SRCDIR)/genOSX.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/GenMac.o: $(SRCDIR)/GenMac.c $(SRCDIR)/GenMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_genOSX
+TESTS += GenMac_test
 
-test_genOSX: $(TEST_SRC)/test_genOSX.c 
+GenMac_test: $(TEST_SRC)/GenMac_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/genWIN_object.o
 
-$(OBJDIR)/genWIN_object.o: $(SRCDIR)/genWIN_object.c 
+OBJS += $(OBJDIR)/GenWIN_object.o
+
+$(OBJDIR)/GenWIN_object.o: $(SRCDIR)/GenWIN_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/genWIN.o
+OBJS += $(OBJDIR)/GenWIN.o
 
-$(OBJDIR)/genWIN.o: $(SRCDIR)/genWIN.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/GenWIN.o: $(SRCDIR)/GenWIN.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_genWIN
+TESTS += GenWIN_test
 
-test_genWIN: $(TEST_SRC)/test_genWIN.c 
+GenWIN_test: $(TEST_SRC)/GenWIN_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/main_object.o
 
-$(OBJDIR)/main_object.o: $(SRCDIR)/main_object.c 
+OBJS += $(OBJDIR)/Main_object.o
+
+$(OBJDIR)/Main_object.o: $(SRCDIR)/Main_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/main.o
+OBJS += $(OBJDIR)/Main.o
 
-$(OBJDIR)/main.o: $(SRCDIR)/main.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/Main.o: $(SRCDIR)/Main.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_main
+TESTS += Main_test
 
-test_main: $(TEST_SRC)/test_main.c 
+Main_test: $(TEST_SRC)/Main_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -279,19 +299,19 @@ NodeTstA_test: $(TEST_SRC)/NodeTstA_test.c
 	$(TEST_OBJ)/$(@F)
 
 
-OBJS += $(OBJDIR)/srcParse_object.o
+OBJS += $(OBJDIR)/SrcParse_object.o
 
-$(OBJDIR)/srcParse_object.o: $(SRCDIR)/srcParse_object.c 
+$(OBJDIR)/SrcParse_object.o: $(SRCDIR)/SrcParse_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/srcParse.o
+OBJS += $(OBJDIR)/SrcParse.o
 
-$(OBJDIR)/srcParse.o: $(SRCDIR)/srcParse.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/SrcParse.o: $(SRCDIR)/SrcParse.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += srcParse_test
+TESTS += SrcParse_test
 
-srcParse_test: $(TEST_SRC)/srcParse_test.c $(TEST_SRC)/data_test.c 
+SrcParse_test: $(TEST_SRC)/SrcParse_test.c $(TEST_SRC)/data_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 

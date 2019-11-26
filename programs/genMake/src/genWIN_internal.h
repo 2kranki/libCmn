@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   genWIN_internal.h
- *	Generated 04/18/2018 09:07:15
+ * File:   GenWin_internal.h
+ *	Generated 11/23/2019 12:07:31
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,17 @@
 
 
 
-#include        <genWIN.h>
-#include        <genBase_internal.h>
+#include        <GenWin.h>
+#include        <GenBase_internal.h>
+#include        <jsonIn.h>
 
 
 #ifndef GENWIN_INTERNAL_H
 #define	GENWIN_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -60,7 +65,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct genWIN_data_s	{
+struct GenWin_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     GENBASE_DATA    super;
@@ -68,26 +73,34 @@ struct genWIN_data_s	{
 
     // Common Data
     uint16_t        size;		    // maximum number of elements
-    uint16_t        reserved;
-    SZHASH_DATA     *pDict;
+    uint16_t        rsvd16;
     ASTR_DATA       *pStr;
-    FILE            *pOutput;       // (Not owned)
 
-    PATH_DATA *     (*pLibIncludePath)(GENWIN_DATA *, const char *, const char *, const char *);
-    PATH_DATA *     (*pLibInstalledPath)(GENWIN_DATA *, const char *, const char *, const char *);
-    ASTR_DATA *     (*pLibName)(GENWIN_DATA *, const char *, const char *);
-    PATH_DATA *     (*pLibObjectPath)(GENWIN_DATA *, const char *, const char *, const char *);
-    
 };
 #pragma pack(pop)
 
     extern
-    const
-    struct genWIN_class_data_s  genWIN_ClassObj;
+    struct GenWin_class_data_s  GenWin_ClassObj;
 
     extern
     const
-    GENWIN_VTBL             genWIN_Vtbl;
+    GENWIN_VTBL         GenWin_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  GENWIN_SINGLETON
+    GENWIN_DATA *     GenWin_getSingleton (
+        void
+    );
+
+    bool            GenWin_setSingleton (
+     GENWIN_DATA       *pValue
+);
+#endif
 
 
 
@@ -95,24 +108,29 @@ struct genWIN_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  genWIN_getSuperVtbl(
+    OBJ_IUNKNOWN *  GenWin_getSuperVtbl (
         GENWIN_DATA     *this
     );
 
 
-    void            genWIN_Dealloc(
+    void            GenWin_Dealloc (
         OBJ_ID          objId
     );
 
 
-    void *          genWIN_QueryInfo(
+    GENWIN_DATA *       GenWin_ParseObject (
+        JSONIN_DATA     *pParser
+    );
+
+
+    void *          GenWin_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     genWIN_ToJSON(
+    ASTR_DATA *     GenWin_ToJSON (
         GENWIN_DATA      *this
     );
 
@@ -121,7 +139,7 @@ struct genWIN_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			genWIN_Validate(
+    bool			GenWin_Validate (
         GENWIN_DATA       *this
     );
 #endif

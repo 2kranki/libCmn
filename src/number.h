@@ -75,7 +75,10 @@ extern "C" {
 
     typedef enum number_type_e {
         NUMBER_TYPE_UNKNOWN=0,
-#if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#if defined(__MACOSX_ENV__)  || defined(__MACOS64_ENV__)
+        NUMBER_TYPE_FLOAT,          // Float or Double
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         NUMBER_TYPE_FLOAT,          // Float or Double
 #endif
         NUMBER_TYPE_INT16,          // int16_t

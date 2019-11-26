@@ -51,7 +51,7 @@ extern "C" {
 #endif
 
 
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
 #   define BLKS_BLOCK_SIZE  4096
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)

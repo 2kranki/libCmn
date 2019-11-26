@@ -1,13 +1,13 @@
 # Generated file - edits may be discarded!
 
 LIBNAM=libCmn
-SYS=macosx
+SYS=macos
 TEMP=/tmp
 BASEDIR = $(TEMP)/$(LIBNAM)
 
 CFLAGS_LIBS = 
 CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
-CFLAGS += -D__MACOSX_ENV__
+CFLAGS += -D__MACOS64_ENV__
 
 TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses
 
@@ -1003,6 +1003,7 @@ test_hex: $(TEST_SRC)/test_hex.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/hjson_object.o
 
 $(OBJDIR)/hjson_object.o: $(SRCDIR)/hjson_object.c 
@@ -1013,11 +1014,12 @@ OBJS += $(OBJDIR)/hjson.o
 $(OBJDIR)/hjson.o: $(SRCDIR)/hjson.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_hjson
+TESTS += hjson_test
 
-test_hjson: $(TEST_SRC)/test_hjson.c 
+hjson_test: $(TEST_SRC)/hjson_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/i32Array_object.o
 
@@ -1099,6 +1101,7 @@ test_lex: $(TEST_SRC)/test_lex.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/lexj_object.o
 
 $(OBJDIR)/lexj_object.o: $(SRCDIR)/lexj_object.c 
@@ -1109,11 +1112,12 @@ OBJS += $(OBJDIR)/lexj.o
 $(OBJDIR)/lexj.o: $(SRCDIR)/lexj.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_lexj
+TESTS += lexj_test
 
-test_lexj: $(TEST_SRC)/test_lexj.c 
+lexj_test: $(TEST_SRC)/lexj_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/lru_object.o
 
@@ -2030,6 +2034,7 @@ test_srcErrors: $(TEST_SRC)/test_srcErrors.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/srcFile_object.o
 
 $(OBJDIR)/srcFile_object.o: $(SRCDIR)/srcFile_object.c 
@@ -2045,6 +2050,7 @@ TESTS += test_srcFile
 test_srcFile: $(TEST_SRC)/test_srcFile.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/srcFiles_object.o
 
@@ -2062,6 +2068,7 @@ test_srcFiles: $(TEST_SRC)/test_srcFiles.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/srcLoc_object.o
 
 $(OBJDIR)/srcLoc_object.o: $(SRCDIR)/srcLoc_object.c 
@@ -2077,11 +2084,12 @@ OBJS += $(OBJDIR)/srcLoc_JSON.o
 $(OBJDIR)/srcLoc_JSON.o: $(SRCDIR)/srcLoc_JSON.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_srcLoc
+TESTS += srcLoc_test
 
-test_srcLoc: $(TEST_SRC)/test_srcLoc.c 
+srcLoc_test: $(TEST_SRC)/srcLoc_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/symAttr_object.o
 
@@ -2274,6 +2282,7 @@ test_timer: $(TEST_SRC)/test_timer.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/token_object.o
 
 $(OBJDIR)/token_object.o: $(SRCDIR)/token_object.c 
@@ -2289,11 +2298,12 @@ OBJS += $(OBJDIR)/token_JSON.o
 $(OBJDIR)/token_JSON.o: $(SRCDIR)/token_JSON.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_token
+TESTS += token_test
 
-test_token: $(TEST_SRC)/test_token.c 
+token_test: $(TEST_SRC)/token_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/tokenList_object.o
 
@@ -2619,9 +2629,9 @@ test_str: $(TEST_SRC)/test_str.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/cmn_osx.o
+OBJS += $(OBJDIR)/cmnMac64.o
 
-$(OBJDIR)/cmn_osx.o: $(SRCDIR)/cmn_osx.c 
+$(OBJDIR)/cmnMac64.o: $(SRCDIR)/cmnMac64.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
 OBJS += $(OBJDIR)/memOSX.o

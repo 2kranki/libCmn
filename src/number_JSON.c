@@ -103,7 +103,13 @@ extern "C" {
         }
         
         switch (type) {
-#if defined(__MACOSX_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+            case NUMBER_TYPE_FLOAT:          // Float or Double
+                obj_Release(pObject);
+                pObject = OBJ_NIL;
+                break;
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
             case NUMBER_TYPE_FLOAT:          // Float or Double
                 obj_Release(pObject);
                 pObject = OBJ_NIL;

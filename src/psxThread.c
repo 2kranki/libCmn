@@ -72,14 +72,14 @@ extern "C" {
     {
         PSXTHREAD_DATA  *this = pData;
         void            *pReturn = NULL;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         int             iRc = 0;
 #endif
        
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 #endif
         for (;;) {
@@ -114,7 +114,7 @@ extern "C" {
                 }
                 if (this->msWait) {
                     this->state = PSXTHREAD_STATE_DELAYING;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
                     usleep(this->msWait * 1000);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -128,7 +128,7 @@ extern "C" {
             }
             else {
                 this->state = PSXTHREAD_STATE_DELAYING;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
                 usleep(100);            // Sleep for 100us
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -203,12 +203,12 @@ extern "C" {
         uint32_t        msWait
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct timespec waitTime = {0};
         int             iRc;
 #endif
 
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         while (msWait > 1000) {
             waitTime.tv_nsec = 1000 * 1000 * 1000;
             iRc = nanosleep(&waitTime, NULL);
@@ -435,7 +435,7 @@ extern "C" {
     )
     {
         bool            fRc = false;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
@@ -453,7 +453,7 @@ extern "C" {
         
         if (!((psxThread_getState(this) == PSXTHREAD_STATE_ENDED)
             || (psxThread_getState(this) == PSXTHREAD_STATE_ENDING))) {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
             iRc = pthread_cancel(this->worker);
             if (iRc == 0) {
                 fRc = true;
@@ -494,7 +494,7 @@ extern "C" {
     )
     {
         PSXTHREAD_DATA  *this = objId;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
@@ -522,7 +522,7 @@ extern "C" {
                 psxThread_Terminate(this);
                 psxThread_Join(this, NULL);
             }
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
             if (this->state == PSXTHREAD_STATE_ENDED) {
             }
             else {
@@ -603,7 +603,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(PSXTHREAD_DATA);
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
@@ -677,7 +677,7 @@ extern "C" {
         }
         
         this->state = PSXTHREAD_STATE_STARTING;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = pthread_create(&this->worker, NULL, &thread_task_body, this);
         if (iRc) {
             DEBUG_BREAK();
@@ -833,7 +833,7 @@ extern "C" {
     {
         bool            fRc = false;
         void            *pReturn = NULL;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -853,7 +853,7 @@ extern "C" {
             return true;
         }
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = pthread_join(this->worker, &pReturn);
         if (0 == iRc) {
             fRc = true;
@@ -945,7 +945,7 @@ extern "C" {
         uint32_t        msTime              // Time in ms
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct timespec req;
         int             iRc;
 #endif
@@ -963,7 +963,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         if(msTime > 999) {
             req.tv_sec = (int)(msTime / 1000);  /* Must be Non-Negative */
             req.tv_nsec = (msTime - ((long)req.tv_sec * 1000)) * 1000000;

@@ -125,6 +125,9 @@ extern "C" {
         NODEHASH_DATA   *pHash;
         NODE_DATA       *pHashItem;
         NODEOBJ_DATA    *pObj;
+        ASTRC_DATA      *pName;
+        ASTRC_DATA      *pNameJson;
+        ASTRC_DATA      *pNameTest;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -160,6 +163,13 @@ extern "C" {
                 obj_Release(pObj);
                 return pErr;
             }
+            pName = NodeObj_getName(pObj);
+            if (OBJ_NIL == pName) {
+                DEBUG_BREAK();
+                obj_Release(pObj);
+                return (eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                       "Error: Object is missing Name!"));
+            }
 
             // Scan off the test stuff if present.
             pHashItem = nodeHash_FindA(pHash, 0, "json");
@@ -190,6 +200,13 @@ extern "C" {
                 }
             }
             endJson:
+            pNameJson = NodeRtn_getName(pObj->pJson);
+            if (OBJ_NIL == pNameJson) {
+                pNameJson = AStrC_AppendA(pName, "_json");
+                NodeRtn_setName(pObj->pJson, pNameJson);
+                obj_Release(pNameJson);
+                pNameJson = OBJ_NIL;
+            }
 
             // Scan off the test stuff if present.
             pHashItem = nodeHash_FindA(pHash, 0, "test");
@@ -223,6 +240,13 @@ extern "C" {
                 pObj->pTest = NodeTest_New();
             }
             endTest:
+            pNameTest = NodeTest_getName(pObj->pTest);
+            if (OBJ_NIL == pNameTest) {
+                pNameTest = AStrC_AppendA(pName, "_test");
+                NodeTest_setName(pObj->pTest, pNameTest);
+                obj_Release(pNameTest);
+                pNameTest = OBJ_NIL;
+            }
 
             *ppBase = pObj;
         }

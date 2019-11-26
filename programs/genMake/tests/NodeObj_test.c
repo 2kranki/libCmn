@@ -175,11 +175,10 @@ int             test_NodeObj_Parse01(
     ERESULT_DATA    *pErr = OBJ_NIL;
     //NODE_DATA       *pNode = OBJ_NIL;
     NODE_DATA       *pNodes = OBJ_NIL;
-    NODE_DATA       *pNodeTest = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    ASTRARRAY_DATA  *pStrArray = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
     NODEOBJ_DATA    *pObj = OBJ_NIL;
+    NODERTN_DATA    *pJson = OBJ_NIL;
+    NODETEST_DATA   *pTest = OBJ_NIL;
     ASTRCARRAY_DATA *pStrCArray = OBJ_NIL;
     ASTRC_DATA      *pStrC = OBJ_NIL;
     const
@@ -262,6 +261,18 @@ int             test_NodeObj_Parse01(
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"ascii.c")));
         pStrC = AStrCArray_Get(pStrCArray, 2);
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"str.c")));
+    }
+    pJson = NodeObj_getJson(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pJson) );
+    if (pJson) {
+        pStrC = NodeRtn_getName(pJson);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr_json")));
+    }
+    pTest = NodeObj_getTest(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pTest) );
+    if (pTest) {
+        pStrC = NodeTest_getName(pTest);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr_test")));
     }
 
     obj_Release(pNodes);

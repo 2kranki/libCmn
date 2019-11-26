@@ -390,7 +390,7 @@ extern "C" {
     
     
     
-    uint16_t        token_getFileIndex(
+    uint32_t        token_getFileIndex(
         TOKEN_DATA      *this
     )
     {
@@ -410,7 +410,7 @@ extern "C" {
     
     bool            token_setFileIndex(
         TOKEN_DATA      *this,
-        uint16_t        value
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
@@ -1532,6 +1532,28 @@ extern "C" {
     }
     
 
+    
+    //---------------------------------------------------------------
+    //                       T o  S r c L o c
+    //---------------------------------------------------------------
+    
+    SRCLOC_DATA *   token_ToSrcLoc(
+        TOKEN_DATA      *this
+    )
+    {
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !token_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        return srcLoc_NewSrcLoc(&this->data.src);
+    }
+    
+    
     
     //---------------------------------------------------------------
     //                      V a l i d a t e

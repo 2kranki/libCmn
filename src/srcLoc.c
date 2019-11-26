@@ -96,7 +96,7 @@ extern "C" {
 
 
     SRCLOC_DATA *     srcLoc_NewFLC(
-        uint16_t        fileIndex,              // File Index
+        uint32_t        fileIndex,              // File Index
         int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo
@@ -174,7 +174,7 @@ extern "C" {
     
     
     
-    uint16_t        srcLoc_getFileIndex(
+    uint32_t        srcLoc_getFileIndex(
         SRCLOC_DATA     *this
     )
     {
@@ -194,7 +194,7 @@ extern "C" {
     
     bool            srcLoc_setFileIndex(
         SRCLOC_DATA     *this,
-        uint16_t        value
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
@@ -464,7 +464,7 @@ extern "C" {
      
     SRCLOC_DATA *   srcLoc_InitFLC(
         SRCLOC_DATA     *this,
-        uint16_t        fileIndex,              // File Index
+        uint32_t        fileIndex,              // File Index
         int64_t         offset,
         uint32_t        lineNo,
         uint16_t        colNo
@@ -583,7 +583,7 @@ extern "C" {
         j = snprintf(
                      str,
                      sizeof(str),
-                     "{%p(srcLoc) fileIndex=%4d offset=%lld line=%d col=%d ",
+                     "{%p(srcLoc) fileIndex=%10d offset=%lld line=%d col=%d ",
                      this,
                      srcLoc_getFileIndex(this),
                      srcLoc_getOffset(this),

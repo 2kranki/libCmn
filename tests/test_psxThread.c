@@ -116,7 +116,7 @@ int         test_psxThread_OpenClose(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         sleep(3);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -151,7 +151,7 @@ int         test_psxThread_Run01(
     PSXTHREAD_DATA	*pObj = OBJ_NIL;
     bool            fRc;
     uint32_t        status;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
     int             iSleep;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -167,7 +167,7 @@ int         test_psxThread_Run01(
     if (pObj) {
 
         fprintf(stderr, "Count = %d\n",count);
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         sleep(1);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -187,7 +187,7 @@ int         test_psxThread_Run01(
         
         fRc = psxThread_Pause(pObj);
         XCTAssertTrue( (fRc) );
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         sleep(1);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -209,7 +209,7 @@ int         test_psxThread_Run01(
         count = 0;
         fRc = psxThread_Resume(pObj);
         XCTAssertTrue( (fRc) );
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iSleep = sleep(5);
         if (iSleep == 0) {
         }
@@ -231,7 +231,7 @@ int         test_psxThread_Run01(
             XCTAssertTrue( ((save > 8) && (save < 12)) );
         }
 
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iSleep = sleep(5);
         if (iSleep == 0) {
         }
@@ -247,7 +247,7 @@ int         test_psxThread_Run01(
 
         fRc = psxThread_Terminate(pObj);
         XCTAssertTrue( (fRc) );
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iSleep = sleep(1);
         if (iSleep == 0) {
         }

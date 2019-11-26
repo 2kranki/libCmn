@@ -100,7 +100,7 @@ extern "C" {
         }
         
         eRc = jsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
-        pObject->pData->fileIndex = (uint16_t)intIn;
+        pObject->pData->fileIndex = (uint32_t)intIn;
         eRc = jsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->pData->offset);
         eRc = jsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
         pObject->pData->lineNo = (uint32_t)intIn;

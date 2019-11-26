@@ -53,9 +53,13 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Dict.h>
 #include        <NodeHdr.h>
+#include        <NodeLib.h>
+#include        <NodePgm.h>
 #include        <NodeRtnA.h>
 #include        <NodeTstA.h>
+#include        <objArray.h>
 
 
 
@@ -149,6 +153,45 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    NODELIB_DATA *      ExpandNodes_getLib (
+        EXPANDNODES_DATA    *this
+    );
+
+    bool                ExpandNodes_setLib (
+        EXPANDNODES_DATA    *this,
+        NODELIB_DATA        *pValue
+    );
+
+
+    NODEPGM_DATA *      ExpandNodes_getPgm (
+        EXPANDNODES_DATA    *this
+    );
+
+    bool                ExpandNodes_setPgm (
+        EXPANDNODES_DATA    *this,
+        NODEPGM_DATA        *pValue
+    );
+
+
+    OBJARRAY_DATA *     ExpandNodes_getRtns (
+        EXPANDNODES_DATA    *this
+    );
+
+    bool                ExpandNodes_setRtns (
+        EXPANDNODES_DATA    *this,
+        OBJARRAY_DATA       *pValue
+    );
+
+
+    OBJARRAY_DATA *     ExpandNodes_getTests (
+        EXPANDNODES_DATA    *this
+    );
+
+    bool                ExpandNodes_setTests (
+        EXPANDNODES_DATA    *this,
+        OBJARRAY_DATA       *pValue
+    );
+
 
 
     
@@ -156,26 +199,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     ExpandNodes_Disable (
-        EXPANDNODES_DATA		*this
+    ERESULT_DATA *      ExpandNodes_ExpandObjs (
+        EXPANDNODES_DATA    *this,
+        OBJARRAY_DATA       *pTests
     );
 
 
-    ERESULT     ExpandNodes_Enable (
-        EXPANDNODES_DATA		*this
-    );
-
-   
-    EXPANDNODES_DATA *   ExpandNodes_Init (
-        EXPANDNODES_DATA     *this
+    ERESULT_DATA *      ExpandNodes_ExpandRtns (
+        EXPANDNODES_DATA    *this,
+        OBJARRAY_DATA       *pRtns
     );
 
 
-    ERESULT     ExpandNodes_IsEnabled (
-        EXPANDNODES_DATA		*this
+    EXPANDNODES_DATA *  ExpandNodes_Init (
+        EXPANDNODES_DATA    *this
     );
-    
- 
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -188,9 +228,9 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    ExpandNodes_ToDebugString (
-        EXPANDNODES_DATA     *this,
-        int             indent
+    ASTR_DATA *         ExpandNodes_ToDebugString (
+        EXPANDNODES_DATA    *this,
+        int                 indent
     );
     
     

@@ -409,7 +409,8 @@ extern "C" {
         ASTR_DATA       *pStr = OBJ_NIL;
         ASTR_DATA       *pSign = OBJ_NIL;
         char            sign = 0;
-        
+        SRCLOC_DATA     *pLoc = OBJ_NIL;
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -435,6 +436,9 @@ extern "C" {
             sign = *AStr_getData(pSign);
             obj_Release(pSign);
             pSign = OBJ_NIL;
+            if (OBJ_NIL == pLoc) {
+                pLoc = token_ToSrcLoc(pToken);
+            }
             lexj_TokenAdvance(this->pLexJ, 1);
             TRC_OBJ(this, "\tsign = %c\n", sign);
             BREAK_FALSE(((sign == '-') || (sign == '+')));
@@ -460,6 +464,9 @@ extern "C" {
                 pNode = node_NewWithUTF8ConAndClass(0, "integer", pStr);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
+                if (OBJ_NIL == pLoc) {
+                    pLoc = token_ToSrcLoc(pToken);
+                }
             }
             lexj_TokenAdvance(this->pLexJ, 1);
         }
@@ -473,13 +480,21 @@ extern "C" {
                 pNode = node_NewWithUTF8ConAndClass(0, "float", pStr);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
+                if (OBJ_NIL == pLoc) {
+                    pLoc = token_ToSrcLoc(pToken);
+                }
             }
             lexj_TokenAdvance(this->pLexJ, 1);
         }
         else {
-            return pNode;
+            return OBJ_NIL;
         }
         
+        if (pLoc && pNode) {
+            node_setExtra(pNode, pLoc);
+            obj_Release(pLoc);
+            pLoc = OBJ_NIL;
+        }
         return pNode;
     }
     
@@ -588,6 +603,7 @@ extern "C" {
         int32_t         tokenClass;
         NODE_DATA       *pNode = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
+        SRCLOC_DATA     *pLoc = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -603,6 +619,9 @@ extern "C" {
         tokenClass = token_getClass(pToken);
         if( tokenClass == LEXJ_CONSTANT_STRING ) {
             pStr = token_ToDataString(pToken);
+            if (OBJ_NIL == pLoc) {
+                pLoc = token_ToSrcLoc(pToken);
+            }
             lexj_TokenAdvance(this->pLexJ, 1);
         }
         else {
@@ -617,6 +636,11 @@ extern "C" {
             pNode = jsonIn_NodeFromString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
+            if (pLoc) {
+                node_setExtra(pNode, pLoc);
+                obj_Release(pLoc);
+                pLoc = OBJ_NIL;
+            }
         }
         
         return pNode;

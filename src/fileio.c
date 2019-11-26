@@ -653,7 +653,7 @@ extern "C" {
         }
 
         //  Open the File.
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         fileHandle =    open(
                              path_getData(this->pPath),
                              (O_CREAT | O_TRUNC | O_RDWR),
@@ -932,7 +932,7 @@ extern "C" {
         }
         
         //  Open the File.
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         fileHandle =    open(
                              path_getData(this->pPath),
                              (O_RDWR),
@@ -1161,7 +1161,7 @@ extern "C" {
         FILEIO_DATA     *this
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -1179,7 +1179,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = fstat(this->fileHandle, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {

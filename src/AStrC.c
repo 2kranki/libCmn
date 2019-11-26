@@ -112,7 +112,7 @@ extern "C" {
         
         this = AStrC_Alloc( );
         if (this) {
-            this = AStrC_InitA( this, pStr );
+            this = AStrC_InitA(this, pStr);
         }
         return( this );
     }
@@ -127,7 +127,7 @@ extern "C" {
         
         this = AStrC_Alloc( );
         if (this) {
-            this = AStrC_InitW32( this, pStr );
+            this = AStrC_InitW32(this, pStr);
         }
         return( this );
     }
@@ -601,6 +601,7 @@ extern "C" {
         }
 #endif
         
+        // This object is immutable.
         obj_Retain(this);
         
         // Return to caller.
@@ -736,7 +737,6 @@ extern "C" {
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);         // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_ASTRC);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&AStrC_Vtbl);
         
@@ -765,7 +765,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this = (ASTRC_DATA *)AStrC_Init( this );
+        this = (ASTRC_DATA *)AStrC_Init(this);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -802,14 +802,14 @@ extern "C" {
         
         len = utf8_StrLenW32(pStr);
         
-        this = (ASTRC_DATA *)AStrC_Init( this );
+        this = (ASTRC_DATA *)AStrC_Init(this);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         
-        lenChars = utf8_W32ToUtf8Str( len, pStr, 0, NULL );
+        lenChars = utf8_W32ToUtf8Str(len, pStr, 0, NULL);
         if (lenChars) {
             pStr8 = mem_Malloc(lenChars);
             if (OBJ_NIL == pStr8) {
@@ -817,12 +817,15 @@ extern "C" {
                 obj_Release(this);
                 return OBJ_NIL;
             }
-            utf8_W32ToUtf8Str( len, pStr, lenChars, pStr8 );
+            utf8_W32ToUtf8Str(len, pStr, lenChars, pStr8);
             this->pData = pStr8;
             this->len = len;
             obj_FlagOn(this, ASTRC_FLAG_MALLOC);
         }
-        
+        else {
+            this->pData = "";
+        }
+
         obj_FlagSet(this, OBJ_FLAG_RO, true);
         return this;
     }
@@ -1083,6 +1086,32 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          T o  W 3 2 S t r
+    //---------------------------------------------------------------
+    
+    W32STR_DATA *   AStrC_ToW32Str(
+        ASTRC_DATA      *this
+    )
+    {
+        W32STR_DATA     *pNew = OBJ_NIL;
+        
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+        
+        pNew = W32Str_NewA(this->pData);
+        
+        return pNew;
+    }
+        
+        
+        
     //---------------------------------------------------------------
     //                          T r i m
     //---------------------------------------------------------------

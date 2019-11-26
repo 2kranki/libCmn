@@ -955,7 +955,6 @@ extern "C" {
         NODEBASE_DATA   *pOther
     )
     {
-        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -971,9 +970,17 @@ extern "C" {
 #endif
 
         // Release objects and areas in other object.
+        if (pOther->pArches) {
+            obj_Release(pOther->pArches);
+            pOther->pArches = OBJ_NIL;
+        }
         if (pOther->pDeps) {
             obj_Release(pOther->pDeps);
             pOther->pDeps = OBJ_NIL;
+        }
+        if (pOther->pHdrs) {
+            obj_Release(pOther->pHdrs);
+            pOther->pHdrs = OBJ_NIL;
         }
         if (pOther->pName) {
             obj_Release(pOther->pName);
@@ -983,17 +990,26 @@ extern "C" {
             obj_Release(pOther->pOSs);
             pOther->pOSs = OBJ_NIL;
         }
-        if (pOther->pArches) {
-            obj_Release(pOther->pArches);
-            pOther->pArches = OBJ_NIL;
-        }
         if (pOther->pSrcs) {
             obj_Release(pOther->pSrcs);
             pOther->pSrcs = OBJ_NIL;
         }
+        if (pOther->pSuffix) {
+            obj_Release(pOther->pSuffix);
+            pOther->pSuffix = OBJ_NIL;
+        }
 
         // Create a copy of objects and areas in this object placing
         // them in other.
+        if (this->pArches) {
+            if (obj_getVtbl(this->pArches)->pCopy) {
+                pOther->pArches = obj_getVtbl(this->pArches)->pCopy(this->pArches);
+            }
+            else {
+                obj_Retain(this->pArches);
+                pOther->pArches = this->pArches;
+            }
+        }
         if (this->pDeps) {
             if (obj_getVtbl(this->pDeps)->pCopy) {
                 pOther->pDeps = obj_getVtbl(this->pDeps)->pCopy(this->pDeps);
@@ -1001,6 +1017,15 @@ extern "C" {
             else {
                 obj_Retain(this->pDeps);
                 pOther->pDeps = this->pDeps;
+            }
+        }
+        if (this->pHdrs) {
+            if (obj_getVtbl(this->pHdrs)->pCopy) {
+                pOther->pHdrs = obj_getVtbl(this->pHdrs)->pCopy(this->pHdrs);
+            }
+            else {
+                obj_Retain(this->pHdrs);
+                pOther->pHdrs = this->pHdrs;
             }
         }
         if (this->pName) {
@@ -1021,15 +1046,6 @@ extern "C" {
                 pOther->pOSs = this->pOSs;
             }
         }
-        if (this->pArches) {
-            if (obj_getVtbl(this->pArches)->pCopy) {
-                pOther->pArches = obj_getVtbl(this->pArches)->pCopy(this->pArches);
-            }
-            else {
-                obj_Retain(this->pArches);
-                pOther->pArches = this->pArches;
-            }
-        }
         if (this->pSrcs) {
             if (obj_getVtbl(this->pSrcs)->pCopy) {
                 pOther->pSrcs = obj_getVtbl(this->pSrcs)->pCopy(this->pSrcs);
@@ -1040,14 +1056,8 @@ extern "C" {
             }
         }
 
-        // Copy other data from this object to other.
-        
-        //goto eom;
-
         // Return to caller.
-        eRc = ERESULT_SUCCESS;
-    eom:
-        return eRc;
+        return ERESULT_SUCCESS;
     }
     
     

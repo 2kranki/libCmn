@@ -123,6 +123,102 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                     D i c t i o n a r y
+    //---------------------------------------------------------------
+    
+    DICT_DATA *         ExpandNodes_getDict (
+        EXPANDNODES_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pDict;
+    }
+    
+    
+    bool                ExpandNodes_setDict (
+        EXPANDNODES_DATA    *this,
+        DICT_DATA           *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_DICT_OWNED
+        obj_Retain(pValue);
+        if (this->pDict) {
+            obj_Release(this->pDict);
+        }
+#endif
+        this->pDict = pValue;
+        
+        return true;
+    }
+    
+        
+        
+    //---------------------------------------------------------------
+    //                   L i b r a r y  O b j e c t
+    //---------------------------------------------------------------
+    
+    NODELIB_DATA *      ExpandNodes_getLib (
+        EXPANDNODES_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pLib;
+    }
+    
+    
+    bool                ExpandNodes_setLib (
+        EXPANDNODES_DATA    *this,
+        NODELIB_DATA        *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_LIB_OWNED
+        obj_Retain(pValue);
+        if (this->pLib) {
+            obj_Release(this->pLib);
+        }
+#endif
+        this->pLib = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -165,6 +261,102 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                   P r o g r a m  O b j e c t
+    //---------------------------------------------------------------
+    
+    NODEPGM_DATA *      ExpandNodes_getPgm (
+        EXPANDNODES_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pPgm;
+    }
+    
+    
+    bool                ExpandNodes_setPgm (
+        EXPANDNODES_DATA    *this,
+        NODEPGM_DATA        *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_PGM_OWNED
+        obj_Retain(pValue);
+        if (this->pPgm) {
+            obj_Release(this->pPgm);
+        }
+#endif
+        this->pPgm = pValue;
+        
+        return true;
+    }
+    
+        
+        
+    //---------------------------------------------------------------
+    //                  R o u t i n e  A r r a y
+    //---------------------------------------------------------------
+    
+    OBJARRAY_DATA *     ExpandNodes_getRtns (
+        EXPANDNODES_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pRtns;
+    }
+    
+    
+    bool                ExpandNodes_setRtns (
+        EXPANDNODES_DATA    *this,
+        OBJARRAY_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_RTNS_OWNED
+        obj_Retain(pValue);
+        if (this->pRtns) {
+            obj_Release(this->pRtns);
+        }
+#endif
+        this->pRtns = pValue;
+        
+        return true;
+    }
+        
+            
+            
     //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
@@ -258,7 +450,55 @@ extern "C" {
     
   
 
+    //---------------------------------------------------------------
+    //                  T e s t s  A r r a y
+    //---------------------------------------------------------------
     
+    OBJARRAY_DATA *     ExpandNodes_getTests (
+        EXPANDNODES_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pTests;
+    }
+    
+    
+    bool                ExpandNodes_setTests (
+        EXPANDNODES_DATA    *this,
+        OBJARRAY_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_TESTS_OWNED
+        obj_Retain(pValue);
+        if (this->pTests) {
+            obj_Release(this->pTests);
+        }
+#endif
+        this->pTests = pValue;
+        
+        return true;
+    }
+            
+                
+                
+
 
     //===============================================================
     //                          M e t h o d s
@@ -473,7 +713,11 @@ extern "C" {
         }
 #endif
 
+        ExpandNodes_setLib(this, OBJ_NIL);
+        ExpandNodes_setPgm(this, OBJ_NIL);
+        ExpandNodes_setRtns(this, OBJ_NIL);
         ExpandNodes_setStr(this, OBJ_NIL);
+        ExpandNodes_setTests(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -557,6 +801,188 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                  E x p a n d  O b j e c t
+    //---------------------------------------------------------------
+
+    /*!
+     Expand an object into several nodes, some optional.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *      ExpandNodes_ExpandObj (
+        EXPANDNODES_DATA    *this,
+        NODEOBJ_DATA        *pObj
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+    #endif
+        
+        
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  E x p a n d  O b j e c t s
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *      ExpandNodes_ExpandObjs (
+        EXPANDNODES_DATA    *this,
+        OBJARRAY_DATA       *pTests
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+    #endif
+        
+        
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  E x p a n d  R o u t i n e
+    //---------------------------------------------------------------
+
+    /*!
+     Expand a routine node into nodes used for actual makefile generation.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *      ExpandNodes_ExpandRtn (
+        EXPANDNODES_DATA    *this,
+        NODERTN_DATA        *pRtn
+    )
+    {
+        ERESULT             eRc;
+        NODERTNA_DATA       *pRtnA = OBJ_NIL;
+        NODETSTA_DATA       *pTstA = OBJ_NIL;
+        NODETEST_DATA       *pTest = OBJ_NIL;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pRtn) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pRtn, OBJ_IDENT_NODERTN)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+    #endif
+        
+        pRtnA = NodeRtnA_New();
+        if (OBJ_NIL == pRtnA) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+        eRc = NodeBase_Assign(NodeRtn_getNodeBase(pRtn), NodeRtnA_getNodeBase(pRtnA));
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_GENERAL_FAILURE, "Routine assign failed!");
+        }
+        
+        pTest = NodeRtn_getTest(pRtn);
+        if (pTest) {
+            
+        } else {
+            
+        }
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  E x p a n d  R o u t i n e s
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *      ExpandNodes_ExpandRtns (
+        EXPANDNODES_DATA    *this,
+        OBJARRAY_DATA       *pTests
+    )
+    {
+        uint32_t            i;
+        uint32_t            iMax;
+        NODERTN_DATA        *pRtn;
+        ERESULT_DATA        *pErr;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+    #endif
+        
+        iMax = objArray_getSize(this->pRtns);
+        for (i=0; i<iMax; i++) {
+            pRtn = objArray_Get(this->pRtns, i+1);
+            if (OBJ_NIL == pRtn) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT,
+                                       "Routine Array missing element");
+            }
+            if (!obj_IsKindOf(pRtn, OBJ_IDENT_NODERTN)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT,
+                                       "Routine Array missing element");
+            }
+            pErr = ExpandNodes_ExpandRtn(this, pRtn);
+            if (pErr) {
+                DEBUG_BREAK();
+                return pErr;
+            }
+        }
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -592,8 +1018,18 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&ExpandNodes_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        this->pRtns = objArray_New( );
+        if (OBJ_NIL == this->pRtns) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        this->pTests = objArray_New( );
+        if (OBJ_NIL == this->pTests) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
@@ -603,7 +1039,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "ExpandNodes::sizeof(EXPANDNODES_DATA) = %lu\n", sizeof(EXPANDNODES_DATA));
+        //fprintf(stderr, "ExpandNodes::sizeof(EXPANDNODES_DATA) = %lu\n", sizeof(EXPANDNODES_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(EXPANDNODES_DATA));
     #endif

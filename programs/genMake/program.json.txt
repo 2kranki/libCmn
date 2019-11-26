@@ -8,10 +8,12 @@
         "main":"mainProgram.c"
     },
     "objects":[
+        {name:"Dict",  	        "deps":["genMake.h"]},
         {name:"ExpandNodes",	"deps":["genMake.h"]},
-        {name:"genBase",  	    "deps":["genMake.h"]},
-        {name:"genOSX",   	    "deps":["genMake.h"]},
-        {name:"genWIN",   	    "deps":["genMake.h"]},
+        {name:"GenBase",  	    "deps":["genMake.h"]},
+        {name:"GenOSX",   	    "deps":["genMake.h"]},
+        {name:"GenWIN",   	    "deps":["genMake.h"]},
+        {name:"Main",  	        "deps":["genMake.h"]},
         {name:"NodeHdr",        "deps":["genMake.h"]},
         {name:"NodeLib",        "deps":["genMake.h"]},
         {name:"NodeObj",        "deps":["NodeBase.h","NodeRtn.h","NodeTest.h"]},
@@ -20,7 +22,6 @@
         {name:"NodeRtnA",       "deps":["NodeBase.h"]},
         {name:"NodeTest",       "deps":["NodeBase.h"]},
         {name:"NodeTstA",       "deps":["NodeBase.h"]},
-        {name:"srcParse",       "deps":["genMake.h"]},
-        {name:"main",           "deps":["genMake.h"]}
+        {name:"SrcParse",       "deps":["genMake.h"]},
     ]
 }

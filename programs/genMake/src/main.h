@@ -75,7 +75,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
-#include        <dbprs.h>
+#include        <Dict.h>
 #include        <fbso.h>
 #include        <node.h>
 #include        <path.h>
@@ -99,12 +99,12 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct main_data_s	MAIN_DATA;    // Inherits from APPL_DATA.
+    typedef struct Main_data_s	MAIN_DATA;    // Inherits from APPL_DATA.
 
-    typedef struct main_vtbl_s	{
+    typedef struct Main_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in main_object.c.
+        // method names to the vtbl definition in Main_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(MAIN_DATA *);
@@ -138,11 +138,11 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef MAIN_SINGLETON
-    MAIN_DATA *     main_Shared(
+    MAIN_DATA *     Main_Shared(
         void
     );
 
-    void            main_SharedReset(
+    void            Main_SharedReset(
         void
     );
 #endif
@@ -154,16 +154,16 @@ extern "C" {
      released.
      @return    pointer to main object if successful, otherwise OBJ_NIL.
      */
-    MAIN_DATA *     main_Alloc(
+    MAIN_DATA *     Main_Alloc(
         void
     );
     
     
-    MAIN_DATA *     main_New(
+    MAIN_DATA *     Main_New(
         void
     );
     
-    MAIN_DATA *     main_NewFromArgV(
+    MAIN_DATA *     Main_NewFromArgV(
         uint16_t        cArgs,
         char            **ppArgs,
         char            **ppEnv
@@ -175,77 +175,72 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    APPL_DATA *     main_getAppl(
+    APPL_DATA *     Main_getAppl(
         MAIN_DATA       *this
     );
     
     
-    NODEHASH_DATA * main_getDict(
+    DICT_DATA *     Main_getDict(
         MAIN_DATA       *this
     );
     
     
-    PATH_DATA *     main_getFilePath(
+    PATH_DATA *     Main_getFilePath(
         MAIN_DATA       *this
     );
     
-    bool            main_setFilePath(
+    bool            Main_setFilePath(
         MAIN_DATA       *this,
         PATH_DATA       *pValue
     );
     
 
-    uint16_t        main_getOsType(
+    uint16_t        Main_getOsType(
         MAIN_DATA       *this
     );
     
-    bool            main_setOsType(
+    bool            Main_setOsType(
         MAIN_DATA       *this,
         uint16_t        value
     );
 
     
-    TEXTOUT_DATA *  main_getOutput(
+    TEXTOUT_DATA *  Main_getOutput(
         MAIN_DATA       *this
     );
     
-    bool            main_setOutput(
+    bool            Main_setOutput(
         MAIN_DATA       *this,
         TEXTOUT_DATA    *pValue
     );
     
 
-    PATH_DATA *     main_getOutputPath(
+    PATH_DATA *     Main_getOutputPath(
         MAIN_DATA       *this
     );
     
-    bool            main_setOutputPath(
+    bool            Main_setOutputPath(
         MAIN_DATA       *this,
         PATH_DATA       *pValue
     );
     
 
-    uint16_t        main_getOutType(
+    uint16_t        Main_getOutType(
         MAIN_DATA       *this
     );
     
-    bool            main_setOutType(
+    bool            Main_setOutType(
         MAIN_DATA       *this,
         uint16_t        value
     );
 
     
-    DBPRS_DATA *    main_getParser(
+    ASTR_DATA *     Main_getStr(
         MAIN_DATA       *this
     );
     
     
-    ASTR_DATA *     main_getStr(
-        MAIN_DATA       *this
-    );
-    
-    
-    int             main_getVerbose(
+    int             Main_getVerbose(
         MAIN_DATA       *this
     );
     
@@ -256,7 +251,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    int             main_Exec(
+    int             Main_Exec(
         MAIN_DATA		*this
     );
 
@@ -267,12 +262,12 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         main_GenMakefile(
+    ERESULT         Main_GenMakefile(
         MAIN_DATA       *this
     );
     
     
-    MAIN_DATA *     main_Init(
+    MAIN_DATA *     Main_Init(
         MAIN_DATA       *this
     );
 
@@ -286,7 +281,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS.  Otherwise,
      an ERESULT_* error code
      */
-    ERESULT         main_SetupFromArgV(
+    ERESULT         Main_SetupFromArgV(
         MAIN_DATA       *this,
         uint16_t        cArgs,
         char            *ppArgV[],
@@ -298,7 +293,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code
-        ASTR_DATA      *pDesc = main_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Main_ToDebugString(this,4);
      @endcode
      @param     this    MAIN object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -306,8 +301,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    main_ToDebugString(
-        MAIN_DATA     *this,
+    ASTR_DATA *    Main_ToDebugString(
+        MAIN_DATA       *this,
         int             indent
     );
     

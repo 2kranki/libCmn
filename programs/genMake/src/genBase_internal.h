@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   genBase_internal.h
- *	Generated 04/10/2018 10:49:33
+ * File:   GenBase_internal.h
+ *	Generated 11/23/2019 12:07:15
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,16 @@
 
 
 
-#include    <genBase.h>
-#include    <fbso.h>
-#include    <nodeHash.h>
+#include        <GenBase.h>
+#include        <jsonIn.h>
 
 
 #ifndef GENBASE_INTERNAL_H
 #define	GENBASE_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -61,7 +64,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct genBase_data_s	{
+struct GenBase_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -69,34 +72,34 @@ struct genBase_data_s	{
 
     // Common Data
     uint16_t        size;		    // maximum number of elements
-    uint16_t        makeType;       // Program, Library, etc
-    uint16_t        osType;         // OSX, Win32, Win64, etc
     uint16_t        rsvd16;
-    DATETIME_DATA   *pDateTime;
-    NODEHASH_DATA   *pDict;
-    NODE_DATA       *pNodes;
-    NODEHASH_DATA   *pObjDirs;      // Object Directories
-    TEXTOUT_DATA    *pOutput;
-    // The following are filled in from sections of the Node Tree.
-    NODEARRAY_DATA  *pLibDeps;
-    NODEARRAY_DATA  *pSrcDeps;
-
-    PATH_DATA *     (*pLibIncludePath)(GENBASE_DATA *, const char *, const char *, const char *);
-    PATH_DATA *     (*pLibInstalledPath)(GENBASE_DATA *, const char *, const char *, const char *);
-    ASTR_DATA *     (*pLibName)(GENBASE_DATA *, const char *, const char *);
-    PATH_DATA *     (*pLibObjectPath)(GENBASE_DATA *, const char *, const char *, const char *);
-    OBJ_ID          pLibObj;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    const
-    struct genBase_class_data_s  genBase_ClassObj;
+    struct GenBase_class_data_s  GenBase_ClassObj;
 
     extern
     const
-    GENBASE_VTBL         genBase_Vtbl;
+    GENBASE_VTBL         GenBase_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  GENBASE_SINGLETON
+    GENBASE_DATA *     GenBase_getSingleton (
+        void
+    );
+
+    bool            GenBase_setSingleton (
+     GENBASE_DATA       *pValue
+);
+#endif
 
 
 
@@ -104,40 +107,29 @@ struct genBase_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            genBase_setObjDirs(
-        GENBASE_DATA    *this,
-        NODEHASH_DATA   *pValue
-    );
-    
-    
-    OBJ_IUNKNOWN *  genBase_getSuperVtbl(
+    OBJ_IUNKNOWN *  GenBase_getSuperVtbl (
         GENBASE_DATA     *this
     );
 
 
-    void            genBase_Dealloc(
+    void            GenBase_Dealloc (
         OBJ_ID          objId
     );
 
 
-    ERESULT         genBase_GenFinal(
-        GENBASE_DATA    *this
+    GENBASE_DATA *       GenBase_ParseObject (
+        JSONIN_DATA     *pParser
     );
-    
-    
-    ASTR_DATA *     genBase_GenInitial(
-        GENBASE_DATA    *this
-    );
-    
-    
-    void *          genBase_QueryInfo(
+
+
+    void *          GenBase_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     genBase_ToJSON(
+    ASTR_DATA *     GenBase_ToJSON (
         GENBASE_DATA      *this
     );
 
@@ -146,7 +138,7 @@ struct genBase_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			genBase_Validate(
+    bool			GenBase_Validate (
         GENBASE_DATA       *this
     );
 #endif

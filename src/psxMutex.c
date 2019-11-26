@@ -135,7 +135,7 @@ extern "C" {
     )
     {
         PSXMUTEX_DATA   *this = objId;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 
@@ -151,7 +151,7 @@ extern "C" {
         }
 #endif
 
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = pthread_mutex_destroy(&this->mutex);
         if (iRc) {
             DEBUG_BREAK();
@@ -178,7 +178,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
@@ -201,7 +201,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&psxMutex_Vtbl);
        
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         //this->mutex = PTHREAD_MUTEX_INITIALIZER;
         iRc = pthread_mutex_init(&this->mutex, NULL);
         if (iRc) {
@@ -283,7 +283,7 @@ extern "C" {
         PSXMUTEX_DATA   *this
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -303,7 +303,7 @@ extern "C" {
 #endif
         TRC_OBJ(this, "psxMutex_Lock(%p)...\n", this);
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = pthread_mutex_lock(&this->mutex);
         if (iRc == 0) {
             return true;
@@ -393,7 +393,7 @@ extern "C" {
         PSXMUTEX_DATA	*this
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -412,7 +412,7 @@ extern "C" {
         }
 #endif
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = pthread_mutex_trylock(&this->mutex);
         if (iRc == 0) {
             return true;
@@ -457,7 +457,7 @@ extern "C" {
         PSXMUTEX_DATA		*this
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         int                 iRc;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
@@ -474,7 +474,7 @@ extern "C" {
 #endif
         TRC_OBJ(this, "psxMutex_Unlock(%p)...\n", this);
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = pthread_mutex_unlock(&this->mutex);
         if (iRc == 0) {
             return true;

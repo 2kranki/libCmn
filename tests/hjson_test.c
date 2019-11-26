@@ -686,7 +686,7 @@ int         test_hjson_Simple02(
 
 
 
-int             test_dbprs_Object01(
+int             test_hjson_Object01(
     const
     char            *pTestName
 )
@@ -743,7 +743,7 @@ int             test_dbprs_Object01(
 
 
 TINYTEST_START_SUITE(test_hjson);
-    TINYTEST_ADD_TEST(test_dbprs_Object01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson_Object01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Simple02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Simple01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_File02,setUp,tearDown);

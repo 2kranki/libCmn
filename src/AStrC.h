@@ -1,22 +1,18 @@
 // vi:nu:et:sts=4 ts=4 sw=4 tw=90
 
 //****************************************************************
-//       Constant NUL-terminated UTF8 String (AStrC) Header
+//       Constant NUL-terminated UTF-8 String (AStrC) Header
 //****************************************************************
 /*
  * Program
- *			Constant NUL-terminated UTF8 String (AStrC)
+ *			Constant NUL-terminated UTF-8 String (AStrC)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate AStrC to run things without complications
- *          of interfering with the main AStrC. A AStrC may be 
- *          called a AStrC on other O/S's.
+ *			This object provides a constant (ie immutable) NUL-
+ *          terminated UTF-8 String.  This is the immutable
+ *          version of AStr.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal AStrC. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	02/19/2016 Generated
@@ -176,7 +172,7 @@ extern "C" {
     
     /*!
      Create a new string that is the current string concatenated with
-     the contents of the provided UTF8 string.
+     the contents of the provided UTF-8 string.
      @return:   If successful, an AStrC object which must be released,
                  otherwise OBJ_NIL and an Error Code is set.
      */
@@ -277,7 +273,7 @@ extern "C" {
     /*!
      Create an AStr object from this string.
      @return:   If successful, an AStr object which must be released,
-     otherwise OBJ_NIL.
+                otherwise OBJ_NIL.
      */
     ASTRC_DATA *    AStrC_ToString(
         ASTRC_DATA      *this
@@ -291,8 +287,18 @@ extern "C" {
                 otherwise OBJ_NIL.
      */
     ASTR_DATA *    AStrC_ToDebugString(
-        ASTRC_DATA     *this,
+        ASTRC_DATA      *this,
         int             indent
+    );
+    
+    
+    /*!
+     Create an W32Str object from this string.
+     @return:   If successful, an W32Str object which must be released,
+                otherwise OBJ_NIL.
+     */
+    W32STR_DATA *   AStrC_ToW32Str(
+        ASTRC_DATA      *this
     );
     
     

@@ -258,13 +258,13 @@ extern "C" {
     );
     
     
-    uint16_t        token_getFileIndex(
+    uint32_t        token_getFileIndex(
         TOKEN_DATA      *this
     );
 
     bool            token_setFileIndex(
         TOKEN_DATA      *this,
-        uint16_t        value
+        uint32_t        value
     );
     
     
@@ -526,7 +526,7 @@ extern "C" {
      @param     this    TOKEN_DATA object pointer
      @return    If successful, ERESULT_SUCCESS otherwise an ERESULT_* error code
      */
-    ERESULT         token_SetupFnLCC(
+    ERESULT     token_SetupFnLCC(
         TOKEN_DATA      *this,
         SRCLOC          *pLoc,
         int32_t         cls
@@ -583,7 +583,11 @@ extern "C" {
     );
 
     
+    SRCLOC_DATA *   token_ToSrcLoc(
+        TOKEN_DATA      *this
+    );
     
+
 
 #ifdef	__cplusplus
 }

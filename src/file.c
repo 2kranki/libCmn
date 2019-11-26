@@ -115,7 +115,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-#if     defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -128,7 +128,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 
-#if     defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pPathA, &statBuffer);
         if (0 == iRc) {
             iRc = unlink(pPathA);
@@ -171,7 +171,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-#if     defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -184,7 +184,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
         
-#if     defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pPathOldA, &statBuffer);
         if (0 == iRc) {
             iRc = rename(pPathOldA, pPathNewA);
@@ -224,7 +224,7 @@ extern "C" {
         char            *pPath
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -234,7 +234,7 @@ extern "C" {
             return -1;
         }
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pPath, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
@@ -357,7 +357,7 @@ extern "C" {
         char            *pPathA
     )
     {
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -371,7 +371,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pPathA, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {  // Regular File

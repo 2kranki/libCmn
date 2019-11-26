@@ -125,6 +125,8 @@ extern "C" {
         NODEHASH_DATA   *pHash;
         NODE_DATA       *pHashItem;
         NODERTN_DATA    *pRtn;
+        ASTRC_DATA      *pName;
+        ASTRC_DATA      *pTestName;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -160,6 +162,13 @@ extern "C" {
                 obj_Release(pRtn);
                 return pErr;
             }
+            pName = NodeRtn_getName(pRtn);
+            if (OBJ_NIL == pName) {
+                DEBUG_BREAK();
+                obj_Release(pRtn);
+                return (eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                       "Error: Routine is missing Name!"));
+            }
 
             // Scan off the test stuff if present.
             pHashItem = nodeHash_FindA(pHash, 0, "test");
@@ -177,10 +186,23 @@ extern "C" {
                         obj_Release(pRtn);
                         return pErr;
                     }
+                    pTestName = NodeTest_getName(pRtn->pTest);
+                    if (OBJ_NIL == pTestName) {
+                        pTestName = AStrC_AppendA(pName, "_test");
+                        NodeTest_setName(pRtn->pTest, pTestName);
+                        obj_Release(pTestName);
+                        pTestName = OBJ_NIL;
+                    }
                 }
             }
             else {
                 pRtn->pTest = NodeTest_New();
+                if (pRtn->pTest) {
+                    pTestName = AStrC_AppendA(pName, "_test");
+                    NodeTest_setName(pRtn->pTest, pTestName);
+                    obj_Release(pTestName);
+                    pTestName = OBJ_NIL;
+                }
             }
             *ppBase = pRtn;
         }

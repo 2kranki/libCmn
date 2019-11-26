@@ -34,7 +34,7 @@
 
 
 #define			MAIN_OBJECT_C	    1
-#include        <main_internal.h>
+#include        <Main_internal.h>
 #ifdef          MAIN_SINGLETON
 #include        <psxLock.h>
 #endif
@@ -45,7 +45,7 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct main_class_data_s	{
+struct Main_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -55,7 +55,7 @@ struct main_class_data_s	{
     MAIN_DATA       *pSingleton;
 #endif
 };
-typedef struct main_class_data_s MAIN_CLASS_DATA;
+typedef struct Main_class_data_s MAIN_CLASS_DATA;
 
 
 
@@ -68,22 +68,22 @@ typedef struct main_class_data_s MAIN_CLASS_DATA;
 
 static
 const
-OBJ_INFO        main_Info;            // Forward Reference
+OBJ_INFO        Main_Info;            // Forward Reference
 
 
 
-OBJ_ID          main_Class(
+OBJ_ID          Main_Class(
     void
 );
 
 
 
 static
-bool            main_ClassIsKindOf(
+bool            Main_ClassIsKindOf(
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_MAIN_CLASS == classID) {
+    if (OBJ_IDENT_MAIN_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_APPL_CLASS == classID) {
@@ -101,7 +101,7 @@ uint16_t		obj_ClassWhoAmI(
     void
 )
 {
-    return MAIN_IDENT_MAIN_CLASS;
+    return OBJ_IDENT_MAIN_CLASS;
 }
 
 
@@ -112,14 +112,14 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    class_Vtbl = {
-	&main_Info,
-    main_ClassIsKindOf,
+	&Main_Info,
+    Main_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    main_Class,
+    Main_Class,
     obj_ClassWhoAmI,
-    (P_OBJ_QUERYINFO)mainClass_QueryInfo,
+    (P_OBJ_QUERYINFO)MainClass_QueryInfo,
     NULL                        // $PClass_ToDebugString
 };
 
@@ -129,7 +129,7 @@ OBJ_IUNKNOWN    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-MAIN_CLASS_DATA  main_ClassObj = {
+MAIN_CLASS_DATA  Main_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(MAIN_CLASS_DATA),            // cbSize
@@ -147,15 +147,15 @@ MAIN_CLASS_DATA  main_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  MAIN_SINGLETON
-MAIN_DATA *     main_getSingleton(
+MAIN_DATA *     Main_getSingleton(
     void
 )
 {
-    return (OBJ_ID)(main_ClassObj.pSingleton);
+    return (OBJ_ID)(Main_ClassObj.pSingleton);
 }
 
 
-bool            main_setSingleton(
+bool            Main_setSingleton(
     MAIN_DATA       *pValue
 )
 {
@@ -176,10 +176,10 @@ bool            main_setSingleton(
     }
     
     obj_Retain(pValue);
-    if (main_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(main_ClassObj.pSingleton));
+    if (Main_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Main_ClassObj.pSingleton));
     }
-    main_ClassObj.pSingleton = pValue;
+    Main_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -189,15 +189,15 @@ bool            main_setSingleton(
 
 
 
-MAIN_DATA *     main_Shared(
+MAIN_DATA *     Main_Shared(
     void
 )
 {
-    MAIN_DATA       *this = (OBJ_ID)(main_ClassObj.pSingleton);
+    MAIN_DATA       *this = (OBJ_ID)(Main_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = main_New( );
-        main_setSingleton(this);
+        this = Main_New( );
+        Main_setSingleton(this);
         appl_setSingleton((APPL_DATA *)this);
         obj_Release(this);          // Shared controls object retention now.
     }
@@ -207,15 +207,15 @@ MAIN_DATA *     main_Shared(
 
 
 
-void            main_SharedReset(
+void            Main_SharedReset(
     void
 )
 {
-    MAIN_DATA       *this = (OBJ_ID)(main_ClassObj.pSingleton);
+    MAIN_DATA       *this = (OBJ_ID)(Main_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        main_ClassObj.pSingleton = NULL;
+        Main_ClassObj.pSingleton = NULL;
     }
     
 }
@@ -224,11 +224,11 @@ void            main_SharedReset(
 
 
 static
-bool            main_IsKindOf(
+bool            Main_IsKindOf(
     uint16_t		classID
 )
 {
-    if (MAIN_IDENT_MAIN == classID) {
+    if (OBJ_IDENT_MAIN == classID) {
        return true;
     }
     if (OBJ_IDENT_APPL == classID) {
@@ -243,25 +243,25 @@ bool            main_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            main_Dealloc(
+void            Main_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          main_Class(
+OBJ_ID          Main_Class(
     void
 )
 {
-    return (OBJ_ID)&main_ClassObj;
+    return (OBJ_ID)&Main_ClassObj;
 }
 
 
 static
-uint16_t		main_WhoAmI(
+uint16_t		Main_WhoAmI(
     void
 )
 {
-    return MAIN_IDENT_MAIN;
+    return OBJ_IDENT_MAIN;
 }
 
 
@@ -269,7 +269,7 @@ uint16_t		main_WhoAmI(
 //                     Q u e r y  I n f o
 //---------------------------------------------------------------
 
-void *          mainClass_QueryInfo(
+void *          MainClass_QueryInfo(
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -297,7 +297,7 @@ void *          mainClass_QueryInfo(
                     
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&main_Info;
+                        return (void *)&Main_Info;
                     }
                     break;
                     
@@ -346,28 +346,28 @@ void *          mainClass_QueryInfo(
 //===========================================================
 
 const
-MAIN_VTBL     main_Vtbl = {
+MAIN_VTBL     Main_Vtbl = {
     {
-        &main_Info,
-        main_IsKindOf,
+        &Main_Info,
+        Main_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        main_Dealloc,
-        main_Class,
-        main_WhoAmI,
-        (P_OBJ_QUERYINFO)main_QueryInfo,
-        (P_OBJ_TOSTRING)main_ToDebugString,
-        NULL,			// main_Enable,
-        NULL,			// main_Disable,
-        NULL,			// (P_OBJ_ASSIGN)main_Assign,
-        NULL,			// (P_OBJ_COMPARE)main_Compare,
-        NULL, 			// (P_OBJ_PTR)main_Copy,
-        NULL 			// (P_OBJ_HASH)main_Hash,
+        Main_Dealloc,
+        Main_Class,
+        Main_WhoAmI,
+        (P_OBJ_QUERYINFO)Main_QueryInfo,
+        (P_OBJ_TOSTRING)Main_ToDebugString,
+        NULL,			// Main_Enable,
+        NULL,			// Main_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Main_Assign,
+        NULL,			// (P_OBJ_COMPARE)Main_Compare,
+        NULL, 			// (P_OBJ_PTR)Main_Copy,
+        NULL 			// (P_OBJ_HASH)Main_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //main_IsEnabled,
+    //Main_IsEnabled,
  
 };
 
@@ -375,12 +375,12 @@ MAIN_VTBL     main_Vtbl = {
 
 static
 const
-OBJ_INFO        main_Info = {
-    "main",
+OBJ_INFO        Main_Info = {
+    "Main",
     "Main Program Object",
-    (OBJ_DATA *)&main_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&main_Vtbl
+    (OBJ_DATA *)&Main_ClassObj,
+    (OBJ_DATA *)&appl_ClassObj,
+    (OBJ_IUNKNOWN *)&Main_Vtbl
 };
 
 

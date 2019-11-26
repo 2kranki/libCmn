@@ -64,7 +64,7 @@ struct psxCond_data_s	{
 
     // Common Data
     PSXMUTEX_DATA   *pMutex;
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
     pthread_cond_t  cond;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)

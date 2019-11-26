@@ -18,31 +18,6 @@
  */
 
 
-/*
-                            Global Dictionary Keys
- 
- */
- 
-#define libBaseID       "libBase"       /* Library Directory Base Directory */
-#define libDepsID       "libDeps"       /* Library Dependencies */
-#define mainID          "main"          /* if program, main routine file name */
-#define makeTypeID      "makeType"      /* "d" for debug, "r" for release */
-#define namePrefixID    "namePrefix"    /* normally "" or "lib" */
-#define nameID          "name"          /* program or library base name */
-#define objBaseID       "objBase"       /*  Object Base Directory */
-#define osTypeID        "osType"        /* "macosx", "win32" or "win64" */
-#define outBaseID       "outBase"       /* Base Directory for output */
-#define resultTypeID    "resultType"    /* "pgm" or "lib" */
-#define srcBaseID       "srcDir"        /* Source File Base Drive and Directory */
-#define srcDepsID       "srcDeps"       /* Source Dependencies */
-#define srcFileID       "srcFile"       /* Source JSON File */
-#define tmpBaseID       "tmpBase"       /* Temporary File Base Directory */
-//#define srcPathID       "srcPath"       /* Source File Full Path */ ???
-
-//#define DICT_OBJ_PREFIX         "obj_prefix"    // ???
-
-
-
 
 
 
@@ -103,20 +78,16 @@ extern "C" {
 
     typedef enum main_idents_e {
         MAIN_IDENT_BASE=OBJ_IDENT_USER_ENTRIES,
-        MAIN_IDENT_DBPRS,
-        MAIN_IDENT_DBPRS_CLASS,
-        MAIN_IDENT_EXPANDNODES,
-        MAIN_IDENT_EXPANDNODES_CLASS,
-        MAIN_IDENT_GENBASE,
-        MAIN_IDENT_GENBASE_CLASS,
-        MAIN_IDENT_GENOSX,
-        MAIN_IDENT_GENOSX_CLASS,
-        MAIN_IDENT_GENWIN,
-        MAIN_IDENT_GENWIN_CLASS,
-        MAIN_IDENT_MAIN,
-        MAIN_IDENT_MAIN_CLASS,
+        OBJ_IDENT_DICT,
+        OBJ_IDENT_DICT_CLASS,
         OBJ_IDENT_EXPANDNODES,
         OBJ_IDENT_EXPANDNODES_CLASS,
+        OBJ_IDENT_GENBASE,
+        OBJ_IDENT_GENBASE_CLASS,
+        OBJ_IDENT_GENMAC,
+        OBJ_IDENT_GENMAC_CLASS,
+        OBJ_IDENT_GENWIN,
+        OBJ_IDENT_GENWIN_CLASS,
         OBJ_IDENT_NODEBASE,
         OBJ_IDENT_NODEBASE_CLASS,
         OBJ_IDENT_NODEHDR,
@@ -135,8 +106,8 @@ extern "C" {
         OBJ_IDENT_NODETEST_CLASS,
         OBJ_IDENT_NODETSTA,
         OBJ_IDENT_NODETSTA_CLASS,
-        MAIN_IDENT_SRCPARSE,
-        MAIN_IDENT_SRCPARSE_CLASS,
+        OBJ_IDENT_SRCPARSE,
+        OBJ_IDENT_SRCPARSE_CLASS,
     } MAIN_IDENTS;
     
 

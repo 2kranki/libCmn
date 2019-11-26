@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   main_internal.h
+ * File:   Main_internal.h
  *	Generated 07/17/2017 14:59:49
  *
  * Notes:
@@ -39,7 +39,7 @@
 
 
 
-#include        <main.h>
+#include        <Main.h>
 #include        <appl_internal.h>
 #include        <nodeHash.h>
 
@@ -57,7 +57,7 @@ extern "C" {
 
 
 #pragma pack(push, 1)
-struct main_data_s	{
+struct Main_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     APPL_DATA       super;
@@ -68,8 +68,7 @@ struct main_data_s	{
     uint16_t        outType;        // See OUTTYPE
     uint16_t        fBackup;        // true == backup output file if it exists
     uint16_t        rsvd16;
-    NODEHASH_DATA   *pDict;
-    DBPRS_DATA      *pPrs;
+    DICT_DATA       *pDict;
     OBJ_ID          pGen;
     PATH_DATA       *pFilePath;
     PATH_DATA       *pOutputPath;
@@ -81,11 +80,11 @@ struct main_data_s	{
 #pragma pack(pop)
 
     extern
-    struct main_class_data_s  main_ClassObj;
+    struct Main_class_data_s  Main_ClassObj;
 
     extern
     const
-    MAIN_VTBL         main_Vtbl;
+    MAIN_VTBL         Main_Vtbl;
 
 
     //---------------------------------------------------------------
@@ -93,17 +92,17 @@ struct main_data_s	{
     //---------------------------------------------------------------
     
 #ifdef  MAIN_SINGLETON
-    MAIN_DATA *     main_getSingleton(
+    MAIN_DATA *     Main_getSingleton(
         void
     );
     
-    bool            main_setSingleton(
+    bool            Main_setSingleton(
         MAIN_DATA       *pValue
     );
 #endif
     
     
-    void *          mainClass_QueryInfo(
+    void *          MainClass_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -116,57 +115,23 @@ struct main_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
     
-    bool            main_setParser(
-        MAIN_DATA       *this,
-        DBPRS_DATA      *pValue
-    );
-    
-    void            main_Dealloc(
+  
+    void            Main_Dealloc(
         OBJ_ID          objId
     );
 
-    ERESULT         main_DictAdd(
-        MAIN_DATA       *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    );
-    
-    ERESULT         main_DictAddA(
-        MAIN_DATA       *this,
-        const
-        char            *pName,
-        const
-        char            *pData
-    );
-
-    ERESULT         main_DictAddUpdate(
-        MAIN_DATA       *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    );
-    
-    ERESULT         main_DictAddUpdateA(
-        MAIN_DATA        *this,
-        const
-        char            *pName,
-        const
-        char            *pData
-    );
-    
-    ERESULT         main_ParseArgsDefault(
+    ERESULT         Main_ParseArgsDefault(
         MAIN_DATA        *this
     );
     
-    int             main_ParseArgsLong(
+    int             Main_ParseArgsLong(
         MAIN_DATA       *this,
         int             *pArgC,
         const
         char            ***pppArgV
     );
     
-    int             main_ParseArgsShort(
+    int             Main_ParseArgsShort(
         MAIN_DATA       *this,
         int             *pArgC,
         const
@@ -180,7 +145,7 @@ struct main_data_s	{
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         main_ParseInputFile(
+    ERESULT         Main_ParseInputFile(
         MAIN_DATA       *this,
         PATH_DATA       *pPath
     );
@@ -192,13 +157,13 @@ struct main_data_s	{
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         main_ParseInputStr(
+    ERESULT         Main_ParseInputStr(
         MAIN_DATA       *this,
         const
         char            *pStr
     );
     
-    ERESULT         main_ProcessInit(
+    ERESULT         Main_ProcessInit(
         MAIN_DATA       *this
     );
     
@@ -209,26 +174,26 @@ struct main_data_s	{
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         main_ProcessArg(
+    ERESULT         Main_ProcessArg(
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     );
     
-    void *          main_QueryInfo(
+    void *          Main_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ERESULT         main_UsageDesc(
+    ERESULT         Main_UsageDesc(
         MAIN_DATA       *this,
         FILE            *pOutput,
         PATH_DATA       *pProgramPath
     );
     
 
-    ERESULT         main_UsageProgLine(
+    ERESULT         Main_UsageProgLine(
         MAIN_DATA       *this,
         FILE            *pOutput,
         PATH_DATA       *pProgramPath,
@@ -237,7 +202,7 @@ struct main_data_s	{
     );
     
     
-    ERESULT         main_UsageOptions(
+    ERESULT         Main_UsageOptions(
         MAIN_DATA       *this,
         FILE            *pOutput
     );
@@ -247,7 +212,7 @@ struct main_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			main_Validate(
+    bool			Main_Validate(
         MAIN_DATA       *this
     );
 #endif
