@@ -62,16 +62,40 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            NodeObj_task_body (
-        void            *pData
+    ERESULT_DATA *  NodeObj_AddHeaderDep (
+        NODEOBJ_DATA    *this
     )
     {
-        //NODEOBJ_DATA  *this = pData;
+        ERESULT_DATA    *pErr;
+        ASTRC_DATA      *pName;
+        ASTRC_DATA      *pNameHdr;
+        ASTRC_DATA      *pNameInt;
+
+        pName = NodeObj_getName(this);
+        if (OBJ_NIL == pName) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing Name!");
+            return pErr;
+        }
+        pNameHdr = AStrC_AppendA(pName, ".h");
+        pNameInt = AStrC_AppendA(pName, "_internal.h");
         
+        NodeBase_AppendDeps(NodeObj_getNodeBase(this), pNameHdr);
+        NodeBase_AppendDeps(NodeObj_getNodeBase(this), pNameInt);
+        if (this->pJson) {
+            NodeBase_AppendDeps(NodeRtn_getNodeBase(this->pJson), pNameHdr);
+            NodeBase_AppendDeps(NodeRtn_getNodeBase(this->pJson), pNameInt);
+        }
+        if (this->pTest) {
+            NodeBase_AppendDeps(NodeTest_getNodeBase(this->pTest), pNameHdr);
+            NodeBase_AppendDeps(NodeTest_getNodeBase(this->pTest), pNameInt);
+        }
+
+        obj_Release(pNameHdr);
+        obj_Release(pNameInt);
+        return OBJ_NIL;
     }
-#endif
 
 
 
@@ -84,11 +108,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODEOBJ_DATA *     NodeObj_Alloc (
+    NODEOBJ_DATA *  NodeObj_Alloc (
         void
     )
     {
-        NODEOBJ_DATA       *this;
+        NODEOBJ_DATA    *this;
         uint32_t        cbSize = sizeof(NODEOBJ_DATA);
         
         // Do initialization.
@@ -101,7 +125,7 @@ extern "C" {
 
 
 
-    NODEOBJ_DATA *     NodeObj_New (
+    NODEOBJ_DATA *  NodeObj_New (
         void
     )
     {
@@ -200,12 +224,14 @@ extern "C" {
                 }
             }
             endJson:
-            pNameJson = NodeRtn_getName(pObj->pJson);
-            if (OBJ_NIL == pNameJson) {
-                pNameJson = AStrC_AppendA(pName, "_json");
-                NodeRtn_setName(pObj->pJson, pNameJson);
-                obj_Release(pNameJson);
-                pNameJson = OBJ_NIL;
+            if (pObj->pJson) {
+                pNameJson = NodeRtn_getName(pObj->pJson);
+                if (OBJ_NIL == pNameJson) {
+                    pNameJson = AStrC_AppendA(pName, "_json");
+                    NodeRtn_setName(pObj->pJson, pNameJson);
+                    obj_Release(pNameJson);
+                    pNameJson = OBJ_NIL;
+                }
             }
 
             // Scan off the test stuff if present.
@@ -253,7 +279,10 @@ extern "C" {
 
         // Return to caller.
         if (OBJ_NIL == pErr) {
-            NodeObj_SortArrays(pObj);
+            pErr = NodeObj_AddHeaderDep(pObj);
+            if (OBJ_NIL == pErr) {
+                NodeObj_SortArrays(pObj);
+            }
         }
         return pErr;
     }
@@ -1288,7 +1317,7 @@ extern "C" {
         }
 #endif
         
-        pErr = NodeBase_SortArrays(NodeObj_getNodeBase(this));
+        pErr = NodeBase_SortAscending(NodeObj_getNodeBase(this));
 
         // Return to caller.
         return OBJ_NIL;

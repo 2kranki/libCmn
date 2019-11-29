@@ -214,8 +214,19 @@ extern "C" {
     );
 
 
-    ERESULT     Dict_Enable (
-        DICT_DATA		*this
+    /*!
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are not rescanned after insertion.
+     @param     this    object pointer
+     @param     pStr    String to be expanded in-place
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+     is returned.
+     */
+    ERESULT         Dict_Expand(
+        DICT_DATA       *this,
+        ASTR_DATA       *pStr
     );
 
    

@@ -180,7 +180,7 @@ extern "C" {
         NODELIST_DATA   *this,
         int32_t         cls,
         const
-        char            *pName,
+        char            *pNameA,
         OBJ_ID          pData
     );
     
@@ -193,7 +193,7 @@ extern "C" {
         NODELIST_DATA   *this,
         int32_t         cls,
         const
-        char            *pName,
+        char            *pNameA,
         OBJ_ID          pData
     );
     
@@ -208,7 +208,7 @@ extern "C" {
         NODELIST_DATA   *this,
         int32_t         cls,
         const
-        char            *pName
+        char            *pNameA
     );
     
     
@@ -236,7 +236,7 @@ extern "C" {
         NODELIST_DATA   *this,
         int32_t         cls,
         const
-        char            *pName
+        char            *pNameA
     );
     
     
@@ -307,8 +307,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    nodeList_ToDebugString(
-        NODELIST_DATA     *this,
+    ASTR_DATA *     nodeList_ToDebugString(
+        NODELIST_DATA   *this,
         int             indent
     );
     

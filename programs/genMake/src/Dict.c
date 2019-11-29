@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <Dict_internal.h>
+#include        <ascii.h>
 #include        <trace.h>
 
 
@@ -713,6 +714,158 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //              E x p a n d  V a r i a b l e s
+    //---------------------------------------------------------------
+    
+    /*!
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are not rescanned after insertion.
+     @param     this    object pointer
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+     is returned.
+     */
+    ERESULT         Dict_Expand(
+        DICT_DATA       *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i = 0;
+        uint32_t        iBegin;
+        uint32_t        len;
+        uint32_t        lenPrefix;
+        uint32_t        lenSuffix;
+        int32_t         chr;
+        bool            fMore = true;
+        //PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pName = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        ASTR_DATA       *pData = OBJ_NIL;
+        const
+        char            *pEnvVar = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!Dict_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (0 == AStr_getLength(pStr)) {
+            return ERESULT_SUCCESS;
+        }
+        
+        // Expand Environment variables.
+        while (fMore) {
+            fMore = false;
+            eRc = AStr_CharFindNextW32(pStr, &i, '$');
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            else {
+                chr = AStr_CharGetW32(pStr, i+1);
+                if (chr == '{') {
+                    i += 2;
+                    iBegin = i;
+                    eRc = AStr_CharFindNextW32(pStr, &i, '}');
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_PARSE_ERROR;
+                    }
+                    len = i - iBegin;
+                    eRc = AStr_Mid(pStr, iBegin, len, &pName);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    lenPrefix = 2;
+                    lenSuffix = 1;
+
+                    // Find the name from the Dictionary.
+                do_replace:
+                    pNode = nodeHash_FindA(
+                                           Dict_getNodeHash(this),
+                                           0,
+                                           AStr_getData(pName)
+                            );
+                    if (OBJ_NIL == pNode) {
+                        obj_Release(pName);
+                        return ERESULT_DATA_NOT_FOUND;
+                    }
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+                    pData = node_getData(pNode);
+                    if((OBJ_NIL == pData) || !obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
+                        DEBUG_BREAK();
+                        return ERESULT_DATA_MISSING;
+                    }
+
+                    // Substitute the name from the Dictionary.
+                    eRc =   AStr_Remove(
+                                pStr,
+                                (iBegin - lenPrefix),
+                                (len + lenPrefix + lenSuffix)
+                            );
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    eRc = AStr_InsertA(pStr, (iBegin - lenPrefix), AStr_getData(pData));
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    i = iBegin - lenPrefix + AStr_getSize(pData);
+                    pEnvVar = NULL;
+                    pData = OBJ_NIL;
+                    pNode = OBJ_NIL;
+                    fMore = true;
+                }
+                else if (chr == '$') {
+                    eRc = AStr_Remove(pStr, i, 1);
+                    ++i;
+                    fMore = true;
+                    continue;
+                }
+                else {
+                    //chr = AStr_CharGetW32(pStr, i+1);
+                    if (ascii_isLabelFirstCharW32(chr)) {
+                        ++i;
+                        iBegin = i;
+                        for (;;) {
+                            ++i;
+                            chr = AStr_CharGetW32(pStr, i);
+                            if (!ascii_isLabelCharW32(chr)) {
+                                break;
+                            }
+                        }
+                        len = i - iBegin;
+                        eRc = AStr_Mid(pStr, iBegin, len, &pName);
+                        if (ERESULT_FAILED(eRc)) {
+                            return ERESULT_OUT_OF_MEMORY;
+                        }
+                        lenPrefix = 1;
+                        lenSuffix = 0;
+                        
+                        goto do_replace;
+
+                    }
+                    else
+                        return ERESULT_PARSE_ERROR;
+                }
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -764,7 +917,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "Dict::sizeof(DICT_DATA) = %lu\n", sizeof(DICT_DATA));
+        //fprintf(stderr, "Dict::sizeof(DICT_DATA) = %lu\n", sizeof(DICT_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(DICT_DATA));
     #endif

@@ -266,6 +266,17 @@ extern "C" {
     );
     
     
+    /*!
+     Find the first matching string in the Array.
+     @param     this    object pointer
+     @return    if found, index to element.  Otherwise, 0.
+     */
+    uint32_t        AStrCArray_Find (
+        ASTRCARRAY_DATA *this,
+        ASTRC_DATA      *pStrC
+    );
+
+
     ASTRCARRAY_DATA * AStrCArray_Init (
         ASTRCARRAY_DATA *this
     );
@@ -283,6 +294,15 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     AStrCArray_ToStringPrefixSep (
+        ASTRCARRAY_DATA *this,
+        const
+        char            *pSep,
+        const
+        char            *pPrefix            // Optional
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

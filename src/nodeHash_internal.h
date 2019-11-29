@@ -135,7 +135,7 @@ struct nodeHash_data_s	{
     );
 
 
-    NODEHASH_DATA * nodeHash_ParseObject(
+    NODEHASH_DATA * nodeHash_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
 

@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <GenBase.h>
 
 
 #ifndef         GENMAC_H
@@ -125,7 +126,7 @@ extern "C" {
      released.
      @return    pointer to GenMac object if successful, otherwise OBJ_NIL.
      */
-    GENMAC_DATA *     GenMac_Alloc (
+    GENMAC_DATA *   GenMac_Alloc (
         void
     );
     
@@ -135,7 +136,7 @@ extern "C" {
     );
     
     
-    GENMAC_DATA *     GenMac_New (
+    GENMAC_DATA *   GenMac_New (
         void
     );
     
@@ -145,6 +146,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    GENBASE_DATA *  GenMac_getGenBase (
+        GENMAC_DATA     *this
+    );
+
+
 
 
     
@@ -152,26 +158,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     GenMac_Disable (
-        GENMAC_DATA		*this
-    );
-
-
-    ERESULT     GenMac_Enable (
-        GENMAC_DATA		*this
-    );
-
-   
     GENMAC_DATA *   GenMac_Init (
         GENMAC_DATA     *this
     );
 
 
-    ERESULT     GenMac_IsEnabled (
-        GENMAC_DATA		*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -184,7 +175,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    GenMac_ToDebugString (
+    ASTR_DATA *     GenMac_ToDebugString (
         GENMAC_DATA     *this,
         int             indent
     );

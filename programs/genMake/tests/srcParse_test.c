@@ -181,7 +181,7 @@ int             test_SrcParse_Object01(
     ERESULT_DATA    *pErr;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODEARRAY_DATA  *pArray = OBJ_NIL;
     const
     char            *pGoodJsonObject1 =
     "["
@@ -226,11 +226,11 @@ int             test_SrcParse_Object01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
-        iMax = objArray_getSize(pArray);
+        iMax = nodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pObj = objArray_Get(pArray, i+1);
+            pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pObj) );
             pRtn = NodeObj_getJson(pObj);
             TINYTEST_TRUE( (OBJ_NIL == pRtn) );
@@ -260,7 +260,7 @@ int             test_SrcParse_Object02(
     ERESULT_DATA    *pErr;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODEARRAY_DATA  *pArray = OBJ_NIL;
     const
     char            *pGoodJsonObject1 =
     "["
@@ -307,18 +307,18 @@ int             test_SrcParse_Object02(
         // Display the Output.
         if (pArray && fDumpNodes) {
             fprintf(stderr, "\n\n===> Object Array:\n\n");
-            ASTR_DATA   *pStr = objArray_ToDebugString(pArray, 0);
+            ASTR_DATA   *pStr = nodeArray_ToDebugString(pArray, 0);
             fprintf(stderr, "%s\n", AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
 
         // Validate the results.
-        iMax = objArray_getSize(pArray);
+        iMax = nodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pObj = objArray_Get(pArray, i+1);
+            pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pObj) );
             pRtn = NodeObj_getJson(pObj);
             TINYTEST_FALSE( (OBJ_NIL == pRtn) );
@@ -348,7 +348,7 @@ int             test_SrcParse_Object03(
     ERESULT_DATA    *pErr;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODEARRAY_DATA  *pArray = OBJ_NIL;
     const
     char            *pGoodJsonObject1 =
     "["
@@ -393,11 +393,11 @@ int             test_SrcParse_Object03(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
-        iMax = objArray_getSize(pArray);
+        iMax = nodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pObj = objArray_Get(pArray, i+1);
+            pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pObj) );
             pRtn = NodeObj_getJson(pObj);
             TINYTEST_TRUE( (OBJ_NIL == pRtn) );
@@ -427,7 +427,7 @@ int             test_SrcParse_Routine01(
     ERESULT_DATA    *pErr;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODEARRAY_DATA  *pArray = OBJ_NIL;
     const
     char            *pGoodJsonObject1 =
     "["
@@ -471,11 +471,11 @@ int             test_SrcParse_Routine01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
-        iMax = objArray_getSize(pArray);
+        iMax = nodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pRtn = objArray_Get(pArray, i+1);
+            pRtn = (NODERTN_DATA *)nodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pRtn) );
             pTest = NodeRtn_getTest(pRtn);
             TINYTEST_FALSE( (OBJ_NIL == pTest) );
@@ -503,7 +503,7 @@ int             test_SrcParse_Routine02(
     ERESULT_DATA    *pErr;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODEARRAY_DATA  *pArray = OBJ_NIL;
     const
     char            *pGoodJsonObject1 =
     "["
@@ -547,11 +547,11 @@ int             test_SrcParse_Routine02(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
-        iMax = objArray_getSize(pArray);
+        iMax = nodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pRtn = objArray_Get(pArray, i+1);
+            pRtn = (NODERTN_DATA *)nodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pRtn) );
             pTest = NodeRtn_getTest(pRtn);
             TINYTEST_FALSE( (OBJ_NIL == pTest) );
@@ -579,7 +579,7 @@ int             test_SrcParse_Test01(
     ERESULT_DATA    *pErr;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODEARRAY_DATA  *pArray = OBJ_NIL;
     const
     char            *pGoodJsonObject1 =
     "["
@@ -622,11 +622,11 @@ int             test_SrcParse_Test01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
-        iMax = objArray_getSize(pArray);
+        iMax = nodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pTest = objArray_Get(pArray, i+1);
+            pTest = (NODETEST_DATA *)nodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pTest) );
         }
 
@@ -652,7 +652,7 @@ int             test_SrcParse_Nodes01(
     ERESULT_DATA    *pErr;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODEARRAY_DATA  *pArray = OBJ_NIL;
     NODELIB_DATA    *pLib;
     NODEPGM_DATA    *pPgm;
     const
@@ -728,10 +728,10 @@ int             test_SrcParse_Nodes01(
         // Validate Objects.
         pArray = SrcParse_getObjs(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        iMax = objArray_getSize(pArray);
+        iMax = nodeArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
-        pObj = objArray_Get(pArray, 1);
+        pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, 1);
         TINYTEST_FALSE( (OBJ_NIL == pObj) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -743,7 +743,7 @@ int             test_SrcParse_Nodes01(
         pStrC = NodeObj_getName(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr")));
-        pObj = objArray_Get(pArray, 2);
+        pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, 2);
         TINYTEST_FALSE( (OBJ_NIL == pObj) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -759,10 +759,10 @@ int             test_SrcParse_Nodes01(
         // Validate Routines.
         pArray = SrcParse_getRtns(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        iMax = objArray_getSize(pArray);
+        iMax = nodeArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Routines: %d\n", iMax);
         TINYTEST_TRUE( (1 == iMax) );
-        pRtn = objArray_Get(pArray, 1);
+        pRtn = (NODERTN_DATA *)nodeArray_Get(pArray, 1);
         TINYTEST_FALSE( (OBJ_NIL == pRtn) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -797,7 +797,7 @@ int             test_SrcParse_Nodes02(
     ERESULT_DATA    *pErr;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODEARRAY_DATA  *pArray = OBJ_NIL;
     NODELIB_DATA    *pLib;
     NODEPGM_DATA    *pPgm;
     const
@@ -872,10 +872,10 @@ int             test_SrcParse_Nodes02(
         // Validate Objects.
         pArray = SrcParse_getObjs(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        iMax = objArray_getSize(pArray);
+        iMax = nodeArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
-        pObj = objArray_Get(pArray, 1);
+        pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, 1);
         TINYTEST_FALSE( (OBJ_NIL == pObj) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -887,7 +887,7 @@ int             test_SrcParse_Nodes02(
         pStrC = NodeObj_getName(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr")));
-        pObj = objArray_Get(pArray, 2);
+        pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, 2);
         TINYTEST_FALSE( (OBJ_NIL == pObj) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -903,10 +903,10 @@ int             test_SrcParse_Nodes02(
         // Validate Routines.
         pArray = SrcParse_getRtns(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        iMax = objArray_getSize(pArray);
+        iMax = nodeArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Routines: %d\n", iMax);
         TINYTEST_TRUE( (1 == iMax) );
-        pRtn = objArray_Get(pArray, 1);
+        pRtn = (NODERTN_DATA *)nodeArray_Get(pArray, 1);
         TINYTEST_FALSE( (OBJ_NIL == pRtn) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;

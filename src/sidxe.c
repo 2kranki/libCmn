@@ -1087,7 +1087,7 @@ extern "C" {
             }
             eRc =   AStr_AppendPrint(
                             pStr,
-                        "{%p(srcLoc) fileIndex=%4d offset=%lld line=%d col=%d (srcLoc)%p}\n",
+                        "{%p(SrcLoc) fileIndex=%4d offset=%lld line=%d col=%d (SrcLoc)%p}\n",
                         pEntry,
                         pEntry->fileIndex,
                         pEntry->offset,

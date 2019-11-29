@@ -123,6 +123,28 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                      G e n B a s e
+    //---------------------------------------------------------------
+    
+    GENBASE_DATA *  GenMac_getGenBase (
+        GENMAC_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!GenMac_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return (GENBASE_DATA *)this;
+    }
+        
+        
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -552,6 +574,196 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    G e n e r a t i o n
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  GenMac_GenerateRtn (
+        GENMAC_DATA     *this,
+        NODERTNA_DATA   *pRtn
+    )
+    {
+        //ERESULT         eRc;
+        ASTR_DATA       *pStr =  OBJ_NIL;
+
+            // Do initialization.
+        #ifdef NDEBUG
+        #else
+        if (!GenMac_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pRtn) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pRtn, OBJ_IDENT_NODERTNA)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+    #endif
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+
+        /*****
+        eRc =   AStr_AppendPrint(
+                                pStr,
+                                "%s += $(%s)/%s.o\n\n",
+                                pObjVar,
+                                pObjDir,
+                                AStr_getData(pFileName)
+                                );
+        if ((AStr_CompareA(pFileExt, "c") == ERESULT_SUCCESS_EQUAL)
+           || (AStr_CompareA(pFileExt, "C") == ERESULT_SUCCESS_EQUAL)) {
+           eRc =   AStr_AppendPrint(
+                                    pStr,
+                                    "$(%s)/%s.o: $(%s)/%s ",
+                                    pObjDir,
+                                    AStr_getData(pFileName),
+                                    pSrcDir,
+                                    pNameA
+                                    );
+           if (pSrcDeps) {
+               iMax = nodeArray_getSize(pSrcDeps);
+               for (i=0; i<iMax; ++i) {
+                   NODE_DATA           *pNode;
+                   ASTR_DATA           *pWrkStr;
+                   pNode = nodeArray_Get(pSrcDeps, (i + 1));
+                   if (pNode) {
+                       pWrkStr = node_getData(pNode);
+                       if (pWrkStr && obj_IsKindOf(pWrkStr, OBJ_IDENT_ASTR)) {
+                           eRc =   AStr_AppendPrint(
+                                               pStr,
+                                               "$(%s)/%s ",
+                                               pSrcDir,
+                                               AStr_getData(pWrkStr)
+                                   );
+                       }
+                   }
+               }
+           }
+           eRc =   AStr_AppendA(pStr, "\n");
+           if (pFlgVar) {
+               eRc =   AStr_AppendPrint(
+                                        pStr,
+                                        "\t$(CC) $(CFLAGS) %s $(%s) -o $(%s)/$(@F) $< ",
+                                        (fCO ? "-c" : ""),
+                                        pFlgVar,
+                                        pObjDir
+                                        );
+           }
+           else {
+               eRc =   AStr_AppendPrint(
+                                        pStr,
+                                        "\t$(CC) $(CFLAGS) %s -o $(%s)/$(@F) $< ",
+                                        (fCO ? "-c" : ""),
+                                        pObjDir
+                                        );
+           }
+           if (pObjDeps) {
+               iMax = nodeArray_getSize(pObjDeps);
+               for (i=0; i<iMax; ++i) {
+                   NODE_DATA           *pNode;
+                   const
+                   char                *pStrA;
+                   pNode = nodeArray_Get(pObjDeps, (i + 1));
+                   if (pNode) {
+                       pStrA = AStr_getData((ASTR_DATA *)node_getData(pNode));
+                       if (pStrA) {
+                           eRc =   AStr_AppendPrint(
+                                                    pStr,
+                                                    "$(%s)/%s ",
+                                                    pSrcDir,
+                                                    pStrA
+                                   );
+                       }
+                   }
+               }
+           }
+        }
+        else if ((AStr_CompareA(pFileExt, "asm") == ERESULT_SUCCESS_EQUAL)
+                || (AStr_CompareA(pFileExt, "ASM") == ERESULT_SUCCESS_EQUAL)) {
+           eRc =   AStr_AppendPrint(
+                                    pStr,
+                                    "$(%s)/%s.o: $(%s)/%s\n",
+                                    pObjDir,
+                                    AStr_getData(pFileName),
+                                    pSrcDir,
+                                    pNameA
+                                    );
+           eRc =   AStr_AppendPrint(
+                                    pStr,
+                                    "\t$(AS) $(AFLAGS) %s -o $(%s)/$(@F) $<",
+                                    (fCO ? "-c" : ""),
+                                    pObjDir
+                                    );
+        }
+        else if ((AStr_CompareA(pFileExt, "s") == ERESULT_SUCCESS_EQUAL)
+                || (AStr_CompareA(pFileExt, "S") == ERESULT_SUCCESS_EQUAL)) {
+           eRc =   AStr_AppendPrint(
+                                    pStr,
+                                    "$(%s)/%s.o: $(%s)/%s\n",
+                                    pObjDir,
+                                    AStr_getData(pFileName),
+                                    pSrcDir,
+                                    pNameA
+                                    );
+           eRc =   AStr_AppendPrint(
+                                    pStr,
+                                    "\t$(AS) $(AFLAGS) -o $(%s)/$(@F) $<",
+                                    pObjDir
+                                    );
+        }
+        else if ((AStr_CompareA(pFileExt, "cpp") == ERESULT_SUCCESS_EQUAL)
+                || (AStr_CompareA(pFileExt, "CPP") == ERESULT_SUCCESS_EQUAL)) {
+           eRc =   AStr_AppendPrint(
+                                    pStr,
+                                    "$(%s)/%s.o: $(%s)/%s\n",
+                                    pObjDir,
+                                    AStr_getData(pFileName),
+                                    pSrcDir,
+                                    pNameA
+                                    );
+           eRc =   AStr_AppendPrint(
+                                    pStr,
+                                    "\t$(CC) $(CFLAGS) %s -o $(%s)/$(@F) $<",
+                                    (fCO ? "-c" : ""),
+                                    pObjDir
+                                    );
+        }
+        else {
+           obj_Release(pFileExt);
+           pFileExt = OBJ_NIL;
+           obj_Release(pFileName);
+           pFileName = OBJ_NIL;
+           obj_Release(pPath);
+           pPath = OBJ_NIL;
+           obj_Release(pStr);
+           pStr = OBJ_NIL;
+           return OBJ_NIL;
+        }
+        if (!fCO && fExec) {
+           eRc = AStr_AppendPrint(pStr, "\n\t$(%s)/$(@F)\n\n", pObjDir);
+        }
+        else {
+           eRc =   AStr_AppendA(pStr, "\n\n");
+        }
+         ***/
+        
+        // Return to caller.
+        return OBJ_NIL;
     }
 
 

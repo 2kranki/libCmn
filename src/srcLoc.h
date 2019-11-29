@@ -72,10 +72,10 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct srcLoc_data_s	SRCLOC_DATA;
+    typedef struct SrcLoc_data_s	SRCLOC_DATA;
 
 #pragma pack(push, 1)
-    typedef struct srcLoc_s    {
+    typedef struct SrcLoc_s    {
         uint32_t        fileIndex;          // File Name Index
         //                                  // Note: If zero, then the entire
         //                                  //      location is ignored.
@@ -99,17 +99,17 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    SRCLOC_DATA *   srcLoc_Alloc(
+    SRCLOC_DATA *   SrcLoc_Alloc(
         void
     );
     
     
-    OBJ_ID          srcLoc_Class(
+    OBJ_ID          SrcLoc_Class(
         void
     );
     
     
-    SRCLOC_DATA *   srcLoc_NewFLC(
+    SRCLOC_DATA *   SrcLoc_NewFLC(
         uint32_t        fileIndex,              // File Index
         int64_t         offset,
         uint32_t        lineNo,
@@ -117,17 +117,17 @@ extern "C" {
     );
     
     
-    SRCLOC_DATA *   srcLoc_NewSrcLoc(
+    SRCLOC_DATA *   SrcLoc_NewSrcLoc(
         SRCLOC          *pSrc
     );
     
     
-    SRCLOC_DATA *   srcLoc_NewFromJSONString(
+    SRCLOC_DATA *   SrcLoc_NewFromJSONString(
         ASTR_DATA       *pString
     );
     
     
-    SRCLOC_DATA *   srcLoc_NewFromJSONStringA(
+    SRCLOC_DATA *   SrcLoc_NewFromJSONStringA(
         const
         char            *pString
     );
@@ -139,47 +139,47 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint16_t        srcLoc_getColNo(
+    uint16_t        SrcLoc_getColNo(
         SRCLOC_DATA     *this
     );
 
-    bool            srcLoc_setColNo(
+    bool            SrcLoc_setColNo(
         SRCLOC_DATA     *this,
         uint16_t        value
     );
     
     
-    uint32_t        srcLoc_getFileIndex(
+    uint32_t        SrcLoc_getFileIndex(
         SRCLOC_DATA      *this
     );
     
-    bool            srcLoc_setFileIndex(
+    bool            SrcLoc_setFileIndex(
         SRCLOC_DATA      *this,
         uint32_t         value
     );
     
     
-    uint32_t        srcLoc_getLineNo(
+    uint32_t        SrcLoc_getLineNo(
         SRCLOC_DATA     *this
     );
     
-    bool            srcLoc_setLineNo(
+    bool            SrcLoc_setLineNo(
         SRCLOC_DATA     *this,
         uint32_t        value
     );
     
     
-    int64_t         srcLoc_getOffset(
+    int64_t         SrcLoc_getOffset(
         SRCLOC_DATA     *this
     );
     
-    bool            srcLoc_setOffset(
+    bool            SrcLoc_setOffset(
         SRCLOC_DATA     *this,
         int64_t         value
     );
     
 
-    SRCLOC *        srcLoc_getSrc(
+    SRCLOC *        SrcLoc_getSrc(
         SRCLOC_DATA     *this
     );
     
@@ -194,17 +194,17 @@ extern "C" {
      @result    ERESULT_SUCCESS_EQUAL if this == other or
                 ERESULT_SUCCESS_UNEQUAL
      */
-    ERESULT         srcLoc_Compare(
+    ERESULT         SrcLoc_Compare(
         SRCLOC_DATA		*this,
         SRCLOC_DATA     *pOther
     );
     
     
-    SRCLOC_DATA *   srcLoc_Init(
+    SRCLOC_DATA *   SrcLoc_Init(
         SRCLOC_DATA     *this
     );
 
-    SRCLOC_DATA *   srcLoc_InitFLC(
+    SRCLOC_DATA *   SrcLoc_InitFLC(
         SRCLOC_DATA     *this,
         uint32_t        fileIndex,              // File Index
         int64_t         offset,
@@ -219,7 +219,7 @@ extern "C" {
      @return:   If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *    srcLoc_ToDebugString(
+    ASTR_DATA *    SrcLoc_ToDebugString(
         SRCLOC_DATA     *this,
         int             indent
     );
@@ -230,7 +230,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = srcLoc_ToJSON(this);
+     ASTR_DATA      *pDesc = SrcLoc_ToJSON(this);
      @endcode
      @param     this    SRCLOC object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -238,7 +238,7 @@ extern "C" {
      ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     srcLoc_ToJSON(
+    ASTR_DATA *     SrcLoc_ToJSON(
         SRCLOC_DATA     *this
     );
     

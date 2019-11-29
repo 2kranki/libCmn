@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <srcLoc_internal.h>
+#include    <SrcLoc_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -74,7 +74,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SRCLOC_DATA *   srcLoc_ParseObject(
+    SRCLOC_DATA *   SrcLoc_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -84,7 +84,7 @@ extern "C" {
         OBJ_INFO        *pInfo;
         int64_t         intIn;
 
-        pInfo = obj_getInfo(srcLoc_Class());
+        pInfo = obj_getInfo(SrcLoc_Class());
         
         eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -93,8 +93,8 @@ extern "C" {
         }
         
 
-        pObject = srcLoc_Alloc( );
-        pObject = srcLoc_Init(pObject);
+        pObject = SrcLoc_Alloc( );
+        pObject = SrcLoc_Init(pObject);
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
@@ -127,7 +127,7 @@ extern "C" {
     //===============================================================
     
 
-    SRCLOC_DATA *   srcLoc_NewFromJSONString(
+    SRCLOC_DATA *   SrcLoc_NewFromJSONString(
         ASTR_DATA       *pString
     )
     {
@@ -141,7 +141,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = srcLoc_ParseObject(pParser);
+        pObject = SrcLoc_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -154,7 +154,7 @@ extern "C" {
     
     
 
-    SRCLOC_DATA *   srcLoc_NewFromJSONStringA(
+    SRCLOC_DATA *   SrcLoc_NewFromJSONStringA(
         const
         char            *pString
     )
@@ -164,7 +164,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pSrcLoc = srcLoc_NewFromJSONString(pStr);
+            pSrcLoc = SrcLoc_NewFromJSONString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -180,7 +180,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = srcLoc_ToJSON(this);
+     ASTR_DATA      *pDesc = SrcLoc_ToJSON(this);
      @endcode
      @param     this    SRCLOC object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -188,7 +188,7 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     srcLoc_ToJSON(
+    ASTR_DATA *     SrcLoc_ToJSON(
         SRCLOC_DATA     *this
     )
     {
@@ -198,7 +198,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }

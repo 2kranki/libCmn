@@ -1364,6 +1364,7 @@ test_nodeGraph: $(TEST_SRC)/test_nodeGraph.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/nodeHash_object.o
 
 $(OBJDIR)/nodeHash_object.o: $(SRCDIR)/nodeHash_object.c 
@@ -1374,16 +1375,17 @@ OBJS += $(OBJDIR)/nodeHash.o
 $(OBJDIR)/nodeHash.o: $(SRCDIR)/nodeHash.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/listdl.h $(SRCDIR)/node.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/nodeHash_JSON.o
+OBJS += $(OBJDIR)/nodeHash_json.o
 
-$(OBJDIR)/nodeHash_JSON.o: $(SRCDIR)/nodeHash_JSON.c 
+$(OBJDIR)/nodeHash_json.o: $(SRCDIR)/nodeHash_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeHash
+TESTS += nodeHash_test
 
-test_nodeHash: $(TEST_SRC)/test_nodeHash.c 
+nodeHash_test: $(TEST_SRC)/nodeHash_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/nodeLink_object.o
 
@@ -1406,6 +1408,7 @@ test_nodeLink: $(TEST_SRC)/test_nodeLink.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/nodeList_object.o
 
 $(OBJDIR)/nodeList_object.o: $(SRCDIR)/nodeList_object.c 
@@ -1416,16 +1419,17 @@ OBJS += $(OBJDIR)/nodeList.o
 $(OBJDIR)/nodeList.o: $(SRCDIR)/nodeList.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/listdl.h $(SRCDIR)/node.h $(SRCDIR)/str.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/nodeList_JSON.o
+OBJS += $(OBJDIR)/nodeList_json.o
 
-$(OBJDIR)/nodeList_JSON.o: $(SRCDIR)/nodeList_JSON.c 
+$(OBJDIR)/nodeList_json.o: $(SRCDIR)/nodeList_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeList
+TESTS += nodeList_test
 
-test_nodeList: $(TEST_SRC)/test_nodeList.c 
+nodeList_test: $(TEST_SRC)/nodeList_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/nodeLnkP_object.o
 
@@ -2069,24 +2073,24 @@ test_srcFiles: $(TEST_SRC)/test_srcFiles.c
 	$(TEST_OBJ)/$(@F)
 
 
-OBJS += $(OBJDIR)/srcLoc_object.o
+OBJS += $(OBJDIR)/SrcLoc_object.o
 
-$(OBJDIR)/srcLoc_object.o: $(SRCDIR)/srcLoc_object.c 
+$(OBJDIR)/SrcLoc_object.o: $(SRCDIR)/SrcLoc_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/srcLoc.o
+OBJS += $(OBJDIR)/SrcLoc.o
 
-$(OBJDIR)/srcLoc.o: $(SRCDIR)/srcLoc.c $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/SrcLoc.o: $(SRCDIR)/SrcLoc.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/srcLoc_JSON.o
+OBJS += $(OBJDIR)/SrcLoc_json.o
 
-$(OBJDIR)/srcLoc_JSON.o: $(SRCDIR)/srcLoc_JSON.c 
+$(OBJDIR)/SrcLoc_json.o: $(SRCDIR)/SrcLoc_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += srcLoc_test
+TESTS += SrcLoc_test
 
-srcLoc_test: $(TEST_SRC)/srcLoc_test.c 
+SrcLoc_test: $(TEST_SRC)/SrcLoc_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 

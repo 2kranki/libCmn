@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <srcLoc_internal.h>
+#include    <SrcLoc_internal.h>
 #include    <srcErrors.h>
 #include    <szTbl.h>
 
@@ -79,7 +79,7 @@ int         tearDown(
 
 
 
-int         test_srcLoc_OpenClose(
+int         test_SrcLoc_OpenClose(
     const
     char            *pTestName
 )
@@ -98,31 +98,31 @@ int         test_srcLoc_OpenClose(
                                 "}\n";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = srcLoc_Alloc( );
+    pObj = SrcLoc_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = srcLoc_InitFLC( pObj, 1, 20, 3, 4);
+    pObj = SrcLoc_InitFLC( pObj, 1, 20, 3, 4);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        TINYTEST_TRUE( (1 == srcLoc_getFileIndex(pObj)) );
-        TINYTEST_TRUE( (20 == srcLoc_getOffset(pObj)) );
-        TINYTEST_TRUE( (3 == srcLoc_getLineNo(pObj)) );
-        TINYTEST_TRUE( (4 == srcLoc_getColNo(pObj)) );
+        TINYTEST_TRUE( (1 == SrcLoc_getFileIndex(pObj)) );
+        TINYTEST_TRUE( (20 == SrcLoc_getOffset(pObj)) );
+        TINYTEST_TRUE( (3 == SrcLoc_getLineNo(pObj)) );
+        TINYTEST_TRUE( (4 == SrcLoc_getColNo(pObj)) );
 
-        pAStr = srcLoc_ToJSON(pObj);
+        pAStr = SrcLoc_ToJSON(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pAStr) );
         fprintf(stderr, "JSON='%s'\n", AStr_getData(pAStr));
         TINYTEST_TRUE( (0 == strcmp(pJsonA, AStr_getData(pAStr))) );
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
 
-        pObj2 = srcLoc_NewFromJSONStringA(pJsonA);
+        pObj2 = SrcLoc_NewFromJSONStringA(pJsonA);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
-        TINYTEST_TRUE( (1 == srcLoc_getFileIndex(pObj2)) );
-        TINYTEST_TRUE( (20 == srcLoc_getOffset(pObj2)) );
-        TINYTEST_TRUE( (3 == srcLoc_getLineNo(pObj2)) );
-        TINYTEST_TRUE( (4 == srcLoc_getColNo(pObj2)) );
+        TINYTEST_TRUE( (1 == SrcLoc_getFileIndex(pObj2)) );
+        TINYTEST_TRUE( (20 == SrcLoc_getOffset(pObj2)) );
+        TINYTEST_TRUE( (3 == SrcLoc_getLineNo(pObj2)) );
+        TINYTEST_TRUE( (4 == SrcLoc_getColNo(pObj2)) );
         
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -139,7 +139,7 @@ int         test_srcLoc_OpenClose(
 
 
 TINYTEST_START_SUITE(test_srcLoc);
-  TINYTEST_ADD_TEST(test_srcLoc_OpenClose,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_SrcLoc_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_srcLoc);

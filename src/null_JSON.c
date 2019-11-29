@@ -2,7 +2,7 @@
 /*
  * File:   null_JSON.c
  *
- * Created on December 20, 2017 from srcLoc_JSON
+ * Created on December 20, 2017 from SrcLoc_json
  */
 
 

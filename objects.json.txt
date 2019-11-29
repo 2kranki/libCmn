@@ -158,7 +158,7 @@
         "srcFile":["cmn_defs.h","AStr.h","ascii.h","fbsi.h","path.h","token.h",
                     "tokenList.h","u8Array.h"],
         "srcFiles":["cmn_defs.h","objArray.h","path.h","srcFile.h","token.h"],
-        "srcLoc":{srcDeps:["cmn_defs.h"], json:true},
+        "SrcLoc":{srcDeps:["cmn_defs.h"], json:true},
         "SRecords":["cmn_defs.h","AStr.h","srcFile.h"],
         "symAttr":["cmn_defs.h"],
         "symEntry":{srcDeps:["cmn_defs.h"], json:true},

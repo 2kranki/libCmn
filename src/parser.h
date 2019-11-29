@@ -54,7 +54,7 @@
 #include        <cmn_defs.h>
 #include        <compiler.h>
 #include        <node.h>
-#include        <srcLoc.h>
+#include        <SrcLoc.h>
 
 
 #ifndef         PARSER_H

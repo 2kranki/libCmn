@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   srcLoc_internal.h
+ * File:   SrcLoc_internal.h
  *	Generated 01/01/2016 08:01:11
  *
  * Notes:
@@ -42,7 +42,7 @@
 #define	SRCLOC_INTERNAL_H
 
 
-#include    <srcLoc.h>
+#include    <SrcLoc.h>
 #include    <jsonIn.h>
 
 
@@ -54,7 +54,7 @@ extern "C" {
 
     
 #pragma pack(push, 1)
-struct srcLoc_data_s	{
+struct SrcLoc_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -68,28 +68,28 @@ struct srcLoc_data_s	{
 
     extern
     const
-    OBJ_IUNKNOWN    srcLoc_Vtbl;
+    OBJ_IUNKNOWN    SrcLoc_Vtbl;
 
 
 
     // Internal Functions
-    bool            srcLoc_setSrc(
+    bool            SrcLoc_setSrc(
         SRCLOC_DATA     *this,
         SRCLOC          *pValue
     );
     
     
-    void            srcLoc_Dealloc(
+    void            SrcLoc_Dealloc(
         OBJ_ID          objId
     );
 
 
-    SRCLOC_DATA *   srcLoc_ParseObject(
+    SRCLOC_DATA *   SrcLoc_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
     
     
-    void *          srcLoc_QueryInfo(
+    void *          SrcLoc_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -98,7 +98,7 @@ struct srcLoc_data_s	{
     
 #ifdef NDEBUG
 #else
-    bool			srcLoc_Validate(
+    bool			SrcLoc_Validate(
         SRCLOC_DATA       *this
     );
 #endif

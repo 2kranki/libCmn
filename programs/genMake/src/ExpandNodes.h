@@ -56,10 +56,12 @@
 #include        <Dict.h>
 #include        <NodeHdr.h>
 #include        <NodeLib.h>
+#include        <NodeObj.h>
 #include        <NodePgm.h>
+#include        <NodeRtn.h>
 #include        <NodeRtnA.h>
 #include        <NodeTstA.h>
-#include        <objArray.h>
+#include        <nodeArray.h>
 
 
 
@@ -133,17 +135,17 @@ extern "C" {
      released.
      @return    pointer to ExpandNodes object if successful, otherwise OBJ_NIL.
      */
-    EXPANDNODES_DATA *     ExpandNodes_Alloc (
+    EXPANDNODES_DATA *  ExpandNodes_Alloc (
         void
     );
     
     
-    OBJ_ID          ExpandNodes_Class (
+    OBJ_ID              ExpandNodes_Class (
         void
     );
     
     
-    EXPANDNODES_DATA *     ExpandNodes_New (
+    EXPANDNODES_DATA *  ExpandNodes_New (
         void
     );
     
@@ -173,23 +175,23 @@ extern "C" {
     );
 
 
-    OBJARRAY_DATA *     ExpandNodes_getRtns (
+    NODEARRAY_DATA *    ExpandNodes_getRtns (
         EXPANDNODES_DATA    *this
     );
 
     bool                ExpandNodes_setRtns (
         EXPANDNODES_DATA    *this,
-        OBJARRAY_DATA       *pValue
+        NODEARRAY_DATA      *pValue
     );
 
 
-    OBJARRAY_DATA *     ExpandNodes_getTests (
+    NODEARRAY_DATA *    ExpandNodes_getTests (
         EXPANDNODES_DATA    *this
     );
 
     bool                ExpandNodes_setTests (
         EXPANDNODES_DATA    *this,
-        OBJARRAY_DATA       *pValue
+        NODEARRAY_DATA      *pValue
     );
 
 
@@ -199,19 +201,148 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT_DATA *      ExpandNodes_ExpandObjs (
+    /*!
+     Accumulate the Routine objects in the Routine Array.
+     @param     this    object pointer
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
+     */
+    ERESULT_DATA *      ExpandNodes_AppendRtn (
         EXPANDNODES_DATA    *this,
-        OBJARRAY_DATA       *pTests
+        NODERTNA_DATA       *pRtn
     );
 
 
+    /*!
+     Accumulate the Test objects in the Test Array.
+     @param     this    object pointer
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
+     */
+    ERESULT_DATA *      ExpandNodes_AppendTest (
+        EXPANDNODES_DATA    *this,
+        NODETSTA_DATA       *pTst
+    );
+
+
+    /*!
+     Check the Routine and Test Nodes to see if they meet
+     the given constraints. If they do, enable the node.
+     Otherwise, disable it.
+     @param     this    object pointer
+     @param     pArch   Optional Architecture String
+     @param     pOS     Optional Operating System String
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
+     */
+    ERESULT_DATA *      ExpandNodes_CheckNodes (
+        EXPANDNODES_DATA    *this,
+        const
+        char                *pArch,
+        const
+        char                *pOS
+    );
+
+
+    /*!
+     Remove all stored data.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT             ExpandNodes_Clean (
+        EXPANDNODES_DATA    *this
+    );
+
+
+    /*!
+     Expand an object into several nodes, some optional.
+     @param     this    object pointer
+     @param     pObj    Input Object Node
+     @param     pArch   Optional Architecture String
+     @param     pOS     Optional Operating System String
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
+     */
+    ERESULT_DATA *      ExpandNodes_ExpandObj (
+        EXPANDNODES_DATA    *this,
+        NODEOBJ_DATA        *pObj,
+        const
+        char                *pArch,
+        const
+        char                *pOS
+    );
+
+
+    /*!
+     Expand the Object Nodes to RtnA and TstA nodes as needed.
+     @param     this    object pointer
+     @param     pObjs   Input Object Node Array
+     @param     pArch   Optional Architecture String
+     @param     pOS     Optional Operating System String
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
+     */
+    ERESULT_DATA *      ExpandNodes_ExpandObjs (
+        EXPANDNODES_DATA    *this,
+        NODEARRAY_DATA      *pObjs,
+        const
+        char                *pArch,
+        const
+        char                *pOS
+    );
+
+
+    /*!
+     Expand a routine node into nodes used for actual makefile generation.
+     @param     this    object pointer
+     @param     pRtn    Input Routine Node
+     @param     pArch   Optional Architecture String
+     @param     pOS     Optional Operating System String
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
+     */
+    ERESULT_DATA *      ExpandNodes_ExpandRtn (
+        EXPANDNODES_DATA    *this,
+        NODERTN_DATA        *pRtn,
+        const
+        char                *pArch,
+        const
+        char                *pOS
+    );
+
+
+    /*!
+     Expand the Routine Nodes to RtnA and TstA nodes as needed.
+     @param     this    object pointer
+     @param     pRtns   Input Routine Node Array
+     @param     pArch   Optional Architecture String
+     @param     pOS     Optional Operating System String
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
+     */
     ERESULT_DATA *      ExpandNodes_ExpandRtns (
         EXPANDNODES_DATA    *this,
-        OBJARRAY_DATA       *pRtns
+        NODEARRAY_DATA      *pRtns,
+        const
+        char                *pArch,
+        const
+        char                *pOS
     );
 
 
     EXPANDNODES_DATA *  ExpandNodes_Init (
+        EXPANDNODES_DATA    *this
+    );
+
+
+    /*!
+     Sort the arrays.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT             ExpandNodes_Sort (
         EXPANDNODES_DATA    *this
     );
 

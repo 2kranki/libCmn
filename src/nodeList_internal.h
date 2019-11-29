@@ -95,12 +95,12 @@ struct nodeList_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  NODELIST_SINGLETON
-    NODELIST_DATA *     nodeList_getSingleton(
+    NODELIST_DATA * nodeList_getSingleton(
         void
     );
 
     bool            nodeList_setSingleton(
-     NODELIST_DATA       *pValue
+        NODELIST_DATA   *pValue
 );
 #endif
 
@@ -111,7 +111,7 @@ struct nodeList_data_s	{
     //---------------------------------------------------------------
 
     OBJ_IUNKNOWN *  nodeList_getSuperVtbl(
-        NODELIST_DATA     *this
+        NODELIST_DATA   *this
     );
 
 
@@ -120,7 +120,7 @@ struct nodeList_data_s	{
     );
 
 
-    NODELIST_DATA *       nodeList_ParseObject(
+    NODELIST_DATA * nodeList_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
 

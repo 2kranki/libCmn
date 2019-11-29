@@ -479,6 +479,46 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                        S u f f i x
+    //---------------------------------------------------------------
+
+    ASTRC_DATA *    NodeTstA_getSuffix (
+        NODETSTA_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeTstA_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getSuffix(NodeTstA_getNodeBase(this));
+    }
+
+
+    bool            NodeTstA_setSuffix (
+        NODETSTA_DATA   *this,
+        ASTRC_DATA      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeTstA_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setSuffix(NodeTstA_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
@@ -583,6 +623,31 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                 C h e c k  C o n s t r a i n t s
+    //---------------------------------------------------------------
+
+    ERESULT             NodeTstA_CheckContraints (
+            NODETSTA_DATA   *this,
+            const
+            char            *pArch,
+            const
+            char            *pOS
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeTstA_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_CheckConstraints(NodeTstA_getNodeBase(this), pArch, pOS);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -597,14 +662,7 @@ extern "C" {
         NODETSTA_DATA     *pOther
     )
     {
-        int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
         
 #ifdef NDEBUG
 #else
@@ -618,25 +676,8 @@ extern "C" {
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
+        eRc = NodeBase_Compare(NodeTstA_getNodeBase(this), NodeTstA_getNodeBase(pOther));
 
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
         return eRc;
     }
     
@@ -1073,9 +1114,7 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         const
         OBJ_INFO        *pInfo;
         
@@ -1106,19 +1145,10 @@ extern "C" {
                     NodeTstA_getSize(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-            }
-        }
-#endif
-        
+        pWrkStr =   NodeBase_ToDebugString(NodeTstA_getNodeBase(this), indent+3);
+        AStr_Append(pStr, pWrkStr);
+        obj_Release(pWrkStr);
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }

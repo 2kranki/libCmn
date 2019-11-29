@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "srcLoc_internal.h"
+#include "SrcLoc_internal.h"
 #include <stdio.h>
 
 
@@ -77,7 +77,7 @@ extern "C" {
      @return        A pointer to the combined data and  object if
                     successful or OBJ_NIL if not.
      */
-    SRCLOC_DATA *     srcLoc_Alloc(
+    SRCLOC_DATA *     SrcLoc_Alloc(
     )
     {
         SRCLOC_DATA     *this;
@@ -95,7 +95,7 @@ extern "C" {
 
 
 
-    SRCLOC_DATA *     srcLoc_NewFLC(
+    SRCLOC_DATA *     SrcLoc_NewFLC(
         uint32_t        fileIndex,              // File Index
         int64_t         offset,
         uint32_t        lineNo,
@@ -104,23 +104,23 @@ extern "C" {
     {
         SRCLOC_DATA     *this;
         
-        this = srcLoc_Alloc( );
+        this = SrcLoc_Alloc( );
         if (this) {
-            this = srcLoc_InitFLC(this, fileIndex, offset, lineNo, colNo);
+            this = SrcLoc_InitFLC(this, fileIndex, offset, lineNo, colNo);
         } 
         return this;
     }
 
 
-    SRCLOC_DATA *     srcLoc_NewSrcLoc(
+    SRCLOC_DATA *     SrcLoc_NewSrcLoc(
         SRCLOC          *pSrc
     )
     {
         SRCLOC_DATA     *this;
         
-        this = srcLoc_Alloc( );
+        this = SrcLoc_Alloc( );
         if (this) {
-            this = srcLoc_Init(this);
+            this = SrcLoc_Init(this);
             if (this && pSrc) {
                 memmove(this->pData, pSrc, sizeof(SRCLOC));
             }
@@ -140,7 +140,7 @@ extern "C" {
     //                          C o l  N o
     //---------------------------------------------------------------
     
-    uint16_t        srcLoc_getColNo(
+    uint16_t        SrcLoc_getColNo(
         SRCLOC_DATA     *this
     )
     {
@@ -148,7 +148,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate( this ) ) {
+        if( !SrcLoc_Validate( this ) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -157,14 +157,14 @@ extern "C" {
     }
     
     
-    bool            srcLoc_setColNo(
+    bool            SrcLoc_setColNo(
         SRCLOC_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -174,7 +174,7 @@ extern "C" {
     
     
     
-    uint32_t        srcLoc_getFileIndex(
+    uint32_t        SrcLoc_getFileIndex(
         SRCLOC_DATA     *this
     )
     {
@@ -182,7 +182,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -192,14 +192,14 @@ extern "C" {
     }
     
     
-    bool            srcLoc_setFileIndex(
+    bool            SrcLoc_setFileIndex(
         SRCLOC_DATA     *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -214,7 +214,7 @@ extern "C" {
     //                         L i n e  N o
     //---------------------------------------------------------------
     
-    uint32_t        srcLoc_getLineNo(
+    uint32_t        SrcLoc_getLineNo(
         SRCLOC_DATA     *this
     )
     {
@@ -222,7 +222,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -230,14 +230,14 @@ extern "C" {
         return this->pData->lineNo;
     }
     
-    bool            srcLoc_setLineNo(
+    bool            SrcLoc_setLineNo(
         SRCLOC_DATA     *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -251,7 +251,7 @@ extern "C" {
     //                         O f f s e t
     //---------------------------------------------------------------
     
-    int64_t         srcLoc_getOffset(
+    int64_t         SrcLoc_getOffset(
         SRCLOC_DATA     *this
     )
     {
@@ -259,7 +259,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -267,14 +267,14 @@ extern "C" {
         return this->pData->offset;
     }
     
-    bool            srcLoc_setOffset(
+    bool            SrcLoc_setOffset(
         SRCLOC_DATA     *this,
         int64_t         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -288,7 +288,7 @@ extern "C" {
     //                          S r c
     //---------------------------------------------------------------
     
-    SRCLOC *        srcLoc_getSrc(
+    SRCLOC *        SrcLoc_getSrc(
         SRCLOC_DATA     *this
     )
     {
@@ -296,7 +296,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate( this ) ) {
+        if( !SrcLoc_Validate( this ) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -305,14 +305,14 @@ extern "C" {
     }
     
     
-    bool            srcLoc_setSrc(
+    bool            SrcLoc_setSrc(
         SRCLOC_DATA     *this,
         SRCLOC          *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -334,7 +334,7 @@ extern "C" {
     //                       C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         srcLoc_Compare(
+    ERESULT         SrcLoc_Compare(
         SRCLOC_DATA		*this,
         SRCLOC_DATA     *pOther
     )
@@ -343,11 +343,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !srcLoc_Validate(pOther) ) {
+        if( !SrcLoc_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -389,7 +389,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            srcLoc_Dealloc(
+    void            SrcLoc_Dealloc(
         OBJ_ID          objId
     )
     {
@@ -401,7 +401,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -424,7 +424,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    SRCLOC_DATA *   srcLoc_Init(
+    SRCLOC_DATA *   SrcLoc_Init(
         SRCLOC_DATA     *this
     )
     {
@@ -443,14 +443,14 @@ extern "C" {
         }
         //obj_setSize(this, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SRCLOC);
-        obj_setVtbl(this, &srcLoc_Vtbl);
+        obj_setVtbl(this, &SrcLoc_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = objArray_New( );
 
     #ifdef NDEBUG
     #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -462,7 +462,7 @@ extern "C" {
     }
 
      
-    SRCLOC_DATA *   srcLoc_InitFLC(
+    SRCLOC_DATA *   SrcLoc_InitFLC(
         SRCLOC_DATA     *this,
         uint32_t        fileIndex,              // File Index
         int64_t         offset,
@@ -471,19 +471,19 @@ extern "C" {
     )
     {
         
-        this = srcLoc_Init(this);
+        this = SrcLoc_Init(this);
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        srcLoc_setFileIndex(this, fileIndex);
-        srcLoc_setOffset(this, offset);
-        srcLoc_setLineNo(this, lineNo);
-        srcLoc_setColNo(this, colNo);
+        SrcLoc_setFileIndex(this, fileIndex);
+        SrcLoc_setOffset(this, offset);
+        SrcLoc_setLineNo(this, lineNo);
+        SrcLoc_setColNo(this, colNo);
         
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -500,7 +500,7 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    void *          srcLoc_QueryInfo(
+    void *          SrcLoc_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -515,7 +515,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcLoc_Validate(this) ) {
+        if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -532,11 +532,11 @@ extern "C" {
                         
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return srcLoc_ToDebugString;
+                            return SrcLoc_ToDebugString;
                         }
 #ifdef XYZZY
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return srcLoc_ToJSON;
+                            return SrcLoc_ToJSON;
                         }
 #endif
                         break;
@@ -559,7 +559,7 @@ extern "C" {
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
-    ASTR_DATA *     srcLoc_ToDebugString(
+    ASTR_DATA *     SrcLoc_ToDebugString(
         SRCLOC_DATA     *this,
         int             indent
     )
@@ -585,10 +585,10 @@ extern "C" {
                      sizeof(str),
                      "{%p(srcLoc) fileIndex=%10d offset=%lld line=%d col=%d ",
                      this,
-                     srcLoc_getFileIndex(this),
-                     srcLoc_getOffset(this),
-                     srcLoc_getLineNo(this),
-                     srcLoc_getColNo(this)
+                     SrcLoc_getFileIndex(this),
+                     SrcLoc_getOffset(this),
+                     SrcLoc_getLineNo(this),
+                     SrcLoc_getColNo(this)
             );
         AStr_AppendA(pStr, str);
 
@@ -619,7 +619,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            srcLoc_Validate(
+    bool            SrcLoc_Validate(
         SRCLOC_DATA      *this
     )
     {

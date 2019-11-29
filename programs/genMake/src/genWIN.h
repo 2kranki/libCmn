@@ -53,6 +53,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <GenBase.h>
 
 
 #ifndef         GENWIN_H
@@ -125,7 +126,7 @@ extern "C" {
      released.
      @return    pointer to GenWin object if successful, otherwise OBJ_NIL.
      */
-    GENWIN_DATA *     GenWin_Alloc (
+    GENWIN_DATA *   GenWin_Alloc (
         void
     );
     
@@ -135,7 +136,7 @@ extern "C" {
     );
     
     
-    GENWIN_DATA *     GenWin_New (
+    GENWIN_DATA *   GenWin_New (
         void
     );
     
@@ -144,6 +145,11 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    GENBASE_DATA *  GenWin_getGenBase (
+        GENWIN_DATA     *this
+    );
+
 
 
 

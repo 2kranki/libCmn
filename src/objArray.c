@@ -1206,7 +1206,6 @@ extern "C" {
 #endif
         
         if (array_getSize(this->pArray) < 2) {
-            this->eRc = ERESULT_SUCCESS;
             return ERESULT_SUCCESS;
         }
         

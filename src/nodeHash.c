@@ -297,6 +297,29 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                          B l o c k s
+    //---------------------------------------------------------------
+    
+    BLOCKS_DATA *   nodeHash_getBlocks (
+        NODEHASH_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!nodeHash_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (BLOCKS_DATA *)this;
+    }
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -398,7 +421,7 @@ extern "C" {
     ERESULT         nodeHash_Add(
         NODEHASH_DATA   *this,
         NODE_DATA       *pNode
-                                 )
+    )
     {
         RBT_TREE        *pTree;
         NODEHASH_RECORD *pRecord = NULL;

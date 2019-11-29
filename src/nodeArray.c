@@ -219,6 +219,29 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     o b j A r r a y
+    //---------------------------------------------------------------
+    
+    OBJARRAY_DATA *  nodeArray_getObjArray(
+        NODEARRAY_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pArray;
+    }
+    
+        
+        
+    //---------------------------------------------------------------
     //                        O t h e r
     //---------------------------------------------------------------
     

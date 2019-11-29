@@ -45,7 +45,6 @@
 #include        <hjson.h>
 #include        <jsonIn.h>
 #include        <srcErrors.h>
-#include        <SrcParse.h>
 #include        <trace.h>
 
 
@@ -810,6 +809,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      R o u t i n e s
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * Main_getRoutines(
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pRtns;
+    }
+    
+    
+    bool            Main_setRoutines(
+        MAIN_DATA       *this,
+        NODEARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pRtns) {
+            obj_Release(this->pRtns);
+        }
+        this->pRtns = pValue;
+        
+        return true;
+    }
+        
+        
+        
+    //---------------------------------------------------------------
     //                          S i z e
     //---------------------------------------------------------------
     
@@ -857,6 +902,52 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //                      T e s t s
+    //---------------------------------------------------------------
+    
+    NODEARRAY_DATA * Main_getTests(
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pTests;
+    }
+    
+    
+    bool            Main_setTests(
+        MAIN_DATA       *this,
+        NODEARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pTests) {
+            obj_Release(this->pTests);
+        }
+        this->pTests = pValue;
+        
+        return true;
+    }
+            
+            
+            
     //---------------------------------------------------------------
     //                          V e r b o s e
     //---------------------------------------------------------------
@@ -1315,7 +1406,7 @@ extern "C" {
         // Handle "objects" section of source file.
         pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "objects");
         if (pNode) {
-            NODEARRAY_DATA  *pArray = OBJ_NIL;
+            //NODEARRAY_DATA  *pArray = OBJ_NIL;
             if (Main_getVerbose(this)) {
                 fprintf(stderr, "Generating Object(s) compile/testing...\n");
             }
@@ -1731,11 +1822,12 @@ extern "C" {
     )
     {
         //ERESULT         eRc;
-        HJSON_DATA      *pObj = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        NODEHASH_DATA   *pHash;
+        //HJSON_DATA      *pObj = OBJ_NIL;
+        //ASTR_DATA       *pStr = OBJ_NIL;
+        //NODEHASH_DATA   *pHash;
         NODE_DATA       *pFileNode;
         SRCPARSE_DATA   *pParser;
+        ERESULT_DATA    *pErr;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1750,56 +1842,25 @@ extern "C" {
         }
 #endif
         
-        pObj = hjson_NewFromPath(pPath, 4);
-        if (pObj) {
-            
-            if  (appl_getDebug((APPL_DATA *)this)) {
-                obj_TraceSet(pObj, true);
-            }
-            pFileNode = hjson_ParseFileHash(pObj);
-            if (pFileNode) {
-                this->pNodes = pFileNode;
-                if (appl_getDebug((APPL_DATA *)this)) {
-                    pStr = node_ToDebugString(pFileNode, 0);
-                    fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                    pStr = node_ToString(pFileNode);
-                    fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
-            }
-            
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-        srcErrors_ExitOnFatal(OBJ_NIL);
-        
-        if (this->pNodes) {
-            pHash = node_getData(this->pNodes);
-            if (OBJ_NIL == pHash) {
-                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-                exit(12);
-            }
-            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
-                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
-                exit(12);
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-            exit(12);
-        }
-        
-        // Scan the JSON Node structure for consistancy with defined grammar.
         pParser = SrcParse_New();
         if (OBJ_NIL == pParser) {
-            fprintf(stderr, "ERROR - Unable to create Source Scanner!\n\n\n");
+            fprintf(stderr, "Error - Out of Memory - Creating Source Parser!\n\n\n");
             exit(12);
         }
-        obj_Release(pParser);
-        pParser = OBJ_NIL;
+        
+        pErr = SrcParse_ParseJsonFile(pParser, pPath);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+            exit(12);
+        }
+        srcErrors_ExitOnFatal(OBJ_NIL);
+        pFileNode = SrcParse_getNodes(pParser);
+        
+        pErr = SrcParse_ParseNodes(pParser);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+            exit(12);
+        }
         
         // Return to caller.
         return ERESULT_SUCCESS;

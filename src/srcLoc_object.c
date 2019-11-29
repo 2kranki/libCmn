@@ -32,7 +32,7 @@
 
 
 #include        "obj.h"
-#include        "srcLoc_internal.h"
+#include        "SrcLoc_internal.h"
 
 
 
@@ -40,7 +40,7 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct srcLoc_class_data_s	{
+struct SrcLoc_class_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -48,7 +48,7 @@ struct srcLoc_class_data_s	{
     // Common Data
     //uint32_t        misc;
 };
-typedef struct srcLoc_class_data_s SRCLOC_CLASS_DATA;
+typedef struct SrcLoc_class_data_s SRCLOC_CLASS_DATA;
 
 
 
@@ -60,13 +60,13 @@ typedef struct srcLoc_class_data_s SRCLOC_CLASS_DATA;
 
 static
 const
-OBJ_INFO        srcLoc_Info;            // Forward Reference
+OBJ_INFO        SrcLoc_Info;            // Forward Reference
 
 
 
 
 static
-bool            srcLoc_ClassIsKindOf(
+bool            SrcLoc_ClassIsKindOf(
     uint16_t		classID
 )
 {
@@ -92,12 +92,12 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    class_Vtbl = {
-    &srcLoc_Info,
-    srcLoc_ClassIsKindOf,
+    &SrcLoc_Info,
+    SrcLoc_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    srcLoc_Class,
+    SrcLoc_Class,
     obj_ClassWhoAmI
 };
 
@@ -109,7 +109,7 @@ OBJ_IUNKNOWN    class_Vtbl = {
 
 static
 const
-SRCLOC_CLASS_DATA  srcLoc_ClassObj = {
+SRCLOC_CLASS_DATA  SrcLoc_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(SRCLOC_CLASS_DATA),          // cbSize
@@ -123,7 +123,7 @@ SRCLOC_CLASS_DATA  srcLoc_ClassObj = {
 
 
 static
-bool            srcLoc_IsKindOf(
+bool            SrcLoc_IsKindOf(
     uint16_t		classID
 )
 {
@@ -139,21 +139,21 @@ bool            srcLoc_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            srcLoc_Dealloc(
+void            SrcLoc_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          srcLoc_Class(
+OBJ_ID          SrcLoc_Class(
     void
 )
 {
-    return (OBJ_ID)&srcLoc_ClassObj;
+    return (OBJ_ID)&SrcLoc_ClassObj;
 }
 
 
 static
-uint16_t		srcLoc_WhoAmI(
+uint16_t		SrcLoc_WhoAmI(
     void
 )
 {
@@ -162,33 +162,33 @@ uint16_t		srcLoc_WhoAmI(
 
 
 const
-OBJ_IUNKNOWN    srcLoc_Vtbl = {
-    &srcLoc_Info,
-    srcLoc_IsKindOf,
+OBJ_IUNKNOWN    SrcLoc_Vtbl = {
+    &SrcLoc_Info,
+    SrcLoc_IsKindOf,
     obj_RetainStandard,
     obj_ReleaseStandard,
-    srcLoc_Dealloc,
-    srcLoc_Class,
-    srcLoc_WhoAmI,
-    (P_OBJ_QUERYINFO)srcLoc_QueryInfo,
-    (P_OBJ_TOSTRING)srcLoc_ToDebugString,
-    NULL,			// srcLoc_Enable,
-    NULL,			// srcLoc_Disable,
-    NULL,			// (P_OBJ_ASSIGN)srcLoc_Assign,
-    NULL,			// (P_OBJ_COMPARE)srcLoc_Compare,
-    NULL, 			// (P_OBJ_PTR)srcLoc_Copy,
+    SrcLoc_Dealloc,
+    SrcLoc_Class,
+    SrcLoc_WhoAmI,
+    (P_OBJ_QUERYINFO)SrcLoc_QueryInfo,
+    (P_OBJ_TOSTRING)SrcLoc_ToDebugString,
+    NULL,			// SrcLoc_Enable,
+    NULL,			// SrcLoc_Disable,
+    NULL,			// (P_OBJ_ASSIGN)SrcLoc_Assign,
+    NULL,			// (P_OBJ_COMPARE)SrcLoc_Compare,
+    NULL, 			// (P_OBJ_PTR)SrcLoc_Copy,
     NULL,           // (P_OBJ_DEEPCOPY)
-    NULL 			// (P_OBJ_HASH)srcLoc_Hash
+    NULL 			// (P_OBJ_HASH)SrcLoc_Hash
 };
 
 
 
 static
 const
-OBJ_INFO        srcLoc_Info = {
+OBJ_INFO        SrcLoc_Info = {
     "srcLoc",
     "Source File Location including column and line numbers",
-    (OBJ_DATA *)&srcLoc_ClassObj,
+    (OBJ_DATA *)&SrcLoc_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };
 

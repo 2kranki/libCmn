@@ -774,6 +774,46 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          F i n d
+    //---------------------------------------------------------------
+
+    uint32_t        AStrCArray_Find (
+        ASTRCARRAY_DATA *this,
+        ASTRC_DATA      *pStrC
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        ASTRC_DATA      *pWrk;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!AStrCArray_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pArray)
+            return 0;
+        
+        iMax = objArray_getSize(this->pArray);
+        for (i=0; i<iMax; i++) {
+            pWrk = objArray_Get(this->pArray, i+1);
+            if (ERESULT_SUCCESS_EQUAL == AStrC_Compare(pStrC, pWrk)) {
+                return i+1;
+            }
+        }
+
+        // Return to caller.
+        return 0;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        G e t
     //---------------------------------------------------------------
     
@@ -794,7 +834,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_Get(this->pArray,index);
+            pNode = objArray_Get(this->pArray, index);
         }
         
         // Return to caller.
@@ -1180,6 +1220,80 @@ extern "C" {
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
+    ASTR_DATA *     AStrCArray_ToStringPrefixSep (
+        ASTRCARRAY_DATA *this,
+        const
+        char            *pSep,
+        const
+        char            *pPrefix            // Optional
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        ASTR_DATA       *pStr;
+        ASTRC_DATA      *pWrk;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!AStrCArray_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (NULL == pSep) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        if (OBJ_NIL == this->pArray)
+            return 0;
+        
+        iMax = objArray_getSize(this->pArray);
+        if (0 == iMax) {
+            return pStr;
+        }
+        if (1 == iMax) {
+            pWrk = objArray_Get(this->pArray, 1);
+            if (pWrk) {
+                if (pPrefix) {
+                    AStr_AppendA(pStr, pPrefix);
+                }
+                AStr_AppendA(pStr, AStrC_getData(pWrk));
+            }
+            return pStr;
+        }
+
+        for (i=0; i<iMax-1; i++) {
+            pWrk = objArray_Get(this->pArray, i+1);
+            if (pWrk) {
+                if (pPrefix) {
+                    AStr_AppendA(pStr, pPrefix);
+                }
+                AStr_AppendA(pStr, AStrC_getData(pWrk));
+                AStr_AppendA(pStr, pSep);
+            }
+        }
+        pWrk = objArray_Get(this->pArray, i+1);
+        if (pWrk) {
+            if (pPrefix) {
+                AStr_AppendA(pStr, pPrefix);
+            }
+            AStr_AppendA(pStr, AStrC_getData(pWrk));
+        }
+
+        // Return to caller.
+        return pStr;
+    }
+
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

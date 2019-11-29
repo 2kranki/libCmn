@@ -53,6 +53,9 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <textOut.h>
+#include        <NodeRtnA.h>
+#include        <NodeTstA.h>
 
 
 #ifndef         GENBASE_H
@@ -109,7 +112,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  GENBASE_SINGLETON
-    GENBASE_DATA *     GenBase_Shared (
+    GENBASE_DATA *  GenBase_Shared (
         void
     );
 
@@ -125,7 +128,7 @@ extern "C" {
      released.
      @return    pointer to GenBase object if successful, otherwise OBJ_NIL.
      */
-    GENBASE_DATA *     GenBase_Alloc (
+    GENBASE_DATA *  GenBase_Alloc (
         void
     );
     
@@ -135,7 +138,7 @@ extern "C" {
     );
     
     
-    GENBASE_DATA *     GenBase_New (
+    GENBASE_DATA *  GenBase_New (
         void
     );
     
@@ -145,6 +148,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! Property: Output is where all the output will be written.
+    */
+    TEXTOUT_DATA *  GenBase_getOutput (
+        GENBASE_DATA    *this
+    );
+
+    bool            GenBase_setOutput (
+        GENBASE_DATA    *this,
+        TEXTOUT_DATA    *pValue
+    );
 
 
     
@@ -152,23 +165,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     GenBase_Disable (
-        GENBASE_DATA		*this
+    ERESULT         GenBase_Disable (
+        GENBASE_DATA    *this
     );
 
 
-    ERESULT     GenBase_Enable (
-        GENBASE_DATA		*this
+    ERESULT         GenBase_Enable (
+        GENBASE_DATA	*this
     );
 
    
-    GENBASE_DATA *   GenBase_Init (
-        GENBASE_DATA     *this
+    GENBASE_DATA *  GenBase_Init (
+        GENBASE_DATA    *this
     );
 
 
-    ERESULT     GenBase_IsEnabled (
-        GENBASE_DATA		*this
+    ERESULT         GenBase_IsEnabled (
+        GENBASE_DATA    *this
     );
     
  
@@ -184,8 +197,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    GenBase_ToDebugString (
-        GENBASE_DATA     *this,
+    ASTR_DATA *     GenBase_ToDebugString (
+        GENBASE_DATA    *this,
         int             indent
     );
     

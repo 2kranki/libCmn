@@ -218,6 +218,19 @@ extern "C" {
     );
 
 
+    /*! Property: file name suffix (optional)
+        The optional file extension suffix to be used with name.
+     */
+    ASTRC_DATA *    NodeTstA_getSuffix (
+        NODETSTA_DATA   *this
+    );
+
+    bool            NodeTstA_setSuffix (
+        NODETSTA_DATA   *this,
+        ASTRC_DATA      *pValue
+    );
+
+
 
 
     
@@ -225,8 +238,67 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    NODETSTA_DATA *   NodeTstA_Init (
-        NODETSTA_DATA     *this
+    /*!
+     Check that the included constraints are met. If a constraint was
+     not specified on the original definition, then it will not be
+     checked. If one or more constraints of one tyoe were specified
+     then we do check to see if the specified value matches any defined.
+     @param     this    object pointer
+     @param     pArch   Optional Architecture String Constraint
+     @param     pOS     Optional Operating System String Constraint
+     @return    if all constraints are met, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code.
+     */
+    ERESULT             NodeTstA_CheckContraints (
+            NODETSTA_DATA   *this,
+            const
+            char            *pArch,
+            const
+            char            *pOS
+    );
+
+
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         NodeTstA_Compare (
+        NODETSTA_DATA     *this,
+        NODETSTA_DATA     *pOther
+    );
+
+
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeTstA_Disable (
+        NODETSTA_DATA   *this
+    );
+
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeTstA_Enable (
+        NODETSTA_DATA   *this
+    );
+
+
+    NODETSTA_DATA * NodeTstA_Init (
+        NODETSTA_DATA   *this
+    );
+
+
+    ERESULT         NodeTstA_IsEnabled (
+        NODETSTA_DATA   *this
     );
 
 

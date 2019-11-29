@@ -77,10 +77,10 @@ struct SrcParse_data_s	{
 
     // Common Data
     NODELIB_DATA    *pLib;
-    OBJARRAY_DATA   *pObjs;
+    NODEARRAY_DATA  *pObjs;
     NODEPGM_DATA    *pPgm;
-    OBJARRAY_DATA   *pRtns;
-    OBJARRAY_DATA   *pTests;
+    NODEARRAY_DATA  *pRtns;
+    NODEARRAY_DATA  *pTests;
     NODE_DATA       *pNodes;
 
 };

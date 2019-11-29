@@ -230,7 +230,7 @@ extern "C" {
     //                        O b j e c t s
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * SrcParse_getObjs (
+    NODEARRAY_DATA * SrcParse_getObjs (
         SRCPARSE_DATA   *this
     )
     {
@@ -250,7 +250,7 @@ extern "C" {
     
     bool            SrcParse_setObjs (
         SRCPARSE_DATA   *this,
-        OBJARRAY_DATA   *pValue
+        NODEARRAY_DATA  *pValue
     )
     {
 #ifdef NDEBUG
@@ -369,7 +369,7 @@ extern "C" {
     //                        R o u t i n e s
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * SrcParse_getRtns (
+    NODEARRAY_DATA * SrcParse_getRtns (
         SRCPARSE_DATA   *this
     )
     {
@@ -389,7 +389,7 @@ extern "C" {
     
     bool            SrcParse_setRtns (
         SRCPARSE_DATA   *this,
-        OBJARRAY_DATA   *pValue
+        NODEARRAY_DATA  *pValue
     )
     {
 #ifdef NDEBUG
@@ -462,7 +462,7 @@ extern "C" {
     //                        R o u t i n e s
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * SrcParse_getTests (
+    NODEARRAY_DATA * SrcParse_getTests (
         SRCPARSE_DATA   *this
     )
     {
@@ -482,7 +482,7 @@ extern "C" {
     
     bool            SrcParse_setTests (
         SRCPARSE_DATA   *this,
-        OBJARRAY_DATA   *pValue
+        NODEARRAY_DATA  *pValue
     )
     {
 #ifdef NDEBUG
@@ -845,19 +845,19 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&SrcParse_Vtbl);
         
-        this->pObjs = objArray_New( );
+        this->pObjs = nodeArray_New( );
         if (OBJ_NIL == this->pObjs) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pRtns = objArray_New( );
+        this->pRtns = nodeArray_New( );
         if (OBJ_NIL == this->pRtns) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pTests = objArray_New( );
+        this->pTests = nodeArray_New( );
         if (OBJ_NIL == this->pRtns) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1218,7 +1218,7 @@ extern "C" {
             return pErr;
         }
         
-        eRc = objArray_AppendObj(this->pObjs, pObj, NULL);
+        eRc = nodeArray_AppendNode(this->pObjs, NodeObj_getNode(pObj), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(pObj);
@@ -1374,7 +1374,7 @@ extern "C" {
             return pErr;
         }
         
-        eRc = objArray_AppendObj(this->pRtns, pRtn, NULL);
+        eRc = nodeArray_AppendNode(this->pRtns, NodeRtn_getNode(pRtn), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(pRtn);
@@ -1603,7 +1603,7 @@ extern "C" {
             return pErr;
         }
         
-        eRc = objArray_AppendObj(this->pTests, pTest, NULL);
+        eRc = nodeArray_AppendNode(this->pTests, NodeTest_getNode(pTest), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(pTest);

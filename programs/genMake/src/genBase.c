@@ -62,16 +62,18 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
+    /*! If no output object is present, default to using one that
+     accumulates everything into an AStr object.
+     */
     static
-    void            GenBase_task_body (
-        void            *pData
+    void            GenBase_CheckOutput (
+        GENBASE_DATA    *this
     )
     {
-        //GENBASE_DATA  *this = pData;
-        
+        if (OBJ_NIL == this->pOut) {
+            this->pOut = textOut_NewAStr();
+        }
     }
-#endif
 
 
 
@@ -122,6 +124,54 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //                       O u t p u t
+    //---------------------------------------------------------------
+    
+    TEXTOUT_DATA *  GenBase_getOutput (
+        GENBASE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!GenBase_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pOut;
+    }
+    
+    
+    bool            GenBase_setOutput (
+        GENBASE_DATA    *this,
+        TEXTOUT_DATA    *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!GenBase_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_STR_OWNED
+        obj_Retain(pValue);
+        if (this->pOut) {
+            obj_Release(this->pOut);
+        }
+#endif
+        this->pOut = pValue;
+        
+        return true;
+    }
+            
+            
+            
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
@@ -258,7 +308,7 @@ extern "C" {
     
   
 
-    
+
 
     //===============================================================
     //                          M e t h o d s
@@ -473,6 +523,7 @@ extern "C" {
         }
 #endif
 
+        GenBase_setOutput(this, OBJ_NIL);
         GenBase_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);

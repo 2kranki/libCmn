@@ -1550,7 +1550,7 @@ extern "C" {
         }
 #endif
         
-        return srcLoc_NewSrcLoc(&this->data.src);
+        return SrcLoc_NewSrcLoc(&this->data.src);
     }
     
     

@@ -59,6 +59,7 @@
 #include        <i32Array.h>
 #include        <node.h>
 #include        <nodeEnum.h>
+#include        <objArray.h>
 #include        <W32Str.h>
 
 
@@ -138,6 +139,11 @@ extern "C" {
     );
     
     
+    OBJARRAY_DATA *  nodeArray_getObjArray(
+        NODEARRAY_DATA  *this
+    );
+
+
     OBJ_ID          nodeArray_getOther(
         NODEARRAY_DATA  *this
     );

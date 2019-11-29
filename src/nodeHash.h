@@ -71,6 +71,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <blocks.h>
 #include        <node.h>
 #include        <nodeArray.h>
 #include        <nodeEnum.h>
@@ -194,9 +195,15 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    /* Size() returns the current number of used entries.
-     * Returns:
-     *        Current Number of Entries in the Hash
+    /*! property:   the underlying object.
+     */
+    BLOCKS_DATA *   nodeHash_getBlocks (
+        NODEHASH_DATA   *this
+    );
+
+
+    /*! Size() returns the current number of used entries.
+        @return     Current Number of Entries in the Hash
      */
     uint32_t        nodeHash_getSize(
         NODEHASH_DATA   *this
@@ -218,7 +225,7 @@ extern "C" {
      @param     this    Object Pointer
      @param     pNode   Data Object Pointer
      @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
-     error code is returned.
+                error code is returned.
      */
     ERESULT         nodeHash_Add (
         NODEHASH_DATA   *this,

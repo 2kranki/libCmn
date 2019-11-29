@@ -106,8 +106,63 @@ int             test_Dict_OpenClose(
 
 
 
+int             test_Dict_test01(
+    const
+    char            *pTestName
+)
+{
+    DICT_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NODE_DATA       *pNode = OBJ_NIL;
+    const
+    char            *pResult = "LIBNAM=libTest\n";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = Dict_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        // Test something.
+        eRc = Dict_AddA(pObj, "lib_prefix", "lib");
+        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
+        eRc = Dict_AddA(pObj, "name", "Test");
+        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
+
+        pStr = AStr_NewA("LIBNAM=${lib_prefix}${name}\n");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            eRc = Dict_Expand(pObj, pStr);
+            fprintf(stderr, "\tResult=\"%s\"\n", AStr_getData(pStr));
+            TINYTEST_TRUE( (0 == strcmp(AStr_getData(pStr), pResult)) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        pStr = AStr_NewA("LIBNAM=$lib_prefix$name\n");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            eRc = Dict_Expand(pObj, pStr);
+            fprintf(stderr, "\tResult=\"%s\"\n", AStr_getData(pStr));
+            TINYTEST_TRUE( (0 == strcmp(AStr_getData(pStr), pResult)) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_Dict);
+    TINYTEST_ADD_TEST(test_Dict_test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dict_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

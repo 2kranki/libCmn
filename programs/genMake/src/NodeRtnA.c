@@ -479,6 +479,46 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                        S u f f i x
+    //---------------------------------------------------------------
+
+    ASTRC_DATA *    NodeRtnA_getSuffix (
+        NODERTNA_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeRtnA_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getSuffix(NodeRtnA_getNodeBase(this));
+    }
+
+
+    bool            NodeRtnA_setSuffix (
+        NODERTNA_DATA   *this,
+        ASTRC_DATA      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeRtnA_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setSuffix(NodeRtnA_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
@@ -507,6 +547,42 @@ extern "C" {
     //===============================================================
     //                          M e t h o d s
     //===============================================================
+
+
+    //---------------------------------------------------------------
+    //                          A p p e n d
+    //---------------------------------------------------------------
+
+    /*!
+     Append a string to the dependencies.
+     @param     this    object pointer
+     @param     pStrC   string pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  NodeRtnA_AppendDeps (
+        NODERTNA_DATA    *this,
+        ASTRC_DATA       *pStrC
+    )
+    {
+        ERESULT_DATA    *pErr = OBJ_NIL;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeRtnA_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+    #endif
+
+        pErr = NodeBase_AppendDeps(NodeRtnA_getNodeBase(this), pStrC);
+        obj_Release(pStrC);
+        pStrC = OBJ_NIL;
+
+        // Return to caller.
+        return pErr;
+    }
 
 
     //---------------------------------------------------------------
@@ -583,6 +659,39 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                 C h e c k  C o n s t r a i n t s
+    //---------------------------------------------------------------
+
+    ERESULT             NodeRtnA_CheckContraints (
+        NODERTNA_DATA   *this,
+        const
+        char            *pArch,
+        const
+        char            *pOS
+    )
+    {
+        ERESULT         eRc;
+#ifdef NDEBUG
+#else
+        if (!NodeRtnA_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        eRc = NodeBase_CheckConstraints(NodeRtnA_getNodeBase(this), pArch, pOS);
+        if (ERESULT_FAILED(eRc)) {
+            NodeRtnA_Disable(this);
+        } else {
+            NodeRtnA_Enable(this);
+        }
+        
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -593,18 +702,11 @@ extern "C" {
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
     ERESULT         NodeRtnA_Compare (
-        NODERTNA_DATA     *this,
-        NODERTNA_DATA     *pOther
+        NODERTNA_DATA   *this,
+        NODERTNA_DATA   *pOther
     )
     {
-        int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
         
 #ifdef NDEBUG
 #else
@@ -617,25 +719,8 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
         
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
-
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
+        eRc = NodeBase_Compare(NodeRtnA_getNodeBase(this), NodeRtnA_getNodeBase(pOther));
         
         return eRc;
     }
@@ -726,6 +811,35 @@ extern "C" {
         this = OBJ_NIL;
 
         // Return to caller.
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          D e p s
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeRtnA_Deps (
+        NODERTNA_DATA   *this,
+        const
+        char            *pPrefix
+    )
+    {
+        ASTR_DATA       *pStr;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeRtnA_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+    #endif
+        
+        pStr = AStrCArray_ToStringPrefixSep(NodeRtnA_getDeps(this), " ", pPrefix);
+
+        // Return to caller.
+        return pStr;
     }
 
 
@@ -847,7 +961,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "NodeRtnA::sizeof(NODERTNA_DATA) = %lu\n", sizeof(NODERTNA_DATA));
+        //fprintf(stderr, "NodeRtnA::sizeof(NODERTNA_DATA) = %lu\n", sizeof(NODERTNA_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODERTNA_DATA));
     #endif
@@ -1011,6 +1125,35 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          S r c s
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeRtnA_Srcs (
+        NODERTNA_DATA   *this,
+        const
+        char            *pPrefix
+    )
+    {
+        ASTR_DATA       *pStr;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeRtnA_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+    #endif
+        
+        pStr = AStrCArray_ToStringPrefixSep(NodeRtnA_getSrcs(this), " ", pPrefix);
+
+        // Return to caller.
+        return pStr;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------
     
@@ -1066,16 +1209,14 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     NodeRtnA_ToDebugString (
-        NODERTNA_DATA      *this,
+        NODERTNA_DATA   *this,
         int             indent
     )
     {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         const
         OBJ_INFO        *pInfo;
         
@@ -1106,19 +1247,10 @@ extern "C" {
                     NodeRtnA_getSize(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-            }
-        }
-#endif
-        
+        pWrkStr =   NodeBase_ToDebugString(NodeRtnA_getNodeBase(this), indent+3);
+        AStr_Append(pStr, pWrkStr);
+        obj_Release(pWrkStr);
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }

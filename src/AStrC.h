@@ -207,6 +207,14 @@ extern "C" {
     );
     
     
+    /*!
+     Compare 'this' to 'pOther'.
+     @param     this    object pointer
+     @param     pOther  Other String Object Pointer
+     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise,
+                ERESULT_SUCCESS_LESS_THAN, ERESULT_SUCCESS_GREATER_THAN or an
+                ERESULT_* error code.
+     */
     ERESULT         AStrC_Compare(
         ASTRC_DATA      *this,
         ASTRC_DATA      *pOther

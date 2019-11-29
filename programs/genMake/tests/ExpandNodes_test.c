@@ -122,7 +122,7 @@ int             test_ExpandNodes_Program01(
     ERESULT_DATA    *pErr;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    OBJARRAY_DATA   *pArray = OBJ_NIL;
+    NODEARRAY_DATA  *pArray = OBJ_NIL;
     NODELIB_DATA    *pLib;
     NODEPGM_DATA    *pPgm;
     const
@@ -137,10 +137,10 @@ int             test_ExpandNodes_Program01(
             "{name:\"appl\", \"srcDeps\":[\"libCmn.h\"]},\n"
         "],\n"
         "\"routines\": [\n"
-                "{name:\"dllist.c\"},\n"
-                "{name:\"cmnMac64.c\", os:[\"macos64\"]},\n"
-                "{name:\"obj.c\"},\n"
-                "{name:\"str.c\"}\n"
+                "{name:\"dllist\", suffix:\"c\", \"test\":true},\n"
+                "{name:\"cmnMac64\", suffix:\"c\", os:[\"macos64\"]},\n"
+                "{name:\"obj\", suffix:\"c\"},\n"
+                "{name:\"str\", \"suffix\":\"c\", test:true}\n"
         "],\n"
     "}\n";
     bool            fDumpNodes = true;
@@ -187,17 +187,80 @@ int             test_ExpandNodes_Program01(
         pExpand = ExpandNodes_New();
         TINYTEST_FALSE( (OBJ_NIL == pExpand) );
         if (pExpand) {
+            
+            pArray = SrcParse_getObjs(pPrs);
+            if (fDumpNodes) {
+                ASTR_DATA       *pWrk = OBJ_NIL;
+                pWrk = nodeArray_ToDebugString(pArray, 0);
+                fprintf(stderr, "\n====> OBJ Array:\n%s\n\n\n", AStr_getData(pWrk));
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+            pErr = ExpandNodes_ExpandObjs(pExpand, pArray, NULL, NULL);
+            TINYTEST_TRUE( (OBJ_NIL == pErr) );
+            ExpandNodes_Sort(pExpand);
+            pArray = ExpandNodes_getRtns(pExpand);
+            TINYTEST_FALSE( (OBJ_NIL == pArray) );
+            iMax = nodeArray_getSize(pArray);
+            fprintf(stderr, "\tObjs: Number of RtnAs: %d\n", iMax);
+            TINYTEST_TRUE( (5 == iMax) );
+            if (fDumpNodes) {
+                ASTR_DATA       *pWrk = OBJ_NIL;
+                pWrk = nodeArray_ToDebugString(pArray, 0);
+                fprintf(stderr, "\n====> RTNA Array:\n%s\n\n\n", AStr_getData(pWrk));
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+            pArray = ExpandNodes_getTests(pExpand);
+            TINYTEST_FALSE( (OBJ_NIL == pArray) );
+            iMax = nodeArray_getSize(pArray);
+            fprintf(stderr, "\tObjs: Number of TstAs: %d\n", iMax);
+            TINYTEST_TRUE( (2 == iMax) );
+            if (fDumpNodes) {
+                ASTR_DATA       *pWrk = OBJ_NIL;
+                pWrk = nodeArray_ToDebugString(pArray, 0);
+                fprintf(stderr, "\n====> TSTA Array:\n%s\n\n\n", AStr_getData(pWrk));
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+
+            ExpandNodes_Clean(pExpand);
             pArray = SrcParse_getRtns(pPrs);
             if (fDumpNodes) {
                 ASTR_DATA       *pWrk = OBJ_NIL;
-                pWrk = objArray_ToDebugString(pArray, 0);
+                pWrk = nodeArray_ToDebugString(pArray, 0);
                 fprintf(stderr, "\n====> RTN Array:\n%s\n\n\n", AStr_getData(pWrk));
                 obj_Release(pWrk);
                 pWrk = OBJ_NIL;
             }
-            //pErr = ExpandNodes_ExpandRtn(pExpand, OBJ_NIL);
-            
-            
+            pErr = ExpandNodes_ExpandRtns(pExpand, pArray, NULL, NULL);
+            TINYTEST_TRUE( (OBJ_NIL == pErr) );
+            ExpandNodes_Sort(pExpand);
+            pArray = ExpandNodes_getRtns(pExpand);
+            TINYTEST_FALSE( (OBJ_NIL == pArray) );
+            iMax = nodeArray_getSize(pArray);
+            fprintf(stderr, "\tRtns: Number of RtnAs: %d\n", iMax);
+            TINYTEST_TRUE( (4 == iMax) );
+            if (fDumpNodes) {
+                ASTR_DATA       *pWrk = OBJ_NIL;
+                pWrk = nodeArray_ToDebugString(pArray, 0);
+                fprintf(stderr, "\n====> RTNA Array:\n%s\n\n\n", AStr_getData(pWrk));
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+            pArray = ExpandNodes_getTests(pExpand);
+            TINYTEST_FALSE( (OBJ_NIL == pArray) );
+            iMax = nodeArray_getSize(pArray);
+            fprintf(stderr, "\tRtns: Number of TstAs: %d\n", iMax);
+            TINYTEST_TRUE( (2 == iMax) );
+            if (fDumpNodes) {
+                ASTR_DATA       *pWrk = OBJ_NIL;
+                pWrk = nodeArray_ToDebugString(pArray, 0);
+                fprintf(stderr, "\n====> TSTA Array:\n%s\n\n\n", AStr_getData(pWrk));
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+
             obj_Release(pExpand);
             pExpand = OBJ_NIL;
         }

@@ -91,6 +91,12 @@ bool            NodeTstAClass_IsKindOf (
     if (OBJ_IDENT_NODETSTA_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_NODEBASE_CLASS == classID) {
+       return true;
+    }
+    if (OBJ_IDENT_NODE_CLASS == classID) {
+       return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -320,6 +326,12 @@ bool            NodeTstA_IsKindOf (
     if (OBJ_IDENT_NODETSTA == classID) {
        return true;
     }
+    if (OBJ_IDENT_NODEBASE == classID) {
+       return true;
+    }
+    if (OBJ_IDENT_NODE == classID) {
+       return true;
+    }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
@@ -378,7 +390,7 @@ NODETSTA_VTBL     NodeTstA_Vtbl = {
         NULL,			// NodeTstA_Enable,
         NULL,			// NodeTstA_Disable,
         NULL,			// (P_OBJ_ASSIGN)NodeTstA_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodeTstA_Compare,
+        (P_OBJ_COMPARE)NodeTstA_Compare,
         NULL, 			// (P_OBJ_PTR)NodeTstA_Copy,
         NULL, 			// (P_OBJ_PTR)NodeTstA_DeepCopy,
         NULL 			// (P_OBJ_HASH)NodeTstA_Hash,

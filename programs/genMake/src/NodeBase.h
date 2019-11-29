@@ -56,6 +56,7 @@
 #include        <AStr.h>
 #include        <AStrC.h>
 #include        <AStrCArray.h>
+#include        <SrcLoc.h>
 
 
 #ifndef         NODEBASE_H
@@ -232,12 +233,12 @@ extern "C" {
         if present.
      */
     ASTRCARRAY_DATA *   NodeBase_getArches (
-            NODEBASE_DATA       *this
+        NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setArches (
-            NODEBASE_DATA       *this,
-            ASTRCARRAY_DATA     *pValue
+        NODEBASE_DATA       *this,
+        ASTRCARRAY_DATA     *pValue
     );
 
 
@@ -247,12 +248,12 @@ extern "C" {
         object.
     */
     ASTRCARRAY_DATA *   NodeBase_getDeps (
-            NODEBASE_DATA       *this
+        NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setDeps (
-            NODEBASE_DATA       *this,
-            ASTRCARRAY_DATA     *pValue
+        NODEBASE_DATA       *this,
+        ASTRCARRAY_DATA     *pValue
     );
 
 
@@ -262,12 +263,12 @@ extern "C" {
         object.
     */
     ASTRCARRAY_DATA *   NodeBase_getHdrs (
-            NODEBASE_DATA       *this
+        NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setHdrs (
-            NODEBASE_DATA       *this,
-            ASTRCARRAY_DATA     *pValue
+        NODEBASE_DATA       *this,
+        ASTRCARRAY_DATA     *pValue
     );
 
 
@@ -276,12 +277,12 @@ extern "C" {
         process. By specifying it here, you are over-riding that.
      */
     ASTRC_DATA *        NodeBase_getName (
-            NODEBASE_DATA       *this
+        NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setName (
-            NODEBASE_DATA       *this,
-            ASTRC_DATA          *pValue
+        NODEBASE_DATA       *this,
+        ASTRC_DATA          *pValue
     );
 
 
@@ -290,7 +291,7 @@ extern "C" {
         helper function to access the underlying node.
      */
     NODE_DATA *         NodeBase_getNode (
-            NODEBASE_DATA       *this
+        NODEBASE_DATA       *this
     );
 
 
@@ -299,12 +300,25 @@ extern "C" {
      *  systems if present.
      */
     ASTRCARRAY_DATA *   NodeBase_getOSs (
-            NODEBASE_DATA       *this
+        NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setOSs (
-            NODEBASE_DATA       *this,
-            ASTRCARRAY_DATA     *pValue
+        NODEBASE_DATA       *this,
+        ASTRCARRAY_DATA     *pValue
+    );
+
+
+    /*! Property: source location (optional)
+        The optional source location can be used for error messages.
+     */
+    SRCLOC_DATA *       NodeBase_getSrcLoc (
+        NODEBASE_DATA       *this
+    );
+
+    bool                NodeBase_setSrcLoc (
+        NODEBASE_DATA       *this,
+        SRCLOC_DATA         *pValue
     );
 
 
@@ -313,12 +327,12 @@ extern "C" {
         object to be complete.
     */
     ASTRCARRAY_DATA *   NodeBase_getSrcs (
-            NODEBASE_DATA       *this
+        NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setSrcs (
-            NODEBASE_DATA       *this,
-            ASTRCARRAY_DATA     *pValue
+        NODEBASE_DATA       *this,
+        ASTRCARRAY_DATA     *pValue
     );
 
 
@@ -326,12 +340,12 @@ extern "C" {
         The optional file extension suffix to be used with name.
      */
     ASTRC_DATA *        NodeBase_getSuffix (
-            NODEBASE_DATA       *this
+        NODEBASE_DATA       *this
     );
 
     bool                NodeBase_setSuffix (
-            NODEBASE_DATA       *this,
-            ASTRC_DATA          *pValue
+        NODEBASE_DATA       *this,
+        ASTRC_DATA          *pValue
     );
 
 
@@ -417,6 +431,38 @@ extern "C" {
 
 
     /*!
+     Check that the included constraints are met. If a constraint was
+     not specified on the original definition, then it will not be
+     checked. If one or more constraints of one tyoe were specified
+     then we do check to see if the specified value matches any defined.
+     @param     this    object pointer
+     @param     pArch   Optional Architecture String Constraint
+     @param     pOS     Optional Operating System String Constraint
+     @return    if all constraints are met, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code.
+     */
+    ERESULT             NodeBase_CheckConstraints (
+            NODEBASE_DATA   *this,
+            const
+            char            *pArch,
+            const
+            char            *pOS
+    );
+
+
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         NodeBase_Compare (
+        NODEBASE_DATA     *this,
+        NODEBASE_DATA     *pOther
+    );
+
+
+    /*!
      Copy the current object creating a new object.
      Example:
      @code
@@ -437,7 +483,7 @@ extern "C" {
     );
 
 
-    ERESULT_DATA *  NodeBase_SortArrays (
+    ERESULT_DATA *  NodeBase_SortAscending (
         NODEBASE_DATA   *this
     );
 

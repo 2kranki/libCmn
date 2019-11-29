@@ -218,13 +218,126 @@ extern "C" {
     );
 
 
-    
+    /*! Property: file name suffix (optional)
+        The optional file extension suffix to be used with name.
+     */
+    ASTRC_DATA *    NodeRtnA_getSuffix (
+        NODERTNA_DATA   *this
+    );
+
+    bool            NodeRtnA_setSuffix (
+        NODERTNA_DATA   *this,
+        ASTRC_DATA      *pValue
+    );
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    NODERTNA_DATA *   NodeRtnA_Init (
-        NODERTNA_DATA     *this
+    /*!
+     Append a string to the dependencies.
+     @param     this    object pointer
+     @param     pStrC   string pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  NodeRtnA_AppendDeps (
+        NODERTNA_DATA    *this,
+        ASTRC_DATA       *pStrC
+    );
+
+
+    /*!
+     Check that the included constraints are met. If a constraint was
+     not specified on the original definition, then it will not be
+     checked. If one or more constraints of one tyoe were specified
+     then we do check to see if the specified value matches any defined.
+     @param     this    object pointer
+     @param     pArch   Optional Architecture String Constraint
+     @param     pOS     Optional Operating System String Constraint
+     @return    if all constraints are met, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code.
+     */
+    ERESULT             NodeRtnA_CheckContraints (
+            NODERTNA_DATA   *this,
+            const
+            char            *pArch,
+            const
+            char            *pOS
+    );
+
+
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         NodeRtnA_Compare (
+        NODERTNA_DATA     *this,
+        NODERTNA_DATA     *pOther
+    );
+
+
+    /*!
+     Return a space-separated optionally prefixed string of the source
+     dependencies.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ASTR_DATA *     NodeRtnA_Deps (
+        NODERTNA_DATA   *this,
+        const
+        char            *pPrefix                // Optional
+    );
+
+
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeRtnA_Disable (
+        NODERTNA_DATA   *this
+    );
+
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeRtnA_Enable (
+        NODERTNA_DATA   *this
+    );
+
+
+    NODERTNA_DATA *  NodeRtnA_Init (
+        NODERTNA_DATA    *this
+    );
+
+
+    ERESULT         NodeRtnA_IsEnabled (
+        NODERTNA_DATA        *this
+    );
+
+
+    /*!
+     Return a space-separated optionally prefixed string of the additional
+     sources.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ASTR_DATA *     NodeRtnA_Deps (
+        NODERTNA_DATA   *this,
+        const
+        char            *pPrefix            // Optional
     );
 
 

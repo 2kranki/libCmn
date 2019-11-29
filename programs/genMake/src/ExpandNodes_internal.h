@@ -49,6 +49,7 @@
 #include        <NodeRtnA.h>
 #include        <NodeTest.h>
 #include        <NodeTstA.h>
+#include        <nodeArray_internal.h>
 
 
 #ifndef EXPANDNODES_INTERNAL_H
@@ -61,6 +62,7 @@
 #define     PROPERTY_RTNS_OWNED 1
 #define     PROPERTY_TESTS_OWNED 1
 #define     PROPERTY_STR_OWNED 1
+#define     PROPERTY_SUFFIXC_OWNED 1
 
 
 
@@ -89,8 +91,9 @@ struct ExpandNodes_data_s	{
     DICT_DATA       *pDict;
     NODELIB_DATA    *pLib;
     NODEPGM_DATA    *pPgm;
-    OBJARRAY_DATA   *pRtns;
-    OBJARRAY_DATA   *pTests;
+    NODEARRAY_DATA  *pRtns;
+    NODEARRAY_DATA  *pTests;
+    ASTRC_DATA      *pSuffixC;
 
 };
 #pragma pack(pop)
@@ -134,13 +137,7 @@ struct ExpandNodes_data_s	{
     );
 
 
-    ERESULT_DATA *      ExpandNodes_ExpandRtn (
-        EXPANDNODES_DATA    *this,
-        NODERTN_DATA        *pRtn
-    );
-
-
-    EXPANDNODES_DATA *  ExpandNodes_ParseObject (
+    EXPANDNODES_DATA *  ExpandNodes_ParseJsonObject (
         JSONIN_DATA         *pParser
     );
 

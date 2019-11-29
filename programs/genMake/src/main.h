@@ -78,6 +78,7 @@
 #include        <Dict.h>
 #include        <fbso.h>
 #include        <node.h>
+#include        <nodeArray.h>
 #include        <path.h>
 #include        <szHash.h>
 #include        <textOut.h>
@@ -235,11 +236,31 @@ extern "C" {
     );
 
     
+    NODEARRAY_DATA * Main_getRoutines(
+        MAIN_DATA       *this
+    );
+
+    bool            Main_setRoutines(
+        MAIN_DATA       *this,
+        NODEARRAY_DATA  *pValue
+    );
+
+
     ASTR_DATA *     Main_getStr(
         MAIN_DATA       *this
     );
     
     
+    NODEARRAY_DATA * Main_getTests(
+        MAIN_DATA       *this
+    );
+
+    bool            Main_setTests(
+        MAIN_DATA       *this,
+        NODEARRAY_DATA  *pValue
+    );
+
+
     int             Main_getVerbose(
         MAIN_DATA       *this
     );

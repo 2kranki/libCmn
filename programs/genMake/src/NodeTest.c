@@ -1135,7 +1135,7 @@ extern "C" {
         }
 #endif
         
-        pErr = NodeBase_SortArrays(NodeTest_getNodeBase(this));
+        pErr = NodeBase_SortAscending(NodeTest_getNodeBase(this));
 
         // Return to caller.
         return OBJ_NIL;

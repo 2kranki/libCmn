@@ -384,7 +384,7 @@ NODEBASE_VTBL     NodeBase_Vtbl = {
         NULL,			// NodeBase_Enable,
         NULL,			// NodeBase_Disable,
         (P_OBJ_ASSIGN)NodeBase_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodeBase_Compare,
+        (P_OBJ_COMPARE)NodeBase_Compare,
         (P_OBJ_PTR)NodeBase_Copy,
         NULL, 			// (P_OBJ_PTR)NodeBase_DeepCopy,
         NULL 			// (P_OBJ_HASH)NodeBase_Hash,

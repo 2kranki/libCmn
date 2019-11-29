@@ -50,7 +50,7 @@
 #include    <jsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
-#include    <srcLoc_internal.h>
+#include    <SrcLoc_internal.h>
 #include    <szTbl.h>
 #include    <utf8_internal.h>
 

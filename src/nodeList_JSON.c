@@ -105,7 +105,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned null object must be released.
      */
-    NODELIST_DATA * nodeList_ParseObject(
+    NODELIST_DATA * nodeList_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {

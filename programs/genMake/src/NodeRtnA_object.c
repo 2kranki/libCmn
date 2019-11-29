@@ -390,7 +390,7 @@ NODERTNA_VTBL     NodeRtnA_Vtbl = {
         NULL,			// NodeRtnA_Enable,
         NULL,			// NodeRtnA_Disable,
         NULL,			// (P_OBJ_ASSIGN)NodeRtnA_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodeRtnA_Compare,
+        (P_OBJ_COMPARE)NodeRtnA_Compare,
         NULL, 			// (P_OBJ_PTR)NodeRtnA_Copy,
         NULL, 			// (P_OBJ_PTR)NodeRtnA_DeepCopy,
         NULL 			// (P_OBJ_HASH)NodeRtnA_Hash,

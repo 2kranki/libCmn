@@ -91,6 +91,12 @@ bool            DictClass_IsKindOf (
     if (OBJ_IDENT_DICT_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_NODEHASH_CLASS == classID) {
+       return true;
+    }
+    if (OBJ_IDENT_BLOCKS_CLASS == classID) {
+       return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -318,6 +324,12 @@ bool            Dict_IsKindOf (
 )
 {
     if (OBJ_IDENT_DICT == classID) {
+       return true;
+    }
+    if (OBJ_IDENT_NODEHASH == classID) {
+       return true;
+    }
+    if (OBJ_IDENT_BLOCKS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {

@@ -370,7 +370,7 @@ extern "C" {
 
         // Return to caller.
         if (OBJ_NIL == pErr) {
-            NodeBase_SortArrays(*ppBase);
+            NodeBase_SortAscending(*ppBase);
         }
         return pErr;
     }
@@ -710,6 +710,54 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      S o u r c e  L o c a t i o n
+    //---------------------------------------------------------------
+    
+    SRCLOC_DATA *   NodeBase_getSrcLoc (
+        NODEBASE_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pSrcLoc;
+    }
+    
+    
+    bool            NodeBase_setSrcLoc (
+        NODEBASE_DATA   *this,
+        SRCLOC_DATA     *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_SRCLOC_OWNED
+        obj_Retain(pValue);
+        if (this->pSrcLoc) {
+            obj_Release(this->pSrcLoc);
+        }
+#endif
+        this->pSrcLoc = pValue;
+        
+        return true;
+    }
+            
+            
+            
+    //---------------------------------------------------------------
     //                          S o u r c e s
     //---------------------------------------------------------------
     
@@ -845,7 +893,7 @@ extern "C" {
         ASTRC_DATA      *pStrC
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -856,7 +904,8 @@ extern "C" {
         }
 #endif
         
-        eRc = AStrCArray_AppendAStrC(this->pArches, pStrC, NULL);
+        if (0 == AStrCArray_Find(this->pArches, pStrC))
+            eRc = AStrCArray_AppendAStrC(this->pArches, pStrC, NULL);
 
         // Return to caller.
         return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
@@ -868,7 +917,7 @@ extern "C" {
         ASTRC_DATA      *pStrC
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -879,7 +928,8 @@ extern "C" {
         }
 #endif
         
-        eRc = AStrCArray_AppendAStrC(this->pDeps, pStrC, NULL);
+        if (0 == AStrCArray_Find(this->pDeps, pStrC))
+            eRc = AStrCArray_AppendAStrC(this->pDeps, pStrC, NULL);
 
         // Return to caller.
         return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
@@ -891,7 +941,7 @@ extern "C" {
         ASTRC_DATA      *pStrC
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -902,7 +952,8 @@ extern "C" {
         }
 #endif
         
-        eRc = AStrCArray_AppendAStrC(this->pOSs, pStrC, NULL);
+        if (0 == AStrCArray_Find(this->pOSs, pStrC))
+            eRc = AStrCArray_AppendAStrC(this->pOSs, pStrC, NULL);
 
         // Return to caller.
         return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
@@ -914,7 +965,7 @@ extern "C" {
         ASTRC_DATA      *pStrC
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -925,7 +976,8 @@ extern "C" {
         }
     #endif
         
-        eRc = AStrCArray_AppendAStrC(this->pSrcs, pStrC, NULL);
+        if (0 == AStrCArray_Find(this->pSrcs, pStrC))
+            eRc = AStrCArray_AppendAStrC(this->pSrcs, pStrC, NULL);
 
         // Return to caller.
         return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
@@ -1055,6 +1107,15 @@ extern "C" {
                 pOther->pSrcs = this->pSrcs;
             }
         }
+        if (this->pSuffix) {
+            if (obj_getVtbl(this->pSuffix)->pCopy) {
+                pOther->pSuffix = obj_getVtbl(this->pSuffix)->pCopy(this->pSuffix);
+            }
+            else {
+                obj_Retain(this->pSuffix);
+                pOther->pSuffix = this->pSuffix;
+            }
+        }
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1062,6 +1123,79 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                 C h e c k  C o n s t r a i n t s
+    //---------------------------------------------------------------
+
+    ERESULT         NodeBase_CheckConstraints (
+        NODEBASE_DATA   *this,
+        const
+        char            *pArch,
+        const
+        char            *pOS
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        bool            fFound;
+        ASTRC_DATA      *pStrC;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+        
+        if (pArch) {
+            iMax = AStrCArray_getSize(this->pArches);
+            if (iMax > 0) {
+                fFound = false;
+                for (i=0; i<iMax; i++) {
+                    pStrC = AStrCArray_Get(this->pArches, i+1);
+                    if (pStrC) {
+                        eRc = AStrC_CompareA(pStrC, pArch);
+                        if (ERESULT_SUCCESS_EQUAL == eRc) {
+                            fFound = true;
+                            break;
+                        }
+                    }
+                }
+                if (!fFound) {
+                    return ERESULT_DATA_NOT_FOUND;
+                }
+            }
+        }
+
+        if (pOS) {
+            iMax = AStrCArray_getSize(this->pArches);
+            if (iMax > 0) {
+                fFound = false;
+                for (i=0; i<iMax; i++) {
+                    pStrC = AStrCArray_Get(this->pArches, i+1);
+                    if (pStrC) {
+                        eRc = AStrC_CompareA(pStrC, pOS);
+                        if (ERESULT_SUCCESS_EQUAL == eRc) {
+                            fFound = true;
+                            break;
+                        }
+                    }
+                }
+                if (!fFound) {
+                    return ERESULT_DATA_NOT_FOUND;
+                }
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
@@ -1077,14 +1211,9 @@ extern "C" {
         NODEBASE_DATA     *pOther
     )
     {
-        int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
+        ASTRC_DATA      *pName;
+        ASTRC_DATA      *pNameOther;
         
 #ifdef NDEBUG
 #else
@@ -1098,24 +1227,9 @@ extern "C" {
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
-
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
+        pName = NodeBase_getName(this);
+        pNameOther = NodeBase_getName(pOther);
+        eRc = AStrC_Compare(pName, pNameOther);
         
         return eRc;
     }
@@ -1202,6 +1316,7 @@ extern "C" {
         NodeBase_setHdrs(this, OBJ_NIL);
         NodeBase_setName(this, OBJ_NIL);
         NodeBase_setOSs(this, OBJ_NIL);
+        NodeBase_setSrcLoc(this, OBJ_NIL);
         NodeBase_setSrcs(this, OBJ_NIL);
         NodeBase_setSuffix(this, OBJ_NIL);
 
@@ -1525,10 +1640,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                     S o r t  A r r a y s
+    //                      S o r t
     //---------------------------------------------------------------
     
-    ERESULT_DATA *  NodeBase_SortArrays (
+    ERESULT_DATA *  NodeBase_SortAscending (
         NODEBASE_DATA   *this
     )
     {
@@ -1781,7 +1896,7 @@ extern "C" {
                 obj_Release(pWrkStr);
             }
         }
-        if (this->pArches) {
+        if (this->pArches && (AStrCArray_getSize(this->pArches) > 0)) {
             if (((OBJ_DATA *)(this->pArches))->pVtbl->pToDebugString) {
                 if (indent) {
                     AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -1795,7 +1910,7 @@ extern "C" {
                 obj_Release(pWrkStr);
             }
         }
-        if (this->pOSs) {
+        if (this->pOSs && (AStrCArray_getSize(this->pOSs) > 0)) {
             if (((OBJ_DATA *)(this->pOSs))->pVtbl->pToDebugString) {
                 if (indent) {
                     AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -1809,7 +1924,7 @@ extern "C" {
                 obj_Release(pWrkStr);
             }
         }
-        if (this->pDeps) {
+        if (this->pDeps && (AStrCArray_getSize(this->pDeps) > 0)) {
             if (((OBJ_DATA *)(this->pDeps))->pVtbl->pToDebugString) {
                 if (indent) {
                     AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -1823,7 +1938,7 @@ extern "C" {
                 obj_Release(pWrkStr);
             }
         }
-        if (this->pHdrs) {
+        if (this->pHdrs && (AStrCArray_getSize(this->pHdrs) > 0)) {
             if (((OBJ_DATA *)(this->pHdrs))->pVtbl->pToDebugString) {
                 if (indent) {
                     AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -1837,7 +1952,7 @@ extern "C" {
                 obj_Release(pWrkStr);
             }
         }
-        if (this->pSrcs) {
+        if (this->pSrcs && (AStrCArray_getSize(this->pSrcs) > 0)) {
             if (((OBJ_DATA *)(this->pSrcs))->pVtbl->pToDebugString) {
                 if (indent) {
                     AStr_AppendCharRepeatA(pStr, indent, ' ');

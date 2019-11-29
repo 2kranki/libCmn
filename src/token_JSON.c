@@ -50,7 +50,7 @@
 #include    <jsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
-#include    <srcLoc_internal.h>
+#include    <SrcLoc_internal.h>
 #include    <szTbl.h>
 #include    <utf8_internal.h>
 
@@ -102,7 +102,7 @@ extern "C" {
         }
 
         eRc = jsonIn_SubobjectInHash(pParser, "loc");
-        pSrc = srcLoc_ParseObject(pParser);
+        pSrc = SrcLoc_ParseJsonObject(pParser);
         jsonIn_SubobjectEnd(pParser);
         if (OBJ_NIL == pSrc) {
             goto exit00;
@@ -120,7 +120,7 @@ extern "C" {
             case TOKEN_TYPE_INTEGER:
                 eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
-                pObject = token_NewInteger(srcLoc_getSrc(pSrc), cls, integer);
+                pObject = token_NewInteger(SrcLoc_getSrc(pSrc), cls, integer);
                 jsonIn_SubobjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
@@ -132,7 +132,7 @@ extern "C" {
                 pUtf8 = utf8_ParseObject(pParser, NULL);
                 jsonIn_SubobjectEnd(pParser);
                 if (pUtf8) {
-                    pObject = token_NewStrA(srcLoc_getSrc(pSrc), cls, (char *)pUtf8);
+                    pObject = token_NewStrA(SrcLoc_getSrc(pSrc), cls, (char *)pUtf8);
                     mem_Free(pUtf8);
                     pUtf8 = NULL;
                 }
@@ -141,7 +141,7 @@ extern "C" {
             case TOKEN_TYPE_W32CHAR:
                 eRc = jsonIn_SubobjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
-                pObject = token_NewCharW32(srcLoc_getSrc(pSrc), cls, (W32CHR_T)integer);
+                pObject = token_NewCharW32(SrcLoc_getSrc(pSrc), cls, (W32CHR_T)integer);
                 jsonIn_SubobjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
@@ -256,9 +256,9 @@ extern "C" {
                          pInfo->pClassName,
                          this->data.cls
         );
-        pSrc = srcLoc_NewSrcLoc(&this->data.src);
+        pSrc = SrcLoc_NewSrcLoc(&this->data.src);
         if (pSrc) {
-            pWrkStr = srcLoc_ToJSON(pSrc);
+            pWrkStr = SrcLoc_ToJSON(pSrc);
             if (pWrkStr) {
                 AStr_AppendPrint(pStr, "\"loc\":%s, ", AStr_getData(pWrkStr));
                 obj_Release(pWrkStr);

@@ -183,7 +183,8 @@ int             test_NodeBase_Parse01(
         "{\n"
         "name:\"AStr\","
         "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
-        "\"srcs\":[\"str.c\",\"ascii.c\"]"
+        "\"srcs\":[\"str.c\",\"ascii.c\"],"
+        "\"suffix\":\"m\""
         "}\n";
     bool            fDumpNodes = true;
 
@@ -261,6 +262,9 @@ int             test_NodeBase_Parse01(
             pStrC = AStrCArray_Get(pStrCArray, 2);
             TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"str.c")));
         }
+        pStrC = NodeBase_getSuffix(pBase);
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"m")));
 
         obj_Release(pNodes);
         pNodes = OBJ_NIL;

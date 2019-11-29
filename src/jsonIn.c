@@ -54,7 +54,7 @@
 #include        <null.h>
 #include        <number.h>
 #include        <objHash.h>
-#include        <srcLoc.h>
+#include        <SrcLoc.h>
 #include        <symAttr.h>
 #include        <symEntry.h>
 #include        <szData_internal.h>
@@ -1561,7 +1561,7 @@ extern "C" {
         pInfo = obj_getInfo(nodeHash_Class());
         eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)nodeHash_ParseObject(this);
+            pObj = (OBJ_ID)nodeHash_ParseJsonObject(this);
             return pObj;
         }
         

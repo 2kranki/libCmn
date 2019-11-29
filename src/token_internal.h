@@ -42,7 +42,7 @@
 
 
 #include    "token.h"
-#include    "srcLoc_internal.h"
+#include    "SrcLoc_internal.h"
 
 
 

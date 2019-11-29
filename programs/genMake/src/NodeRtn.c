@@ -195,15 +195,6 @@ extern "C" {
                     }
                 }
             }
-            else {
-                pRtn->pTest = NodeTest_New();
-                if (pRtn->pTest) {
-                    pTestName = AStrC_AppendA(pName, "_test");
-                    NodeTest_setName(pRtn->pTest, pTestName);
-                    obj_Release(pTestName);
-                    pTestName = OBJ_NIL;
-                }
-            }
             *ppBase = pRtn;
         }
 
@@ -1273,10 +1264,6 @@ extern "C" {
         obj_Release(pWrkStr);
 
         if (this->pTest) {
-            if (indent) {
-                AStr_AppendCharRepeatA(pStr, indent, ' ');
-            }
-            eRc = AStr_AppendPrint(pStr, "==>Test:\n");
             if (((OBJ_DATA *)(this->pTest))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pTest))->pVtbl->pToDebugString(
                                                     this->pTest,

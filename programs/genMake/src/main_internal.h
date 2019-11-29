@@ -41,7 +41,9 @@
 
 #include        <Main.h>
 #include        <appl_internal.h>
+#include        <ExpandNodes.h>
 #include        <nodeHash.h>
+#include        <SrcParse.h>
 
 
 #ifndef MAIN_INTERNAL_H
@@ -73,8 +75,11 @@ struct Main_data_s	{
     PATH_DATA       *pFilePath;
     PATH_DATA       *pOutputPath;
     TEXTOUT_DATA    *pOutput;
+    NODEARRAY_DATA  *pRtns;         // All RtnA's including disabled ones
+    NODEARRAY_DATA  *pTests;        // All TstA's including disabled ones.
     NODE_DATA       *pNodes;
     ASTR_DATA       *pOut;
+    SRCPARSE_DATA   *pParser;
 
 };
 #pragma pack(pop)

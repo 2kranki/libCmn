@@ -44,6 +44,7 @@
 #include        <nodeArray.h>
 #include        <nodeHash.h>
 #include        <jsonIn.h>
+#include        <SrcLoc.h>
 
 
 #ifndef NODEBASE_INTERNAL_H
@@ -56,6 +57,7 @@
 #define     PROPERTY_NAME_OWNED 1
 #define     PROPERTY_REQARCHES_OWNED 1
 #define     PROPERTY_REQOSS_OWNED 1
+#define     PROPERTY_SRCLOC_OWNED 1
 #define     PROPERTY_SRCS_OWNED 1
 
 
@@ -87,6 +89,7 @@ struct NodeBase_data_s	{
     ASTRCARRAY_DATA *pOSs;
     ASTRCARRAY_DATA *pSrcs;
     ASTRC_DATA      *pSuffix;       // Name Suffix (optional)
+    SRCLOC_DATA     *pSrcLoc;
 
 };
 #pragma pack(pop)

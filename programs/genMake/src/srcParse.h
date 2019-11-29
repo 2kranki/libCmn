@@ -55,7 +55,7 @@
 #include        <AStr.h>
 #include        <NodeLib.h>
 #include        <NodePgm.h>
-#include        <objArray.h>
+#include        <nodeArray.h>
 
 
 #ifndef         SRCPARSE_H
@@ -178,13 +178,13 @@ extern "C" {
      Objects contains the accumulated NodeObj's which were parsed by
      ParseObject() or ParseObjects().
      */
-    OBJARRAY_DATA * SrcParse_getObjs (
+    NODEARRAY_DATA * SrcParse_getObjs (
         SRCPARSE_DATA   *this
     );
 
     bool            SrcParse_setObjs (
         SRCPARSE_DATA   *this,
-        OBJARRAY_DATA   *pValue
+        NODEARRAY_DATA  *pValue
     );
 
 
@@ -205,13 +205,13 @@ extern "C" {
      Routines contains the accumulated NodeRtn's which were parsed by
      ParseRoutine() or ParseRoutines().
      */
-    OBJARRAY_DATA * SrcParse_getRtns (
+    NODEARRAY_DATA * SrcParse_getRtns (
         SRCPARSE_DATA   *this
     );
 
     bool            SrcParse_setRtns (
         SRCPARSE_DATA   *this,
-        OBJARRAY_DATA   *pValue
+        NODEARRAY_DATA  *pValue
     );
 
 
@@ -219,13 +219,13 @@ extern "C" {
      Tests contains the accumulated NodeTest's which were parsed by
      ParseTest() or ParseTests().
      */
-    OBJARRAY_DATA * SrcParse_getTests (
+    NODEARRAY_DATA * SrcParse_getTests (
         SRCPARSE_DATA   *this
     );
 
     bool            SrcParse_setTests (
         SRCPARSE_DATA   *this,
-        OBJARRAY_DATA   *pValue
+        NODEARRAY_DATA  *pValue
     );
 
 

@@ -59,7 +59,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <AStrC.h>
-#include        <srcLoc.h>
+#include        <SrcLoc.h>
 #include        <W32Str.h>
 #include        <W32StrC.h>
 

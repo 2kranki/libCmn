@@ -313,7 +313,7 @@ extern "C" {
     //                  R o u t i n e  A r r a y
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA *     ExpandNodes_getRtns (
+    NODEARRAY_DATA *    ExpandNodes_getRtns (
         EXPANDNODES_DATA    *this
     )
     {
@@ -333,7 +333,7 @@ extern "C" {
     
     bool                ExpandNodes_setRtns (
         EXPANDNODES_DATA    *this,
-        OBJARRAY_DATA       *pValue
+        NODEARRAY_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -454,7 +454,7 @@ extern "C" {
     //                  T e s t s  A r r a y
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA *     ExpandNodes_getTests (
+    NODEARRAY_DATA *    ExpandNodes_getTests (
         EXPANDNODES_DATA    *this
     )
     {
@@ -474,7 +474,7 @@ extern "C" {
     
     bool                ExpandNodes_setTests (
         EXPANDNODES_DATA    *this,
-        OBJARRAY_DATA       *pValue
+        NODEARRAY_DATA      *pValue
     )
     {
 #ifdef NDEBUG
@@ -503,6 +503,99 @@ extern "C" {
     //===============================================================
     //                          M e t h o d s
     //===============================================================
+
+
+    //---------------------------------------------------------------
+    //                       A p p e n d
+    //---------------------------------------------------------------
+
+    /*!
+     Accumulate the Routine objects in the Routine Array.
+     @param     this    object pointer
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
+     */
+    ERESULT_DATA *      ExpandNodes_AppendRtn (
+        EXPANDNODES_DATA    *this,
+        NODERTNA_DATA       *pRtn
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pRtn) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pRtn, OBJ_IDENT_NODERTNA)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        
+        eRc = nodeArray_AppendNode(this->pRtns, NodeRtnA_getNode(pRtn), NULL);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return  eResult_NewStrA(
+                                   ERESULT_GENERAL_FAILURE,
+                                   "Routine array append failed!"
+                    );
+        }
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+    /*!
+     Accumulate the Test objects in the Test Array.
+     @param     this    object pointer
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
+     */
+    ERESULT_DATA *      ExpandNodes_AppendTest (
+        EXPANDNODES_DATA    *this,
+        NODETSTA_DATA       *pTst
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pTst) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pTst, OBJ_IDENT_NODETSTA)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        
+        eRc = nodeArray_AppendNode(this->pTests, NodeTstA_getNode(pTst), NULL);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return  eResult_NewStrA(
+                                   ERESULT_GENERAL_FAILURE,
+                                   "Test array append failed!"
+                    );
+        }
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
 
 
     //---------------------------------------------------------------
@@ -578,6 +671,120 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                  C h e c k  N o d e s
+    //---------------------------------------------------------------
+
+    ERESULT_DATA *      ExpandNodes_CheckNodes (
+        EXPANDNODES_DATA    *this,
+        const
+        char                *pArch,
+        const
+        char                *pOS
+    )
+    {
+        uint32_t            i;
+        uint32_t            iMax;
+        NODERTNA_DATA       *pRtnA;
+        NODETSTA_DATA       *pTstA;
+        //ERESULT_DATA        *pErr;
+        ERESULT             eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+#endif
+        
+        iMax = nodeArray_getSize(this->pRtns);
+        for (i=0; i<iMax; i++) {
+            pRtnA = (NODERTNA_DATA *)nodeArray_Get(this->pRtns, i+1);
+            if (OBJ_NIL == pRtnA) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT,
+                                       "Routine Array missing element");
+            }
+            if (!obj_IsKindOf(pRtnA, OBJ_IDENT_NODERTNA)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT,
+                                       "Routine Array missing element");
+            }
+            eRc = NodeRtnA_CheckContraints(pRtnA, pArch, pOS);
+        }
+
+        iMax = nodeArray_getSize(this->pTests);
+        for (i=0; i<iMax; i++) {
+            pTstA = (NODETSTA_DATA *)nodeArray_Get(this->pTests, i+1);
+            if (OBJ_NIL == pTstA) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT,
+                                       "Routine Array missing element");
+            }
+            if (!obj_IsKindOf(pTstA, OBJ_IDENT_NODETSTA)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT,
+                                       "Routine Array missing element");
+            }
+            eRc = NodeTstA_CheckContraints(pTstA, pArch, pOS);
+        }
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      C l e a n
+    //---------------------------------------------------------------
+
+    /*!
+     Remove all stored data.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ExpandNodes_Clean (
+        EXPANDNODES_DATA        *this
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        ExpandNodes_setLib(this, OBJ_NIL);
+        ExpandNodes_setPgm(this, OBJ_NIL);
+        ExpandNodes_setRtns(this, OBJ_NIL);
+        ExpandNodes_setStr(this, OBJ_NIL);
+        ExpandNodes_setTests(this, OBJ_NIL);
+
+        this->pRtns = nodeArray_New( );
+        if (OBJ_NIL == this->pRtns) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        this->pTests = nodeArray_New( );
+        if (OBJ_NIL == this->pTests) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
@@ -718,6 +925,10 @@ extern "C" {
         ExpandNodes_setRtns(this, OBJ_NIL);
         ExpandNodes_setStr(this, OBJ_NIL);
         ExpandNodes_setTests(this, OBJ_NIL);
+        if (this->pSuffixC) {
+            obj_Release(this->pSuffixC);
+            this->pSuffixC = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -782,13 +993,13 @@ extern "C" {
         //ERESULT         eRc;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!ExpandNodes_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
@@ -807,26 +1018,141 @@ extern "C" {
     /*!
      Expand an object into several nodes, some optional.
      @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
+     @param     pObj    Input Object Node
+     @param     pArch   Optional Architecture String
+     @param     pOS     Optional Operating System String
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
      */
     ERESULT_DATA *      ExpandNodes_ExpandObj (
         EXPANDNODES_DATA    *this,
-        NODEOBJ_DATA        *pObj
+        NODEOBJ_DATA        *pObj,
+        const
+        char                *pArch,
+        const
+        char                *pOS
     )
     {
-        //ERESULT         eRc;
+        ERESULT_DATA        *pErr = OBJ_NIL;
+        ERESULT             eRc;
+        NODERTN_DATA        *pRtn  = OBJ_NIL;
+        NODERTNA_DATA       *pRtnA = OBJ_NIL;
+        NODETSTA_DATA       *pTstA = OBJ_NIL;
+        NODETEST_DATA       *pTest = OBJ_NIL;
+        ASTRC_DATA          *pName;
+        ASTRC_DATA          *pNameWrk;
+        ASTRC_DATA          *pSuffix = OBJ_NIL;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!ExpandNodes_Validate(this)) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
-    #endif
+        if (OBJ_NIL == pObj) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pObj, OBJ_IDENT_NODEOBJ)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        pName = NodeObj_getName(pObj);
+
+        pRtnA = NodeRtnA_New();
+        if (OBJ_NIL == pRtnA) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+        eRc = NodeBase_Assign(NodeObj_getNodeBase(pObj), NodeRtnA_getNodeBase(pRtnA));
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_GENERAL_FAILURE, "Object assign failed!");
+        }
+        NodeRtnA_setName(pRtnA, pName);
+        pSuffix = NodeRtnA_getSuffix(pRtnA);
+        if (OBJ_NIL == pSuffix) {
+            NodeRtnA_setSuffix(pRtnA, this->pSuffixC);
+        }
+        pErr = ExpandNodes_AppendRtn(this, pRtnA);
+        obj_Release(pRtnA);
+        pRtnA = OBJ_NIL;
+        if (pErr) {
+            DEBUG_BREAK();
+            return  pErr;
+        }
         
+        pRtnA = NodeRtnA_New();
+        if (OBJ_NIL == pRtnA) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+        eRc = NodeBase_Assign(NodeObj_getNodeBase(pObj), NodeRtnA_getNodeBase(pRtnA));
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_GENERAL_FAILURE, "Object assign failed!");
+        }
+        pNameWrk = AStrC_AppendA(pName, "_object");
+        NodeRtnA_setName(pRtnA, pNameWrk);
+        obj_Release(pNameWrk);
+        pNameWrk = OBJ_NIL;
+        pSuffix = NodeRtnA_getSuffix(pRtnA);
+        if (OBJ_NIL == pSuffix) {
+            NodeRtnA_setSuffix(pRtnA, this->pSuffixC);
+        }
+        pErr = ExpandNodes_AppendRtn(this, pRtnA);
+        obj_Release(pRtnA);
+        pRtnA = OBJ_NIL;
+        if (pErr) {
+            DEBUG_BREAK();
+            return  pErr;
+        }
+
+        pRtn = NodeObj_getJson(pObj);
+        if (pRtn) {
+            pErr = ExpandNodes_ExpandRtn(this, pRtn, pArch, pOS);
+            if (pErr) {
+                return pErr;
+            }
+        }
         
+        pTest = NodeObj_getTest(pObj);
+        if (pTest) {
+            pNameWrk = NodeTest_getName(pTest);
+            pTstA = NodeTstA_New();
+            if (OBJ_NIL == pTstA) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+            }
+            eRc =   NodeBase_Assign(
+                                  NodeTest_getNodeBase(pTest),
+                                  NodeTstA_getNodeBase(pTstA)
+                    );
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_GENERAL_FAILURE, "Test assign failed!");
+            }
+            if (pNameWrk) {
+                NodeTstA_setName(pTstA, pNameWrk);
+            } else {
+                pNameWrk = AStrC_AppendA(pName, "_test");
+                NodeTstA_setName(pTstA, pNameWrk);
+            }
+            pSuffix = NodeTstA_getSuffix(pTstA);
+            if (OBJ_NIL == pSuffix) {
+                NodeTstA_setSuffix(pTstA, this->pSuffixC);
+            }
+            pErr = ExpandNodes_AppendTest(this, pTstA);
+            obj_Release(pTstA);
+            pTstA = OBJ_NIL;
+            if (pErr) {
+                DEBUG_BREAK();
+                return  pErr;
+            }
+        }
+
         // Return to caller.
         return OBJ_NIL;
     }
@@ -837,18 +1163,19 @@ extern "C" {
     //                  E x p a n d  O b j e c t s
     //---------------------------------------------------------------
 
-    /*!
-     Enable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
     ERESULT_DATA *      ExpandNodes_ExpandObjs (
         EXPANDNODES_DATA    *this,
-        OBJARRAY_DATA       *pTests
+        NODEARRAY_DATA      *pObjs,
+        const
+        char                *pArch,
+        const
+        char                *pOS
     )
     {
-        //ERESULT         eRc;
+        uint32_t            i;
+        uint32_t            iMax;
+        NODEOBJ_DATA        *pObj;
+        ERESULT_DATA        *pErr;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -857,8 +1184,31 @@ extern "C" {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
+        if (OBJ_NIL == pObjs) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
     #endif
         
+    iMax = nodeArray_getSize(pObjs);
+    for (i=0; i<iMax; i++) {
+        pObj = (NODEOBJ_DATA *)nodeArray_Get(pObjs, i+1);
+        if (OBJ_NIL == pObj) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT,
+                                   "Routine Array missing element");
+        }
+        if (!obj_IsKindOf(pObj, OBJ_IDENT_NODEOBJ)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT,
+                                   "Routine Array missing element");
+        }
+        pErr = ExpandNodes_ExpandObj(this, pObj, pArch, pOS);
+        if (pErr) {
+            DEBUG_BREAK();
+            return pErr;
+        }
+    }
         
         // Return to caller.
         return OBJ_NIL;
@@ -870,21 +1220,22 @@ extern "C" {
     //                  E x p a n d  R o u t i n e
     //---------------------------------------------------------------
 
-    /*!
-     Expand a routine node into nodes used for actual makefile generation.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
     ERESULT_DATA *      ExpandNodes_ExpandRtn (
         EXPANDNODES_DATA    *this,
-        NODERTN_DATA        *pRtn
+        NODERTN_DATA        *pRtn,
+        const
+        char                *pArch,
+        const
+        char                *pOS
     )
     {
+        ERESULT_DATA        *pErr;
         ERESULT             eRc;
         NODERTNA_DATA       *pRtnA = OBJ_NIL;
         NODETSTA_DATA       *pTstA = OBJ_NIL;
         NODETEST_DATA       *pTest = OBJ_NIL;
+        ASTRC_DATA          *pName;
+        ASTRC_DATA          *pSuffix = OBJ_NIL;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -902,6 +1253,7 @@ extern "C" {
             return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
         }
     #endif
+        pName = NodeRtn_getName(pRtn);
         
         pRtnA = NodeRtnA_New();
         if (OBJ_NIL == pRtnA) {
@@ -913,12 +1265,45 @@ extern "C" {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_GENERAL_FAILURE, "Routine assign failed!");
         }
-        
+        NodeRtnA_setName(pRtnA, pName);
+        pSuffix = NodeRtnA_getSuffix(pRtnA);
+        if (OBJ_NIL == pSuffix) {
+            NodeRtnA_setSuffix(pRtnA, this->pSuffixC);
+        }
+        pErr = ExpandNodes_AppendRtn(this, pRtnA);
+        obj_Release(pRtnA);
+        pRtnA = OBJ_NIL;
+        if (pErr) {
+            DEBUG_BREAK();
+            return  pErr;
+        }
+
         pTest = NodeRtn_getTest(pRtn);
         if (pTest) {
-            
-        } else {
-            
+            pTstA = NodeTstA_New();
+            if (OBJ_NIL == pTstA) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+            }
+            eRc =   NodeBase_Assign(
+                                  NodeTest_getNodeBase(pTest),
+                                  NodeTstA_getNodeBase(pTstA)
+                    );
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_GENERAL_FAILURE, "Test assign failed!");
+            }
+            pSuffix = NodeTstA_getSuffix(pTstA);
+            if (OBJ_NIL == pSuffix) {
+                NodeTstA_setSuffix(pTstA, this->pSuffixC);
+            }
+            pErr = ExpandNodes_AppendTest(this, pTstA);
+            obj_Release(pTstA);
+            pTstA = OBJ_NIL;
+            if (pErr) {
+                DEBUG_BREAK();
+                return  pErr;
+            }
         }
 
         // Return to caller.
@@ -932,14 +1317,21 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Enable operation of this object.
+     Expand the Routine Nodes to RtnA and TstA nodes as needed.
      @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
+     @param     pRtns   Input Routine Node Array
+     @param     pArch   Optional Architecture String
+     @param     pOS     Optional Operating System String
+     @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
+                error code which must be released.
      */
     ERESULT_DATA *      ExpandNodes_ExpandRtns (
         EXPANDNODES_DATA    *this,
-        OBJARRAY_DATA       *pTests
+        NODEARRAY_DATA      *pRtns,
+        const
+        char                *pArch,
+        const
+        char                *pOS
     )
     {
         uint32_t            i;
@@ -954,11 +1346,15 @@ extern "C" {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
+        if (OBJ_NIL == pRtns) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
     #endif
         
-        iMax = objArray_getSize(this->pRtns);
+        iMax = nodeArray_getSize(pRtns);
         for (i=0; i<iMax; i++) {
-            pRtn = objArray_Get(this->pRtns, i+1);
+            pRtn = (NODERTN_DATA *)nodeArray_Get(pRtns, i+1);
             if (OBJ_NIL == pRtn) {
                 DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_OBJECT,
@@ -969,7 +1365,7 @@ extern "C" {
                 return eResult_NewStrA(ERESULT_INVALID_OBJECT,
                                        "Routine Array missing element");
             }
-            pErr = ExpandNodes_ExpandRtn(this, pRtn);
+            pErr = ExpandNodes_ExpandRtn(this, pRtn, pArch, pOS);
             if (pErr) {
                 DEBUG_BREAK();
                 return pErr;
@@ -1018,14 +1414,20 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&ExpandNodes_Vtbl);
         
-        this->pRtns = objArray_New( );
+        this->pRtns = nodeArray_New( );
         if (OBJ_NIL == this->pRtns) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pTests = objArray_New( );
+        this->pTests = nodeArray_New( );
         if (OBJ_NIL == this->pTests) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        this->pSuffixC = AStrC_NewA("c");
+        if (OBJ_NIL == this->pSuffixC) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -1202,6 +1604,44 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                         S o r t
+    //---------------------------------------------------------------
+
+    /*!
+     Sort the arrays.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ExpandNodes_Sort (
+        EXPANDNODES_DATA    *this
+    )
+    {
+        OBJARRAY_DATA       *pArray;
+        ERESULT             eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pArray = nodeArray_getObjArray(this->pRtns);
+        eRc = objArray_SortAscending(pArray, (P_OBJ_COMPARE)NodeBase_Compare);
+        
+        pArray = nodeArray_getObjArray(this->pTests);
+        eRc = objArray_SortAscending(pArray, (P_OBJ_COMPARE)NodeBase_Compare);
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------

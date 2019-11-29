@@ -40,7 +40,7 @@
 
 
 #include    <textIn.h>
-#include    <srcLoc_internal.h>
+#include    <SrcLoc_internal.h>
 #include    <ascii.h>
 #include    <sidxe.h>
 #include    <u8Array.h>

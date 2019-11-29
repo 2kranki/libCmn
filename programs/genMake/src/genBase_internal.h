@@ -74,6 +74,7 @@ struct GenBase_data_s	{
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
+    TEXTOUT_DATA    *pOut;
 
 };
 #pragma pack(pop)

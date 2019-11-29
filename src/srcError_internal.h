@@ -40,7 +40,7 @@
 
 
 #include    <srcError.h>
-#include    <srcLoc_internal.h>
+#include    <SrcLoc_internal.h>
 
 
 #ifndef SRCERROR_INTERNAL_H
