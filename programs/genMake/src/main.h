@@ -81,7 +81,7 @@
 #include        <nodeArray.h>
 #include        <path.h>
 #include        <szHash.h>
-#include        <textOut.h>
+#include        <TextOut.h>
 
 
 #ifndef         MAIN_H

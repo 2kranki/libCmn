@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   textOut_internal.h
+ * File:   TextOut_internal.h
  *	Generated 12/08/2017 10:18:28
  *
  * Notes:
@@ -39,7 +39,7 @@
 
 
 
-#include    <textOut.h>
+#include    <TextOut.h>
 #include    <fbso.h>
 
 
@@ -53,7 +53,7 @@ extern "C" {
 #endif
 
 
-    typedef enum textOut_type_e {
+    typedef enum TextOut_type_e {
         TEXTOUT_TYPE_UNKNOWN=0,
         TEXTOUT_TYPE_ASTR,
         TEXTOUT_TYPE_FBSO,
@@ -71,7 +71,7 @@ extern "C" {
     //---------------------------------------------------------------
 
  #pragma pack(push, 1)
-struct textOut_data_s	{
+struct TextOut_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -95,11 +95,11 @@ struct textOut_data_s	{
 
     extern
     const
-    struct textOut_class_data_s  textOut_ClassObj;
+    struct TextOut_class_data_s  TextOut_ClassObj;
 
     extern
     const
-    TEXTOUT_VTBL         textOut_Vtbl;
+    TEXTOUT_VTBL         TextOut_Vtbl;
 
 
 
@@ -107,24 +107,24 @@ struct textOut_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  textOut_getSuperVtbl(
+    OBJ_IUNKNOWN *  TextOut_getSuperVtbl(
         TEXTOUT_DATA     *this
     );
 
 
-    void            textOut_Dealloc(
+    void            TextOut_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          textOut_QueryInfo(
+    void *          TextOut_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     textOut_ToJSON(
+    ASTR_DATA *     TextOut_ToJSON(
         TEXTOUT_DATA      *this
     );
 
@@ -133,7 +133,7 @@ struct textOut_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			textOut_Validate(
+    bool			TextOut_Validate(
         TEXTOUT_DATA       *this
     );
 #endif

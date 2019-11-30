@@ -61,6 +61,7 @@ test_AStr: $(TEST_SRC)/test_AStr.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/AStrArray_object.o
 
 $(OBJDIR)/AStrArray_object.o: $(SRCDIR)/AStrArray_object.c 
@@ -2254,21 +2255,23 @@ test_textIn: $(TEST_SRC)/test_textIn.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/textOut_object.o
 
-$(OBJDIR)/textOut_object.o: $(SRCDIR)/textOut_object.c 
+OBJS += $(OBJDIR)/TextOut_object.o
+
+$(OBJDIR)/TextOut_object.o: $(SRCDIR)/TextOut_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/textOut.o
+OBJS += $(OBJDIR)/TextOut.o
 
-$(OBJDIR)/textOut.o: $(SRCDIR)/textOut.c $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/TextOut.o: $(SRCDIR)/TextOut.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_textOut
+TESTS += TextOut_test
 
-test_textOut: $(TEST_SRC)/test_textOut.c 
+TextOut_test: $(TEST_SRC)/TextOut_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/timer_object.o
 

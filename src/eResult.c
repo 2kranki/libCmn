@@ -857,6 +857,9 @@ void            eResult_ErrorFatalOn(
         const
         char            *pMsg = NULL;
 
+        if (OBJ_NIL == this) {
+            return;
+        }
 #ifdef NDEBUG
 #else
         if( !eResult_Validate( this ) ) {

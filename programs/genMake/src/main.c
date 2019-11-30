@@ -897,7 +897,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        return textOut_getStr(this->pOutput);
+        return TextOut_getStr(this->pOutput);
     }
     
     
@@ -1553,7 +1553,7 @@ extern "C" {
         
         //FIXME: pStr = dbprs_getStr(pPrs);
         if (pStr) {
-            textOut_PutA(this->pOutput, AStr_getData(pStr));
+            TextOut_PutA(this->pOutput, AStr_getData(pStr));
         }
         
         // Return to caller.
@@ -2072,7 +2072,7 @@ extern "C" {
                 eRc = path_VersionedRename(pMakepath);
             }
             this->pOutputPath = pMakepath;
-            this->pOutput = textOut_NewFromPath(pMakepath);
+            this->pOutput = TextOut_NewFromPath(pMakepath);
             if (OBJ_NIL == this->pOutput) {
                 DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to open \n");
@@ -2238,7 +2238,7 @@ extern "C" {
         }
 #endif
         
-        this->pOutput = textOut_NewAStr( );
+        this->pOutput = TextOut_NewAStr( );
         if (OBJ_NIL == this->pOutput) {
             return ERESULT_OUT_OF_MEMORY;
         }

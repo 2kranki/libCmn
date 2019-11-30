@@ -1246,15 +1246,16 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
+        if (OBJ_NIL == this->pArray) {
+            return OBJ_NIL;
+        }
+        
         pStr = AStr_New();
         if (OBJ_NIL == pStr) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 
-        if (OBJ_NIL == this->pArray)
-            return 0;
-        
         iMax = objArray_getSize(this->pArray);
         if (0 == iMax) {
             return pStr;

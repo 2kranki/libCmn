@@ -334,7 +334,7 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ASTR_DATA *     NodeRtnA_Deps (
+    ASTR_DATA *     NodeRtnA_Srcs (
         NODERTNA_DATA   *this,
         const
         char            *pPrefix            // Optional

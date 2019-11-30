@@ -71,7 +71,7 @@ extern "C" {
     )
     {
         if (OBJ_NIL == this->pOut) {
-            this->pOut = textOut_NewAStr();
+            this->pOut = TextOut_NewAStr();
         }
     }
 
@@ -104,7 +104,7 @@ extern "C" {
 
 
     GENBASE_DATA *     GenBase_New (
-        void
+        TEXTOUT_DATA    *pOutput
     )
     {
         GENBASE_DATA       *this;
@@ -112,6 +112,16 @@ extern "C" {
         this = GenBase_Alloc( );
         if (this) {
             this = GenBase_Init(this);
+            if (pOutput) {
+                GenBase_setOutput(this, pOutput);
+            } else {
+                this->pOut = TextOut_NewAStr();
+                if (OBJ_NIL == this->pOut) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+            }
         } 
         return this;
     }
@@ -479,7 +489,7 @@ extern "C" {
         }
 #endif
         
-        pOther = GenBase_New( );
+        pOther = GenBase_New(OBJ_NIL);
         if (pOther) {
             eRc = GenBase_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
@@ -699,6 +709,60 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          O u t p u t
+    //---------------------------------------------------------------
+
+    ERESULT         GenBase_Output (
+        GENBASE_DATA    *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!GenBase_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        GenBase_CheckOutput(this);
+        
+        eRc = TextOut_PutA(this->pOut, AStr_getData(pStr));
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         GenBase_OutputA (
+        GENBASE_DATA    *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!GenBase_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        GenBase_CheckOutput(this);
+        
+        eRc = TextOut_PutA(this->pOut, pStrA);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------

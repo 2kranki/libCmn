@@ -24,6 +24,10 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <hjson.h>
+#include    <srcErrors.h>
+#include    <szTbl.h>
+#include    <str.h>
 #include    <trace.h>
 #include    <GenMac_internal.h>
 
@@ -50,9 +54,10 @@ int             tearDown(
 {
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
-
     
-    trace_SharedReset( ); 
+    szTbl_SharedReset( );
+    srcErrors_SharedReset( );
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -72,6 +77,57 @@ int             tearDown(
 
 
 
+ERESULT_DATA *  InputStrToJSON(
+    const
+    char            *pStrA,
+    NODE_DATA       **ppNodes
+)
+{
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode = OBJ_NIL;
+
+    // Do initialization.
+#ifdef NDEBUG
+#else
+    if (NULL == pStrA) {
+        DEBUG_BREAK();
+        pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing String!");
+        return pErr;
+    }
+#endif
+
+    pObj = hjson_NewA(pStrA, 4);
+    if (pObj) {
+        pFileNode = hjson_ParseFileValue(pObj);
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    srcErrors_ExitOnFatal(OBJ_NIL);
+
+    if (pFileNode) {
+        pHash = node_getData(pFileNode);
+        if (OBJ_NIL == pHash) {
+            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            exit(12);
+        }
+        if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+            fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+            exit(12);
+        }
+    }
+    else {
+        fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+        exit(12);
+    }
+
+    // Return to caller.
+    if (ppNodes) {
+        *ppNodes = pFileNode;
+    }
+    return pErr;
+}
 
 
 
@@ -100,7 +156,359 @@ int             test_GenMac_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_GenMac_CompileRoutine01(
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    GENMAC_DATA     *pObj = OBJ_NIL;
+    NODERTNA_DATA   *pRtn = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pJsonObject =
+        "{name:\"AStr\", "
+        "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+        "\"srcs\":[\"str.c\",\"ascii.c\"],"
+        "suffix:\"c\","
+        "\"test\":{\"arch\":\"X86\",\"os\":\"macos\",srcs:[\"abc.c\"]}"
+        "}\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pErr = InputStrToJSON(pJsonObject, &pNodes);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+    pRtn = NodeRtnA_New();
+    TINYTEST_FALSE( (OBJ_NIL == pRtn) );
+    pErr = NodeBase_Parse(pNodes, (NODEBASE_DATA **)&pRtn);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+
+    pObj = GenMac_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //TODO: Set up this variables.
+        pObj->pObjDir = AStrC_NewA("OBJDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjDir) );
+        pObj->pObjVar = AStrC_NewA("OBJS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjVar) );
+        pObj->pSrcDir = AStrC_NewA("SRCDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pSrcDir) );
+        pObj->pTstBin = AStrC_NewA("TEST_BIN");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstBin) );
+        pObj->pTstDir = AStrC_NewA("TEST_DIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstDir) );
+        pObj->pTstVar = AStrC_NewA("TESTS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstVar) );
+
+        //obj_Enable(pRtn);  Routine is disabled by default.
+        pErr = GenMac_GenCompileRtn(pObj, pRtn);
+        eResult_Fprint(pErr, stderr);
+        TINYTEST_TRUE( (OBJ_NIL == pErr) );
+        TINYTEST_TRUE( (OBJ_NIL == GenBase_getOutput(GenMac_getGenBase(pObj))) );
+
+        obj_Release(pObj->pObjDir);
+        obj_Release(pObj->pObjVar);
+        obj_Release(pObj->pSrcDir);
+        obj_Release(pObj->pTstBin);
+        obj_Release(pObj->pTstDir);
+        obj_Release(pObj->pTstVar);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pRtn);
+    obj_Release(pNodes);
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_GenMac_CompileRoutine02(
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    GENMAC_DATA     *pObj = OBJ_NIL;
+    NODERTNA_DATA   *pRtn = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    bool            fDumpNodes = false;
+
+    const
+    char            *pJsonObject =
+        "{name:\"AStr\", "
+        "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+        "\"srcs\":[\"str.c\",\"ascii.c\"],"
+        "suffix:\"c\","
+        "\"test\":{\"arch\":\"X86\",\"os\":\"macos\",srcs:[\"abc.c\"]}"
+        "}\n";
+    const
+    char            *pGenCheck =
+        "OBJS += $(OBJDIR)/AStr.o\n\n"
+        "$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h\n"
+        "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< $(SRCDIR)/ascii.c $(SRCDIR)/str.c\n"
+        "\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pErr = InputStrToJSON(pJsonObject, &pNodes);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+    pRtn = NodeRtnA_New();
+    TINYTEST_FALSE( (OBJ_NIL == pRtn) );
+    pErr = NodeBase_Parse(pNodes, (NODEBASE_DATA **)&pRtn);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    if (fDumpNodes) {
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        pWrk = NodeRtnA_ToDebugString(pRtn, 0);
+        fprintf(stderr, "\n====> RTNA Input:\n%s\n\n\n", AStr_getData(pWrk));
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+    }
+
+    pObj = GenMac_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //TODO: Set up this variables.
+        pObj->pObjDir = AStrC_NewA("OBJDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjDir) );
+        pObj->pObjVar = AStrC_NewA("OBJS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjVar) );
+        pObj->pSrcDir = AStrC_NewA("SRCDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pSrcDir) );
+        pObj->pTstBin = AStrC_NewA("TEST_BIN");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstBin) );
+        pObj->pTstDir = AStrC_NewA("TEST_DIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstDir) );
+        pObj->pTstVar = AStrC_NewA("TESTS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstVar) );
+
+        obj_Enable(pRtn);
+        pErr = GenMac_GenCompileRtn(pObj, pRtn);
+        eResult_Fprint(pErr, stderr);
+        TINYTEST_TRUE( (OBJ_NIL == pErr) );
+
+        TINYTEST_FALSE( (OBJ_NIL == GenBase_getOutput(GenMac_getGenBase(pObj))) );
+        pStr = TextOut_getStr(GenBase_getOutput(GenMac_getGenBase(pObj)));
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            fprintf(stderr, "Generated:\n%s...End of Generated\n\n", AStr_getData(pStr));
+        }
+        TINYTEST_TRUE( (AStr_CompareA(pStr, pGenCheck) == ERESULT_SUCCESS_EQUAL) );
+
+        obj_Release(pObj->pObjDir);
+        obj_Release(pObj->pObjVar);
+        obj_Release(pObj->pSrcDir);
+        obj_Release(pObj->pTstBin);
+        obj_Release(pObj->pTstDir);
+        obj_Release(pObj->pTstVar);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pRtn);
+    obj_Release(pNodes);
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_GenMac_BuildTest01(
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    GENMAC_DATA     *pObj = OBJ_NIL;
+    NODETSTA_DATA   *pTest = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pJsonObject =
+        "{name:\"AStr\", "
+        "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+        "\"srcs\":[\"str.c\",\"ascii.c\"],"
+        "suffix:\"c\","
+        "\"test\":{\"arch\":\"X86\",\"os\":\"macos\",srcs:[\"abc.c\"]}"
+        "}\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pErr = InputStrToJSON(pJsonObject, &pNodes);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+    pTest = NodeTstA_New();
+    TINYTEST_FALSE( (OBJ_NIL == pTest) );
+    pErr = NodeBase_Parse(pNodes, (NODEBASE_DATA **)&pTest);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+
+    pObj = GenMac_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //TODO: Set up this variables.
+        pObj->pObjDir = AStrC_NewA("OBJDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjDir) );
+        pObj->pObjVar = AStrC_NewA("OBJS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjVar) );
+        pObj->pSrcDir = AStrC_NewA("SRCDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pSrcDir) );
+        pObj->pTstBin = AStrC_NewA("TEST_BIN");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstBin) );
+        pObj->pTstDir = AStrC_NewA("TEST_DIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstDir) );
+        pObj->pTstVar = AStrC_NewA("TESTS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstVar) );
+
+        //obj_Enable(pRtn);  Routine is disabled by default.
+        pErr = GenMac_GenBuildTest(pObj, pTest);
+        eResult_Fprint(pErr, stderr);
+        TINYTEST_TRUE( (OBJ_NIL == pErr) );
+        TINYTEST_TRUE( (OBJ_NIL == GenBase_getOutput(GenMac_getGenBase(pObj))) );
+
+        obj_Release(pObj->pObjDir);
+        obj_Release(pObj->pObjVar);
+        obj_Release(pObj->pSrcDir);
+        obj_Release(pObj->pTstBin);
+        obj_Release(pObj->pTstDir);
+        obj_Release(pObj->pTstVar);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pTest);
+    obj_Release(pNodes);
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_GenMac_BuildTest02(
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    GENMAC_DATA     *pObj = OBJ_NIL;
+    NODETSTA_DATA   *pTest = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    bool            fDumpNodes = false;
+    int             iRc;
+    int             offset = 0;
+
+    const
+    char            *pJsonObject =
+        "{name:\"AStr_test\", "
+        "\"srcs\":[\"data1.c\"],"
+        "suffix:\"c\","
+        "\"test\":{\"arch\":\"X86\",\"os\":\"macos\",srcs:[\"abc.c\"]}"
+        "}\n";
+    const
+    char            *pGenCheck =
+        "TESTS += AStr_test\n\n"
+        "AStr_test: $(TEST_SRC)/AStr_test.c \n"
+        "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_BIN)/$(@F) $(OBJS) $(TEST_SRC)/data1.c $<\n"
+        "\t$(TEST_BIN)/$(@F)\n\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pErr = InputStrToJSON(pJsonObject, &pNodes);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+    pTest = NodeTstA_New();
+    TINYTEST_FALSE( (OBJ_NIL == pTest) );
+    pErr = NodeBase_Parse(pNodes, (NODEBASE_DATA **)&pTest);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    if (fDumpNodes) {
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        pWrk = NodeTstA_ToDebugString(pTest, 0);
+        fprintf(stderr, "\n====> TSTA Input:\n%s\n\n\n", AStr_getData(pWrk));
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+    }
+
+    pObj = GenMac_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //TODO: Set up this variables.
+        pObj->pObjDir = AStrC_NewA("OBJDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjDir) );
+        pObj->pObjVar = AStrC_NewA("OBJS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjVar) );
+        pObj->pSrcDir = AStrC_NewA("SRCDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pSrcDir) );
+        pObj->pTstBin = AStrC_NewA("TEST_BIN");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstBin) );
+        pObj->pTstDir = AStrC_NewA("TEST_SRC");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstDir) );
+        pObj->pTstVar = AStrC_NewA("TESTS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstVar) );
+
+        obj_Enable(pTest);
+        pErr = GenMac_GenBuildTest(pObj, pTest);
+        eResult_Fprint(pErr, stderr);
+        TINYTEST_TRUE( (OBJ_NIL == pErr) );
+
+        TINYTEST_FALSE( (OBJ_NIL == GenBase_getOutput(GenMac_getGenBase(pObj))) );
+        pStr = TextOut_getStr(GenBase_getOutput(GenMac_getGenBase(pObj)));
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            fprintf(stderr, "0         1         2         3\n");
+            fprintf(stderr, "0123456789012345678901234567890\n");
+            fprintf(stderr, "Generated:\n%s...End of Generated\n\n", AStr_getData(pStr));
+        }
+        iRc = str_CompareSpcl(AStr_getData(pStr), pGenCheck, &offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
+        obj_Release(pObj->pObjDir);
+        obj_Release(pObj->pObjVar);
+        obj_Release(pObj->pSrcDir);
+        obj_Release(pObj->pTstBin);
+        obj_Release(pObj->pTstDir);
+        obj_Release(pObj->pTstVar);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pTest);
+    obj_Release(pNodes);
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -108,6 +516,10 @@ int             test_GenMac_OpenClose(
 
 
 TINYTEST_START_SUITE(test_GenMac);
+    TINYTEST_ADD_TEST(test_GenMac_BuildTest02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_GenMac_BuildTest01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_GenMac_CompileRoutine02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_GenMac_CompileRoutine01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_GenMac_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

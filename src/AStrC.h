@@ -130,6 +130,18 @@ extern "C" {
     );
     
     
+    /*!
+     Create a new string that from a print output.
+     @return:   If successful, an AStrC object which must be released,
+                 otherwise OBJ_NIL and an Error Code is set.
+     */
+    ASTRC_DATA *    AStrC_NewFromPrint(
+        const
+        char            *pFormat,
+        ...
+    );
+
+
 
 
     //---------------------------------------------------------------

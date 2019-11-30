@@ -270,6 +270,13 @@ extern "C" {
     );
 
 
+    ASTR_DATA *     NodeTstA_Deps (
+        NODETSTA_DATA   *this,
+        const
+        char            *pPrefix
+    );
+
+
     /*!
      Disable operation of this object.
      @param     this    object pointer
@@ -299,6 +306,13 @@ extern "C" {
 
     ERESULT         NodeTstA_IsEnabled (
         NODETSTA_DATA   *this
+    );
+
+
+    ASTR_DATA *     NodeTstA_Srcs (
+        NODETSTA_DATA   *this,
+        const
+        char            *pPrefix
     );
 
 

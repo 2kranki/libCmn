@@ -772,6 +772,35 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          D e p s
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeTstA_Deps (
+        NODETSTA_DATA   *this,
+        const
+        char            *pPrefix
+    )
+    {
+        ASTR_DATA       *pStr;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeTstA_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+    #endif
+        
+        pStr = AStrCArray_ToStringPrefixSep(NodeTstA_getDeps(this), " ", pPrefix);
+
+        // Return to caller.
+        return pStr;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -1051,6 +1080,35 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          S r c s
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeTstA_Srcs (
+        NODETSTA_DATA   *this,
+        const
+        char            *pPrefix
+    )
+    {
+        ASTR_DATA       *pStr;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeTstA_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+    #endif
+        
+        pStr = AStrCArray_ToStringPrefixSep(NodeTstA_getSrcs(this), " ", pPrefix);
+
+        // Return to caller.
+        return pStr;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------

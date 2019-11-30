@@ -53,7 +53,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
-#include        <textOut.h>
+#include        <TextOut.h>
 #include        <NodeRtnA.h>
 #include        <NodeTstA.h>
 
@@ -139,7 +139,7 @@ extern "C" {
     
     
     GENBASE_DATA *  GenBase_New (
-        void
+        TEXTOUT_DATA    *pOutput
     );
     
     
@@ -170,11 +170,6 @@ extern "C" {
     );
 
 
-    ERESULT         GenBase_Enable (
-        GENBASE_DATA	*this
-    );
-
-   
     GENBASE_DATA *  GenBase_Init (
         GENBASE_DATA    *this
     );
@@ -185,6 +180,31 @@ extern "C" {
     );
     
  
+     /*!
+      Output the given AStr object.
+      @param     this    object pointer
+      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                 error code.
+      */
+     ERESULT         GenBase_Output (
+         GENBASE_DATA    *this,
+         ASTR_DATA       *pStr
+     );
+
+    
+      /*!
+       Output the given UTF-8 string.
+       @param     this    object pointer
+       @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                  error code.
+       */
+      ERESULT        GenBase_OutputA (
+         GENBASE_DATA    *this,
+         const
+         char            *pStrA
+      );
+
+     
     /*!
      Create a string that describes this object and the objects within it.
      Example:

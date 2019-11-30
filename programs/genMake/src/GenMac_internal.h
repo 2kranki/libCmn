@@ -75,6 +75,20 @@ struct GenMac_data_s	{
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
+    // The following are required fields that must be filled in prior
+    // to executing any generation.
+    ASTRC_DATA      *pObjDir;       // Makefile Variable Name for
+    //                              // object file output
+    ASTRC_DATA      *pObjVar;       // Makefile Variable Name for
+    //                              // accumulating object file names
+    ASTRC_DATA      *pSrcDir;       // Makefile Variable Name used to
+    //                              // prefix all source file names
+    ASTRC_DATA      *pTstBin;       // Makefile Variable Name used to
+    //                              // prefix all test compiled programs
+    ASTRC_DATA      *pTstDir;       // Makefile Variable Name used to
+    //                              // prefix all test source file names
+    ASTRC_DATA      *pTstVar;       // Makefile Variable Name for
+    //                              // accumulating test program names
 
 };
 #pragma pack(pop)

@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <textOut_internal.h>
+#include    <TextOut_internal.h>
 
 
 
@@ -74,7 +74,7 @@ int         tearDown(
 
 
 
-int         test_textOut_OpenClose(
+int         test_TextOut_OpenClose(
     const
     char        *pTestName
 )
@@ -83,9 +83,9 @@ int         test_textOut_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = textOut_Alloc( );
+    pObj = TextOut_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = textOut_Init( pObj );
+    pObj = TextOut_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -102,11 +102,11 @@ int         test_textOut_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_textOut);
-    TINYTEST_ADD_TEST(test_textOut_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_TextOut);
+    TINYTEST_ADD_TEST(test_TextOut_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_textOut);
+TINYTEST_MAIN_SINGLE_SUITE(test_TextOut);
 
 
 

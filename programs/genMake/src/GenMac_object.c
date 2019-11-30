@@ -91,6 +91,9 @@ bool            GenMacClass_IsKindOf (
     if (OBJ_IDENT_GENMAC_CLASS == classID) {
        return true;
     }
+    if (OBJ_IDENT_GENBASE_CLASS == classID) {
+       return true;
+    }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
@@ -318,6 +321,9 @@ bool            GenMac_IsKindOf (
 )
 {
     if (OBJ_IDENT_GENMAC == classID) {
+       return true;
+    }
+    if (OBJ_IDENT_GENBASE == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {

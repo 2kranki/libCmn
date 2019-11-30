@@ -158,6 +158,18 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    ERESULT_DATA *  GenMac_GenBuildTest (
+        GENMAC_DATA     *this,
+        NODETSTA_DATA   *pTest
+    );
+
+
+    ERESULT_DATA *  GenMac_GenCompileRtn (
+        GENMAC_DATA     *this,
+        NODERTNA_DATA   *pRtn
+    );
+
+
     GENMAC_DATA *   GenMac_Init (
         GENMAC_DATA     *this
     );

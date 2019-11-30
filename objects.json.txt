@@ -169,7 +169,7 @@
         "table":["cmn_defs.h","AStr.h","listdl.h"],
         "ternary":["cmn_defs.h","AStr.h","blocks.h"],
         "textIn":["cmn_defs.h"],
-        "textOut":["cmn_defs.h"],
+        "TextOut":["cmn_defs.h"],
         "timer":{srcDeps:["cmn_defs.h"], json:false, test:true},
         "token":{srcDeps:["cmn_defs.h","AStr.h","AStrC.h"], json:true},
         "tokenList":["cmn_defs.h","AStr.h","token.h"],

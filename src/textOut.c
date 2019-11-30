@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <textOut_internal.h>
+#include <TextOut_internal.h>
 #include <utf8.h>
 
 
@@ -61,7 +61,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            textOut_task_body(
+    void            TextOut_task_body(
         void            *pData
     )
     {
@@ -81,7 +81,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    TEXTOUT_DATA *  textOut_Alloc(
+    TEXTOUT_DATA *  TextOut_Alloc(
     )
     {
         TEXTOUT_DATA    *this;
@@ -97,27 +97,27 @@ extern "C" {
 
 
 
-    TEXTOUT_DATA *  textOut_New(
+    TEXTOUT_DATA *  TextOut_New(
     )
     {
         TEXTOUT_DATA    *this;
         
-        this = textOut_Alloc( );
+        this = TextOut_Alloc( );
         if (this) {
-            this = textOut_Init(this);
+            this = TextOut_Init(this);
         } 
         return this;
     }
 
 
-    TEXTOUT_DATA *  textOut_NewAStr(
+    TEXTOUT_DATA *  TextOut_NewAStr(
     )
     {
         TEXTOUT_DATA    *this;
         
-        this = textOut_Alloc( );
+        this = TextOut_Alloc( );
         if (this) {
-            this = textOut_Init(this);
+            this = TextOut_Init(this);
             if (this) {
                 this->pStr = AStr_New( );
                 if (this->pStr) {
@@ -133,18 +133,18 @@ extern "C" {
     }
     
     
-    TEXTOUT_DATA *  textOut_NewFromPath(
+    TEXTOUT_DATA *  TextOut_NewFromPath(
         PATH_DATA       *pPath
     )
     {
         TEXTOUT_DATA    *this;
         ERESULT         eRc;
         
-        this = textOut_Alloc( );
+        this = TextOut_Alloc( );
         if (this) {
-            this = textOut_Init(this);
+            this = TextOut_Init(this);
             if (this) {
-                eRc = textOut_SetupPath(this, pPath);
+                eRc = TextOut_SetupPath(this, pPath);
                 if (ERESULT_FAILED(eRc)) {
                     obj_Release(this);
                     this = OBJ_NIL;
@@ -166,7 +166,7 @@ extern "C" {
     //                          F i l e
     //---------------------------------------------------------------
     
-    FILE *          textOut_getFile(
+    FILE *          TextOut_getFile(
         TEXTOUT_DATA    *this
     )
     {
@@ -174,7 +174,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -184,14 +184,14 @@ extern "C" {
     }
     
     
-    bool            textOut_setFile(
+    bool            TextOut_setFile(
         TEXTOUT_DATA    *this,
         FILE            *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -208,7 +208,7 @@ extern "C" {
     //                          O f f s e t
     //---------------------------------------------------------------
     
-    uint16_t        textOut_getOffset(
+    uint16_t        TextOut_getOffset(
         TEXTOUT_DATA    *this
     )
     {
@@ -216,7 +216,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -226,14 +226,14 @@ extern "C" {
     }
     
     
-    bool            textOut_setOffset(
+    bool            TextOut_setOffset(
         TEXTOUT_DATA    *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -250,7 +250,7 @@ extern "C" {
     //                 O f f s e t  C h a r
     //---------------------------------------------------------------
     
-    char            textOut_getOffsetChr(
+    char            TextOut_getOffsetChr(
         TEXTOUT_DATA    *this
     )
     {
@@ -258,7 +258,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -268,14 +268,14 @@ extern "C" {
     }
     
     
-    bool            textOut_setOffsetChr(
+    bool            TextOut_setOffsetChr(
         TEXTOUT_DATA    *this,
         char            value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -292,7 +292,7 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        textOut_getPriority(
+    uint16_t        TextOut_getPriority(
         TEXTOUT_DATA     *this
     )
     {
@@ -300,7 +300,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -311,14 +311,14 @@ extern "C" {
     }
 
 
-    bool            textOut_setPriority(
+    bool            TextOut_setPriority(
         TEXTOUT_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -335,13 +335,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        textOut_getSize(
+    uint32_t        TextOut_getSize(
         TEXTOUT_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -356,7 +356,7 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * textOut_getStr(
+    ASTR_DATA * TextOut_getStr(
         TEXTOUT_DATA     *this
     )
     {
@@ -364,7 +364,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -374,14 +374,14 @@ extern "C" {
     }
     
     
-    bool        textOut_setStr(
+    bool        TextOut_setStr(
         TEXTOUT_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -402,7 +402,7 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  textOut_getSuperVtbl(
+    OBJ_IUNKNOWN *  TextOut_getSuperVtbl(
         TEXTOUT_DATA     *this
     )
     {
@@ -410,7 +410,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -426,7 +426,7 @@ extern "C" {
     //                          T a b  S i z e
     //---------------------------------------------------------------
     
-    uint16_t        textOut_getTabSize(
+    uint16_t        TextOut_getTabSize(
         TEXTOUT_DATA    *this
     )
     {
@@ -434,7 +434,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -444,14 +444,14 @@ extern "C" {
     }
     
     
-    bool            textOut_setTabSize(
+    bool            TextOut_setTabSize(
         TEXTOUT_DATA    *this,
         uint16_t        value
                                         )
     {
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -482,14 +482,14 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = textOut__Assign(this,pOther);
+        ERESULT eRc = TextOut__Assign(this,pOther);
      @endcode 
      @param     this    TEXTOUT object pointer
      @param     pOther  a pointer to another TEXTOUT object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         textOut_Assign(
+    ERESULT         TextOut_Assign(
         TEXTOUT_DATA	*this,
         TEXTOUT_DATA    *pOther
     )
@@ -499,11 +499,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !textOut_Validate(pOther) ) {
+        if( !TextOut_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -553,14 +553,14 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        textOut      *pCopy = textOut_Copy(this);
+        textOut      *pCopy = TextOut_Copy(this);
      @endcode 
      @param     this    TEXTOUT object pointer
      @return    If successful, a TEXTOUT object which must be released,
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned the TEXTOUT object.
      */
-    TEXTOUT_DATA *     textOut_Copy(
+    TEXTOUT_DATA *     TextOut_Copy(
         TEXTOUT_DATA       *this
     )
     {
@@ -570,15 +570,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = textOut_New( );
+        pOther = TextOut_New( );
         if (pOther) {
-            eRc = textOut_Assign(this, pOther);
+            eRc = TextOut_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -596,7 +596,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            textOut_Dealloc(
+    void            TextOut_Dealloc(
         OBJ_ID          objId
     )
     {
@@ -608,7 +608,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
@@ -624,7 +624,7 @@ extern "C" {
             case TEXTOUT_TYPE_UNKNOWN:
                 break;
             case TEXTOUT_TYPE_ASTR:
-                textOut_setStr(this, OBJ_NIL);
+                TextOut_setStr(this, OBJ_NIL);
                 this->type = TEXTOUT_TYPE_UNKNOWN;
                 break;
             case TEXTOUT_TYPE_FBSO:
@@ -662,7 +662,7 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         textOut_Disable(
+    ERESULT         TextOut_Disable(
         TEXTOUT_DATA		*this
     )
     {
@@ -670,7 +670,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -690,7 +690,7 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         textOut_Enable(
+    ERESULT         TextOut_Enable(
         TEXTOUT_DATA		*this
     )
     {
@@ -698,7 +698,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -718,7 +718,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    TEXTOUT_DATA *   textOut_Init(
+    TEXTOUT_DATA *   TextOut_Init(
         TEXTOUT_DATA       *this
     )
     {
@@ -748,11 +748,11 @@ extern "C" {
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
         //obj_setIdent((OBJ_ID)this, OBJ_IDENT_TEXTOUT);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&textOut_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&TextOut_Vtbl);
         
     #ifdef NDEBUG
     #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -772,7 +772,7 @@ extern "C" {
     //                          P r i n t
     //---------------------------------------------------------------
     
-    ERESULT         textOut_Print(
+    ERESULT         TextOut_Print(
         TEXTOUT_DATA    *this,
         const
         char            *pFormat,
@@ -792,7 +792,7 @@ extern "C" {
         // Do Initialization.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -824,7 +824,7 @@ extern "C" {
                     eRc = ERESULT_DATA_ERROR;
                     break;
                 }
-                eRc = textOut_Putwc(this, chr);
+                eRc = TextOut_Putwc(this, chr);
                 if (ERESULT_FAILED(eRc)) {
                     break;
                 }
@@ -845,7 +845,7 @@ extern "C" {
     //                       P u t  S t r i n g
     //---------------------------------------------------------------
     
-    ERESULT             textOut_PutA(
+    ERESULT             TextOut_PutA(
         TEXTOUT_DATA        *this,
         const
         char                *pStrA
@@ -858,7 +858,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if(!textOut_Validate(this)) {
+        if(!TextOut_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -874,7 +874,7 @@ extern "C" {
                 eRc = ERESULT_DATA_ERROR;
                 break;
             }
-            eRc = textOut_Putwc(this, chr);
+            eRc = TextOut_Putwc(this, chr);
             if (ERESULT_FAILED(eRc)) {
                 break;
             }
@@ -886,7 +886,7 @@ extern "C" {
     }
     
     
-    ERESULT             textOut_PutAStr(
+    ERESULT             TextOut_PutAStr(
         TEXTOUT_DATA        *this,
         ASTR_DATA           *pStr
     )
@@ -898,7 +898,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if(!textOut_Validate(this)) {
+        if(!TextOut_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -909,7 +909,7 @@ extern "C" {
 #endif
         pStrA = AStr_getData(pStr);
         
-        eRc = textOut_PutA(this, pStrA);
+        eRc = TextOut_PutA(this, pStrA);
         
         // Return to caller.
         return eRc;
@@ -921,7 +921,7 @@ extern "C" {
     //                       P u t  C h a r
     //---------------------------------------------------------------
     
-    ERESULT         textOut_Putc(
+    ERESULT         TextOut_Putc(
         TEXTOUT_DATA    *this,
         const
         char            chr
@@ -933,7 +933,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -964,7 +964,7 @@ extern "C" {
     }
     
     
-    ERESULT         textOut_Putwc(
+    ERESULT         TextOut_Putwc(
         TEXTOUT_DATA    *this,
         const
         W32CHR_T        chr
@@ -976,7 +976,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1024,7 +1024,7 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = textOut_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = TextOut_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
@@ -1039,7 +1039,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          textOut_QueryInfo(
+    void *          TextOut_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -1054,7 +1054,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1071,22 +1071,22 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return textOut_Disable;
+                            return TextOut_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return textOut_Enable;
+                            return TextOut_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return textOut_ToDebugString;
+                            return TextOut_ToDebugString;
                         }
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return textOut_ToJSON;
+                            return TextOut_ToJSON;
                         }
                         break;
                         
@@ -1096,9 +1096,9 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == textOut_ToDebugString)
+                if (pData == TextOut_ToDebugString)
                     return "ToDebugString";
-                if (pData == textOut_ToJSON)
+                if (pData == TextOut_ToJSON)
                     return "ToJSON";
                 break;
                 
@@ -1115,7 +1115,7 @@ extern "C" {
     //                       S e t u p
     //---------------------------------------------------------------
     
-    ERESULT             textOut_SetupFile(
+    ERESULT             TextOut_SetupFile(
         TEXTOUT_DATA        *this,
         FILE                *pFile,
         bool                fClose
@@ -1128,7 +1128,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if(!textOut_Validate(this)) {
+        if(!TextOut_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1152,7 +1152,7 @@ extern "C" {
     }
     
     
-    ERESULT             textOut_SetupPath(
+    ERESULT             TextOut_SetupPath(
         TEXTOUT_DATA        *this,
         PATH_DATA           *pPath
     )
@@ -1163,7 +1163,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if(!textOut_Validate(this)) {
+        if(!TextOut_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1197,7 +1197,7 @@ extern "C" {
     }
     
     
-    ERESULT             textOut_SetupPathAppend(
+    ERESULT             TextOut_SetupPathAppend(
         TEXTOUT_DATA        *this,
         PATH_DATA           *pPath
     )
@@ -1208,7 +1208,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if(!textOut_Validate(this)) {
+        if(!TextOut_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1242,7 +1242,7 @@ extern "C" {
     }
     
     
-    ERESULT             textOut_SetupStdout(
+    ERESULT             TextOut_SetupStdout(
         TEXTOUT_DATA        *this
     )
     {
@@ -1253,7 +1253,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if(!textOut_Validate(this)) {
+        if(!TextOut_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1276,7 +1276,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = textOut_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = TextOut_ToDebugString(this,4);
      @endcode 
      @param     this    TEXTOUT object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1284,7 +1284,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     textOut_ToDebugString(
+    ASTR_DATA *     TextOut_ToDebugString(
         TEXTOUT_DATA      *this,
         int             indent
     )
@@ -1301,13 +1301,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = textOut_Vtbl.iVtbl.pInfo;
+        pInfo = TextOut_Vtbl.iVtbl.pInfo;
         pStr = AStr_New();
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -1348,7 +1348,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     textOut_ToJSON(
+    ASTR_DATA *     TextOut_ToJSON(
         TEXTOUT_DATA      *this
     )
     {
@@ -1360,7 +1360,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !textOut_Validate(this) ) {
+        if( !TextOut_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1387,7 +1387,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            textOut_Validate(
+    bool            TextOut_Validate(
         TEXTOUT_DATA      *this
     )
     {

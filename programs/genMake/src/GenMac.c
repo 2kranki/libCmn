@@ -582,19 +582,116 @@ extern "C" {
     //                    G e n e r a t i o n
     //---------------------------------------------------------------
 
-    /*!
-     Enable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT_DATA *  GenMac_GenerateRtn (
+    ERESULT_DATA *  GenMac_GenBuildTest (
         GENMAC_DATA     *this,
-        NODERTNA_DATA   *pRtn
+        NODETSTA_DATA   *pTest
     )
     {
         //ERESULT         eRc;
         ASTR_DATA       *pStr =  OBJ_NIL;
+        ASTRC_DATA      *pSuffix;
+        ASTRC_DATA      *pSrcDirPrefix;
+        ASTRC_DATA      *pTstDirPrefix;
+
+            // Do initialization.
+        #ifdef NDEBUG
+        #else
+        if (!GenMac_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pTest) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pTest, OBJ_IDENT_NODETSTA)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+    #endif
+        
+        // Skip disabled entries.
+        if (!NodeTstA_IsEnabled(pTest)) {
+            return OBJ_NIL;
+        }
+        
+        // Set up to generate Makefile entry.
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+        pSuffix = NodeTstA_getSuffix(pTest);
+        pSrcDirPrefix = AStrC_NewFromPrint("$(%s)/", AStrC_getData(this->pSrcDir));
+        pTstDirPrefix = AStrC_NewFromPrint("$(%s)/", AStrC_getData(this->pTstDir));
+
+        AStr_AppendPrint(
+            pStr,
+            "%s += %s\n\n",
+            AStrC_getData(this->pTstVar),
+            AStrC_getData(NodeTstA_getName(pTest))
+        );
+        if ((AStrC_CompareA(pSuffix, "c") == ERESULT_SUCCESS_EQUAL)
+            || (AStrC_CompareA(pSuffix, "C") == ERESULT_SUCCESS_EQUAL)
+            || (AStrC_CompareA(pSuffix, "cpp") == ERESULT_SUCCESS_EQUAL)
+            || (AStrC_CompareA(pSuffix, "CPP") == ERESULT_SUCCESS_EQUAL)) {
+            ASTR_DATA       *pDeps = NodeTstA_Deps(pTest, AStrC_getData(pTstDirPrefix));
+            ASTR_DATA       *pSrcs = NodeTstA_Srcs(pTest, AStrC_getData(pTstDirPrefix));
+            AStr_AppendPrint(
+                pStr,
+                "%s: %s%s.%s ",
+                AStrC_getData(NodeTstA_getName(pTest)),
+                AStrC_getData(pTstDirPrefix),
+                AStrC_getData(NodeTstA_getName(pTest)),
+                AStrC_getData(pSuffix)
+            );
+            if (pDeps) {
+                AStr_AppendPrint(pStr, "%s", AStr_getData(pDeps));
+            }
+            AStr_AppendA(pStr, "\n");
+            AStr_AppendPrint(
+                pStr,
+                "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(%s)/$(@F) $(%s)",
+                AStrC_getData(this->pTstBin),
+                AStrC_getData(this->pObjVar)
+            );
+            if (pSrcs) {
+                AStr_AppendPrint(pStr, " %s", AStr_getData(pSrcs));
+            }
+            AStr_AppendA(pStr, " $<\n");
+            AStr_AppendPrint(
+                pStr,
+                "\t$(%s)/$(@F)\n\n",
+                AStrC_getData(this->pTstBin)
+            );
+            obj_Release(pDeps);
+            obj_Release(pSrcs);
+        }
+        else {
+            obj_Release(pSrcDirPrefix);
+            obj_Release(pTstDirPrefix);
+            obj_Release(pStr);
+            return eResult_NewStrA(ERESULT_UNSUPPORTED_PARAMETER, "Invalid File Suffix");
+        }
+        GenBase_Output(GenMac_getGenBase(this), pStr);
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        // Return to caller.
+        obj_Release(pSrcDirPrefix);
+        obj_Release(pTstDirPrefix);
+        return OBJ_NIL;
+    }
+
+
+
+    ERESULT_DATA *  GenMac_GenCompileRtn (
+        GENMAC_DATA     *this,
+        NODERTNA_DATA   *pRtn
+    )
+    {
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        ASTRC_DATA      *pSuffix;
+        ASTRC_DATA      *pSrcDirPrefix;
 
             // Do initialization.
         #ifdef NDEBUG
@@ -612,120 +709,86 @@ extern "C" {
             return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
         }
     #endif
+        
+        // Skip disabled entries.
+        if (!NodeRtnA_IsEnabled(pRtn)) {
+            return OBJ_NIL;
+        }
+        
+        // Set up to generate Makefile entry.
         pStr = AStr_New();
         if (OBJ_NIL == pStr) {
             return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
         }
+        pSuffix = NodeRtnA_getSuffix(pRtn);
+        pSrcDirPrefix = AStrC_NewFromPrint("$(%s)/", AStrC_getData(this->pSrcDir));
 
+        AStr_AppendPrint(
+            pStr,
+            "%s += $(%s)/%s.o\n\n",
+            AStrC_getData(this->pObjVar),
+            AStrC_getData(this->pObjDir),
+            AStrC_getData(NodeRtnA_getName(pRtn))
+        );
+        if ((AStrC_CompareA(pSuffix, "c") == ERESULT_SUCCESS_EQUAL)
+           || (AStrC_CompareA(pSuffix, "C") == ERESULT_SUCCESS_EQUAL)) {
+            ASTR_DATA       *pDeps = NodeRtnA_Deps(pRtn, AStrC_getData(pSrcDirPrefix));
+            ASTR_DATA       *pSrcs = NodeRtnA_Srcs(pRtn, AStrC_getData(pSrcDirPrefix));
+            AStr_AppendPrint(
+                pStr,
+                "$(%s)/%s.o: %s%s.%s ",
+                AStrC_getData(this->pObjDir),
+                AStrC_getData(NodeRtnA_getName(pRtn)),
+                AStrC_getData(pSrcDirPrefix),
+                AStrC_getData(NodeRtnA_getName(pRtn)),
+                AStrC_getData(pSuffix)
+            );
+            if (pDeps) {
+                AStr_AppendPrint(
+                    pStr,
+                    "%s",
+                    AStr_getData(pDeps)
+                );
+            }
+            AStr_AppendPrint(pStr, "\n");
+            AStr_AppendPrint(
+                pStr,
+                "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $< ",
+                AStrC_getData(this->pObjDir)
+            );
+            if (pSrcs) {
+                AStr_AppendPrint(
+                    pStr,
+                    "%s",
+                    AStr_getData(pSrcs)
+                );
+            }
+            AStr_AppendPrint(pStr, "\n\n");
+            obj_Release(pDeps);
+            obj_Release(pSrcs);
+        }
+        else if (  (AStrC_CompareA(pSuffix, "asm") == ERESULT_SUCCESS_EQUAL)
+                || (AStrC_CompareA(pSuffix, "ASM") == ERESULT_SUCCESS_EQUAL)
+                || (AStrC_CompareA(pSuffix, "s") == ERESULT_SUCCESS_EQUAL)
+                || (AStrC_CompareA(pSuffix, "S") == ERESULT_SUCCESS_EQUAL)) {
+           AStr_AppendPrint(
+               pStr,
+               "$(%s)/%s.o: %s%s.%s ",
+               AStrC_getData(this->pObjDir),
+               AStrC_getData(NodeRtnA_getName(pRtn)),
+               AStrC_getData(pSrcDirPrefix),
+               AStrC_getData(NodeRtnA_getName(pRtn)),
+               AStrC_getData(pSuffix)
+           );
+           AStr_AppendPrint(
+               pStr,
+               "\t$(AS) $(AFLAGS) -o $(%s)/$(@F) $< ",
+               AStrC_getData(this->pObjDir)
+           );
+           AStr_AppendPrint(pStr, "\n\n");
+        }
+        //TODO: Put in support for other language types.
         /*****
-        eRc =   AStr_AppendPrint(
-                                pStr,
-                                "%s += $(%s)/%s.o\n\n",
-                                pObjVar,
-                                pObjDir,
-                                AStr_getData(pFileName)
-                                );
-        if ((AStr_CompareA(pFileExt, "c") == ERESULT_SUCCESS_EQUAL)
-           || (AStr_CompareA(pFileExt, "C") == ERESULT_SUCCESS_EQUAL)) {
-           eRc =   AStr_AppendPrint(
-                                    pStr,
-                                    "$(%s)/%s.o: $(%s)/%s ",
-                                    pObjDir,
-                                    AStr_getData(pFileName),
-                                    pSrcDir,
-                                    pNameA
-                                    );
-           if (pSrcDeps) {
-               iMax = nodeArray_getSize(pSrcDeps);
-               for (i=0; i<iMax; ++i) {
-                   NODE_DATA           *pNode;
-                   ASTR_DATA           *pWrkStr;
-                   pNode = nodeArray_Get(pSrcDeps, (i + 1));
-                   if (pNode) {
-                       pWrkStr = node_getData(pNode);
-                       if (pWrkStr && obj_IsKindOf(pWrkStr, OBJ_IDENT_ASTR)) {
-                           eRc =   AStr_AppendPrint(
-                                               pStr,
-                                               "$(%s)/%s ",
-                                               pSrcDir,
-                                               AStr_getData(pWrkStr)
-                                   );
-                       }
-                   }
-               }
-           }
-           eRc =   AStr_AppendA(pStr, "\n");
-           if (pFlgVar) {
-               eRc =   AStr_AppendPrint(
-                                        pStr,
-                                        "\t$(CC) $(CFLAGS) %s $(%s) -o $(%s)/$(@F) $< ",
-                                        (fCO ? "-c" : ""),
-                                        pFlgVar,
-                                        pObjDir
-                                        );
-           }
-           else {
-               eRc =   AStr_AppendPrint(
-                                        pStr,
-                                        "\t$(CC) $(CFLAGS) %s -o $(%s)/$(@F) $< ",
-                                        (fCO ? "-c" : ""),
-                                        pObjDir
-                                        );
-           }
-           if (pObjDeps) {
-               iMax = nodeArray_getSize(pObjDeps);
-               for (i=0; i<iMax; ++i) {
-                   NODE_DATA           *pNode;
-                   const
-                   char                *pStrA;
-                   pNode = nodeArray_Get(pObjDeps, (i + 1));
-                   if (pNode) {
-                       pStrA = AStr_getData((ASTR_DATA *)node_getData(pNode));
-                       if (pStrA) {
-                           eRc =   AStr_AppendPrint(
-                                                    pStr,
-                                                    "$(%s)/%s ",
-                                                    pSrcDir,
-                                                    pStrA
-                                   );
-                       }
-                   }
-               }
-           }
-        }
-        else if ((AStr_CompareA(pFileExt, "asm") == ERESULT_SUCCESS_EQUAL)
-                || (AStr_CompareA(pFileExt, "ASM") == ERESULT_SUCCESS_EQUAL)) {
-           eRc =   AStr_AppendPrint(
-                                    pStr,
-                                    "$(%s)/%s.o: $(%s)/%s\n",
-                                    pObjDir,
-                                    AStr_getData(pFileName),
-                                    pSrcDir,
-                                    pNameA
-                                    );
-           eRc =   AStr_AppendPrint(
-                                    pStr,
-                                    "\t$(AS) $(AFLAGS) %s -o $(%s)/$(@F) $<",
-                                    (fCO ? "-c" : ""),
-                                    pObjDir
-                                    );
-        }
-        else if ((AStr_CompareA(pFileExt, "s") == ERESULT_SUCCESS_EQUAL)
-                || (AStr_CompareA(pFileExt, "S") == ERESULT_SUCCESS_EQUAL)) {
-           eRc =   AStr_AppendPrint(
-                                    pStr,
-                                    "$(%s)/%s.o: $(%s)/%s\n",
-                                    pObjDir,
-                                    AStr_getData(pFileName),
-                                    pSrcDir,
-                                    pNameA
-                                    );
-           eRc =   AStr_AppendPrint(
-                                    pStr,
-                                    "\t$(AS) $(AFLAGS) -o $(%s)/$(@F) $<",
-                                    pObjDir
-                                    );
-        }
         else if ((AStr_CompareA(pFileExt, "cpp") == ERESULT_SUCCESS_EQUAL)
                 || (AStr_CompareA(pFileExt, "CPP") == ERESULT_SUCCESS_EQUAL)) {
            eRc =   AStr_AppendPrint(
@@ -761,8 +824,12 @@ extern "C" {
            eRc =   AStr_AppendA(pStr, "\n\n");
         }
          ***/
+        GenBase_Output(GenMac_getGenBase(this), pStr);
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
         
         // Return to caller.
+        obj_Release(pSrcDirPrefix);
         return OBJ_NIL;
     }
 

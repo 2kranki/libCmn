@@ -34,7 +34,7 @@
 
 
 #define			TEXTOUT_OBJECT_C	    1
-#include        <textOut_internal.h>
+#include        <TextOut_internal.h>
 
 
 
@@ -42,14 +42,14 @@
 //                  Class Object Definition
 //-----------------------------------------------------------
 
-struct textOut_class_data_s	{
+struct TextOut_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
     //uint32_t        misc;
 };
-typedef struct textOut_class_data_s TEXTOUT_CLASS_DATA;
+typedef struct TextOut_class_data_s TEXTOUT_CLASS_DATA;
 
 
 
@@ -62,18 +62,18 @@ typedef struct textOut_class_data_s TEXTOUT_CLASS_DATA;
 
 static
 const
-OBJ_INFO        textOut_Info;            // Forward Reference
+OBJ_INFO        TextOut_Info;            // Forward Reference
 
 
 
-OBJ_ID          textOut_Class(
+OBJ_ID          TextOut_Class(
     void
 );
 
 
 
 static
-bool            textOut_ClassIsKindOf(
+bool            TextOut_ClassIsKindOf(
     uint16_t		classID
 )
 {
@@ -99,12 +99,12 @@ uint16_t		obj_ClassWhoAmI(
 static
 const
 OBJ_IUNKNOWN    class_Vtbl = {
-	&textOut_Info,
-    textOut_ClassIsKindOf,
+	&TextOut_Info,
+    TextOut_ClassIsKindOf,
     obj_RetainNull,
     obj_ReleaseNull,
     NULL,
-    textOut_Class,
+    TextOut_Class,
     obj_ClassWhoAmI
 };
 
@@ -115,7 +115,7 @@ OBJ_IUNKNOWN    class_Vtbl = {
 //-----------------------------------------------------------
 
 const
-TEXTOUT_CLASS_DATA  textOut_ClassObj = {
+TEXTOUT_CLASS_DATA  TextOut_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
         sizeof(TEXTOUT_CLASS_DATA),         // cbSize
@@ -129,7 +129,7 @@ TEXTOUT_CLASS_DATA  textOut_ClassObj = {
 
 
 static
-bool            textOut_IsKindOf(
+bool            TextOut_IsKindOf(
     uint16_t		classID
 )
 {
@@ -145,21 +145,21 @@ bool            textOut_IsKindOf(
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            textOut_Dealloc(
+void            TextOut_Dealloc(
     OBJ_ID          objId
 );
 
 
-OBJ_ID          textOut_Class(
+OBJ_ID          TextOut_Class(
     void
 )
 {
-    return (OBJ_ID)&textOut_ClassObj;
+    return (OBJ_ID)&TextOut_ClassObj;
 }
 
 
 static
-uint16_t		textOut_WhoAmI(
+uint16_t		TextOut_WhoAmI(
     void
 )
 {
@@ -168,28 +168,28 @@ uint16_t		textOut_WhoAmI(
 
 
 const
-TEXTOUT_VTBL     textOut_Vtbl = {
+TEXTOUT_VTBL     TextOut_Vtbl = {
     {
-        &textOut_Info,
-        textOut_IsKindOf,
+        &TextOut_Info,
+        TextOut_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        textOut_Dealloc,
-        textOut_Class,
-        textOut_WhoAmI,
-        (P_OBJ_QUERYINFO)textOut_QueryInfo,
-        (P_OBJ_TOSTRING)textOut_ToDebugString,
-        NULL,			// textOut_Enable,
-        NULL,			// textOut_Disable,
-        NULL,			// (P_OBJ_ASSIGN)textOut_Assign,
-        NULL,			// (P_OBJ_COMPARE)textOut_Compare,
-        NULL, 			// (P_OBJ_PTR)textOut_Copy,
-        NULL 			// (P_OBJ_HASH)textOut_Hash,
+        TextOut_Dealloc,
+        TextOut_Class,
+        TextOut_WhoAmI,
+        (P_OBJ_QUERYINFO)TextOut_QueryInfo,
+        (P_OBJ_TOSTRING)TextOut_ToDebugString,
+        NULL,			// TextOut_Enable,
+        NULL,			// TextOut_Disable,
+        NULL,			// (P_OBJ_ASSIGN)TextOut_Assign,
+        NULL,			// (P_OBJ_COMPARE)TextOut_Compare,
+        NULL, 			// (P_OBJ_PTR)TextOut_Copy,
+        NULL 			// (P_OBJ_HASH)TextOut_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //textOut_IsEnabled,
+    //TextOut_IsEnabled,
  
 };
 
@@ -197,12 +197,12 @@ TEXTOUT_VTBL     textOut_Vtbl = {
 
 static
 const
-OBJ_INFO        textOut_Info = {
+OBJ_INFO        TextOut_Info = {
     "textOut",
     "Text Output",
-    (OBJ_DATA *)&textOut_ClassObj,
+    (OBJ_DATA *)&TextOut_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&textOut_Vtbl
+    (OBJ_IUNKNOWN *)&TextOut_Vtbl
 };
 
 

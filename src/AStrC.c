@@ -174,7 +174,45 @@ extern "C" {
     
     
 
+    ASTRC_DATA *    AStrC_NewFromPrint(
+        const
+        char            *pFormat,
+        ...
+    )
+    {
+        char            str[256];
+        int             size;
+        va_list         arg_ptr;
+        char            *pStrA = NULL;
+        ASTRC_DATA      *pStrC = OBJ_NIL;
+        
+        va_start( arg_ptr, pFormat );
+        str[0] = '\0';
+        size = vsnprintf(str, sizeof(str), pFormat, arg_ptr);
+        va_end( arg_ptr );
+        if (size >= sizeof(str)) {
+            ++size;
+            pStrA = (char *)mem_Malloc(size);
+            if( pStrA == NULL ) {
+                return OBJ_NIL;
+            }
+            va_start( arg_ptr, pFormat );
+            size = vsnprintf(pStrA, size, pFormat, arg_ptr);
+            va_end( arg_ptr );
+            pStrC = AStrC_NewA(pStrA);
+            mem_Free(pStrA);
+            pStrA = NULL;
+        }
+        else {
+            pStrC = AStrC_NewA(str);
+        }
+        
+        return pStrC;
+    }
     
+    
+    
+
 
     
     //===============================================================
