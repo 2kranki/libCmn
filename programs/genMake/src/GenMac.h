@@ -170,6 +170,30 @@ extern "C" {
     );
 
 
+    ERESULT_DATA *  GenMac_GenLibBegin (
+        GENMAC_DATA     *this,
+        NODELIB_DATA    *pLib
+    );
+
+
+    ERESULT_DATA *  GenMac_GenLibEnd (
+        GENMAC_DATA     *this,
+        NODELIB_DATA    *pLib
+    );
+
+
+    ERESULT_DATA *  GenMac_GenPgmBegin (
+        GENMAC_DATA     *this,
+        NODELIB_DATA    *pLib
+    );
+
+
+    ERESULT_DATA *  GenMac_GenPgmEnd (
+        GENMAC_DATA     *this,
+        NODELIB_DATA    *pLib
+    );
+
+
     GENMAC_DATA *   GenMac_Init (
         GENMAC_DATA     *this
     );

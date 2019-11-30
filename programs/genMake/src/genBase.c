@@ -318,6 +318,54 @@ extern "C" {
     
   
 
+    //---------------------------------------------------------------
+    //                      T i m e
+    //---------------------------------------------------------------
+    
+    DATETIME_DATA * GenBase_getTime (
+        GENBASE_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!GenBase_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pTime;
+    }
+    
+    
+    bool        GenBase_setTime (
+        GENBASE_DATA     *this,
+        DATETIME_DATA    *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!GenBase_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_TIME_OWNED
+        obj_Retain(pValue);
+        if (this->pTime) {
+            obj_Release(this->pTime);
+        }
+#endif
+        this->pTime = pValue;
+        
+        return true;
+    }
+            
+            
+            
 
 
     //===============================================================
@@ -535,6 +583,7 @@ extern "C" {
 
         GenBase_setOutput(this, OBJ_NIL);
         GenBase_setStr(this, OBJ_NIL);
+        GenBase_setTime(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -617,6 +666,48 @@ extern "C" {
 
 
 
+    ERESULT_DATA *  GenBase_GenHeader (
+        GENBASE_DATA    *this
+    )
+    {
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        ASTR_DATA       *pWrk =  OBJ_NIL;
+
+            // Do initialization.
+        #ifdef NDEBUG
+        #else
+        if (!GenBase_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+    #endif
+        
+        // Set up to generate Makefile entry.
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+
+        AStr_AppendA(pStr,
+                     "# Generated file - Edits will be discarded by next generation!\n");
+        if (GenBase_getTime(this)) {
+            pWrk = dateTime_ToString(GenBase_getTime(this));
+            AStr_AppendPrint(pStr, "# (%s)\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+        }
+        AStr_AppendA(pStr, "\n");
+        
+        GenBase_Output(this, pStr);
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
@@ -653,14 +744,12 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&GenBase_Vtbl);
         
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
+        this->pTime = dateTime_NewCurrent();
+        if (OBJ_NIL == this->pTime) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
 
     #ifdef NDEBUG
     #else

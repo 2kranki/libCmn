@@ -53,7 +53,10 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <dateTime.h>
 #include        <TextOut.h>
+#include        <NodeLib.h>
+#include        <NodePgm.h>
 #include        <NodeRtnA.h>
 #include        <NodeTstA.h>
 
@@ -160,12 +163,17 @@ extern "C" {
     );
 
 
-    
+    DATETIME_DATA * GenBase_getTime (
+        GENBASE_DATA    *this
+    );
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         GenBase_Disable (
+    ERESULT_DATA *  GenBase_GenHeader (
         GENBASE_DATA    *this
     );
 
@@ -175,11 +183,6 @@ extern "C" {
     );
 
 
-    ERESULT         GenBase_IsEnabled (
-        GENBASE_DATA    *this
-    );
-    
- 
      /*!
       Output the given AStr object.
       @param     this    object pointer

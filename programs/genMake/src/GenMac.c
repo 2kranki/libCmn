@@ -650,7 +650,7 @@ extern "C" {
             AStr_AppendA(pStr, "\n");
             AStr_AppendPrint(
                 pStr,
-                "\t$(CC) $(CFLAGS) $(TEST_FLGS) -o $(%s)/$(@F) $(%s)",
+                "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(%s)/$(@F) $(%s)",
                 AStrC_getData(this->pTstBin),
                 AStrC_getData(this->pObjVar)
             );
@@ -731,7 +731,9 @@ extern "C" {
             AStrC_getData(NodeRtnA_getName(pRtn))
         );
         if ((AStrC_CompareA(pSuffix, "c") == ERESULT_SUCCESS_EQUAL)
-           || (AStrC_CompareA(pSuffix, "C") == ERESULT_SUCCESS_EQUAL)) {
+            || (AStrC_CompareA(pSuffix, "C") == ERESULT_SUCCESS_EQUAL)
+            || (AStrC_CompareA(pSuffix, "cpp") == ERESULT_SUCCESS_EQUAL)
+            || (AStrC_CompareA(pSuffix, "CPP") == ERESULT_SUCCESS_EQUAL)) {
             ASTR_DATA       *pDeps = NodeRtnA_Deps(pRtn, AStrC_getData(pSrcDirPrefix));
             ASTR_DATA       *pSrcs = NodeRtnA_Srcs(pRtn, AStrC_getData(pSrcDirPrefix));
             AStr_AppendPrint(
@@ -830,6 +832,157 @@ extern "C" {
         
         // Return to caller.
         obj_Release(pSrcDirPrefix);
+        return OBJ_NIL;
+    }
+
+
+
+    ERESULT_DATA *  GenMac_GenLibBegin (
+        GENMAC_DATA     *this,
+        NODELIB_DATA    *pLib
+    )
+    {
+        ASTR_DATA       *pStr =  OBJ_NIL;
+
+            // Do initialization.
+        #ifdef NDEBUG
+        #else
+        if (!GenMac_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pLib) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pLib, OBJ_IDENT_NODELIB)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+    #endif
+        
+        // Set up to generate Makefile entry.
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+
+        GenBase_GenHeader(GenMac_getGenBase(this));
+        
+        //AStr_AppendPrint(pStr, "CC=clang\n");
+        AStr_AppendPrint(pStr, "LIBNAM=lib%s\n", AStrC_getData(NodeLib_getName(pLib)));
+        AStr_AppendA(pStr, "SYS=macos64\n");
+        AStr_AppendA(pStr, "TEMP=/tmp\nBASEDIR = $(TEMP)/$(LIBNAM)\n\n");
+        AStr_AppendA(pStr, "CFLAGS_LIBS = \n");
+        AStr_AppendA(pStr, "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n");
+        AStr_AppendA(pStr, "CFLAGS += -D__MACOS64_ENV__\n");
+        AStr_AppendA(pStr, "CFLAGS_TEST = -Itests $(CFLAGS_LIBS) -lcurses\n");
+        AStr_AppendA(pStr, "\n");
+
+        AStr_AppendA(pStr, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
+        AStr_AppendA(pStr, "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n");
+        AStr_AppendA(pStr, "LIBDIR = $(BASEDIR)/$(SYS)\n");
+        AStr_AppendA(pStr, "SRCDIR = ./src\n");
+        AStr_AppendA(pStr, "SRCSYSDIR = ./src/$(SYS)\n");
+        AStr_AppendA(pStr, "TEST_SRC = ./tests\n");
+        AStr_AppendA(pStr, "ifdef  NDEBUG\n");
+        AStr_AppendA(pStr, "CFLAGS += -DNDEBUG\n");
+        AStr_AppendA(pStr, "LIB_FILENAME=$(LIBNAM)R.a\n");
+        AStr_AppendA(pStr, "OBJDIR = $(LIBDIR)/o/r\n");
+        AStr_AppendA(pStr, "else   #DEBUG\n");
+        AStr_AppendA(pStr, "CFLAGS += -D_DEBUG\n");
+        AStr_AppendA(pStr, "LIB_FILENAME=$(LIBNAM)D.a\n");
+        AStr_AppendA(pStr, "OBJDIR = $(LIBDIR)/o/d\n");
+        AStr_AppendA(pStr, "endif  #NDEBUG\n");
+        AStr_AppendA(pStr, "TEST_OBJ = $(OBJDIR)/tests\n");
+        AStr_AppendA(pStr, "TEST_BIN = $(OBJDIR)/tests\n");
+        AStr_AppendA(pStr, "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n");
+        
+        AStr_AppendA(pStr, ".SUFFIXES:\n");
+        AStr_AppendA(pStr, ".SUFFIXES: .asm .c .cpp .o\n");
+        AStr_AppendA(pStr, "\n");
+
+        AStr_AppendPrint(pStr, "%s =\n\n", AStrC_getData(this->pObjVar));
+        AStr_AppendPrint(pStr, "%s =\n\n", AStrC_getData(this->pTstVar));
+        AStr_AppendA(pStr, "\n");
+
+        GenBase_Output(GenMac_getGenBase(this), pStr);
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        
+        // Return to caller.
+        //obj_Release(pSrcDirPrefix);
+        return OBJ_NIL;
+    }
+
+
+
+    ERESULT_DATA *  GenMac_GenLibEnd (
+        GENMAC_DATA     *this,
+        NODELIB_DATA    *pLib
+    )
+    {
+        ASTR_DATA       *pStr =  OBJ_NIL;
+
+            // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!GenMac_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pLib) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pLib, OBJ_IDENT_NODELIB)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        
+        // Set up to generate Makefile entry.
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+        }
+
+         AStr_AppendPrint(pStr, "$(LIBPATH):  $(%s)\n", AStrC_getData(this->pObjVar));
+         AStr_AppendA(pStr, "\t-cd $(LIBDIR) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n");
+         AStr_AppendPrint(pStr, "\tar rc $(LIBPATH) $(%s)\n\n\n\n", AStrC_getData(this->pObjVar));
+         AStr_AppendA(pStr, ".PHONY: test\n");
+         AStr_AppendPrint(pStr, "test: $(%s)\n\n\n", AStrC_getData(this->pTstVar));
+         
+         AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
+         AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n");
+
+         AStr_AppendA(pStr, ".PHONY: install\ninstall:\n");
+         AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n");
+         AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; "
+                      "[ ! -d $(LIBNAM)/include ] && "
+                      "mkdir -p $(LIBNAM)/include/$(SYS)\n");
+         AStr_AppendA(pStr, "\tcp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a\n");
+         AStr_AppendA(pStr, "\tcp src/*.h $(INSTALLDIR)/include/\n");
+         AStr_AppendA(pStr, "\tif [ -d src/$(SYS) ]; then \\\n");
+         AStr_AppendA(pStr, "\t\tcp src/$(SYS)/*.h $(INSTALLDIR)/include/$(SYS)/; \\\n");
+         AStr_AppendA(pStr, "\tfi\n\n\n");
+
+        AStr_AppendA(pStr, ".PHONY: create_dirs\n");
+        AStr_AppendA(pStr, "create_dirs:\n");
+        AStr_AppendPrint(pStr,
+                     "\t[ ! -d $(%s) ] && mkdir -p $(%s)/tests\n\n\n",
+                      AStrC_getData(this->pObjDir),
+                      AStrC_getData(this->pObjDir)
+        );
+         
+        AStr_AppendA(pStr, ".PHONY: all\n");
+        AStr_AppendA(pStr, "all:  clean create_dirs $(LIBPATH)\n\n\n\n");
+
+        GenBase_Output(GenMac_getGenBase(this), pStr);
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        // Return to caller.
         return OBJ_NIL;
     }
 

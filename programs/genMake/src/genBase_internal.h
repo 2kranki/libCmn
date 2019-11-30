@@ -49,6 +49,7 @@
 
 
 #define     PROPERTY_STR_OWNED 1
+#define     PROPERTY_TIME_OWNED 1
 
 
 
@@ -75,6 +76,7 @@ struct GenBase_data_s	{
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
     TEXTOUT_DATA    *pOut;
+    DATETIME_DATA   *pTime;
 
 };
 #pragma pack(pop)
