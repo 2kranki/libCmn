@@ -42,9 +42,12 @@
 
 /* Header File Inclusion */
 #include        <Main_internal.h>
-#include        <hjson.h>
+#include        <ExpandNodes.h>
+#include        <GenMac.h>
+#include        <GenWin.h>
 #include        <jsonIn.h>
 #include        <srcErrors.h>
+#include        <SrcParse.h>
 #include        <trace.h>
 
 
@@ -54,29 +57,36 @@ extern "C" {
 #endif
     
 
-    ERESULT         Main_ArgLibInclude(
+    ERESULT         Main_ArgLibInclude (
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     );
-    ERESULT         Main_ArgMacos(
+    ERESULT         Main_ArgMacos32 (
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     );
-    ERESULT         Main_ArgMsc32(
+    ERESULT         Main_ArgMacos64 (
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     );
-    ERESULT         Main_ArgMsc64(
+    ERESULT         Main_ArgMsc32 (
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     );
-    ERESULT         Main_DefaultsMacos(
+    ERESULT         Main_ArgMsc64 (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    );
+    ERESULT         Main_DefaultsMacos32 (
         MAIN_DATA       *this
     );
-    ERESULT         Main_DefaultsMsc32(
+    ERESULT         Main_DefaultsMacos64 (
         MAIN_DATA       *this
     );
-    ERESULT         Main_DefaultsMsc64(
+    ERESULT         Main_DefaultsMsc32 (
+        MAIN_DATA       *this
+    );
+    ERESULT         Main_DefaultsMsc64 (
         MAIN_DATA       *this
     );
 
@@ -111,12 +121,21 @@ extern "C" {
             "Library Include Base Path"
         },
         {
-            "macos",
+            "macos32",
             'X',
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_EXEC,
             0,
-            (void *)Main_ArgMacos,
+            (void *)Main_ArgMacos32,
+            "Generate MacOS Makefile (default)"
+        },
+        {
+            "macos64",
+            'X',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_ArgMacos64,
             "Generate MacOS Makefile (default)"
         },
         {
@@ -170,7 +189,7 @@ extern "C" {
     //                     A r g  R o u t i n e s
     //---------------------------------------------------------------
     
-    ERESULT         Main_ArgLibInclude(
+    ERESULT         Main_ArgLibInclude (
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     )
@@ -193,7 +212,7 @@ extern "C" {
     }
     
     
-    ERESULT         Main_ArgMacos(
+    ERESULT         Main_ArgMacos32 (
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     )
@@ -209,14 +228,37 @@ extern "C" {
         }
 #endif
         
-        eRc = Main_DefaultsMacos(this);
+        eRc = Main_DefaultsMacos32(this);
         
         // Return to caller.
         return ERESULT_SUCCESS;
     }
     
     
-    ERESULT         Main_ArgMsc32(
+    ERESULT         Main_ArgMacos64 (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = Main_DefaultsMacos64(this);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+        
+        
+    ERESULT         Main_ArgMsc32 (
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     )
@@ -239,7 +281,7 @@ extern "C" {
     }
     
     
-    ERESULT         Main_ArgMsc64(
+    ERESULT         Main_ArgMsc64 (
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     )
@@ -267,7 +309,7 @@ extern "C" {
     //                D e f a u l t  R o u t i n e s
     //---------------------------------------------------------------
     
-    ERESULT         Main_DefaultsMacos(
+    ERESULT         Main_DefaultsMacos32 (
         MAIN_DATA       *this
     )
     {
@@ -281,14 +323,35 @@ extern "C" {
         }
 #endif
         
-        this->osType = OSTYPE_MACOS;
+        this->osType = OSTYPE_MACOS32;
 
         // Return to caller.
         return ERESULT_SUCCESS;
     }
     
     
-    ERESULT         Main_DefaultsMsc32(
+    ERESULT         Main_DefaultsMacos64 (
+        MAIN_DATA       *this
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        this->osType = OSTYPE_MACOS64;
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+        
+        
+    ERESULT         Main_DefaultsMsc32 (
         MAIN_DATA       *this
     )
     {
@@ -309,7 +372,7 @@ extern "C" {
     }
     
     
-    ERESULT         Main_DefaultsMsc64(
+    ERESULT         Main_DefaultsMsc64 (
         MAIN_DATA       *this
     )
     {
@@ -371,7 +434,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    MAIN_DATA *     Main_Alloc(
+    MAIN_DATA *     Main_Alloc (
     )
     {
         MAIN_DATA       *this;
@@ -387,7 +450,7 @@ extern "C" {
 
 
 
-    MAIN_DATA *     Main_New(
+    MAIN_DATA *     Main_New (
         void
     )
     {
@@ -432,7 +495,7 @@ extern "C" {
     //                      A p p l i c a t i o n
     //---------------------------------------------------------------
     
-    APPL_DATA *     Main_getAppl(
+    APPL_DATA *     Main_getAppl (
         MAIN_DATA       *this
     )
     {
@@ -455,7 +518,7 @@ extern "C" {
     //                  D i c t i o n a r y
     //---------------------------------------------------------------
     
-    DICT_DATA *     Main_getDict(
+    DICT_DATA *     Main_getDict (
         MAIN_DATA       *this
     )
     {
@@ -473,7 +536,7 @@ extern "C" {
     }
     
     
-    bool            Main_setDict(
+    bool            Main_setDict (
         MAIN_DATA       *this,
         DICT_DATA       *pValue
     )
@@ -501,7 +564,7 @@ extern "C" {
     //                  F i l e  P a t h
     //---------------------------------------------------------------
     
-    PATH_DATA *     Main_getFilePath(
+    PATH_DATA *     Main_getFilePath (
         MAIN_DATA       *this
     )
     {
@@ -519,7 +582,7 @@ extern "C" {
     }
     
     
-    bool            Main_setFilePath(
+    bool            Main_setFilePath (
         MAIN_DATA       *this,
         PATH_DATA       *pValue
     )
@@ -547,7 +610,7 @@ extern "C" {
     //                          N o d e s
     //---------------------------------------------------------------
     
-    NODE_DATA *     Main_getNodes(
+    NODE_DATA *     Main_getNodes (
         MAIN_DATA       *this
     )
     {
@@ -565,7 +628,7 @@ extern "C" {
     }
     
     
-    bool            Main_setNodes(
+    bool            Main_setNodes (
         MAIN_DATA       *this,
         NODE_DATA       *pValue
     )
@@ -593,7 +656,7 @@ extern "C" {
     //                      O/S  T y p e
     //---------------------------------------------------------------
     
-    uint16_t        Main_getOsType(
+    uint16_t        Main_getOsType (
         MAIN_DATA       *this
     )
     {
@@ -611,7 +674,7 @@ extern "C" {
     }
     
     
-    bool            Main_setOsType(
+    bool            Main_setOsType (
         MAIN_DATA       *this,
         uint16_t        value
     )
@@ -635,7 +698,7 @@ extern "C" {
     //                      O u t p u t
     //---------------------------------------------------------------
     
-    TEXTOUT_DATA *  Main_getOutput(
+    TEXTOUT_DATA *  Main_getOutput (
         MAIN_DATA       *this
     )
     {
@@ -653,7 +716,7 @@ extern "C" {
     }
     
     
-    bool            Main_setOutput(
+    bool            Main_setOutput (
         MAIN_DATA       *this,
         TEXTOUT_DATA    *pValue
     )
@@ -681,7 +744,7 @@ extern "C" {
     //                  O u t p u t  P a t h
     //---------------------------------------------------------------
     
-    PATH_DATA *     Main_getOutputPath(
+    PATH_DATA *     Main_getOutputPath (
         MAIN_DATA       *this
     )
     {
@@ -699,7 +762,7 @@ extern "C" {
     }
     
     
-    bool            Main_setOutputPath(
+    bool            Main_setOutputPath (
         MAIN_DATA       *this,
         PATH_DATA       *pValue
     )
@@ -727,7 +790,7 @@ extern "C" {
     //                      O u t  T y p e
     //---------------------------------------------------------------
     
-    uint16_t        Main_getOutType(
+    uint16_t        Main_getOutType (
         MAIN_DATA       *this
     )
     {
@@ -745,7 +808,7 @@ extern "C" {
     }
     
     
-    bool            Main_setOutType(
+    bool            Main_setOutType (
         MAIN_DATA       *this,
         uint16_t        value
     )
@@ -766,10 +829,56 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      P a r s e r
+    //---------------------------------------------------------------
+    
+    SRCPARSE_DATA * Main_getParser (
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pParser;
+    }
+    
+    
+    bool            Main_setParser (
+        MAIN_DATA       *this,
+        SRCPARSE_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pParser) {
+            obj_Release(this->pParser);
+        }
+        this->pParser = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        Main_getPriority(
+    uint16_t        Main_getPriority (
         MAIN_DATA     *this
     )
     {
@@ -788,7 +897,7 @@ extern "C" {
     }
 
 
-    bool            Main_setPriority(
+    bool            Main_setPriority (
         MAIN_DATA     *this,
         uint16_t        value
     )
@@ -812,7 +921,7 @@ extern "C" {
     //                      R o u t i n e s
     //---------------------------------------------------------------
     
-    NODEARRAY_DATA * Main_getRoutines(
+    NODEARRAY_DATA * Main_getRoutines (
         MAIN_DATA       *this
     )
     {
@@ -830,7 +939,7 @@ extern "C" {
     }
     
     
-    bool            Main_setRoutines(
+    bool            Main_setRoutines (
         MAIN_DATA       *this,
         NODEARRAY_DATA  *pValue
     )
@@ -858,7 +967,7 @@ extern "C" {
     //                          S i z e
     //---------------------------------------------------------------
     
-    uint32_t        Main_getSize(
+    uint32_t        Main_getSize (
         MAIN_DATA       *this
     )
     {
@@ -879,10 +988,11 @@ extern "C" {
     //                          S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA *     Main_getStr(
+    ASTR_DATA *     Main_getStr (
         MAIN_DATA       *this
     )
     {
+        ASTR_DATA       *pStr = OBJ_NIL;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -897,7 +1007,10 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        return TextOut_getStr(this->pOutput);
+        if (TextOut_IsString(this->pOutput))
+            pStr = TextOut_getStr(this->pOutput);
+        
+        return pStr;
     }
     
     
@@ -906,7 +1019,7 @@ extern "C" {
     //                      T e s t s
     //---------------------------------------------------------------
     
-    NODEARRAY_DATA * Main_getTests(
+    NODEARRAY_DATA * Main_getTests (
         MAIN_DATA       *this
     )
     {
@@ -924,7 +1037,7 @@ extern "C" {
     }
     
     
-    bool            Main_setTests(
+    bool            Main_setTests (
         MAIN_DATA       *this,
         NODEARRAY_DATA  *pValue
     )
@@ -952,7 +1065,7 @@ extern "C" {
     //                          V e r b o s e
     //---------------------------------------------------------------
     
-    int             Main_getVerbose(
+    int             Main_getVerbose (
         MAIN_DATA       *this
     )
     {
@@ -998,7 +1111,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
-    ERESULT         Main_Assign(
+    ERESULT         Main_Assign (
         MAIN_DATA		*this,
         MAIN_DATA       *pOther
     )
@@ -1055,6 +1168,90 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //               C r e a t e  I n p u t  P a t h
+    //---------------------------------------------------------------
+
+    PATH_DATA *     Main_CheckInputPath (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pDrive = OBJ_NIL;
+        PATH_DATA       *pDir = OBJ_NIL;
+        PATH_DATA       *pFileName = OBJ_NIL;
+        PATH_DATA       *pArgDir = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        TRC_OBJ(this, "Main_CreateOutputPath(%s)\n", pStr ? AStr_getData(pStr) : "");
+        
+        pPath = path_NewFromAStr(pStr);
+        appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pPath),
+                    "FATAL - Failed to create path \"from\" \n"
+        );
+        eRc = path_Clean(pPath);
+        appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - File, %s, does not exist or is not a file!\n",
+                    path_getData(pPath)
+        );
+        eRc = path_IsFile(pPath);
+        appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - File, %s, does not exist or is not a file!\n",
+                    path_getData(pPath)
+        );
+        eRc = path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
+        appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - Unable to extract directory from File, %s!\n",
+                    path_getData(pPath)
+        );
+        pArgDir = path_NewFromDriveDirFilename(pDrive, pDir, OBJ_NIL);
+        appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pArgDir),
+                    "FATAL - Unable to extract directory from File, %s!\n",
+                    path_getData(pPath)
+        );
+        eRc = Dict_AddA(Main_getDict(this), srcBaseID, (void *)pArgDir);
+        
+        eRc = Dict_AddA(Main_getDict(this), srcFileID, path_getData(pPath));
+        if (ERESULT_FAILED(eRc) ) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Failed to add 'srcFile' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+
+        // Return to caller.
+        obj_Release(pArgDir);
+        pArgDir = OBJ_NIL;
+        obj_Release(pDrive);
+        pDrive = OBJ_NIL;
+        obj_Release(pDir);
+        pDrive = OBJ_NIL;
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+        return pPath;
+    }
+            
+            
+            
+    //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     
@@ -1069,7 +1266,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned the MAIN object.
      */
-    MAIN_DATA *     Main_Copy(
+    MAIN_DATA *     Main_Copy (
         MAIN_DATA       *this
     )
     {
@@ -1102,10 +1299,130 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //               C r e a t e  O u t p u t  P a t h
+    //---------------------------------------------------------------
+
+    PATH_DATA *     Main_CreateOutputPath (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr,
+        const
+        char            *pOsNameA
+    )
+    {
+        PATH_DATA       *pPath = OBJ_NIL;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pDrive = OBJ_NIL;
+        PATH_DATA       *pDir = OBJ_NIL;
+        PATH_DATA       *pFileName = OBJ_NIL;
+        PATH_DATA       *pArgDir = OBJ_NIL;
+        PATH_DATA       *pMakefile = OBJ_NIL;
+        PATH_DATA       *pMakepath = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        
+        pPath = path_NewFromAStr(pStr);
+        appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pPath),
+                    "FATAL - Failed to create path \"from\" \n"
+        );
+        eRc = path_Clean(pPath);
+        appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - File, %s, does not exist or is not a file!\n",
+                    path_getData(pPath)
+        );
+        eRc = path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
+        appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - Unable to extract directory from File, %s!\n",
+                    path_getData(pPath)
+        );
+
+        // Create the output file path if given.
+        pMakefile = path_NewA("Makefile.");
+        if (OBJ_NIL == pMakefile) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL - Unable to create Makefile name!\n"
+                    );
+            exit(EXIT_FAILURE);
+        }
+        eRc = path_AppendA(pMakefile, this->pOsName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(
+                    stderr,
+                    "FATAL - Unable to create Makefile name!\n"
+                    );
+            exit(EXIT_FAILURE);
+        }
+        eRc = path_AppendA(pMakefile, ".txt");
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(
+                    stderr,
+                    "FATAL - Unable to create Makefile name!\n"
+                    );
+            exit(EXIT_FAILURE);
+        }
+        pMakepath = path_NewFromDriveDirFilename(pDrive, pDir, pMakefile);
+        if (OBJ_NIL == pMakefile) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL - Unable to create Makepath!\n"
+                    );
+            exit(EXIT_FAILURE);
+        }
+        eRc = path_ExpandVars(pMakepath, this->pDict);
+        if (ERESULT_FAILED(eRc) ) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Failed to expand Makepath\n");
+            exit(EXIT_FAILURE);
+        }
+        eRc = path_IsFile(pMakepath);
+        if (!ERESULT_FAILED(eRc) && this->fBackup) {
+            eRc = path_VersionedRename(pMakepath);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to back up old Makefile\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+        
+        // Return to caller.
+        obj_Release(pArgDir);
+        pArgDir = OBJ_NIL;
+        obj_Release(pDrive);
+        pDrive = OBJ_NIL;
+        obj_Release(pDir);
+        pDrive = OBJ_NIL;
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        return pMakepath;
+    }
+        
+        
+        
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            Main_Dealloc(
+    void            Main_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -1138,6 +1455,7 @@ extern "C" {
         Main_setNodes(this, OBJ_NIL);
         Main_setOutput(this, OBJ_NIL);
         Main_setOutputPath(this, OBJ_NIL);
+        Main_setParser(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1154,7 +1472,7 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         Main_Disable(
+    ERESULT         Main_Disable (
         MAIN_DATA		*this
     )
     {
@@ -1185,7 +1503,7 @@ extern "C" {
     //                          E x e c
     //---------------------------------------------------------------
 
-    int             Main_Exec(
+    int             Main_Exec (
         MAIN_DATA       *this
     )
     {
@@ -1243,21 +1561,22 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                  G e n  M a k e  F i l e
+    //                  G e n  M a k e f i l e
     //---------------------------------------------------------------
     
-    ERESULT         Main_GenMakefile(
+    ERESULT         Main_GenMakefile (
         MAIN_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
+        ERESULT_DATA    *pErr;
+        SRCPARSE_DATA   *pPrs = this->pParser;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODEHASH_DATA   *pHash = OBJ_NIL;
-        NODEHASH_DATA   *pHashWrk = OBJ_NIL;
-        //FIXME: GENBASE_DATA    *pGen;
-        //FIXME: DBPRS_DATA      *pPrs;
+        EXPANDNODES_DATA *pExpand = OBJ_NIL;
+        GENMAC_DATA     *pMac = OBJ_NIL;
+        GENWIN_DATA     *pWin = OBJ_NIL;
+        NODELIB_DATA    *pLib = OBJ_NIL;
+        NODEPGM_DATA    *pPgm = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1266,42 +1585,124 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if (OBJ_NIL == pPrs) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_MISSING;
+        }
         if (OBJ_NIL == this->pDict) {
             DEBUG_BREAK();
             return ERESULT_DATA_MISSING;
         }
-        if (OBJ_NIL == this->pNodes) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_MISSING;
-        }
 #endif
+     
+        pLib = SrcParse_getLib(pPrs);
+        if (OBJ_NIL == pLib) {
+            pPgm = SrcParse_getPgm(pPrs);
+            if (OBJ_NIL == pPgm) {
+                fprintf(stderr, "Error - Neither Program nor Library Nodes found in source!");
+                exit(12);
+            }
+        }
+
+        /*
+         Expand will take the JSON described Objects and Routines and
+         convert them into 1 or more simple routines/tests. The simple
+         routines/tests are then easily converted to Makefile entries.
+         */
+        pExpand = ExpandNodes_New();
+        if (OBJ_NIL == pExpand) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        // Expand the Objects.
+        pArray = SrcParse_getObjs(pPrs);
+        if (pArray) {
+            pErr = ExpandNodes_ExpandObjs(pExpand, pArray);
+            if (pErr) {
+                eResult_Fprint(pErr, stderr);
+                exit(12);
+            }
+            ExpandNodes_Sort(pExpand);
+        }
+
+        // Expand the Routines.
+        pArray = SrcParse_getRtns(pPrs);
+        if (pArray) {
+            pErr = ExpandNodes_ExpandRtns(pExpand, pArray);
+            if (pErr) {
+                eResult_Fprint(pErr, stderr);
+                exit(12);
+            }
+            ExpandNodes_Sort(pExpand);
+        }
+
+        pErr = ExpandNodes_CheckNodes(pExpand, this->pOsArch, this->pOsName);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+            exit(12);
+        }
+
+        /*  Now pExpand contains two arrays, Routines and Tests. Routines
+            are compile only and form the library or program parts. Tests
+            are full programs used to test the parts. These two arrays
+            plus the lib/pgm node are all that is needed to generate the
+            makefile.
+         */
         
         // Set up the O/S Generator.
         switch (this->osType) {
                 
-            case OSTYPE_MACOS:
-                //FIXME: below
-                /*
-                pGen = (OBJ_ID)genOSX_New(this->pDict);
-                if (pGen) {
-                    if (obj_Trace(this) || appl_getDebug((APPL_DATA *)this)) {
-                        obj_TraceSet(pGen, true);
+            case OSTYPE_MACOS32:
+            case OSTYPE_MACOS64:
+                pMac = GenMac_New();
+                GenMac_SetupDefaults(pMac);
+                GenMac_setOutput(pMac, this->pOutput);
+                
+                if (pLib) {
+                    pErr = GenMac_GenLibBegin(pMac, pLib);
+                } else {
+                    pErr = GenMac_GenPgmBegin(pMac, pPgm);
+                }
+                if (pErr) {
+                    eResult_Fprint(pErr, stderr);
+                    exit(12);
+                }
+
+                pArray = ExpandNodes_getRtns(pExpand);
+                if (pArray) {
+                    pErr = GenMac_GenCompileRtns(pMac, pArray);
+                    if (pErr) {
+                        eResult_Fprint(pErr, stderr);
+                        exit(12);
                     }
                 }
-                 */
+                
+                pArray = ExpandNodes_getTests(pExpand);
+                if (pArray) {
+                    pErr = GenMac_GenBuildTests(pMac, pArray);
+                    if (pErr) {
+                        eResult_Fprint(pErr, stderr);
+                        exit(12);
+                    }
+                }
+
+                if (pLib) {
+                    pErr = GenMac_GenLibEnd(pMac, pLib);
+                } else {
+                    pErr = GenMac_GenPgmEnd(pMac, pPgm);
+                }
+                if (pErr) {
+                    eResult_Fprint(pErr, stderr);
+                    exit(12);
+                }
+
                 break;
                 
             case OSTYPE_MSC32:
             case OSTYPE_MSC64:
-                //FIXME: below
-                /*
-                pGen = (OBJ_ID)genWIN_New(this->pDict);
-                if (pGen) {
-                    if (obj_Trace(this) || appl_getDebug((APPL_DATA *)this)) {
-                        obj_TraceSet(pGen, true);
-                    }
-                }
-                 */
+                pWin = GenWin_New();
+                //FIXME: Needs to be implemented.
                 break;
                 
             default:
@@ -1311,256 +1712,14 @@ extern "C" {
                 );
                 exit(8);
         }
-        //FIXME: below
-        /*
-        if (OBJ_NIL == pGen) {
-            fprintf(stderr, "FATAL - Could not create generator object!\n\n\n");
-            exit(12);
-        }
-         */
-        
-        // Set up a Parser and Generator for the input.
-        //FIXME: pPrs = dbprs_NewWithDictAndGen(this->pDict, pGen);
-        /*
-        if (OBJ_NIL == pPrs) {
-            fprintf(stderr, "FATAL - Could not create database parser object!\n\n\n");
-            exit(12);
-        }
-         */
-        //FIXME: dbprs_setNodes(pPrs, this->pNodes);
-        
-        pHash = node_getData(this->pNodes);
-        if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_DATA;
-        }
-        
-        // Handle "library" or "program" section of source file.
-        pNode = nodeHash_FindA(pHash, 0, "library");
-        if (pNode) {
-            if (Main_getVerbose(this)) {
-                fprintf(stderr, "Generating Library Header...\n");
-            }
-            pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
-            if (pHashWrk) {
-                //FIXME: genBase_setMakeType(pGen, GENMAKE_TYPE_LIB);
-                //FIXME: eRc = dbprs_ParseLibrary(pPrs, pHashWrk);
-                if (ERESULT_FAILED(eRc)) {
-                    fprintf(
-                            stderr,
-                            "FATAL - Could not parse \"library\" "
-                            "node in database hash object!\n\n\n"
-                            );
-                    exit(12);
-                }
-                Main_setOutType(this, OUTTYPE_LIB);
-            }
-            else {
-                fprintf(
-                        stderr,
-                        "FATAL - Found \"library\" "
-                        "node in database, but it is not a hash object!\n\n\n"
-                        );
-                exit(12);
-            }
-        }
-        else {
-            pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "program");
-            if (pNode) {
-                if (Main_getVerbose(this)) {
-                    fprintf(stderr, "Generating Program Header...\n");
-                }
-                pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
-                if (pHashWrk) {
-                    //FIXME: genBase_setMakeType(pGen, GENMAKE_TYPE_PGM);
-                    //FIXME: eRc = dbprs_ParseProgram(pPrs, pHashWrk);
-                    if (ERESULT_FAILED(eRc)) {
-                        fprintf(
-                                stderr,
-                                "FATAL - Could not parse \"program\" "
-                                "node in database hash object!\n\n\n"
-                                );
-                        exit(12);
-                    }
-                    Main_setOutType(this, OUTTYPE_CLP);
-                }
-                else {
-                    fprintf(
-                            stderr,
-                            "FATAL - Found \"program\" "
-                            "node in database, but it is not a hash object!\n\n\n"
-                            );
-                    exit(12);
-                }
-            }
-            else {
-                fprintf(
-                        stderr,
-                        "FATAL - Could not find \"library\" or"
-                        " \"program\" node in database hash object!\n\n\n"
-                        );
-                exit(12);
-            }
-        }
-
-        // Handle "objects" section of source file.
-        pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "objects");
-        if (pNode) {
-            //NODEARRAY_DATA  *pArray = OBJ_NIL;
-            if (Main_getVerbose(this)) {
-                fprintf(stderr, "Generating Object(s) compile/testing...\n");
-            }
-            pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
-            if (pHashWrk) {
-                //FIXME: eRc = dbprs_ParseObjects(pPrs, pHashWrk, &pArray);
-                if (ERESULT_FAILED(eRc)) {
-                    fprintf(
-                            stderr,
-                            "FATAL - Could not parse \"objects\" "
-                            "node in database hash object!\n\n\n"
-                            );
-                    exit(12);
-                }
-                //TODO: Do something with pArray!
-            }
-            else {
-                fprintf(
-                        stderr,
-                        "FATAL - Found \"objects\" "
-                        "node in database, but it is not a hash object!\n\n\n"
-                        );
-                exit(12);
-            }
-        }
-        
-        // Handle "routines" section of source file.
-        pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "routines");
-        if (pNode) {
-            if (Main_getVerbose(this)) {
-                fprintf(stderr, "Generating Routine(s) compilation...\n");
-            }
-            pArray = jsonIn_CheckNodeDataForArray(pNode);
-            if (pArray) {
-                //FIXME: eRc = dbprs_ParseRoutines(pPrs, pArray);
-            }
-            else {
-                fprintf(
-                        stderr,
-                        "FATAL - Found \"routines\" "
-                        "node in database, but it is not an array object!\n\n\n"
-                        );
-                exit(12);
-            }
-        }
-        
-        // Handle "tests" section of source file.
-        pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "tests");
-        if (pNode) {
-            if (Main_getVerbose(this)) {
-                fprintf(stderr, "Generating extra Tests...\n");
-            }
-            pArray = jsonIn_CheckNodeDataForArray(pNode);
-            if (pArray) {
-                //FIXME: eRc = dbprs_ParseTests(pPrs, pArray);
-            }
-            else {
-                fprintf(
-                        stderr,
-                        "FATAL - Found \"tests\" "
-                        "node in database, but it is not an array object!\n\n\n"
-                        );
-                exit(12);
-            }
-        }
-        
-        // Handle O/S section of source file.
-        switch (this->osType) {
-                
-            case OSTYPE_MACOS:
-                pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "macosx");
-                if (pNode) {
-                    if (Main_getVerbose(this)) {
-                        fprintf(stderr, "Generating MacOS routines...\n");
-                    }
-                    pArray = jsonIn_CheckNodeDataForArray(pNode);
-                    if (pArray) {
-                        //FIXME: eRc = dbprs_ParseRoutines(pPrs, pArray);
-                    }
-                    else {
-                        fprintf(
-                                stderr,
-                                "FATAL - Found \"macosx\" "
-                                "node in database, but it is not an array object!\n\n\n"
-                                );
-                        exit(12);
-                    }
-                }
-                
-                break;
-                
-            case OSTYPE_MSC32:
-                pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "win32");
-                if (pNode) {
-                    if (Main_getVerbose(this)) {
-                        fprintf(stderr, "Generating Win32 routines...\n");
-                    }
-                    pArray = jsonIn_CheckNodeDataForArray(pNode);
-                    if (pArray) {
-                        //FIXME: eRc = dbprs_ParseRoutines(pPrs, pArray);
-                    }
-                    else {
-                        fprintf(
-                                stderr,
-                                "FATAL - Found \"win32\" "
-                                "node in database, but it is not an array object!\n\n\n"
-                                );
-                        exit(12);
-                    }
-                }
-                break;
-                
-            case OSTYPE_MSC64:
-                pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "win64");
-                if (pNode) {
-                    if (Main_getVerbose(this)) {
-                        fprintf(stderr, "Generating Win64 routines...\n");
-                    }
-                    pArray = jsonIn_CheckNodeDataForArray(pNode);
-                    if (pArray) {
-                        //FIXME: eRc = dbprs_ParseRoutines(pPrs, pArray);
-                    }
-                    else {
-                        fprintf(
-                                stderr,
-                                "FATAL - Found \"win64\" "
-                                "node in database, but it is not an array object!\n\n\n"
-                                );
-                        exit(12);
-                    }
-                }
-                break;
-                
-            default:
-                appl_Usage(
-                           (APPL_DATA *)this,
-                           "ERROR - Failed to indicate type of makefile to generate!\n\n\n"
-                           );
-                exit(8);
-        }
-        
-        // Generate the trailing part of the Makefile.
-        //FIXME: eRc = dbprs_Finalize(pPrs);
-        
-        //FIXME: pStr = dbprs_getStr(pPrs);
-        if (pStr) {
-            TextOut_PutA(this->pOutput, AStr_getData(pStr));
-        }
         
         // Return to caller.
-        //FIXME: obj_Release(pPrs);
-        //FIXME: pPrs = OBJ_NIL;
-        //FIXME: obj_Release(pGen);
-        //FIXME: pGen = OBJ_NIL;
+        obj_Release(pExpand);
+        pExpand = OBJ_NIL;
+        obj_Release(pMac);
+        pMac = OBJ_NIL;
+        obj_Release(pWin);
+        pWin = OBJ_NIL;
         return eRc;
     }
     
@@ -1570,7 +1729,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    MAIN_DATA *     Main_Init(
+    MAIN_DATA *     Main_Init (
         MAIN_DATA       *this
     )
     {
@@ -1638,7 +1797,7 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Main_IsEnabled(
+    ERESULT         Main_IsEnabled (
         MAIN_DATA		*this
     )
     {
@@ -1666,7 +1825,7 @@ extern "C" {
     //              P a r s e  A r g s  D e f a u l t
     //---------------------------------------------------------------
     
-    ERESULT         Main_ParseArgsDefault(
+    ERESULT         Main_ParseArgsDefault (
         MAIN_DATA        *this
     )
     {
@@ -1704,7 +1863,7 @@ extern "C" {
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
-        eRc = Main_DefaultsMacos(this);
+        eRc = Main_DefaultsMacos64(this);
 
         pStr = AStr_NewA("d");
         if (pStr) {
@@ -1816,16 +1975,11 @@ extern "C" {
     //              P a r s e  I n p u t  F i l e
     //---------------------------------------------------------------
     
-    ERESULT         Main_ParseInputFile(
+    ERESULT         Main_ParseInputFile (
         MAIN_DATA       *this,
         PATH_DATA       *pPath
     )
     {
-        //ERESULT         eRc;
-        //HJSON_DATA      *pObj = OBJ_NIL;
-        //ASTR_DATA       *pStr = OBJ_NIL;
-        //NODEHASH_DATA   *pHash;
-        NODE_DATA       *pFileNode;
         SRCPARSE_DATA   *pParser;
         ERESULT_DATA    *pErr;
 
@@ -1854,7 +2008,6 @@ extern "C" {
             exit(12);
         }
         srcErrors_ExitOnFatal(OBJ_NIL);
-        pFileNode = SrcParse_getNodes(pParser);
         
         pErr = SrcParse_ParseNodes(pParser);
         if (pErr) {
@@ -1862,22 +2015,23 @@ extern "C" {
             exit(12);
         }
         
+        Main_setParser(this, pParser);
+        obj_Release(pParser);
+        pParser = OBJ_NIL;
+        
         // Return to caller.
         return ERESULT_SUCCESS;
     }
     
     
-    ERESULT         Main_ParseInputStr(
+    ERESULT         Main_ParseInputStr (
         MAIN_DATA       *this,
         const
         char            *pStrA
     )
     {
-        //ERESULT         eRc;
-        HJSON_DATA      *pObj = OBJ_NIL;
-        ASTR_DATA       *pWrk = OBJ_NIL;
-        NODE_DATA       *pFileNode;
-        NODEHASH_DATA   *pHash;
+        SRCPARSE_DATA   *pParser;
+        ERESULT_DATA    *pErr;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1892,42 +2046,28 @@ extern "C" {
         }
 #endif
         
-        pObj = hjson_NewA(pStrA, 4);
-        if (pObj) {
-            if  (appl_getDebug((APPL_DATA *)this)) {
-                obj_TraceSet(pObj, true);
-            }
-            pFileNode = hjson_ParseFileHash(pObj);
-            if (pFileNode) {
-                this->pNodes = pFileNode;
-                if (appl_getDebug((APPL_DATA *)this)) {
-                    pWrk = node_ToDebugString(pFileNode, 0);
-                    fprintf(stderr, "%s\n\n\n", AStr_getData(pWrk));
-                    obj_Release(pWrk);
-                    pWrk = OBJ_NIL;
-                }
-            }
+        pParser = SrcParse_New();
+        if (OBJ_NIL == pParser) {
+            fprintf(stderr, "Error - Out of Memory - Creating Source Parser!\n\n\n");
+            exit(12);
+        }
 
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
+        pErr = SrcParse_ParseJsonStr(pParser, pStrA);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+            exit(12);
         }
         srcErrors_ExitOnFatal(OBJ_NIL);
 
-        if (this->pNodes) {
-            pHash = node_getData(this->pNodes);
-            if (OBJ_NIL == pHash) {
-                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-                exit(12);
-            }
-            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
-                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
-                exit(12);
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+        pErr = SrcParse_ParseNodes(pParser);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
             exit(12);
         }
+        
+        Main_setParser(this, pParser);
+        obj_Release(pParser);
+        pParser = OBJ_NIL;
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1939,7 +2079,7 @@ extern "C" {
     //              P r o c e s s  A r g s
     //---------------------------------------------------------------
     
-    ERESULT         Main_ProcessInit(
+    ERESULT         Main_ProcessInit (
         MAIN_DATA       *this
     )
     {
@@ -1961,13 +2101,13 @@ extern "C" {
     
     
     /*!
-     Process each command line argument, parsing the HJSON file and
+     Process each command line argument, parsing the JSON file and
      generating the Makefile.
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
+                error code.
      */
-    ERESULT         Main_ProcessArg(
+    ERESULT         Main_ProcessArg (
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     )
@@ -1993,7 +2133,11 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        TRC_OBJ(this, "Main_ProcessArg(%s)\n", AStr_getData(pStr));
+        TRC_OBJ(this, "Main_ProcessArg(%s)\n", pStr ? AStr_getData(pStr) : "");
+        eRc = Main_SetupOsArch(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
         
         if (!appl_getQuiet((APPL_DATA *)this)) {
             fprintf(stderr, "\tProcessing - %s...\n", AStr_getData(pStr));
@@ -2086,7 +2230,7 @@ extern "C" {
         }
 
         // Generate the Makefile.
-        eRc = Main_GenMakefile(this);
+        //FIXME: eRc = Main_GenMakefile(this);
         
         obj_Release(this->pOutput);
         this->pOutput = OBJ_NIL;
@@ -2111,7 +2255,7 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    void *          Main_QueryInfo(
+    void *          Main_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -2190,7 +2334,7 @@ extern "C" {
     //                  S e t u p  F r o m  A r g V
     //---------------------------------------------------------------
     
-    ERESULT         Main_SetupFromArgV(
+    ERESULT         Main_SetupFromArgV (
         MAIN_DATA       *this,
         uint16_t        cArgs,
         char            *ppArgV[],
@@ -2217,10 +2361,59 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          O/S and Arch Constants.
+    //---------------------------------------------------------------
+
+    ERESULT         Main_SetupOsArch (
+        MAIN_DATA        *this
+    )
+    {
+
+        // Do initialization.
+        if (NULL == this) {
+            return ERESULT_INVALID_OBJECT;
+        }
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Set up the O/S Generator.
+        switch (this->osType) {
+            case OSTYPE_MACOS32:
+                this->pOsArch = "x86";
+                this->pOsName = "macos32";
+                break;
+            case OSTYPE_MACOS64:
+                this->pOsArch = "x86_64";
+                this->pOsName = "macos64";
+                break;
+            case OSTYPE_MSC32:
+                this->pOsArch = "x86";
+                this->pOsName = "win32";
+                break;
+            case OSTYPE_MSC64:
+                this->pOsArch = "x86_64";
+                this->pOsName = "win64";
+                break;
+            default:
+                return ERESULT_INVALID_DATA;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //             S e t u p  T e x t O u t
     //---------------------------------------------------------------
     
-    ERESULT         Main_SetupTextOutAStr(
+    ERESULT         Main_SetupTextOutAStr (
         MAIN_DATA        *this
     )
     {
@@ -2265,7 +2458,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Main_ToDebugString(
+    ASTR_DATA *     Main_ToDebugString (
         MAIN_DATA      *this,
         int             indent
     )
@@ -2336,7 +2529,7 @@ extern "C" {
      @return    ERESULT_SUCCESS if successful, otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Main_UsageDesc(
+    ERESULT         Main_UsageDesc (
         MAIN_DATA       *this,
         FILE            *pOutput,
         PATH_DATA       *pPgmPath
@@ -2365,7 +2558,7 @@ extern "C" {
     
     // Note: --debug(-d), --force(-f), --help(-?,-h), --verbose(-v) are already
     //      taken care of in appl_Usage().
-    ERESULT         Main_UsageOptions(
+    ERESULT         Main_UsageOptions (
         MAIN_DATA       *this,
         FILE            *pOutput
     )
@@ -2382,7 +2575,8 @@ extern "C" {
         
         fprintf(pOutput, "  --clp              Set type to Command Line Program\n");
         fprintf(pOutput, "                     (Default is Library)\n");
-        fprintf(pOutput, "  --macos            Generate MacOSX nmake file (default)\n");
+        fprintf(pOutput, "  --macos32          Generate MacOS 32-bit nmake file (default)\n");
+        fprintf(pOutput, "  --macos64          Generate MacOS 64-bit nmake file (default)\n");
         fprintf(pOutput, "  --msc32            Generate MSC Win32 nmake file\n");
         fprintf(pOutput, "  --msc64            Generate MSC Win64 nmake file\n");
         fprintf(pOutput, "  (--out | -o) path  Output the generated data to <path>\n");
@@ -2401,7 +2595,7 @@ extern "C" {
      @return    ERESULT_SUCCESS if successful, otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         Main_UsageProgLine(
+    ERESULT         Main_UsageProgLine (
         MAIN_DATA       *this,
         FILE            *pOutput,
         PATH_DATA       *pPgmPath,
@@ -2434,7 +2628,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            Main_Validate(
+    bool            Main_Validate (
         MAIN_DATA      *this
     )
     {

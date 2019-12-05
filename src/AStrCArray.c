@@ -450,7 +450,11 @@ extern "C" {
         ASTRCARRAY_DATA *pOther
     )
     {
-        
+        ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        ASTRC_DATA      *pAStrC = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -466,19 +470,19 @@ extern "C" {
 
         // Release objects and areas in other object.
         if (pOther->pArray) {
-            obj_Release(pOther->pArray);
+            objArray_DeleteAll(pOther->pArray);
             pOther->pArray = OBJ_NIL;
         }
         
         // Create a copy of objects and areas in this object placing
         // them in other.
         if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
-            }
-            else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
+            iMax = AStrCArray_getSize(this);
+            for (i=0; i<iMax; i++) {
+                pAStrC = AStrCArray_Get(this, i+1);
+                if (pAStrC) {
+                    eRc = AStrCArray_AppendAStrC(pOther, pAStrC, NULL);
+                }
             }
         }
         
@@ -571,7 +575,10 @@ extern "C" {
     {
         ASTRCARRAY_DATA *pOther = OBJ_NIL;
         ERESULT         eRc;
-        
+        uint32_t        i;
+        uint32_t        iMax;
+        ASTRC_DATA      *pAStrC = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -583,10 +590,12 @@ extern "C" {
         
         pOther = AStrCArray_New( );
         if (pOther) {
-            eRc = AStrCArray_Assign(this, pOther);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                obj_Release(pOther);
-                pOther = OBJ_NIL;
+            iMax = AStrCArray_getSize(this);
+            for (i=0; i<iMax; i++) {
+                pAStrC = AStrCArray_Get(this, i+1);
+                if (pAStrC) {
+                    eRc = AStrCArray_AppendAStrC(pOther, pAStrC, NULL);
+                }
             }
         }
         
@@ -1220,12 +1229,14 @@ extern "C" {
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
-    ASTR_DATA *     AStrCArray_ToStringPrefixSep (
+    ASTR_DATA *     AStrCArray_ToStringSep (
         ASTRCARRAY_DATA *this,
         const
         char            *pSep,
         const
-        char            *pPrefix            // Optional
+        char            *pPrefix,           // Optional
+        const
+        char            *pSuffix            // Optional
     )
     {
         //ERESULT         eRc;
@@ -1267,6 +1278,9 @@ extern "C" {
                     AStr_AppendA(pStr, pPrefix);
                 }
                 AStr_AppendA(pStr, AStrC_getData(pWrk));
+                if (pSuffix) {
+                    AStr_AppendA(pStr, pSuffix);
+                }
             }
             return pStr;
         }
@@ -1278,6 +1292,9 @@ extern "C" {
                     AStr_AppendA(pStr, pPrefix);
                 }
                 AStr_AppendA(pStr, AStrC_getData(pWrk));
+                if (pSuffix) {
+                    AStr_AppendA(pStr, pSuffix);
+                }
                 AStr_AppendA(pStr, pSep);
             }
         }
@@ -1287,6 +1304,9 @@ extern "C" {
                 AStr_AppendA(pStr, pPrefix);
             }
             AStr_AppendA(pStr, AStrC_getData(pWrk));
+            if (pSuffix) {
+                AStr_AppendA(pStr, pSuffix);
+            }
         }
 
         // Return to caller.

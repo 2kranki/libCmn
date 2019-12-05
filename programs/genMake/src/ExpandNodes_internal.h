@@ -128,7 +128,7 @@ struct ExpandNodes_data_s	{
     //---------------------------------------------------------------
 
     OBJ_IUNKNOWN *  ExpandNodes_getSuperVtbl (
-        EXPANDNODES_DATA     *this
+        EXPANDNODES_DATA    *this
     );
 
 

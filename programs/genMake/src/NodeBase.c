@@ -1171,11 +1171,11 @@ extern "C" {
         }
 
         if (pOS) {
-            iMax = AStrCArray_getSize(this->pArches);
+            iMax = AStrCArray_getSize(this->pOSs);
             if (iMax > 0) {
                 fFound = false;
                 for (i=0; i<iMax; i++) {
-                    pStrC = AStrCArray_Get(this->pArches, i+1);
+                    pStrC = AStrCArray_Get(this->pOSs, i+1);
                     if (pStrC) {
                         eRc = AStrC_CompareA(pStrC, pOS);
                         if (ERESULT_SUCCESS_EQUAL == eRc) {

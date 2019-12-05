@@ -199,7 +199,13 @@ extern "C" {
     );
 
     
+    CMDUTL_DATA *   cmdutl_NewRescan(
+        int             cArgs,
+        char            **ppArgs
+    );
+
     
+
     
 
     //---------------------------------------------------------------

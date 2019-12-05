@@ -148,7 +148,7 @@ extern "C" {
                 ;
         components
                 : "name" ':' string
-                | "deps" ':' deps
+                | "deps" ':' deps       // Library Dependencies
                 | "libdir" ':' string   // Path to where object library will be created
                 | "objdir" ':' string   // Path to where temporary object files will be
                                         // created
@@ -189,8 +189,8 @@ extern "C" {
     );
 
 
-    /*! Property: Source Dependencies, zero or more file paths that
-        compilation depends on.
+    /*! Property: Lib Dependencies, zero or more library names without
+        the "lib" prefix that compilation depends on.
     */
     ASTRCARRAY_DATA * NodeLib_getDeps (
         NODELIB_DATA    *this

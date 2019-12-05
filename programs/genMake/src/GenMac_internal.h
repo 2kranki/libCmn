@@ -72,9 +72,6 @@ struct GenMac_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
     // The following are required fields that must be filled in prior
     // to executing any generation.
     ASTRC_DATA      *pObjDir;       // Makefile Variable Name for
@@ -107,7 +104,7 @@ struct GenMac_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  GENMAC_SINGLETON
-    GENMAC_DATA *     GenMac_getSingleton (
+    GENMAC_DATA *   GenMac_getSingleton (
         void
     );
 
@@ -132,7 +129,7 @@ struct GenMac_data_s	{
     );
 
 
-    GENMAC_DATA *       GenMac_ParseObject (
+    GENMAC_DATA *   GenMac_ParseObject (
         JSONIN_DATA     *pParser
     );
 

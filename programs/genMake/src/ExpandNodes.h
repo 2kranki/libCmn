@@ -259,18 +259,12 @@ extern "C" {
      Expand an object into several nodes, some optional.
      @param     this    object pointer
      @param     pObj    Input Object Node
-     @param     pArch   Optional Architecture String
-     @param     pOS     Optional Operating System String
      @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
                 error code which must be released.
      */
     ERESULT_DATA *      ExpandNodes_ExpandObj (
         EXPANDNODES_DATA    *this,
-        NODEOBJ_DATA        *pObj,
-        const
-        char                *pArch,
-        const
-        char                *pOS
+        NODEOBJ_DATA        *pObj
     );
 
 
@@ -278,18 +272,12 @@ extern "C" {
      Expand the Object Nodes to RtnA and TstA nodes as needed.
      @param     this    object pointer
      @param     pObjs   Input Object Node Array
-     @param     pArch   Optional Architecture String
-     @param     pOS     Optional Operating System String
      @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
                 error code which must be released.
      */
     ERESULT_DATA *      ExpandNodes_ExpandObjs (
         EXPANDNODES_DATA    *this,
-        NODEARRAY_DATA      *pObjs,
-        const
-        char                *pArch,
-        const
-        char                *pOS
+        NODEARRAY_DATA      *pObjs
     );
 
 
@@ -297,18 +285,12 @@ extern "C" {
      Expand a routine node into nodes used for actual makefile generation.
      @param     this    object pointer
      @param     pRtn    Input Routine Node
-     @param     pArch   Optional Architecture String
-     @param     pOS     Optional Operating System String
      @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
                 error code which must be released.
      */
     ERESULT_DATA *      ExpandNodes_ExpandRtn (
         EXPANDNODES_DATA    *this,
-        NODERTN_DATA        *pRtn,
-        const
-        char                *pArch,
-        const
-        char                *pOS
+        NODERTN_DATA        *pRtn
     );
 
 
@@ -316,18 +298,12 @@ extern "C" {
      Expand the Routine Nodes to RtnA and TstA nodes as needed.
      @param     this    object pointer
      @param     pRtns   Input Routine Node Array
-     @param     pArch   Optional Architecture String
-     @param     pOS     Optional Operating System String
      @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
                 error code which must be released.
      */
     ERESULT_DATA *      ExpandNodes_ExpandRtns (
         EXPANDNODES_DATA    *this,
-        NODEARRAY_DATA      *pRtns,
-        const
-        char                *pArch,
-        const
-        char                *pOS
+        NODEARRAY_DATA      *pRtns
     );
 
 

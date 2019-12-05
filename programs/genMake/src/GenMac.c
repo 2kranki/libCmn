@@ -144,6 +144,46 @@ extern "C" {
     }
         
         
+        //---------------------------------------------------------------
+        //                       O u t p u t
+        //---------------------------------------------------------------
+        
+        TEXTOUT_DATA *  GenMac_getOutput (
+            GENMAC_DATA     *this
+        )
+        {
+            
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if (!GenMac_Validate(this)) {
+                DEBUG_BREAK();
+                return OBJ_NIL;
+            }
+    #endif
+            
+            return GenBase_getOutput(GenMac_getGenBase(this));
+        }
+        
+        
+        bool            GenMac_setOutput (
+            GENMAC_DATA     *this,
+            TEXTOUT_DATA    *pValue
+        )
+        {
+    #ifdef NDEBUG
+    #else
+            if (!GenMac_Validate(this)) {
+                DEBUG_BREAK();
+                return false;
+            }
+    #endif
+
+            return GenBase_setOutput(GenMac_getGenBase(this), pValue);
+        }
+                
+                
+                
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
@@ -216,6 +256,7 @@ extern "C" {
         GENMAC_DATA     *this
     )
     {
+        TEXTOUT_DATA    *pOut;
         
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -226,33 +267,14 @@ extern "C" {
         }
 #endif
         
-        return this->pStr;
-    }
-    
-    
-    bool        GenMac_setStr (
-        GENMAC_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!GenMac_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
+        pOut = GenBase_getOutput(GenMac_getGenBase(this));
+        if (TextOut_IsString(pOut)) {
+            return TextOut_getStr(pOut);
         }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
         
-        return true;
+        return OBJ_NIL;
     }
+    
     
     
     
@@ -495,7 +517,30 @@ extern "C" {
         }
 #endif
 
-        GenMac_setStr(this, OBJ_NIL);
+        if (this->pObjDir) {
+            obj_Release(this->pObjDir);
+            this->pObjDir = OBJ_NIL;
+        }
+        if (this->pObjVar) {
+            obj_Release(this->pObjVar);
+            this->pObjVar = OBJ_NIL;
+        }
+        if (this->pSrcDir) {
+            obj_Release(this->pSrcDir);
+            this->pSrcDir = OBJ_NIL;
+        }
+        if (this->pTstBin) {
+            obj_Release(this->pTstBin);
+            this->pTstBin = OBJ_NIL;
+        }
+        if (this->pTstDir) {
+            obj_Release(this->pTstDir);
+            this->pTstDir = OBJ_NIL;
+        }
+        if (this->pTstVar) {
+            obj_Release(this->pTstVar);
+            this->pTstVar = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -611,7 +656,7 @@ extern "C" {
     #endif
         
         // Skip disabled entries.
-        if (!NodeTstA_IsEnabled(pTest)) {
+        if (ERESULT_SUCCESS_FALSE == NodeTstA_IsEnabled(pTest)) {
             return OBJ_NIL;
         }
         
@@ -634,8 +679,10 @@ extern "C" {
             || (AStrC_CompareA(pSuffix, "C") == ERESULT_SUCCESS_EQUAL)
             || (AStrC_CompareA(pSuffix, "cpp") == ERESULT_SUCCESS_EQUAL)
             || (AStrC_CompareA(pSuffix, "CPP") == ERESULT_SUCCESS_EQUAL)) {
-            ASTR_DATA       *pDeps = NodeTstA_Deps(pTest, AStrC_getData(pTstDirPrefix));
-            ASTR_DATA       *pSrcs = NodeTstA_Srcs(pTest, AStrC_getData(pTstDirPrefix));
+            ASTR_DATA       *pDeps = NodeTstA_Deps(pTest, AStrC_getData(pTstDirPrefix),
+                                                   NULL);
+            ASTR_DATA       *pSrcs = NodeTstA_Srcs(pTest, AStrC_getData(pTstDirPrefix),
+                                                   NULL);
             AStr_AppendPrint(
                 pStr,
                 "%s: %s%s.%s ",
@@ -650,9 +697,10 @@ extern "C" {
             AStr_AppendA(pStr, "\n");
             AStr_AppendPrint(
                 pStr,
-                "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(%s)/$(@F) $(%s)",
+                "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(%s)/$(@F) $(%s) -I$(%s)",
                 AStrC_getData(this->pTstBin),
-                AStrC_getData(this->pObjVar)
+                AStrC_getData(this->pObjVar),
+                AStrC_getData(this->pTstDir)
             );
             if (pSrcs) {
                 AStr_AppendPrint(pStr, " %s", AStr_getData(pSrcs));
@@ -679,6 +727,51 @@ extern "C" {
         // Return to caller.
         obj_Release(pSrcDirPrefix);
         obj_Release(pTstDirPrefix);
+        return OBJ_NIL;
+    }
+
+
+
+    ERESULT_DATA *  GenMac_GenBuildTests (
+        GENMAC_DATA     *this,
+        NODEARRAY_DATA  *pArray
+    )
+    {
+        ERESULT_DATA    *pErr;
+        uint32_t        i;
+        uint32_t        iMax;
+        NODETSTA_DATA   *pNode;
+
+            // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!GenMac_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pArray) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        
+        iMax = nodeArray_getSize(pArray);
+        for (i=0; i<iMax; i++) {
+            pNode = (NODETSTA_DATA *)nodeArray_Get(pArray, i+1);
+            if (pNode) {
+                pErr = GenMac_GenBuildTest(this, pNode);
+                if (pErr) {
+                    eResult_Fprint(pErr, stderr);
+                    exit(12);
+                }
+            }
+        }
+                
+        // Return to caller.
         return OBJ_NIL;
     }
 
@@ -711,7 +804,7 @@ extern "C" {
     #endif
         
         // Skip disabled entries.
-        if (!NodeRtnA_IsEnabled(pRtn)) {
+        if (ERESULT_SUCCESS_FALSE == NodeRtnA_IsEnabled(pRtn)) {
             return OBJ_NIL;
         }
         
@@ -734,8 +827,10 @@ extern "C" {
             || (AStrC_CompareA(pSuffix, "C") == ERESULT_SUCCESS_EQUAL)
             || (AStrC_CompareA(pSuffix, "cpp") == ERESULT_SUCCESS_EQUAL)
             || (AStrC_CompareA(pSuffix, "CPP") == ERESULT_SUCCESS_EQUAL)) {
-            ASTR_DATA       *pDeps = NodeRtnA_Deps(pRtn, AStrC_getData(pSrcDirPrefix));
-            ASTR_DATA       *pSrcs = NodeRtnA_Srcs(pRtn, AStrC_getData(pSrcDirPrefix));
+            ASTR_DATA       *pDeps = NodeRtnA_Deps(pRtn, AStrC_getData(pSrcDirPrefix),
+                                                   NULL);
+            ASTR_DATA       *pSrcs = NodeRtnA_Srcs(pRtn, AStrC_getData(pSrcDirPrefix),
+                                                   NULL);
             AStr_AppendPrint(
                 pStr,
                 "$(%s)/%s.o: %s%s.%s ",
@@ -755,8 +850,9 @@ extern "C" {
             AStr_AppendPrint(pStr, "\n");
             AStr_AppendPrint(
                 pStr,
-                "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) $< ",
-                AStrC_getData(this->pObjDir)
+                "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) -I$(%s) $< ",
+                AStrC_getData(this->pObjDir),
+                AStrC_getData(this->pSrcDir)
             );
             if (pSrcs) {
                 AStr_AppendPrint(
@@ -789,43 +885,7 @@ extern "C" {
            );
            AStr_AppendPrint(pStr, "\n\n");
         }
-        //TODO: Put in support for other language types.
-        /*****
-        else if ((AStr_CompareA(pFileExt, "cpp") == ERESULT_SUCCESS_EQUAL)
-                || (AStr_CompareA(pFileExt, "CPP") == ERESULT_SUCCESS_EQUAL)) {
-           eRc =   AStr_AppendPrint(
-                                    pStr,
-                                    "$(%s)/%s.o: $(%s)/%s\n",
-                                    pObjDir,
-                                    AStr_getData(pFileName),
-                                    pSrcDir,
-                                    pNameA
-                                    );
-           eRc =   AStr_AppendPrint(
-                                    pStr,
-                                    "\t$(CC) $(CFLAGS) %s -o $(%s)/$(@F) $<",
-                                    (fCO ? "-c" : ""),
-                                    pObjDir
-                                    );
-        }
-        else {
-           obj_Release(pFileExt);
-           pFileExt = OBJ_NIL;
-           obj_Release(pFileName);
-           pFileName = OBJ_NIL;
-           obj_Release(pPath);
-           pPath = OBJ_NIL;
-           obj_Release(pStr);
-           pStr = OBJ_NIL;
-           return OBJ_NIL;
-        }
-        if (!fCO && fExec) {
-           eRc = AStr_AppendPrint(pStr, "\n\t$(%s)/$(@F)\n\n", pObjDir);
-        }
-        else {
-           eRc =   AStr_AppendA(pStr, "\n\n");
-        }
-         ***/
+
         GenBase_Output(GenMac_getGenBase(this), pStr);
         obj_Release(pStr);
         pStr = OBJ_NIL;
@@ -837,12 +897,60 @@ extern "C" {
 
 
 
+    ERESULT_DATA *  GenMac_GenCompileRtns (
+        GENMAC_DATA     *this,
+        NODEARRAY_DATA  *pArray
+    )
+    {
+        ERESULT_DATA    *pErr;
+        uint32_t        i;
+        uint32_t        iMax;
+        NODERTNA_DATA   *pNode;
+
+            // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!GenMac_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pArray) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+        if (!obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        
+        iMax = nodeArray_getSize(pArray);
+        for (i=0; i<iMax; i++) {
+            pNode = (NODERTNA_DATA *)nodeArray_Get(pArray, i+1);
+            if (pNode) {
+                pErr = GenMac_GenCompileRtn(this, pNode);
+                if (pErr) {
+                    eResult_Fprint(pErr, stderr);
+                    exit(12);
+                }
+            }
+        }
+                
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+
     ERESULT_DATA *  GenMac_GenLibBegin (
         GENMAC_DATA     *this,
         NODELIB_DATA    *pLib
     )
     {
         ASTR_DATA       *pStr =  OBJ_NIL;
+        ASTRC_DATA      *pStrC =  OBJ_NIL;
+        ASTRCARRAY_DATA *pArrayC =  OBJ_NIL;
+        uint32_t        i;
 
             // Do initialization.
         #ifdef NDEBUG
@@ -872,31 +980,55 @@ extern "C" {
         //AStr_AppendPrint(pStr, "CC=clang\n");
         AStr_AppendPrint(pStr, "LIBNAM=lib%s\n", AStrC_getData(NodeLib_getName(pLib)));
         AStr_AppendA(pStr, "SYS=macos64\n");
-        AStr_AppendA(pStr, "TEMP=/tmp\nBASEDIR = $(TEMP)/$(LIBNAM)\n\n");
-        AStr_AppendA(pStr, "CFLAGS_LIBS = \n");
-        AStr_AppendA(pStr, "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n");
-        AStr_AppendA(pStr, "CFLAGS += -D__MACOS64_ENV__\n");
-        AStr_AppendA(pStr, "CFLAGS_TEST = -Itests $(CFLAGS_LIBS) -lcurses\n");
-        AStr_AppendA(pStr, "\n");
-
-        AStr_AppendA(pStr, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
-        AStr_AppendA(pStr, "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n");
-        AStr_AppendA(pStr, "LIBDIR = $(BASEDIR)/$(SYS)\n");
+        AStr_AppendA(pStr, "TEMP=/tmp\nBASE_OBJ = $(TEMP)/$(LIBNAM)\n");
         AStr_AppendA(pStr, "SRCDIR = ./src\n");
-        AStr_AppendA(pStr, "SRCSYSDIR = ./src/$(SYS)\n");
-        AStr_AppendA(pStr, "TEST_SRC = ./tests\n");
+        AStr_AppendA(pStr, "TEST_SRC = ./tests\n\n");
+        
+        AStr_AppendA(pStr, "CFLAGS += -g -Werror\n");
         AStr_AppendA(pStr, "ifdef  NDEBUG\n");
         AStr_AppendA(pStr, "CFLAGS += -DNDEBUG\n");
-        AStr_AppendA(pStr, "LIB_FILENAME=$(LIBNAM)R.a\n");
-        AStr_AppendA(pStr, "OBJDIR = $(LIBDIR)/o/r\n");
         AStr_AppendA(pStr, "else   #DEBUG\n");
         AStr_AppendA(pStr, "CFLAGS += -D_DEBUG\n");
+        AStr_AppendA(pStr, "endif  #NDEBUG\n");
+        AStr_AppendA(pStr, "CFLAGS += -D__MACOS64_ENV__\n");
+        AStr_AppendA(pStr, "CFLAGS_LIBS = \n");
+        pArrayC = NodeLib_getDeps(pLib);
+        if (pArrayC && (AStrCArray_getSize(pArrayC) > 0)) {
+            for (i=0; i<AStrCArray_getSize(pArrayC); i++) {
+                pStrC = AStrCArray_Get(pArrayC, i+1);
+                if (pStrC) {
+                    ASTR_DATA       *pStrUpper = AStrC_ToUpper(pStrC);
+                    AStr_AppendPrint(pStr, "# lib%s\n", AStrC_getData(pStrC));
+                    AStr_AppendPrint(pStr, "LIB%s_BASE = $(LIB_BASE)/lib%s\n",
+                                     AStr_getData(pStrUpper),
+                                     AStrC_getData(pStrC)
+                    );
+                    AStr_AppendPrint(pStr, "CFLAGS += -I$(LIB%s_BASE)/include\n",
+                                     AStr_getData(pStrUpper)
+                    );
+                    AStr_AppendPrint(pStr, "CFLAGS_LIBS += -l%s -L$(LIB%s_BASE)\n",
+                                     AStrC_getData(pStrC),
+                                     AStr_getData(pStrUpper)
+                    );
+                    obj_Release(pStrUpper);
+                }
+            }
+        }
+        AStr_AppendA(pStr, "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n");
+
+        AStr_AppendA(pStr, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
+        AStr_AppendA(pStr, "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n");
+        AStr_AppendA(pStr, "LIBOBJ = $(BASE_OBJ)/$(SYS)\n");
+        AStr_AppendA(pStr, "ifdef  NDEBUG\n");
+        AStr_AppendA(pStr, "LIB_FILENAME=$(LIBNAM)R.a\n");
+        AStr_AppendA(pStr, "OBJDIR = $(LIBOBJ)/o/r\n");
+        AStr_AppendA(pStr, "else   #DEBUG\n");
         AStr_AppendA(pStr, "LIB_FILENAME=$(LIBNAM)D.a\n");
-        AStr_AppendA(pStr, "OBJDIR = $(LIBDIR)/o/d\n");
+        AStr_AppendA(pStr, "OBJDIR = $(LIBOBJ)/o/d\n");
         AStr_AppendA(pStr, "endif  #NDEBUG\n");
         AStr_AppendA(pStr, "TEST_OBJ = $(OBJDIR)/tests\n");
         AStr_AppendA(pStr, "TEST_BIN = $(OBJDIR)/tests\n");
-        AStr_AppendA(pStr, "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n");
+        AStr_AppendA(pStr, "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n");
         
         AStr_AppendA(pStr, ".SUFFIXES:\n");
         AStr_AppendA(pStr, ".SUFFIXES: .asm .c .cpp .o\n");
@@ -947,9 +1079,9 @@ extern "C" {
             return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
         }
 
-         AStr_AppendPrint(pStr, "$(LIBPATH):  $(%s)\n", AStrC_getData(this->pObjVar));
-         AStr_AppendA(pStr, "\t-cd $(LIBDIR) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n");
-         AStr_AppendPrint(pStr, "\tar rc $(LIBPATH) $(%s)\n\n\n\n", AStrC_getData(this->pObjVar));
+         AStr_AppendPrint(pStr, "$(LIB_PATH):  $(%s)\n", AStrC_getData(this->pObjVar));
+         AStr_AppendA(pStr, "\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n");
+         AStr_AppendPrint(pStr, "\tar rc $(LIB_PATH) $(%s)\n\n\n\n", AStrC_getData(this->pObjVar));
          AStr_AppendA(pStr, ".PHONY: test\n");
          AStr_AppendPrint(pStr, "test: $(%s)\n\n\n", AStrC_getData(this->pTstVar));
          
@@ -961,10 +1093,10 @@ extern "C" {
          AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; "
                       "[ ! -d $(LIBNAM)/include ] && "
                       "mkdir -p $(LIBNAM)/include/$(SYS)\n");
-         AStr_AppendA(pStr, "\tcp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a\n");
-         AStr_AppendA(pStr, "\tcp src/*.h $(INSTALLDIR)/include/\n");
+         AStr_AppendA(pStr, "\tcp $(LIB_PATH) $(INSTALL_DIR)/$(LIBNAM).a\n");
+         AStr_AppendA(pStr, "\tcp src/*.h $(INSTALL_DIR)/include/\n");
          AStr_AppendA(pStr, "\tif [ -d src/$(SYS) ]; then \\\n");
-         AStr_AppendA(pStr, "\t\tcp src/$(SYS)/*.h $(INSTALLDIR)/include/$(SYS)/; \\\n");
+         AStr_AppendA(pStr, "\t\tcp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \\\n");
          AStr_AppendA(pStr, "\tfi\n\n\n");
 
         AStr_AppendA(pStr, ".PHONY: create_dirs\n");
@@ -976,7 +1108,7 @@ extern "C" {
         );
          
         AStr_AppendA(pStr, ".PHONY: all\n");
-        AStr_AppendA(pStr, "all:  clean create_dirs $(LIBPATH)\n\n\n\n");
+        AStr_AppendA(pStr, "all:  clean create_dirs $(LIB_PATH)\n\n\n\n");
 
         GenBase_Output(GenMac_getGenBase(this), pStr);
         obj_Release(pStr);
@@ -985,6 +1117,190 @@ extern "C" {
         // Return to caller.
         return OBJ_NIL;
     }
+
+
+
+        ERESULT_DATA *  GenMac_GenPgmBegin (
+            GENMAC_DATA     *this,
+            NODEPGM_DATA    *pPgm
+        )
+        {
+            ASTR_DATA       *pStr =  OBJ_NIL;
+            ASTRC_DATA      *pStrC =  OBJ_NIL;
+            ASTRCARRAY_DATA *pArrayC =  OBJ_NIL;
+            uint32_t        i;
+
+                // Do initialization.
+            #ifdef NDEBUG
+            #else
+            if (!GenMac_Validate(this)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+            }
+            if (OBJ_NIL == pPgm) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+            }
+            if (!obj_IsKindOf(pPgm, OBJ_IDENT_NODEPGM)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+            }
+        #endif
+            
+            // Set up to generate Makefile entry.
+            pStr = AStr_New();
+            if (OBJ_NIL == pStr) {
+                return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+            }
+
+            GenBase_GenHeader(GenMac_getGenBase(this));
+            
+            //AStr_AppendA(pStr, "CC=clang\n");
+            AStr_AppendPrint(pStr, "PGMNAM=%s\n", AStrC_getData(NodePgm_getName(pPgm)));
+            AStr_AppendA(pStr, "SYS=macos64\n");
+            AStr_AppendA(pStr, "TEMP=/tmp\nBASE_OBJ = $(TEMP)/$(PGMNAM)\n");
+            AStr_AppendA(pStr, "SRCDIR = ./src\n");
+            AStr_AppendA(pStr, "TEST_SRC = ./tests\n\n");
+
+            AStr_AppendA(pStr, "CFLAGS += -g -Werror\n");
+            AStr_AppendA(pStr, "ifdef  NDEBUG\n");
+            AStr_AppendA(pStr, "CFLAGS += -DNDEBUG\n");
+            AStr_AppendA(pStr, "else   #DEBUG\n");
+            AStr_AppendA(pStr, "CFLAGS += -D_DEBUG\n");
+            AStr_AppendA(pStr, "endif  #NDEBUG\n");
+            AStr_AppendA(pStr, "CFLAGS += -D__MACOS64_ENV__\n");
+            AStr_AppendA(pStr, "CFLAGS_LIBS = \n");
+            pArrayC = NodePgm_getDeps(pPgm);
+            if (pArrayC && (AStrCArray_getSize(pArrayC) > 0)) {
+                for (i=0; i<AStrCArray_getSize(pArrayC); i++) {
+                    pStrC = AStrCArray_Get(pArrayC, i+1);
+                    if (pStrC) {
+                        ASTR_DATA       *pStrUpper = AStrC_ToUpper(pStrC);
+                        AStr_AppendPrint(pStr, "# lib%s\n", AStrC_getData(pStrC));
+                        AStr_AppendPrint(pStr, "LIB%s_BASE = $(LIB_BASE)/lib%s\n",
+                                         AStr_getData(pStrUpper),
+                                         AStrC_getData(pStrC)
+                        );
+                        AStr_AppendPrint(pStr, "CFLAGS += -I$(LIB%s_BASE)/include\n",
+                                         AStr_getData(pStrUpper)
+                        );
+                        AStr_AppendPrint(pStr, "CFLAGS_LIBS += -l%s -L$(LIB%s_BASE)\n",
+                                         AStrC_getData(pStrC),
+                                         AStr_getData(pStrUpper)
+                        );
+                        obj_Release(pStrUpper);
+                    }
+                }
+            }
+            AStr_AppendA(pStr, "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n");
+
+            AStr_AppendA(pStr, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
+            AStr_AppendA(pStr, "INSTALL_DIR = $(INSTALL_BASE)/$(PGMNAM)\n");
+            AStr_AppendA(pStr, "LIBOBJ = $(BASE_OBJ)/$(SYS)\n");
+            AStr_AppendA(pStr, "ifdef  NDEBUG\n");
+            AStr_AppendA(pStr, "LIB_FILENAME=$(PGMNAM)R.a\n");
+            AStr_AppendA(pStr, "OBJDIR = $(LIBOBJ)/o/r\n");
+            AStr_AppendA(pStr, "else   #DEBUG\n");
+            AStr_AppendA(pStr, "LIB_FILENAME=$(PGMNAM)D.a\n");
+            AStr_AppendA(pStr, "OBJDIR = $(LIBOBJ)/o/d\n");
+            AStr_AppendA(pStr, "endif  #NDEBUG\n");
+            AStr_AppendA(pStr, "TEST_OBJ = $(OBJDIR)/tests\n");
+            AStr_AppendA(pStr, "TEST_BIN = $(OBJDIR)/tests\n");
+            AStr_AppendA(pStr, "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n");
+            
+            AStr_AppendA(pStr, ".SUFFIXES:\n");
+            AStr_AppendA(pStr, ".SUFFIXES: .asm .c .cpp .o\n\n");
+
+            AStr_AppendPrint(pStr, "%s =\n\n", AStrC_getData(this->pObjVar));
+            AStr_AppendPrint(pStr, "%s =\n\n", AStrC_getData(this->pTstVar));
+            AStr_AppendA(pStr, "\n");
+
+            GenBase_Output(GenMac_getGenBase(this), pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            
+            // Return to caller.
+            return OBJ_NIL;
+        }
+
+
+
+        ERESULT_DATA *  GenMac_GenPgmEnd (
+            GENMAC_DATA     *this,
+            NODEPGM_DATA    *pPgm
+        )
+        {
+            ASTR_DATA       *pStr =  OBJ_NIL;
+
+                // Do initialization.
+    #ifdef NDEBUG
+    #else
+            if (!GenMac_Validate(this)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+            }
+            if (OBJ_NIL == pPgm) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+            }
+            if (!obj_IsKindOf(pPgm, OBJ_IDENT_NODEPGM)) {
+                DEBUG_BREAK();
+                return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+            }
+    #endif
+            
+            // Set up to generate Makefile entry.
+            pStr = AStr_New();
+            if (OBJ_NIL == pStr) {
+                return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+            }
+
+            AStr_AppendA(pStr, ".PHONY: test\n");
+            AStr_AppendPrint(pStr, "test: $(%s)\n\n\n", AStrC_getData(this->pTstVar));
+             
+            AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
+            AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(PGMNAM) ] "
+                                "&& rm -fr $(PGMNAM)\n\n\n");
+
+            AStr_AppendA(pStr, ".PHONY: install\ninstall:\n");
+            AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] "
+                                "&& rm -fr $(PGMNAM)\n");
+            AStr_AppendPrint(
+                    pStr,
+                    "\tcp $(%s)/$(PGMNAM) $(INSTALL_DIR)/$(PGMNAM)\n\n\n",
+                    AStrC_getData(this->pObjDir)
+            );
+
+            AStr_AppendPrint(
+                    pStr,
+                    ".PHONY: link\nlink: $(%s) $(%s)/mainProgram.c\n",
+                    AStrC_getData(this->pObjVar),
+                    AStrC_getData(this->pSrcDir)
+            );
+            AStr_AppendPrint(
+                    pStr,
+                    "\tCC -o $(%s)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^\n\n\n",
+                    AStrC_getData(this->pObjDir)
+            );
+
+            AStr_AppendA(pStr, ".PHONY: create_dirs\n");
+            AStr_AppendA(pStr, "create_dirs:\n");
+            AStr_AppendPrint(pStr,
+                         "\t[ ! -d $(%s) ] && mkdir -p $(%s)/tests\n\n\n",
+                          AStrC_getData(this->pObjDir),
+                          AStrC_getData(this->pObjDir)
+            );
+             
+            AStr_AppendA(pStr, ".PHONY: all\n");
+            AStr_AppendA(pStr, "all:  clean create_dirs link\n\n\n");
+
+            GenBase_Output(GenMac_getGenBase(this), pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+
+            // Return to caller.
+            return OBJ_NIL;
+        }
 
 
 
@@ -1203,6 +1519,68 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                  S e t u p  D e f a u l t s
+    //---------------------------------------------------------------
+
+    /*!
+     Set up default parameters.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         GenMac_SetupDefaults (
+        GENMAC_DATA     *this
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!GenMac_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+        
+        this->pObjDir = AStrC_NewA("OBJDIR");
+        if (OBJ_NIL == this->pObjDir) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        this->pObjVar = AStrC_NewA("OBJS");
+        if (OBJ_NIL == this->pObjVar) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        this->pSrcDir = AStrC_NewA("SRCDIR");
+        if (OBJ_NIL == this->pSrcDir) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        this->pTstBin = AStrC_NewA("TEST_BIN");
+        if (OBJ_NIL == this->pTstBin) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        this->pTstDir = AStrC_NewA("TEST_DIR");
+        if (OBJ_NIL == this->pTstDir) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        this->pTstVar = AStrC_NewA("TESTS");
+        if (OBJ_NIL == this->pTstVar) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------

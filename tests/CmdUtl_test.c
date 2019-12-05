@@ -143,6 +143,7 @@ int         test_cmdutl_CommandString01(
     ASTR_DATA       *pStr = OBJ_NIL;
     ASTRARRAY_DATA  *pArray = OBJ_NIL;
     uint32_t        cArray;
+    bool            fDebug = false;
     
     
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -173,6 +174,45 @@ int         test_cmdutl_CommandString01(
         pStr = AStrArray_Get(pArray, 5);
         XCTAssertFalse( (OBJ_NIL == pStr) );
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "d")) );
+        
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+    }
+    
+    pArray = cmdutl_CommandStringToArray(" --define xx=\"yy yy\" abc");
+    XCTAssertFalse( (OBJ_NIL == pArray) );
+    cArray = AStrArray_getSize(pArray);
+    XCTAssertTrue( (5 == cArray) );
+
+    if (pArray) {
+
+        if (fDebug) {
+            ASTR_DATA       *pDump;
+            pDump = AStrArray_ToDebugString(pArray, 0);
+            if (pDump) {
+                fprintf(stderr, "%s\n", AStr_getData(pDump));
+                obj_Release(pDump);
+            }
+        }
+        pStr = AStrArray_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "")) );
+        
+        pStr = AStrArray_Get(pArray, 2);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "--define")) );
+        
+        pStr = AStrArray_Get(pArray, 3);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "xx")) );
+        
+        pStr = AStrArray_Get(pArray, 4);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "yy yy")) );
+        
+        pStr = AStrArray_Get(pArray, 5);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "abc")) );
         
         obj_Release(pArray);
         pArray = OBJ_NIL;
@@ -508,10 +548,10 @@ int         test_cmdutl_ParseCommandLine04(
         "def",
         NULL
     };
-    int             iRc;
+    //int             iRc;
     bool            fRc;
     char            *pArg;
-    int             longIndex;
+    //int             longIndex;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -589,12 +629,15 @@ int         test_cmdutl_ParseCommandLine05(
     typedef struct options_s {
         uint16_t        fDebug;
         uint16_t        fVerbose;
+        ASTR_DATA       *pDefine;
         PATH_DATA       *pFilePath;
     } OPTIONS;
     OPTIONS         options = {0};
-    CMDUTL_OPTION   longDefns1[4] = {
+    CMDUTL_OPTION   longDefns1[5] = {
         {"debug",   0, CMDUTL_ARG_OPTION_NONE, CMDUTL_TYPE_BOOL,
             offsetof(OPTIONS, fDebug), NULL, NULL},
+        {"define",    'f', CMDUTL_ARG_OPTION_REQUIRED, CMDUTL_TYPE_STRING,
+            offsetof(OPTIONS, pDefine), NULL, NULL},
         {"file",    'f', CMDUTL_ARG_OPTION_REQUIRED, CMDUTL_TYPE_PATH,
             offsetof(OPTIONS, pFilePath), NULL, NULL},
         {"verbose", 'v', CMDUTL_ARG_OPTION_NONE, CMDUTL_TYPE_INCR,
@@ -613,16 +656,18 @@ int         test_cmdutl_ParseCommandLine05(
         "-vv",
         "--file",
         "xyzzy",
+        "--define",
+        "xxx=\"yy yy\"",
         "abc",
         "-f",
         "xyzzy2",
         "def",
         NULL
     };
-    int             iRc;
+    //int             iRc;
     bool            fRc;
     char            *pArg;
-    int             longIndex;
+    //int             longIndex;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -660,6 +705,132 @@ int         test_cmdutl_ParseCommandLine05(
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (1 == options.fDebug) );
         XCTAssertTrue( (2 == options.fVerbose) );
+        XCTAssertFalse( (OBJ_NIL == options.pDefine) );
+        XCTAssertTrue( (obj_IsKindOf(options.pDefine, OBJ_IDENT_ASTR)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(options.pDefine), "xxx=\"yy yy\"")) );
+        obj_Release(options.pDefine);
+        options.pDefine = OBJ_NIL;
+        XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
+        XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
+        XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy2")) );
+        obj_Release(options.pFilePath);
+        options.pFilePath = OBJ_NIL;
+        
+        
+        pArg = cmdutl_NextArg(pObj);
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (pArg) );
+        XCTAssertTrue( (0 == strcmp(pArg, "def")) );
+        
+        fRc = cmdutl_IsMore(pObj);
+        XCTAssertTrue( (!fRc) );
+        
+        pArg = cmdutl_NextArg(pObj);
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (NULL == pArg) );
+        
+        pObj->pObj = NULL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_cmdutl_ParseCommandLine06(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    CMDUTL_DATA     *pObj = OBJ_NIL;
+    typedef struct options_s {
+        uint16_t        fDebug;
+        uint16_t        fVerbose;
+        ASTR_DATA       *pDefine;
+        PATH_DATA       *pFilePath;
+    } OPTIONS;
+    OPTIONS         options = {0};
+    CMDUTL_OPTION   longDefns1[5] = {
+        {"debug",   0, CMDUTL_ARG_OPTION_NONE, CMDUTL_TYPE_BOOL,
+            offsetof(OPTIONS, fDebug), NULL, NULL},
+        {"define",    'f', CMDUTL_ARG_OPTION_REQUIRED, CMDUTL_TYPE_STRING,
+            offsetof(OPTIONS, pDefine), NULL, NULL},
+        {"file",    'f', CMDUTL_ARG_OPTION_REQUIRED, CMDUTL_TYPE_PATH,
+            offsetof(OPTIONS, pFilePath), NULL, NULL},
+        {"verbose", 'v', CMDUTL_ARG_OPTION_NONE, CMDUTL_TYPE_INCR,
+            offsetof(OPTIONS, fVerbose), NULL, NULL},
+        {0}
+    };
+    CMDUTL_OPTION   longDefns2[4] = {
+        {NULL,      'D', CMDUTL_ARG_OPTION_NONE},
+        {"help",    'h', CMDUTL_ARG_OPTION_NONE},
+        {NULL,      'V', CMDUTL_ARG_OPTION_NONE},
+        {0, 0, 0}
+    };
+    char            *ppArgs[] = {
+        "./test",
+        "--debug",
+        "-vv",
+        "--file",
+        "xyzzy",
+        "--define",
+        "xxx=\"yy yy\"",
+        "abc",
+        "-f",
+        "xyzzy2",
+        "def",
+        NULL
+    };
+    //int             iRc;
+    bool            fRc;
+    char            *pArg;
+    //int             longIndex;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = cmdutl_New(8, ppArgs);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    
+    if (pObj) {
+        
+        eRc = cmdutl_SetupOptions(pObj, longDefns1, longDefns2);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        pObj->pObj = &options;
+        
+        eRc = cmdutl_ProcessOptions(pObj);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (1 == options.fDebug) );
+        XCTAssertTrue( (2 == options.fVerbose) );
+        XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
+        XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
+        XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy")) );
+        obj_Release(options.pFilePath);
+        options.pFilePath = OBJ_NIL;
+        
+        fRc = cmdutl_IsMore(pObj);
+        XCTAssertTrue( (fRc) );
+        
+        pArg = cmdutl_NextArg(pObj);
+        XCTAssertTrue( (0 == pObj->optopt) );
+        XCTAssertTrue( (pArg) );
+        XCTAssertTrue( (0 == strcmp(pArg, "abc")) );
+        
+        fRc = cmdutl_IsMore(pObj);
+        XCTAssertTrue( (fRc) );
+        
+        eRc = cmdutl_ProcessOptions(pObj);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (1 == options.fDebug) );
+        XCTAssertTrue( (2 == options.fVerbose) );
+        XCTAssertFalse( (OBJ_NIL == options.pDefine) );
+        XCTAssertTrue( (obj_IsKindOf(options.pDefine, OBJ_IDENT_ASTR)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData(options.pDefine), "xxx=\"yy yy\"")) );
+        obj_Release(options.pDefine);
+        options.pDefine = OBJ_NIL;
         XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
         XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
         XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy2")) );
@@ -794,6 +965,7 @@ int         test_cmdutl_Input01(
 
 TINYTEST_START_SUITE(test_cmdutl);
     //TINYTEST_ADD_TEST(test_cmdutl_Input01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_cmdutl_ParseCommandLine06,setUp,tearDown);
     TINYTEST_ADD_TEST(test_cmdutl_ParseCommandLine05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_cmdutl_ParseCommandLine04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_cmdutl_ParseCommandLine03,setUp,tearDown);

@@ -678,7 +678,7 @@ extern "C" {
                             fRc = hex_ScanUint32A(2, pCurChr, &hexNumber);
                             if (fRc) {
                                 AStr_AppendCharA(pStr, (char)hexNumber);
-                                ++cOutput;
+                                cOutput++;
                                 pCurChr += 2;
                             }
                             else {
@@ -689,13 +689,13 @@ extern "C" {
                     }
                     else {
                         AStr_AppendCharA(pStr, *pCurChr);
-                        ++cOutput;
-                        ++pCurChr;
+                        cOutput++;
+                        pCurChr++;
                     }
                 }
                 if( *pCurChr ) {
                     //                *pCurChr = '\0';
-                    ++pCurChr;
+                    pCurChr++;
                 }
             }
             // Handle Non-Quoted Arguments.
@@ -705,13 +705,13 @@ extern "C" {
                            || (' ' == *pCurChr) || ('\t' == *pCurChr))
                       ) {
                     AStr_AppendCharA(pStr, *pCurChr);
-                    ++cOutput;
-                    ++pCurChr;
+                    cOutput++;
+                    pCurChr++;
                 }
                 while( *pCurChr
                             && !(('=' == *pCurChr) || (',' == *pCurChr)
                             || (' ' == *pCurChr) || ('\t' == *pCurChr)) ) {
-                    ++pCurChr;
+                    pCurChr++;
                 }
             }
         }

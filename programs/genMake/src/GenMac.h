@@ -151,6 +151,14 @@ extern "C" {
     );
 
 
+    TEXTOUT_DATA *  GenMac_getOutput (
+        GENMAC_DATA     *this
+    );
+
+    bool            GenMac_setOutput (
+        GENMAC_DATA     *this,
+        TEXTOUT_DATA    *pValue
+    );
 
 
     
@@ -164,9 +172,21 @@ extern "C" {
     );
 
 
+    ERESULT_DATA *  GenMac_GenBuildTests (
+        GENMAC_DATA     *this,
+        NODEARRAY_DATA  *pArray
+    );
+
+
     ERESULT_DATA *  GenMac_GenCompileRtn (
         GENMAC_DATA     *this,
         NODERTNA_DATA   *pRtn
+    );
+
+
+    ERESULT_DATA *  GenMac_GenCompileRtns (
+        GENMAC_DATA     *this,
+        NODEARRAY_DATA  *pArray
     );
 
 
@@ -184,17 +204,28 @@ extern "C" {
 
     ERESULT_DATA *  GenMac_GenPgmBegin (
         GENMAC_DATA     *this,
-        NODELIB_DATA    *pLib
+        NODEPGM_DATA    *pPgm
     );
 
 
     ERESULT_DATA *  GenMac_GenPgmEnd (
         GENMAC_DATA     *this,
-        NODELIB_DATA    *pLib
+        NODEPGM_DATA    *pPgm
     );
 
 
     GENMAC_DATA *   GenMac_Init (
+        GENMAC_DATA     *this
+    );
+
+
+    /*!
+     Set up default parameters.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         GenMac_SetupDefaults (
         GENMAC_DATA     *this
     );
 

@@ -1026,11 +1026,7 @@ extern "C" {
      */
     ERESULT_DATA *      ExpandNodes_ExpandObj (
         EXPANDNODES_DATA    *this,
-        NODEOBJ_DATA        *pObj,
-        const
-        char                *pArch,
-        const
-        char                *pOS
+        NODEOBJ_DATA        *pObj
     )
     {
         ERESULT_DATA        *pErr = OBJ_NIL;
@@ -1112,7 +1108,7 @@ extern "C" {
 
         pRtn = NodeObj_getJson(pObj);
         if (pRtn) {
-            pErr = ExpandNodes_ExpandRtn(this, pRtn, pArch, pOS);
+            pErr = ExpandNodes_ExpandRtn(this, pRtn);
             if (pErr) {
                 return pErr;
             }
@@ -1165,11 +1161,7 @@ extern "C" {
 
     ERESULT_DATA *      ExpandNodes_ExpandObjs (
         EXPANDNODES_DATA    *this,
-        NODEARRAY_DATA      *pObjs,
-        const
-        char                *pArch,
-        const
-        char                *pOS
+        NODEARRAY_DATA      *pObjs
     )
     {
         uint32_t            i;
@@ -1203,7 +1195,7 @@ extern "C" {
             return eResult_NewStrA(ERESULT_INVALID_OBJECT,
                                    "Routine Array missing element");
         }
-        pErr = ExpandNodes_ExpandObj(this, pObj, pArch, pOS);
+        pErr = ExpandNodes_ExpandObj(this, pObj);
         if (pErr) {
             DEBUG_BREAK();
             return pErr;
@@ -1222,11 +1214,7 @@ extern "C" {
 
     ERESULT_DATA *      ExpandNodes_ExpandRtn (
         EXPANDNODES_DATA    *this,
-        NODERTN_DATA        *pRtn,
-        const
-        char                *pArch,
-        const
-        char                *pOS
+        NODERTN_DATA        *pRtn
     )
     {
         ERESULT_DATA        *pErr;
@@ -1320,18 +1308,12 @@ extern "C" {
      Expand the Routine Nodes to RtnA and TstA nodes as needed.
      @param     this    object pointer
      @param     pRtns   Input Routine Node Array
-     @param     pArch   Optional Architecture String
-     @param     pOS     Optional Operating System String
      @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
                 error code which must be released.
      */
     ERESULT_DATA *      ExpandNodes_ExpandRtns (
         EXPANDNODES_DATA    *this,
-        NODEARRAY_DATA      *pRtns,
-        const
-        char                *pArch,
-        const
-        char                *pOS
+        NODEARRAY_DATA      *pRtns
     )
     {
         uint32_t            i;
@@ -1365,7 +1347,7 @@ extern "C" {
                 return eResult_NewStrA(ERESULT_INVALID_OBJECT,
                                        "Routine Array missing element");
             }
-            pErr = ExpandNodes_ExpandRtn(this, pRtn, pArch, pOS);
+            pErr = ExpandNodes_ExpandRtn(this, pRtn);
             if (pErr) {
                 DEBUG_BREAK();
                 return pErr;

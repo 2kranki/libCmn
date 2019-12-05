@@ -1875,8 +1875,7 @@ extern "C" {
         pData  = array_Ptr((ARRAY_DATA *)cbp, 1);
         if (lenStr) {
             while( *pData && lenStr-- ) {
-                if( (*pData >= 'A') && (*pData <= 'Z') )
-                    *pData = (char)(*pData + ('a' - 'A'));
+                *pData = ascii_toLowerW32(*pData);
                 ++pData;
             }
         }
@@ -2461,8 +2460,7 @@ extern "C" {
         if (lenStr) {
             pData = array_Ptr((ARRAY_DATA *)this, 1);
             while( *pData && lenStr-- ) {
-                if( (*pData >= 'a') && (*pData <= 'z') )
-                    *pData = (char)(*pData - ('a' - 'A'));
+                *pData = ascii_toUpperW32(*pData);
                 ++pData;
             }
         }

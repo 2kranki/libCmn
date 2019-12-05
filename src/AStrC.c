@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include <AStrC_internal.h>
 #include <AStr_internal.h>
+#include <ascii.h>
 #include <crc.h>
 #include <utf8.h>
 #include <stdio.h>
@@ -1124,6 +1125,49 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          T o  U p p e r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     AStrC_ToUpper(
+        ASTRC_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        const
+        char            *pData;
+        W32CHR_T        curChr;
+
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_New();
+        if (pStr) {
+            pData = AStrC_getData(this);
+            for (;;) {
+                curChr = utf8_ChrConToW32_Scan(&pData);
+                if (curChr == -1)
+                    break;
+                curChr = ascii_toUpperW32(curChr);
+                eRc = AStr_AppendCharW32(pStr, curChr);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
+                }
+            }
+        }
+
+        return pStr;
+    }
+        
+        
+        
     //---------------------------------------------------------------
     //                          T o  W 3 2 S t r
     //---------------------------------------------------------------

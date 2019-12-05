@@ -291,7 +291,9 @@ extern "C" {
     ASTR_DATA *     NodeRtnA_Deps (
         NODERTNA_DATA   *this,
         const
-        char            *pPrefix                // Optional
+        char            *pPrefix,
+        const
+        char            *pSuffix
     );
 
 
@@ -337,7 +339,9 @@ extern "C" {
     ASTR_DATA *     NodeRtnA_Srcs (
         NODERTNA_DATA   *this,
         const
-        char            *pPrefix            // Optional
+        char            *pPrefix,
+        const
+        char            *pSuffix
     );
 
 

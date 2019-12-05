@@ -309,6 +309,11 @@ extern "C" {
     );
     
     
+    W32CHR_T            ascii_toLowerW32(
+        W32CHR_T            w32Char
+    );
+    
+    
     char                ascii_toUpperA(
         char                asciiChar
     );

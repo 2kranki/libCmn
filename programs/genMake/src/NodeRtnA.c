@@ -671,6 +671,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
+
 #ifdef NDEBUG
 #else
         if (!NodeRtnA_Validate(this)) {
@@ -822,7 +823,9 @@ extern "C" {
     ASTR_DATA *     NodeRtnA_Deps (
         NODERTNA_DATA   *this,
         const
-        char            *pPrefix
+        char            *pPrefix,
+        const
+        char            *pSuffix
     )
     {
         ASTR_DATA       *pStr;
@@ -836,7 +839,7 @@ extern "C" {
         }
     #endif
         
-        pStr = AStrCArray_ToStringPrefixSep(NodeRtnA_getDeps(this), " ", pPrefix);
+        pStr = AStrCArray_ToStringSep(NodeRtnA_getDeps(this), " ", pPrefix, pSuffix);
 
         // Return to caller.
         return pStr;
@@ -1131,7 +1134,9 @@ extern "C" {
     ASTR_DATA *     NodeRtnA_Srcs (
         NODERTNA_DATA   *this,
         const
-        char            *pPrefix
+        char            *pPrefix,
+        const
+        char            *pSuffix
     )
     {
         ASTR_DATA       *pStr;
@@ -1145,7 +1150,7 @@ extern "C" {
         }
     #endif
         
-        pStr = AStrCArray_ToStringPrefixSep(NodeRtnA_getSrcs(this), " ", pPrefix);
+        pStr = AStrCArray_ToStringSep(NodeRtnA_getSrcs(this), " ", pPrefix, pSuffix);
 
         // Return to caller.
         return pStr;

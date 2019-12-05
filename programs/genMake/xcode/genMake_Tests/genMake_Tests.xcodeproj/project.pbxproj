@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C43204B72390AD540078124D /* GenMac_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C43204B62390AD540078124D /* GenMac_test.c */; };
 		C43204C8239171FE0078124D /* TextOut_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C43204C4239171FD0078124D /* TextOut_object.c */; };
 		C43204C9239171FE0078124D /* TextOut.c in Sources */ = {isa = PBXBuildFile; fileRef = C43204C7239171FE0078124D /* TextOut.c */; };
 		C43319F62384C453003BBCAF /* AStrCArray.c in Sources */ = {isa = PBXBuildFile; fileRef = C43319F22384C452003BBCAF /* AStrCArray.c */; };
@@ -380,6 +379,7 @@
 		C4D97F6A2309054A00767A01 /* bpt32lf.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97F282309054900767A01 /* bpt32lf.c */; };
 		C4D97F6B2309054A00767A01 /* bitMatrix_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97F2A2309054A00767A01 /* bitMatrix_object.c */; };
 		C4D97F6C2309054A00767A01 /* ascii_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D97F2B2309054A00767A01 /* ascii_object.c */; };
+		C4FD74592397581D00BBF697 /* Main_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4FD74582397581D00BBF697 /* Main_test.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -395,7 +395,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C43204B62390AD540078124D /* GenMac_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = GenMac_test.c; sourceTree = "<group>"; };
 		C43204C4239171FD0078124D /* TextOut_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TextOut_object.c; sourceTree = "<group>"; };
 		C43204C5239171FE0078124D /* TextOut_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextOut_internal.h; sourceTree = "<group>"; };
 		C43204C6239171FE0078124D /* TextOut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextOut.h; sourceTree = "<group>"; };
@@ -1115,6 +1114,7 @@
 		C4D97F292309054A00767A01 /* blocks_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blocks_internal.h; sourceTree = "<group>"; };
 		C4D97F2A2309054A00767A01 /* bitMatrix_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitMatrix_object.c; sourceTree = "<group>"; };
 		C4D97F2B2309054A00767A01 /* ascii_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ascii_object.c; sourceTree = "<group>"; };
+		C4FD74582397581D00BBF697 /* Main_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Main_test.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1151,7 +1151,7 @@
 		C45573DF20CC0140002F9BFE /* genMake_Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C43204B62390AD540078124D /* GenMac_test.c */,
+				C4FD74582397581D00BBF697 /* Main_test.c */,
 				C4BE26C62378853800D0B580 /* data_test.c */,
 			);
 			name = genMake_Tests;
@@ -2102,6 +2102,7 @@
 				C4D97CFD2309033000767A01 /* plist.c in Sources */,
 				C4D97DBE2309037D00767A01 /* nodeList_JSON.c in Sources */,
 				C4D97CED2309033000767A01 /* prt.c in Sources */,
+				C4FD74592397581D00BBF697 /* Main_test.c in Sources */,
 				C4D97E97230903BD00767A01 /* crc_object.c in Sources */,
 				C4D97DAE2309037D00767A01 /* path_object.c in Sources */,
 				C4D97DAD2309037D00767A01 /* objCb_object.c in Sources */,
@@ -2242,7 +2243,6 @@
 				C4D97C50230902FC00767A01 /* scanwhite.c in Sources */,
 				C4D97DA02309037D00767A01 /* null_JSON.c in Sources */,
 				C4D97F6B2309054A00767A01 /* bitMatrix_object.c in Sources */,
-				C43204B72390AD540078124D /* GenMac_test.c in Sources */,
 				C4D97F542309054A00767A01 /* cb16_object.c in Sources */,
 				C4D97DE12309037D00767A01 /* memOSX.c in Sources */,
 				C4D97C93230902FC00767A01 /* str.c in Sources */,

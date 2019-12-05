@@ -190,6 +190,7 @@ int             test_NodeObj_Parse01(
         "\"test\":{\"arch\":\"X86\",\"os\":\"macos\",srcs:[\"abc.c\"]}"
         "}\n";
     bool            fDumpNodes = true;
+    uint32_t        size;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -247,16 +248,24 @@ int             test_NodeObj_Parse01(
     pStrCArray = NodeObj_getDeps(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
     if (pStrCArray) {
-        TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
+        size = AStrCArray_getSize(pStrCArray);
+        fprintf(stderr, "Deps Size: %d\n", size);
+        TINYTEST_TRUE((4 == size));
         pStrC = AStrCArray_Get(pStrCArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"array.h")));
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr.h")));
         pStrC = AStrCArray_Get(pStrCArray, 2);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr_internal.h")));
+        pStrC = AStrCArray_Get(pStrCArray, 3);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"array.h")));
+        pStrC = AStrCArray_Get(pStrCArray, 4);
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"cmn_defs.h")));
     }
     pStrCArray = NodeObj_getSrcs(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
     if (pStrCArray) {
-        TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
+        size = AStrCArray_getSize(pStrCArray);
+        fprintf(stderr, "Deps Size: %d\n", size);
+        TINYTEST_TRUE((2 == size));
         pStrC = AStrCArray_Get(pStrCArray, 1);
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"ascii.c")));
         pStrC = AStrCArray_Get(pStrCArray, 2);

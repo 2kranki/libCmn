@@ -225,17 +225,24 @@ int         test_AStrCArray_NewFromArrayA(
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
         TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC, "mm")) );
         
-        pStr = AStrCArray_ToStringPrefixSep(pObj, ", ", NULL);
+        pStr = AStrCArray_ToStringSep(pObj, ", ", NULL, NULL);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
         TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,
                 "abc/def/x.txt, jjj, kk, ll, mm")) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
-        pStr = AStrCArray_ToStringPrefixSep(pObj, ", ", "x");
+        pStr = AStrCArray_ToStringSep(pObj, ", ", "x", NULL);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
         TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,
                 "xabc/def/x.txt, xjjj, xkk, xll, xmm")) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        pStr = AStrCArray_ToStringSep(pObj, ", ", "x", "X");
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,
+                "xabc/def/x.txtX, xjjjX, xkkX, xllX, xmmX")) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
 

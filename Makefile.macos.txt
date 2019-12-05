@@ -55,9 +55,9 @@ OBJS += $(OBJDIR)/AStr_JSON.o
 $(OBJDIR)/AStr_JSON.o: $(SRCDIR)/AStr_JSON.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_AStr
+TESTS += AStr_test
 
-test_AStr: $(TEST_SRC)/test_AStr.c 
+AStr_test: $(TEST_SRC)/AStr_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -72,11 +72,12 @@ OBJS += $(OBJDIR)/AStrArray.o
 $(OBJDIR)/AStrArray.o: $(SRCDIR)/AStrArray.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_AStrArray
+TESTS += AStrArray_test
 
-test_AStrArray: $(TEST_SRC)/test_AStrArray.c 
+AStrArray_test: $(TEST_SRC)/AStrArray_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/AStrC_object.o
 
@@ -88,11 +89,12 @@ OBJS += $(OBJDIR)/AStrC.o
 $(OBJDIR)/AStrC.o: $(SRCDIR)/AStrC.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_AStrC
+TESTS += AStrC_test
 
-test_AStrC: $(TEST_SRC)/test_AStrC.c 
+AStrC_test: $(TEST_SRC)/AStrC_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/AStrCArray_object.o
 
@@ -109,6 +111,7 @@ TESTS += AStrCArray_test
 AStrCArray_test: $(TEST_SRC)/AStrCArray_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/AStrCReader_object.o
 
@@ -179,6 +182,7 @@ test_W32StrC: $(TEST_SRC)/test_W32StrC.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/appl_object.o
 
 $(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c 
@@ -189,11 +193,12 @@ OBJS += $(OBJDIR)/appl.o
 $(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/cmdutl.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_appl
+TESTS += Appl_test
 
-test_appl: $(TEST_SRC)/test_appl.c 
+Appl_test: $(TEST_SRC)/Appl_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/array_object.o
 
@@ -546,6 +551,7 @@ test_cfa: $(TEST_SRC)/test_cfa.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/cmdutl_object.o
 
 $(OBJDIR)/cmdutl_object.o: $(SRCDIR)/cmdutl_object.c 
@@ -556,11 +562,12 @@ OBJS += $(OBJDIR)/cmdutl.o
 $(OBJDIR)/cmdutl.o: $(SRCDIR)/cmdutl.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_cmdutl
+TESTS += CmdUtl_test
 
-test_cmdutl: $(TEST_SRC)/test_cmdutl.c 
+CmdUtl_test: $(TEST_SRC)/CmdUtl_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/compiler_object.o
 

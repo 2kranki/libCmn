@@ -429,7 +429,7 @@ extern "C" {
      OBJ_NIL if an error occurred.
      @warning   Remember to release the returned AStrArray object.
      */
-    //FIXME: We need to make this aware of the Array and Hash allowed in
+    //FIXME: We need to make this aware of the Array and Hash allowed
     //FIXME: in parameters since they may have whitespace between elements.
     ASTRARRAY_DATA * cmdutl_CommandStringToArray(
         const
@@ -487,6 +487,11 @@ extern "C" {
                 pArg = OBJ_NIL;
             }
             
+            // Bypass certain terminators.
+            if (*pCurChr && ((*pCurChr == '=') || (*pCurChr == ','))) {
+                pCurChr++;
+            }
+            
         }
         
         // Return to caller.
@@ -510,7 +515,40 @@ extern "C" {
     }
     
     
+    CMDUTL_DATA *   cmdutl_NewRescan(
+        int             cArgs,
+        char            **ppArgs
+    )
+    {
+        CMDUTL_DATA     *this = OBJ_NIL;
+        ASTR_DATA       *pStr;
+        ASTRARRAY_DATA  *pArgs;
+
+        pStr = cmdutl_ArgvToAStr(cArgs, (const char **)ppArgs);
+        if (pStr) {
+            this = cmdutl_Alloc( );
+            if (this) {
+                this = cmdutl_Init(this, 0, NULL);
+                if (this) {
+                    pArgs = cmdutl_CommandStringToArray(AStr_getData(pStr));
+                    if (pArgs) {
+                        cmdutl_setArgV(this, pArgs);
+                        obj_Release(pArgs);
+                        pArgs = OBJ_NIL;
+                    } else {
+                        obj_Release(this);
+                        this = OBJ_NIL;
+                    }
+                }
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        return this;
+    }
     
+    
+
     
     
 
@@ -1395,12 +1433,8 @@ extern "C" {
         int             indent
     )
     {
-        char            str[256];
-        int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
         ASTR_DATA       *pWrkStr;
-#endif
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1410,30 +1444,27 @@ extern "C" {
         if (indent) {
             AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(cmdutl) ",
-                     this
-            );
-        AStr_AppendA(pStr, str);
+        AStr_AppendPrint(pStr, "{%p(cmdutl) ", this);
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->toDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->toDebugString(
-                                                    this->pData,
-                                                    indent+3
+        if (this->pSavedArgs) {
+            if (indent) {
+                AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            }
+            AStr_AppendA(pStr, "Args:\n");
+            if (this->pSavedArgs) {
+                pWrkStr =   AStrArray_ToDebugString(
+                                                    this->pSavedArgs,
+                                                    indent+4
                             );
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
-#endif
         
-        j = snprintf( str, sizeof(str), " %p}\n", this );
-        AStr_AppendA(pStr, str);
+        if (indent) {
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        }
+        AStr_AppendPrint(pStr, " %p(cmdutl)}\n", this);
         
         return pStr;
     }

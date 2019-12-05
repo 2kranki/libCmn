@@ -294,12 +294,14 @@ extern "C" {
     );
     
     
-    ASTR_DATA *     AStrCArray_ToStringPrefixSep (
+    ASTR_DATA *     AStrCArray_ToStringSep (
         ASTRCARRAY_DATA *this,
         const
         char            *pSep,
         const
-        char            *pPrefix            // Optional
+        char            *pPrefix,           // Optional
+        const
+        char            *pSuffix            // Optional
     );
 
 

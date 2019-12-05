@@ -947,7 +947,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "NodeLib::sizeof(NODELIB_DATA) = %lu\n", sizeof(NODELIB_DATA));
+        //fprintf(stderr, "NodeLib::sizeof(NODELIB_DATA) = %lu\n", sizeof(NODELIB_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODELIB_DATA));
     #endif

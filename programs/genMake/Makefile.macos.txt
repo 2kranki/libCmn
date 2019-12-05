@@ -4,23 +4,24 @@ PGMNAM=genMake
 SYS=macos
 TEMP=/tmp
 BASEDIR = $(TEMP)/$(PGMNAM)
+SRCDIR = ./src
+SRCSYSDIR = ./src/$(SYS)
+TEST_SRC = ./tests
 
-CFLAGS_LIBS = 
-CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
+CFLAGS += -g -Werror -I$(SRCDIR) -I$(SRCDIR)/$(SYS)
+CFLAGS += -D__MACOS64_ENV__
 LIB_BASE = $(HOME)/Support/lib/$(SYS)
+CFLAGS_LIBS = 
+# libCmn
 LIBCMN_BASE = $(LIB_BASE)/libCmn
 CFLAGS += -I$(LIBCMN_BASE)/include
 CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)
-CFLAGS += -D__MACOS64_ENV__
 
 TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses
 
 INSTALL_BASE = $(HOME)/Support/bin
 INSTALLDIR = $(INSTALL_BASE)
 LIBDIR = $(BASEDIR)/$(SYS)
-SRCDIR = ./src
-SRCSYSDIR = ./src/$(SYS)
-TEST_SRC = ./tests
 ifdef  NDEBUG
 CFLAGS += -DNDEBUG
 LIB_FILENAME=$(LIBNAM)R.a

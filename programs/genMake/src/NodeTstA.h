@@ -273,7 +273,9 @@ extern "C" {
     ASTR_DATA *     NodeTstA_Deps (
         NODETSTA_DATA   *this,
         const
-        char            *pPrefix
+        char            *pPrefix,
+        const
+        char            *pSuffix
     );
 
 
@@ -312,7 +314,9 @@ extern "C" {
     ASTR_DATA *     NodeTstA_Srcs (
         NODETSTA_DATA   *this,
         const
-        char            *pPrefix
+        char            *pPrefix,
+        const
+        char            *pSuffix
     );
 
 

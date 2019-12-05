@@ -61,7 +61,7 @@ struct AStrC_data_s	{
 
     // Common Data
     const
-    char            *pData;
+    char            *pData;         // UTF-8 Data
     uint32_t        len;            // Number of Unicode Chars in String
 
 };

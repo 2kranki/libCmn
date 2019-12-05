@@ -313,6 +313,17 @@ extern "C" {
     
     
     /*!
+     Create an AStr object from this string converting the string
+     to upper case.
+     @return:   If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     AStrC_ToUpper(
+        ASTRC_DATA      *this
+    );
+    
+    
+    /*!
      Create an W32Str object from this string.
      @return:   If successful, an W32Str object which must be released,
                 otherwise OBJ_NIL.

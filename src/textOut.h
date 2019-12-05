@@ -170,6 +170,17 @@ extern "C" {
     );
 
 
+    /*!
+     Indicate if we are accumulating the output into an AStr.
+     @param     this    Object Pointer
+     @return    True == output accumulated in AStr.  Otherwise,
+                False.
+     */
+    bool            TextOut_IsString(
+        TEXTOUT_DATA    *this
+    );
+
+
     ERESULT         TextOut_Print (
         TEXTOUT_DATA    *this,
         const

@@ -104,6 +104,12 @@ struct cmdutl_data_s	{
 
 
     // Internal Functions
+    bool            cmdutl_setArgV(
+        CMDUTL_DATA     *this,
+        ASTRARRAY_DATA  *pValue
+    );
+
+
     ERESULT         cmdutl_AppendCharToField(
         CMDUTL_DATA     *cbp,
         W32CHR_T        chr

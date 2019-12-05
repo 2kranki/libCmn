@@ -634,6 +634,8 @@ extern "C" {
             char            *pOS
     )
     {
+            ERESULT         eRc;
+
 #ifdef NDEBUG
 #else
         if (!NodeTstA_Validate(this)) {
@@ -642,7 +644,14 @@ extern "C" {
         }
 #endif
 
-        return NodeBase_CheckConstraints(NodeTstA_getNodeBase(this), pArch, pOS);
+        eRc = NodeBase_CheckConstraints(NodeTstA_getNodeBase(this), pArch, pOS);
+        if (ERESULT_FAILED(eRc)) {
+            NodeTstA_Disable(this);
+        } else {
+            NodeTstA_Enable(this);
+        }
+        
+        return eRc;
     }
 
 
@@ -778,7 +787,9 @@ extern "C" {
     ASTR_DATA *     NodeTstA_Deps (
         NODETSTA_DATA   *this,
         const
-        char            *pPrefix
+        char            *pPrefix,
+        const
+        char            *pSuffix
     )
     {
         ASTR_DATA       *pStr;
@@ -792,7 +803,7 @@ extern "C" {
         }
     #endif
         
-        pStr = AStrCArray_ToStringPrefixSep(NodeTstA_getDeps(this), " ", pPrefix);
+        pStr = AStrCArray_ToStringSep(NodeTstA_getDeps(this), " ", pPrefix, pSuffix);
 
         // Return to caller.
         return pStr;
@@ -1087,7 +1098,9 @@ extern "C" {
     ASTR_DATA *     NodeTstA_Srcs (
         NODETSTA_DATA   *this,
         const
-        char            *pPrefix
+        char            *pPrefix,
+        const
+        char            *pSuffix
     )
     {
         ASTR_DATA       *pStr;
@@ -1101,7 +1114,7 @@ extern "C" {
         }
     #endif
         
-        pStr = AStrCArray_ToStringPrefixSep(NodeTstA_getSrcs(this), " ", pPrefix);
+        pStr = AStrCArray_ToStringSep(NodeTstA_getSrcs(this), " ", pPrefix, pSuffix);
 
         // Return to caller.
         return pStr;

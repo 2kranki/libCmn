@@ -297,8 +297,110 @@ int             test_NodeRtn_Parse01(
 
 
 
+int             test_NodeRtn_Parse02(
+    const
+    char            *pTestName
+)
+{
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    //NODE_DATA       *pNode = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    NODEHASH_DATA   *pHash = OBJ_NIL;
+    ASTRARRAY_DATA  *pStrArray = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTRCARRAY_DATA *pStrCArray = OBJ_NIL;
+    ASTRC_DATA      *pStrC = OBJ_NIL;
+    NODERTN_DATA    *pRtn = OBJ_NIL;
+    NODETEST_DATA   *pTest = OBJ_NIL;
+    const
+    char            *pGoodJsonObject1 =
+        "{name:\"dllist\", "
+        "\"os\":[\"win32\",\"win64\"]"
+        "}\n";
+    bool            fDumpNodes = true;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    // Process the JSON data.
+    pErr = InputStrToJSON(pGoodJsonObject1, &pNodes);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+    TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
+    pHash = node_getData(pNodes);
+    TINYTEST_FALSE( (OBJ_NIL == pHash) );
+    TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
+
+    if (fDumpNodes) {
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        pWrk = node_ToDebugString(pNodes, 0);
+        fprintf(stderr, "Parsed JSON:\n%s\n\n\n", AStr_getData(pWrk));
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+    }
+
+    // Parse the Object.
+    //obj_TraceSet(pBase, true);
+    pErr = NodeRtn_Parse(pNodes, &pRtn);
+    if (pErr) {
+        fprintf(stderr, "%s\n", eResult_getErrorA(pErr));
+    }
+    TINYTEST_TRUE((OBJ_NIL == pErr));
+    
+    // Display the Output.
+    if (pRtn) {
+        fprintf(stderr, "===> NodeObj:\n\n");
+        ASTR_DATA   *pStr = NodeRtn_ToDebugString(pRtn, 0);
+        fprintf(stderr, "%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
+
+    // Validate the output.
+    pStrC = NodeRtn_getName(pRtn);
+    TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+    TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"dllist")));
+    pStrCArray = NodeRtn_getArches(pRtn);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((0 == AStrCArray_getSize(pStrCArray)));
+    }
+    pStrCArray = NodeRtn_getOSs(pRtn);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
+        pStrC = AStrCArray_Get(pStrCArray, 1);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"win32")));
+        pStrC = AStrCArray_Get(pStrCArray, 2);
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"win64")));
+    }
+    pStrCArray = NodeRtn_getDeps(pRtn);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((0 == AStrCArray_getSize(pStrCArray)));
+    }
+    pStrCArray = NodeRtn_getSrcs(pRtn);
+    TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
+    if (pStrCArray) {
+        TINYTEST_TRUE((0 == AStrCArray_getSize(pStrCArray)));
+    }
+    pTest = NodeRtn_getTest(pRtn);
+    TINYTEST_TRUE( (OBJ_NIL == pTest) );
+
+    obj_Release(pNodes);
+    pNodes = OBJ_NIL;
+    
+    obj_Release(pRtn);
+    pRtn = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_NodeRtn);
+    TINYTEST_ADD_TEST(test_NodeRtn_Parse02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_NodeRtn_Parse01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_NodeRtn_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

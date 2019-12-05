@@ -1893,7 +1893,7 @@ extern "C" {
         uint16_t        cbSize;
         int             Num = 0;
 #endif
-        char            *pCurChr;
+        //char            *pCurChr;
 #ifdef XYZZY
         char            *pCurCmd;
         char            quote;

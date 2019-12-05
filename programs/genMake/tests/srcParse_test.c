@@ -478,7 +478,7 @@ int             test_SrcParse_Routine01(
             pRtn = (NODERTN_DATA *)nodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pRtn) );
             pTest = NodeRtn_getTest(pRtn);
-            TINYTEST_FALSE( (OBJ_NIL == pTest) );
+            TINYTEST_TRUE( (OBJ_NIL == pTest) );
         }
 
         obj_Release(pNodes);
@@ -554,7 +554,7 @@ int             test_SrcParse_Routine02(
             pRtn = (NODERTN_DATA *)nodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pRtn) );
             pTest = NodeRtn_getTest(pRtn);
-            TINYTEST_FALSE( (OBJ_NIL == pTest) );
+            TINYTEST_TRUE( (OBJ_NIL == pTest) );
         }
 
         obj_Release(pNodes);

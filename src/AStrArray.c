@@ -794,8 +794,6 @@ extern "C" {
         ERESULT         eRc;
         ASTR_DATA       *pStr = OBJ_NIL;
         ASTR_DATA       *pWrkStr;
-        //uint32_t        i;
-        //uint32_t        iMax;
         const
         OBJ_INFO        *pInfo;
 
@@ -808,13 +806,13 @@ extern "C" {
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        eRc = AStr_AppendPrint(
+        eRc =   AStr_AppendPrint(
                                pStr,
                                "{%p(%s) size=%d\n",
                                this,
                                pInfo->pClassName,
                                AStrArray_getSize(this)
-                               );
+                );
         
         if (this->pArray) {
             pWrkStr = objArray_ToDebugString(this->pArray, indent+4);

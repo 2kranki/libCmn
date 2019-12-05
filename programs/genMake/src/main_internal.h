@@ -80,6 +80,10 @@ struct Main_data_s	{
     NODE_DATA       *pNodes;
     ASTR_DATA       *pOut;
     SRCPARSE_DATA   *pParser;
+    const
+    char            *pOsName;
+    const
+    char            *pOsArch;
 
 };
 #pragma pack(pop)
@@ -121,22 +125,34 @@ struct Main_data_s	{
     //---------------------------------------------------------------
     
   
-    void            Main_Dealloc(
+    PATH_DATA *     Main_CheckInputPath (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    );
+
+    PATH_DATA *     Main_CreateOutputPath (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr,
+        const
+        char            *pOsNameA
+    );
+
+    void            Main_Dealloc (
         OBJ_ID          objId
     );
 
-    ERESULT         Main_ParseArgsDefault(
+    ERESULT         Main_ParseArgsDefault (
         MAIN_DATA        *this
     );
     
-    int             Main_ParseArgsLong(
+    int             Main_ParseArgsLong (
         MAIN_DATA       *this,
         int             *pArgC,
         const
         char            ***pppArgV
     );
     
-    int             Main_ParseArgsShort(
+    int             Main_ParseArgsShort (
         MAIN_DATA       *this,
         int             *pArgC,
         const
@@ -150,7 +166,7 @@ struct Main_data_s	{
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         Main_ParseInputFile(
+    ERESULT         Main_ParseInputFile (
         MAIN_DATA       *this,
         PATH_DATA       *pPath
     );
@@ -162,13 +178,13 @@ struct Main_data_s	{
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         Main_ParseInputStr(
+    ERESULT         Main_ParseInputStr (
         MAIN_DATA       *this,
         const
         char            *pStr
     );
     
-    ERESULT         Main_ProcessInit(
+    ERESULT         Main_ProcessInit (
         MAIN_DATA       *this
     );
     
@@ -179,26 +195,31 @@ struct Main_data_s	{
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         Main_ProcessArg(
+    ERESULT         Main_ProcessArg (
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     );
     
-    void *          Main_QueryInfo(
+    void *          Main_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ERESULT         Main_UsageDesc(
+    ERESULT         Main_SetupOsArch (
+        MAIN_DATA        *this
+    );
+
+
+    ERESULT         Main_UsageDesc (
         MAIN_DATA       *this,
         FILE            *pOutput,
         PATH_DATA       *pProgramPath
     );
     
 
-    ERESULT         Main_UsageProgLine(
+    ERESULT         Main_UsageProgLine (
         MAIN_DATA       *this,
         FILE            *pOutput,
         PATH_DATA       *pProgramPath,
@@ -207,7 +228,7 @@ struct Main_data_s	{
     );
     
     
-    ERESULT         Main_UsageOptions(
+    ERESULT         Main_UsageOptions (
         MAIN_DATA       *this,
         FILE            *pOutput
     );
@@ -217,7 +238,7 @@ struct Main_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			Main_Validate(
+    bool			Main_Validate (
         MAIN_DATA       *this
     );
 #endif

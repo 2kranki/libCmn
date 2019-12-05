@@ -865,7 +865,21 @@ extern "C" {
         return( chr );
     }
     
+    W32CHR_T            ascii_toLowerW32(
+        W32CHR_T            asciiChar
+    )
+    {
+        W32CHR_T            chr = asciiChar;
+        
+        if ((asciiChar >= 'A') && (asciiChar <= 'Z')) {
+            chr = (asciiChar - 'A') + 'a';
+        }
+
+        return chr;
+    }
     
+    
+
     
     //**********************************************************
     //					t o U p p e r

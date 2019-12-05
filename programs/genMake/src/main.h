@@ -76,10 +76,12 @@
 #include        <genMake.h>
 #include        <AStr.h>
 #include        <Dict.h>
+#include        <ExpandNodes.h>
 #include        <fbso.h>
 #include        <node.h>
 #include        <nodeArray.h>
 #include        <path.h>
+#include        <SrcParse.h>
 #include        <szHash.h>
 #include        <TextOut.h>
 
@@ -114,7 +116,8 @@ extern "C" {
 
     typedef enum os_type_e {
         OSTYPE_UNKNOWN=0,
-        OSTYPE_MACOS,
+        OSTYPE_MACOS32,
+        OSTYPE_MACOS64,
         OSTYPE_MSC32,
         OSTYPE_MSC64
     } OSTYPE;
@@ -236,6 +239,16 @@ extern "C" {
     );
 
     
+    SRCPARSE_DATA * Main_getParser(
+        MAIN_DATA       *this
+    );
+
+    bool            Main_setParser(
+        MAIN_DATA       *this,
+        SRCPARSE_DATA   *pValue
+    );
+
+
     NODEARRAY_DATA * Main_getRoutines(
         MAIN_DATA       *this
     );
@@ -278,7 +291,8 @@ extern "C" {
 
    
     /*!
-     Generate a makefile given the internal nodes and the dictionary.
+     Generate a makefile given the internal nodes and the dictionary passed
+     from the ParseInput phase.
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
@@ -290,6 +304,22 @@ extern "C" {
     
     MAIN_DATA *     Main_Init(
         MAIN_DATA       *this
+    );
+
+
+    /*!
+     Parse the given input file resetting any prior parse data and
+     building the appropriate node tables from the JSON. The parser
+     and its tables will be saved internally for later phases of
+     the generation process.
+     @param     this        object pointer
+     @param     pPath       JSON Input File Path
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         Main_ParseInputFile(
+        MAIN_DATA       *this,
+        PATH_DATA       *pPath
     );
 
 

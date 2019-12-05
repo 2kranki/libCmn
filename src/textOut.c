@@ -769,6 +769,35 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                      I s  S t r i n g
+    //---------------------------------------------------------------
+
+    bool            TextOut_IsString(
+        TEXTOUT_DATA    *this
+    )
+    {
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if( !TextOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+    #endif
+        
+        if (this->type == TEXTOUT_TYPE_ASTR)
+            return true;
+
+        // Put code here...
+        
+        // Return to caller.
+        return false;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i n t
     //---------------------------------------------------------------
     

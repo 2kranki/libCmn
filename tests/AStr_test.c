@@ -1578,8 +1578,57 @@ int         test_AStr_CharGet01(
 
 
 
+int         test_AStr_LowerUpper(
+    const
+    char        *pTestName
+)
+{
+    char        *pLower = "abcdefghijklmnopqrstuvwxyz";
+    char        *pUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    ASTR_DATA   *pLowerA = OBJ_NIL;
+    ASTR_DATA   *pUpperA = OBJ_NIL;
+    ASTR_DATA   *pWrk = OBJ_NIL;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pLowerA = AStr_NewA(pLower);
+    XCTAssertFalse( (OBJ_NIL == pLowerA) );
+    XCTAssertTrue( (26 == AStr_getLength(pLowerA)) );
+    XCTAssertTrue( (0 == strcmp(pLower, AStr_getData(pLowerA))) );
+    
+    pUpperA = AStr_NewA(pUpper);
+    XCTAssertFalse( (OBJ_NIL == pUpperA) );
+    XCTAssertTrue( (26 == AStr_getLength(pUpperA)) );
+    XCTAssertTrue( (0 == strcmp(pUpper, AStr_getData(pUpperA))) );
+
+    pWrk = AStr_ToLower(pUpperA);
+    XCTAssertFalse( (OBJ_NIL == pWrk) );
+    XCTAssertTrue( (26 == AStr_getLength(pWrk)) );
+    XCTAssertTrue( (0 == strcmp(pLower, AStr_getData(pWrk))) );
+    obj_Release(pWrk);
+    pWrk = OBJ_NIL;
+    
+    pWrk = AStr_ToUpper(pLowerA);
+    XCTAssertFalse( (OBJ_NIL == pWrk) );
+    XCTAssertTrue( (26 == AStr_getLength(pWrk)) );
+    XCTAssertTrue( (0 == strcmp(pUpper, AStr_getData(pWrk))) );
+    obj_Release(pWrk);
+    pWrk = OBJ_NIL;
+    
+    obj_Release(pUpperA);
+    pUpperA = OBJ_NIL;
+    obj_Release(pLowerA);
+    pLowerA = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_AStr);
+    TINYTEST_ADD_TEST(test_AStr_LowerUpper,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_CharGet01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_SplitOn05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_SplitOn04,setUp,tearDown);

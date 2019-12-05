@@ -3054,10 +3054,12 @@ extern "C" {
         ASTR_DATA       *this
     )
     {
+        ERESULT         eRc;
         ASTR_DATA       *pStr;
+        const
         char            *pData;
-        uint32_t        lenStr;
-        
+        W32CHR_T        curChr;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -3067,19 +3069,21 @@ extern "C" {
         }
 #endif
         
-        pStr = AStr_Copy(this);
+        pStr = AStr_New();
         if (pStr) {
-            lenStr = AStr_getLength(pStr);
-            if (lenStr) {
-                pData = array_Ptr(pStr->pData,1);
-                while( *pData ) {
-                    if( (*pData >= 'A') && (*pData <= 'Z') )
-                        *pData = (char)(*pData + ('a' - 'A'));
-                    ++pData;
+            pData = AStr_getData(this);
+            for (;;) {
+                curChr = utf8_ChrConToW32_Scan(&pData);
+                if (curChr == -1)
+                    break;
+                curChr = ascii_toLowerW32(curChr);
+                eRc = AStr_AppendCharW32(pStr, curChr);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
                 }
             }
         }
-        
+
         return pStr;
     }
     
@@ -3261,9 +3265,11 @@ extern "C" {
         ASTR_DATA       *this
     )
     {
+        ERESULT         eRc;
         ASTR_DATA       *pStr;
+        const
         char            *pData;
-        uint32_t        lenStr;
+        W32CHR_T        curChr;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -3274,15 +3280,17 @@ extern "C" {
         }
 #endif
         
-        pStr = AStr_Copy(this);
+        pStr = AStr_New();
         if (pStr) {
-            lenStr = AStr_getLength(pStr);
-            if (lenStr) {
-                pData = array_Ptr(pStr->pData,1);
-                while( *pData ) {
-                    if( (*pData >= 'a') && (*pData <= 'z') )
-                        *pData = (char)(*pData - ('a' - 'A'));
-                    ++pData;
+            pData = AStr_getData(this);
+            for (;;) {
+                curChr = utf8_ChrConToW32_Scan(&pData);
+                if (curChr == -1)
+                    break;
+                curChr = ascii_toUpperW32(curChr);
+                eRc = AStr_AppendCharW32(pStr, curChr);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
                 }
             }
         }

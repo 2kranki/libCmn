@@ -263,7 +263,8 @@ int             test_GenMac_CompileRoutine02(
     char            *pGenCheck =
         "OBJS += $(OBJDIR)/AStr.o\n\n"
         "$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h\n"
-        "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< $(SRCDIR)/ascii.c $(SRCDIR)/str.c\n"
+        "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< "
+                            "$(SRCDIR)/ascii.c $(SRCDIR)/str.c\n"
         "\n";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -438,7 +439,8 @@ int             test_GenMac_BuildTest02(
     char            *pGenCheck =
         "TESTS += AStr_test\n\n"
         "AStr_test: $(TEST_SRC)/AStr_test.c \n"
-        "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) $(TEST_SRC)/data1.c $<\n"
+        "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) "
+                                "-I$(TEST_SRC) $(TEST_SRC)/data1.c $<\n"
         "\t$(TEST_BIN)/$(@F)\n\n";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -526,8 +528,11 @@ int             test_GenMac_LibBegin01(
     NODE_DATA       *pNodes = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     bool            fDumpNodes = true;
-    //int             iRc;
-    //int             offset = 0;
+    int             iRc;
+    int             offset = 0;
+    uint32_t        i;
+    const
+    char            *pChr;
 
     const
     char            *pJsonObject =
@@ -537,34 +542,38 @@ int             test_GenMac_LibBegin01(
         "}\n";
     const
     char            *pGenCheck =
-    "# Generated file - edits may be discarded!\n"
-    "# (11/30/2019  4:09:40.000)\n\n\n"
+    //"# Generated file - edits may be discarded!\n"
+    //"# (11/30/2019  4:09:40.000)\n\n\n"
     "LIBNAM=libCmn\n"
     "SYS=macos64\n"
     "TEMP=/tmp\n"
-    "BASEDIR = $(TEMP)/$(LIBNAM)\n\n"
-    "CFLAGS_LIBS = \n"
-    "CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)\n"
-    "CFLAGS += -D__MACOS64_ENV__\n"
-    "CFLAGS_TEST = -Itests $(CFLAGS_LIBS) -lcurses\n\n"
-    "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
-    "INSTALLDIR = $(INSTALL_BASE)/$(LIBNAM)\n"
-    "LIBDIR = $(BASEDIR)/$(SYS)\n"
+    "BASE_OBJ = $(TEMP)/$(LIBNAM)\n"
     "SRCDIR = ./src\n"
-    "SRCSYSDIR = ./src/$(SYS)\n"
-    "TEST_SRC = ./tests\n"
+    "TEST_SRC = ./tests\n\n"
+    
+    "CFLAGS += -g -Werror\n"
     "ifdef  NDEBUG\n"
     "CFLAGS += -DNDEBUG\n"
-    "LIB_FILENAME=$(LIBNAM)R.a\n"
-    "OBJDIR = $(LIBDIR)/o/r\n"
     "else   #DEBUG\n"
     "CFLAGS += -D_DEBUG\n"
+    "endif  #NDEBUG\n"
+    "CFLAGS += -D__MACOS64_ENV__\n"
+    "CFLAGS_LIBS = \n"
+    "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
+    
+    "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+    "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
+    "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
+    "ifdef  NDEBUG\n"
+    "LIB_FILENAME=$(LIBNAM)R.a\n"
+    "OBJDIR = $(LIBOBJ)/o/r\n"
+    "else   #DEBUG\n"
     "LIB_FILENAME=$(LIBNAM)D.a\n"
-    "OBJDIR = $(LIBDIR)/o/d\n"
+    "OBJDIR = $(LIBOBJ)/o/d\n"
     "endif  #NDEBUG\n"
     "TEST_OBJ = $(OBJDIR)/tests\n"
     "TEST_BIN = $(OBJDIR)/tests\n"
-    "LIBPATH = $(LIBDIR)/$(LIB_FILENAME)\n\n"
+    "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
     ".SUFFIXES:\n"
     ".SUFFIXES: .asm .c .cpp .o\n\n"
     "OBJS =\n\n"
@@ -619,9 +628,19 @@ int             test_GenMac_LibBegin01(
             fprintf(stderr, "0123456789012345678901234567890\n");
             fprintf(stderr, "Generated:\n%s...End of Generated\n\n", AStr_getData(pStr));
         }
-        // Because output has date/time in it, this comparison will not work.
-        //iRc = str_CompareSpcl(AStr_getData(pStr), pGenCheck, &offset);
-        //TINYTEST_TRUE( (0 == iRc) );
+
+        // Skip first 3 lines of output.
+        pChr = AStr_getData(pStr);
+        for (i=0; i<3; i++) {
+            while (*pChr && (*pChr != '\n')) {
+                pChr++;
+            }
+            pChr++;
+        }
+        
+        // Compare the remainder.
+        iRc = str_CompareSpcl(pChr, pGenCheck, &offset);
+        TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pObj->pObjDir);
         obj_Release(pObj->pObjVar);
@@ -654,7 +673,7 @@ int             test_GenMac_LibEnd01(
     NODELIB_DATA    *pLib = OBJ_NIL;
     NODE_DATA       *pNodes = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
-    bool            fDumpNodes = true;
+    bool            fDumpNodes = false;
     int             iRc;
     int             offset = 0;
 
@@ -666,9 +685,9 @@ int             test_GenMac_LibEnd01(
         "}\n";
     const
     char            *pGenCheck =
-        "$(LIBPATH):  $(OBJS)\n"
-        "\t-cd $(LIBDIR) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
-        "\tar rc $(LIBPATH) $(OBJS)\n\n\n\n"
+        "$(LIB_PATH):  $(OBJS)\n"
+        "\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
+        "\tar rc $(LIB_PATH) $(OBJS)\n\n\n\n"
         ".PHONY: test\n"
         "test: $(TESTS)\n\n\n"
         ".PHONY: clean\n"
@@ -678,16 +697,16 @@ int             test_GenMac_LibEnd01(
         "install:\n"
         "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
         "\t-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include/$(SYS)\n"
-        "\tcp $(LIBPATH) $(INSTALLDIR)/$(LIBNAM).a\n"
-        "\tcp src/*.h $(INSTALLDIR)/include/\n"
+        "\tcp $(LIB_PATH) $(INSTALL_DIR)/$(LIBNAM).a\n"
+        "\tcp src/*.h $(INSTALL_DIR)/include/\n"
         "\tif [ -d src/$(SYS) ]; then \\\n"
-        "\t\tcp src/$(SYS)/*.h $(INSTALLDIR)/include/$(SYS)/; \\\n"
+        "\t\tcp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \\\n"
         "\tfi\n\n\n"
         ".PHONY: create_dirs\n"
         "create_dirs:\n"
         "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
         ".PHONY: all\n"
-        "all:  clean create_dirs $(LIBPATH)\n\n\n\n";
+        "all:  clean create_dirs $(LIB_PATH)\n\n\n\n";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -761,8 +780,271 @@ int             test_GenMac_LibEnd01(
 
 
 
+int             test_GenMac_PgmBegin01(
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    GENMAC_DATA     *pObj = OBJ_NIL;
+    NODEPGM_DATA    *pPgm = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    bool            fDumpNodes = true;
+    int             iRc;
+    int             offset = 0;
+    uint32_t        i;
+    const
+    char            *pChr;
+
+    const
+    char            *pJsonObject =
+        "{name:\"genMake\", "
+        "\"deps\":[], "
+        "\"hdrs\":[\"cmn_defs.h\"] "
+        "}\n";
+    const
+    char            *pGenCheck =
+    //"# Generated file - edits may be discarded!\n"
+    //"# (11/30/2019  4:09:40.000)\n\n\n"
+    "PGMNAM=genMake\n"
+    "SYS=macos64\n"
+    "TEMP=/tmp\n"
+    "BASE_OBJ = $(TEMP)/$(PGMNAM)\n"
+    "SRCDIR = ./src\n"
+    "TEST_SRC = ./tests\n\n"
+    
+    "CFLAGS += -g -Werror\n"
+    "ifdef  NDEBUG\n"
+    "CFLAGS += -DNDEBUG\n"
+    "else   #DEBUG\n"
+    "CFLAGS += -D_DEBUG\n"
+    "endif  #NDEBUG\n"
+    "CFLAGS += -D__MACOS64_ENV__\n"
+    "CFLAGS_LIBS = \n"
+    "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
+    
+    "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+    "INSTALL_DIR = $(INSTALL_BASE)/$(PGMNAM)\n"
+    "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
+    "ifdef  NDEBUG\n"
+    "LIB_FILENAME=$(PGMNAM)R.a\n"
+    "OBJDIR = $(LIBOBJ)/o/r\n"
+    "else   #DEBUG\n"
+    "LIB_FILENAME=$(PGMNAM)D.a\n"
+    "OBJDIR = $(LIBOBJ)/o/d\n"
+    "endif  #NDEBUG\n"
+    "TEST_OBJ = $(OBJDIR)/tests\n"
+    "TEST_BIN = $(OBJDIR)/tests\n"
+    "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
+    
+    ".SUFFIXES:\n"
+    ".SUFFIXES: .asm .c .cpp .o\n\n"
+    
+    "OBJS =\n\n"
+    "TESTS =\n\n\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pErr = InputStrToJSON(pJsonObject, &pNodes);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+    pPgm = NodePgm_New();
+    TINYTEST_FALSE( (OBJ_NIL == pPgm) );
+    pErr = NodeBase_Parse(pNodes, (NODEBASE_DATA **)&pPgm);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    if (fDumpNodes) {
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        pWrk = NodePgm_ToDebugString(pPgm, 0);
+        fprintf(stderr, "\n====> TSTA Input:\n%s\n\n\n", AStr_getData(pWrk));
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+    }
+
+    pObj = GenMac_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //TODO: Set up this variables.
+        pObj->pObjDir = AStrC_NewA("OBJDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjDir) );
+        pObj->pObjVar = AStrC_NewA("OBJS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjVar) );
+        pObj->pSrcDir = AStrC_NewA("SRCDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pSrcDir) );
+        pObj->pTstBin = AStrC_NewA("TEST_BIN");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstBin) );
+        pObj->pTstDir = AStrC_NewA("TEST_SRC");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstDir) );
+        pObj->pTstVar = AStrC_NewA("TESTS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstVar) );
+
+        pErr = GenMac_GenPgmBegin(pObj, pPgm);
+        eResult_Fprint(pErr, stderr);
+        TINYTEST_TRUE( (OBJ_NIL == pErr) );
+
+        TINYTEST_FALSE( (OBJ_NIL == GenBase_getOutput(GenMac_getGenBase(pObj))) );
+        pStr = TextOut_getStr(GenBase_getOutput(GenMac_getGenBase(pObj)));
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            fprintf(stderr, "0         1         2         3\n");
+            fprintf(stderr, "0123456789012345678901234567890\n");
+            fprintf(stderr, "Generated:\n%s...End of Generated\n\n", AStr_getData(pStr));
+        }
+        
+        // Skip first 3 lines of output.
+        pChr = AStr_getData(pStr);
+        for (i=0; i<3; i++) {
+            while (*pChr && (*pChr != '\n')) {
+                pChr++;
+            }
+            pChr++;
+        }
+        
+        // Compare the remainder.
+        iRc = str_CompareSpcl(pChr, pGenCheck, &offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
+        obj_Release(pObj->pObjDir);
+        obj_Release(pObj->pObjVar);
+        obj_Release(pObj->pSrcDir);
+        obj_Release(pObj->pTstBin);
+        obj_Release(pObj->pTstDir);
+        obj_Release(pObj->pTstVar);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pPgm);
+    obj_Release(pNodes);
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_GenMac_PgmEnd01(
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    GENMAC_DATA     *pObj = OBJ_NIL;
+    NODEPGM_DATA    *pPgm = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    bool            fDumpNodes = false;
+    int             iRc;
+    int             offset = 0;
+
+    const
+    char            *pJsonObject =
+        "{name:\"Cmn\", "
+        "\"deps\":[], "
+        "\"hdrs\":[\"cmn_defs.h\"] "
+        "}\n";
+    const
+    char            *pGenCheck =
+        ".PHONY: test\n"
+        "test: $(TESTS)\n\n\n"
+        ".PHONY: clean\n"
+        "clean:\n"
+        "\t-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n\n\n"
+        ".PHONY: install\n"
+        "install:\n"
+        "\t-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n"
+        "\tcp $(OBJDIR)/$(PGMNAM) $(INSTALL_DIR)/$(PGMNAM)\n\n\n"
+        ".PHONY: link\n"
+        "link: $(OBJS) $(SRCDIR)/mainProgram.c\n"
+        "\tCC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^\n\n\n"
+        ".PHONY: create_dirs\n"
+        "create_dirs:\n"
+        "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
+        ".PHONY: all\n"
+        "all:  clean create_dirs link\n\n\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pErr = InputStrToJSON(pJsonObject, &pNodes);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+    pPgm = NodePgm_New();
+    TINYTEST_FALSE( (OBJ_NIL == pPgm) );
+    pErr = NodeBase_Parse(pNodes, (NODEBASE_DATA **)&pPgm);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    if (fDumpNodes) {
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        pWrk = NodePgm_ToDebugString(pPgm, 0);
+        fprintf(stderr, "\n====> TSTA Input:\n%s\n\n\n", AStr_getData(pWrk));
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+    }
+
+    pObj = GenMac_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //TODO: Set up this variables.
+        pObj->pObjDir = AStrC_NewA("OBJDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjDir) );
+        pObj->pObjVar = AStrC_NewA("OBJS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pObjVar) );
+        pObj->pSrcDir = AStrC_NewA("SRCDIR");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pSrcDir) );
+        pObj->pTstBin = AStrC_NewA("TEST_BIN");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstBin) );
+        pObj->pTstDir = AStrC_NewA("TEST_SRC");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstDir) );
+        pObj->pTstVar = AStrC_NewA("TESTS");
+        TINYTEST_FALSE( (OBJ_NIL == pObj->pTstVar) );
+
+        pErr = GenMac_GenPgmEnd(pObj, pPgm);
+        eResult_Fprint(pErr, stderr);
+        TINYTEST_TRUE( (OBJ_NIL == pErr) );
+
+        TINYTEST_FALSE( (OBJ_NIL == GenBase_getOutput(GenMac_getGenBase(pObj))) );
+        pStr = TextOut_getStr(GenBase_getOutput(GenMac_getGenBase(pObj)));
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            fprintf(stderr, "0         1         2         3\n");
+            fprintf(stderr, "0123456789012345678901234567890\n");
+            fprintf(stderr, "Generated:\n%s...End of Generated\n\n", AStr_getData(pStr));
+        }
+        iRc = str_CompareSpcl(AStr_getData(pStr), pGenCheck, &offset);
+        TINYTEST_TRUE( (0 == iRc) );
+
+        obj_Release(pObj->pObjDir);
+        obj_Release(pObj->pObjVar);
+        obj_Release(pObj->pSrcDir);
+        obj_Release(pObj->pTstBin);
+        obj_Release(pObj->pTstDir);
+        obj_Release(pObj->pTstVar);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    obj_Release(pPgm);
+    obj_Release(pNodes);
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_GenMac);
+    TINYTEST_ADD_TEST(test_GenMac_PgmEnd01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_GenMac_PgmBegin01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_GenMac_LibEnd01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_GenMac_LibBegin01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_GenMac_BuildTest02,setUp,tearDown);

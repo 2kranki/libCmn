@@ -1157,9 +1157,6 @@ extern "C" {
                 return eResult_NewStrA(ERESULT_INVALID_DATA,
                                        "Missing 'objects' JSON Array");
             }
-        } else {
-            return eResult_NewStrA(ERESULT_INVALID_DATA,
-                                   "Missing 'objects' JSON nodes");
         }
         
         pNode = nodeHash_FindA(pHash, 0, "routines");
@@ -1321,7 +1318,7 @@ extern "C" {
             //BREAK_NULL(this->pDict);
     #endif
             
-            // We cheat and let NodeLib parse the Object.
+            // We cheat and let NodePgm parse the Object.
             pErr = NodePgm_Parse(pNode, &pPgm);
             if (pErr) {
                 DEBUG_BREAK();

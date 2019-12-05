@@ -692,7 +692,7 @@ extern "C" {
                      "# Generated file - Edits will be discarded by next generation!\n");
         if (GenBase_getTime(this)) {
             pWrk = dateTime_ToString(GenBase_getTime(this));
-            AStr_AppendPrint(pStr, "# (%s)\n\n", AStr_getData(pWrk));
+            AStr_AppendPrint(pStr, "# (%s)\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
         }
