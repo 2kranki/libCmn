@@ -812,22 +812,22 @@ typedef struct W32StrC_vtbl_s	{
 #   include     <memMac32.h>
 #endif
 #if             defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-#	include     <cmnMac64.h>
-#   include     <memOSX.h>
+#   include     <cmnMac64.h>
+#   include     <memMac64.h>
 #endif
 #if defined(__WIN32_ENV__)
-#	include     <win32/cmn_win32.h>
+#   include     <win32/cmn_win32.h>
 #   include     <win32/memWin32.h>
 #endif
 #if defined(__WIN64_ENV__)
-#	include     <win64/cmn_win64.h>
+#   include     <win64/cmn_win64.h>
 #   include     <win64/memWin64.h>
 #endif
 #if defined(__PIC32MX_ENV__)
-#	include    <cmnPic32mx.h>
+#   include    <cmnPic32mx.h>
 #endif
 #if defined( __PIC32MZ_ENV__ )
-#	include    <cmnPic32mz.h>
+#   include    <cmnPic32mz.h>
 #endif
 
 

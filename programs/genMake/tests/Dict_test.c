@@ -93,7 +93,7 @@ int             test_Dict_OpenClose(
 
         //obj_TraceSet(pObj, true);       
         
-        // Test something.
+        eRc = Dict_Defaults(pObj);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
@@ -114,7 +114,6 @@ int             test_Dict_test01(
     DICT_DATA       *pObj = OBJ_NIL;
     ERESULT         eRc = ERESULT_SUCCESS;
     ASTR_DATA       *pStr = OBJ_NIL;
-    NODE_DATA       *pNode = OBJ_NIL;
     const
     char            *pResult = "LIBNAM=libTest\n";
     
@@ -130,7 +129,7 @@ int             test_Dict_test01(
         eRc = Dict_AddA(pObj, "name", "Test");
         TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
 
-        pStr = AStr_NewA("LIBNAM=${lib_prefix}${name}\n");
+        pStr = AStr_NewA("LIBNAM=%[lib_prefix]%[name]\n");
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         if (pStr) {
             eRc = Dict_Expand(pObj, pStr);
@@ -140,7 +139,7 @@ int             test_Dict_test01(
             pStr = OBJ_NIL;
         }
 
-        pStr = AStr_NewA("LIBNAM=$lib_prefix$name\n");
+        pStr = AStr_NewA("LIBNAM=%lib_prefix%name\n");
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         if (pStr) {
             eRc = Dict_Expand(pObj, pStr);

@@ -68,19 +68,26 @@
  */
  
 #define libBaseID       "libBase"       /* Library Directory Base Directory */
-#define libDepsID       "libDeps"       /* Library Dependencies */
+//#define libDepsID       "libDeps"       /* Library Dependencies */
 #define mainID          "main"          /* if program, main routine file name */
 #define makeTypeID      "makeType"      /* "d" for debug, "r" for release */
-#define namePrefixID    "namePrefix"    /* normally "" or "lib" */
-#define nameID          "name"          /* program or library base name */
-#define objBaseID       "objBase"       /*  Object Base Directory */
-#define osTypeID        "osType"        /* "macosx", "win32" or "win64" */
-#define outBaseID       "outBase"       /* Base Directory for output */
+//#define namePrefixID    "namePrefix"    /* normally "" or "lib" */
+//#define nameID          "name"          /* program or library base name */
+#define objDirVarID     "objDirVar"     /*  Object Base Directory */
+#define objsVarID       "objsVar"        /*  Object Output Accum Variable Name */
+#define osArchID        "osArch"        /* "x86", "x86_64" */
+#define osTypeID        "osType"        /* "macos32", "macos64", "win32" or "win64" */
+#define pgmBaseID       "pgmBase"       /* Program output Base Directory */
 #define resultTypeID    "resultType"    /* "pgm" or "lib" */
-#define srcBaseID       "srcDir"        /* Source File Base Drive and Directory */
-#define srcDepsID       "srcDeps"       /* Source Dependencies */
-#define srcFileID       "srcFile"       /* Source JSON File */
-#define tmpBaseID       "tmpBase"       /* Temporary File Base Directory */
+#define srcDirID        "srcDir"        /* Source File Base Drive and Directory */
+#define srcDirVarID     "srcDirVar"        /* Makefile Source File Directory Variable */
+//#define srcDepsID       "srcDeps"       /* Source Dependencies */
+#define srcFileID       "srcFile"       /* Source JSON File Path*/
+#define tmpDirID        "tmpDir"        /* Temporary File Base Directory */
+#define tstBinVarID     "tstBinVar"     /* Test Binary Output Directory */
+#define tstSrcID        "tstSrc"        /* Test Source Directory */
+#define tstSrcVarID     "tstSrcVar"     /* Test Source Directory */
+#define testsVarID      "testsVar"      /* Test Output Accum Variable Name */
 
 
 
@@ -206,11 +213,22 @@ extern "C" {
 
 
     ERESULT         Dict_AddUpdateA(
-        DICT_DATA        *this,
+        DICT_DATA       *this,
         const
         char            *pName,
         const
         char            *pData
+    );
+
+
+    /*!
+     Set the default values for the O/S which this is compiled on.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Dict_Defaults (
+        DICT_DATA        *this
     );
 
 
@@ -230,16 +248,11 @@ extern "C" {
     );
 
    
-    DICT_DATA *   Dict_Init (
-        DICT_DATA     *this
+    DICT_DATA *     Dict_Init (
+        DICT_DATA       *this
     );
 
 
-    ERESULT     Dict_IsEnabled (
-        DICT_DATA		*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -252,8 +265,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    Dict_ToDebugString (
-        DICT_DATA     *this,
+    ASTR_DATA *     Dict_ToDebugString (
+        DICT_DATA       *this,
         int             indent
     );
     

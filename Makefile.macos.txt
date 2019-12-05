@@ -50,9 +50,9 @@ OBJS += $(OBJDIR)/AStr.o
 $(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/array.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/AStr_JSON.o
+OBJS += $(OBJDIR)/AStr_json.o
 
-$(OBJDIR)/AStr_JSON.o: $(SRCDIR)/AStr_JSON.c 
+$(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
 TESTS += AStr_test
@@ -123,9 +123,9 @@ OBJS += $(OBJDIR)/AStrCReader.o
 $(OBJDIR)/AStrCReader.o: $(SRCDIR)/AStrCReader.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStrC.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_AStrCReader
+TESTS += AStrCReader_test
 
-test_AStrCReader: $(TEST_SRC)/test_AStrCReader.c 
+AStrCReader_test: $(TEST_SRC)/AStrCReader_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -139,9 +139,9 @@ OBJS += $(OBJDIR)/SRecords.o
 $(OBJDIR)/SRecords.o: $(SRCDIR)/SRecords.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/srcFile.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_SRecords
+TESTS += SRecords_test
 
-test_SRecords: $(TEST_SRC)/test_SRecords.c 
+SRecords_test: $(TEST_SRC)/SRecords_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -155,14 +155,14 @@ OBJS += $(OBJDIR)/W32Str.o
 $(OBJDIR)/W32Str.o: $(SRCDIR)/W32Str.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/W32Str_JSON.o
+OBJS += $(OBJDIR)/W32Str_json.o
 
-$(OBJDIR)/W32Str_JSON.o: $(SRCDIR)/W32Str_JSON.c 
+$(OBJDIR)/W32Str_json.o: $(SRCDIR)/W32Str_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_W32Str
+TESTS += W32Str_test
 
-test_W32Str: $(TEST_SRC)/test_W32Str.c 
+W32Str_test: $(TEST_SRC)/W32Str_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -176,9 +176,9 @@ OBJS += $(OBJDIR)/W32StrC.o
 $(OBJDIR)/W32StrC.o: $(SRCDIR)/W32StrC.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_W32StrC
+TESTS += W32StrC_test
 
-test_W32StrC: $(TEST_SRC)/test_W32StrC.c 
+W32StrC_test: $(TEST_SRC)/W32StrC_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -210,9 +210,9 @@ OBJS += $(OBJDIR)/array.o
 $(OBJDIR)/array.o: $(SRCDIR)/array.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_array
+TESTS += array_test
 
-test_array: $(TEST_SRC)/test_array.c 
+array_test: $(TEST_SRC)/array_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -226,9 +226,9 @@ OBJS += $(OBJDIR)/ascii.o
 $(OBJDIR)/ascii.o: $(SRCDIR)/ascii.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_ascii
+TESTS += ascii_test
 
-test_ascii: $(TEST_SRC)/test_ascii.c 
+ascii_test: $(TEST_SRC)/ascii_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -242,9 +242,9 @@ OBJS += $(OBJDIR)/audioCW.o
 $(OBJDIR)/audioCW.o: $(SRCDIR)/audioCW.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/audioWAV.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_audioCW
+TESTS += audioCW_test
 
-test_audioCW: $(TEST_SRC)/test_audioCW.c 
+audioCW_test: $(TEST_SRC)/audioCW_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -258,9 +258,9 @@ OBJS += $(OBJDIR)/audioWAV.o
 $(OBJDIR)/audioWAV.o: $(SRCDIR)/audioWAV.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_audioWAV
+TESTS += audioWAV_test
 
-test_audioWAV: $(TEST_SRC)/test_audioWAV.c 
+audioWAV_test: $(TEST_SRC)/audioWAV_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -274,14 +274,14 @@ OBJS += $(OBJDIR)/bitMatrix.o
 $(OBJDIR)/bitMatrix.o: $(SRCDIR)/bitMatrix.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/bitSet.h $(SRCDIR)/u16Matrix.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/bitMatrix_JSON.o
+OBJS += $(OBJDIR)/bitMatrix_json.o
 
-$(OBJDIR)/bitMatrix_JSON.o: $(SRCDIR)/bitMatrix_JSON.c 
+$(OBJDIR)/bitMatrix_json.o: $(SRCDIR)/bitMatrix_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_bitMatrix
+TESTS += bitMatrix_test
 
-test_bitMatrix: $(TEST_SRC)/test_bitMatrix.c 
+bitMatrix_test: $(TEST_SRC)/bitMatrix_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -295,9 +295,9 @@ OBJS += $(OBJDIR)/bitSet.o
 $(OBJDIR)/bitSet.o: $(SRCDIR)/bitSet.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_bitSet
+TESTS += bitSet_test
 
-test_bitSet: $(TEST_SRC)/test_bitSet.c 
+bitSet_test: $(TEST_SRC)/bitSet_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -311,9 +311,9 @@ OBJS += $(OBJDIR)/blkdrcds16.o
 $(OBJDIR)/blkdrcds16.o: $(SRCDIR)/blkdrcds16.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_blkdrcds16
+TESTS += blkdrcds16_test
 
-test_blkdrcds16: $(TEST_SRC)/test_blkdrcds16.c 
+blkdrcds16_test: $(TEST_SRC)/blkdrcds16_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -327,9 +327,9 @@ OBJS += $(OBJDIR)/blks.o
 $(OBJDIR)/blks.o: $(SRCDIR)/blks.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_blks
+TESTS += blks_test
 
-test_blks: $(TEST_SRC)/test_blks.c 
+blks_test: $(TEST_SRC)/blks_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -343,9 +343,9 @@ OBJS += $(OBJDIR)/block16.o
 $(OBJDIR)/block16.o: $(SRCDIR)/block16.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_block16
+TESTS += block16_test
 
-test_block16: $(TEST_SRC)/test_block16.c 
+block16_test: $(TEST_SRC)/block16_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -359,9 +359,9 @@ OBJS += $(OBJDIR)/block32.o
 $(OBJDIR)/block32.o: $(SRCDIR)/block32.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_block32
+TESTS += block32_test
 
-test_block32: $(TEST_SRC)/test_block32.c 
+block32_test: $(TEST_SRC)/block32_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -375,9 +375,9 @@ OBJS += $(OBJDIR)/blocks.o
 $(OBJDIR)/blocks.o: $(SRCDIR)/blocks.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/listdl.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_blocks
+TESTS += blocks_test
 
-test_blocks: $(TEST_SRC)/test_blocks.c 
+blocks_test: $(TEST_SRC)/blocks_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -391,9 +391,9 @@ OBJS += $(OBJDIR)/bpt32.o
 $(OBJDIR)/bpt32.o: $(SRCDIR)/bpt32.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_bpt32
+TESTS += bpt32_test
 
-test_bpt32: $(TEST_SRC)/test_bpt32.c 
+bpt32_test: $(TEST_SRC)/bpt32_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -417,9 +417,9 @@ OBJS += $(OBJDIR)/bpt32lf.o
 $(OBJDIR)/bpt32lf.o: $(SRCDIR)/bpt32lf.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_bpt32lf
+TESTS += bpt32lf_test
 
-test_bpt32lf: $(TEST_SRC)/test_bpt32lf.c 
+bpt32lf_test: $(TEST_SRC)/bpt32lf_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -433,9 +433,9 @@ OBJS += $(OBJDIR)/bptIndex.o
 $(OBJDIR)/bptIndex.o: $(SRCDIR)/bptIndex.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_bptIndex
+TESTS += bptIndex_test
 
-test_bptIndex: $(TEST_SRC)/test_bptIndex.c 
+bptIndex_test: $(TEST_SRC)/bptIndex_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -449,9 +449,9 @@ OBJS += $(OBJDIR)/bptLeaf.o
 $(OBJDIR)/bptLeaf.o: $(SRCDIR)/bptLeaf.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_bptLeaf
+TESTS += bptLeaf_test
 
-test_bptLeaf: $(TEST_SRC)/test_bptLeaf.c 
+bptLeaf_test: $(TEST_SRC)/bptLeaf_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -465,9 +465,9 @@ OBJS += $(OBJDIR)/bptree.o
 $(OBJDIR)/bptree.o: $(SRCDIR)/bptree.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_bptree
+TESTS += bptree_test
 
-test_bptree: $(TEST_SRC)/test_bptree.c 
+bptree_test: $(TEST_SRC)/bptree_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -481,9 +481,9 @@ OBJS += $(OBJDIR)/btp.o
 $(OBJDIR)/btp.o: $(SRCDIR)/btp.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_btp
+TESTS += btp_test
 
-test_btp: $(TEST_SRC)/test_btp.c 
+btp_test: $(TEST_SRC)/btp_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -497,9 +497,9 @@ OBJS += $(OBJDIR)/cb.o
 $(OBJDIR)/cb.o: $(SRCDIR)/cb.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_cb
+TESTS += cb_test
 
-test_cb: $(TEST_SRC)/test_cb.c 
+cb_test: $(TEST_SRC)/cb_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c 
 	$(TEST_OBJ)/$(@F)
 
@@ -513,9 +513,9 @@ OBJS += $(OBJDIR)/cb16.o
 $(OBJDIR)/cb16.o: $(SRCDIR)/cb16.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_cb16
+TESTS += cb16_test
 
-test_cb16: $(TEST_SRC)/test_cb16.c 
+cb16_test: $(TEST_SRC)/cb16_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -529,9 +529,9 @@ OBJS += $(OBJDIR)/cb32.o
 $(OBJDIR)/cb32.o: $(SRCDIR)/cb32.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/psxMutex.h $(SRCDIR)/psxSem.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_cb32
+TESTS += cb32_test
 
-test_cb32: $(TEST_SRC)/test_cb32.c 
+cb32_test: $(TEST_SRC)/cb32_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -545,9 +545,9 @@ OBJS += $(OBJDIR)/cfa.o
 $(OBJDIR)/cfa.o: $(SRCDIR)/cfa.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_cfa
+TESTS += cfa_test
 
-test_cfa: $(TEST_SRC)/test_cfa.c 
+cfa_test: $(TEST_SRC)/cfa_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -579,9 +579,9 @@ OBJS += $(OBJDIR)/compiler.o
 $(OBJDIR)/compiler.o: $(SRCDIR)/compiler.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_compiler
+TESTS += compiler_test
 
-test_compiler: $(TEST_SRC)/test_compiler.c 
+compiler_test: $(TEST_SRC)/compiler_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -595,9 +595,9 @@ OBJS += $(OBJDIR)/consumer.o
 $(OBJDIR)/consumer.o: $(SRCDIR)/consumer.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/psxMutex.h $(SRCDIR)/psxSem.h $(SRCDIR)/psxThread.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_consumer
+TESTS += consumer_test
 
-test_consumer: $(TEST_SRC)/test_consumer.c 
+consumer_test: $(TEST_SRC)/consumer_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -611,9 +611,9 @@ OBJS += $(OBJDIR)/crc.o
 $(OBJDIR)/crc.o: $(SRCDIR)/crc.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_crc
+TESTS += crc_test
 
-test_crc: $(TEST_SRC)/test_crc.c 
+crc_test: $(TEST_SRC)/crc_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -627,9 +627,9 @@ OBJS += $(OBJDIR)/csv.o
 $(OBJDIR)/csv.o: $(SRCDIR)/csv.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_csv
+TESTS += csv_test
 
-test_csv: $(TEST_SRC)/test_csv.c 
+csv_test: $(TEST_SRC)/csv_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -643,9 +643,9 @@ OBJS += $(OBJDIR)/dateTime.o
 $(OBJDIR)/dateTime.o: $(SRCDIR)/dateTime.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_dateTime
+TESTS += dateTime_test
 
-test_dateTime: $(TEST_SRC)/test_dateTime.c 
+dateTime_test: $(TEST_SRC)/dateTime_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -659,9 +659,9 @@ OBJS += $(OBJDIR)/dbCsv.o
 $(OBJDIR)/dbCsv.o: $(SRCDIR)/dbCsv.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/objArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_dbCsv
+TESTS += dbCsv_test
 
-test_dbCsv: $(TEST_SRC)/test_dbCsv.c 
+dbCsv_test: $(TEST_SRC)/dbCsv_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -675,9 +675,9 @@ OBJS += $(OBJDIR)/dbField.o
 $(OBJDIR)/dbField.o: $(SRCDIR)/dbField.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_dbField
+TESTS += dbField_test
 
-test_dbField: $(TEST_SRC)/test_dbField.c 
+dbField_test: $(TEST_SRC)/dbField_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -691,9 +691,9 @@ OBJS += $(OBJDIR)/dbf.o
 $(OBJDIR)/dbf.o: $(SRCDIR)/dbf.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_dbf
+TESTS += dbf_test
 
-test_dbf: $(TEST_SRC)/test_dbf.c 
+dbf_test: $(TEST_SRC)/dbf_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -707,14 +707,14 @@ OBJS += $(OBJDIR)/dec.o
 $(OBJDIR)/dec.o: $(SRCDIR)/dec.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/dec_JSON.o
+OBJS += $(OBJDIR)/dec_json.o
 
-$(OBJDIR)/dec_JSON.o: $(SRCDIR)/dec_JSON.c 
+$(OBJDIR)/dec_json.o: $(SRCDIR)/dec_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_dec
+TESTS += dec_test
 
-test_dec: $(TEST_SRC)/test_dec.c 
+dec_test: $(TEST_SRC)/dec_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -728,9 +728,9 @@ OBJS += $(OBJDIR)/dir.o
 $(OBJDIR)/dir.o: $(SRCDIR)/dir.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/dirEntry.h $(SRCDIR)/path.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_dir
+TESTS += dir_test
 
-test_dir: $(TEST_SRC)/test_dir.c 
+dir_test: $(TEST_SRC)/dir_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -744,9 +744,9 @@ OBJS += $(OBJDIR)/dirEntry.o
 $(OBJDIR)/dirEntry.o: $(SRCDIR)/dirEntry.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/path.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_dirEntry
+TESTS += dirEntry_test
 
-test_dirEntry: $(TEST_SRC)/test_dirEntry.c 
+dirEntry_test: $(TEST_SRC)/dirEntry_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -760,9 +760,9 @@ OBJS += $(OBJDIR)/disk.o
 $(OBJDIR)/disk.o: $(SRCDIR)/disk.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/path.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_disk
+TESTS += disk_test
 
-test_disk: $(TEST_SRC)/test_disk.c 
+disk_test: $(TEST_SRC)/disk_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -776,9 +776,9 @@ OBJS += $(OBJDIR)/disks.o
 $(OBJDIR)/disks.o: $(SRCDIR)/disks.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/path.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_disks
+TESTS += disks_test
 
-test_disks: $(TEST_SRC)/test_disks.c 
+disks_test: $(TEST_SRC)/disks_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -792,9 +792,9 @@ OBJS += $(OBJDIR)/eResult.o
 $(OBJDIR)/eResult.o: $(SRCDIR)/eResult.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_eResult
+TESTS += eResult_test
 
-test_eResult: $(TEST_SRC)/test_eResult.c 
+eResult_test: $(TEST_SRC)/eResult_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -808,9 +808,9 @@ OBJS += $(OBJDIR)/ebcdic.o
 $(OBJDIR)/ebcdic.o: $(SRCDIR)/ebcdic.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_ebcdic
+TESTS += ebcdic_test
 
-test_ebcdic: $(TEST_SRC)/test_ebcdic.c 
+ebcdic_test: $(TEST_SRC)/ebcdic_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -824,9 +824,9 @@ OBJS += $(OBJDIR)/endian.o
 $(OBJDIR)/endian.o: $(SRCDIR)/endian.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_endian
+TESTS += endian_test
 
-test_endian: $(TEST_SRC)/test_endian.c 
+endian_test: $(TEST_SRC)/endian_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -840,9 +840,9 @@ OBJS += $(OBJDIR)/enum.o
 $(OBJDIR)/enum.o: $(SRCDIR)/enum.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_enum
+TESTS += enum_test
 
-test_enum: $(TEST_SRC)/test_enum.c 
+enum_test: $(TEST_SRC)/enum_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -856,9 +856,9 @@ OBJS += $(OBJDIR)/execArray.o
 $(OBJDIR)/execArray.o: $(SRCDIR)/execArray.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/objArray.h $(SRCDIR)/ptrArray.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_execArray
+TESTS += execArray_test
 
-test_execArray: $(TEST_SRC)/test_execArray.c 
+execArray_test: $(TEST_SRC)/execArray_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -872,9 +872,9 @@ OBJS += $(OBJDIR)/false.o
 $(OBJDIR)/false.o: $(SRCDIR)/false.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_false
+TESTS += false_test
 
-test_false: $(TEST_SRC)/test_false.c 
+false_test: $(TEST_SRC)/false_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -888,9 +888,9 @@ OBJS += $(OBJDIR)/fbsi.o
 $(OBJDIR)/fbsi.o: $(SRCDIR)/fbsi.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/path.h $(SRCDIR)/u8Array.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_fbsi
+TESTS += fbsi_test
 
-test_fbsi: $(TEST_SRC)/test_fbsi.c 
+fbsi_test: $(TEST_SRC)/fbsi_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -904,9 +904,9 @@ OBJS += $(OBJDIR)/fbso.o
 $(OBJDIR)/fbso.o: $(SRCDIR)/fbso.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/path.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_fbso
+TESTS += fbso_test
 
-test_fbso: $(TEST_SRC)/test_fbso.c 
+fbso_test: $(TEST_SRC)/fbso_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -920,9 +920,9 @@ OBJS += $(OBJDIR)/file.o
 $(OBJDIR)/file.o: $(SRCDIR)/file.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/u8Array.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_file
+TESTS += file_test
 
-test_file: $(TEST_SRC)/test_file.c 
+file_test: $(TEST_SRC)/file_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -936,9 +936,9 @@ OBJS += $(OBJDIR)/fileio.o
 $(OBJDIR)/fileio.o: $(SRCDIR)/fileio.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/path.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_fileio
+TESTS += fileio_test
 
-test_fileio: $(TEST_SRC)/test_fileio.c 
+fileio_test: $(TEST_SRC)/fileio_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -952,9 +952,9 @@ OBJS += $(OBJDIR)/genObj.o
 $(OBJDIR)/genObj.o: $(SRCDIR)/genObj.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_genObj
+TESTS += genObj_test
 
-test_genObj: $(TEST_SRC)/test_genObj.c 
+genObj_test: $(TEST_SRC)/genObj_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -968,9 +968,9 @@ OBJS += $(OBJDIR)/greg.o
 $(OBJDIR)/greg.o: $(SRCDIR)/greg.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_greg
+TESTS += greg_test
 
-test_greg: $(TEST_SRC)/test_greg.c 
+greg_test: $(TEST_SRC)/greg_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -984,9 +984,9 @@ OBJS += $(OBJDIR)/hash32.o
 $(OBJDIR)/hash32.o: $(SRCDIR)/hash32.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_hash32
+TESTS += hash32_test
 
-test_hash32: $(TEST_SRC)/test_hash32.c 
+hash32_test: $(TEST_SRC)/hash32_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1000,14 +1000,14 @@ OBJS += $(OBJDIR)/hex.o
 $(OBJDIR)/hex.o: $(SRCDIR)/hex.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/hex_JSON.o
+OBJS += $(OBJDIR)/hex_json.o
 
-$(OBJDIR)/hex_JSON.o: $(SRCDIR)/hex_JSON.c 
+$(OBJDIR)/hex_json.o: $(SRCDIR)/hex_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_hex
+TESTS += hex_test
 
-test_hex: $(TEST_SRC)/test_hex.c 
+hex_test: $(TEST_SRC)/hex_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1039,9 +1039,9 @@ OBJS += $(OBJDIR)/i32Array.o
 $(OBJDIR)/i32Array.o: $(SRCDIR)/i32Array.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_i32Array
+TESTS += i32Array_test
 
-test_i32Array: $(TEST_SRC)/test_i32Array.c 
+i32Array_test: $(TEST_SRC)/i32Array_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1055,9 +1055,9 @@ OBJS += $(OBJDIR)/jsonIn.o
 $(OBJDIR)/jsonIn.o: $(SRCDIR)/jsonIn.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_jsonIn
+TESTS += jsonIn_test
 
-test_jsonIn: $(TEST_SRC)/test_jsonIn.c 
+jsonIn_test: $(TEST_SRC)/jsonIn_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1071,9 +1071,9 @@ OBJS += $(OBJDIR)/jsonOut.o
 $(OBJDIR)/jsonOut.o: $(SRCDIR)/jsonOut.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_jsonOut
+TESTS += jsonOut_test
 
-test_jsonOut: $(TEST_SRC)/test_jsonOut.c 
+jsonOut_test: $(TEST_SRC)/jsonOut_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1087,9 +1087,9 @@ OBJS += $(OBJDIR)/jsonPP.o
 $(OBJDIR)/jsonPP.o: $(SRCDIR)/jsonPP.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_jsonPP
+TESTS += jsonPP_test
 
-test_jsonPP: $(TEST_SRC)/test_jsonPP.c 
+jsonPP_test: $(TEST_SRC)/jsonPP_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1103,9 +1103,9 @@ OBJS += $(OBJDIR)/lex.o
 $(OBJDIR)/lex.o: $(SRCDIR)/lex.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_lex
+TESTS += lex_test
 
-test_lex: $(TEST_SRC)/test_lex.c 
+lex_test: $(TEST_SRC)/lex_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1137,9 +1137,9 @@ OBJS += $(OBJDIR)/lru.o
 $(OBJDIR)/lru.o: $(SRCDIR)/lru.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/listdl.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_lru
+TESTS += lru_test
 
-test_lru: $(TEST_SRC)/test_lru.c 
+lru_test: $(TEST_SRC)/lru_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1170,9 +1170,9 @@ OBJS += $(OBJDIR)/memFile.o
 $(OBJDIR)/memFile.o: $(SRCDIR)/memFile.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_memFile
+TESTS += memFile_test
 
-test_memFile: $(TEST_SRC)/test_memFile.c 
+memFile_test: $(TEST_SRC)/memFile_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1186,9 +1186,9 @@ OBJS += $(OBJDIR)/memrrds.o
 $(OBJDIR)/memrrds.o: $(SRCDIR)/memrrds.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_memrrds
+TESTS += memrrds_test
 
-test_memrrds: $(TEST_SRC)/test_memrrds.c 
+memrrds_test: $(TEST_SRC)/memrrds_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1202,9 +1202,9 @@ OBJS += $(OBJDIR)/misc.o
 $(OBJDIR)/misc.o: $(SRCDIR)/misc.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_misc
+TESTS += misc_test
 
-test_misc: $(TEST_SRC)/test_misc.c 
+misc_test: $(TEST_SRC)/misc_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1218,9 +1218,9 @@ OBJS += $(OBJDIR)/msgBus.o
 $(OBJDIR)/msgBus.o: $(SRCDIR)/msgBus.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_msgBus
+TESTS += msgBus_test
 
-test_msgBus: $(TEST_SRC)/test_msgBus.c 
+msgBus_test: $(TEST_SRC)/msgBus_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c 
 	$(TEST_OBJ)/$(@F)
 
@@ -1234,9 +1234,9 @@ OBJS += $(OBJDIR)/msgData.o
 $(OBJDIR)/msgData.o: $(SRCDIR)/msgData.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_msgData
+TESTS += msgData_test
 
-test_msgData: $(TEST_SRC)/test_msgData.c 
+msgData_test: $(TEST_SRC)/msgData_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1250,14 +1250,14 @@ OBJS += $(OBJDIR)/name.o
 $(OBJDIR)/name.o: $(SRCDIR)/name.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/str.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/name_JSON.o
+OBJS += $(OBJDIR)/name_json.o
 
-$(OBJDIR)/name_JSON.o: $(SRCDIR)/name_JSON.c 
+$(OBJDIR)/name_json.o: $(SRCDIR)/name_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_name
+TESTS += name_test
 
-test_name: $(TEST_SRC)/test_name.c 
+name_test: $(TEST_SRC)/name_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1271,14 +1271,14 @@ OBJS += $(OBJDIR)/node.o
 $(OBJDIR)/node.o: $(SRCDIR)/node.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/listdl.h $(SRCDIR)/name.h $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeHash.h $(SRCDIR)/szTbl.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/node_JSON.o
+OBJS += $(OBJDIR)/node_json.o
 
-$(OBJDIR)/node_JSON.o: $(SRCDIR)/node_JSON.c 
+$(OBJDIR)/node_json.o: $(SRCDIR)/node_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_node
+TESTS += node_test
 
-test_node: $(TEST_SRC)/test_node.c 
+node_test: $(TEST_SRC)/node_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1292,9 +1292,9 @@ OBJS += $(OBJDIR)/nodeArc.o
 $(OBJDIR)/nodeArc.o: $(SRCDIR)/nodeArc.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/node.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeArc
+TESTS += nodeArc_test
 
-test_nodeArc: $(TEST_SRC)/test_nodeArc.c 
+nodeArc_test: $(TEST_SRC)/nodeArc_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1308,14 +1308,14 @@ OBJS += $(OBJDIR)/nodeArray.o
 $(OBJDIR)/nodeArray.o: $(SRCDIR)/nodeArray.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/objArray.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/nodeArray_JSON.o
+OBJS += $(OBJDIR)/nodeArray_json.o
 
-$(OBJDIR)/nodeArray_JSON.o: $(SRCDIR)/nodeArray_JSON.c 
+$(OBJDIR)/nodeArray_json.o: $(SRCDIR)/nodeArray_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeArray
+TESTS += nodeArray_test
 
-test_nodeArray: $(TEST_SRC)/test_nodeArray.c 
+nodeArray_test: $(TEST_SRC)/nodeArray_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1329,14 +1329,14 @@ OBJS += $(OBJDIR)/nodeBTP.o
 $(OBJDIR)/nodeBTP.o: $(SRCDIR)/nodeBTP.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/node.h $(SRCDIR)/nodeLnkP.h $(SRCDIR)/nodeArray.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/nodeBTP_JSON.o
+OBJS += $(OBJDIR)/nodeBTP_json.o
 
-$(OBJDIR)/nodeBTP_JSON.o: $(SRCDIR)/nodeBTP_JSON.c 
+$(OBJDIR)/nodeBTP_json.o: $(SRCDIR)/nodeBTP_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeBTP
+TESTS += nodeBTP_test
 
-test_nodeBTP: $(TEST_SRC)/test_nodeBTP.c 
+nodeBTP_test: $(TEST_SRC)/nodeBTP_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1350,9 +1350,9 @@ OBJS += $(OBJDIR)/nodeEnum.o
 $(OBJDIR)/nodeEnum.o: $(SRCDIR)/nodeEnum.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeEnum
+TESTS += nodeEnum_test
 
-test_nodeEnum: $(TEST_SRC)/test_nodeEnum.c 
+nodeEnum_test: $(TEST_SRC)/nodeEnum_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1366,9 +1366,9 @@ OBJS += $(OBJDIR)/nodeGraph.o
 $(OBJDIR)/nodeGraph.o: $(SRCDIR)/nodeGraph.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/node.h $(SRCDIR)/objArray.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeGraph
+TESTS += nodeGraph_test
 
-test_nodeGraph: $(TEST_SRC)/test_nodeGraph.c 
+nodeGraph_test: $(TEST_SRC)/nodeGraph_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1405,14 +1405,14 @@ OBJS += $(OBJDIR)/nodeLink.o
 $(OBJDIR)/nodeLink.o: $(SRCDIR)/nodeLink.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/name.h $(SRCDIR)/node.h $(SRCDIR)/str.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/nodeLink_JSON.o
+OBJS += $(OBJDIR)/nodeLink_json.o
 
-$(OBJDIR)/nodeLink_JSON.o: $(SRCDIR)/nodeLink_JSON.c 
+$(OBJDIR)/nodeLink_json.o: $(SRCDIR)/nodeLink_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeLink
+TESTS += nodeLink_test
 
-test_nodeLink: $(TEST_SRC)/test_nodeLink.c 
+nodeLink_test: $(TEST_SRC)/nodeLink_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1449,9 +1449,9 @@ OBJS += $(OBJDIR)/nodeLnkP.o
 $(OBJDIR)/nodeLnkP.o: $(SRCDIR)/nodeLnkP.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/name.h $(SRCDIR)/node.h $(SRCDIR)/str.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeLnkP
+TESTS += nodeLnkP_test
 
-test_nodeLnkP: $(TEST_SRC)/test_nodeLnkP.c 
+nodeLnkP_test: $(TEST_SRC)/nodeLnkP_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1465,9 +1465,9 @@ OBJS += $(OBJDIR)/nodeMatrix.o
 $(OBJDIR)/nodeMatrix.o: $(SRCDIR)/nodeMatrix.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/node.h $(SRCDIR)/objMatrix.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeMatrix
+TESTS += nodeMatrix_test
 
-test_nodeMatrix: $(TEST_SRC)/test_nodeMatrix.c 
+nodeMatrix_test: $(TEST_SRC)/nodeMatrix_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1481,9 +1481,9 @@ OBJS += $(OBJDIR)/nodeScan.o
 $(OBJDIR)/nodeScan.o: $(SRCDIR)/nodeScan.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeScan
+TESTS += nodeScan_test
 
-test_nodeScan: $(TEST_SRC)/test_nodeScan.c 
+nodeScan_test: $(TEST_SRC)/nodeScan_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1497,9 +1497,9 @@ OBJS += $(OBJDIR)/nodeTree.o
 $(OBJDIR)/nodeTree.o: $(SRCDIR)/nodeTree.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/node.h $(SRCDIR)/nodeHash.h $(SRCDIR)/objArray.h $(SRCDIR)/szTbl.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_nodeTree
+TESTS += nodeTree_test
 
-test_nodeTree: $(TEST_SRC)/test_nodeTree.c 
+nodeTree_test: $(TEST_SRC)/nodeTree_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1513,14 +1513,14 @@ OBJS += $(OBJDIR)/null.o
 $(OBJDIR)/null.o: $(SRCDIR)/null.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/null_JSON.o
+OBJS += $(OBJDIR)/null_json.o
 
-$(OBJDIR)/null_JSON.o: $(SRCDIR)/null_JSON.c 
+$(OBJDIR)/null_json.o: $(SRCDIR)/null_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_null
+TESTS += null_test
 
-test_null: $(TEST_SRC)/test_null.c 
+null_test: $(TEST_SRC)/null_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1534,14 +1534,14 @@ OBJS += $(OBJDIR)/number.o
 $(OBJDIR)/number.o: $(SRCDIR)/number.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/number_JSON.o
+OBJS += $(OBJDIR)/number_json.o
 
-$(OBJDIR)/number_JSON.o: $(SRCDIR)/number_JSON.c 
+$(OBJDIR)/number_json.o: $(SRCDIR)/number_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_number
+TESTS += number_test
 
-test_number: $(TEST_SRC)/test_number.c 
+number_test: $(TEST_SRC)/number_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1555,9 +1555,9 @@ OBJS += $(OBJDIR)/objArray.o
 $(OBJDIR)/objArray.o: $(SRCDIR)/objArray.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_objArray
+TESTS += objArray_test
 
-test_objArray: $(TEST_SRC)/test_objArray.c 
+objArray_test: $(TEST_SRC)/objArray_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1571,9 +1571,9 @@ OBJS += $(OBJDIR)/objCb.o
 $(OBJDIR)/objCb.o: $(SRCDIR)/objCb.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_objCb
+TESTS += objCb_test
 
-test_objCb: $(TEST_SRC)/test_objCb.c 
+objCb_test: $(TEST_SRC)/objCb_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c 
 	$(TEST_OBJ)/$(@F)
 
@@ -1587,9 +1587,9 @@ OBJS += $(OBJDIR)/objEnum.o
 $(OBJDIR)/objEnum.o: $(SRCDIR)/objEnum.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_objEnum
+TESTS += objEnum_test
 
-test_objEnum: $(TEST_SRC)/test_objEnum.c 
+objEnum_test: $(TEST_SRC)/objEnum_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1603,14 +1603,14 @@ OBJS += $(OBJDIR)/objHash.o
 $(OBJDIR)/objHash.o: $(SRCDIR)/objHash.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/listdl.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/objHash_JSON.o
+OBJS += $(OBJDIR)/objHash_json.o
 
-$(OBJDIR)/objHash_JSON.o: $(SRCDIR)/objHash_JSON.c 
+$(OBJDIR)/objHash_json.o: $(SRCDIR)/objHash_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_objHash
+TESTS += objHash_test
 
-test_objHash: $(TEST_SRC)/test_objHash.c 
+objHash_test: $(TEST_SRC)/objHash_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1624,9 +1624,9 @@ OBJS += $(OBJDIR)/objList.o
 $(OBJDIR)/objList.o: $(SRCDIR)/objList.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/listdl.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_objList
+TESTS += objList_test
 
-test_objList: $(TEST_SRC)/test_objList.c 
+objList_test: $(TEST_SRC)/objList_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1640,9 +1640,9 @@ OBJS += $(OBJDIR)/objMatrix.o
 $(OBJDIR)/objMatrix.o: $(SRCDIR)/objMatrix.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_objMatrix
+TESTS += objMatrix_test
 
-test_objMatrix: $(TEST_SRC)/test_objMatrix.c 
+objMatrix_test: $(TEST_SRC)/objMatrix_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1656,9 +1656,9 @@ OBJS += $(OBJDIR)/objMethod.o
 $(OBJDIR)/objMethod.o: $(SRCDIR)/objMethod.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_objMethod
+TESTS += objMethod_test
 
-test_objMethod: $(TEST_SRC)/test_objMethod.c 
+objMethod_test: $(TEST_SRC)/objMethod_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1672,9 +1672,9 @@ OBJS += $(OBJDIR)/parser.o
 $(OBJDIR)/parser.o: $(SRCDIR)/parser.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_parser
+TESTS += parser_test
 
-test_parser: $(TEST_SRC)/test_parser.c 
+parser_test: $(TEST_SRC)/parser_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1688,9 +1688,9 @@ OBJS += $(OBJDIR)/path.o
 $(OBJDIR)/path.o: $(SRCDIR)/path.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_path
+TESTS += path_test
 
-test_path: $(TEST_SRC)/test_path.c 
+path_test: $(TEST_SRC)/path_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1704,9 +1704,9 @@ OBJS += $(OBJDIR)/plist.o
 $(OBJDIR)/plist.o: $(SRCDIR)/plist.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/objArray.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_plist
+TESTS += plist_test
 
-test_plist: $(TEST_SRC)/test_plist.c 
+plist_test: $(TEST_SRC)/plist_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1720,9 +1720,9 @@ OBJS += $(OBJDIR)/pplex.o
 $(OBJDIR)/pplex.o: $(SRCDIR)/pplex.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/lex.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_pplex
+TESTS += pplex_test
 
-test_pplex: $(TEST_SRC)/test_pplex.c 
+pplex_test: $(TEST_SRC)/pplex_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1736,9 +1736,9 @@ OBJS += $(OBJDIR)/pplex1.o
 $(OBJDIR)/pplex1.o: $(SRCDIR)/pplex1.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/lex.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_pplex1
+TESTS += pplex1_test
 
-test_pplex1: $(TEST_SRC)/test_pplex1.c 
+pplex1_test: $(TEST_SRC)/pplex1_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1752,9 +1752,9 @@ OBJS += $(OBJDIR)/pplex2.o
 $(OBJDIR)/pplex2.o: $(SRCDIR)/pplex2.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/lex.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_pplex2
+TESTS += pplex2_test
 
-test_pplex2: $(TEST_SRC)/test_pplex2.c 
+pplex2_test: $(TEST_SRC)/pplex2_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1768,9 +1768,9 @@ OBJS += $(OBJDIR)/pplex3.o
 $(OBJDIR)/pplex3.o: $(SRCDIR)/pplex3.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/lex.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_pplex3
+TESTS += pplex3_test
 
-test_pplex3: $(TEST_SRC)/test_pplex3.c 
+pplex3_test: $(TEST_SRC)/pplex3_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1784,9 +1784,9 @@ OBJS += $(OBJDIR)/prt.o
 $(OBJDIR)/prt.o: $(SRCDIR)/prt.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_prt
+TESTS += prt_test
 
-test_prt: $(TEST_SRC)/test_prt.c 
+prt_test: $(TEST_SRC)/prt_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1800,9 +1800,9 @@ OBJS += $(OBJDIR)/psxCond.o
 $(OBJDIR)/psxCond.o: $(SRCDIR)/psxCond.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_psxCond
+TESTS += psxCond_test
 
-test_psxCond: $(TEST_SRC)/test_psxCond.c 
+psxCond_test: $(TEST_SRC)/psxCond_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1816,9 +1816,9 @@ OBJS += $(OBJDIR)/psxExec.o
 $(OBJDIR)/psxExec.o: $(SRCDIR)/psxExec.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_psxExec
+TESTS += psxExec_test
 
-test_psxExec: $(TEST_SRC)/test_psxExec.c 
+psxExec_test: $(TEST_SRC)/psxExec_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1832,9 +1832,9 @@ OBJS += $(OBJDIR)/psxLock.o
 $(OBJDIR)/psxLock.o: $(SRCDIR)/psxLock.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_psxLock
+TESTS += psxLock_test
 
-test_psxLock: $(TEST_SRC)/test_psxLock.c 
+psxLock_test: $(TEST_SRC)/psxLock_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1848,9 +1848,9 @@ OBJS += $(OBJDIR)/psxMutex.o
 $(OBJDIR)/psxMutex.o: $(SRCDIR)/psxMutex.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_psxMutex
+TESTS += psxMutex_test
 
-test_psxMutex: $(TEST_SRC)/test_psxMutex.c 
+psxMutex_test: $(TEST_SRC)/psxMutex_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1864,9 +1864,9 @@ OBJS += $(OBJDIR)/psxSem.o
 $(OBJDIR)/psxSem.o: $(SRCDIR)/psxSem.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_psxSem
+TESTS += psxSem_test
 
-test_psxSem: $(TEST_SRC)/test_psxSem.c 
+psxSem_test: $(TEST_SRC)/psxSem_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1880,9 +1880,9 @@ OBJS += $(OBJDIR)/psxThread.o
 $(OBJDIR)/psxThread.o: $(SRCDIR)/psxThread.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/psxMutex.h $(SRCDIR)/psxSem.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_psxThread
+TESTS += psxThread_test
 
-test_psxThread: $(TEST_SRC)/test_psxThread.c 
+psxThread_test: $(TEST_SRC)/psxThread_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1896,9 +1896,9 @@ OBJS += $(OBJDIR)/ptrArray.o
 $(OBJDIR)/ptrArray.o: $(SRCDIR)/ptrArray.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_ptrArray
+TESTS += ptrArray_test
 
-test_ptrArray: $(TEST_SRC)/test_ptrArray.c 
+ptrArray_test: $(TEST_SRC)/ptrArray_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1912,9 +1912,9 @@ OBJS += $(OBJDIR)/rrds.o
 $(OBJDIR)/rrds.o: $(SRCDIR)/rrds.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/hash32.h $(SRCDIR)/listdl.h $(SRCDIR)/path.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_rrds
+TESTS += rrds_test
 
-test_rrds: $(TEST_SRC)/test_rrds.c 
+rrds_test: $(TEST_SRC)/rrds_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1928,9 +1928,9 @@ OBJS += $(OBJDIR)/scanReader.o
 $(OBJDIR)/scanReader.o: $(SRCDIR)/scanReader.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_scanReader
+TESTS += scanReader_test
 
-test_scanReader: $(TEST_SRC)/test_scanReader.c 
+scanReader_test: $(TEST_SRC)/scanReader_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1944,9 +1944,9 @@ OBJS += $(OBJDIR)/scanner.o
 $(OBJDIR)/scanner.o: $(SRCDIR)/scanner.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_scanner
+TESTS += scanner_test
 
-test_scanner: $(TEST_SRC)/test_scanner.c 
+scanner_test: $(TEST_SRC)/scanner_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1960,9 +1960,9 @@ OBJS += $(OBJDIR)/screen.o
 $(OBJDIR)/screen.o: $(SRCDIR)/screen.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_screen
+TESTS += screen_test
 
-test_screen: $(TEST_SRC)/test_screen.c 
+screen_test: $(TEST_SRC)/screen_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1976,9 +1976,9 @@ OBJS += $(OBJDIR)/sgraph.o
 $(OBJDIR)/sgraph.o: $(SRCDIR)/sgraph.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_sgraph
+TESTS += sgraph_test
 
-test_sgraph: $(TEST_SRC)/test_sgraph.c 
+sgraph_test: $(TEST_SRC)/sgraph_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -1992,9 +1992,9 @@ OBJS += $(OBJDIR)/sidx.o
 $(OBJDIR)/sidx.o: $(SRCDIR)/sidx.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_sidx
+TESTS += sidx_test
 
-test_sidx: $(TEST_SRC)/test_sidx.c 
+sidx_test: $(TEST_SRC)/sidx_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2008,9 +2008,9 @@ OBJS += $(OBJDIR)/sidxe.o
 $(OBJDIR)/sidxe.o: $(SRCDIR)/sidxe.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/srcLoc.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_sidxe
+TESTS += sidxe_test
 
-test_sidxe: $(TEST_SRC)/test_sidxe.c 
+sidxe_test: $(TEST_SRC)/sidxe_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2024,9 +2024,9 @@ OBJS += $(OBJDIR)/srcError.o
 $(OBJDIR)/srcError.o: $(SRCDIR)/srcError.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_srcError
+TESTS += srcError_test
 
-test_srcError: $(TEST_SRC)/test_srcError.c 
+srcError_test: $(TEST_SRC)/srcError_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2040,9 +2040,9 @@ OBJS += $(OBJDIR)/srcErrors.o
 $(OBJDIR)/srcErrors.o: $(SRCDIR)/srcErrors.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_srcErrors
+TESTS += srcErrors_test
 
-test_srcErrors: $(TEST_SRC)/test_srcErrors.c 
+srcErrors_test: $(TEST_SRC)/srcErrors_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2057,9 +2057,9 @@ OBJS += $(OBJDIR)/srcFile.o
 $(OBJDIR)/srcFile.o: $(SRCDIR)/srcFile.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/ascii.h $(SRCDIR)/fbsi.h $(SRCDIR)/path.h $(SRCDIR)/token.h $(SRCDIR)/tokenList.h $(SRCDIR)/u8Array.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_srcFile
+TESTS += srcFile_test
 
-test_srcFile: $(TEST_SRC)/test_srcFile.c 
+srcFile_test: $(TEST_SRC)/srcFile_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2074,9 +2074,9 @@ OBJS += $(OBJDIR)/srcFiles.o
 $(OBJDIR)/srcFiles.o: $(SRCDIR)/srcFiles.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/objArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/token.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_srcFiles
+TESTS += srcFiles_test
 
-test_srcFiles: $(TEST_SRC)/test_srcFiles.c 
+srcFiles_test: $(TEST_SRC)/srcFiles_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2113,9 +2113,9 @@ OBJS += $(OBJDIR)/symAttr.o
 $(OBJDIR)/symAttr.o: $(SRCDIR)/symAttr.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_symAttr
+TESTS += symAttr_test
 
-test_symAttr: $(TEST_SRC)/test_symAttr.c 
+symAttr_test: $(TEST_SRC)/symAttr_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2129,14 +2129,14 @@ OBJS += $(OBJDIR)/symEntry.o
 $(OBJDIR)/symEntry.o: $(SRCDIR)/symEntry.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/symEntry_JSON.o
+OBJS += $(OBJDIR)/symEntry_json.o
 
-$(OBJDIR)/symEntry_JSON.o: $(SRCDIR)/symEntry_JSON.c 
+$(OBJDIR)/symEntry_json.o: $(SRCDIR)/symEntry_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_symEntry
+TESTS += symEntry_test
 
-test_symEntry: $(TEST_SRC)/test_symEntry.c 
+symEntry_test: $(TEST_SRC)/symEntry_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2150,9 +2150,9 @@ OBJS += $(OBJDIR)/symTable.o
 $(OBJDIR)/symTable.o: $(SRCDIR)/symTable.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_symTable
+TESTS += symTable_test
 
-test_symTable: $(TEST_SRC)/test_symTable.c 
+symTable_test: $(TEST_SRC)/symTable_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2166,14 +2166,14 @@ OBJS += $(OBJDIR)/szData.o
 $(OBJDIR)/szData.o: $(SRCDIR)/szData.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/szData_JSON.o
+OBJS += $(OBJDIR)/szData_json.o
 
-$(OBJDIR)/szData_JSON.o: $(SRCDIR)/szData_JSON.c 
+$(OBJDIR)/szData_json.o: $(SRCDIR)/szData_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_szData
+TESTS += szData_test
 
-test_szData: $(TEST_SRC)/test_szData.c 
+szData_test: $(TEST_SRC)/szData_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2187,9 +2187,9 @@ OBJS += $(OBJDIR)/szHash.o
 $(OBJDIR)/szHash.o: $(SRCDIR)/szHash.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/listdl.h $(SRCDIR)/szTbl.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_szHash
+TESTS += szHash_test
 
-test_szHash: $(TEST_SRC)/test_szHash.c 
+szHash_test: $(TEST_SRC)/szHash_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2203,14 +2203,14 @@ OBJS += $(OBJDIR)/szTbl.o
 $(OBJDIR)/szTbl.o: $(SRCDIR)/szTbl.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/ptrArray.h $(SRCDIR)/szHash.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/szTbl_JSON.o
+OBJS += $(OBJDIR)/szTbl_json.o
 
-$(OBJDIR)/szTbl_JSON.o: $(SRCDIR)/szTbl_JSON.c 
+$(OBJDIR)/szTbl_json.o: $(SRCDIR)/szTbl_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_szTbl
+TESTS += szTbl_test
 
-test_szTbl: $(TEST_SRC)/test_szTbl.c 
+szTbl_test: $(TEST_SRC)/szTbl_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2224,9 +2224,9 @@ OBJS += $(OBJDIR)/table.o
 $(OBJDIR)/table.o: $(SRCDIR)/table.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/listdl.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_table
+TESTS += table_test
 
-test_table: $(TEST_SRC)/test_table.c 
+table_test: $(TEST_SRC)/table_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2240,9 +2240,9 @@ OBJS += $(OBJDIR)/ternary.o
 $(OBJDIR)/ternary.o: $(SRCDIR)/ternary.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/blocks.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_ternary
+TESTS += ternary_test
 
-test_ternary: $(TEST_SRC)/test_ternary.c 
+ternary_test: $(TEST_SRC)/ternary_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2256,9 +2256,9 @@ OBJS += $(OBJDIR)/textIn.o
 $(OBJDIR)/textIn.o: $(SRCDIR)/textIn.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_textIn
+TESTS += textIn_test
 
-test_textIn: $(TEST_SRC)/test_textIn.c 
+textIn_test: $(TEST_SRC)/textIn_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2290,9 +2290,9 @@ OBJS += $(OBJDIR)/timer.o
 $(OBJDIR)/timer.o: $(SRCDIR)/timer.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_timer
+TESTS += timer_test
 
-test_timer: $(TEST_SRC)/test_timer.c 
+timer_test: $(TEST_SRC)/timer_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2307,9 +2307,9 @@ OBJS += $(OBJDIR)/token.o
 $(OBJDIR)/token.o: $(SRCDIR)/token.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/AStrC.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/token_JSON.o
+OBJS += $(OBJDIR)/token_json.o
 
-$(OBJDIR)/token_JSON.o: $(SRCDIR)/token_JSON.c 
+$(OBJDIR)/token_json.o: $(SRCDIR)/token_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
 TESTS += token_test
@@ -2329,9 +2329,9 @@ OBJS += $(OBJDIR)/tokenList.o
 $(OBJDIR)/tokenList.o: $(SRCDIR)/tokenList.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/token.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_tokenList
+TESTS += tokenList_test
 
-test_tokenList: $(TEST_SRC)/test_tokenList.c 
+tokenList_test: $(TEST_SRC)/tokenList_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2345,9 +2345,9 @@ OBJS += $(OBJDIR)/trace.o
 $(OBJDIR)/trace.o: $(SRCDIR)/trace.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_trace
+TESTS += trace_test
 
-test_trace: $(TEST_SRC)/test_trace.c 
+trace_test: $(TEST_SRC)/trace_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2361,9 +2361,9 @@ OBJS += $(OBJDIR)/true.o
 $(OBJDIR)/true.o: $(SRCDIR)/true.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_true
+TESTS += true_test
 
-test_true: $(TEST_SRC)/test_true.c 
+true_test: $(TEST_SRC)/true_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2377,9 +2377,9 @@ OBJS += $(OBJDIR)/u12Array.o
 $(OBJDIR)/u12Array.o: $(SRCDIR)/u12Array.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/array.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_u12Array
+TESTS += u12Array_test
 
-test_u12Array: $(TEST_SRC)/test_u12Array.c 
+u12Array_test: $(TEST_SRC)/u12Array_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2393,9 +2393,9 @@ OBJS += $(OBJDIR)/u16Array.o
 $(OBJDIR)/u16Array.o: $(SRCDIR)/u16Array.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/array.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_u16Array
+TESTS += u16Array_test
 
-test_u16Array: $(TEST_SRC)/test_u16Array.c 
+u16Array_test: $(TEST_SRC)/u16Array_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2409,9 +2409,9 @@ OBJS += $(OBJDIR)/u16Matrix.o
 $(OBJDIR)/u16Matrix.o: $(SRCDIR)/u16Matrix.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_u16Matrix
+TESTS += u16Matrix_test
 
-test_u16Matrix: $(TEST_SRC)/test_u16Matrix.c 
+u16Matrix_test: $(TEST_SRC)/u16Matrix_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2425,9 +2425,9 @@ OBJS += $(OBJDIR)/u32Array.o
 $(OBJDIR)/u32Array.o: $(SRCDIR)/u32Array.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h $(SRCDIR)/array.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_u32Array
+TESTS += u32Array_test
 
-test_u32Array: $(TEST_SRC)/test_u32Array.c 
+u32Array_test: $(TEST_SRC)/u32Array_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2441,9 +2441,9 @@ OBJS += $(OBJDIR)/u32Matrix.o
 $(OBJDIR)/u32Matrix.o: $(SRCDIR)/u32Matrix.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/AStr.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_u32Matrix
+TESTS += u32Matrix_test
 
-test_u32Matrix: $(TEST_SRC)/test_u32Matrix.c 
+u32Matrix_test: $(TEST_SRC)/u32Matrix_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2457,14 +2457,14 @@ OBJS += $(OBJDIR)/u8Array.o
 $(OBJDIR)/u8Array.o: $(SRCDIR)/u8Array.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/u8Array_JSON.o
+OBJS += $(OBJDIR)/u8Array_json.o
 
-$(OBJDIR)/u8Array_JSON.o: $(SRCDIR)/u8Array_JSON.c 
+$(OBJDIR)/u8Array_json.o: $(SRCDIR)/u8Array_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_u8Array
+TESTS += u8Array_test
 
-test_u8Array: $(TEST_SRC)/test_u8Array.c 
+u8Array_test: $(TEST_SRC)/u8Array_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2478,9 +2478,9 @@ OBJS += $(OBJDIR)/uint128.o
 $(OBJDIR)/uint128.o: $(SRCDIR)/uint128.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_uint128
+TESTS += uint128_test
 
-test_uint128: $(TEST_SRC)/test_uint128.c 
+uint128_test: $(TEST_SRC)/uint128_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2494,14 +2494,14 @@ OBJS += $(OBJDIR)/utf8.o
 $(OBJDIR)/utf8.o: $(SRCDIR)/utf8.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/utf8_JSON.o
+OBJS += $(OBJDIR)/utf8_json.o
 
-$(OBJDIR)/utf8_JSON.o: $(SRCDIR)/utf8_JSON.c 
+$(OBJDIR)/utf8_json.o: $(SRCDIR)/utf8_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_utf8
+TESTS += utf8_test
 
-test_utf8: $(TEST_SRC)/test_utf8.c 
+utf8_test: $(TEST_SRC)/utf8_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2515,14 +2515,14 @@ OBJS += $(OBJDIR)/value.o
 $(OBJDIR)/value.o: $(SRCDIR)/value.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/value_JSON.o
+OBJS += $(OBJDIR)/value_json.o
 
-$(OBJDIR)/value_JSON.o: $(SRCDIR)/value_JSON.c 
+$(OBJDIR)/value_json.o: $(SRCDIR)/value_json.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_value
+TESTS += value_test
 
-test_value: $(TEST_SRC)/test_value.c 
+value_test: $(TEST_SRC)/value_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2536,9 +2536,9 @@ OBJS += $(OBJDIR)/visitor.o
 $(OBJDIR)/visitor.o: $(SRCDIR)/visitor.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_visitor
+TESTS += visitor_test
 
-test_visitor: $(TEST_SRC)/test_visitor.c 
+visitor_test: $(TEST_SRC)/visitor_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2552,9 +2552,9 @@ OBJS += $(OBJDIR)/wav.o
 $(OBJDIR)/wav.o: $(SRCDIR)/wav.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_wav
+TESTS += wav_test
 
-test_wav: $(TEST_SRC)/test_wav.c 
+wav_test: $(TEST_SRC)/wav_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2568,9 +2568,9 @@ OBJS += $(OBJDIR)/wisp.o
 $(OBJDIR)/wisp.o: $(SRCDIR)/wisp.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_wisp
+TESTS += wisp_test
 
-test_wisp: $(TEST_SRC)/test_wisp.c 
+wisp_test: $(TEST_SRC)/wisp_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2584,9 +2584,9 @@ OBJS += $(OBJDIR)/xml.o
 $(OBJDIR)/xml.o: $(SRCDIR)/xml.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_xml
+TESTS += xml_test
 
-test_xml: $(TEST_SRC)/test_xml.c 
+xml_test: $(TEST_SRC)/xml_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -2625,21 +2625,21 @@ OBJS += $(OBJDIR)/str.o
 $(OBJDIR)/str.o: $(SRCDIR)/str.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_listdl
+TESTS += listdl_test
 
-test_listdl: $(TEST_SRC)/test_listdl.c 
+listdl_test: $(TEST_SRC)/listdl_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-TESTS += test_rbt_tree
+TESTS += rbt_tree_test
 
-test_rbt_tree: $(TEST_SRC)/test_rbt_tree.c 
+rbt_tree_test: $(TEST_SRC)/rbt_tree_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-TESTS += test_str
+TESTS += str_test
 
-test_str: $(TEST_SRC)/test_str.c 
+str_test: $(TEST_SRC)/str_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 

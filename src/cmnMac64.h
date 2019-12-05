@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   cmn_osx.h
+ * File:   cmnMac64.h
  *
  * Notes:
  *   1	None

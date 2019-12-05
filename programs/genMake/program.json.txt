@@ -23,5 +23,6 @@
         {name:"NodeTest",       "deps":["NodeBase.h"]},
         {name:"NodeTstA",       "deps":["NodeBase.h"]},
         {name:"SrcParse",       "deps":["genMake.h"]},
+        {name:"SrcRef",         "deps":["genMake.h"]},
     ]
 }

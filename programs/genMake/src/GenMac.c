@@ -697,10 +697,11 @@ extern "C" {
             AStr_AppendA(pStr, "\n");
             AStr_AppendPrint(
                 pStr,
-                "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(%s)/$(@F) $(%s) -I$(%s)",
+                "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(%s)/$(@F) $(%s) -I$(%s) -I$(%s)",
                 AStrC_getData(this->pTstBin),
                 AStrC_getData(this->pObjVar),
-                AStrC_getData(this->pTstDir)
+                AStrC_getData(this->pTstDir),
+                AStrC_getData(this->pSrcDir)
             );
             if (pSrcs) {
                 AStr_AppendPrint(pStr, " %s", AStr_getData(pSrcs));
@@ -1564,7 +1565,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_OUT_OF_MEMORY;
         }
-        this->pTstDir = AStrC_NewA("TEST_DIR");
+        this->pTstDir = AStrC_NewA("TEST_SRC");
         if (OBJ_NIL == this->pTstDir) {
             DEBUG_BREAK();
             return ERESULT_OUT_OF_MEMORY;

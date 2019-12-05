@@ -1,12 +1,12 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   cmn_osx.c
+ * File:   cmnMac64.c
  * Author: bob
  *
  * Created on September 26, 2014, 3:40 PM
  */
 
-#include        "cmn_defs.h"
+#include        <cmn_defs.h>
 #include        <assert.h>
 #include        <stdbool.h>
 #include        <sys/types.h>

@@ -212,6 +212,11 @@ struct Main_data_s	{
     );
 
 
+    ERESULT         Main_SetupTextOutAStr (
+        MAIN_DATA        *this
+    );
+
+
     ERESULT         Main_UsageDesc (
         MAIN_DATA       *this,
         FILE            *pOutput,

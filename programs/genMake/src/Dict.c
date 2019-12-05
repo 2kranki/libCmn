@@ -644,6 +644,508 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      D e f a u l t s
+    //---------------------------------------------------------------
+
+    //---------------------------------------------------------------
+    //                      D e f a u l t s
+    //---------------------------------------------------------------
+
+    /*!
+     Set the default values for most variables.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Dict_DefaultsCommon (
+        DICT_DATA        *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pOS = OBJ_NIL;
+        ASTR_DATA       *pArch = OBJ_NIL;
+        ASTR_DATA       *pStr;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!Dict_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+        
+        pStr = AStr_NewA("d");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, makeTypeID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", makeTypeID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pStr = AStr_NewA("OBJDIR");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, objDirVarID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        objDirVarID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        pStr = AStr_NewA("OBJS");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, objsVarID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        objsVarID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        pStr = AStr_NewA("./src");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, srcDirID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        srcDirID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pStr = AStr_NewA("SRCDIR");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, srcDirVarID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        srcDirVarID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        pStr = AStr_NewA("TEST_BIN");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, tstBinVarID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        tstBinVarID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+                
+        pStr = AStr_NewA("./tests");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, tstSrcID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        tstSrcID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+                
+        pStr = AStr_NewA("TEST_SRC");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, tstSrcVarID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        tstSrcVarID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+                
+        pStr = AStr_NewA("TESTS");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, testsVarID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        testsVarID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    /*!
+     Set the default values for most variables.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Dict_DefaultsMacos64 (
+        DICT_DATA        *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pOS = OBJ_NIL;
+        ASTR_DATA       *pArch = OBJ_NIL;
+        ASTR_DATA       *pStr;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!Dict_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+        
+        pOS = AStr_NewA("macos64");
+        pArch = AStr_NewA("x86_64");
+
+        if (pOS) {
+            eRc = Dict_AddUpdate(this, osTypeID, pOS);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pOS);
+            pOS = OBJ_NIL;
+        }
+        
+        if (pArch) {
+            eRc = Dict_AddUpdate(this, osArchID, pArch);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osArchID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pArch);
+            pArch = OBJ_NIL;
+        }
+
+        pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, libBaseID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        libBaseID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pStr = AStr_NewA("$(HOME)/Support/bin");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, pgmBaseID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        pgmBaseID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pStr = AStr_NewA("${TMPDIR}");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, tmpDirID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        tmpDirID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        eRc = Dict_DefaultsCommon(this);
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    /*!
+     Set the default values for most variables.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Dict_DefaultsWin64 (
+        DICT_DATA        *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pOS = OBJ_NIL;
+        ASTR_DATA       *pArch = OBJ_NIL;
+        ASTR_DATA       *pStr;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!Dict_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+        
+        pOS = AStr_NewA("win64");
+        pArch = AStr_NewA("x86_64");
+
+        if (pOS) {
+            eRc = Dict_AddUpdate(this, osTypeID, pOS);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pOS);
+            pOS = OBJ_NIL;
+        }
+        
+        if (pArch) {
+            eRc = Dict_AddUpdate(this, osArchID, pArch);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osArchID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pArch);
+            pArch = OBJ_NIL;
+        }
+
+        pStr = AStr_NewA("C:/PROGRAMS");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, libBaseID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        libBaseID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pStr = AStr_NewA("C:/PROGRAMS");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, pgmBaseID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        pgmBaseID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pStr = AStr_NewA("${TMP}");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, tmpDirID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        tmpDirID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        eRc = Dict_DefaultsCommon(this);
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    /*!
+     Set the default values for most variables.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Dict_Defaults (
+        DICT_DATA        *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pOS = OBJ_NIL;
+        ASTR_DATA       *pArch = OBJ_NIL;
+        ASTR_DATA       *pStr;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!Dict_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+        
+#if defined(__MACOS32_ENV__)
+        pOS = AStr_NewA("macos32");
+        pArch = AStr_NewA("x86");
+#endif
+#if defined(__MACOS64_ENV__) || defined(__MACOSX_ENV__)
+        pOS = AStr_NewA("macos64");
+        pArch = AStr_NewA("x86_64");
+#endif
+#if defined(__WIN32_ENV__)
+        pOS = AStr_NewA("win32");
+        pArch = AStr_NewA("x86");
+#endif
+#if defined(__WIN64_ENV__)
+        pOS = AStr_NewA("win64");
+        pArch = AStr_NewA("x86_64");
+#endif
+
+        if (pOS) {
+            eRc = Dict_AddUpdate(this, osTypeID, pOS);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pOS);
+            pOS = OBJ_NIL;
+        }
+        
+        if (pArch) {
+            eRc = Dict_AddUpdate(this, osArchID, pArch);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osArchID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pArch);
+            pArch = OBJ_NIL;
+        }
+
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__) || defined(__MACOSX_ENV__)
+        pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        pStr = AStr_NewA("C:/PROGRAMS");
+#endif
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, libBaseID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        libBaseID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__) || defined(__MACOSX_ENV__)
+        pStr = AStr_NewA("$(HOME)/Support/bin");
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        pStr = AStr_NewA("C:/PROGRAMS");
+#endif
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, pgmBaseID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        pgmBaseID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__) || defined(__MACOSX_ENV__)
+        pStr = AStr_NewA("${TMPDIR}");
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        pStr = AStr_NewA("${TMP}");
+#endif
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, tmpDirID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        tmpDirID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        eRc = Dict_DefaultsCommon(this);
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -742,7 +1244,7 @@ extern "C" {
         //PATH_DATA       *pPath = OBJ_NIL;
         ASTR_DATA       *pName = OBJ_NIL;
         NODE_DATA       *pNode = OBJ_NIL;
-        ASTR_DATA       *pData = OBJ_NIL;
+        OBJ_ID          pData = OBJ_NIL;
         const
         char            *pEnvVar = NULL;
         
@@ -766,16 +1268,16 @@ extern "C" {
         // Expand Environment variables.
         while (fMore) {
             fMore = false;
-            eRc = AStr_CharFindNextW32(pStr, &i, '$');
+            eRc = AStr_CharFindNextW32(pStr, &i, '%');
             if (ERESULT_FAILED(eRc)) {
                 break;
             }
             else {
                 chr = AStr_CharGetW32(pStr, i+1);
-                if (chr == '{') {
+                if (chr == '[') {
                     i += 2;
                     iBegin = i;
-                    eRc = AStr_CharFindNextW32(pStr, &i, '}');
+                    eRc = AStr_CharFindNextW32(pStr, &i, ']');
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_PARSE_ERROR;
                     }
@@ -801,7 +1303,9 @@ extern "C" {
                     obj_Release(pName);
                     pName = OBJ_NIL;
                     pData = node_getData(pNode);
-                    if((OBJ_NIL == pData) || !obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
+                    if((OBJ_NIL == pData)
+                       || !(obj_IsKindOf(pData, OBJ_IDENT_ASTR)
+                            || obj_IsKindOf(pData, OBJ_IDENT_ASTRC))) {
                         DEBUG_BREAK();
                         return ERESULT_DATA_MISSING;
                     }
@@ -815,7 +1319,11 @@ extern "C" {
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_OUT_OF_MEMORY;
                     }
-                    eRc = AStr_InsertA(pStr, (iBegin - lenPrefix), AStr_getData(pData));
+                    if (obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
+                        eRc = AStr_InsertA(pStr, (iBegin - lenPrefix), AStr_getData(pData));
+                    } else if (obj_IsKindOf(pData, OBJ_IDENT_ASTRC)) {
+                        eRc = AStr_InsertA(pStr, (iBegin - lenPrefix), AStrC_getData(pData));
+                    }
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_OUT_OF_MEMORY;
                     }
@@ -824,12 +1332,6 @@ extern "C" {
                     pData = OBJ_NIL;
                     pNode = OBJ_NIL;
                     fMore = true;
-                }
-                else if (chr == '$') {
-                    eRc = AStr_Remove(pStr, i, 1);
-                    ++i;
-                    fMore = true;
-                    continue;
                 }
                 else {
                     //chr = AStr_CharGetW32(pStr, i+1);
@@ -1143,7 +1645,7 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
@@ -1174,18 +1676,9 @@ extern "C" {
                     Dict_getSize(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-            }
-        }
-#endif
+        pWrkStr =   nodeHash_ToDebugString(Dict_getNodeHash(this), indent+3);
+        AStr_Append(pStr, pWrkStr);
+        obj_Release(pWrkStr);
         
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');

@@ -32,6 +32,221 @@
 
 #include    <data_test.c>
 
+// pGoodJsonA needs to match libJson01.txt in tests subdirectory.
+static
+const
+char            *pGoodJsonA =
+"{\n"
+    "\"library\":{\n"
+        "\"name\":\"Cmn\"\n"
+    "}\n,"
+    "\"objects\": [\n"
+        "{name:\"AStr\", \"srcDeps\":[\"libCmn.h\"], \"json\":true},\n"
+        "{name:\"appl\", \"srcDeps\":[\"libCmn.h\"]}\n"
+    "],\n"
+    "\"routines\": [\n"
+            "{name:\"dllist\"}\n"
+    "]\n"
+"}\n";
+const
+char            *pOutputA =
+"LIBNAM=libCmn\n"
+"SYS=macos64\n"
+"TEMP=/tmp\n"
+"BASE_OBJ = $(TEMP)/$(LIBNAM)\n"
+"SRCDIR = ./src\n"
+"TEST_SRC = ./tests\n\n"
+
+"CFLAGS += -g -Werror\n"
+"ifdef  NDEBUG\n"
+"CFLAGS += -DNDEBUG\n"
+"else   #DEBUG\n"
+"CFLAGS += -D_DEBUG\n"
+"endif  #NDEBUG\n"
+"CFLAGS += -D__MACOS64_ENV__\n"
+"CFLAGS_LIBS = \n"
+"CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
+
+"INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+"INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
+"LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
+"ifdef  NDEBUG\n"
+"LIB_FILENAME=$(LIBNAM)R.a\n"
+"OBJDIR = $(LIBOBJ)/o/r\n"
+"else   #DEBUG\n"
+"LIB_FILENAME=$(LIBNAM)D.a\n"
+"OBJDIR = $(LIBOBJ)/o/d\n"
+"endif  #NDEBUG\n"
+"TEST_OBJ = $(OBJDIR)/tests\n"
+"TEST_BIN = $(OBJDIR)/tests\n"
+"LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
+
+".SUFFIXES:\n"
+".SUFFIXES: .asm .c .cpp .o\n\n"
+
+"OBJS =\n\n"
+"TESTS =\n\n\n"
+
+"OBJS += $(OBJDIR)/AStr.o\n\n"
+"$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"OBJS += $(OBJDIR)/AStr_json.o\n\n"
+"$(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"OBJS += $(OBJDIR)/AStr_object.o\n\n"
+"$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+
+"OBJS += $(OBJDIR)/appl.o\n\n"
+"$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"OBJS += $(OBJDIR)/appl_object.o\n\n"
+"$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+
+"OBJS += $(OBJDIR)/dllist.o\n\n"
+"$(OBJDIR)/dllist.o: $(SRCDIR)/dllist.c \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+
+"TESTS += AStr_test\n\n"
+"AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
+"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
+"\t$(TEST_BIN)/$(@F)\n\n"
+"TESTS += appl_test\n\n"
+"appl_test: $(TEST_SRC)/appl_test.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
+"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
+"\t$(TEST_BIN)/$(@F)\n\n"
+
+"$(LIB_PATH):  $(OBJS)\n"
+"\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
+"\tar rc $(LIB_PATH) $(OBJS)\n\n\n\n"
+".PHONY: test\n"
+"test: $(TESTS)\n\n\n"
+".PHONY: clean\n"
+"clean:\n"
+"\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n"
+".PHONY: install\n"
+"install:\n"
+"\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
+"\t-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include/$(SYS)\n"
+"\tcp $(LIB_PATH) $(INSTALL_DIR)/$(LIBNAM).a\n"
+"\tcp src/*.h $(INSTALL_DIR)/include/\n"
+"\tif [ -d src/$(SYS) ]; then \\\n"
+"\t\tcp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \\\n"
+"\tfi\n\n\n"
+".PHONY: create_dirs\n"
+"create_dirs:\n"
+"\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
+".PHONY: all\n"
+"all:  clean create_dirs $(LIB_PATH)\n\n\n\n"
+;
+
+
+// pGoodJsonB needs to match libJson02.txt in tests subdirectory.
+static
+const
+char            *pGoodJsonB =
+"{\n"
+    "\"library\":{\n"
+        "\"name\":\"Cmn\"\n"
+    "}\n,"
+    "\"objects\": [\n"
+        "{name:\"AStr\", \"srcDeps\":[\"libCmn.h\"], \"json\":true},\n"
+        "{name:\"appl\", \"srcDeps\":[\"libCmn.h\"]}\n"
+    "],\n"
+    "\"routines\": [\n"
+            "{name:\"dllist\", \"os\":[\"win32\"]},\n"  // Should not be generated!
+            "{name:\"str\", \"arch\":[\"x86\"]},\n"     // Should not be generated!
+    "]\n"
+"}\n";
+const
+char            *pOutputB =
+"LIBNAM=libCmn\n"
+"SYS=macos64\n"
+"TEMP=/tmp\n"
+"BASE_OBJ = $(TEMP)/$(LIBNAM)\n"
+"SRCDIR = ./src\n"
+"TEST_SRC = ./tests\n\n"
+
+"CFLAGS += -g -Werror\n"
+"ifdef  NDEBUG\n"
+"CFLAGS += -DNDEBUG\n"
+"else   #DEBUG\n"
+"CFLAGS += -D_DEBUG\n"
+"endif  #NDEBUG\n"
+"CFLAGS += -D__MACOS64_ENV__\n"
+"CFLAGS_LIBS = \n"
+"CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
+
+"INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+"INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
+"LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
+"ifdef  NDEBUG\n"
+"LIB_FILENAME=$(LIBNAM)R.a\n"
+"OBJDIR = $(LIBOBJ)/o/r\n"
+"else   #DEBUG\n"
+"LIB_FILENAME=$(LIBNAM)D.a\n"
+"OBJDIR = $(LIBOBJ)/o/d\n"
+"endif  #NDEBUG\n"
+"TEST_OBJ = $(OBJDIR)/tests\n"
+"TEST_BIN = $(OBJDIR)/tests\n"
+"LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
+
+".SUFFIXES:\n"
+".SUFFIXES: .asm .c .cpp .o\n\n"
+
+"OBJS =\n\n"
+"TESTS =\n\n\n"
+
+"OBJS += $(OBJDIR)/AStr.o\n\n"
+"$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"OBJS += $(OBJDIR)/AStr_json.o\n\n"
+"$(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"OBJS += $(OBJDIR)/AStr_object.o\n\n"
+"$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+
+"OBJS += $(OBJDIR)/appl.o\n\n"
+"$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"OBJS += $(OBJDIR)/appl_object.o\n\n"
+"$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+
+"TESTS += AStr_test\n\n"
+"AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
+"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
+"\t$(TEST_BIN)/$(@F)\n\n"
+"TESTS += appl_test\n\n"
+"appl_test: $(TEST_SRC)/appl_test.c $(TEST_DIR)/appl.h $(TEST_DIR)/appl_internal.h\n"
+"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
+"\t$(TEST_BIN)/$(@F)\n\n"
+
+"$(LIB_PATH):  $(OBJS)\n"
+"\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
+"\tar rc $(LIB_PATH) $(OBJS)\n\n\n\n"
+".PHONY: test\n"
+"test: $(TESTS)\n\n\n"
+".PHONY: clean\n"
+"clean:\n"
+"\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n"
+".PHONY: install\n"
+"install:\n"
+"\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
+"\t-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include/$(SYS)\n"
+"\tcp $(LIB_PATH) $(INSTALL_DIR)/$(LIBNAM).a\n"
+"\tcp src/*.h $(INSTALL_DIR)/include/\n"
+"\tif [ -d src/$(SYS) ]; then \\\n"
+"\t\tcp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \\\n"
+"\tfi\n\n\n"
+".PHONY: create_dirs\n"
+"create_dirs:\n"
+"\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
+".PHONY: all\n"
+"all:  clean create_dirs $(LIB_PATH)\n\n\n\n"
+;
 
 
 
@@ -126,114 +341,6 @@ int         test_Main_Generation01(
     uint32_t        i;
     const
     char            *pChr;
-    static
-    const
-    char            *pGoodJsonA =
-    "{\n"
-        "\"library\":{\n"
-            "\"name\":\"Cmn\"\n"
-        "}\n,"
-        "\"objects\": [\n"
-            "{name:\"AStr\", \"srcDeps\":[\"libCmn.h\"], \"json\":true},\n"
-            "{name:\"appl\", \"srcDeps\":[\"libCmn.h\"]}\n"
-        "],\n"
-        "\"routines\": [\n"
-                "{name:\"dllist\"}\n"
-        "]\n"
-    "}\n";
-    const
-    char            *pOutputA =
-    "LIBNAM=libCmn\n"
-    "SYS=macos64\n"
-    "TEMP=/tmp\n"
-    "BASE_OBJ = $(TEMP)/$(LIBNAM)\n"
-    "SRCDIR = ./src\n"
-    "TEST_SRC = ./tests\n\n"
-
-    "CFLAGS += -g -Werror\n"
-    "ifdef  NDEBUG\n"
-    "CFLAGS += -DNDEBUG\n"
-    "else   #DEBUG\n"
-    "CFLAGS += -D_DEBUG\n"
-    "endif  #NDEBUG\n"
-    "CFLAGS += -D__MACOS64_ENV__\n"
-    "CFLAGS_LIBS = \n"
-    "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
-    
-    "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
-    "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
-    "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
-    "ifdef  NDEBUG\n"
-    "LIB_FILENAME=$(LIBNAM)R.a\n"
-    "OBJDIR = $(LIBOBJ)/o/r\n"
-    "else   #DEBUG\n"
-    "LIB_FILENAME=$(LIBNAM)D.a\n"
-    "OBJDIR = $(LIBOBJ)/o/d\n"
-    "endif  #NDEBUG\n"
-    "TEST_OBJ = $(OBJDIR)/tests\n"
-    "TEST_BIN = $(OBJDIR)/tests\n"
-    "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
-    
-    ".SUFFIXES:\n"
-    ".SUFFIXES: .asm .c .cpp .o\n\n"
-    
-    "OBJS =\n\n"
-    "TESTS =\n\n\n"
-
-    "OBJS += $(OBJDIR)/AStr.o\n\n"
-    "$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    "OBJS += $(OBJDIR)/AStr_json.o\n\n"
-    "$(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    "OBJS += $(OBJDIR)/AStr_object.o\n\n"
-    "$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    
-    "OBJS += $(OBJDIR)/appl.o\n\n"
-    "$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    "OBJS += $(OBJDIR)/appl_object.o\n\n"
-    "$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    
-    "OBJS += $(OBJDIR)/dllist.o\n\n"
-    "$(OBJDIR)/dllist.o: $(SRCDIR)/dllist.c \n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    
-    "TESTS += AStr_test\n\n"
-    "AStr_test: $(TEST_DIR)/AStr_test.c $(TEST_DIR)/AStr.h $(TEST_DIR)/AStr_internal.h\n"
-    "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
-    "\t$(TEST_BIN)/$(@F)\n\n"
-    "TESTS += appl_test\n\n"
-    "appl_test: $(TEST_DIR)/appl_test.c $(TEST_DIR)/appl.h $(TEST_DIR)/appl_internal.h\n"
-    "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
-    "\t$(TEST_BIN)/$(@F)\n\n"
-
-    "$(LIB_PATH):  $(OBJS)\n"
-    "\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
-    "\tar rc $(LIB_PATH) $(OBJS)\n\n\n\n"
-    ".PHONY: test\n"
-    "test: $(TESTS)\n\n\n"
-    ".PHONY: clean\n"
-    "clean:\n"
-    "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n"
-    ".PHONY: install\n"
-    "install:\n"
-    "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
-    "\t-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include/$(SYS)\n"
-    "\tcp $(LIB_PATH) $(INSTALL_DIR)/$(LIBNAM).a\n"
-    "\tcp src/*.h $(INSTALL_DIR)/include/\n"
-    "\tif [ -d src/$(SYS) ]; then \\\n"
-    "\t\tcp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \\\n"
-    "\tfi\n\n\n"
-    ".PHONY: create_dirs\n"
-    "create_dirs:\n"
-    "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
-    ".PHONY: all\n"
-    "all:  clean create_dirs $(LIB_PATH)\n\n\n\n"
-    ;
-    
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -304,111 +411,6 @@ int         test_Main_Generation02(
     uint32_t        i;
     const
     char            *pChr;
-    static
-    const
-    char            *pGoodJsonA =
-    "{\n"
-        "\"library\":{\n"
-            "\"name\":\"Cmn\"\n"
-        "}\n,"
-        "\"objects\": [\n"
-            "{name:\"AStr\", \"srcDeps\":[\"libCmn.h\"], \"json\":true},\n"
-            "{name:\"appl\", \"srcDeps\":[\"libCmn.h\"]}\n"
-        "],\n"
-        "\"routines\": [\n"
-                "{name:\"dllist\", \"os\":[\"win32\"]},\n"  // Should not be generated!
-                "{name:\"str\", \"arch\":[\"x86\"]},\n"     // Should not be generated!
-        "]\n"
-    "}\n";
-    const
-    char            *pOutputA =
-    "LIBNAM=libCmn\n"
-    "SYS=macos64\n"
-    "TEMP=/tmp\n"
-    "BASE_OBJ = $(TEMP)/$(LIBNAM)\n"
-    "SRCDIR = ./src\n"
-    "TEST_SRC = ./tests\n\n"
-
-    "CFLAGS += -g -Werror\n"
-    "ifdef  NDEBUG\n"
-    "CFLAGS += -DNDEBUG\n"
-    "else   #DEBUG\n"
-    "CFLAGS += -D_DEBUG\n"
-    "endif  #NDEBUG\n"
-    "CFLAGS += -D__MACOS64_ENV__\n"
-    "CFLAGS_LIBS = \n"
-    "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
-    
-    "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
-    "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
-    "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
-    "ifdef  NDEBUG\n"
-    "LIB_FILENAME=$(LIBNAM)R.a\n"
-    "OBJDIR = $(LIBOBJ)/o/r\n"
-    "else   #DEBUG\n"
-    "LIB_FILENAME=$(LIBNAM)D.a\n"
-    "OBJDIR = $(LIBOBJ)/o/d\n"
-    "endif  #NDEBUG\n"
-    "TEST_OBJ = $(OBJDIR)/tests\n"
-    "TEST_BIN = $(OBJDIR)/tests\n"
-    "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
-    
-    ".SUFFIXES:\n"
-    ".SUFFIXES: .asm .c .cpp .o\n\n"
-    
-    "OBJS =\n\n"
-    "TESTS =\n\n\n"
-
-    "OBJS += $(OBJDIR)/AStr.o\n\n"
-    "$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    "OBJS += $(OBJDIR)/AStr_json.o\n\n"
-    "$(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    "OBJS += $(OBJDIR)/AStr_object.o\n\n"
-    "$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    
-    "OBJS += $(OBJDIR)/appl.o\n\n"
-    "$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    "OBJS += $(OBJDIR)/appl_object.o\n\n"
-    "$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
-    "\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
-    
-    "TESTS += AStr_test\n\n"
-    "AStr_test: $(TEST_DIR)/AStr_test.c $(TEST_DIR)/AStr.h $(TEST_DIR)/AStr_internal.h\n"
-    "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
-    "\t$(TEST_BIN)/$(@F)\n\n"
-    "TESTS += appl_test\n\n"
-    "appl_test: $(TEST_DIR)/appl_test.c $(TEST_DIR)/appl.h $(TEST_DIR)/appl_internal.h\n"
-    "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
-    "\t$(TEST_BIN)/$(@F)\n\n"
-
-    "$(LIB_PATH):  $(OBJS)\n"
-    "\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
-    "\tar rc $(LIB_PATH) $(OBJS)\n\n\n\n"
-    ".PHONY: test\n"
-    "test: $(TESTS)\n\n\n"
-    ".PHONY: clean\n"
-    "clean:\n"
-    "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n"
-    ".PHONY: install\n"
-    "install:\n"
-    "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
-    "\t-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include/$(SYS)\n"
-    "\tcp $(LIB_PATH) $(INSTALL_DIR)/$(LIBNAM).a\n"
-    "\tcp src/*.h $(INSTALL_DIR)/include/\n"
-    "\tif [ -d src/$(SYS) ]; then \\\n"
-    "\t\tcp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \\\n"
-    "\tfi\n\n\n"
-    ".PHONY: create_dirs\n"
-    "create_dirs:\n"
-    "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
-    ".PHONY: all\n"
-    "all:  clean create_dirs $(LIB_PATH)\n\n\n\n"
-    ;
-    
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -420,7 +422,7 @@ int         test_Main_Generation02(
         TINYTEST_FALSE( (OBJ_NIL == pObj->pOutput) );
 
         //appl_setDebug((APPL_DATA *)pObj, true);
-        eRc = Main_ParseInputStr(pObj, pGoodJsonA);
+        eRc = Main_ParseInputStr(pObj, pGoodJsonB);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pObj->pParser) );
 
@@ -448,7 +450,7 @@ int         test_Main_Generation02(
             pChr++;
         }
         
-        iRc = str_CompareSpcl(pChr, pOutputA, &offset);
+        iRc = str_CompareSpcl(pChr, pOutputB, &offset);
         fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
         TINYTEST_TRUE( (0 == iRc) );
         
@@ -582,8 +584,171 @@ int         test_Main_CreateOutputFilePath01(
 
 
 
+int         test_Main_Generation03(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    MAIN_DATA       *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    PATH_DATA       *pInputPath = OBJ_NIL;
+    PATH_DATA       *pOutputPath = OBJ_NIL;
+    //ASTR_DATA       *pWrk = OBJ_NIL;
+    int             iRc;
+    int             offset = 0;
+    bool            fDump = false;
+    uint32_t        i;
+    const
+    char            *pChr;
+    static
+    const
+    char            *pInputPathA = "~/git/libCmn/programs/genMake/tests/libJson01.txt";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = Main_New();
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pInputPath = path_NewA(pInputPathA);
+        TINYTEST_FALSE( (OBJ_NIL == pInputPath) );
+
+        pObj->osType = OSTYPE_MACOS64;
+        eRc = Main_SetupOsArch(pObj);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = Main_ProcessArg(pObj, path_getAStr(pInputPath));
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pOutputPath =   Main_CreateOutputPath(
+                                            pObj,
+                                            path_getAStr(pInputPath),
+                                            pObj->pOsName
+                        );
+        TINYTEST_FALSE( (OBJ_NIL == pOutputPath) );
+        
+        pStr = AStr_NewFromUtf8File(pOutputPath);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (fDump) {
+            fprintf(stderr, "GEN_BEGIN:\n%sGEN_END:\n\n\n", AStr_getData(pStr));
+        }
+        
+        // Skip first 3 lines of output.
+        pChr = AStr_getData(pStr);
+        for (i=0; i<3; i++) {
+            while (*pChr && (*pChr != '\n')) {
+                pChr++;
+            }
+            pChr++;
+        }
+        
+        iRc = str_CompareSpcl(pChr, pOutputA, &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+        
+        eRc = path_Delete(pOutputPath);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        obj_Release(pOutputPath);
+        pOutputPath = OBJ_NIL;
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        obj_Release(pInputPath);
+        pInputPath = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Main_Generation04(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    MAIN_DATA       *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    PATH_DATA       *pInputPath = OBJ_NIL;
+    PATH_DATA       *pOutputPath = OBJ_NIL;
+    int             iRc;
+    int             offset = 0;
+    bool            fDump = false;
+    uint32_t        i;
+    const
+    char            *pChr;
+    static
+    const
+    char            *pInputPathA = "~/git/libCmn/programs/genMake/tests/libJson02.txt";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = Main_New();
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pInputPath = path_NewA(pInputPathA);
+        TINYTEST_FALSE( (OBJ_NIL == pInputPath) );
+
+        pObj->osType = OSTYPE_MACOS64;
+        eRc = Main_SetupOsArch(pObj);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = Main_ProcessArg(pObj, path_getAStr(pInputPath));
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pOutputPath =   Main_CreateOutputPath(
+                                            pObj,
+                                            path_getAStr(pInputPath),
+                                            pObj->pOsName
+                        );
+        TINYTEST_FALSE( (OBJ_NIL == pOutputPath) );
+        
+        pStr = AStr_NewFromUtf8File(pOutputPath);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (fDump) {
+            fprintf(stderr, "GEN_BEGIN:\n%sGEN_END:\n\n\n", AStr_getData(pStr));
+        }
+        
+        // Skip first 3 lines of output.
+        pChr = AStr_getData(pStr);
+        for (i=0; i<3; i++) {
+            while (*pChr && (*pChr != '\n')) {
+                pChr++;
+            }
+            pChr++;
+        }
+        
+        iRc = str_CompareSpcl(pChr, pOutputB, &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+        
+        eRc = path_Delete(pOutputPath);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        obj_Release(pOutputPath);
+        pOutputPath = OBJ_NIL;
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        obj_Release(pInputPath);
+        pInputPath = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_Main);
+    TINYTEST_ADD_TEST(test_Main_Generation04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Main_Generation03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_CreateOutputFilePath01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_CheckInputFilePath01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_Generation02,setUp,tearDown);

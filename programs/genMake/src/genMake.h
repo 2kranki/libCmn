@@ -108,14 +108,17 @@ extern "C" {
         OBJ_IDENT_NODETSTA_CLASS,
         OBJ_IDENT_SRCPARSE,
         OBJ_IDENT_SRCPARSE_CLASS,
+        OBJ_IDENT_SRCREF,
+        OBJ_IDENT_SRCREF_CLASS,
     } MAIN_IDENTS;
     
 
     typedef enum genMake_os_e {
         GENMAKE_OS_UNKNOW=0,
-        GENMAKE_OS_MACOSX,
-        GENMAKE_OS_MSC32,
-        GENMAKE_OS_MSC64,
+        GENMAKE_OS_MACOS32,
+        GENMAKE_OS_MACOS64,
+        GENMAKE_OS_WIN32,
+        GENMAKE_OS_WIN64,
         GENMAKE_OS_PIC32
     } GENMAKE_OS;
     

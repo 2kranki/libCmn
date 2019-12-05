@@ -1228,7 +1228,7 @@ extern "C" {
                     "FATAL - Unable to extract directory from File, %s!\n",
                     path_getData(pPath)
         );
-        eRc = Dict_AddA(Main_getDict(this), srcBaseID, (void *)pArgDir);
+        eRc = Dict_AddA(Main_getDict(this), srcDirID, (void *)pArgDir);
         
         eRc = Dict_AddA(Main_getDict(this), srcFileID, path_getData(pPath));
         if (ERESULT_FAILED(eRc) ) {
@@ -1314,7 +1314,6 @@ extern "C" {
         ASTR_DATA       *pDrive = OBJ_NIL;
         PATH_DATA       *pDir = OBJ_NIL;
         PATH_DATA       *pFileName = OBJ_NIL;
-        PATH_DATA       *pArgDir = OBJ_NIL;
         PATH_DATA       *pMakefile = OBJ_NIL;
         PATH_DATA       *pMakepath = OBJ_NIL;
 
@@ -1403,8 +1402,8 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_Release(pArgDir);
-        pArgDir = OBJ_NIL;
+        obj_Release(pMakefile);
+        pMakefile = OBJ_NIL;
         obj_Release(pDrive);
         pDrive = OBJ_NIL;
         obj_Release(pDir);
@@ -1830,8 +1829,10 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        
+        ASTR_DATA       *pOS = OBJ_NIL;
+        ASTR_DATA       *pArch = OBJ_NIL;
+        ASTR_DATA       *pStr;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1841,27 +1842,46 @@ extern "C" {
         }
 #endif
         
+#if defined(__MACOS32_ENV__)
+        this->osType = OSTYPE_MACOS32;
+        pOS = AStr_NewA("macos32");
+#endif
+#if defined(__MACOS64_ENV__)
+        this->osType = OSTYPE_MACOS64;
+        pOS = AStr_NewA("macos64");
+        pArch = AStr_NewA("x86_64");
+#endif
 #if defined(__MACOSX_ENV__)
-        this->osType = OSTYPE_MACOS;
-        pStr = AStr_NewA("macos");
+        this->osType = OSTYPE_MACOS64;
+        pOS = AStr_NewA("macos64");
 #endif
 #if defined(__WIN32_ENV__)
         this->osType = OSTYPE_WIN32;
-        pStr = AStr_NewA("win32");
+        pOS = AStr_NewA("win32");
 #endif
 #if defined(__WIN64_ENV__)
         this->osType = OSTYPE_WIN64;
-        pStr = AStr_NewA("win64");
+        pOS = AStr_NewA("win64");
 #endif
-        if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, osTypeID, pStr);
+        if (pOS) {
+            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, osTypeID, pOS);
             if (ERESULT_FAILED(eRc) ) {
                 DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
                 exit(EXIT_FAILURE);
             }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
+            obj_Release(pOS);
+            pOS = OBJ_NIL;
+        }
+        if (pArch) {
+            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, osArchID, pArch);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osArchID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pArch);
+            pArch = OBJ_NIL;
         }
         eRc = Main_DefaultsMacos64(this);
 
@@ -1876,22 +1896,7 @@ extern "C" {
             pStr = OBJ_NIL;
         }
         
-        pStr = AStr_NewA("lib");
-        if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, resultTypeID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        resultTypeID
-                );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
@@ -1903,7 +1908,7 @@ extern "C" {
                 fprintf(
                         stderr,
                         "FATAL - Failed to add '%s' to Dictionary\n",
-                        outBaseID
+                        libBaseID
                         );
                 exit(EXIT_FAILURE);
             }
@@ -1911,19 +1916,19 @@ extern "C" {
             pStr = OBJ_NIL;
         }
         
-#if defined(__MACOSX_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         pStr = AStr_NewA("$(HOME)/Support/bin");
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         pStr = AStr_NewA("C:/PROGRAMS");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, outBaseID, pStr);
+            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, pgmBaseID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
                         "FATAL - Failed to add '%s' to Dictionary\n",
-                        outBaseID
+                        pgmBaseID
                         );
                 exit(EXIT_FAILURE);
             }
@@ -1933,12 +1938,12 @@ extern "C" {
         
         pStr = AStr_NewA("./src");
         if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, srcBaseID, pStr);
+            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, srcDirID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
                         "FATAL - Failed to add '%s' to Dictionary\n",
-                        srcBaseID
+                        srcDirID
                         );
                 exit(EXIT_FAILURE);
             }
@@ -1953,12 +1958,27 @@ extern "C" {
         pStr = AStr_NewA("${TMP}");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, tmpBaseID, pStr);
+            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, tmpDirID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
                         "FATAL - Failed to add '%s' to Dictionary\n",
-                        tmpBaseID
+                        tmpDirID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
+        pStr = AStr_NewA("./tests");
+        if (pStr) {
+            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, tstSrcID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        tstSrcID
                         );
                 exit(EXIT_FAILURE);
             }
@@ -2112,14 +2132,11 @@ extern "C" {
         ASTR_DATA       *pStr
     )
     {
-        PATH_DATA       *pPath = OBJ_NIL;
         ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pDrive = OBJ_NIL;
-        PATH_DATA       *pDir = OBJ_NIL;
+        PATH_DATA       *pPath = OBJ_NIL;
         PATH_DATA       *pFileName = OBJ_NIL;
-        PATH_DATA       *pArgDir = OBJ_NIL;
-        PATH_DATA       *pMakefile = OBJ_NIL;
         PATH_DATA       *pMakepath = OBJ_NIL;
+        ASTR_DATA       *pWrk;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -2138,112 +2155,59 @@ extern "C" {
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
-        
+        eRc = Main_SetupTextOutAStr(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
         if (!appl_getQuiet((APPL_DATA *)this)) {
             fprintf(stderr, "\tProcessing - %s...\n", AStr_getData(pStr));
         }
         
-        pPath = path_NewFromAStr(pStr);
+        pPath = Main_CheckInputPath(this, pStr);
         appl_ErrorFatalOnBool(
                     (OBJ_NIL == pPath),
                     "FATAL - Failed to create path \"from\" \n"
         );
-        eRc = path_Clean(pPath);
-        appl_ErrorFatalOnEresult(
-                    eRc,
-                    "FATAL - File, %s, does not exist or is not a file!\n",
-                    path_getData(pPath)
-        );
-        eRc = path_IsFile(pPath);
-        appl_ErrorFatalOnEresult(
-                    eRc,
-                    "FATAL - File, %s, does not exist or is not a file!\n",
-                    path_getData(pPath)
-        );
-        eRc = path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
-        appl_ErrorFatalOnEresult(
-                    eRc,
-                    "FATAL - Unable to extract directory from File, %s!\n",
-                    path_getData(pPath)
-        );
-        pArgDir = path_NewFromDriveDirFilename(pDrive, pDir, OBJ_NIL);
-        appl_ErrorFatalOnBool(
-                    (OBJ_NIL == pArgDir),
-                    "FATAL - Unable to extract directory from File, %s!\n",
-                    path_getData(pPath)
-        );
-        eRc = Dict_AddA(Main_getDict(this), srcBaseID, (void *)pArgDir);
-        
-        eRc = Dict_AddA(Main_getDict(this), srcFileID, path_getData(pPath));
-        if (ERESULT_FAILED(eRc) ) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Failed to add 'srcFile' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
 
         eRc = Main_ParseInputFile(this, pPath);
         obj_Release(pPath);
         pPath = OBJ_NIL;
         
-        // Create the output file path if given.
-        if (OBJ_NIL == this->pOutputPath) {
-            pMakefile = path_NewA("Makefile.${" osTypeID "}.txt");
-            if (OBJ_NIL == pMakefile) {
-                DEBUG_BREAK();
-                fprintf(
-                        stderr,
-                        "FATAL - Unable to create Makefile name!\n"
-                        );
-                exit(EXIT_FAILURE);
-            }
-            pMakepath = path_NewFromDriveDirFilename(pDrive, pDir, pMakefile);
-            if (OBJ_NIL == pMakefile) {
-                DEBUG_BREAK();
-                fprintf(
-                        stderr,
-                        "FATAL - Unable to create Makepath!\n"
-                        );
-                exit(EXIT_FAILURE);
-            }
-            eRc = path_ExpandVars(pMakepath, this->pDict);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to expand Makepath\n");
-                exit(EXIT_FAILURE);
-            }
-            eRc = path_IsFile(pMakepath);
-            if (!ERESULT_FAILED(eRc) && this->fBackup) {
-                eRc = path_VersionedRename(pMakepath);
-            }
-            this->pOutputPath = pMakepath;
-            this->pOutput = TextOut_NewFromPath(pMakepath);
-            if (OBJ_NIL == this->pOutput) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to open \n");
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pMakefile);
-            pMakefile = OBJ_NIL;
-        }
-        if (!appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\t\tCreating %s\n", path_getData(this->pOutputPath));
-        }
+        pMakepath = Main_CreateOutputPath(this, pStr, this->pOsName);
+        appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pMakepath),
+                    "FATAL - Failed to create path \"from\" \n"
+        );
 
         // Generate the Makefile.
-        //FIXME: eRc = Main_GenMakefile(this);
+        eRc = Main_GenMakefile(this);
         
-        obj_Release(this->pOutput);
-        this->pOutput = OBJ_NIL;
+        if (!appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\tCreating - %s...\n", path_getData(pMakepath));
+        }
         
+        pWrk = Main_getStr(this);
+        if (OBJ_NIL == pWrk) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Failed to find output! \n");
+            exit(EXIT_FAILURE);
+        }
+        
+        eRc = AStr_ToUtf8File(pWrk, pMakepath);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Failed to write output! \n");
+            exit(EXIT_FAILURE);
+        }
+
+        if (!appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\t\t%s created.\n", path_getData(pMakepath));
+        }
+
         // Return to caller.
         obj_Release(pMakepath);
         pMakepath = OBJ_NIL;
-        obj_Release(pArgDir);
-        pArgDir = OBJ_NIL;
-        obj_Release(pDrive);
-        pDrive = OBJ_NIL;
-        obj_Release(pDir);
-        pDrive = OBJ_NIL;
         obj_Release(pFileName);
         pFileName = OBJ_NIL;
         return eRc;

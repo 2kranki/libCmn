@@ -1,26 +1,27 @@
 # Generated file - edits may be discarded!
 
 PGMNAM=genMake
-SYS=macosx
+SYS=macos
 TEMP=/tmp
 BASEDIR = $(TEMP)/$(PGMNAM)
+SRCDIR = ./src
+SRCSYSDIR = ./src/$(SYS)
+TEST_SRC = ./tests
 
-CFLAGS_LIBS = 
-CFLAGS += -g -Werror -Isrc -Isrc/$(SYS)
+CFLAGS += -g -Werror -I$(SRCDIR) -I$(SRCDIR)/$(SYS)
+CFLAGS += -D__MACOS64_ENV__
 LIB_BASE = $(HOME)/Support/lib/$(SYS)
+CFLAGS_LIBS = 
+# libCmn
 LIBCMN_BASE = $(LIB_BASE)/libCmn
 CFLAGS += -I$(LIBCMN_BASE)/include
 CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)
-CFLAGS += -D__MACOSX_ENV__
 
 TEST_FLGS = -Itests $(CFLAGS_LIBS) -lcurses
 
 INSTALL_BASE = $(HOME)/Support/bin
 INSTALLDIR = $(INSTALL_BASE)
 LIBDIR = $(BASEDIR)/$(SYS)
-SRCDIR = ./src
-SRCSYSDIR = ./src/$(SYS)
-TEST_SRC = ./tests
 ifdef  NDEBUG
 CFLAGS += -DNDEBUG
 LIB_FILENAME=$(LIBNAM)R.a
@@ -44,195 +45,291 @@ TESTS =
 
 
 
-OBJS += $(OBJDIR)/dbprs_object.o
+OBJS += $(OBJDIR)/Dict_object.o
 
-$(OBJDIR)/dbprs_object.o: $(SRCDIR)/dbprs_object.c 
+$(OBJDIR)/Dict_object.o: $(SRCDIR)/Dict_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/dbprs.o
+OBJS += $(OBJDIR)/Dict.o
 
-$(OBJDIR)/dbprs.o: $(SRCDIR)/dbprs.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/Dict.o: $(SRCDIR)/Dict.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_dbprs
+TESTS += Dict_test
 
-test_dbprs: $(TEST_SRC)/test_dbprs.c 
+Dict_test: $(TEST_SRC)/Dict_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/genBase_object.o
 
-$(OBJDIR)/genBase_object.o: $(SRCDIR)/genBase_object.c 
+OBJS += $(OBJDIR)/ExpandNodes_object.o
+
+$(OBJDIR)/ExpandNodes_object.o: $(SRCDIR)/ExpandNodes_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/genBase.o
+OBJS += $(OBJDIR)/ExpandNodes.o
 
-$(OBJDIR)/genBase.o: $(SRCDIR)/genBase.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/ExpandNodes.o: $(SRCDIR)/ExpandNodes.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_genBase
+TESTS += ExpandNodes_test
 
-test_genBase: $(TEST_SRC)/test_genBase.c 
+ExpandNodes_test: $(TEST_SRC)/ExpandNodes_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/genOSX_object.o
 
-$(OBJDIR)/genOSX_object.o: $(SRCDIR)/genOSX_object.c 
+OBJS += $(OBJDIR)/GenBase_object.o
+
+$(OBJDIR)/GenBase_object.o: $(SRCDIR)/GenBase_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/genOSX.o
+OBJS += $(OBJDIR)/GenBase.o
 
-$(OBJDIR)/genOSX.o: $(SRCDIR)/genOSX.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/GenBase.o: $(SRCDIR)/GenBase.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_genOSX
+TESTS += GenBase_test
 
-test_genOSX: $(TEST_SRC)/test_genOSX.c 
+GenBase_test: $(TEST_SRC)/GenBase_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/genWIN_object.o
 
-$(OBJDIR)/genWIN_object.o: $(SRCDIR)/genWIN_object.c 
+OBJS += $(OBJDIR)/GenMac_object.o
+
+$(OBJDIR)/GenMac_object.o: $(SRCDIR)/GenMac_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/genWIN.o
+OBJS += $(OBJDIR)/GenMac.o
 
-$(OBJDIR)/genWIN.o: $(SRCDIR)/genWIN.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/GenMac.o: $(SRCDIR)/GenMac.c $(SRCDIR)/GenMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_genWIN
+TESTS += GenMac_test
 
-test_genWIN: $(TEST_SRC)/test_genWIN.c 
+GenMac_test: $(TEST_SRC)/GenMac_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/hdrNode_object.o
 
-$(OBJDIR)/hdrNode_object.o: $(SRCDIR)/hdrNode_object.c 
+OBJS += $(OBJDIR)/GenWIN_object.o
+
+$(OBJDIR)/GenWIN_object.o: $(SRCDIR)/GenWIN_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/hdrNode.o
+OBJS += $(OBJDIR)/GenWIN.o
 
-$(OBJDIR)/hdrNode.o: $(SRCDIR)/hdrNode.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/GenWIN.o: $(SRCDIR)/GenWIN.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_hdrNode
+TESTS += GenWIN_test
 
-test_hdrNode: $(TEST_SRC)/test_hdrNode.c 
+GenWIN_test: $(TEST_SRC)/GenWIN_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/libNode_object.o
 
-$(OBJDIR)/libNode_object.o: $(SRCDIR)/libNode_object.c 
+OBJS += $(OBJDIR)/Main_object.o
+
+$(OBJDIR)/Main_object.o: $(SRCDIR)/Main_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/libNode.o
+OBJS += $(OBJDIR)/Main.o
 
-$(OBJDIR)/libNode.o: $(SRCDIR)/libNode.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/Main.o: $(SRCDIR)/Main.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_libNode
+TESTS += Main_test
 
-test_libNode: $(TEST_SRC)/test_libNode.c 
+Main_test: $(TEST_SRC)/Main_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/objNode_object.o
 
-$(OBJDIR)/objNode_object.o: $(SRCDIR)/objNode_object.c 
+OBJS += $(OBJDIR)/NodeBase_object.o
+
+$(OBJDIR)/NodeBase_object.o: $(SRCDIR)/NodeBase_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/objNode.o
+OBJS += $(OBJDIR)/NodeBase.o
 
-$(OBJDIR)/objNode.o: $(SRCDIR)/objNode.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/NodeBase.o: $(SRCDIR)/NodeBase.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_objNode
+TESTS += NodeBase_test
 
-test_objNode: $(TEST_SRC)/test_objNode.c 
+NodeBase_test: $(TEST_SRC)/NodeBase_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/pgmNode_object.o
 
-$(OBJDIR)/pgmNode_object.o: $(SRCDIR)/pgmNode_object.c 
+OBJS += $(OBJDIR)/NodeHdr_object.o
+
+$(OBJDIR)/NodeHdr_object.o: $(SRCDIR)/NodeHdr_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/pgmNode.o
+OBJS += $(OBJDIR)/NodeHdr.o
 
-$(OBJDIR)/pgmNode.o: $(SRCDIR)/pgmNode.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/NodeHdr.o: $(SRCDIR)/NodeHdr.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_pgmNode
+TESTS += NodeHdr_test
 
-test_pgmNode: $(TEST_SRC)/test_pgmNode.c 
+NodeHdr_test: $(TEST_SRC)/NodeHdr_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/rtnNode_object.o
 
-$(OBJDIR)/rtnNode_object.o: $(SRCDIR)/rtnNode_object.c 
+OBJS += $(OBJDIR)/NodeLib_object.o
+
+$(OBJDIR)/NodeLib_object.o: $(SRCDIR)/NodeLib_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/rtnNode.o
+OBJS += $(OBJDIR)/NodeLib.o
 
-$(OBJDIR)/rtnNode.o: $(SRCDIR)/rtnNode.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/NodeLib.o: $(SRCDIR)/NodeLib.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_rtnNode
+TESTS += NodeLib_test
 
-test_rtnNode: $(TEST_SRC)/test_rtnNode.c 
+NodeLib_test: $(TEST_SRC)/NodeLib_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/srcParse_object.o
 
-$(OBJDIR)/srcParse_object.o: $(SRCDIR)/srcParse_object.c 
+OBJS += $(OBJDIR)/NodeObj_object.o
+
+$(OBJDIR)/NodeObj_object.o: $(SRCDIR)/NodeObj_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/srcParse.o
+OBJS += $(OBJDIR)/NodeObj.o
 
-$(OBJDIR)/srcParse.o: $(SRCDIR)/srcParse.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/NodeObj.o: $(SRCDIR)/NodeObj.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_srcParse
+TESTS += NodeObj_test
 
-test_srcParse: $(TEST_SRC)/test_srcParse.c 
+NodeObj_test: $(TEST_SRC)/NodeObj_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/tstNode_object.o
 
-$(OBJDIR)/tstNode_object.o: $(SRCDIR)/tstNode_object.c 
+OBJS += $(OBJDIR)/NodePgm_object.o
+
+$(OBJDIR)/NodePgm_object.o: $(SRCDIR)/NodePgm_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/tstNode.o
+OBJS += $(OBJDIR)/NodePgm.o
 
-$(OBJDIR)/tstNode.o: $(SRCDIR)/tstNode.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/NodePgm.o: $(SRCDIR)/NodePgm.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_tstNode
+TESTS += NodePgm_test
 
-test_tstNode: $(TEST_SRC)/test_tstNode.c 
+NodePgm_test: $(TEST_SRC)/NodePgm_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
-OBJS += $(OBJDIR)/main_object.o
 
-$(OBJDIR)/main_object.o: $(SRCDIR)/main_object.c 
+OBJS += $(OBJDIR)/NodeRtn_object.o
+
+$(OBJDIR)/NodeRtn_object.o: $(SRCDIR)/NodeRtn_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/main.o
+OBJS += $(OBJDIR)/NodeRtn.o
 
-$(OBJDIR)/main.o: $(SRCDIR)/main.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/NodeRtn.o: $(SRCDIR)/NodeRtn.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += test_main
+TESTS += NodeRtn_test
 
-test_main: $(TEST_SRC)/test_main.c 
+NodeRtn_test: $(TEST_SRC)/NodeRtn_test.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+
+OBJS += $(OBJDIR)/NodeRtnA_object.o
+
+$(OBJDIR)/NodeRtnA_object.o: $(SRCDIR)/NodeRtnA_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/NodeRtnA.o
+
+$(OBJDIR)/NodeRtnA.o: $(SRCDIR)/NodeRtnA.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += NodeRtnA_test
+
+NodeRtnA_test: $(TEST_SRC)/NodeRtnA_test.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+
+OBJS += $(OBJDIR)/NodeTest_object.o
+
+$(OBJDIR)/NodeTest_object.o: $(SRCDIR)/NodeTest_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/NodeTest.o
+
+$(OBJDIR)/NodeTest.o: $(SRCDIR)/NodeTest.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += NodeTest_test
+
+NodeTest_test: $(TEST_SRC)/NodeTest_test.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+
+OBJS += $(OBJDIR)/NodeTstA_object.o
+
+$(OBJDIR)/NodeTstA_object.o: $(SRCDIR)/NodeTstA_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/NodeTstA.o
+
+$(OBJDIR)/NodeTstA.o: $(SRCDIR)/NodeTstA.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += NodeTstA_test
+
+NodeTstA_test: $(TEST_SRC)/NodeTstA_test.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+
+OBJS += $(OBJDIR)/SrcParse_object.o
+
+$(OBJDIR)/SrcParse_object.o: $(SRCDIR)/SrcParse_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/SrcParse.o
+
+$(OBJDIR)/SrcParse.o: $(SRCDIR)/SrcParse.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += SrcParse_test
+
+SrcParse_test: $(TEST_SRC)/SrcParse_test.c $(TEST_SRC)/data_test.c 
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+
+OBJS += $(OBJDIR)/SrcRef_object.o
+
+$(OBJDIR)/SrcRef_object.o: $(SRCDIR)/SrcRef_object.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/SrcRef.o
+
+$(OBJDIR)/SrcRef.o: $(SRCDIR)/SrcRef.c $(SRCDIR)/genMake.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += SrcRef_test
+
+SrcRef_test: $(TEST_SRC)/SrcRef_test.c $(TEST_SRC)/data_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -255,7 +352,7 @@ install:
 
 
 .PHONY: link
-link: $(OBJS) $(SRCDIR)/mainProgram.c
+link: $(OBJS) src/mainProgram.c
 	CC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^
 
 
