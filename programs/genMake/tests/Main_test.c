@@ -55,9 +55,11 @@ char            *pOutputA =
 "TEMP=/tmp\n"
 "BASE_OBJ = $(TEMP)/$(LIBNAM)\n"
 "SRCDIR = ./src\n"
-"TEST_SRC = ./tests\n\n"
+"TEST_SRC = ./tests\n"
+"INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+"LIB_BASE = $(HOME)/Support/lib/$(SYS)\n\n"
 
-"CFLAGS += -g -Werror\n"
+"CFLAGS += -g -Werror -I$(SRCDIR)\n"
 "ifdef  NDEBUG\n"
 "CFLAGS += -DNDEBUG\n"
 "else   #DEBUG\n"
@@ -67,7 +69,6 @@ char            *pOutputA =
 "CFLAGS_LIBS = \n"
 "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
 
-"INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
 "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
 "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
 "ifdef  NDEBUG\n"
@@ -166,9 +167,11 @@ char            *pOutputB =
 "TEMP=/tmp\n"
 "BASE_OBJ = $(TEMP)/$(LIBNAM)\n"
 "SRCDIR = ./src\n"
-"TEST_SRC = ./tests\n\n"
+"TEST_SRC = ./tests\n"
+"INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+"LIB_BASE = $(HOME)/Support/lib/$(SYS)\n\n"
 
-"CFLAGS += -g -Werror\n"
+"CFLAGS += -g -Werror -I$(SRCDIR)\n"
 "ifdef  NDEBUG\n"
 "CFLAGS += -DNDEBUG\n"
 "else   #DEBUG\n"
@@ -178,7 +181,6 @@ char            *pOutputB =
 "CFLAGS_LIBS = \n"
 "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
 
-"INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
 "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
 "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
 "ifdef  NDEBUG\n"

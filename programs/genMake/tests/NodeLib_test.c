@@ -312,6 +312,7 @@ int             test_NodeLib_Begin01(
     "CFLAGS_LIBS = \n"
     "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
     
+    "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
     "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
     "ifdef  NDEBUG\n"
     "LIB_FILENAME=$(LIBNAM)R.a\n"
@@ -440,6 +441,7 @@ int             test_NodeLib_Begin02(
     "CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)\n"
     "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
     
+    "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
     "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
     "ifdef  NDEBUG\n"
     "LIB_FILENAME=$(LIBNAM)R.a\n"

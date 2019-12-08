@@ -728,9 +728,6 @@ extern "C" {
     )
     {
         ASTR_DATA       *pStr =  OBJ_NIL;
-        ASTRC_DATA      *pStrC =  OBJ_NIL;
-        ASTRCARRAY_DATA *pArrayC =  OBJ_NIL;
-        uint32_t        i;
 
             // Do initialization.
         #ifdef NDEBUG
@@ -750,73 +747,10 @@ extern "C" {
     #endif
         
         // Set up to generate Makefile entry.
-        pStr = AStr_New();
+        pStr = NodeLib_GenMacBegin(pLib, pDict);
         if (OBJ_NIL == pStr) {
             return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
         }
-
-        GenBase_GenHeader(GenMac_getGenBase(this));
-        
-        //AStr_AppendPrint(pStr, "CC=clang\n");
-        AStr_AppendPrint(pStr, "LIBNAM=lib%s\n", AStrC_getData(NodeLib_getName(pLib)));
-        AStr_AppendA(pStr, "SYS=macos64\n");
-        AStr_AppendA(pStr, "TEMP=/tmp\nBASE_OBJ = $(TEMP)/$(LIBNAM)\n");
-        AStr_AppendA(pStr, "SRCDIR = ./src\n");
-        AStr_AppendA(pStr, "TEST_SRC = ./tests\n\n");
-        
-        AStr_AppendA(pStr, "CFLAGS += -g -Werror\n");
-        AStr_AppendA(pStr, "ifdef  NDEBUG\n");
-        AStr_AppendA(pStr, "CFLAGS += -DNDEBUG\n");
-        AStr_AppendA(pStr, "else   #DEBUG\n");
-        AStr_AppendA(pStr, "CFLAGS += -D_DEBUG\n");
-        AStr_AppendA(pStr, "endif  #NDEBUG\n");
-        AStr_AppendA(pStr, "CFLAGS += -D__MACOS64_ENV__\n");
-        AStr_AppendA(pStr, "CFLAGS_LIBS = \n");
-        pArrayC = NodeLib_getDeps(pLib);
-        if (pArrayC && (AStrCArray_getSize(pArrayC) > 0)) {
-            for (i=0; i<AStrCArray_getSize(pArrayC); i++) {
-                pStrC = AStrCArray_Get(pArrayC, i+1);
-                if (pStrC) {
-                    ASTR_DATA       *pStrUpper = AStrC_ToUpper(pStrC);
-                    AStr_AppendPrint(pStr, "# lib%s\n", AStrC_getData(pStrC));
-                    AStr_AppendPrint(pStr, "LIB%s_BASE = $(LIB_BASE)/lib%s\n",
-                                     AStr_getData(pStrUpper),
-                                     AStrC_getData(pStrC)
-                    );
-                    AStr_AppendPrint(pStr, "CFLAGS += -I$(LIB%s_BASE)/include\n",
-                                     AStr_getData(pStrUpper)
-                    );
-                    AStr_AppendPrint(pStr, "CFLAGS_LIBS += -l%s -L$(LIB%s_BASE)\n",
-                                     AStrC_getData(pStrC),
-                                     AStr_getData(pStrUpper)
-                    );
-                    obj_Release(pStrUpper);
-                }
-            }
-        }
-        AStr_AppendA(pStr, "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n");
-
-        AStr_AppendA(pStr, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
-        AStr_AppendA(pStr, "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n");
-        AStr_AppendA(pStr, "LIBOBJ = $(BASE_OBJ)/$(SYS)\n");
-        AStr_AppendA(pStr, "ifdef  NDEBUG\n");
-        AStr_AppendA(pStr, "LIB_FILENAME=$(LIBNAM)R.a\n");
-        AStr_AppendA(pStr, "OBJDIR = $(LIBOBJ)/o/r\n");
-        AStr_AppendA(pStr, "else   #DEBUG\n");
-        AStr_AppendA(pStr, "LIB_FILENAME=$(LIBNAM)D.a\n");
-        AStr_AppendA(pStr, "OBJDIR = $(LIBOBJ)/o/d\n");
-        AStr_AppendA(pStr, "endif  #NDEBUG\n");
-        AStr_AppendA(pStr, "TEST_OBJ = $(OBJDIR)/tests\n");
-        AStr_AppendA(pStr, "TEST_BIN = $(OBJDIR)/tests\n");
-        AStr_AppendA(pStr, "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n");
-        
-        AStr_AppendA(pStr, ".SUFFIXES:\n");
-        AStr_AppendA(pStr, ".SUFFIXES: .asm .c .cpp .o\n");
-        AStr_AppendA(pStr, "\n");
-
-        AStr_AppendPrint(pStr, "%s =\n\n", AStrC_getData(this->pObjVar));
-        AStr_AppendPrint(pStr, "%s =\n\n", AStrC_getData(this->pTstVar));
-        AStr_AppendA(pStr, "\n");
 
         GenBase_Output(GenMac_getGenBase(this), pStr);
         obj_Release(pStr);
