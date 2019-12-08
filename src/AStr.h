@@ -203,7 +203,7 @@ extern "C" {
     
     
     /*!
-     @return:   return the number of Ascii or Unicode characters in
+     @return:   return the number of Unicode characters in
                 the string, not the actual size of the string in
                 memory.  -1 indicates an error occurred.
      */
@@ -213,7 +213,7 @@ extern "C" {
     
     
     /*!
-     @return:   return the number of Ascii or Unicode characters in
+     @return:   return the number of Unicode characters in
                 the string, not the actual size of the string in
                 memory.  -1 indicates an error occurred.
      */
@@ -526,13 +526,49 @@ extern "C" {
      Substitutions are not rescanned after insertion.
      @param     this    object pointer
      @param     pHash   optional node hash pointer where the node's data is a
-                        path or astr kind object.
+                        path or astr/astrc kind object.
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
                 is returned.
      */
     ERESULT         AStr_ExpandVars(
         ASTR_DATA       *this,
         OBJ_ID          pHash
+    );
+
+
+    /*! Scan the string until one of the characters in the given
+        nul-terminated string are found. Start searching at the
+        given index and bump it as the search continues.
+     @param     this    object pointer
+     @param     pStrA   pointer to a wide char nul-terminated string.
+     @param     pIndex  Index into the string to start at and where the
+                        scan stopped.
+     @return    If one of the chars is found, ERESULT_SUCCESS.
+                ERESULT_OUT_OF_RANGE if none of the chars are found.
+     */
+    ERESULT         AStr_FindNextA(
+        ASTR_DATA       *this,
+        const
+        char            *pStrA,             // UTF-8 String
+        uint32_t        *pIndex
+    );
+
+
+    /*! Scan the string until one of the characters in the given
+        nul-terminated string are found. Start searching at the
+        given index and bump it as the search continues.
+     @param     this    object pointer
+     @param     pStrW32 pointer to a wide char nul-terminated string.
+     @param     pIndex  Index into the string to start at and where the
+                        scan stopped.
+     @return    If one of the chars is found, ERESULT_SUCCESS.
+                ERESULT_OUT_OF_RANGE if none of the chars are found.
+     */
+    ERESULT         AStr_FindNextW32(
+        ASTR_DATA       *this,
+        const
+        W32CHR_T        *pStrW32,
+        uint32_t        *pIndex
     );
 
 

@@ -53,6 +53,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <Dict.h>
 #include        <NodeBase.h>
 
 
@@ -110,7 +111,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  NODELIB_SINGLETON
-    NODELIB_DATA *     NodeLib_Shared (
+    NODELIB_DATA *  NodeLib_Shared (
         void
     );
 
@@ -267,6 +268,25 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Generate the Makefile beginning in macOS.
+     @param     this    object pointer
+     @param     pDict   dictionary pointer
+     @return    If successful, an AStr which must be released.
+                Otherwise, OBJ_NIL.
+     */
+    ASTR_DATA *     NodeLib_GenMacBegin (
+        NODELIB_DATA    *this,
+        DICT_DATA       *pDict
+    );
+
+
+    ASTR_DATA *     NodeLib_GenMacEnd (
+        NODELIB_DATA    *this,
+        DICT_DATA       *pDict
+    );
+
 
     NODELIB_DATA *   NodeLib_Init (
         NODELIB_DATA    *this

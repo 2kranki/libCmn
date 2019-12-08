@@ -366,13 +366,13 @@ extern "C" {
             if (NULL == this) {
                 return ERESULT_INVALID_OBJECT;
             }
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
             if( !AStrCArray_Validate(this) ) {
                 DEBUG_BREAK();
                 return ERESULT_INVALID_OBJECT;
             }
-    #endif
+#endif
             
             if (OBJ_NIL == this->pArray) {
                 this->pArray = objArray_New();
@@ -393,41 +393,86 @@ extern "C" {
         }
 
         
-    ERESULT         AStrCArray_AppendAStrC(
+    ERESULT     AStrCArray_AppendAStrC(
         ASTRCARRAY_DATA *this,
         ASTRC_DATA      *pObject,
         uint32_t        *pIndex
-        )
-        {
-            ERESULT         eRc;
-            
-            // Do initialization.
-            if (NULL == this) {
-                return ERESULT_INVALID_OBJECT;
-            }
-    #ifdef NDEBUG
-    #else
-            if( !AStrCArray_Validate(this) ) {
-                DEBUG_BREAK();
-                return ERESULT_INVALID_OBJECT;
-            }
-    #endif
-            
-            if (OBJ_NIL == this->pArray) {
-                this->pArray = objArray_New();
-                if (OBJ_NIL == this->pArray) {
-                    return ERESULT_OUT_OF_MEMORY;
-                }
-            }
-            
-            eRc = objArray_AppendObj(this->pArray, pObject, pIndex);
-            
-            // Return to caller.
-            return eRc;
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+        if (NULL == this) {
+            return ERESULT_INVALID_OBJECT;
         }
+#ifdef NDEBUG
+#else
+        if( !AStrCArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pArray) {
+            this->pArray = objArray_New();
+            if (OBJ_NIL == this->pArray) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        eRc = objArray_AppendObj(this->pArray, pObject, pIndex);
+        
+        // Return to caller.
+        return eRc;
+    }
 
         
+    ERESULT         AStrCArray_AppendA(
+        ASTRCARRAY_DATA *this,
+        const
+        char            *pStrA,
+        uint32_t        *pIndex
+    )
+    {
+        ERESULT         eRc;
+        ASTRC_DATA      *pStrC;
         
+        // Do initialization.
+        if (NULL == this) {
+            return ERESULT_INVALID_OBJECT;
+        }
+#ifdef NDEBUG
+#else
+        if( !AStrCArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pStrA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pArray) {
+            this->pArray = objArray_New();
+            if (OBJ_NIL == this->pArray) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        
+        pStrC = AStrC_NewA(pStrA);
+        if (OBJ_NIL == pStrC)
+            return ERESULT_OUT_OF_MEMORY;
+        eRc = objArray_AppendObj(this->pArray, pStrC, pIndex);
+        obj_Release(pStrC);
+        pStrC = OBJ_NIL;
+        
+        // Return to caller.
+        return eRc;
+    }
+
+                
+
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -821,6 +866,42 @@ extern "C" {
     }
 
 
+    uint32_t        AStrCArray_FindA (
+        ASTRCARRAY_DATA *this,
+        const
+        char            *pStrA
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        ASTRC_DATA      *pWrk;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!AStrCArray_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pArray)
+            return 0;
+        
+        iMax = objArray_getSize(this->pArray);
+        for (i=0; i<iMax; i++) {
+            pWrk = objArray_Get(this->pArray, i+1);
+            if (ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pWrk, pStrA)) {
+                return i+1;
+            }
+        }
+
+        // Return to caller.
+        return 0;
+    }
+
+
 
     //---------------------------------------------------------------
     //                        G e t
@@ -1029,6 +1110,37 @@ extern "C" {
     }
     
     
+    
+    //---------------------------------------------------------------
+    //                        P u t
+    //---------------------------------------------------------------
+    
+    ERESULT         AStrCArray_Put(
+        ASTRCARRAY_DATA *this,
+        uint32_t        index,          // Relative to 1
+        ASTRC_DATA      *pObject
+    )
+    {
+        ERESULT         eRc = ERESULT_DATA_MISSING;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrCArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (this->pArray) {
+            eRc = objArray_Put(this->pArray, index, pObject);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+        
+ 
     
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o

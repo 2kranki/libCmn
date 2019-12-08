@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          GENMAC Console Transmit Task (GenMac) Header
+//          FILEREF Console Transmit Task (FileRef) Header
 //****************************************************************
 /*
  * Program
- *			Separate GenMac (GenMac)
+ *			Separate FileRef (FileRef)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate GenMac to run things without complications
- *          of interfering with the main GenMac. A GenMac may be 
- *          called a GenMac on other O/S's.
+ *          a separate FileRef to run things without complications
+ *          of interfering with the main FileRef. A FileRef may be 
+ *          called a FileRef on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	11/23/2019 Generated
+ *	12/06/2019 Generated
  */
 
 
@@ -53,15 +53,15 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <Dict.h>
-#include        <GenBase.h>
+#include        <AStrC.h>
 
 
-#ifndef         GENMAC_H
-#define         GENMAC_H
+#ifndef         FILEREF_H
+#define         FILEREF_H
 
 
-//#define   GENMAC_SINGLETON    1
+//#define   FILEREF_JSON_SUPPORT 1
+//#define   FILEREF_SINGLETON    1
 
 
 
@@ -77,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct GenMac_data_s	GENMAC_DATA;            // Inherits from OBJ
-    typedef struct GenMac_class_data_s GENMAC_CLASS_DATA;   // Inherits from OBJ
+    typedef struct FileRef_data_s	FILEREF_DATA;            // Inherits from OBJ
+    typedef struct FileRef_class_data_s FILEREF_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct GenMac_vtbl_s	{
+    typedef struct FileRef_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in GenMac_object.c.
+        // method names to the vtbl definition in FileRef_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(GENMAC_DATA *);
-    } GENMAC_VTBL;
+        //bool        (*pIsEnabled)(FILEREF_DATA *);
+    } FILEREF_VTBL;
 
-    typedef struct GenMac_class_vtbl_s	{
+    typedef struct FileRef_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in GenMac_object.c.
+        // method names to the vtbl definition in FileRef_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(GENMAC_DATA *);
-    } GENMAC_CLASS_VTBL;
+        //bool        (*pIsEnabled)(FILEREF_DATA *);
+    } FILEREF_CLASS_VTBL;
 
 
 
@@ -110,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  GENMAC_SINGLETON
-    GENMAC_DATA *     GenMac_Shared (
+#ifdef  FILEREF_SINGLETON
+    FILEREF_DATA *  FileRef_Shared (
         void
     );
 
-    bool            GenMac_SharedReset (
+    bool            FileRef_SharedReset (
         void
     );
 #endif
@@ -125,41 +125,75 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to GenMac object if successful, otherwise OBJ_NIL.
+     @return    pointer to FileRef object if successful, otherwise OBJ_NIL.
      */
-    GENMAC_DATA *   GenMac_Alloc (
+    FILEREF_DATA *  FileRef_Alloc (
         void
     );
     
     
-    OBJ_ID          GenMac_Class (
+    OBJ_ID          FileRef_Class (
         void
     );
     
     
-    GENMAC_DATA *   GenMac_New (
+    FILEREF_DATA *  FileRef_New (
         void
     );
     
     
+    FILEREF_DATA *  FileRef_NewWithData (
+        ASTRC_DATA      *pDrv,
+        ASTRC_DATA      *pDir,
+        ASTRC_DATA      *pName,
+        ASTRC_DATA      *pExt
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    GENBASE_DATA *  GenMac_getGenBase (
-        GENMAC_DATA     *this
+    ASTRC_DATA *    FileRef_getDrv (
+        FILEREF_DATA    *this
+    );
+
+    bool            FileRef_setDrv (
+        FILEREF_DATA    *this,
+        ASTRC_DATA      *pValue
     );
 
 
-    TEXTOUT_DATA *  GenMac_getOutput (
-        GENMAC_DATA     *this
+    ASTRC_DATA *    FileRef_getDir (
+        FILEREF_DATA    *this
     );
 
-    bool            GenMac_setOutput (
-        GENMAC_DATA     *this,
-        TEXTOUT_DATA    *pValue
+    bool            FileRef_setDir (
+        FILEREF_DATA    *this,
+        ASTRC_DATA      *pValue
     );
+
+
+    ASTRC_DATA *    FileRef_getExt (
+        FILEREF_DATA    *this
+    );
+
+    bool            FileRef_setExt (
+        FILEREF_DATA    *this,
+        ASTRC_DATA      *pValue
+    );
+
+
+    ASTRC_DATA *    FileRef_getName (
+        FILEREF_DATA    *this
+    );
+
+    bool            FileRef_setName (
+        FILEREF_DATA    *this,
+        ASTRC_DATA      *pValue
+    );
+
 
 
     
@@ -167,61 +201,8 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT_DATA *  GenMac_GenBuildTests (
-        GENMAC_DATA     *this,
-        NODEARRAY_DATA  *pArray,
-        DICT_DATA       *pDict
-    );
-
-
-    ERESULT_DATA *  GenMac_GenCompileRtns (
-        GENMAC_DATA     *this,
-        NODEARRAY_DATA  *pArray,
-        DICT_DATA       *pDict
-    );
-
-
-    ERESULT_DATA *  GenMac_GenLibBegin (
-        GENMAC_DATA     *this,
-        NODELIB_DATA    *pLib,
-        DICT_DATA       *pDict
-    );
-
-
-    ERESULT_DATA *  GenMac_GenLibEnd (
-        GENMAC_DATA     *this,
-        NODELIB_DATA    *pLib,
-        DICT_DATA       *pDict
-    );
-
-
-    ERESULT_DATA *  GenMac_GenPgmBegin (
-        GENMAC_DATA     *this,
-        NODEPGM_DATA    *pPgm,
-        DICT_DATA       *pDict
-    );
-
-
-    ERESULT_DATA *  GenMac_GenPgmEnd (
-        GENMAC_DATA     *this,
-        NODEPGM_DATA    *pPgm,
-        DICT_DATA       *pDict
-    );
-
-
-    GENMAC_DATA *   GenMac_Init (
-        GENMAC_DATA     *this
-    );
-
-
-    /*!
-     Set up default parameters.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         GenMac_SetupDefaults (
-        GENMAC_DATA     *this
+    FILEREF_DATA *  FileRef_Init (
+        FILEREF_DATA    *this
     );
 
 
@@ -229,25 +210,28 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = GenMac_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = FileRef_ToDebugString(this,4);
      @endcode 
-     @param     this    GENMAC object pointer
+     @param     this    FILEREF object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     GenMac_ToDebugString (
-        GENMAC_DATA     *this,
+    ASTR_DATA *     FileRef_ToDebugString (
+        FILEREF_DATA    *this,
         int             indent
     );
     
     
+    ASTR_DATA *     FileRef_ToString (
+        FILEREF_DATA    *this
+    );
 
     
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* GENMAC_H */
+#endif	/* FILEREF_H */
 

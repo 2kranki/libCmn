@@ -266,6 +266,8 @@ extern "C" {
         OBJ_IDENT_FILE_CLASS,
         OBJ_IDENT_FILEIO,               // File I/O
         OBJ_IDENT_FILEIO_CLASS,
+        OBJ_IDENT_FILEREF,              // File Reference
+        OBJ_IDENT_FILEREF_CLASS,
         OBJ_IDENT_GENOBJ,               // Generate an Object
         OBJ_IDENT_GENOBJ_CLASS,
         OBJ_IDENT_GREG,                 // Gregorian Date

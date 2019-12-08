@@ -49,6 +49,7 @@
 #include    <str.h>
 #include    <objArray.h>
 #include    <array_internal.h>
+#include    <utf8.h>
 
 #ifdef	__cplusplus
 extern "C" {

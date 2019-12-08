@@ -203,6 +203,46 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                    E x t e n s i o n
+    //---------------------------------------------------------------
+
+    ASTRC_DATA *    NodeRtnA_getExt (
+        NODERTNA_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeRtnA_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return NodeBase_getExt(NodeRtnA_getNodeBase(this));
+    }
+
+
+    bool            NodeRtnA_setExt (
+        NODERTNA_DATA   *this,
+        ASTRC_DATA      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeRtnA_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return NodeBase_setExt(NodeRtnA_getNodeBase(this), pValue);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        N a m e
     //---------------------------------------------------------------
 
@@ -478,46 +518,6 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //                        S u f f i x
-    //---------------------------------------------------------------
-
-    ASTRC_DATA *    NodeRtnA_getSuffix (
-        NODERTNA_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeRtnA_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return NodeBase_getSuffix(NodeRtnA_getNodeBase(this));
-    }
-
-
-    bool            NodeRtnA_setSuffix (
-        NODERTNA_DATA   *this,
-        ASTRC_DATA      *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeRtnA_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        return NodeBase_setSuffix(NodeRtnA_getNodeBase(this), pValue);
-    }
-
-
-
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -913,6 +913,142 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    G e n e r a t i o n
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeRtnA_GenMac (
+        NODERTNA_DATA   *this,
+        DICT_DATA       *pDict
+    )
+    {
+        //ERESULT         eRc;
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        ASTRC_DATA      *pExt;
+        uint32_t        i;
+        uint32_t        iMax;
+
+            // Do initialization.
+        #ifdef NDEBUG
+        #else
+        if (!NodeRtnA_Validate(this)) {
+            DEBUG_BREAK();
+            //return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+            return OBJ_NIL;
+        }
+    #endif
+        
+        // Skip disabled entries.
+        if (ERESULT_SUCCESS_FALSE == NodeRtnA_IsEnabled(this)) {
+            return OBJ_NIL;
+        }
+        
+        // Set up to generate Makefile entry.
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            //return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+            return OBJ_NIL;
+        }
+        pExt = NodeRtnA_getExt(this);
+
+        AStr_AppendPrint(
+            pStr,
+            "%s += $(%s)/%s.o\n\n",
+            Dict_GetA(pDict, objsVarID),
+            Dict_GetA(pDict, objDirVarID),
+            AStrC_getData(NodeRtnA_getName(this))
+        );
+        
+        if ((AStrC_CompareA(pExt, "c") == ERESULT_SUCCESS_EQUAL)
+            || (AStrC_CompareA(pExt, "C") == ERESULT_SUCCESS_EQUAL)
+            || (AStrC_CompareA(pExt, "cpp") == ERESULT_SUCCESS_EQUAL)
+            || (AStrC_CompareA(pExt, "CPP") == ERESULT_SUCCESS_EQUAL)) {
+            // First prerequisite must be the Test Program Source.
+            ASTR_DATA       *pWrk = AStr_New();
+            if (AStrC_CharGetFirstW32(NodeRtnA_getName(this)) == '$') {
+                AStr_AppendA(pWrk, AStrC_getData(NodeRtnA_getName(this)));
+            } else {
+                AStr_AppendPrint(pWrk,
+                                 "$(%s)/%s",
+                                 Dict_GetA(pDict, srcDirVarID),
+                                 AStrC_getData(NodeRtnA_getName(this))
+                );
+            }
+            AStr_AppendPrint(
+                pStr,
+                "$(%s)/%s.o: %s.%s ",
+                Dict_GetA(pDict, objDirVarID),
+                AStrC_getData(NodeRtnA_getName(this)),
+                AStr_getData(pWrk),
+                AStrC_getData(pExt)
+            );
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+            iMax = AStrCArray_getSize(NodeRtnA_getDeps(this));
+            for (i=0; i<iMax; i++) {
+                ASTRC_DATA      *pStrC = AStrCArray_Get(NodeRtnA_getDeps(this), i+1);
+                if (pStrC) {
+                    if (AStrC_CharGetFirstW32(pStrC) == '$') {
+                        AStr_AppendA(pStr, AStrC_getData(pStrC));
+                        AStr_AppendA(pStr, " ");
+                    } else {
+                        AStr_AppendPrint(
+                                         pStr,
+                                         "$(%s)/%s ",
+                                         Dict_GetA(pDict, srcDirVarID),
+                                         AStrC_getData(pStrC)
+                        );
+                    }
+                }
+            }
+            AStr_AppendA(pStr, "\n");
+            AStr_AppendPrint(
+                pStr,
+                "\t$(CC) $(CFLAGS) -c -o $(%s)/$(@F) -I$(%s)",
+                Dict_GetA(pDict, objDirVarID),
+                Dict_GetA(pDict, srcDirVarID)
+            );
+            iMax = AStrCArray_getSize(NodeRtnA_getSrcs(this));
+            for (i=0; i<iMax; i++) {
+                ASTRC_DATA      *pStrC = AStrCArray_Get(NodeRtnA_getSrcs(this), i+1);
+                if (pStrC) {
+                    if (AStrC_CharGetFirstW32(pStrC) == '$') {
+                        AStr_AppendA(pStr, " ");
+                        AStr_AppendA(pStr, AStrC_getData(pStrC));
+                    } else {
+                        AStr_AppendPrint(
+                                         pStr,
+                                         " $(%s)/%s",
+                                         Dict_GetA(pDict, srcDirVarID),
+                                         AStrC_getData(pStrC)
+                        );
+                    }
+                }
+            }
+            // $< == the name of the first prerequisite
+            AStr_AppendA(pStr, " $<\n");
+        }
+        else {
+            fprintf(stderr, "Error: Unsupported file extension for %s.%s\n\n",
+                    AStrC_getData(NodeRtnA_getName(this)),
+                    AStrC_getData(NodeRtnA_getExt(this))
+            );
+            DEBUG_BREAK();
+            obj_Release(pStr);
+            //return eResult_NewStrA(ERESULT_UNSUPPORTED_PARAMETER, "Invalid File Suffix");
+            return OBJ_NIL;
+        }
+        
+        if (pStr) {
+            AStr_AppendA(pStr, "\n");
+        }
+
+        // Return to caller.
+        return pStr;
     }
 
 

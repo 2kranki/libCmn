@@ -69,6 +69,7 @@ extern "C" {
     {
         ERESULT_DATA    *pErr;
         ASTRC_DATA      *pName;
+        ASTRC_DATA      *pName2;
         ASTRC_DATA      *pNameHdr;
         ASTRC_DATA      *pNameInt;
 
@@ -78,8 +79,9 @@ extern "C" {
             pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing Name!");
             return pErr;
         }
-        pNameHdr = AStrC_AppendA(pName, ".h");
-        pNameInt = AStrC_AppendA(pName, "_internal.h");
+        pName2 = AStrC_PrependA(pName, "$(SRCDIR)/");
+        pNameHdr = AStrC_AppendA(pName2, ".h");
+        pNameInt = AStrC_AppendA(pName2, "_internal.h");
         
         NodeBase_AppendDeps(NodeObj_getNodeBase(this), pNameHdr);
         NodeBase_AppendDeps(NodeObj_getNodeBase(this), pNameInt);
@@ -92,6 +94,7 @@ extern "C" {
             NodeBase_AppendDeps(NodeTest_getNodeBase(this->pTest), pNameInt);
         }
 
+        obj_Release(pName2);
         obj_Release(pNameHdr);
         obj_Release(pNameInt);
         return OBJ_NIL;
@@ -148,10 +151,11 @@ extern "C" {
         ERESULT_DATA    *pErr = OBJ_NIL;
         NODEHASH_DATA   *pHash;
         NODE_DATA       *pHashItem;
-        NODEOBJ_DATA    *pObj;
-        ASTRC_DATA      *pName;
-        ASTRC_DATA      *pNameJson;
-        ASTRC_DATA      *pNameTest;
+        NODEOBJ_DATA    *pObj = OBJ_NIL;
+        ASTRC_DATA      *pExt = OBJ_NIL;
+        ASTRC_DATA      *pName = OBJ_NIL;
+        ASTRC_DATA      *pNameJson = OBJ_NIL;
+        ASTRC_DATA      *pNameTest = OBJ_NIL;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -194,6 +198,17 @@ extern "C" {
                 return (eResult_NewStrA(ERESULT_INVALID_PARAMETER,
                                        "Error: Object is missing Name!"));
             }
+            obj_Retain(pName);
+            if (pObj) {
+                pErr =  NodeBase_AddPrefixDepsA(
+                                        NodeObj_getNodeBase(pObj),
+                                        "$(SRCDIR)/"
+                        );
+                pErr =  NodeBase_AddPrefixSrcsA(
+                                        NodeObj_getNodeBase(pObj),
+                                        "$(SRCDIR)/"
+                        );
+            }
 
             // Scan off the test stuff if present.
             pHashItem = nodeHash_FindA(pHash, 0, "json");
@@ -220,6 +235,7 @@ extern "C" {
                 if (pErr) {
                     DEBUG_BREAK();
                     obj_Release(pObj);
+                    obj_Release(pName);
                     return pErr;
                 }
             }
@@ -231,6 +247,13 @@ extern "C" {
                     NodeRtn_setName(pObj->pJson, pNameJson);
                     obj_Release(pNameJson);
                     pNameJson = OBJ_NIL;
+                }
+                pExt = NodeRtn_getName(pObj->pJson);
+                if (OBJ_NIL == pExt) {
+                    pExt = AStrC_NewA("c");
+                    NodeRtn_setName(pObj->pJson, pExt);
+                    obj_Release(pExt);
+                    pExt = OBJ_NIL;
                 }
             }
 
@@ -276,7 +299,7 @@ extern "C" {
 
             *ppBase = pObj;
         }
-
+        
         // Return to caller.
         if (OBJ_NIL == pErr) {
             pErr = NodeObj_AddHeaderDep(pObj);
@@ -284,6 +307,7 @@ extern "C" {
                 NodeObj_SortArrays(pObj);
             }
         }
+        obj_Release(pName);
         return pErr;
     }
 

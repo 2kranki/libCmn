@@ -1659,9 +1659,9 @@ extern "C" {
                 GenMac_setOutput(pMac, this->pOutput);
                 
                 if (pLib) {
-                    pErr = GenMac_GenLibBegin(pMac, pLib);
+                    pErr = GenMac_GenLibBegin(pMac, pLib, this->pDict);
                 } else {
-                    pErr = GenMac_GenPgmBegin(pMac, pPgm);
+                    pErr = GenMac_GenPgmBegin(pMac, pPgm, this->pDict);
                 }
                 if (pErr) {
                     eResult_Fprint(pErr, stderr);
@@ -1670,7 +1670,7 @@ extern "C" {
 
                 pArray = ExpandNodes_getRtns(pExpand);
                 if (pArray) {
-                    pErr = GenMac_GenCompileRtns(pMac, pArray);
+                    pErr = GenMac_GenCompileRtns(pMac, pArray, this->pDict);
                     if (pErr) {
                         eResult_Fprint(pErr, stderr);
                         exit(12);
@@ -1679,7 +1679,7 @@ extern "C" {
                 
                 pArray = ExpandNodes_getTests(pExpand);
                 if (pArray) {
-                    pErr = GenMac_GenBuildTests(pMac, pArray);
+                    pErr = GenMac_GenBuildTests(pMac, pArray, this->pDict);
                     if (pErr) {
                         eResult_Fprint(pErr, stderr);
                         exit(12);
@@ -1687,9 +1687,9 @@ extern "C" {
                 }
 
                 if (pLib) {
-                    pErr = GenMac_GenLibEnd(pMac, pLib);
+                    pErr = GenMac_GenLibEnd(pMac, pLib, this->pDict);
                 } else {
-                    pErr = GenMac_GenPgmEnd(pMac, pPgm);
+                    pErr = GenMac_GenPgmEnd(pMac, pPgm, this->pDict);
                 }
                 if (pErr) {
                     eResult_Fprint(pErr, stderr);
@@ -1732,6 +1732,7 @@ extern "C" {
         MAIN_DATA       *this
     )
     {
+        ERESULT         eRc;
         uint32_t        cbSize = sizeof(MAIN_DATA);
         
         if (OBJ_NIL == this) {
@@ -1765,6 +1766,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+        eRc = Dict_Defaults(this->pDict);
         appl_setUsage(
                           (APPL_DATA *)this,
                           this,

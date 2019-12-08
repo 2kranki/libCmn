@@ -185,7 +185,7 @@ int             test_NodeBase_Parse01(
         "name:\"AStr\","
         "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
         "\"srcs\":[\"str.c\",\"ascii.c\"],"
-        "\"suffix\":\"m\","
+        "\"ext\":\"m\","
         "\"arch\":[\"x86_64\"]"
         "\"os\":[\"macos64\"]"
         "}\n";
@@ -269,7 +269,7 @@ int             test_NodeBase_Parse01(
             pStrC = AStrCArray_Get(pStrCArray, 2);
             TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"str.c")));
         }
-        pStrC = NodeBase_getSuffix(pBase);
+        pStrC = NodeBase_getExt(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"m")));
 
@@ -311,7 +311,7 @@ int             test_NodeBase_Parse01(
             pStrC = AStrCArray_Get(pStrCArray, 2);
             TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"str.c")));
         }
-        pStrC = NodeBase_getSuffix(pBase2);
+        pStrC = NodeBase_getExt(pBase2);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"m")));
         
@@ -428,6 +428,9 @@ int             test_NodeBase_Parse02(
             pStrC = AStrCArray_Get(pStrCArray, 2);
             TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"str.c")));
         }
+        pStrC = NodeBase_getExt(pBase);
+        TINYTEST_FALSE( (OBJ_NIL == pStrC) );
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"c")));
 
         obj_Release(pNodes);
         pNodes = OBJ_NIL;

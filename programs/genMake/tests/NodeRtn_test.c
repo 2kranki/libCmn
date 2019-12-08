@@ -170,6 +170,7 @@ int             test_NodeRtn_Parse01(
     char            *pTestName
 )
 {
+    ERESULT         eRc;
     ERESULT_DATA    *pErr = OBJ_NIL;
     //NODE_DATA       *pNode = OBJ_NIL;
     NODE_DATA       *pNodes = OBJ_NIL;
@@ -183,11 +184,12 @@ int             test_NodeRtn_Parse01(
     const
     char            *pGoodJsonObject1 =
         "{name:\"AStr\", "
-        "\"deps\":[\"cmn_defs.h\",\"array.h\"],"
+        "ext:c, "
+        "deps:[\"cmn_defs.h\",\"array.h\"],"
         "\"srcs\":[\"str.c\",\"ascii.c\"],"
         "\"test\":{\"arch\":\"X86\",\"os\":\"macos\",srcs:[\"abc.c\"]}"
         "}\n";
-    bool            fDumpNodes = true;
+    bool            fDump = true;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -200,7 +202,7 @@ int             test_NodeRtn_Parse01(
     TINYTEST_FALSE( (OBJ_NIL == pHash) );
     TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
-    if (fDumpNodes) {
+    if (fDump) {
         ASTR_DATA       *pWrk = OBJ_NIL;
         pWrk = node_ToDebugString(pNodes, 0);
         fprintf(stderr, "Parsed JSON:\n%s\n\n\n", AStr_getData(pWrk));
@@ -217,7 +219,7 @@ int             test_NodeRtn_Parse01(
     TINYTEST_TRUE((OBJ_NIL == pErr));
     
     // Display the Output.
-    if (pRtn) {
+    if (pRtn && fDump) {
         fprintf(stderr, "===> NodeObj:\n\n");
         ASTR_DATA   *pStr = NodeRtn_ToDebugString(pRtn, 0);
         fprintf(stderr, "%s\n", AStr_getData(pStr));
@@ -244,18 +246,22 @@ int             test_NodeRtn_Parse01(
     if (pStrCArray) {
         TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
         pStrC = AStrCArray_Get(pStrCArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"array.h")));
+        eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/array.h");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
         pStrC = AStrCArray_Get(pStrCArray, 2);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"cmn_defs.h")));
+        eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/cmn_defs.h");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
     }
     pStrCArray = NodeRtn_getSrcs(pRtn);
     TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
     if (pStrCArray) {
         TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
         pStrC = AStrCArray_Get(pStrCArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"ascii.c")));
+        eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/ascii.c");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
         pStrC = AStrCArray_Get(pStrCArray, 2);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"str.c")));
+        eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/str.c");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
     }
     pTest = NodeRtn_getTest(pRtn);
     TINYTEST_FALSE( (OBJ_NIL == pTest) );
@@ -282,7 +288,8 @@ int             test_NodeRtn_Parse01(
     if (pStrCArray) {
         TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
         pStrC = AStrCArray_Get(pStrCArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"abc.c")));
+        eRc = AStrC_CompareA(pStrC,"$(TEST_SRC)/abc.c");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
     }
 
     obj_Release(pNodes);
@@ -306,8 +313,6 @@ int             test_NodeRtn_Parse02(
     //NODE_DATA       *pNode = OBJ_NIL;
     NODE_DATA       *pNodes = OBJ_NIL;
     NODEHASH_DATA   *pHash = OBJ_NIL;
-    ASTRARRAY_DATA  *pStrArray = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
     ASTRCARRAY_DATA *pStrCArray = OBJ_NIL;
     ASTRC_DATA      *pStrC = OBJ_NIL;
     NODERTN_DATA    *pRtn = OBJ_NIL;
@@ -317,7 +322,7 @@ int             test_NodeRtn_Parse02(
         "{name:\"dllist\", "
         "\"os\":[\"win32\",\"win64\"]"
         "}\n";
-    bool            fDumpNodes = true;
+    bool            fDump = true;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -330,7 +335,7 @@ int             test_NodeRtn_Parse02(
     TINYTEST_FALSE( (OBJ_NIL == pHash) );
     TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
-    if (fDumpNodes) {
+    if (fDump) {
         ASTR_DATA       *pWrk = OBJ_NIL;
         pWrk = node_ToDebugString(pNodes, 0);
         fprintf(stderr, "Parsed JSON:\n%s\n\n\n", AStr_getData(pWrk));
@@ -347,7 +352,7 @@ int             test_NodeRtn_Parse02(
     TINYTEST_TRUE((OBJ_NIL == pErr));
     
     // Display the Output.
-    if (pRtn) {
+    if (pRtn && fDump) {
         fprintf(stderr, "===> NodeObj:\n\n");
         ASTR_DATA   *pStr = NodeRtn_ToDebugString(pRtn, 0);
         fprintf(stderr, "%s\n", AStr_getData(pStr));

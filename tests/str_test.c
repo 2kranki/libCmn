@@ -122,6 +122,36 @@ int         test_str_CompareSpcl_NoWS(
 
 
 
+int         test_str_CompareW32A(
+    const
+    char        *pTestName
+)
+{
+    int             iRc;
+    const
+    W32CHR_T        szStr1W32[] = {'H','e',0};
+    const
+    char            *pStr1 = "He";               // 0
+    const
+    char            *pStr2 = "Ha";              // > 0
+    const
+    char            *pStr3 = "Ho";              // < 0
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    iRc = str_CompareW32A(szStr1W32, pStr1);
+    XCTAssertTrue( (0 == iRc) );
+    iRc = str_CompareW32A(szStr1W32, pStr2);
+    XCTAssertTrue( (0 < iRc) );
+    iRc = str_CompareW32A(szStr1W32, pStr3);
+    XCTAssertTrue( (0 > iRc) );
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_str_Concat(
     const
     char        *pTestName
@@ -323,6 +353,7 @@ TINYTEST_START_SUITE(test_str);
     TINYTEST_ADD_TEST(test_str_DupA,setUp,tearDown);
     TINYTEST_ADD_TEST(test_str_CopyFill01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_str_Concat,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_str_CompareW32A,setUp,tearDown);
     TINYTEST_ADD_TEST(test_str_CompareSpcl_NoWS,setUp,tearDown);
 TINYTEST_END_SUITE();
 

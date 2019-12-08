@@ -40,6 +40,7 @@
  */
 #include	<str_internal.h>
 #include    <ascii.h>
+#include    <utf8.h>
 
 
 // Hashing function described in
@@ -402,6 +403,104 @@ int             str_CompareNW32(
         }
         ++pszStr1;
         ++pszStr2;
+        --len;
+        if (0 == len) {
+            result = 0;
+            break;
+        }
+    }
+    
+    // Return to caller.
+    return result;
+}
+
+
+int             str_CompareW32A(
+    const
+    W32CHR_T        *pszStr1W32,
+    const
+    char            *pszStr2
+)
+{
+    int32_t         i;
+    int             result = 0;
+    W32CHR_T        chrW32;
+
+    // Do initialization.
+    
+    //    Compare the strings.
+    for( ;; ) {
+        if( *pszStr1W32 )
+            ;
+        else {
+            if( *pszStr2 )
+                result = -1;
+            break;
+        }
+        if( *pszStr2 )
+            ;
+        else {
+            if( *pszStr1W32 )
+                result = 1;
+            break;
+        }
+        chrW32 = utf8_ChrConToW32_Scan(&pszStr2);
+        i = *pszStr1W32 - chrW32;
+        if( i ) {
+            if( i < 0 )
+                result = -1;
+            else
+                result = 1;
+            break;
+        }
+        ++pszStr1W32;
+    }
+    
+    // Return to caller.
+    return result;
+}
+
+
+int             str_CompareNW32A(
+    const
+    W32CHR_T        *pszStr1W32,
+    const
+    char            *pszStr2,
+    uint32_t        len
+)
+{
+    int32_t         i;
+    int             result = 0;
+    W32CHR_T        chrW32;
+
+    // Do initialization.
+    
+    //    Compare the strings.
+    for( ;; ) {
+        if( *pszStr1W32 )
+            ;
+        else {
+            if( *pszStr2 )
+                result = -1;
+            break;
+        }
+        if( *pszStr2 )
+            ;
+        else {
+            if( *pszStr1W32 )
+                result = 1;
+            break;
+        }
+        chrW32 = utf8_ChrConToW32_Scan(&pszStr2);
+        i = *pszStr1W32 - chrW32;
+        if( i ) {
+            if( i < 0 )
+                result = -1;
+            else
+                result = 1;
+            break;
+        }
+        ++pszStr1W32;
         --len;
         if (0 == len) {
             result = 0;

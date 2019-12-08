@@ -247,7 +247,7 @@ int             test_NodeLib_Parse01(
     if (pStrCArray) {
         TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
         pStrC = AStrCArray_Get(pStrCArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"cmn_defs.h")));
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"$(SRCDIR)/cmn_defs.h")));
     }
     pStrCArray = NodeLib_getSrcs(pLib);
     TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
@@ -267,8 +267,354 @@ int             test_NodeLib_Parse01(
 
 
 
+int             test_NodeLib_Begin01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    DICT_DATA       *pDict = OBJ_NIL;
+    NODELIB_DATA    *pLib = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    bool            fDump = true;
+    int             iRc;
+    int             offset = 0;
+    uint32_t        i;
+    const
+    char            *pChr;
+
+    const
+    char            *pJsonObject =
+        "{name:\"Cmn\" "
+        "}\n";
+    const
+    char            *pGenCheck =
+    //"# Generated file - edits may be discarded!\n"
+    //"# (11/30/2019  4:09:40.000)\n\n\n"
+    "LIBNAM=libCmn\n"
+    "SYS=macos64\n"
+    "TEMP=/tmp\n"
+    "BASE_OBJ = $(TEMP)/$(LIBNAM)\n"
+    "SRCDIR = ./src\n"
+    "TEST_SRC = ./tests\n"
+    "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+    "LIB_BASE = $(HOME)/Support/lib/$(SYS)\n\n"
+
+    "CFLAGS += -g -Werror -I$(SRCDIR)\n"
+    "ifdef  NDEBUG\n"
+    "CFLAGS += -DNDEBUG\n"
+    "else   #DEBUG\n"
+    "CFLAGS += -D_DEBUG\n"
+    "endif  #NDEBUG\n"
+    "CFLAGS += -D__MACOS64_ENV__\n"
+    "CFLAGS_LIBS = \n"
+    "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
+    
+    "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
+    "ifdef  NDEBUG\n"
+    "LIB_FILENAME=$(LIBNAM)R.a\n"
+    "OBJDIR = $(LIBOBJ)/o/r\n"
+    "else   #DEBUG\n"
+    "LIB_FILENAME=$(LIBNAM)D.a\n"
+    "OBJDIR = $(LIBOBJ)/o/d\n"
+    "endif  #NDEBUG\n"
+    "TEST_OBJ = $(OBJDIR)/tests\n"
+    "TEST_BIN = $(OBJDIR)/tests\n"
+    "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
+    
+    ".SUFFIXES:\n"
+    ".SUFFIXES: .asm .c .cpp .o\n\n"
+    
+    "OBJS =\n\n"
+    "TESTS =\n\n\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pErr = InputStrToJSON(pJsonObject, &pNodes);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+
+    pDict = Dict_New();
+    TINYTEST_FALSE( (OBJ_NIL == pDict) );
+    eRc = Dict_Defaults(pDict);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+    pLib = NodeLib_New();
+    TINYTEST_FALSE( (OBJ_NIL == pLib) );
+    pErr = NodeBase_Parse(pNodes, (NODEBASE_DATA **)&pLib);
+    
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    if (fDump) {
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        pWrk = NodeLib_ToDebugString(pLib, 0);
+        fprintf(stderr, "\n====> TSTA Input:\n%s\n\n\n", AStr_getData(pWrk));
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+    }
+
+    pStr = NodeLib_GenMacBegin(pLib, pDict);
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+
+    if (pStr && fDump) {
+        fprintf(stderr, "0         1         2         3\n");
+        fprintf(stderr, "0123456789012345678901234567890\n");
+        fprintf(stderr, "Generated:\n%s...End of Generated\n\n", AStr_getData(pStr));
+    }
+
+    // Skip first 3 lines of output.
+    pChr = AStr_getData(pStr);
+    for (i=0; i<3; i++) {
+        while (*pChr && (*pChr != '\n')) {
+            pChr++;
+        }
+        pChr++;
+    }
+
+    // Compare the remainder.
+    iRc = str_CompareSpcl(pChr, pGenCheck, &offset);
+    TINYTEST_TRUE( (0 == iRc) );
+
+    obj_Release(pStr);
+    obj_Release(pLib);
+    obj_Release(pDict);
+    obj_Release(pNodes);
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_NodeLib_Begin02(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    DICT_DATA       *pDict = OBJ_NIL;
+    NODELIB_DATA    *pLib = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    bool            fDump = true;
+    int             iRc;
+    int             offset = 0;
+    uint32_t        i;
+    const
+    char            *pChr;
+
+    const
+    char            *pJsonObject =
+        "{name:\"Emu\", "
+        "\"deps\":[Cmn] "
+        //"\"hdrs\":[\"cmn_defs.h\"] "
+        "}\n";
+    const
+    char            *pGenCheck =
+    //"# Generated file - edits may be discarded!\n"
+    //"# (11/30/2019  4:09:40.000)\n\n\n"
+    "LIBNAM=libEmu\n"
+    "SYS=macos64\n"
+    "TEMP=/tmp\n"
+    "BASE_OBJ = $(TEMP)/$(LIBNAM)\n"
+    "SRCDIR = ./src\n"
+    "TEST_SRC = ./tests\n"
+    "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n"
+    "LIB_BASE = $(HOME)/Support/lib/$(SYS)\n\n"
+    
+    "CFLAGS += -g -Werror -I$(SRCDIR)\n"
+    "ifdef  NDEBUG\n"
+    "CFLAGS += -DNDEBUG\n"
+    "else   #DEBUG\n"
+    "CFLAGS += -D_DEBUG\n"
+    "endif  #NDEBUG\n"
+    "CFLAGS += -D__MACOS64_ENV__\n"
+    "CFLAGS_LIBS = \n"
+    "# libCmn\n"
+    "LIBCMN_BASE = $(LIB_BASE)/libCmn\n"
+    "CFLAGS += -I$(LIBCMN_BASE)/include\n"
+    "CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)\n"
+    "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
+    
+    "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
+    "ifdef  NDEBUG\n"
+    "LIB_FILENAME=$(LIBNAM)R.a\n"
+    "OBJDIR = $(LIBOBJ)/o/r\n"
+    "else   #DEBUG\n"
+    "LIB_FILENAME=$(LIBNAM)D.a\n"
+    "OBJDIR = $(LIBOBJ)/o/d\n"
+    "endif  #NDEBUG\n"
+    "TEST_OBJ = $(OBJDIR)/tests\n"
+    "TEST_BIN = $(OBJDIR)/tests\n"
+    "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
+    
+    ".SUFFIXES:\n"
+    ".SUFFIXES: .asm .c .cpp .o\n\n"
+    
+    "OBJS =\n\n"
+    "TESTS =\n\n\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pErr = InputStrToJSON(pJsonObject, &pNodes);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+
+    pDict = Dict_New();
+    TINYTEST_FALSE( (OBJ_NIL == pDict) );
+    eRc = Dict_Defaults(pDict);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+    pLib = NodeLib_New();
+    TINYTEST_FALSE( (OBJ_NIL == pLib) );
+    pErr = NodeBase_Parse(pNodes, (NODEBASE_DATA **)&pLib);
+    
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    if (fDump) {
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        pWrk = NodeLib_ToDebugString(pLib, 0);
+        fprintf(stderr, "\n====> TSTA Input:\n%s\n\n\n", AStr_getData(pWrk));
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+    }
+
+    pStr = NodeLib_GenMacBegin(pLib, pDict);
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+
+    if (pStr && fDump) {
+        fprintf(stderr, "0         1         2         3\n");
+        fprintf(stderr, "0123456789012345678901234567890\n");
+        fprintf(stderr, "Generated:\n%s...End of Generated\n\n", AStr_getData(pStr));
+    }
+
+    // Skip first 3 lines of output.
+    pChr = AStr_getData(pStr);
+    for (i=0; i<3; i++) {
+        while (*pChr && (*pChr != '\n')) {
+            pChr++;
+        }
+        pChr++;
+    }
+
+    // Compare the remainder.
+    iRc = str_CompareSpcl(pChr, pGenCheck, &offset);
+    TINYTEST_TRUE( (0 == iRc) );
+
+    obj_Release(pStr);
+    obj_Release(pLib);
+    obj_Release(pDict);
+    obj_Release(pNodes);
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_NodeLib_End01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT_DATA    *pErr = OBJ_NIL;
+    DICT_DATA       *pDict = OBJ_NIL;
+    NODELIB_DATA    *pLib = OBJ_NIL;
+    NODE_DATA       *pNodes = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    bool            fDump = true;
+    int             iRc;
+    int             offset = 0;
+
+    const
+    char            *pJsonObject =
+        "{name:\"genMake\", "
+        "\"deps\":[Cmn] "
+        "}\n";
+    const
+    char            *pGenCheck =
+        "\n\n$(LIB_PATH):  $(OBJS)\n"
+        "\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
+        "\tar rc $(LIB_PATH) $(OBJS)\n\n\n"
+        ".PHONY: test\n"
+        "test: $(TESTS)\n\n\n"
+        ".PHONY: clean\n"
+        "clean:\n"
+        "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n"
+        ".PHONY: install\n"
+        "install:\n"
+        "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
+        "\t-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include/$(SYS)\n"
+        "\tcp $(LIB_PATH) $(INSTALL_DIR)/$(LIBNAM).a\n"
+        "\tcp src/*.h $(INSTALL_DIR)/include/\n"
+        "\tif [ -d src/$(SYS) ]; then \\\n"
+        "\t\tcp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \\\n"
+        "\tfi\n\n\n"
+        ".PHONY: create_dirs\n"
+        "create_dirs:\n"
+        "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
+        ".PHONY: all\n"
+        "all:  clean create_dirs $(LIB_PATH)\n\n\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pErr = InputStrToJSON(pJsonObject, &pNodes);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    TINYTEST_FALSE( (OBJ_NIL == pNodes) );
+    
+    pDict = Dict_New();
+    TINYTEST_FALSE( (OBJ_NIL == pDict) );
+    eRc = Dict_Defaults(pDict);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+    pLib = NodeLib_New();
+    TINYTEST_FALSE( (OBJ_NIL == pLib) );
+    pErr = NodeBase_Parse(pNodes, (NODEBASE_DATA **)&pLib);
+    eResult_Fprint(pErr, stderr);
+    TINYTEST_TRUE( (OBJ_NIL == pErr) );
+    
+    if (fDump) {
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        pWrk = NodeLib_ToDebugString(pLib, 0);
+        fprintf(stderr, "\n====> TSTA Input:\n%s\n\n\n", AStr_getData(pWrk));
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+    }
+
+    pStr = NodeLib_GenMacEnd(pLib, pDict);
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+
+    if (pStr && fDump) {
+        fprintf(stderr, "0         1         2         3\n");
+        fprintf(stderr, "0123456789012345678901234567890\n");
+        fprintf(stderr, "Generated:\n%s...End of Generated\n\n", AStr_getData(pStr));
+    }
+    iRc = str_CompareSpcl(AStr_getData(pStr), pGenCheck, &offset);
+    TINYTEST_TRUE( (0 == iRc) );
+
+    obj_Release(pStr);
+    obj_Release(pLib);
+    obj_Release(pDict);
+    obj_Release(pNodes);
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_NodeLib);
+    TINYTEST_ADD_TEST(test_NodeLib_End01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_NodeLib_Begin02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_NodeLib_Begin01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_NodeLib_Parse01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_NodeLib_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

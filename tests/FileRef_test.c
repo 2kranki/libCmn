@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 12/05/2019 14:04:10
+ *	Generated 12/06/2019 21:02:56
  */
 
 
@@ -25,7 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <SrcRef_internal.h>
+#include    <FileRef_internal.h>
 
 
 
@@ -75,19 +75,19 @@ int             tearDown(
 
 
 
-int             test_SrcRef_OpenClose(
+int             test_FileRef_OpenClose(
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SRCREF_DATA	    *pObj = OBJ_NIL;
+    FILEREF_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = SrcRef_Alloc( );
+    pObj = FileRef_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = SrcRef_Init( pObj );
+    pObj = FileRef_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -107,11 +107,11 @@ int             test_SrcRef_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_SrcRef);
-    TINYTEST_ADD_TEST(test_SrcRef_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_FileRef);
+    TINYTEST_ADD_TEST(test_FileRef_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_SrcRef);
+TINYTEST_MAIN_SINGLE_SUITE(test_FileRef);
 
 
 

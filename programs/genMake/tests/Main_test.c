@@ -37,14 +37,14 @@ static
 const
 char            *pGoodJsonA =
 "{\n"
-    "\"library\":{\n"
-        "\"name\":\"Cmn\"\n"
+    "library:{\n"
+        "name:\"Cmn\"\n"
     "}\n,"
-    "\"objects\": [\n"
-        "{name:\"AStr\", \"srcDeps\":[\"libCmn.h\"], \"json\":true},\n"
-        "{name:\"appl\", \"srcDeps\":[\"libCmn.h\"]}\n"
+    "objects: [\n"
+        "{name:\"AStr\", json:true},\n"
+        "{name:\"appl\"}\n"
     "],\n"
-    "\"routines\": [\n"
+    "routines: [\n"
             "{name:\"dllist\"}\n"
     "]\n"
 "}\n";
@@ -88,38 +88,38 @@ char            *pOutputA =
 "TESTS =\n\n\n"
 
 "OBJS += $(OBJDIR)/AStr.o\n\n"
-"$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 "OBJS += $(OBJDIR)/AStr_json.o\n\n"
-"$(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"$(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 "OBJS += $(OBJDIR)/AStr_object.o\n\n"
-"$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 
 "OBJS += $(OBJDIR)/appl.o\n\n"
-"$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 "OBJS += $(OBJDIR)/appl_object.o\n\n"
-"$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 
 "OBJS += $(OBJDIR)/dllist.o\n\n"
 "$(OBJDIR)/dllist.o: $(SRCDIR)/dllist.c \n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 
 "TESTS += AStr_test\n\n"
-"AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
+"AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h \n"
+"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<\n"
 "\t$(TEST_BIN)/$(@F)\n\n"
 "TESTS += appl_test\n\n"
-"appl_test: $(TEST_SRC)/appl_test.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
-"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
+"appl_test: $(TEST_SRC)/appl_test.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h \n"
+"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<\n"
 "\t$(TEST_BIN)/$(@F)\n\n"
 
-"$(LIB_PATH):  $(OBJS)\n"
+"\n\n$(LIB_PATH):  $(OBJS)\n"
 "\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
-"\tar rc $(LIB_PATH) $(OBJS)\n\n\n\n"
+"\tar rc $(LIB_PATH) $(OBJS)\n\n\n"
 ".PHONY: test\n"
 "test: $(TESTS)\n\n\n"
 ".PHONY: clean\n"
@@ -138,7 +138,7 @@ char            *pOutputA =
 "create_dirs:\n"
 "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
 ".PHONY: all\n"
-"all:  clean create_dirs $(LIB_PATH)\n\n\n\n"
+"all:  clean create_dirs $(LIB_PATH)\n\n\n"
 ;
 
 
@@ -151,8 +151,8 @@ char            *pGoodJsonB =
         "\"name\":\"Cmn\"\n"
     "}\n,"
     "\"objects\": [\n"
-        "{name:\"AStr\", \"srcDeps\":[\"libCmn.h\"], \"json\":true},\n"
-        "{name:\"appl\", \"srcDeps\":[\"libCmn.h\"]}\n"
+        "{name:\"AStr\", \"json\":true},\n"
+        "{name:\"appl\"}\n"
     "],\n"
     "\"routines\": [\n"
             "{name:\"dllist\", \"os\":[\"win32\"]},\n"  // Should not be generated!
@@ -199,34 +199,34 @@ char            *pOutputB =
 "TESTS =\n\n\n"
 
 "OBJS += $(OBJDIR)/AStr.o\n\n"
-"$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 "OBJS += $(OBJDIR)/AStr_json.o\n\n"
-"$(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"$(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 "OBJS += $(OBJDIR)/AStr_object.o\n\n"
-"$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 
 "OBJS += $(OBJDIR)/appl.o\n\n"
-"$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 "OBJS += $(OBJDIR)/appl_object.o\n\n"
-"$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h\n"
-"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $< \n\n"
+"$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h \n"
+"\t$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<\n\n"
 
 "TESTS += AStr_test\n\n"
-"AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h\n"
-"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
+"AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h \n"
+"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<\n"
 "\t$(TEST_BIN)/$(@F)\n\n"
 "TESTS += appl_test\n\n"
-"appl_test: $(TEST_SRC)/appl_test.c $(TEST_DIR)/appl.h $(TEST_DIR)/appl_internal.h\n"
-"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_DIR) $<\n"
+"appl_test: $(TEST_SRC)/appl_test.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h \n"
+"\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<\n"
 "\t$(TEST_BIN)/$(@F)\n\n"
 
-"$(LIB_PATH):  $(OBJS)\n"
+"\n\n$(LIB_PATH):  $(OBJS)\n"
 "\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
-"\tar rc $(LIB_PATH) $(OBJS)\n\n\n\n"
+"\tar rc $(LIB_PATH) $(OBJS)\n\n\n"
 ".PHONY: test\n"
 "test: $(TESTS)\n\n\n"
 ".PHONY: clean\n"
@@ -245,7 +245,7 @@ char            *pOutputB =
 "create_dirs:\n"
 "\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
 ".PHONY: all\n"
-"all:  clean create_dirs $(LIB_PATH)\n\n\n\n"
+"all:  clean create_dirs $(LIB_PATH)\n\n\n"
 ;
 
 
@@ -335,7 +335,7 @@ int         test_Main_Generation01(
     //ASTR_DATA       *pWrk = OBJ_NIL;
     int             iRc;
     int             offset = 0;
-    bool            fDump = false;
+    bool            fDump = true;
     NODELIB_DATA    *pLib = OBJ_NIL;
     //NODELIB_DATA    *pPgm = OBJ_NIL;
     uint32_t        i;

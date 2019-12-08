@@ -662,8 +662,6 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        ASTR_DATA       *pOS = OBJ_NIL;
-        ASTR_DATA       *pArch = OBJ_NIL;
         ASTR_DATA       *pStr;
 
         // Do initialization.
@@ -1367,6 +1365,58 @@ extern "C" {
     }
     
     
+    //---------------------------------------------------------------
+    //                          G e t
+    //---------------------------------------------------------------
+    
+    /*!
+     Get the dictionary value for a given name.
+     @param     this    object pointer
+     @param     pNameA  pointer to UTF-8 Name string
+     @return    if successful, pointer to data string.  Otherwise, NULL.
+     */
+    const
+    char *          Dict_GetA (
+        DICT_DATA       *this,
+        const
+        char            *pNameA
+    )
+    {
+        const
+        char            *pStrA = NULL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        OBJ_ID          pData = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Dict_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return NULL;
+        }
+#endif
+        
+        pNode = nodeHash_FindA(Dict_getNodeHash(this), 0, pNameA);
+        if (pNode) {
+            pData = node_getData(pNode);
+            if (OBJ_NIL == pData)
+                ;
+            else  if (obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
+                pStrA = AStr_getData((ASTR_DATA *)pData);
+            } else if (obj_IsKindOf(pData, OBJ_IDENT_ASTRC)) {
+                pStrA = AStrC_getData((ASTRC_DATA *)pData);
+            }
+        } else {
+            pStrA = getenv(pNameA);
+        }
+        
+        // Return to caller.
+        return pStrA;
+    }
+    
+        
+        
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------

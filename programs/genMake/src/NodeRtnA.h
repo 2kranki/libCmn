@@ -52,6 +52,7 @@
 
 
 #include        <genMake.h>
+#include        <Dict.h>
 #include        <NodeBase.h>
 #include        <AStr.h>
 
@@ -171,6 +172,19 @@ extern "C" {
     );
 
 
+    /*! Property: file name extension (optional)
+        The optional file extension suffix to be used with name.
+     */
+    ASTRC_DATA *    NodeRtnA_getExt (
+        NODERTNA_DATA   *this
+    );
+
+    bool            NodeRtnA_setExt (
+        NODERTNA_DATA   *this,
+        ASTRC_DATA      *pValue
+    );
+
+
     /*! Property: Test program file name including file extension
      */
     ASTRC_DATA *    NodeRtnA_getName (
@@ -215,19 +229,6 @@ extern "C" {
     bool            NodeRtnA_setSrcs (
         NODERTNA_DATA   *this,
         ASTRCARRAY_DATA *pValue
-    );
-
-
-    /*! Property: file name suffix (optional)
-        The optional file extension suffix to be used with name.
-     */
-    ASTRC_DATA *    NodeRtnA_getSuffix (
-        NODERTNA_DATA   *this
-    );
-
-    bool            NodeRtnA_setSuffix (
-        NODERTNA_DATA   *this,
-        ASTRC_DATA      *pValue
     );
 
 
@@ -316,6 +317,19 @@ extern "C" {
      */
     ERESULT         NodeRtnA_Enable (
         NODERTNA_DATA   *this
+    );
+
+
+    /*!
+     Generate the Makefile entry for this object in macOS.
+     @param     this    object pointer
+     @param     pDict   dictionary pointer
+     @return    If successful, an AStr which must be released.
+                Otherwise, OBJ_NIL.
+     */
+    ASTR_DATA *  NodeRtnA_GenMac (
+        NODERTNA_DATA   *this,
+        DICT_DATA       *pDict
     );
 
 

@@ -50,7 +50,6 @@
 #include    <hex.h>
 #include    <misc.h>
 #include    <str.h>
-#include    <utf8.h>
 #include    <W32Str.h>
 #include    <stdio.h>
 #include    <time.h>
@@ -2032,7 +2031,7 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //     E x p a n d  E n v i r o n m e n t  V a r i a b l e s
+    //                  E x p a n d  V a r i a b l e s
     //---------------------------------------------------------------
     
     /*!
@@ -2070,14 +2069,14 @@ extern "C" {
 #else
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
         if (pHash) {
             if(obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH))
                 ;
             else {
                 DEBUG_BREAK();
-                return false;
+                return ERESULT_INVALID_PARAMETER;
             }
         }
 #endif
@@ -2115,20 +2114,24 @@ extern "C" {
                                 || obj_IsKindOf(this, OBJ_IDENT_PATH)) {
                                 pEnvVar = AStr_getData((ASTR_DATA *)pData);
                             }
-                            if (pNode && pEnvVar) {
-                                goto expandIt;
+                            else if (obj_IsKindOf(this, OBJ_IDENT_ASTRC)) {
+                                pEnvVar = AStrC_getData((ASTRC_DATA *)pData);
                             }
-                            // We did not find it in the Hash. So, fall
-                            // through to normal environment variables
-                            // search.
+                            if (OBJ_NIL == pEnvVar) {
+                                pEnvVar = getenv(AStr_getData(pName));
+                                if (NULL == pEnvVar) {
+                                    obj_Release(pName);
+                                    return ERESULT_DATA_NOT_FOUND;
+                                }
+                            }
+                        }
+                    } else {
+                        pEnvVar = getenv(AStr_getData(pName));
+                        if (NULL == pEnvVar) {
+                            obj_Release(pName);
+                            return ERESULT_DATA_NOT_FOUND;
                         }
                     }
-                    pEnvVar = getenv(AStr_getData(pName));
-                    if (NULL == pEnvVar) {
-                        obj_Release(pName);
-                        return ERESULT_DATA_NOT_FOUND;
-                    }
-                expandIt:
                     obj_Release(pName);
                     pName = OBJ_NIL;
                     eRc = AStr_Remove(this, i-2, len+3);
@@ -2165,6 +2168,157 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      F i n d  N e x t
+    //---------------------------------------------------------------
+    
+    /*  These methods rely on the fact that UTF-8 unicode characters
+        never contain a NUL and each encoded unicode character is
+        unique.
+     */
+    ERESULT         AStr_FindNextA(
+        ASTR_DATA       *this,
+        const
+        char            *pSrchA,            // UTF-8 String
+        uint32_t        *pIndex
+    )
+    {
+        uint32_t        i;
+        uint32_t        index;
+        uint32_t        offset;
+        uint32_t        lenStr;
+        uint32_t        lenSrchStr;
+        W32CHR_T        chrW32;
+        W32CHR_T        chrSrchW32;
+        int             iRc;
+        const
+        char            *pChrA;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pIndex) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pSrchA) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        iRc = utf8_Utf8ToW32(pSrchA, &chrSrchW32);
+        if (iRc <= 0) {
+            return ERESULT_INVALID_DATA;
+        }
+        lenSrchStr = utf8_StrLenA(pSrchA);
+        if (lenSrchStr == 0) {
+            return ERESULT_INVALID_DATA;
+        }
+        lenStr = AStr_getLength(this);
+        
+        index = *pIndex;
+        if (0 == index) {
+            index = 1;
+        }
+        if (index > lenStr) {
+            *pIndex = 0;
+            return ERESULT_OUT_OF_RANGE;
+        }
+        
+        offset = utf8_StrOffset(array_Ptr(this->pData, 1), index);
+        pChrA = array_Ptr(this->pData, offset);
+        for (i=index; i<=(lenStr - lenSrchStr + 1); i++) {
+            const
+            char            *pChrA_old = pChrA;
+            chrW32 = utf8_Utf8ToW32_Scan(&pChrA);
+            if (chrW32 == chrSrchW32) {
+                if (0 == str_CompareN(pChrA_old, pSrchA, lenSrchStr)) {
+                    *pIndex = index;
+                    return ERESULT_SUCCESS;
+                }
+            }
+            index++;
+        }
+        
+        // Return to caller.
+        *pIndex = 0;
+        return ERESULT_OUT_OF_RANGE;
+    }
+                
+                
+    ERESULT         AStr_FindNextW32(
+        ASTR_DATA       *this,
+        const
+        W32CHR_T        *pStrW32,
+        uint32_t        *pIndex
+    )
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+        uint32_t        offset;
+        uint32_t        index;
+        uint32_t        lenStr;
+        uint32_t        lenSrchStr;
+        W32CHR_T        chrW32;
+        W32CHR_T        chrSrchW32;
+        const
+        char            *pChrA;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pIndex) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pStrW32) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        lenStr = AStr_getLength(this);
+        lenSrchStr = utf8_StrLenW32(pStrW32);
+        if (lenSrchStr == 0) {
+            return ERESULT_INVALID_DATA;
+        }
+        chrSrchW32 = *pStrW32;
+
+        index = *pIndex;
+        if (0 == index) {
+            index = 1;
+        }
+        if (index > lenStr) {
+            *pIndex = 0;
+            return ERESULT_OUT_OF_RANGE;
+        }
+        
+        offset = utf8_StrOffset(array_Ptr(this->pData, 1), index);
+        pChrA = array_Ptr(this->pData, offset);
+        iMax = lenStr - lenSrchStr + 1;
+        for ( i=index; i<=iMax; i++) {
+            const
+            char            *pChrA_old = pChrA;
+            chrW32 = utf8_Utf8ToW32_Scan(&pChrA);
+            if (chrW32 == chrSrchW32) {
+                if (0 == str_CompareNW32A(pStrW32, pChrA_old, lenSrchStr)) {
+                    *pIndex = index;
+                    return ERESULT_SUCCESS;
+                }
+            }
+            index++;
+        }
+        
+        // Return to caller.
+        *pIndex = 0;
+        return ERESULT_OUT_OF_RANGE;
+    }
+            
+            
+            
     //---------------------------------------------------------------
     //                          H a s h
     //---------------------------------------------------------------

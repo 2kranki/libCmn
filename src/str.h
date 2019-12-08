@@ -145,6 +145,28 @@ int             str_CompareNW32(
 );
 
 
+/* str_CompareW32A() compares two Input Strings to each other.
+* Returns:
+*    -1              =    Str1 <    Str2
+*    0                =    Str1 == Str2
+*    1               =    Str1 >    Str2
+*/
+int             str_CompareW32A(
+    const
+    W32CHR_T        *pszStr1,
+    const
+    char            *pszStr2            // UTF-8 String
+);
+
+int             str_CompareNW32A(
+    const
+    W32CHR_T        *pszStr1W32,
+    const
+    char            *pszStr2,
+    uint32_t        len
+);
+
+
 /* str_Concat() concatenates the Input String to the Output String in-
  * cluding the nul-terminator for the Maximum number of Chars
  * specified.  The Output String is always left nul-terminated even

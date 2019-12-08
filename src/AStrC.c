@@ -506,6 +506,129 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       C h a r  G e t
+    //---------------------------------------------------------------
+    
+    W32CHR_T        AStrC_CharGetW32(
+        ASTRC_DATA      *this,
+        uint32_t        offset
+    )
+    {
+        uint32_t        lenStr;
+        uint32_t        off;
+        W32CHR_T        chr = -1;
+        const
+        char            *pChr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        lenStr = AStrC_getLength(this);
+        
+        if( (0 == offset) || (offset > lenStr) ) {
+            return EOF;
+        }
+        off = utf8_StrOffset(this->pData, offset);
+        
+        pChr = this->pData + (off - 1);
+        if (pChr) {
+            lenStr = utf8_Utf8ToW32(pChr, &chr);
+        }
+        
+        // Return to caller.
+        return chr;
+    }
+    
+
+    W32CHR_T        AStrC_CharGetFirstW32(
+        ASTRC_DATA      *this
+    )
+    {
+        uint32_t        lenStr;
+        uint32_t        off;
+        W32CHR_T        chr = -1;
+        const
+        char            *pChr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        lenStr = AStrC_getLength(this);
+        if (0 == lenStr) {
+            return chr;
+        }
+        
+        off = utf8_StrOffset(this->pData, 1);
+        
+        pChr = this->pData + (off - 1);
+        if (pChr) {
+            if ('\0' == *pChr)
+                ;
+            else {
+                lenStr = utf8_Utf8ToW32(pChr, &chr);
+                if (0 == chr)
+                    chr = -1;
+            }
+        }
+        
+        // Return to caller.
+        return chr;
+    }
+            
+            
+    W32CHR_T        AStrC_CharGetLastW32(
+        ASTRC_DATA      *this
+    )
+    {
+        uint32_t        lenStr;
+        uint32_t        off;
+        W32CHR_T        chr = -1;
+        const
+        char            *pChr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        lenStr = AStrC_getLength(this);
+        if (0 == lenStr) {
+            return chr;
+        }
+        
+        off = utf8_StrOffset(this->pData, lenStr);
+        
+        pChr = this->pData + (off - 1);
+        if (pChr) {
+            if ('\0' == *pChr)
+                ;
+            else {
+                lenStr = utf8_Utf8ToW32(pChr, &chr);
+                if (0 == chr)
+                    chr = -1;
+            }
+        }
+        
+        // Return to caller.
+        return chr;
+    }
+        
+        
+
+    //---------------------------------------------------------------
     //                       C o m p a r e
     //---------------------------------------------------------------
     
@@ -720,6 +843,157 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      F i n d  N e x t
+    //---------------------------------------------------------------
+    
+    /*  These methods rely on the fact that UTF-8 unicode characters
+        never contain a NUL and each encoded unicode character is
+        unique.
+     */
+    ERESULT         AStrC_FindNextA(
+        ASTRC_DATA      *this,
+        const
+        char            *pSrchA,            // UTF-8 String
+        uint32_t        *pIndex
+    )
+    {
+        uint32_t        i;
+        uint32_t        offset;
+        uint32_t        index;
+        uint32_t        lenStr;
+        uint32_t        lenSrchStr;
+        W32CHR_T        chrW32;
+        W32CHR_T        chrSrchW32;
+        int             iRc;
+        const
+        char            *pChrA;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pIndex) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pSrchA) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        iRc = utf8_Utf8ToW32(pSrchA, &chrSrchW32);
+        if (iRc <= 0) {
+            return ERESULT_INVALID_DATA;
+        }
+        lenSrchStr = utf8_StrLenA(pSrchA);
+        if (lenSrchStr == 0) {
+            return ERESULT_INVALID_DATA;
+        }
+        lenStr = AStrC_getLength(this);
+        
+        index = *pIndex;
+        if (0 == index) {
+            index = 1;
+        }
+        if (index > lenStr) {
+            *pIndex = 0;
+            return ERESULT_OUT_OF_RANGE;
+        }
+        
+        offset = utf8_StrOffset(this->pData, index);
+        pChrA = this->pData + (offset - 1);
+        for (i=index; i<=(lenStr - lenSrchStr + 1); i++) {
+            const
+            char            *pChrA_old = pChrA;
+            chrW32 = utf8_Utf8ToW32_Scan(&pChrA);
+            if (chrW32 == chrSrchW32) {
+                if (0 == str_CompareN(pChrA_old, pSrchA, lenSrchStr)) {
+                    *pIndex = index;
+                    return ERESULT_SUCCESS;
+                }
+            }
+            index++;
+        }
+        
+        // Return to caller.
+        *pIndex = 0;
+        return ERESULT_OUT_OF_RANGE;
+    }
+                
+                
+    ERESULT         AStrC_FindNextW32(
+        ASTRC_DATA      *this,
+        const
+        W32CHR_T        *pStrW32,
+        uint32_t        *pIndex
+    )
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+        uint32_t        offset;
+        uint32_t        index;
+        uint32_t        lenStr;
+        uint32_t        lenSrchStr;
+        W32CHR_T        chrW32;
+        W32CHR_T        chrSrchW32;
+        const
+        char            *pChrA;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pIndex) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pStrW32) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        lenStr = AStrC_getLength(this);
+        lenSrchStr = utf8_StrLenW32(pStrW32);
+        if (lenSrchStr == 0) {
+            return ERESULT_INVALID_DATA;
+        }
+        chrSrchW32 = *pStrW32;
+
+        index = *pIndex;
+        if (0 == index) {
+            index = 1;
+        }
+        if (index > lenStr) {
+            *pIndex = 0;
+            return ERESULT_OUT_OF_RANGE;
+        }
+        
+        offset = utf8_StrOffset(this->pData, index);
+        pChrA = this->pData + (offset - 1);
+        iMax = lenStr - lenSrchStr + 1;
+        for ( i=index; i<=iMax; i++) {
+            const
+            char            *pChrA_old = pChrA;
+            chrW32 = utf8_Utf8ToW32_Scan(&pChrA);
+            if (chrW32 == chrSrchW32) {
+                if (0 == str_CompareNW32A(pStrW32, pChrA_old, lenSrchStr)) {
+                    *pIndex = index;
+                    return ERESULT_SUCCESS;
+                }
+            }
+            index++;
+        }
+        
+        // Return to caller.
+        *pIndex = 0;
+        return ERESULT_OUT_OF_RANGE;
+    }
+            
+            
+            
     //---------------------------------------------------------------
     //                          H a s h
     //---------------------------------------------------------------
@@ -962,6 +1236,73 @@ extern "C" {
 
     
     //---------------------------------------------------------------
+    //                       P r e p e n d
+    //---------------------------------------------------------------
+
+    ASTRC_DATA *    AStrC_PrependA(
+        ASTRC_DATA      *this,
+        const
+        char            *pStr
+    )
+    {
+        uint32_t        len;
+        uint32_t        lenData;
+        uint32_t        lenStr;
+        char            *pData;
+        ASTRC_DATA      *pOther;
+
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (NULL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = AStrC_New( );
+        if (OBJ_NIL == pOther) {
+            return OBJ_NIL;
+        }
+        // This depends on the fact that a new AStrC object
+        // doesn't have any data internally.
+        
+        // Get the data area needed.
+        lenStr = (uint32_t)utf8_StrLenChars(pStr);
+        if (0 == lenStr) {
+            obj_Release(pOther);
+            return OBJ_NIL;
+        }
+        lenData = this->len;
+        len = lenStr + lenData + 1;
+        pData = mem_Malloc(len);
+        if (NULL == pData) {
+            obj_Release(pOther);
+            return OBJ_NIL;
+        }
+
+        // Copy the data to the new area.
+        memmove(pData, pStr, lenStr);
+        memmove(pData+lenStr, this->pData, lenData);
+        pData[lenData+lenStr] = '\0';
+        
+        // Now place the data in the new AStrC.
+        pOther->pData = pData;
+        pOther->len = lenStr + lenData;
+        obj_FlagOn(pOther, ASTRC_FLAG_MALLOC);
+
+        // Return to caller.
+        return pOther;
+    }
+
+    
+    
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -1044,6 +1385,49 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          T o  L o w e r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     AStrC_ToLower(
+        ASTRC_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        const
+        char            *pData;
+        W32CHR_T        curChr;
+
+#ifdef NDEBUG
+#else
+        if( !AStrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_New();
+        if (pStr) {
+            pData = AStrC_getData(this);
+            for (;;) {
+                curChr = utf8_ChrConToW32_Scan(&pData);
+                if (curChr == -1)
+                    break;
+                curChr = ascii_toLowerW32(curChr);
+                eRc = AStr_AppendCharW32(pStr, curChr);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
+                }
+            }
+        }
+
+        return pStr;
+    }
+            
+            
+            
     //---------------------------------------------------------------
     //                          T o  S t r i n g
     //---------------------------------------------------------------

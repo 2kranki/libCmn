@@ -200,7 +200,14 @@ extern "C" {
         uint32_t        *pIndex
     );
     
+    ERESULT         AStrCArray_AppendA(
+        ASTRCARRAY_DATA *this,
+        const
+        char            *pStrA,
+        uint32_t        *pIndex
+    );
     
+
     /*!
      Assign the contents of this object to the other object (ie
      this -> other).  Any objects in other will be released before
@@ -276,6 +283,12 @@ extern "C" {
         ASTRC_DATA      *pStrC
     );
 
+    uint32_t        AStrCArray_FindA (
+        ASTRCARRAY_DATA *this,
+        const
+        char            *pStrA
+    );
+
 
     ASTRCARRAY_DATA * AStrCArray_Init (
         ASTRCARRAY_DATA *this
@@ -285,6 +298,22 @@ extern "C" {
     ERESULT         AStrCArray_InsertStr(
         ASTRCARRAY_DATA *this,
         uint32_t        index,
+        ASTRC_DATA      *pObject
+    );
+    
+    
+    /*!
+     Replace index'th element with the given element expanding the array if
+     necessary. after the index'th element of the array.
+     @param     this    object pointer
+     @param     index   1 to Size.
+     @param     pObject AStrC Object Pointer or OBJ_NIL.
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         AStrCArray_Put(
+        ASTRCARRAY_DATA *this,
+        uint32_t        index,          // Relative to 1
         ASTRC_DATA      *pObject
     );
     

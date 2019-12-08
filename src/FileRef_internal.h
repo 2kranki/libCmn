@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   NodeBase_internal.h
- *	Generated 11/03/2019 08:11:17
+ * File:   FileRef_internal.h
+ *	Generated 12/06/2019 21:02:56
  *
  * Notes:
  *  --	N/A
@@ -10,7 +10,7 @@
 
 
 /*
- This is free and unencumbered software released into the public domain.
+/Volumes/apple06_data/bob/git/libCmn/programs/genMake/src/SrcParse.h This is free and unencumbered software released into the public domain.
  
  Anyone is free to copy, modify, publish, use, compile, sell, or
  distribute this software, either in source code form or as a compiled
@@ -39,27 +39,20 @@
 
 
 
-#include        <node_internal.h>
-#include        <NodeBase.h>
-#include        <nodeArray.h>
-#include        <nodeHash.h>
+#include        <FileRef.h>
 #include        <jsonIn.h>
-#include        <SrcLoc.h>
 
 
-#ifndef NODEBASE_INTERNAL_H
-#define	NODEBASE_INTERNAL_H
+#ifndef FILEREF_INTERNAL_H
+#define	FILEREF_INTERNAL_H
 
 
 
-#define     PROPERTY_DEPS_OWNED 1
-#define     PROPERTY_HDRS_OWNED 1
-#define     PROPERTY_NAME_OWNED 1
+#define     PROPERTY_DRV_OWNED 1
+#define     PROPERTY_DIR_OWNED 1
 #define     PROPERTY_EXT_OWNED 1
-#define     PROPERTY_REQARCHES_OWNED 1
-#define     PROPERTY_REQOSS_OWNED 1
-#define     PROPERTY_SRCLOC_OWNED 1
-#define     PROPERTY_SRCS_OWNED 1
+#define     PROPERTY_NAME_OWNED 1
+
 
 
 #ifdef	__cplusplus
@@ -74,33 +67,27 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct NodeBase_data_s	{
+struct FileRef_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    NODE_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTRCARRAY_DATA *pArches;
-    ASTRCARRAY_DATA *pDeps;
-    ASTRCARRAY_DATA *pHdrs;
-    ASTRC_DATA      *pName;
-    ASTRCARRAY_DATA *pOSs;
-    ASTRCARRAY_DATA *pSrcs;
-    ASTRC_DATA      *pExt;          // File Name Extension (optional)
-    SRCLOC_DATA     *pSrcLoc;
+    ASTRC_DATA      *pDrv;          // Drive
+    ASTRC_DATA      *pDir;          // Directory
+    ASTRC_DATA      *pName;         // File Name
+    ASTRC_DATA      *pExt;          // File Extension
 
 };
 #pragma pack(pop)
 
     extern
-    struct NodeBase_class_data_s  NodeBase_ClassObj;
+    struct FileRef_class_data_s  FileRef_ClassObj;
 
     extern
     const
-    NODEBASE_VTBL         NodeBase_Vtbl;
+    FILEREF_VTBL         FileRef_Vtbl;
 
 
 
@@ -108,13 +95,13 @@ struct NodeBase_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NODEBASE_SINGLETON
-    NODEBASE_DATA * NodeBase_getSingleton (
+#ifdef  FILEREF_SINGLETON
+    FILEREF_DATA *     FileRef_getSingleton (
         void
     );
 
-    bool            NodeBase_setSingleton (
-     NODEBASE_DATA       *pValue
+    bool            FileRef_setSingleton (
+     FILEREF_DATA       *pValue
 );
 #endif
 
@@ -124,39 +111,43 @@ struct NodeBase_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  NodeBase_getSuperVtbl (
-        NODEBASE_DATA     *this
+    OBJ_IUNKNOWN *  FileRef_getSuperVtbl (
+        FILEREF_DATA     *this
     );
 
 
-    void            NodeBase_Dealloc (
+    void            FileRef_Dealloc (
         OBJ_ID          objId
     );
 
 
-    NODEBASE_DATA * NodeBase_ParseObject (
+#ifdef  FILEREF_JSON_SUPPORT
+    FILEREF_DATA *       FileRef_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+#endif
 
 
-    void *          NodeBase_QueryInfo (
+    void *          FileRef_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     NodeBase_ToJSON (
-        NODEBASE_DATA      *this
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     FileRef_ToJson (
+        FILEREF_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			NodeBase_Validate (
-        NODEBASE_DATA       *this
+    bool			FileRef_Validate (
+        FILEREF_DATA       *this
     );
 #endif
 
@@ -166,5 +157,5 @@ struct NodeBase_data_s	{
 }
 #endif
 
-#endif	/* NODEBASE_INTERNAL_H */
+#endif	/* FILEREF_INTERNAL_H */
 

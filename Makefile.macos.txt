@@ -910,6 +910,7 @@ fbso_test: $(TEST_SRC)/fbso_test.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/file_object.o
 
 $(OBJDIR)/file_object.o: $(SRCDIR)/file_object.c 
@@ -925,6 +926,7 @@ TESTS += file_test
 file_test: $(TEST_SRC)/file_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/fileio_object.o
 
@@ -942,6 +944,24 @@ fileio_test: $(TEST_SRC)/fileio_test.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
+OBJS += $(OBJDIR)/FileRef_object.o
+
+$(OBJDIR)/FileRef_object.o: $(SRCDIR)/FileRef_object.c
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+OBJS += $(OBJDIR)/FileRef.o
+
+$(OBJDIR)/FileRef.o: $(SRCDIR)/FileRef.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
+
+TESTS += FileRef_test
+
+FileRef_test: $(TEST_SRC)/FileRef_test.c
+	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
+	$(TEST_OBJ)/$(@F)
+
+
 OBJS += $(OBJDIR)/genObj_object.o
 
 $(OBJDIR)/genObj_object.o: $(SRCDIR)/genObj_object.c 
@@ -957,6 +977,7 @@ TESTS += genObj_test
 genObj_test: $(TEST_SRC)/genObj_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/greg_object.o
 
@@ -974,6 +995,7 @@ greg_test: $(TEST_SRC)/greg_test.c
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
+
 OBJS += $(OBJDIR)/hash32_object.o
 
 $(OBJDIR)/hash32_object.o: $(SRCDIR)/hash32_object.c 
@@ -989,6 +1011,7 @@ TESTS += hash32_test
 hash32_test: $(TEST_SRC)/hash32_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
+
 
 OBJS += $(OBJDIR)/hex_object.o
 

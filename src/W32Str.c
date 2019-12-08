@@ -56,6 +56,8 @@
 #include        <crc.h>
 #include        <dec.h>
 #include        <hex.h>
+#include        <node.h>
+#include        <nodeHash.h>
 #include        <utf8.h>
 #include        <stdio.h>
 #include        <time.h>
@@ -1229,7 +1231,7 @@ extern "C" {
     
     
     ERESULT         W32Str_CompareW32(
-        W32STR_DATA		*cbp,
+        W32STR_DATA		*this,
         const
         W32CHR_T        *pString
     )
@@ -1246,14 +1248,14 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !W32Str_Validate( cbp ) ) {
+        if( !W32Str_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        str1len = W32Str_getLength(cbp);
-        pStr1 = array_Ptr((ARRAY_DATA *)cbp,1);
+        str1len = W32Str_getLength(this);
+        pStr1 = array_Ptr((ARRAY_DATA *)this, 1);
         if (NULL == pString) {
             str2len = 0;
             pStr2 = NULL;
@@ -1498,8 +1500,277 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                  E x p a n d  V a r i a b l e s
+    //---------------------------------------------------------------
     
+    /*!
+     Substitute hash values or environment variables into the current string
+     using a BASH-like syntax with the hash value having the highest priority.
+     Variable names should have the syntax of:
+     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are not rescanned after insertion.
+     @param     this    object pointer
+     @param     pHash   optional node hash pointer where the node's data is a
+     path or astr kind object.
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+     is returned.
+     */
+    ERESULT         W32Str_ExpandVars(
+        W32STR_DATA     *this,
+        OBJ_ID          pHash
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i = 0;
+        uint32_t        j;
+        uint32_t        len;
+        bool            fMore = true;
+        //PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pName = OBJ_NIL;
+        const
+        char            *pEnvVar = NULL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        OBJ_ID          pData;
+        W32CHR_T        *pChr;
+        W32CHR_T        chr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32Str_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (pHash) {
+            if(obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH))
+                ;
+            else {
+                DEBUG_BREAK();
+                return ERESULT_INVALID_PARAMETER;
+            }
+        } else {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        if (pHash)
+            return ERESULT_NOT_IMPLEMENTED;
+
+        
+        if (0 == W32Str_getLength(this)) {
+            return ERESULT_SUCCESS;
+        }
+        pChr = array_Ptr((ARRAY_DATA *)this, 1);
+
+        // Expand Environment variables.
+        while (fMore) {
+            fMore = false;
+            eRc = W32Str_CharFindNextW32(this, &i, '$');
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            else {
+                chr = W32Str_CharGetW32(this, i+1);
+                if (chr == '{') {
+                    i += 2;
+                    j = i;
+                    eRc = W32Str_CharFindNextW32(this, &j, '}');
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_PARSE_ERROR;
+                    }
+                    len = j - i;
+                    //FIXME: eRc = W32Str_Mid(this, i, len, &pName);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    if (pHash) {
+                        pNode = nodeHash_FindA(pHash, 0, AStr_getData(pName));
+                        if (pNode) {
+                            pData = node_getData(pNode);
+                            if (obj_IsKindOf(this, OBJ_IDENT_ASTR)
+                                || obj_IsKindOf(this, OBJ_IDENT_PATH)) {
+                                pEnvVar = AStr_getData((ASTR_DATA *)pData);
+                            }
+                            else if (obj_IsKindOf(this, OBJ_IDENT_ASTRC)) {
+                                pEnvVar = AStrC_getData((ASTRC_DATA *)pData);
+                            }
+                            if (pNode && pEnvVar) {
+                                goto expandIt;
+                            }
+                            // We did not find it in the Hash. So, fall
+                            // through to normal environment variables
+                            // search.
+                        }
+                    }
+                    pEnvVar = getenv(AStr_getData(pName));
+                    if (NULL == pEnvVar) {
+                        obj_Release(pName);
+                        return ERESULT_DATA_NOT_FOUND;
+                    }
+                expandIt:
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+                    eRc = W32Str_Remove(this, i-2, len+3);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    eRc = W32Str_InsertA(this, i-2, pEnvVar);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+                    pEnvVar = NULL;
+                    fMore = true;
+                }
+                // Not certain that we need this.
+                else if (chr == '$') {
+                    eRc = W32Str_Remove(this, i, 1);
+                    ++i;
+                    fMore = true;
+                    continue;
+                }
+                else {
+                    ++i;
+                    fMore = true;
+                    continue;
+                }
+            }
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+        
+        
+        
+    //---------------------------------------------------------------
+    //                      F i n d  N e x t
+    //---------------------------------------------------------------
     
+    ERESULT         W32Str_FindNextA(
+        W32STR_DATA     *this,
+        const
+        char            *pStrA,             // UTF-8 String
+        uint32_t        *pIndex
+    )
+    {
+        uint32_t        i;
+        uint32_t        index;
+        uint32_t        lenStr;
+        uint32_t        lenSrchStr;
+        W32CHR_T        *pChr;
+        W32CHR_T        chr;
+        int             iRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32Str_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pIndex) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pStrA) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        iRc = utf8_Utf8ToW32(pStrA, &chr);
+        if (iRc <= 0) {
+            return ERESULT_INVALID_DATA;
+        }
+        lenSrchStr = utf8_StrLenA(pStrA);
+        if (lenSrchStr == 0) {
+            return ERESULT_INVALID_DATA;
+        }
+        lenStr = W32Str_getLength(this);
+        
+        index = *pIndex;
+        if (0 == index) {
+            index = 1;
+        }
+        if (index > lenStr) {
+            *pIndex = 0;
+            return ERESULT_OUT_OF_RANGE;
+        }
+        
+        pChr = array_Ptr((ARRAY_DATA *)this, index);
+        for ( i=index; i<=(lenStr - lenSrchStr + 1); ++i,++pChr ) {
+            if (*pChr == chr) {
+                if (0 == str_CompareNW32A(pChr, pStrA, lenSrchStr)) {
+                    *pIndex = i;
+                    return ERESULT_SUCCESS;
+                }
+            }
+        }
+        
+        // Return to caller.
+        *pIndex = 0;
+        return ERESULT_OUT_OF_RANGE;
+    }
+            
+            
+    ERESULT         W32Str_FindNextW32(
+        W32STR_DATA     *this,
+        const
+        W32CHR_T        *pStrW32,
+        uint32_t        *pIndex
+    )
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+        uint32_t        index;
+        uint32_t        lenStr;
+        uint32_t        lenSrchStr;
+        W32CHR_T        *pChr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32Str_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pIndex) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pStrW32) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        lenStr = W32Str_getLength(this);
+        lenSrchStr = utf8_StrLenW32(pStrW32);
+        if (lenSrchStr == 0) {
+            return ERESULT_INVALID_DATA;
+        }
+
+        index = *pIndex;
+        if (0 == index) {
+            index = 1;
+        }
+        if (index > lenStr) {
+            *pIndex = 0;
+            return ERESULT_OUT_OF_RANGE;
+        }
+        
+        pChr = array_Ptr((ARRAY_DATA *)this, index);
+        iMax = lenStr - lenSrchStr + 1;
+        for ( i=index; i<=iMax; ++i,++pChr ) {
+            if (*pChr == *pStrW32) {
+                if (0 == str_CompareNW32(pChr, pStrW32, lenSrchStr)) {
+                    *pIndex = i;
+                    return ERESULT_SUCCESS;
+                }
+            }
+        }
+        
+        // Return to caller.
+        *pIndex = 0;
+        return ERESULT_OUT_OF_RANGE;
+    }
+        
+        
+        
     //---------------------------------------------------------------
     //                       G e t  C h a r
     //---------------------------------------------------------------
@@ -1570,7 +1841,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         W32Str_IndexUntil(
-        W32STR_DATA		*cbp,
+        W32STR_DATA		*this,
         const
         W32CHR_T        *pSetStr,
         uint32_t        *pIndex
@@ -1584,7 +1855,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !W32Str_Validate( cbp ) ) {
+        if( !W32Str_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1595,7 +1866,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        lenStr = W32Str_getLength(cbp);
+        lenStr = W32Str_getLength(this);
         
         index = *pIndex;
         if (0 == index) {
@@ -1606,9 +1877,9 @@ extern "C" {
             return ERESULT_OUT_OF_RANGE;
         }
         
-        pChr = array_Ptr((ARRAY_DATA *)cbp,index);
+        pChr = array_Ptr((ARRAY_DATA *)this, index);
         for ( i=index; i<lenStr; ++i,++pChr ) {
-            if (W32Str_ChrInStr(*pChr,pSetStr)) {
+            if (W32Str_ChrInStr(*pChr, pSetStr)) {
                 *pIndex = i;
                 return ERESULT_SUCCESS;
             }

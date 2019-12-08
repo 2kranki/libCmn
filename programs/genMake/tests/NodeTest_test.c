@@ -170,6 +170,7 @@ int             test_NodeTest_Parse01(
     char            *pTestName
 )
 {
+    ERESULT         eRc;
     ERESULT_DATA    *pErr = OBJ_NIL;
     NODE_DATA       *pNodeTest = OBJ_NIL;
     NODE_DATA       *pNodes = OBJ_NIL;
@@ -256,7 +257,9 @@ int             test_NodeTest_Parse01(
     if (pStrCArray) {
         TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
         pStrC = AStrCArray_Get(pStrCArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"abc.c")));
+        fprintf(stderr, "Srcs[1] = %s\n", AStrC_getData(pStrC));
+        eRc = AStrC_CompareA(pStrC,"$(TEST_SRC)/abc.c");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
     }
 
     obj_Release(pNodes);

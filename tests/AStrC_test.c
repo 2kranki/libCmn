@@ -294,8 +294,123 @@ int         test_AStrC_LeftMidRight(
 
 
 
+int         test_AStrC_Find(
+    const
+    char        *pTestName
+)
+{
+    ASTRC_DATA  *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    //                             1111111111222222222
+    //                    1234567890123456789012345678
+    const
+    char        *pStr1 = "isa isa isa";
+    const
+    W32CHR_T    szSrchW32[] = {'i','s','a',0};
+    const
+    char        *pSrchA = "isa";
+    uint32_t    offset = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = AStrC_NewA(pStr1);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = AStrC_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (1 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = AStrC_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (5 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = AStrC_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (9 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = AStrC_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == offset) );
+
+        eRc = AStrC_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (1 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = AStrC_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (5 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = AStrC_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (9 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = AStrC_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == offset) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_AStrC_Prepend(
+    const
+    char        *pTestName
+)
+{
+    ASTRC_DATA  *pObj   = OBJ_NIL;
+    ASTRC_DATA  *pObj2  = OBJ_NIL;
+    ERESULT     eRc;
+    W32CHR_T    chrW32;
+    //                             1111111111222222222
+    //                    1234567890123456789012345678
+    const
+    char        *pStr1 = "isa";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = AStrC_NewA(pStr1);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pObj2 = AStrC_PrependA(pObj, "xyz");
+        XCTAssertFalse( (OBJ_NIL == pObj2) );
+        fprintf(stderr, "obj2 -> %s\n", AStrC_getData(pObj2));
+        eRc = AStrC_CompareA(pObj2, "xyzisa");
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        chrW32 = AStrC_CharGetFirstW32(pObj2);
+        XCTAssertTrue( ('x' == chrW32) );
+        chrW32 = AStrC_CharGetLastW32(pObj2);
+        XCTAssertTrue( ('a' == chrW32) );
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_AStrC);
+    TINYTEST_ADD_TEST(test_AStrC_Prepend,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStrC_Find,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStrC_LeftMidRight,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStrC_Append02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStrC_Append01,setUp,tearDown);

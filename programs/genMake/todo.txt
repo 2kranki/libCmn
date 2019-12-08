@@ -27,4 +27,6 @@ X Finish NodeLib_test
 
 * HJSon now puts a SrcLoc object in each node for error messages. Expand
     the error messages to include it.
+
+* Fix source prefix for $(SRCDIR)/ and $(TEST_SRC)/.
  

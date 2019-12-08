@@ -1,16 +1,16 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODETSTA Console Transmit Task (NodeTstA) Header
+//          Test Absolute Object (NodeTstA) Header
 //****************************************************************
 /*
  * Program
- *			Separate NodeTstA (NodeTstA)
+ *			Test Absolute Object (NodeTstA)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate NodeTstA to run things without complications
- *          of interfering with the main NodeTstA. A NodeTstA may be 
- *          called a NodeTstA on other O/S's.
+ *			Test Absolute Object contains the methods and data to
+ *          generate the test program build and execution in the
+ *          Makefile.  Unless a source file is prefixed already,
+ *          all sources are considered to be present in $(TEST_SRC).
  *
  * Remarks
  *	1.      None
@@ -53,6 +53,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <Dict.h>
 #include        <NodeBase.h>
 
 
@@ -110,7 +111,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  NODETSTA_SINGLETON
-    NODETSTA_DATA *     NodeTstA_Shared (
+    NODETSTA_DATA * NodeTstA_Shared (
         void
     );
 
@@ -171,6 +172,19 @@ extern "C" {
     );
 
 
+    /*! Property: file name extension (optional)
+        The optional file extension suffix to be used with name.
+     */
+    ASTRC_DATA *    NodeTstA_getExt (
+        NODETSTA_DATA   *this
+    );
+
+    bool            NodeTstA_setExt (
+        NODETSTA_DATA   *this,
+        ASTRC_DATA      *pValue
+    );
+
+
     /*! Property: Test program file name including file extension
      */
     ASTRC_DATA *    NodeTstA_getName (
@@ -215,19 +229,6 @@ extern "C" {
     bool            NodeTstA_setSrcs (
         NODETSTA_DATA   *this,
         ASTRCARRAY_DATA *pValue
-    );
-
-
-    /*! Property: file name suffix (optional)
-        The optional file extension suffix to be used with name.
-     */
-    ASTRC_DATA *    NodeTstA_getSuffix (
-        NODETSTA_DATA   *this
-    );
-
-    bool            NodeTstA_setSuffix (
-        NODETSTA_DATA   *this,
-        ASTRC_DATA      *pValue
     );
 
 
@@ -298,6 +299,19 @@ extern "C" {
      */
     ERESULT         NodeTstA_Enable (
         NODETSTA_DATA   *this
+    );
+
+
+    /*!
+     Generate the Makefile entry for this object in macOS.
+     @param     this    object pointer
+     @param     pDict   dictionary pointer
+     @return    If successful, an AStr which must be released.
+                Otherwise, OBJ_NIL.
+     */
+    ASTR_DATA *  NodeTstA_GenMac (
+        NODETSTA_DATA   *this,
+        DICT_DATA       *pDict
     );
 
 

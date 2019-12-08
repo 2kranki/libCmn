@@ -53,6 +53,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
+#include        <Dict.h>
 
 
 #ifndef         NODEPGM_H
@@ -277,6 +278,18 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    ASTR_DATA *     NodePgm_GenMacBegin (
+        NODEPGM_DATA    *this,
+        DICT_DATA       *pDict
+    );
+
+
+    ASTR_DATA *     NodePgm_GenMacEnd (
+        NODEPGM_DATA    *this,
+        DICT_DATA       *pDict
+    );
+
 
     NODEPGM_DATA *   NodePgm_Init (
         NODEPGM_DATA     *this

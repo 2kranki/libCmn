@@ -172,6 +172,7 @@ int             test_NodeObj_Parse01(
     char            *pTestName
 )
 {
+    ERESULT         eRc;
     ERESULT_DATA    *pErr = OBJ_NIL;
     //NODE_DATA       *pNode = OBJ_NIL;
     NODE_DATA       *pNodes = OBJ_NIL;
@@ -252,24 +253,36 @@ int             test_NodeObj_Parse01(
         fprintf(stderr, "Deps Size: %d\n", size);
         TINYTEST_TRUE((4 == size));
         pStrC = AStrCArray_Get(pStrCArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr.h")));
+        fprintf(stderr, "dep1: %s\n", AStrC_getData(pStrC));
+        eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/AStr.h");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
         pStrC = AStrCArray_Get(pStrCArray, 2);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr_internal.h")));
+        fprintf(stderr, "dep2: %s\n", AStrC_getData(pStrC));
+        eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/AStr_internal.h");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
         pStrC = AStrCArray_Get(pStrCArray, 3);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"array.h")));
+        fprintf(stderr, "dep3: %s\n", AStrC_getData(pStrC));
+        eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/array.h");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
         pStrC = AStrCArray_Get(pStrCArray, 4);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"cmn_defs.h")));
+        fprintf(stderr, "dep4: %s\n", AStrC_getData(pStrC));
+        eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/cmn_defs.h");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
     }
     pStrCArray = NodeObj_getSrcs(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
     if (pStrCArray) {
         size = AStrCArray_getSize(pStrCArray);
-        fprintf(stderr, "Deps Size: %d\n", size);
+        fprintf(stderr, "Srcs Size: %d\n", size);
         TINYTEST_TRUE((2 == size));
         pStrC = AStrCArray_Get(pStrCArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"ascii.c")));
+        fprintf(stderr, "src1: %s\n", AStrC_getData(pStrC));
+        eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/ascii.c");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
         pStrC = AStrCArray_Get(pStrCArray, 2);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"str.c")));
+        fprintf(stderr, "src2: %s\n", AStrC_getData(pStrC));
+        eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/str.c");
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
     }
     pJson = NodeObj_getJson(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pJson) );

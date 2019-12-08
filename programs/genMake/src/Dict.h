@@ -248,6 +248,20 @@ extern "C" {
     );
 
    
+    /*!
+     Get the dictionary value for a given name.
+     @param     this    object pointer
+     @param     pNameA  pointer to UTF-8 Name string
+     @return    if successful, pointer to data string.  Otherwise, NULL.
+     */
+    const
+    char *          Dict_GetA (
+        DICT_DATA       *this,
+        const
+        char            *pNameA
+    );
+
+
     DICT_DATA *     Dict_Init (
         DICT_DATA       *this
     );

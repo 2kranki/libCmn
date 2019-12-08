@@ -257,6 +257,19 @@ extern "C" {
     );
 
 
+    /*! Property: file name extension (optional)
+        The optional file extension suffix to be used with name.
+     */
+    ASTRC_DATA *        NodeBase_getExt (
+        NODEBASE_DATA       *this
+    );
+
+    bool                NodeBase_setExt (
+        NODEBASE_DATA       *this,
+        ASTRC_DATA          *pValue
+    );
+
+
     /*! Property: Source Dependencies, zero or more file paths that
         compilation depends on. These are normally header files and
         will be listed in the first line of the makefile for this
@@ -336,24 +349,59 @@ extern "C" {
     );
 
 
-    /*! Property: file name suffix (optional)
-        The optional file extension suffix to be used with name.
-     */
-    ASTRC_DATA *        NodeBase_getSuffix (
-        NODEBASE_DATA       *this
-    );
-
-    bool                NodeBase_setSuffix (
-        NODEBASE_DATA       *this,
-        ASTRC_DATA          *pValue
-    );
-
-
 
 
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Add a prefix string to each dependency or source that does
+     not already have one. Keep in mind that dependencies are
+     source files. Prefixes always start with '$'.
+     @param     this        object pointer
+     @param     pPrefixA    string pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  NodeBase_AddPrefixDepsA (
+        NODEBASE_DATA   *this,
+        const
+        char            *pPrefixA
+    );
+
+
+    /*!
+     Add a prefix string to each dependency or source that does
+     not already have one. Keep in mind that dependencies are
+     source files. Prefixes always start with '$'.
+     @param     this        object pointer
+     @param     pPrefixA    string pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  NodeBase_AddPrefixHdrsA (
+        NODEBASE_DATA   *this,
+        const
+        char            *pPrefixA
+    );
+
+
+    /*!
+     Add a prefix string to each dependency or source that does
+     not already have one. Keep in mind that dependencies are
+     source files. Prefixes always start with '$'.
+     @param     this        object pointer
+     @param     pPrefixA    string pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  NodeBase_AddPrefixSrcsA (
+        NODEBASE_DATA   *this,
+        const
+        char            *pPrefixA
+    );
+
 
     /*!
      Append a string to the architeture list.
@@ -380,6 +428,13 @@ extern "C" {
     ERESULT_DATA *  NodeBase_AppendDeps (
         NODEBASE_DATA   *this,
         ASTRC_DATA      *pStrC
+    );
+
+
+    ERESULT_DATA *  NodeBase_AppendHdrsA (
+        NODEBASE_DATA   *this,
+        const
+        char            *pStrA
     );
 
 
@@ -480,6 +535,20 @@ extern "C" {
 
     NODEBASE_DATA * NodeBase_Init (
         NODEBASE_DATA   *this
+    );
+
+
+    /*!
+     Merge an array into the dependencies list.
+     @param     this    object pointer
+     @param     pArray  Array of other deps
+     @return    If successful, OBJ_NIL is returne, otherwise a new
+                ERESULT_DATA error object is returned.
+     @warning   The ERESULT_DATA error object must be released.
+     */
+    ERESULT_DATA *  NodeBase_MergeDeps (
+        NODEBASE_DATA   *this,
+        ASTRCARRAY_DATA *pArray
     );
 
 

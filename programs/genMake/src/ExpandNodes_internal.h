@@ -93,7 +93,6 @@ struct ExpandNodes_data_s	{
     NODEPGM_DATA    *pPgm;
     NODEARRAY_DATA  *pRtns;
     NODEARRAY_DATA  *pTests;
-    ASTRC_DATA      *pSuffixC;
 
 };
 #pragma pack(pop)

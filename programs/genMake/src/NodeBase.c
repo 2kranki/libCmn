@@ -335,13 +335,13 @@ extern "C" {
                 }
             }
 
-            pHashItem = nodeHash_FindA(pHash, 0, "suffix");
+            pHashItem = nodeHash_FindA(pHash, 0, "ext");
             if (pHashItem) {
                 ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
                 ASTRC_DATA      *pStrC;
                 if (pStr) {
                     pStrC = AStrC_NewFromAStr(pStr);
-                    NodeBase_setSuffix(*ppBase, pStrC);
+                    NodeBase_setExt(*ppBase, pStrC);
                     obj_Release(pStrC);
                     pStrC = OBJ_NIL;
                 }
@@ -368,6 +368,14 @@ extern "C" {
 
         }    // End of Hash Checking
 
+        // Set defaults.
+        if (OBJ_NIL == NodeBase_getExt(*ppBase)) {
+            ASTRC_DATA      *pStrC;
+            pStrC = AStrC_NewA("c");
+            NodeBase_setExt(*ppBase, pStrC);
+            obj_Release(pStrC);
+        }
+        
         // Return to caller.
         if (OBJ_NIL == pErr) {
             NodeBase_SortAscending(*ppBase);
@@ -479,6 +487,54 @@ extern "C" {
         
         
         
+    //---------------------------------------------------------------
+    //                      E x t e n s i o n
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *    NodeBase_getExt (
+        NODEBASE_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pExt;
+    }
+    
+    
+    bool            NodeBase_setExt (
+        NODEBASE_DATA   *this,
+        ASTRC_DATA      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_EXT_OWNED
+        obj_Retain(pValue);
+        if (this->pExt) {
+            obj_Release(this->pExt);
+        }
+#endif
+        this->pExt = pValue;
+        
+        return true;
+    }
+                
+                
+                
     //---------------------------------------------------------------
     //                  S o u r c e  H e a d e r s
     //---------------------------------------------------------------
@@ -806,54 +862,6 @@ extern "C" {
     
 
     //---------------------------------------------------------------
-    //                        S u f f i x
-    //---------------------------------------------------------------
-    
-    ASTRC_DATA *    NodeBase_getSuffix (
-        NODEBASE_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeBase_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pSuffix;
-    }
-    
-    
-    bool            NodeBase_setSuffix (
-        NODEBASE_DATA   *this,
-        ASTRC_DATA      *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeBase_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_NAME_OWNED
-        obj_Retain(pValue);
-        if (this->pSuffix) {
-            obj_Release(this->pSuffix);
-        }
-#endif
-        this->pSuffix = pValue;
-        
-        return true;
-    }
-            
-            
-            
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
@@ -884,6 +892,179 @@ extern "C" {
     //===============================================================
 
 
+    //---------------------------------------------------------------
+    //                  A d d  P r e f i x
+    //---------------------------------------------------------------
+
+    /*!
+     Add a prefix string to each dependency or source that does
+     not already have one. Keep in mind that dependencies are
+     source files. Prefixes always start with '$'.
+     @param     this        object pointer
+     @param     pPrefixA    string pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  NodeBase_AddPrefixDepsA (
+        NODEBASE_DATA   *this,
+        const
+        char            *pPrefixA
+    )
+    {
+        ERESULT         eRc;
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        ASTRC_DATA      *pStrC;
+        ASTRC_DATA      *pStrC_New = OBJ_NIL;
+        W32CHR_T        chrW32;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+    #endif
+        
+        iMax = AStrCArray_getSize(this->pDeps);
+        for (i=0; i<iMax; i++) {
+            pStrC = AStrCArray_Get(this->pDeps, i+1);
+            if (pStrC) {
+                chrW32 = AStrC_CharGetW32(pStrC, 1);
+                if (chrW32 == '$')
+                    ;
+                else {
+                    // We need to add the prefix.
+                    pStrC_New = AStrC_PrependA(pStrC, pPrefixA);
+                    if (pStrC_New) {
+                        eRc = AStrCArray_Put(this->pDeps, i+1, pStrC_New);
+                        obj_Release(pStrC_New);
+                        pStrC_New = OBJ_NIL;
+                    }
+                }
+            }
+        }
+
+        // Return to caller.
+        return pErr;
+    }
+
+
+    /*!
+     Add a prefix string to each dependency or source that does
+     not already have one. Keep in mind that dependencies are
+     source files. Prefixes always start with '$'.
+     @param     this        object pointer
+     @param     pPrefixA    string pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  NodeBase_AddPrefixHdrsA (
+        NODEBASE_DATA   *this,
+        const
+        char            *pPrefixA
+    )
+    {
+        ERESULT         eRc;
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        ASTRC_DATA      *pStrC;
+        ASTRC_DATA      *pStrC_New = OBJ_NIL;
+        W32CHR_T        chrW32;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+    #endif
+        
+        iMax = AStrCArray_getSize(this->pHdrs);
+        for (i=0; i<iMax; i++) {
+            pStrC = AStrCArray_Get(this->pHdrs, i+1);
+            if (pStrC) {
+                chrW32 = AStrC_CharGetW32(pStrC, 1);
+                if (chrW32 == '$')
+                    ;
+                else {
+                    // We need to add the prefix.
+                    pStrC_New = AStrC_PrependA(pStrC, pPrefixA);
+                    if (pStrC_New) {
+                        eRc = AStrCArray_Put(this->pHdrs, i+1, pStrC_New);
+                        obj_Release(pStrC_New);
+                        pStrC_New = OBJ_NIL;
+                    }
+                }
+            }
+        }
+
+        // Return to caller.
+        return pErr;
+    }
+
+
+    /*!
+     Add a prefix string to each dependency or source that does
+     not already have one. Keep in mind that dependencies are
+     source files. Prefixes always start with '$'.
+     @param     this        object pointer
+     @param     pPrefixA    string pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT_DATA *  NodeBase_AddPrefixSrcsA (
+        NODEBASE_DATA   *this,
+        const
+        char            *pPrefixA
+    )
+    {
+        ERESULT         eRc;
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        ASTRC_DATA      *pStrC;
+        ASTRC_DATA      *pStrC_New = OBJ_NIL;
+        W32CHR_T        chrW32;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+    #endif
+        
+        iMax = AStrCArray_getSize(this->pSrcs);
+        for (i=0; i<iMax; i++) {
+            pStrC = AStrCArray_Get(this->pSrcs, i+1);
+            if (pStrC) {
+                chrW32 = AStrC_CharGetW32(pStrC, 1);
+                if (chrW32 == '$')
+                    ;
+                else {
+                    // We need to add the prefix.
+                    pStrC_New = AStrC_PrependA(pStrC, pPrefixA);
+                    if (pStrC_New) {
+                        eRc = AStrCArray_Put(this->pSrcs, i+1, pStrC_New);
+                        obj_Release(pStrC_New);
+                        pStrC_New = OBJ_NIL;
+                    }
+                }
+            }
+        }
+
+        // Return to caller.
+        return pErr;
+    }
+
+    
+    
     //---------------------------------------------------------------
     //                          A p p e n d
     //---------------------------------------------------------------
@@ -930,6 +1111,31 @@ extern "C" {
         
         if (0 == AStrCArray_Find(this->pDeps, pStrC))
             eRc = AStrCArray_AppendAStrC(this->pDeps, pStrC, NULL);
+
+        // Return to caller.
+        return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
+    }
+
+
+    ERESULT_DATA *  NodeBase_AppendHdrsA (
+        NODEBASE_DATA   *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+#endif
+        
+        if (0 == AStrCArray_FindA(this->pHdrs, pStrA))
+            eRc = AStrCArray_AppendA(this->pHdrs, pStrA, NULL);
 
         // Return to caller.
         return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
@@ -1046,9 +1252,9 @@ extern "C" {
             obj_Release(pOther->pSrcs);
             pOther->pSrcs = OBJ_NIL;
         }
-        if (pOther->pSuffix) {
-            obj_Release(pOther->pSuffix);
-            pOther->pSuffix = OBJ_NIL;
+        if (pOther->pExt) {
+            obj_Release(pOther->pExt);
+            pOther->pExt = OBJ_NIL;
         }
 
         // Create a copy of objects and areas in this object placing
@@ -1069,6 +1275,15 @@ extern "C" {
             else {
                 obj_Retain(this->pDeps);
                 pOther->pDeps = this->pDeps;
+            }
+        }
+        if (this->pExt) {
+            if (obj_getVtbl(this->pExt)->pCopy) {
+                pOther->pExt = obj_getVtbl(this->pExt)->pCopy(this->pExt);
+            }
+            else {
+                obj_Retain(this->pExt);
+                pOther->pExt = this->pExt;
             }
         }
         if (this->pHdrs) {
@@ -1105,15 +1320,6 @@ extern "C" {
             else {
                 obj_Retain(this->pSrcs);
                 pOther->pSrcs = this->pSrcs;
-            }
-        }
-        if (this->pSuffix) {
-            if (obj_getVtbl(this->pSuffix)->pCopy) {
-                pOther->pSuffix = obj_getVtbl(this->pSuffix)->pCopy(this->pSuffix);
-            }
-            else {
-                obj_Retain(this->pSuffix);
-                pOther->pSuffix = this->pSuffix;
             }
         }
 
@@ -1318,7 +1524,7 @@ extern "C" {
         NodeBase_setOSs(this, OBJ_NIL);
         NodeBase_setSrcLoc(this, OBJ_NIL);
         NodeBase_setSrcs(this, OBJ_NIL);
-        NodeBase_setSuffix(this, OBJ_NIL);
+        NodeBase_setExt(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1467,6 +1673,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+        this->pExt = AStrC_NewA("c");
 
     #ifdef NDEBUG
     #else
@@ -1515,6 +1722,47 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          M e r g e
+    //---------------------------------------------------------------
+
+    ERESULT_DATA *  NodeBase_MergeDeps (
+        NODEBASE_DATA   *this,
+        ASTRCARRAY_DATA *pArray
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTRC_DATA      *pStrC;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pArray) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        
+        iMax = AStrCArray_getSize(pArray);
+        for (i=0; i<iMax; i++) {
+            pStrC = AStrCArray_Get(pArray, i+1);
+            if (pStrC && (0 == AStrCArray_Find(this->pDeps, pStrC))) {
+                eRc = AStrCArray_AppendAStrC(this->pDeps, pStrC, NULL);
+            }
+        }
+        
+
+        // Return to caller.
+        return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
+    }
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -1774,8 +2022,8 @@ extern "C" {
             if (this->pName) {
                 AStr_AppendPrint(pStr, "\tname: %s\n", AStrC_getData(this->pName));
             }
-            if (this->pSuffix) {
-                AStr_AppendPrint(pStr, "\tsuffix: %s\n", AStrC_getData(this->pSuffix));
+            if (this->pExt) {
+                AStr_AppendPrint(pStr, "\text: %s\n", AStrC_getData(this->pExt));
             }
             if (this->pArches) {
                 AStr_AppendPrint(pStr, "\tarches[\n");
@@ -1882,14 +2130,14 @@ extern "C" {
                 obj_Release(pWrkStr);
             }
         }
-        if (this->pSuffix) {
-            if (((OBJ_DATA *)(this->pSuffix))->pVtbl->pToDebugString) {
+        if (this->pExt) {
+            if (((OBJ_DATA *)(this->pExt))->pVtbl->pToDebugString) {
                 if (indent) {
                     AStr_AppendCharRepeatA(pStr, indent, ' ');
                 }
-                AStr_AppendA(pStr, "Suffix:\n");
-                pWrkStr =   ((OBJ_DATA *)(this->pSuffix))->pVtbl->pToDebugString(
-                                                    this->pSuffix,
+                AStr_AppendA(pStr, "Ext:\n");
+                pWrkStr =   ((OBJ_DATA *)(this->pExt))->pVtbl->pToDebugString(
+                                                    this->pExt,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);

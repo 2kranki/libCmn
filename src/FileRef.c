@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   NodeRtn.c
- *	Generated 11/03/2019 08:11:37
+ * File:   FileRef.c
+ *	Generated 12/06/2019 21:02:56
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <NodeRtn_internal.h>
+#include        <FileRef_internal.h>
 #include        <trace.h>
 
 
@@ -64,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            NodeRtn_task_body (
+    void            FileRef_task_body (
         void            *pData
     )
     {
-        //NODERTN_DATA  *this = pData;
+        //FILEREF_DATA  *this = pData;
         
     }
 #endif
@@ -84,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODERTN_DATA *     NodeRtn_Alloc (
+    FILEREF_DATA *     FileRef_Alloc (
         void
     )
     {
-        NODERTN_DATA       *this;
-        uint32_t        cbSize = sizeof(NODERTN_DATA);
+        FILEREF_DATA       *this;
+        uint32_t        cbSize = sizeof(FILEREF_DATA);
         
         // Do initialization.
         
@@ -101,115 +101,45 @@ extern "C" {
 
 
 
-    NODERTN_DATA *     NodeRtn_New (
+    FILEREF_DATA *     FileRef_New (
         void
     )
     {
-        NODERTN_DATA       *this;
+        FILEREF_DATA       *this;
         
-        this = NodeRtn_Alloc( );
+        this = FileRef_Alloc( );
         if (this) {
-            this = NodeRtn_Init(this);
+            this = FileRef_Init(this);
         } 
         return this;
     }
 
 
 
-    ERESULT_DATA *  NodeRtn_Parse (
-        NODE_DATA       *pNode,
-        NODERTN_DATA    **ppBase
+    FILEREF_DATA *  FileRef_NewWithData (
+        ASTRC_DATA      *pDrv,
+        ASTRC_DATA      *pDir,
+        ASTRC_DATA      *pName,
+        ASTRC_DATA      *pExt
     )
     {
-        ERESULT_DATA    *pErr = OBJ_NIL;
-        NODEHASH_DATA   *pHash;
-        NODE_DATA       *pHashItem;
-        NODERTN_DATA    *pRtn;
-        ASTRC_DATA      *pName;
-        ASTRC_DATA      *pTestName;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (OBJ_NIL == pNode) {
-            DEBUG_BREAK();
-            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER, "Error: Missing Input Node!");
-            return pErr;
-        }
-        if (OBJ_NIL == ppBase) {
-            DEBUG_BREAK();
-            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
-                                   "Error: Missing Base Node Pointer!");
-            return pErr;
-        }
-    #endif
-        pRtn = NodeRtn_New();
-        if (OBJ_NIL == pRtn) {
-            DEBUG_BREAK();
-            pErr = eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
-            return pErr;
-        }
-        *ppBase = OBJ_NIL;
-
-        pHash = jsonIn_CheckNodeForHash(pNode);
-        if (pHash) {
-            // Ok, we have a hash, so there might a lot to parse here.
-
-            // Scan off the base parameters.
-            pErr = NodeBase_Parse(pNode, (NODEBASE_DATA **)&pRtn);
-            if (pErr) {
-                DEBUG_BREAK();
-                obj_Release(pRtn);
-                return pErr;
-            }
-            pName = NodeRtn_getName(pRtn);
-            if (OBJ_NIL == pName) {
-                DEBUG_BREAK();
-                obj_Release(pRtn);
-                return (eResult_NewStrA(ERESULT_INVALID_PARAMETER,
-                                       "Error: Routine is missing Name!"));
-            }
-            if (pRtn) {
-                pErr =  NodeBase_AddPrefixDepsA(
-                                        NodeRtn_getNodeBase(pRtn),
-                                        "$(SRCDIR)/"
-                        );
-                pErr =  NodeBase_AddPrefixSrcsA(
-                                        NodeRtn_getNodeBase(pRtn),
-                                        "$(SRCDIR)/"
-                        );
-            }
-
-            // Scan off the test stuff if present.
-            pHashItem = nodeHash_FindA(pHash, 0, "test");
-            if (pHashItem) {
-                FALSE_DATA      *pFalse;
-                pFalse = jsonIn_CheckNodeDataForFalse(pHashItem);
-                if (pFalse)
-                    ;
-                else {
-                    pHashItem = node_getData(pHashItem);
-                    // NodeTest::Parse will provide the NodeTest.
-                    pErr = NodeTest_Parse(pHashItem, &pRtn->pTest);
-                    if (pErr) {
-                        DEBUG_BREAK();
-                        obj_Release(pRtn);
-                        return pErr;
-                    }
-                    pTestName = NodeTest_getName(pRtn->pTest);
-                    if (OBJ_NIL == pTestName) {
-                        pTestName = AStrC_AppendA(pName, "_test");
-                        NodeTest_setName(pRtn->pTest, pTestName);
-                        obj_Release(pTestName);
-                        pTestName = OBJ_NIL;
-                    }
-                }
-            }
-            *ppBase = pRtn;
-        }
+        FILEREF_DATA       *this;
         
-        // Return to caller.
-        return pErr;
+        this = FileRef_Alloc( );
+        if (this) {
+            this = FileRef_Init(this);
+            if (this) {
+                obj_Retain(pDrv);
+                this->pDir = pDrv;
+                obj_Retain(pDir);
+                this->pDir = pDir;
+                obj_Retain(pName);
+                this->pName = pName;
+                obj_Retain(pExt);
+                this->pExt = pExt;
+            }
+        }
+        return this;
     }
 
 
@@ -221,222 +151,210 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                  A r c h i t e c t u r e s
+    //                      D r i v e
     //---------------------------------------------------------------
-
-    ASTRCARRAY_DATA * NodeRtn_getArches (
-        NODERTN_DATA    *this
+    
+    ASTRC_DATA *    FileRef_getDrv (
+        FILEREF_DATA    *this
     )
     {
-
+        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-
-        return NodeBase_getArches(NodeRtn_getNodeBase(this));
+        
+        return this->pDrv;
     }
-
-
-    bool            NodeRtn_setArches (
-        NODERTN_DATA    *this,
-        ASTRCARRAY_DATA *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        return NodeBase_setArches(NodeRtn_getNodeBase(this), pValue);
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                        D e p s
-    //---------------------------------------------------------------
-
-    ASTRCARRAY_DATA * NodeRtn_getDeps (
-        NODERTN_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return NodeBase_getDeps(NodeRtn_getNodeBase(this));
-    }
-
-
-    bool            NodeRtn_setDeps (
-        NODERTN_DATA    *this,
-        ASTRCARRAY_DATA *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        return NodeBase_setDeps(NodeRtn_getNodeBase(this), pValue);
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                        N a m e
-    //---------------------------------------------------------------
-
-    ASTRC_DATA *    NodeRtn_getName (
-        NODERTN_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return NodeBase_getName(NodeRtn_getNodeBase(this));
-    }
-
-
-    bool            NodeRtn_setName (
-        NODERTN_DATA    *this,
+    
+    
+    bool            FileRef_setDrv (
+        FILEREF_DATA    *this,
         ASTRC_DATA      *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        return NodeBase_setName(NodeRtn_getNodeBase(this), pValue);
+#ifdef  PROPERTY_DRV_OWNED
+        obj_Retain(pValue);
+        if (this->pDrv) {
+            obj_Release(this->pDrv);
+        }
+#endif
+        this->pDrv = pValue;
+        
+        return true;
     }
-
-
-
+        
+        
+        
     //---------------------------------------------------------------
-    //                           N o d e
+    //                    D i r e c t o r y
     //---------------------------------------------------------------
-
-    NODE_DATA *     NodeRtn_getNode (
-        NODERTN_DATA    *this
+    
+    ASTRC_DATA *    FileRef_getDir (
+        FILEREF_DATA    *this
     )
     {
-
+        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-
-        return (NODE_DATA *)this;
+        
+        return this->pDir;
     }
-
-
-    //---------------------------------------------------------------
-    //                       N o d e  B a s e
-    //---------------------------------------------------------------
-
-    NODEBASE_DATA *     NodeRtn_getNodeBase (
-        NODERTN_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return (NODEBASE_DATA *)this;
-    }
-
-
-    //---------------------------------------------------------------
-    //                        O S
-    //---------------------------------------------------------------
-
-    ASTRCARRAY_DATA * NodeRtn_getOSs (
-        NODERTN_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return NodeBase_getOSs(NodeRtn_getNodeBase(this));
-    }
-
-
-    bool            NodeRtn_setOSs (
-        NODERTN_DATA    *this,
-        ASTRCARRAY_DATA *pValue
+    
+    
+    bool            FileRef_setDir (
+        FILEREF_DATA    *this,
+        ASTRC_DATA      *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        return NodeBase_setOSs(NodeRtn_getNodeBase(this), pValue);
+#ifdef  PROPERTY_DIR_OWNED
+        obj_Retain(pValue);
+        if (this->pDir) {
+            obj_Release(this->pDir);
+        }
+#endif
+        this->pDir = pValue;
+        
+        return true;
     }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                  F i l e  E x t e n s i o n
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *    FileRef_getExt (
+        FILEREF_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!FileRef_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pExt;
+    }
+    
+    
+    bool            FileRef_setExt (
+        FILEREF_DATA    *this,
+        ASTRC_DATA      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!FileRef_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
 
+#ifdef  PROPERTY_EXT_OWNED
+        obj_Retain(pValue);
+        if (this->pExt) {
+            obj_Release(this->pExt);
+        }
+#endif
+        this->pExt = pValue;
+        
+        return true;
+    }
+                
+                
+                
+    //---------------------------------------------------------------
+    //                     F i l e  N a m e
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *    FileRef_getName (
+        FILEREF_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!FileRef_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pName;
+    }
+    
+    
+    bool            FileRef_setName (
+        FILEREF_DATA    *this,
+        ASTRC_DATA      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!FileRef_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
 
-
+#ifdef  PROPERTY_NAME_OWNED
+        obj_Retain(pValue);
+        if (this->pName) {
+            obj_Release(this->pName);
+        }
+#endif
+        this->pName = pValue;
+        
+        return true;
+    }
+            
+            
+            
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        NodeRtn_getPriority (
-        NODERTN_DATA     *this
+    uint16_t        FileRef_getPriority (
+        FILEREF_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -447,14 +365,14 @@ extern "C" {
     }
 
 
-    bool            NodeRtn_setPriority (
-        NODERTN_DATA     *this,
+    bool            FileRef_setPriority (
+        FILEREF_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -468,56 +386,16 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          S r c s
-    //---------------------------------------------------------------
-
-    ASTRCARRAY_DATA * NodeRtn_getSrcs (
-        NODERTN_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return NodeBase_getSrcs(NodeRtn_getNodeBase(this));
-    }
-
-
-    bool            NodeRtn_setSrcs (
-        NODERTN_DATA    *this,
-        ASTRCARRAY_DATA *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        return NodeBase_setSrcs(NodeRtn_getNodeBase(this), pValue);
-    }
-
-
-
-    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        NodeRtn_getSize (
-        NODERTN_DATA       *this
+    uint32_t        FileRef_getSize (
+        FILEREF_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -532,15 +410,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  NodeRtn_getSuperVtbl (
-        NODERTN_DATA     *this
+    OBJ_IUNKNOWN *  FileRef_getSuperVtbl (
+        FILEREF_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -552,126 +430,11 @@ extern "C" {
     
   
 
-    //---------------------------------------------------------------
-    //                          T e s t
-    //---------------------------------------------------------------
     
-    NODETEST_DATA * NodeRtn_getTest (
-        NODERTN_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pTest;
-    }
-    
-    
-    bool            NodeRtn_setTest (
-        NODERTN_DATA    *this,
-        NODETEST_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_TEST_OWNED
-        obj_Retain(pValue);
-        if (this->pTest) {
-            obj_Release(this->pTest);
-        }
-#endif
-        this->pTest = pValue;
-        
-        return true;
-    }
-            
-            
-            
-
 
     //===============================================================
     //                          M e t h o d s
     //===============================================================
-
-
-    //---------------------------------------------------------------
-    //                          A p p e n d
-    //---------------------------------------------------------------
-
-    ERESULT_DATA *  NodeRtn_AppendDeps (
-        NODERTN_DATA	*this,
-        ASTR_DATA       *pStr
-    )
-    {
-        ERESULT_DATA    *pErr;
-        ASTRC_DATA      *pStrC;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
-        }
-    #endif
-
-        pStrC = AStrC_NewFromAStr(pStr);
-        if (OBJ_NIL == pStrC) {
-            DEBUG_BREAK();
-            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
-        }
-        pErr = NodeBase_AppendDeps(NodeRtn_getNodeBase(this), pStrC);
-        obj_Release(pStrC);
-        pStrC = OBJ_NIL;
-
-        // Return to caller.
-        return pErr;
-    }
-
-
-    ERESULT_DATA *  NodeRtn_AppendSrcs (
-        NODERTN_DATA	*this,
-        ASTR_DATA       *pStr
-    )
-    {
-        ERESULT_DATA    *pErr;
-        ASTRC_DATA      *pStrC;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!NodeRtn_Validate(this)) {
-            DEBUG_BREAK();
-            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
-        }
-    #endif
-
-        pStrC = AStrC_NewFromAStr(pStr);
-        if (OBJ_NIL == pStrC) {
-            DEBUG_BREAK();
-            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
-        }
-        pErr = NodeBase_AppendSrcs(NodeRtn_getNodeBase(this), pStrC);
-        obj_Release(pStrC);
-        pStrC = OBJ_NIL;
-
-        // Return to caller.
-        return pErr;
-    }
-
 
 
     //---------------------------------------------------------------
@@ -684,16 +447,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = NodeRtn_Assign(this,pOther);
+        ERESULT eRc = FileRef_Assign(this,pOther);
      @endcode 
-     @param     this    NODERTN object pointer
-     @param     pOther  a pointer to another NODERTN object
+     @param     this    FILEREF object pointer
+     @param     pOther  a pointer to another FILEREF object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         NodeRtn_Assign (
-        NODERTN_DATA	*this,
-        NODERTN_DATA    *pOther
+    ERESULT         FileRef_Assign (
+        FILEREF_DATA		*this,
+        FILEREF_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -701,11 +464,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!NodeRtn_Validate(pOther)) {
+        if (!FileRef_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -757,9 +520,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         NodeRtn_Compare (
-        NODERTN_DATA     *this,
-        NODERTN_DATA     *pOther
+    ERESULT         FileRef_Compare (
+        FILEREF_DATA     *this,
+        FILEREF_DATA     *pOther
     )
     {
         int             i = 0;
@@ -773,11 +536,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!NodeRtn_Validate(pOther)) {
+        if (!FileRef_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -815,32 +578,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        NodeRtn      *pCopy = NodeRtn_Copy(this);
+        FileRef      *pCopy = FileRef_Copy(this);
      @endcode 
-     @param     this    NODERTN object pointer
-     @return    If successful, a NODERTN object which must be 
+     @param     this    FILEREF object pointer
+     @return    If successful, a FILEREF object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    NODERTN_DATA *     NodeRtn_Copy (
-        NODERTN_DATA       *this
+    FILEREF_DATA *     FileRef_Copy (
+        FILEREF_DATA       *this
     )
     {
-        NODERTN_DATA       *pOther = OBJ_NIL;
+        FILEREF_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = NodeRtn_New( );
+        pOther = FileRef_New( );
         if (pOther) {
-            eRc = NodeRtn_Assign(this, pOther);
+            eRc = FileRef_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -858,11 +621,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            NodeRtn_Dealloc (
+    void            FileRef_Dealloc (
         OBJ_ID          objId
     )
     {
-        NODERTN_DATA   *this = objId;
+        FILEREF_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -870,7 +633,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -878,11 +641,13 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((NODERTN_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((FILEREF_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        NodeRtn_setTest(this, OBJ_NIL);
+        FileRef_setDir(this, OBJ_NIL);
+        FileRef_setExt(this, OBJ_NIL);
+        FileRef_setName(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -905,8 +670,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeRtn_Disable (
-        NODERTN_DATA		*this
+    ERESULT         FileRef_Disable (
+        FILEREF_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -914,7 +679,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -940,8 +705,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeRtn_Enable (
-        NODERTN_DATA		*this
+    ERESULT         FileRef_Enable (
+        FILEREF_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -949,7 +714,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -969,11 +734,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    NODERTN_DATA *   NodeRtn_Init (
-        NODERTN_DATA       *this
+    FILEREF_DATA *   FileRef_Init (
+        FILEREF_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(NODERTN_DATA);
+        uint32_t        cbSize = sizeof(FILEREF_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -990,31 +755,37 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)NodeBase_Init((NODEBASE_DATA *)this);    // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODERTN);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_FILEREF);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                        // Needed for Inheritance
+        //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeRtn_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&FileRef_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        */
 
     #ifdef NDEBUG
     #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "NodeRtn::sizeof(NODERTN_DATA) = %lu\n", sizeof(NODERTN_DATA));
+        //fprintf(stderr, "FileRef::sizeof(FILEREF_DATA) = %lu\n", sizeof(FILEREF_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(NODERTN_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(FILEREF_DATA));
     #endif
 
         return this;
@@ -1026,8 +797,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         NodeRtn_IsEnabled (
-        NODERTN_DATA		*this
+    ERESULT         FileRef_IsEnabled (
+        FILEREF_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -1035,7 +806,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1062,14 +833,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = NodeRtn_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = FileRef_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "NodeRtn", prefix,
+                        the object name, "FileRef", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1077,13 +848,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          NodeRtn_QueryInfo (
+    void *          FileRef_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        NODERTN_DATA     *this = objId;
+        FILEREF_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1092,7 +863,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1101,11 +872,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODERTN_DATA);
+            return (void *)sizeof(FILEREF_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)NodeRtn_Class();
+                return (void *)FileRef_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -1135,23 +906,25 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return NodeRtn_Disable;
+                            return FileRef_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return NodeRtn_Enable;
+                            return FileRef_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return NodeRtn_ToDebugString;
+                            return FileRef_ToDebugString;
                         }
+#ifdef  SRCREF_JSON_SUPPORT
                         if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return NodeRtn_ToJSON;
+                            return FileRef_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -1160,10 +933,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == NodeRtn_ToDebugString)
+                if (pData == FileRef_ToDebugString)
                     return "ToDebugString";
-                if (pData == NodeRtn_ToJSON)
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == FileRef_ToJson)
                     return "ToJSON";
+#endif
                 break;
                 
             default:
@@ -1179,8 +954,9 @@ extern "C" {
     //                       T o  J S O N
     //---------------------------------------------------------------
     
-     ASTR_DATA *     NodeRtn_ToJSON (
-        NODERTN_DATA      *this
+#ifdef  FILEREF_JSON_SUPPORT
+     ASTR_DATA *     FileRef_ToJson (
+        FILEREF_DATA      *this
     )
     {
         ERESULT         eRc;
@@ -1191,7 +967,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1211,6 +987,7 @@ extern "C" {
         
         return pStr;
     }
+#endif
     
     
     
@@ -1222,30 +999,30 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = NodeRtn_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = FileRef_ToDebugString(this,4);
      @endcode 
-     @param     this    NODERTN object pointer
+     @param     this    FILEREF object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NodeRtn_ToDebugString (
-        NODERTN_DATA      *this,
+    ASTR_DATA *     FileRef_ToDebugString (
+        FILEREF_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeRtn_Validate(this)) {
+        if (!FileRef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1266,23 +1043,21 @@ extern "C" {
                     "{%p(%s) size=%d\n",
                     this,
                     pInfo->pClassName,
-                    NodeRtn_getSize(this)
+                    FileRef_getSize(this)
             );
 
-        pWrkStr =   NodeBase_ToDebugString(NodeRtn_getNodeBase(this), indent+3);
-        AStr_Append(pStr, pWrkStr);
-        obj_Release(pWrkStr);
-
-        if (this->pTest) {
-            if (((OBJ_DATA *)(this->pTest))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pTest))->pVtbl->pToDebugString(
-                                                    this->pTest,
+#ifdef  XYZZY        
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
+                                                    this->pData,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
+#endif
         
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -1298,6 +1073,51 @@ extern "C" {
     }
     
     
+     ASTR_DATA *     FileRef_ToString (
+        FILEREF_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        //int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        W32CHR_T        chrW32;
+        
+#ifdef NDEBUG
+#else
+        if (!FileRef_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        if (pStr) {
+            if (this->pDrv) {
+                eRc = AStr_AppendPrint(pStr, "%s:", AStrC_getData(this->pDrv));
+            }
+            if (this->pDir) {
+                chrW32 = AStrC_CharGetLastW32(this->pDir);
+                if (chrW32 == '/') {
+                    eRc = AStr_AppendPrint(pStr, "%s", AStrC_getData(this->pDir));
+                } else {
+                    eRc = AStr_AppendPrint(pStr, "%s/", AStrC_getData(this->pDir));
+                }
+            }
+            if (this->pName) {
+                eRc = AStr_AppendPrint(pStr, "%s", AStrC_getData(this->pName));
+            }
+            if (this->pExt) {
+                eRc = AStr_AppendPrint(pStr, ".%s", AStrC_getData(this->pExt));
+            }
+        }
+        
+        return pStr;
+    }
+
+    
     
     //---------------------------------------------------------------
     //                      V a l i d a t e
@@ -1305,15 +1125,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            NodeRtn_Validate (
-        NODERTN_DATA      *this
+    bool            FileRef_Validate (
+        FILEREF_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_NODERTN))
+            if (obj_IsKindOf(this, OBJ_IDENT_FILEREF))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1329,7 +1149,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(NODERTN_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(FILEREF_DATA))) {
             return false;
         }
 

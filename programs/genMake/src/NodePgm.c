@@ -120,6 +120,7 @@ extern "C" {
         NODEPGM_DATA    **ppBase
     )
     {
+        //ERESULT         eRc;
         ERESULT_DATA    *pErr = OBJ_NIL;
         NODEHASH_DATA   *pHash;
         NODE_DATA       *pHashItem;
@@ -166,6 +167,12 @@ extern "C" {
                 obj_Release(pPgm);
                 return pErr;
             }
+            pErr = NodeBase_AddPrefixHdrsA((NODEBASE_DATA *)pPgm, "$(SRCDIR)/");
+            if (pErr) {
+                DEBUG_BREAK();
+                obj_Release(pPgm);
+                return pErr;
+            }
 
             // Scan off the main program name if present.
             pHashItem = nodeHash_FindA(pHash, 0, "main");
@@ -184,6 +191,34 @@ extern "C" {
                 }
             }
             *ppBase = pPgm;
+        }
+        
+        // Now set up some defaults.
+        if (pPgm) {
+            uint32_t        i;
+            uint32_t        iMax;
+            ASTRC_DATA      *pStrC;
+            iMax = AStrCArray_getSize(NodePgm_getDeps(pPgm));
+            for (i=0; i<iMax; i++) {
+                pStrC = AStrCArray_Get(NodePgm_getDeps(pPgm), i+1);
+                if (pStrC) {
+                    ASTR_DATA       *pLwr = AStrC_ToLower(pStrC);
+                    ASTR_DATA       *pUpr = AStrC_ToUpper(pStrC);
+                    ASTR_DATA       *pStr = OBJ_NIL;
+                    pStr = AStr_NewFromPrint(
+                                    "$(LIB%s_BASE)/include/%s_defs.h",
+                                    AStr_getData(pUpr),
+                                    AStr_getData(pLwr)
+                            );
+                    pErr =  NodeBase_AppendHdrsA(
+                                        NodePgm_getNodeBase(pPgm),
+                                        AStr_getData(pStr)
+                            );
+                    obj_Release(pLwr);
+                    obj_Release(pUpr);
+                    obj_Release(pStr);
+                }
+            }
         }
 
         // Return to caller.
@@ -893,7 +928,7 @@ extern "C" {
                 error code.
      */
     ERESULT         NodePgm_Enable (
-        NODEPGM_DATA		*this
+        NODEPGM_DATA	*this
     )
     {
         //ERESULT         eRc;
@@ -917,6 +952,189 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                    G e n e r a t i o n
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodePgm_GenMacBegin (
+        NODEPGM_DATA    *this,
+        DICT_DATA       *pDict
+    )
+    {
+        ASTR_DATA       *pStr =  OBJ_NIL;
+        ASTRC_DATA      *pStrC =  OBJ_NIL;
+        ASTRCARRAY_DATA *pArrayC =  OBJ_NIL;
+        DATETIME_DATA   *pDate = OBJ_NIL;
+        uint32_t        i;
+
+            // Do initialization.
+        #ifdef NDEBUG
+        #else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            //return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+            return OBJ_NIL;
+        }
+    #endif
+        
+        // Set up to generate Makefile entry.
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            //return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+            return OBJ_NIL;
+        }
+
+        AStr_AppendA(pStr,
+                     "# Generated file - Edits will be discarded by next generation!\n");
+        pDate = dateTime_NewCurrent();
+        if (pDate) {
+            ASTR_DATA       *pWrk;
+            pWrk = dateTime_ToString(pDate);
+            AStr_AppendPrint(pStr, "# (%s)\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+            obj_Release(pDate);
+            pDate = OBJ_NIL;
+        }
+        AStr_AppendA(pStr, "\n");
+
+        //AStr_AppendA(pStr, "CC=clang\n");
+        AStr_AppendPrint(pStr, "PGMNAM=%s\n", AStrC_getData(NodePgm_getName(this)));
+        AStr_AppendA(pStr, "SYS=macos64\n");
+        AStr_AppendA(pStr, "TEMP=/tmp\nBASE_OBJ = $(TEMP)/$(PGMNAM)\n");
+        AStr_AppendA(pStr, "SRCDIR = ./src\n");
+        AStr_AppendA(pStr, "TEST_SRC = ./tests\n");
+        AStr_AppendA(pStr, "INSTALL_BASE = $(HOME)/Support/bin\n");
+        AStr_AppendA(pStr, "LIB_BASE = $(HOME)/Support/lib/$(SYS)\n\n");
+
+        AStr_AppendPrint(pStr, "CFLAGS += -g -Werror -I$(%s)\n",
+                                Dict_GetA(pDict, srcDirVarID));
+        AStr_AppendA(pStr, "ifdef  NDEBUG\n");
+        AStr_AppendA(pStr, "CFLAGS += -DNDEBUG\n");
+        AStr_AppendA(pStr, "else   #DEBUG\n");
+        AStr_AppendA(pStr, "CFLAGS += -D_DEBUG\n");
+        AStr_AppendA(pStr, "endif  #NDEBUG\n");
+        AStr_AppendA(pStr, "CFLAGS += -D__MACOS64_ENV__\n");
+        AStr_AppendA(pStr, "CFLAGS_LIBS = \n");
+        pArrayC = NodePgm_getDeps(this);
+        if (pArrayC && (AStrCArray_getSize(pArrayC) > 0)) {
+            for (i=0; i<AStrCArray_getSize(pArrayC); i++) {
+                pStrC = AStrCArray_Get(pArrayC, i+1);
+                if (pStrC) {
+                    ASTR_DATA       *pStrUpper = AStrC_ToUpper(pStrC);
+                    AStr_AppendPrint(pStr, "# lib%s\n", AStrC_getData(pStrC));
+                    AStr_AppendPrint(pStr, "LIB%s_BASE = $(LIB_BASE)/lib%s\n",
+                                     AStr_getData(pStrUpper),
+                                     AStrC_getData(pStrC)
+                    );
+                    AStr_AppendPrint(pStr, "CFLAGS += -I$(LIB%s_BASE)/include\n",
+                                     AStr_getData(pStrUpper)
+                    );
+                    AStr_AppendPrint(pStr, "CFLAGS_LIBS += -l%s -L$(LIB%s_BASE)\n",
+                                     AStrC_getData(pStrC),
+                                     AStr_getData(pStrUpper)
+                    );
+                    obj_Release(pStrUpper);
+                }
+            }
+        }
+        AStr_AppendA(pStr, "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n");
+
+        AStr_AppendA(pStr, "LIBOBJ = $(BASE_OBJ)/$(SYS)\n");
+        AStr_AppendA(pStr, "ifdef  NDEBUG\n");
+        AStr_AppendA(pStr, "LIB_FILENAME=$(PGMNAM)R.a\n");
+        AStr_AppendA(pStr, "OBJDIR = $(LIBOBJ)/o/r\n");
+        AStr_AppendA(pStr, "else   #DEBUG\n");
+        AStr_AppendA(pStr, "LIB_FILENAME=$(PGMNAM)D.a\n");
+        AStr_AppendA(pStr, "OBJDIR = $(LIBOBJ)/o/d\n");
+        AStr_AppendA(pStr, "endif  #NDEBUG\n");
+        AStr_AppendA(pStr, "TEST_OBJ = $(OBJDIR)/tests\n");
+        AStr_AppendA(pStr, "TEST_BIN = $(OBJDIR)/tests\n");
+        AStr_AppendA(pStr, "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n");
+        
+        AStr_AppendA(pStr, ".SUFFIXES:\n");
+        AStr_AppendA(pStr, ".SUFFIXES: .asm .c .cpp .o\n\n");
+
+        AStr_AppendPrint(pStr, "%s =\n\n", Dict_GetA(pDict, objsVarID));
+        AStr_AppendPrint(pStr, "%s =\n\n", Dict_GetA(pDict, testsVarID));
+        AStr_AppendA(pStr, "\n");
+
+        // Return to caller.
+        return pStr;
+    }
+    
+
+    ASTR_DATA *     NodePgm_GenMacEnd (
+        NODEPGM_DATA    *this,
+        DICT_DATA       *pDict
+    )
+    {
+        ASTR_DATA       *pStr =  OBJ_NIL;
+
+            // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            //return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+            return OBJ_NIL;
+        }
+#endif
+        
+        // Set up to generate Makefile entry.
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            //return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
+            return OBJ_NIL;
+        }
+
+        AStr_AppendA(pStr, "\n\n.PHONY: test\n");
+        AStr_AppendPrint(pStr, "test: $(%s)\n\n\n", Dict_GetA(pDict, testsVarID));
+         
+        AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
+        AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(PGMNAM) ] "
+                            "&& rm -fr $(PGMNAM)\n\n\n");
+
+        AStr_AppendA(pStr, ".PHONY: install\ninstall:\n");
+        AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] "
+                            "&& rm -fr $(PGMNAM)\n");
+        AStr_AppendPrint(
+                pStr,
+                "\tcp $(%s)/$(PGMNAM) $(INSTALL_BASE)/$(PGMNAM)\n\n\n",
+                Dict_GetA(pDict, objDirVarID)
+        );
+
+        AStr_AppendPrint(
+                pStr,
+                ".PHONY: link\nlink: $(%s) $(%s)/mainProgram.c\n",
+                Dict_GetA(pDict, objsVarID),
+                Dict_GetA(pDict, srcDirVarID)
+        );
+        AStr_AppendPrint(
+                pStr,
+                "\tCC -o $(%s)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^\n\n\n",
+                Dict_GetA(pDict, objDirVarID)
+        );
+
+        AStr_AppendA(pStr, ".PHONY: create_dirs\n");
+        AStr_AppendA(pStr, "create_dirs:\n");
+        AStr_AppendPrint(pStr,
+                     "\t[ ! -d $(%s) ] && mkdir -p $(%s)/tests\n\n\n",
+                      Dict_GetA(pDict, objDirVarID),
+                      Dict_GetA(pDict, objDirVarID)
+        );
+         
+        AStr_AppendA(pStr, ".PHONY: all\n");
+        AStr_AppendA(pStr, "all:  clean create_dirs link\n\n\n");
+
+        // Return to caller.
+        return pStr;
+    }
+
+
+    
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------

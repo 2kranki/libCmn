@@ -121,6 +121,7 @@ extern "C" {
         NODETEST_DATA   **ppBase
     )
     {
+        //ERESULT         eRc;
         ERESULT_DATA    *pErr = OBJ_NIL;
         NODEHASH_DATA   *pHash;
         NODETEST_DATA   *pTest;
@@ -190,6 +191,19 @@ extern "C" {
             obj_Release(pTest);
             pErr = eResult_NewStrA(ERESULT_GENERAL_FAILURE, "Error: unexpected node type!");
             return pErr;
+        }
+        
+        if (pTest) {
+            pErr =  NodeBase_AddPrefixDepsA(
+                                    NodeTest_getNodeBase(pTest),
+                                    "$(TEST_SRC)/"
+                    );
+            if (OBJ_NIL == pErr) {
+                pErr =  NodeBase_AddPrefixSrcsA(
+                                        NodeTest_getNodeBase(pTest),
+                                        "$(TEST_SRC)/"
+                        );
+            }
         }
 
         // Return to caller.

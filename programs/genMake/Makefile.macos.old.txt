@@ -113,19 +113,19 @@ GenMac_test: $(TEST_SRC)/GenMac_test.c
 	$(TEST_OBJ)/$(@F)
 
 
-OBJS += $(OBJDIR)/GenWIN_object.o
+OBJS += $(OBJDIR)/GenWin_object.o
 
-$(OBJDIR)/GenWIN_object.o: $(SRCDIR)/GenWIN_object.c 
+$(OBJDIR)/GenWin_object.o: $(SRCDIR)/GenWin_object.c 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-OBJS += $(OBJDIR)/GenWIN.o
+OBJS += $(OBJDIR)/GenWin.o
 
-$(OBJDIR)/GenWIN.o: $(SRCDIR)/GenWIN.c $(SRCDIR)/genMake.h 
+$(OBJDIR)/GenWin.o: $(SRCDIR)/GenWin.c $(SRCDIR)/genMake.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
 
-TESTS += GenWIN_test
+TESTS += GenWin_test
 
-GenWIN_test: $(TEST_SRC)/GenWIN_test.c 
+GenWin_test: $(TEST_SRC)/GenWin_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 
@@ -313,23 +313,6 @@ $(OBJDIR)/SrcParse.o: $(SRCDIR)/SrcParse.c $(SRCDIR)/genMake.h
 TESTS += SrcParse_test
 
 SrcParse_test: $(TEST_SRC)/SrcParse_test.c $(TEST_SRC)/data_test.c 
-	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
-	$(TEST_OBJ)/$(@F)
-
-
-OBJS += $(OBJDIR)/SrcRef_object.o
-
-$(OBJDIR)/SrcRef_object.o: $(SRCDIR)/SrcRef_object.c 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-OBJS += $(OBJDIR)/SrcRef.o
-
-$(OBJDIR)/SrcRef.o: $(SRCDIR)/SrcRef.c $(SRCDIR)/genMake.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) $< 
-
-TESTS += SrcRef_test
-
-SrcRef_test: $(TEST_SRC)/SrcRef_test.c $(TEST_SRC)/data_test.c 
 	$(CC) $(CFLAGS) $(TEST_FLGS) -o $(TEST_OBJ)/$(@F) $(OBJS) $< 
 	$(TEST_OBJ)/$(@F)
 

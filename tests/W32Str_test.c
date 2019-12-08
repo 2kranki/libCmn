@@ -41,12 +41,12 @@ char            *pString1 = "\x01\xC0\x82\xE0\x80\x83\xF8\x80\x80\x84\x00";
 // WStr of "xyz"
 static
 const
-int32_t         string2[4] = { 'x', 'y', 'z', 0 };
+W32CHR_T        string2[4] = { 'x', 'y', 'z', 0 };
 
 
 static
 const
-int32_t         whiteSpace[11] = {
+W32CHR_T        whiteSpace[11] = {
     ' ',
     '\f',
     '\n',
@@ -135,8 +135,8 @@ int         test_w32str_OpenClose(
     W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     const
-    int32_t     *pData;
-    int32_t     chr;
+    W32CHR_T    *pData;
+    W32CHR_T    chr;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -176,7 +176,7 @@ int         test_w32str_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -190,7 +190,7 @@ int         test_w32str_Span(
     W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     uint32_t    index = 0;
-    int32_t     scanStr[4] = {'x','y','z',0};
+    W32CHR_T    scanStr[4] = {'x','y','z',0};
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -230,7 +230,7 @@ int         test_w32str_Span(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -245,9 +245,9 @@ int         test_w32str_AssignCopy(
     W32STR_DATA	*pOther = OBJ_NIL;
     ERESULT     eRc;
     const
-    int32_t     *pData1;
+    W32CHR_T    *pData1;
     const
-    int32_t     *pData2;
+    W32CHR_T    *pData2;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -284,7 +284,7 @@ int         test_w32str_AssignCopy(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -328,7 +328,7 @@ int         test_w32str_Compare(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -342,7 +342,7 @@ int         test_w32str_CompareA(
     W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     const
-    int32_t     *pData;
+    W32CHR_T    *pData;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -401,7 +401,7 @@ int         test_w32str_CompareA(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -415,7 +415,7 @@ int         test_w32str_CompareW(
     W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
     const
-    int32_t     *pData;
+    W32CHR_T    *pData;
     char        *pStr = NULL;
     uint32_t    lenStr;
     uint32_t    len;
@@ -491,7 +491,7 @@ int         test_w32str_CompareW(
         
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -621,7 +621,7 @@ int         test_w32str_AppendChr(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -685,7 +685,7 @@ int         test_w32str_Append(
         
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -735,7 +735,7 @@ int         test_w32str_CharFindNext(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -780,7 +780,7 @@ int         test_w32str_CharFindPrev(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -826,7 +826,7 @@ int         test_w32str_LeftRightMid(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -853,7 +853,7 @@ int         test_w32str_NewFromEnv(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -900,7 +900,78 @@ int         test_w32str_File(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_w32str_Find(
+    const
+    char        *pTestName
+)
+{
+    W32STR_DATA *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    //                             1111111111222222222
+    //                    1234567890123456789012345678
+    const
+    char        *pStr1 = "isa isa isa";
+    const
+    W32CHR_T    szSrchW32[] = {'i','s','a',0};
+    const
+    char        *pSrchA = "isa";
+    uint32_t    offset = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = W32Str_NewA(pStr1);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = W32Str_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (1 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = W32Str_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (5 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = W32Str_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (9 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = W32Str_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == offset) );
+
+        eRc = W32Str_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (1 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = W32Str_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (5 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = W32Str_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (9 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = W32Str_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == offset) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -913,7 +984,7 @@ int         test_w32str_Trim(
 {
     W32STR_DATA	*pObj = OBJ_NIL;
     ERESULT     eRc;
-    int32_t     chrW32 = 'x';
+    W32CHR_T    chrW32 = 'x';
     
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -970,7 +1041,7 @@ int         test_w32str_Trim(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -1075,7 +1146,7 @@ int         test_w32str_EscapeForC(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -1119,7 +1190,7 @@ int         test_w32str_CRC01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -1130,11 +1201,11 @@ int         test_w32str_JSON01(
     char        *pTestName
 )
 {
-    ERESULT     eRc;
-    W32STR_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc = ERESULT_SUCCESS;
+    W32STR_DATA *pObj = OBJ_NIL;
     //uint32_t    crc;
     ASTR_DATA   *pJson = OBJ_NIL;
-    W32STR_DATA   *pJsonOut = OBJ_NIL;
+    W32STR_DATA *pJsonOut = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -1186,7 +1257,7 @@ int         test_w32str_JSON01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -1198,6 +1269,7 @@ TINYTEST_START_SUITE(test_w32str);
     TINYTEST_ADD_TEST(test_w32str_CRC01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_w32str_EscapeForC,setUp,tearDown);
     TINYTEST_ADD_TEST(test_w32str_Trim,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_w32str_Find,setUp,tearDown);
     TINYTEST_ADD_TEST(test_w32str_File,setUp,tearDown);
     TINYTEST_ADD_TEST(test_w32str_NewFromEnv,setUp,tearDown);
     TINYTEST_ADD_TEST(test_w32str_LeftRightMid,setUp,tearDown);

@@ -28,6 +28,7 @@
 #include    <trace.h>
 #include    <AStr_internal.h>
 #include    <srcErrors.h>
+#include    <utf8.h>
 
 
 // Faked UTF-8 of 0x01..0x04 in 1..4 bytes
@@ -1626,8 +1627,152 @@ int         test_AStr_LowerUpper(
 
 
 
+int         test_AStr_Find(
+    const
+    char        *pTestName
+)
+{
+    ASTR_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    //                             1111111111222222222
+    //                    1234567890123456789012345678
+    const
+    char        *pStr1 = "isa isa isa";
+    const
+    W32CHR_T    szSrchW32[] = {'i','s','a',0};
+    const
+    char        *pSrchA = "isa";
+    uint32_t    offset = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = AStr_NewA(pStr1);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = AStr_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (1 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = AStr_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (5 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = AStr_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (9 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = AStr_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == offset) );
+
+        eRc = AStr_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (1 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = AStr_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (5 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = AStr_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (9 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = AStr_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == offset) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_AStr_Prepend(
+    const
+    char        *pTestName
+)
+{
+    ASTR_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    //                             1111111111222222222
+    //                    1234567890123456789012345678
+    const
+    char        *pStr1 = "isa isa isa";
+    const
+    W32CHR_T    szSrchW32[] = {'i','s','a',0};
+    const
+    char        *pSrchA = "isa";
+    uint32_t    offset = 0;
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = AStr_NewA(pStr1);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        eRc = AStr_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (1 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = AStr_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (5 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = AStr_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (9 == offset) );
+        offset += utf8_StrLenW32(szSrchW32);
+
+        eRc = AStr_FindNextW32(pObj, szSrchW32, &offset);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == offset) );
+
+        eRc = AStr_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (1 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = AStr_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (5 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = AStr_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (9 == offset) );
+        offset += utf8_StrLenA(pSrchA);
+
+        eRc = AStr_FindNextA(pObj, pSrchA, &offset);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == offset) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_AStr);
+    TINYTEST_ADD_TEST(test_AStr_Prepend,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_AStr_Find,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_LowerUpper,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_CharGet01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_SplitOn05,setUp,tearDown);

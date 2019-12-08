@@ -925,10 +925,6 @@ extern "C" {
         ExpandNodes_setRtns(this, OBJ_NIL);
         ExpandNodes_setStr(this, OBJ_NIL);
         ExpandNodes_setTests(this, OBJ_NIL);
-        if (this->pSuffixC) {
-            obj_Release(this->pSuffixC);
-            this->pSuffixC = OBJ_NIL;
-        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1019,8 +1015,6 @@ extern "C" {
      Expand an object into several nodes, some optional.
      @param     this    object pointer
      @param     pObj    Input Object Node
-     @param     pArch   Optional Architecture String
-     @param     pOS     Optional Operating System String
      @return    if successful, OBJ_NIL.  Otherwise, an ERESULT_DATA *
                 error code which must be released.
      */
@@ -1037,7 +1031,8 @@ extern "C" {
         NODETEST_DATA       *pTest = OBJ_NIL;
         ASTRC_DATA          *pName;
         ASTRC_DATA          *pNameWrk;
-        ASTRC_DATA          *pSuffix = OBJ_NIL;
+        ASTRC_DATA          *pExt = OBJ_NIL;
+        ASTRCARRAY_DATA     *pArray = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1055,6 +1050,37 @@ extern "C" {
             return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
         }
 #endif
+        if (this->pLib) {
+            pArray = NodeLib_getDeps(this->pLib);
+        } else if (this->pPgm) {
+            pArray = NodePgm_getDeps(this->pPgm);
+        }
+        if (pArray) {
+            ASTRCARRAY_DATA     *pDeps = NodeBase_getDeps(NodeObj_getNodeBase(pObj));
+            pArray = AStrCArray_Copy(pArray);
+            if (pArray) {
+                uint32_t        i;
+                uint32_t        iMax = AStrCArray_getSize(pArray);
+                ASTR_DATA       *pStr = AStr_New();
+                for (i=0; i<iMax; i++) {
+                    ASTRC_DATA      *pWrkC = AStrCArray_Get(pArray, i+1);
+                    AStr_AppendPrint(pStr, "$(SRCDIR)/%d_defs.h", AStrC_getData(pWrkC));
+                    if (!AStrCArray_FindA(pDeps, AStr_getData(pStr))) {
+                        eRc = AStrCArray_AppendA(pDeps, AStr_getData(pStr), NULL);
+                    }
+                    AStr_Truncate(pStr, 0);
+                }
+                obj_Release(pStr);
+            }
+        }
+        if (this->pLib) {
+            pArray = NodeLib_getHdrs(this->pLib);
+        } else if (this->pPgm) {
+            pArray = NodePgm_getHdrs(this->pPgm);
+        }
+        if (pArray) {
+            pErr = NodeBase_MergeDeps(NodeObj_getNodeBase(pObj), pArray);
+        }
         pName = NodeObj_getName(pObj);
 
         pRtnA = NodeRtnA_New();
@@ -1068,10 +1094,6 @@ extern "C" {
             return eResult_NewStrA(ERESULT_GENERAL_FAILURE, "Object assign failed!");
         }
         NodeRtnA_setName(pRtnA, pName);
-        pSuffix = NodeRtnA_getSuffix(pRtnA);
-        if (OBJ_NIL == pSuffix) {
-            NodeRtnA_setSuffix(pRtnA, this->pSuffixC);
-        }
         pErr = ExpandNodes_AppendRtn(this, pRtnA);
         obj_Release(pRtnA);
         pRtnA = OBJ_NIL;
@@ -1094,10 +1116,7 @@ extern "C" {
         NodeRtnA_setName(pRtnA, pNameWrk);
         obj_Release(pNameWrk);
         pNameWrk = OBJ_NIL;
-        pSuffix = NodeRtnA_getSuffix(pRtnA);
-        if (OBJ_NIL == pSuffix) {
-            NodeRtnA_setSuffix(pRtnA, this->pSuffixC);
-        }
+        pExt = NodeRtnA_getExt(pRtnA);
         pErr = ExpandNodes_AppendRtn(this, pRtnA);
         obj_Release(pRtnA);
         pRtnA = OBJ_NIL;
@@ -1135,10 +1154,6 @@ extern "C" {
             } else {
                 pNameWrk = AStrC_AppendA(pName, "_test");
                 NodeTstA_setName(pTstA, pNameWrk);
-            }
-            pSuffix = NodeTstA_getSuffix(pTstA);
-            if (OBJ_NIL == pSuffix) {
-                NodeTstA_setSuffix(pTstA, this->pSuffixC);
             }
             pErr = ExpandNodes_AppendTest(this, pTstA);
             obj_Release(pTstA);
@@ -1223,7 +1238,6 @@ extern "C" {
         NODETSTA_DATA       *pTstA = OBJ_NIL;
         NODETEST_DATA       *pTest = OBJ_NIL;
         ASTRC_DATA          *pName;
-        ASTRC_DATA          *pSuffix = OBJ_NIL;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -1254,10 +1268,6 @@ extern "C" {
             return eResult_NewStrA(ERESULT_GENERAL_FAILURE, "Routine assign failed!");
         }
         NodeRtnA_setName(pRtnA, pName);
-        pSuffix = NodeRtnA_getSuffix(pRtnA);
-        if (OBJ_NIL == pSuffix) {
-            NodeRtnA_setSuffix(pRtnA, this->pSuffixC);
-        }
         pErr = ExpandNodes_AppendRtn(this, pRtnA);
         obj_Release(pRtnA);
         pRtnA = OBJ_NIL;
@@ -1280,10 +1290,6 @@ extern "C" {
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_GENERAL_FAILURE, "Test assign failed!");
-            }
-            pSuffix = NodeTstA_getSuffix(pTstA);
-            if (OBJ_NIL == pSuffix) {
-                NodeTstA_setSuffix(pTstA, this->pSuffixC);
             }
             pErr = ExpandNodes_AppendTest(this, pTstA);
             obj_Release(pTstA);
@@ -1404,12 +1410,6 @@ extern "C" {
         }
         this->pTests = nodeArray_New( );
         if (OBJ_NIL == this->pTests) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        this->pSuffixC = AStrC_NewA("c");
-        if (OBJ_NIL == this->pSuffixC) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;

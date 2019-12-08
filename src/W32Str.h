@@ -54,7 +54,7 @@
 
 #include        <cmn_defs.h>
 #include        <str.h>
-
+#include        <AStrC.h>
 
 #ifndef         W32STR_H
 #define         W32STR_H
@@ -378,11 +378,56 @@ extern "C" {
     );
     
     
+    /*! Scan the string until one of the characters in the given
+        nul-terminated string are found. Start searching at the
+        given index and bump it as the search continues.
+     @param     this    object pointer
+     @param     pStrA   pointer to a wide char nul-terminated string.
+     @param     pIndex  Index into the string to start at and where the
+                        scan stopped.
+     @return    If one of the chars is found, ERESULT_SUCCESS.
+                ERESULT_OUT_OF_RANGE if none of the chars are found.
+     */
+    ERESULT         W32Str_FindNextA(
+        W32STR_DATA     *this,
+        const
+        char            *pStrA,             // UTF-8 String
+        uint32_t        *pIndex
+    );
+
+
+    /*! Scan the string until one of the characters in the given
+        nul-terminated string are found. Start searching at the
+        given index and bump it as the search continues.
+     @param     this    object pointer
+     @param     pStrW32 pointer to a wide char nul-terminated string.
+     @param     pIndex  Index into the string to start at and where the
+                        scan stopped.
+     @return    If one of the chars is found, ERESULT_SUCCESS.
+                ERESULT_OUT_OF_RANGE if none of the chars are found.
+     */
+    ERESULT         W32Str_FindNextW32(
+        W32STR_DATA     *this,
+        const
+        W32CHR_T        *pStrW32,
+        uint32_t        *pIndex
+    );
+
+
     uint32_t        W32Str_Hash(
         W32STR_DATA     *this
     );
     
-    
+    /*! Scan the string until one of the characters in the given
+        nul-terminated string are found. Start searching at the
+        given index and bump it as the search continues.
+     @param     this    object pointer
+     @param     pSetStr pointer to a nul-terminated set of wide chars.
+     @param     pIndex  Index into the string to start at and where the
+                        scan stopped.
+     @return    If one of the chars is found, ERESULT_SUCCESS.
+                ERESULT_OUT_OF_RANGE if none of the chars are found.
+     */
     ERESULT         W32Str_IndexUntil(
         W32STR_DATA		*this,
         const

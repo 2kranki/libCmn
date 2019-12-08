@@ -219,6 +219,22 @@ extern "C" {
     );
     
     
+    W32CHR_T        AStrC_CharGetW32(
+        ASTRC_DATA      *this,
+        uint32_t        offset
+    );
+
+
+    W32CHR_T        AStrC_CharGetFirstW32(
+        ASTRC_DATA      *this
+    );
+
+
+    W32CHR_T        AStrC_CharGetLastW32(
+        ASTRC_DATA      *this
+    );
+
+
     /*!
      Compare 'this' to 'pOther'.
      @param     this    object pointer
@@ -255,6 +271,42 @@ extern "C" {
     );
     
     
+    /*! Scan the string until one of the characters in the given
+        nul-terminated string are found. Start searching at the
+        given index and bump it as the search continues.
+     @param     this    object pointer
+     @param     pStrA   pointer to a wide char nul-terminated string.
+     @param     pIndex  Index into the string to start at and where the
+                        scan stopped.
+     @return    If one of the chars is found, ERESULT_SUCCESS.
+                ERESULT_OUT_OF_RANGE if none of the chars are found.
+     */
+    ERESULT         AStrC_FindNextA(
+        ASTRC_DATA      *this,
+        const
+        char            *pStrA,             // UTF-8 String
+        uint32_t        *pIndex
+    );
+
+
+    /*! Scan the string until one of the characters in the given
+        nul-terminated string are found. Start searching at the
+        given index and bump it as the search continues.
+     @param     this    object pointer
+     @param     pStrW32 pointer to a wide char nul-terminated string.
+     @param     pIndex  Index into the string to start at and where the
+                        scan stopped.
+     @return    If one of the chars is found, ERESULT_SUCCESS.
+                ERESULT_OUT_OF_RANGE if none of the chars are found.
+     */
+    ERESULT         AStrC_FindNextW32(
+        ASTRC_DATA      *this,
+        const
+        W32CHR_T        *pStrW32,
+        uint32_t        *pIndex
+    );
+
+
     uint32_t        AStrC_Hash(
         ASTRC_DATA      *this
     );
@@ -280,6 +332,13 @@ extern "C" {
     );
     
     
+    ASTRC_DATA *    AStrC_PrependA(
+        ASTRC_DATA      *this,
+        const
+        char            *pStr
+    );
+
+
     /*!
      Create an AStr object from this string.
      @return:   If successful, an AStr object which must be released,
@@ -290,6 +349,11 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     AStrC_ToLower(
+        ASTRC_DATA      *this
+    );
+
+
     /*!
      Create an AStr object from this string.
      @return:   If successful, an AStr object which must be released,
