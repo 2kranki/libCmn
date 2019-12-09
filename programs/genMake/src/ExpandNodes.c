@@ -123,6 +123,54 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                     D e p e n d e n c i e s
+    //---------------------------------------------------------------
+    
+    ASTRCARRAY_DATA *   ExpandNodes_getDeps (
+        EXPANDNODES_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pDeps;
+    }
+    
+    
+    bool                ExpandNodes_setDeps (
+        EXPANDNODES_DATA    *this,
+        ASTRCARRAY_DATA     *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_DEPS_OWNED
+        obj_Retain(pValue);
+        if (this->pDeps) {
+            obj_Release(this->pDeps);
+        }
+#endif
+        this->pDeps = pValue;
+        
+        return true;
+    }
+        
+            
+            
+    //---------------------------------------------------------------
     //                     D i c t i o n a r y
     //---------------------------------------------------------------
     
@@ -218,49 +266,6 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //                          P r i o r i t y
-    //---------------------------------------------------------------
-    
-    uint16_t        ExpandNodes_getPriority (
-        EXPANDNODES_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!ExpandNodes_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        //return this->priority;
-        return 0;
-    }
-
-
-    bool            ExpandNodes_setPriority (
-        EXPANDNODES_DATA     *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!ExpandNodes_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        //this->priority = value;
-
-        return true;
-    }
-
-
-
     //---------------------------------------------------------------
     //                   P r o g r a m  O b j e c t
     //---------------------------------------------------------------
@@ -378,54 +383,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * ExpandNodes_getStr (
-        EXPANDNODES_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!ExpandNodes_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        ExpandNodes_setStr (
-        EXPANDNODES_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!ExpandNodes_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -765,7 +722,6 @@ extern "C" {
         ExpandNodes_setLib(this, OBJ_NIL);
         ExpandNodes_setPgm(this, OBJ_NIL);
         ExpandNodes_setRtns(this, OBJ_NIL);
-        ExpandNodes_setStr(this, OBJ_NIL);
         ExpandNodes_setTests(this, OBJ_NIL);
 
         this->pRtns = nodeArray_New( );
@@ -920,11 +876,12 @@ extern "C" {
         }
 #endif
 
+        ExpandNodes_setDict(this, OBJ_NIL);
         ExpandNodes_setLib(this, OBJ_NIL);
         ExpandNodes_setPgm(this, OBJ_NIL);
         ExpandNodes_setRtns(this, OBJ_NIL);
-        ExpandNodes_setStr(this, OBJ_NIL);
         ExpandNodes_setTests(this, OBJ_NIL);
+        ExpandNodes_setDeps(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1032,7 +989,6 @@ extern "C" {
         ASTRC_DATA          *pName;
         ASTRC_DATA          *pNameWrk;
         ASTRC_DATA          *pExt = OBJ_NIL;
-        ASTRCARRAY_DATA     *pArray = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1050,37 +1006,8 @@ extern "C" {
             return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
         }
 #endif
-        if (this->pLib) {
-            pArray = NodeLib_getDeps(this->pLib);
-        } else if (this->pPgm) {
-            pArray = NodePgm_getDeps(this->pPgm);
-        }
-        if (pArray) {
-            ASTRCARRAY_DATA     *pDeps = NodeBase_getDeps(NodeObj_getNodeBase(pObj));
-            pArray = AStrCArray_Copy(pArray);
-            if (pArray) {
-                uint32_t        i;
-                uint32_t        iMax = AStrCArray_getSize(pArray);
-                ASTR_DATA       *pStr = AStr_New();
-                for (i=0; i<iMax; i++) {
-                    ASTRC_DATA      *pWrkC = AStrCArray_Get(pArray, i+1);
-                    AStr_AppendPrint(pStr, "$(SRCDIR)/%d_defs.h", AStrC_getData(pWrkC));
-                    if (!AStrCArray_FindA(pDeps, AStr_getData(pStr))) {
-                        eRc = AStrCArray_AppendA(pDeps, AStr_getData(pStr), NULL);
-                    }
-                    AStr_Truncate(pStr, 0);
-                }
-                obj_Release(pStr);
-            }
-        }
-        if (this->pLib) {
-            pArray = NodeLib_getHdrs(this->pLib);
-        } else if (this->pPgm) {
-            pArray = NodePgm_getHdrs(this->pPgm);
-        }
-        if (pArray) {
-            pErr = NodeBase_MergeDeps(NodeObj_getNodeBase(pObj), pArray);
-        }
+        
+        pErr = NodeBase_MergeDeps(NodeObj_getNodeBase(pObj), this->pDeps);
         pName = NodeObj_getName(pObj);
 
         pRtnA = NodeRtnA_New();
@@ -1127,6 +1054,7 @@ extern "C" {
 
         pRtn = NodeObj_getJson(pObj);
         if (pRtn) {
+            pErr = NodeBase_MergeDeps(NodeRtn_getNodeBase(pRtn), NodeObj_getDeps(pObj));
             pErr = ExpandNodes_ExpandRtn(this, pRtn);
             if (pErr) {
                 return pErr;
@@ -1135,6 +1063,7 @@ extern "C" {
         
         pTest = NodeObj_getTest(pObj);
         if (pTest) {
+            pErr = NodeBase_MergeDeps(NodeTest_getNodeBase(pTest), NodeObj_getDeps(pObj));
             pNameWrk = NodeTest_getName(pTest);
             pTstA = NodeTstA_New();
             if (OBJ_NIL == pTstA) {
@@ -1256,7 +1185,8 @@ extern "C" {
         }
     #endif
         pName = NodeRtn_getName(pRtn);
-        
+        pErr = NodeBase_MergeDeps(NodeRtn_getNodeBase(pRtn), this->pDeps);
+
         pRtnA = NodeRtnA_New();
         if (OBJ_NIL == pRtnA) {
             DEBUG_BREAK();
@@ -1283,6 +1213,7 @@ extern "C" {
                 DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
             }
+            pErr = NodeBase_MergeDeps(NodeTest_getNodeBase(pTest), NodeRtn_getDeps(pRtn));
             eRc =   NodeBase_Assign(
                                   NodeTest_getNodeBase(pTest),
                                   NodeTstA_getNodeBase(pTstA)
@@ -1410,6 +1341,12 @@ extern "C" {
         }
         this->pTests = nodeArray_New( );
         if (OBJ_NIL == this->pTests) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        this->pDeps = AStrCArray_New( );
+        if (OBJ_NIL == this->pDeps) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -1587,6 +1524,78 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                     S e t u p  D e p s
+    //---------------------------------------------------------------
+
+    /*!
+     Set up the external dependencies from the Program or Library
+     definitions.
+     @param     this    object pointer
+     @param     pDict   Dictionary pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ExpandNodes_SetupDeps (
+        EXPANDNODES_DATA    *this,
+        DICT_DATA           *pDict
+    )
+    {
+        ASTRCARRAY_DATA     *pArray = OBJ_NIL;
+        ERESULT             eRc;
+        const
+        char                *pSrcDirA;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pDict) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        pSrcDirA = Dict_GetA(pDict, srcDirVarID);
+        
+        // Merge Headers.
+        if (this->pLib) {
+            pArray = NodeLib_getHdrs(this->pLib);
+        } else if (this->pPgm) {
+            pArray = NodePgm_getHdrs(this->pPgm);
+        }
+        if (pArray) {
+            uint32_t        i;
+            uint32_t        iMax = AStrCArray_getSize(pArray);
+            ASTR_DATA       *pStr = AStr_New();
+            for (i=0; i<iMax; i++) {
+                ASTRC_DATA      *pWrkC = AStrCArray_Get(pArray, i+1);
+                const
+                char            *pStrA;
+                if ('$' == AStrC_CharGetFirstW32(pWrkC))
+                    pStrA = AStrC_getData(pWrkC);
+                else {
+                    AStr_AppendA(pStr, pSrcDirA);
+                    AStr_AppendA(pStr, "/");
+                    AStr_AppendA(pStr, AStrC_getData(pWrkC));
+                    pStrA = AStr_getData(pStr);
+                }
+                if (0 == AStrCArray_FindA(this->pDeps, pStrA)) {
+                    eRc = AStrCArray_AppendA(this->pDeps, pStrA, NULL);
+                }
+                AStr_Truncate(pStr, 0);
+            }
+            obj_Release(pStr);
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                         S o r t
     //---------------------------------------------------------------
 
@@ -1680,7 +1689,7 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     ExpandNodes_ToDebugString (
-        EXPANDNODES_DATA      *this,
+        EXPANDNODES_DATA *this,
         int             indent
     )
     {
@@ -1747,7 +1756,101 @@ extern "C" {
     }
     
     
-    
+    ASTR_DATA *     ExpandNodes_ToString (
+        EXPANDNODES_DATA *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        NODERTNA_DATA   *pRtnA = OBJ_NIL;
+        NODETSTA_DATA   *pTstA = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ExpandNodes_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+              
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        eRc = AStr_AppendPrint(pStr, "==================  ExpandNodes Output "
+                               "=================\n");
+
+        if (this->pLib) {
+            pWrk = NodeLib_ToString(this->pLib);
+            if (pWrk) {
+                eRc = AStr_Append(pStr, pWrk);
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+                AStr_AppendA(pStr, "\n");
+            }
+        }
+        if (this->pPgm) {
+            pWrk = NodePgm_ToString(this->pPgm);
+            if (pWrk) {
+                eRc = AStr_Append(pStr, pWrk);
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+                AStr_AppendA(pStr, "\n");
+            }
+        }
+        if (this->pRtns) {
+            iMax = nodeArray_getSize(this->pRtns);
+            if (iMax > 0) {
+                eRc = AStr_AppendPrint(pStr, "-----------------  ExpandNodes %d Routines "
+                                       "-----------------\n", iMax);
+            }
+            for (i=0; i<iMax; i++) {
+                pRtnA = (NODERTNA_DATA *)nodeArray_Get(this->pRtns, i+1);
+                if (pRtnA) {
+                    pWrk = NodeRtnA_ToString(pRtnA);
+                    if (pWrk) {
+                        eRc = AStr_Append(pStr, pWrk);
+                        obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+            AStr_AppendA(pStr, "\n");
+        }
+        if (this->pTests) {
+            iMax = nodeArray_getSize(this->pTests);
+            if (iMax > 0) {
+                eRc = AStr_AppendPrint(pStr, "-----------------  ExpandNodes %d Tests "
+                                       "-----------------\n", iMax);
+            }
+            for (i=0; i<iMax; i++) {
+                pTstA = (NODETSTA_DATA *)nodeArray_Get(this->pTests, i+1);
+                if (pTstA) {
+                    pWrk = NodeTstA_ToString(pTstA);
+                    if (pWrk) {
+                        eRc = AStr_Append(pStr, pWrk);
+                        obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+            AStr_AppendA(pStr, "\n");
+        }
+
+        return pStr;
+    }
+        
+            
+
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

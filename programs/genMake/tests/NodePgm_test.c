@@ -539,7 +539,7 @@ int             test_NodePgm_End01(
     NODEPGM_DATA    *pPgm = OBJ_NIL;
     NODE_DATA       *pNodes = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
-    bool            fDump = false;
+    bool            fDump = true;
     int             iRc;
     int             offset = 0;
 

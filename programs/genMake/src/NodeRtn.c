@@ -1298,7 +1298,48 @@ extern "C" {
     }
     
     
-    
+     ASTR_DATA *    NodeRtn_ToString (
+        NODERTN_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrk;
+        
+#ifdef NDEBUG
+#else
+        if (!NodeRtn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_New();
+        if (pStr) {
+            eRc =   AStr_AppendA(pStr, "===> RTN:\n");
+            pWrk = NodeBase_ToString(NodeRtn_getNodeBase(this));
+            if (pWrk) {
+                eRc = AStr_Append(pStr, pWrk);
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+            if (this->pTest) {
+                eRc =   AStr_AppendA(pStr, "===> RTN's TEST:\n");
+                pWrk = NodeTest_ToString(this->pTest);
+                if (pWrk) {
+                    eRc = AStr_Append(pStr, pWrk);
+                    obj_Release(pWrk);
+                    pWrk = OBJ_NIL;
+                }
+            }
+            eRc = AStr_AppendA(pStr, "\n\n");
+        }
+        
+        return pStr;
+    }
+                
+                
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

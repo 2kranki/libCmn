@@ -49,7 +49,7 @@
 
 
 
-#define     PROPERTY_STR_OWNED 1
+#define     PROPERTY_MAIN_OWNED 1
 
 
 
@@ -72,8 +72,6 @@ struct NodePgm_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
     ASTRC_DATA      *pMain;
 
 };

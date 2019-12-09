@@ -352,6 +352,11 @@ extern "C" {
     );
     
     
+    ASTR_DATA *    NodeTstA_ToString (
+        NODETSTA_DATA   *this
+    );
+
+
 
     
 #ifdef	__cplusplus

@@ -117,6 +117,7 @@ int             test_ExpandNodes_Program01(
     char            *pTestName
 )
 {
+    DICT_DATA       *pDict = OBJ_NIL;
     SRCPARSE_DATA   *pPrs = OBJ_NIL;
     EXPANDNODES_DATA *pExpand = OBJ_NIL;
     ERESULT_DATA    *pErr;
@@ -128,35 +129,34 @@ int             test_ExpandNodes_Program01(
     "{\n"
         "\"program\":{\n"
             "\"name\":\"genMake\",\n"
-            "\"deps\":[\"Cmd\"]\n"
+            "\"deps\":[\"Cmn\"],\n"
+            "\"hdrs\":\"genMake.h\"\n"
         "}\n,"
         "\"objects\": [\n"
-            "{name:\"AStr\", \"json\":true},\n"
-            "{name:\"appl\"},\n"
+            "{name:\"NodeBase\", json:true},\n"
+            "{name:\"NodeLib\", deps:[\"NodeBase.h\"]},\n"
         "],\n"
         "\"routines\": [\n"
-                "{name:\"dllist\", \"test\":true},\n"
                 "{name:\"cmnMac64\", os:[\"macos64\"]},\n"
                 "{name:\"obj\"},\n"
                 "{name:\"str\", test:true}\n"
         "],\n"
     "}\n";
-    bool            fDumpNodes = true;
+    bool            fDumpNodes = false;
+    bool            fDump = true;
     uint32_t        iMax;
-    NODELIB_DATA    *pLib;
-    NODEPGM_DATA    *pPgm;
-    NODEOBJ_DATA    *pObj;
-    NODERTN_DATA    *pRtn;
-    NODERTNA_DATA   *pRtnA;
-    NODETSTA_DATA   *pTstA;
-    ASTRC_DATA      *pStrC;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pDict = Dict_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pDict) );
+    Dict_Defaults(pDict);
     
     pPrs = SrcParse_New( );
     TINYTEST_FALSE( (OBJ_NIL == pPrs) );
     if (pPrs) {
         
+        // Parse the JSON source in a raw source tree.
         //obj_TraceSet(pObj, true);
         pErr = SrcParse_ParseJsonStr(pPrs, pGoodJson1);
         if (pErr) {
@@ -178,89 +178,97 @@ int             test_ExpandNodes_Program01(
             pWrk = OBJ_NIL;
         }
 
+        // Convert the source tree into objects, routines and tests.
         pErr = SrcParse_ParseNodes(pPrs);
         if (pErr) {
             eResult_Fprint(pErr, stderr);
         }
         TINYTEST_TRUE((OBJ_NIL == pErr));
-        
+
+        if (fDump) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = SrcParse_ToString(pPrs);
+            if (pWrk) {
+                fprintf(stderr, "\n%s\n\n\n", AStr_getData(pWrk));
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+        }
+
         pExpand = ExpandNodes_New();
         TINYTEST_FALSE( (OBJ_NIL == pExpand) );
         if (pExpand) {
             
+            ExpandNodes_setLib(pExpand, SrcParse_getLib(pPrs));
+            ExpandNodes_setPgm(pExpand, SrcParse_getPgm(pPrs));
+            ExpandNodes_SetupDeps(pExpand, pDict);
+            
             pArray = SrcParse_getObjs(pPrs);
-            if (fDumpNodes) {
-                ASTR_DATA       *pWrk = OBJ_NIL;
-                pWrk = nodeArray_ToDebugString(pArray, 0);
-                fprintf(stderr, "\n====> OBJ Array:\n%s\n\n\n", AStr_getData(pWrk));
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
-            }
             pErr = ExpandNodes_ExpandObjs(pExpand, pArray);
             TINYTEST_TRUE( (OBJ_NIL == pErr) );
             ExpandNodes_Sort(pExpand);
+            fprintf(stderr, "====================================\n");
+            fprintf(stderr, "ExpandNodes just expanded Objs only!\n");
+            fprintf(stderr, "------------------------------------\n");
+
             pArray = ExpandNodes_getRtns(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
             iMax = nodeArray_getSize(pArray);
             fprintf(stderr, "\tObjs: Number of RtnAs: %d\n", iMax);
             TINYTEST_TRUE( (5 == iMax) );
-            if (fDumpNodes) {
-                ASTR_DATA       *pWrk = OBJ_NIL;
-                pWrk = nodeArray_ToDebugString(pArray, 0);
-                fprintf(stderr, "\n====> RTNA Array:\n%s\n\n\n", AStr_getData(pWrk));
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
-            }
+
             pArray = ExpandNodes_getTests(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
             iMax = nodeArray_getSize(pArray);
             fprintf(stderr, "\tObjs: Number of TstAs: %d\n", iMax);
             TINYTEST_TRUE( (2 == iMax) );
-            if (fDumpNodes) {
-                ASTR_DATA       *pWrk = OBJ_NIL;
-                pWrk = nodeArray_ToDebugString(pArray, 0);
-                fprintf(stderr, "\n====> TSTA Array:\n%s\n\n\n", AStr_getData(pWrk));
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
-            }
 
-            ExpandNodes_Clean(pExpand);
-            pArray = SrcParse_getRtns(pPrs);
-            if (fDumpNodes) {
+            if (fDump) {
                 ASTR_DATA       *pWrk = OBJ_NIL;
-                pWrk = nodeArray_ToDebugString(pArray, 0);
-                fprintf(stderr, "\n====> RTN Array:\n%s\n\n\n", AStr_getData(pWrk));
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
+                pWrk = ExpandNodes_ToString(pExpand);
+                if (pWrk) {
+                    fprintf(stderr, "\n%s\n\n\n", AStr_getData(pWrk));
+                    obj_Release(pWrk);
+                    pWrk = OBJ_NIL;
+                }
             }
+            
+            ExpandNodes_Clean(pExpand);
+            ExpandNodes_setLib(pExpand, SrcParse_getLib(pPrs));
+            ExpandNodes_setPgm(pExpand, SrcParse_getPgm(pPrs));
+            ExpandNodes_SetupDeps(pExpand, pDict);
+
+            pArray = SrcParse_getRtns(pPrs);
             pErr = ExpandNodes_ExpandRtns(pExpand, pArray);
             TINYTEST_TRUE( (OBJ_NIL == pErr) );
             ExpandNodes_Sort(pExpand);
+            fprintf(stderr, "====================================\n");
+            fprintf(stderr, "ExpandNodes just expanded Rtns only!\n");
+            fprintf(stderr, "------------------------------------\n");
+
             pArray = ExpandNodes_getRtns(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
             iMax = nodeArray_getSize(pArray);
             fprintf(stderr, "\tRtns: Number of RtnAs: %d\n", iMax);
-            TINYTEST_TRUE( (4 == iMax) );
-            if (fDumpNodes) {
-                ASTR_DATA       *pWrk = OBJ_NIL;
-                pWrk = nodeArray_ToDebugString(pArray, 0);
-                fprintf(stderr, "\n====> RTNA Array:\n%s\n\n\n", AStr_getData(pWrk));
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
-            }
+            TINYTEST_TRUE( (3 == iMax) );
+
             pArray = ExpandNodes_getTests(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
             iMax = nodeArray_getSize(pArray);
             fprintf(stderr, "\tRtns: Number of TstAs: %d\n", iMax);
-            TINYTEST_TRUE( (2 == iMax) );
-            if (fDumpNodes) {
-                ASTR_DATA       *pWrk = OBJ_NIL;
-                pWrk = nodeArray_ToDebugString(pArray, 0);
-                fprintf(stderr, "\n====> TSTA Array:\n%s\n\n\n", AStr_getData(pWrk));
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
-            }
+            TINYTEST_TRUE( (1 == iMax) );
 
+            if (fDump) {
+                ASTR_DATA       *pWrk = OBJ_NIL;
+                fprintf(stderr, "Second Expansion Completed:\n");
+                pWrk = ExpandNodes_ToString(pExpand);
+                if (pWrk) {
+                    fprintf(stderr, "\n%s\n\n\n", AStr_getData(pWrk));
+                    obj_Release(pWrk);
+                    pWrk = OBJ_NIL;
+                }
+            }
+            
             obj_Release(pExpand);
             pExpand = OBJ_NIL;
         }
@@ -272,6 +280,9 @@ int             test_ExpandNodes_Program01(
         pPrs = OBJ_NIL;
     }
 
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
+    
     fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
@@ -283,6 +294,7 @@ int             test_ExpandNodes_Program02(
     char            *pTestName
 )
 {
+    DICT_DATA       *pDict = OBJ_NIL;
     SRCPARSE_DATA   *pPrs = OBJ_NIL;
     EXPANDNODES_DATA *pExpand = OBJ_NIL;
     ERESULT_DATA    *pErr;
@@ -294,7 +306,8 @@ int             test_ExpandNodes_Program02(
     "{\n"
         "\"program\":{\n"
             "\"name\":\"genMake\",\n"
-            "\"deps\":[\"Cmd\"]\n"
+            "\"deps\":[\"Cmn\"],\n"
+            "\"hdrs\":\"genMake.h\"\n"
         "}\n,"
         "\"routines\": [\n"
                 "{name:\"dllist\", \"test\":true},\n"
@@ -303,17 +316,15 @@ int             test_ExpandNodes_Program02(
                 "{name:\"str\", test:true}\n"
         "],\n"
     "}\n";
-    bool            fDumpNodes = true;
+    bool            fDumpNodes = false;
+    bool            fDump = true;
     uint32_t        iMax;
-    NODELIB_DATA    *pLib;
-    NODEPGM_DATA    *pPgm;
-    NODEOBJ_DATA    *pObj;
-    NODERTN_DATA    *pRtn;
-    NODERTNA_DATA   *pRtnA;
-    NODETSTA_DATA   *pTstA;
-    ASTRC_DATA      *pStrC;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pDict = Dict_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pDict) );
+    Dict_Defaults(pDict);
     
     pPrs = SrcParse_New( );
     TINYTEST_FALSE( (OBJ_NIL == pPrs) );
@@ -346,46 +357,54 @@ int             test_ExpandNodes_Program02(
         }
         TINYTEST_TRUE((OBJ_NIL == pErr));
         
+        if (fDump) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = SrcParse_ToString(pPrs);
+            if (pWrk) {
+                fprintf(stderr, "\n%s\n\n\n", AStr_getData(pWrk));
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+        }
+
         pExpand = ExpandNodes_New();
         TINYTEST_FALSE( (OBJ_NIL == pExpand) );
         if (pExpand) {
             
+            ExpandNodes_setLib(pExpand, SrcParse_getLib(pPrs));
+            ExpandNodes_setPgm(pExpand, SrcParse_getPgm(pPrs));
+            ExpandNodes_SetupDeps(pExpand, pDict);
+
             pArray = SrcParse_getRtns(pPrs);
-            if (fDumpNodes) {
-                ASTR_DATA       *pWrk = OBJ_NIL;
-                pWrk = nodeArray_ToDebugString(pArray, 0);
-                fprintf(stderr, "\n====> RTN Array:\n%s\n\n\n", AStr_getData(pWrk));
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
-            }
             pErr = ExpandNodes_ExpandRtns(pExpand, pArray);
             TINYTEST_TRUE( (OBJ_NIL == pErr) );
             ExpandNodes_Sort(pExpand);
+            fprintf(stderr, "====================================\n");
+            fprintf(stderr, "ExpandNodes just expanded Rtns only!\n");
+            fprintf(stderr, "------------------------------------\n");
+
             pArray = ExpandNodes_getRtns(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
             iMax = nodeArray_getSize(pArray);
             fprintf(stderr, "\tRtns: Number of RtnAs: %d\n", iMax);
             TINYTEST_TRUE( (4 == iMax) );
-            if (fDumpNodes) {
-                ASTR_DATA       *pWrk = OBJ_NIL;
-                pWrk = nodeArray_ToDebugString(pArray, 0);
-                fprintf(stderr, "\n====> RTNA Array:\n%s\n\n\n", AStr_getData(pWrk));
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
-            }
+
             pArray = ExpandNodes_getTests(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
             iMax = nodeArray_getSize(pArray);
             fprintf(stderr, "\tRtns: Number of TstAs: %d\n", iMax);
             TINYTEST_TRUE( (2 == iMax) );
-            if (fDumpNodes) {
-                ASTR_DATA       *pWrk = OBJ_NIL;
-                pWrk = nodeArray_ToDebugString(pArray, 0);
-                fprintf(stderr, "\n====> TSTA Array:\n%s\n\n\n", AStr_getData(pWrk));
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
-            }
 
+            if (fDump) {
+                ASTR_DATA       *pWrk = OBJ_NIL;
+                pWrk = ExpandNodes_ToString(pExpand);
+                if (pWrk) {
+                    fprintf(stderr, "\n%s\n\n\n", AStr_getData(pWrk));
+                    obj_Release(pWrk);
+                    pWrk = OBJ_NIL;
+                }
+            }
+            
             obj_Release(pExpand);
             pExpand = OBJ_NIL;
         }
@@ -396,6 +415,9 @@ int             test_ExpandNodes_Program02(
         obj_Release(pPrs);
         pPrs = OBJ_NIL;
     }
+
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;

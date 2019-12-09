@@ -322,12 +322,17 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    NodeTest_ToDebugString (
-        NODETEST_DATA     *this,
+    ASTR_DATA *     NodeTest_ToDebugString (
+        NODETEST_DATA   *this,
         int             indent
     );
     
     
+    ASTR_DATA *     NodeTest_ToString (
+        NODETEST_DATA   *this
+    );
+
+
 
     
 #ifdef	__cplusplus

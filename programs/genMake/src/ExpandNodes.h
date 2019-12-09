@@ -313,6 +313,20 @@ extern "C" {
 
 
     /*!
+     Set up the external dependencies from the Program or Library
+     definitions.
+     @param     this    object pointer
+     @param     pDict   Dictionary pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ExpandNodes_SetupDeps (
+        EXPANDNODES_DATA    *this,
+        DICT_DATA           *pDict
+    );
+
+
+    /*!
      Sort the arrays.
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
@@ -341,6 +355,11 @@ extern "C" {
     );
     
     
+    ASTR_DATA *         ExpandNodes_ToString (
+        EXPANDNODES_DATA    *this
+    );
+
+
 
     
 #ifdef	__cplusplus

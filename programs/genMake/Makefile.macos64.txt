@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/ 8/2019  3:16:11.000)
+# (12/ 9/2019 19:54:55.000)
 
 PGMNAM=genMake
 SYS=macos64
@@ -46,257 +46,257 @@ TESTS =
 
 OBJS += $(OBJDIR)/Dict.o
 
-$(OBJDIR)/Dict.o: $(SRCDIR)/Dict.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h 
+$(OBJDIR)/Dict.o: $(SRCDIR)/Dict.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Dict_object.o
 
-$(OBJDIR)/Dict_object.o: $(SRCDIR)/Dict_object.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h 
+$(OBJDIR)/Dict_object.o: $(SRCDIR)/Dict_object.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/ExpandNodes.o
 
-$(OBJDIR)/ExpandNodes.o: $(SRCDIR)/ExpandNodes.c $(SRCDIR)/ExpandNodes.h $(SRCDIR)/ExpandNodes_internal.h 
+$(OBJDIR)/ExpandNodes.o: $(SRCDIR)/ExpandNodes.c $(SRCDIR)/ExpandNodes.h $(SRCDIR)/ExpandNodes_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/ExpandNodes_object.o
 
-$(OBJDIR)/ExpandNodes_object.o: $(SRCDIR)/ExpandNodes_object.c $(SRCDIR)/ExpandNodes.h $(SRCDIR)/ExpandNodes_internal.h 
+$(OBJDIR)/ExpandNodes_object.o: $(SRCDIR)/ExpandNodes_object.c $(SRCDIR)/ExpandNodes.h $(SRCDIR)/ExpandNodes_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/GenBase.o
 
-$(OBJDIR)/GenBase.o: $(SRCDIR)/GenBase.c $(SRCDIR)/GenBase.h $(SRCDIR)/GenBase_internal.h 
+$(OBJDIR)/GenBase.o: $(SRCDIR)/GenBase.c $(SRCDIR)/GenBase.h $(SRCDIR)/GenBase_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/GenBase_object.o
 
-$(OBJDIR)/GenBase_object.o: $(SRCDIR)/GenBase_object.c $(SRCDIR)/GenBase.h $(SRCDIR)/GenBase_internal.h 
+$(OBJDIR)/GenBase_object.o: $(SRCDIR)/GenBase_object.c $(SRCDIR)/GenBase.h $(SRCDIR)/GenBase_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/GenMac.o
 
-$(OBJDIR)/GenMac.o: $(SRCDIR)/GenMac.c $(SRCDIR)/GenMac.h $(SRCDIR)/GenMac_internal.h 
+$(OBJDIR)/GenMac.o: $(SRCDIR)/GenMac.c $(SRCDIR)/GenMac.h $(SRCDIR)/GenMac_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/GenMac_object.o
 
-$(OBJDIR)/GenMac_object.o: $(SRCDIR)/GenMac_object.c $(SRCDIR)/GenMac.h $(SRCDIR)/GenMac_internal.h 
+$(OBJDIR)/GenMac_object.o: $(SRCDIR)/GenMac_object.c $(SRCDIR)/GenMac.h $(SRCDIR)/GenMac_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/GenWin.o
 
-$(OBJDIR)/GenWin.o: $(SRCDIR)/GenWin.c $(SRCDIR)/GenWin.h $(SRCDIR)/GenWin_internal.h 
+$(OBJDIR)/GenWin.o: $(SRCDIR)/GenWin.c $(SRCDIR)/GenWin.h $(SRCDIR)/GenWin_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/GenWin_object.o
 
-$(OBJDIR)/GenWin_object.o: $(SRCDIR)/GenWin_object.c $(SRCDIR)/GenWin.h $(SRCDIR)/GenWin_internal.h 
+$(OBJDIR)/GenWin_object.o: $(SRCDIR)/GenWin_object.c $(SRCDIR)/GenWin.h $(SRCDIR)/GenWin_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Main.o
 
-$(OBJDIR)/Main.o: $(SRCDIR)/Main.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h 
+$(OBJDIR)/Main.o: $(SRCDIR)/Main.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Main_object.o
 
-$(OBJDIR)/Main_object.o: $(SRCDIR)/Main_object.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h 
+$(OBJDIR)/Main_object.o: $(SRCDIR)/Main_object.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeBase.o
 
-$(OBJDIR)/NodeBase.o: $(SRCDIR)/NodeBase.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeBase_internal.h 
+$(OBJDIR)/NodeBase.o: $(SRCDIR)/NodeBase.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeBase_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeBase_object.o
 
-$(OBJDIR)/NodeBase_object.o: $(SRCDIR)/NodeBase_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeBase_internal.h 
+$(OBJDIR)/NodeBase_object.o: $(SRCDIR)/NodeBase_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeBase_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeHdr.o
 
-$(OBJDIR)/NodeHdr.o: $(SRCDIR)/NodeHdr.c $(SRCDIR)/NodeHdr.h $(SRCDIR)/NodeHdr_internal.h 
+$(OBJDIR)/NodeHdr.o: $(SRCDIR)/NodeHdr.c $(SRCDIR)/NodeHdr.h $(SRCDIR)/NodeHdr_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeHdr_object.o
 
-$(OBJDIR)/NodeHdr_object.o: $(SRCDIR)/NodeHdr_object.c $(SRCDIR)/NodeHdr.h $(SRCDIR)/NodeHdr_internal.h 
+$(OBJDIR)/NodeHdr_object.o: $(SRCDIR)/NodeHdr_object.c $(SRCDIR)/NodeHdr.h $(SRCDIR)/NodeHdr_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeLib.o
 
-$(OBJDIR)/NodeLib.o: $(SRCDIR)/NodeLib.c $(SRCDIR)/NodeLib.h $(SRCDIR)/NodeLib_internal.h 
+$(OBJDIR)/NodeLib.o: $(SRCDIR)/NodeLib.c $(SRCDIR)/NodeLib.h $(SRCDIR)/NodeLib_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeLib_object.o
 
-$(OBJDIR)/NodeLib_object.o: $(SRCDIR)/NodeLib_object.c $(SRCDIR)/NodeLib.h $(SRCDIR)/NodeLib_internal.h 
+$(OBJDIR)/NodeLib_object.o: $(SRCDIR)/NodeLib_object.c $(SRCDIR)/NodeLib.h $(SRCDIR)/NodeLib_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeObj.o
 
-$(OBJDIR)/NodeObj.o: $(SRCDIR)/NodeObj.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeObj.h $(SRCDIR)/NodeObj_internal.h $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeTest.h 
+$(OBJDIR)/NodeObj.o: $(SRCDIR)/NodeObj.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeObj.h $(SRCDIR)/NodeObj_internal.h $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeTest.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeObj_object.o
 
-$(OBJDIR)/NodeObj_object.o: $(SRCDIR)/NodeObj_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeObj.h $(SRCDIR)/NodeObj_internal.h $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeTest.h 
+$(OBJDIR)/NodeObj_object.o: $(SRCDIR)/NodeObj_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeObj.h $(SRCDIR)/NodeObj_internal.h $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeTest.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodePgm.o
 
-$(OBJDIR)/NodePgm.o: $(SRCDIR)/NodePgm.c $(SRCDIR)/NodePgm.h $(SRCDIR)/NodePgm_internal.h 
+$(OBJDIR)/NodePgm.o: $(SRCDIR)/NodePgm.c $(SRCDIR)/NodePgm.h $(SRCDIR)/NodePgm_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodePgm_object.o
 
-$(OBJDIR)/NodePgm_object.o: $(SRCDIR)/NodePgm_object.c $(SRCDIR)/NodePgm.h $(SRCDIR)/NodePgm_internal.h 
+$(OBJDIR)/NodePgm_object.o: $(SRCDIR)/NodePgm_object.c $(SRCDIR)/NodePgm.h $(SRCDIR)/NodePgm_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeRtn.o
 
-$(OBJDIR)/NodeRtn.o: $(SRCDIR)/NodeRtn.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeRtn_internal.h $(SRCDIR)/NodeTest.h 
+$(OBJDIR)/NodeRtn.o: $(SRCDIR)/NodeRtn.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeRtn_internal.h $(SRCDIR)/NodeTest.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeRtnA.o
 
-$(OBJDIR)/NodeRtnA.o: $(SRCDIR)/NodeRtnA.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeRtnA.h $(SRCDIR)/NodeRtnA_internal.h 
+$(OBJDIR)/NodeRtnA.o: $(SRCDIR)/NodeRtnA.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeRtnA.h $(SRCDIR)/NodeRtnA_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeRtnA_object.o
 
-$(OBJDIR)/NodeRtnA_object.o: $(SRCDIR)/NodeRtnA_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeRtnA.h $(SRCDIR)/NodeRtnA_internal.h 
+$(OBJDIR)/NodeRtnA_object.o: $(SRCDIR)/NodeRtnA_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeRtnA.h $(SRCDIR)/NodeRtnA_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeRtn_object.o
 
-$(OBJDIR)/NodeRtn_object.o: $(SRCDIR)/NodeRtn_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeRtn_internal.h $(SRCDIR)/NodeTest.h 
+$(OBJDIR)/NodeRtn_object.o: $(SRCDIR)/NodeRtn_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeRtn_internal.h $(SRCDIR)/NodeTest.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeTest.o
 
-$(OBJDIR)/NodeTest.o: $(SRCDIR)/NodeTest.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeTest.h $(SRCDIR)/NodeTest_internal.h 
+$(OBJDIR)/NodeTest.o: $(SRCDIR)/NodeTest.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeTest.h $(SRCDIR)/NodeTest_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeTest_object.o
 
-$(OBJDIR)/NodeTest_object.o: $(SRCDIR)/NodeTest_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeTest.h $(SRCDIR)/NodeTest_internal.h 
+$(OBJDIR)/NodeTest_object.o: $(SRCDIR)/NodeTest_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeTest.h $(SRCDIR)/NodeTest_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeTstA.o
 
-$(OBJDIR)/NodeTstA.o: $(SRCDIR)/NodeTstA.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeTstA.h $(SRCDIR)/NodeTstA_internal.h 
+$(OBJDIR)/NodeTstA.o: $(SRCDIR)/NodeTstA.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeTstA.h $(SRCDIR)/NodeTstA_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeTstA_object.o
 
-$(OBJDIR)/NodeTstA_object.o: $(SRCDIR)/NodeTstA_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeTstA.h $(SRCDIR)/NodeTstA_internal.h 
+$(OBJDIR)/NodeTstA_object.o: $(SRCDIR)/NodeTstA_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeTstA.h $(SRCDIR)/NodeTstA_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SrcParse.o
 
-$(OBJDIR)/SrcParse.o: $(SRCDIR)/SrcParse.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h 
+$(OBJDIR)/SrcParse.o: $(SRCDIR)/SrcParse.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SrcParse_object.o
 
-$(OBJDIR)/SrcParse_object.o: $(SRCDIR)/SrcParse_object.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h 
+$(OBJDIR)/SrcParse_object.o: $(SRCDIR)/SrcParse_object.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 TESTS += Dict_test
 
-Dict_test: $(TEST_SRC)/Dict_test.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h 
+Dict_test: $(TEST_SRC)/Dict_test.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += ExpandNodes_test
 
-ExpandNodes_test: $(TEST_SRC)/ExpandNodes_test.c $(SRCDIR)/ExpandNodes.h $(SRCDIR)/ExpandNodes_internal.h 
+ExpandNodes_test: $(TEST_SRC)/ExpandNodes_test.c $(SRCDIR)/ExpandNodes.h $(SRCDIR)/ExpandNodes_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += GenBase_test
 
-GenBase_test: $(TEST_SRC)/GenBase_test.c $(SRCDIR)/GenBase.h $(SRCDIR)/GenBase_internal.h 
+GenBase_test: $(TEST_SRC)/GenBase_test.c $(SRCDIR)/GenBase.h $(SRCDIR)/GenBase_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += GenMac_test
 
-GenMac_test: $(TEST_SRC)/GenMac_test.c $(SRCDIR)/GenMac.h $(SRCDIR)/GenMac_internal.h 
+GenMac_test: $(TEST_SRC)/GenMac_test.c $(SRCDIR)/GenMac.h $(SRCDIR)/GenMac_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += GenWin_test
 
-GenWin_test: $(TEST_SRC)/GenWin_test.c $(SRCDIR)/GenWin.h $(SRCDIR)/GenWin_internal.h 
+GenWin_test: $(TEST_SRC)/GenWin_test.c $(SRCDIR)/GenWin.h $(SRCDIR)/GenWin_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += Main_test
 
-Main_test: $(TEST_SRC)/Main_test.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h 
+Main_test: $(TEST_SRC)/Main_test.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodeBase_test
 
-NodeBase_test: $(TEST_SRC)/NodeBase_test.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeBase_internal.h 
+NodeBase_test: $(TEST_SRC)/NodeBase_test.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeBase_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodeHdr_test
 
-NodeHdr_test: $(TEST_SRC)/NodeHdr_test.c $(SRCDIR)/NodeHdr.h $(SRCDIR)/NodeHdr_internal.h 
+NodeHdr_test: $(TEST_SRC)/NodeHdr_test.c $(SRCDIR)/NodeHdr.h $(SRCDIR)/NodeHdr_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodeLib_test
 
-NodeLib_test: $(TEST_SRC)/NodeLib_test.c $(SRCDIR)/NodeLib.h $(SRCDIR)/NodeLib_internal.h 
+NodeLib_test: $(TEST_SRC)/NodeLib_test.c $(SRCDIR)/NodeLib.h $(SRCDIR)/NodeLib_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodeObj_test
 
-NodeObj_test: $(TEST_SRC)/NodeObj_test.c $(SRCDIR)/NodeObj.h $(SRCDIR)/NodeObj_internal.h 
+NodeObj_test: $(TEST_SRC)/NodeObj_test.c $(SRCDIR)/NodeObj.h $(SRCDIR)/NodeObj_internal.h $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeTest.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodePgm_test
 
-NodePgm_test: $(TEST_SRC)/NodePgm_test.c $(SRCDIR)/NodePgm.h $(SRCDIR)/NodePgm_internal.h 
+NodePgm_test: $(TEST_SRC)/NodePgm_test.c $(SRCDIR)/NodePgm.h $(SRCDIR)/NodePgm_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodeRtnA_test
 
-NodeRtnA_test: $(TEST_SRC)/NodeRtnA_test.c $(SRCDIR)/NodeRtnA.h $(SRCDIR)/NodeRtnA_internal.h 
+NodeRtnA_test: $(TEST_SRC)/NodeRtnA_test.c $(SRCDIR)/NodeRtnA.h $(SRCDIR)/NodeRtnA_internal.h $(SRCDIR)/NodeBase.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodeRtn_test
 
-NodeRtn_test: $(TEST_SRC)/NodeRtn_test.c $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeRtn_internal.h 
+NodeRtn_test: $(TEST_SRC)/NodeRtn_test.c $(SRCDIR)/NodeRtn.h $(SRCDIR)/NodeRtn_internal.h $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeTest.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodeTest_test
 
-NodeTest_test: $(TEST_SRC)/NodeTest_test.c $(SRCDIR)/NodeTest.h $(SRCDIR)/NodeTest_internal.h 
+NodeTest_test: $(TEST_SRC)/NodeTest_test.c $(SRCDIR)/NodeTest.h $(SRCDIR)/NodeTest_internal.h $(SRCDIR)/NodeBase.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodeTstA_test
 
-NodeTstA_test: $(TEST_SRC)/NodeTstA_test.c $(SRCDIR)/NodeTstA.h $(SRCDIR)/NodeTstA_internal.h 
+NodeTstA_test: $(TEST_SRC)/NodeTstA_test.c $(SRCDIR)/NodeTstA.h $(SRCDIR)/NodeTstA_internal.h $(SRCDIR)/NodeBase.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += SrcParse_test
 
-SrcParse_test: $(TEST_SRC)/SrcParse_test.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h 
+SrcParse_test: $(TEST_SRC)/SrcParse_test.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

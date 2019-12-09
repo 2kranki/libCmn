@@ -80,6 +80,7 @@ struct Main_data_s	{
     NODE_DATA       *pNodes;
     ASTR_DATA       *pOut;
     SRCPARSE_DATA   *pParser;
+    EXPANDNODES_DATA *pExpand;
     const
     char            *pOsName;
     const

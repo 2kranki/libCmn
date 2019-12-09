@@ -389,7 +389,7 @@ extern "C" {
         }
 #endif
 
-#ifdef  PROPERTY_STR_OWNED
+#ifdef  PROPERTY_MAIN_OWNED
         obj_Retain(pValue);
         if (this->pMain) {
             obj_Release(this->pMain);
@@ -1108,9 +1108,10 @@ extern "C" {
 
         AStr_AppendPrint(
                 pStr,
-                ".PHONY: link\nlink: $(%s) $(%s)/mainProgram.c\n",
+                ".PHONY: link\nlink: $(%s) $(%s)/%s\n",
                 Dict_GetA(pDict, objsVarID),
-                Dict_GetA(pDict, srcDirVarID)
+                Dict_GetA(pDict, srcDirVarID),
+                Dict_GetA(pDict, mainID)
         );
         AStr_AppendPrint(
                 pStr,
@@ -1456,7 +1457,39 @@ extern "C" {
     }
     
     
-    
+     ASTR_DATA *     NodePgm_ToString (
+        NODEPGM_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrk;
+        
+#ifdef NDEBUG
+#else
+        if (!NodePgm_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_New();
+        if (pStr) {
+            eRc =   AStr_AppendA(pStr, "===> PGM:\n");
+            if (this->pMain) {
+                eRc = AStr_AppendPrint(pStr, "main: %s\n", AStrC_getData(this->pMain));
+            }
+            pWrk = NodeBase_ToString(NodePgm_getNodeBase(this));
+            eRc = AStr_Append(pStr, pWrk);
+            obj_Release(pWrk);
+            eRc = AStr_AppendA(pStr, "\n\n");
+        }
+        
+        return pStr;
+    }
+        
+        
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

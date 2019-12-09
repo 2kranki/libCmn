@@ -57,11 +57,12 @@
 
 
 
+#define     PROPERTY_DEPS_OWNED 1
+#define     PROPERTY_DICT_OWNED 1
 #define     PROPERTY_LIB_OWNED 1
 #define     PROPERTY_PGM_OWNED 1
 #define     PROPERTY_RTNS_OWNED 1
 #define     PROPERTY_TESTS_OWNED 1
-#define     PROPERTY_STR_OWNED 1
 #define     PROPERTY_SUFFIXC_OWNED 1
 
 
@@ -85,14 +86,12 @@ struct ExpandNodes_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
     DICT_DATA       *pDict;
     NODELIB_DATA    *pLib;
     NODEPGM_DATA    *pPgm;
     NODEARRAY_DATA  *pRtns;
     NODEARRAY_DATA  *pTests;
+    ASTRCARRAY_DATA *pDeps;
 
 };
 #pragma pack(pop)

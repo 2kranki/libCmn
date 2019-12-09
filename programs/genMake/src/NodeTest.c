@@ -1268,7 +1268,37 @@ extern "C" {
     }
     
     
-    
+         ASTR_DATA *    NodeTest_ToString (
+            NODETEST_DATA   *this
+        )
+        {
+            ERESULT         eRc;
+            ASTR_DATA       *pStr;
+            ASTR_DATA       *pWrk;
+            
+    #ifdef NDEBUG
+    #else
+            if (!NodeTest_Validate(this)) {
+                DEBUG_BREAK();
+                return OBJ_NIL;
+            }
+    #endif
+            
+            pStr = AStr_New();
+            if (pStr) {
+                eRc =   AStr_AppendA(pStr, "===> TEST:\n");
+                pWrk = NodeBase_ToString(NodeTest_getNodeBase(this));
+                eRc = AStr_Append(pStr, pWrk);
+                obj_Release(pWrk);
+                eRc = AStr_AppendA(pStr, "\n\n");
+            }
+            
+            return pStr;
+        }
+                
+                
+
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

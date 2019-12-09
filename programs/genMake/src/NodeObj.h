@@ -363,6 +363,11 @@ extern "C" {
     );
     
     
+    ASTR_DATA *    NodeObj_ToString (
+        NODEOBJ_DATA    *this
+    );
+
+
 
     
 #ifdef	__cplusplus

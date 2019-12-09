@@ -377,6 +377,11 @@ extern "C" {
     );
     
     
+    ASTR_DATA *    NodeRtnA_ToString (
+        NODERTNA_DATA   *this
+    );
+
+
 
     
 #ifdef	__cplusplus

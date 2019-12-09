@@ -561,6 +561,52 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                  E x p a n d  N o d e s
+    //---------------------------------------------------------------
+    
+    EXPANDNODES_DATA * Main_getExpandNodes (
+        MAIN_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pExpand;
+    }
+    
+    
+    bool            Main_setExpandNodes (
+        MAIN_DATA       *this,
+        EXPANDNODES_DATA *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pExpand) {
+            obj_Release(this->pExpand);
+        }
+        this->pExpand = pValue;
+        
+        return true;
+    }
+        
+        
+        
+    //---------------------------------------------------------------
     //                  F i l e  P a t h
     //---------------------------------------------------------------
     
@@ -1455,6 +1501,7 @@ extern "C" {
         Main_setOutput(this, OBJ_NIL);
         Main_setOutputPath(this, OBJ_NIL);
         Main_setParser(this, OBJ_NIL);
+        Main_setExpandNodes(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1571,11 +1618,11 @@ extern "C" {
         ERESULT_DATA    *pErr;
         SRCPARSE_DATA   *pPrs = this->pParser;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
-        EXPANDNODES_DATA *pExpand = OBJ_NIL;
         GENMAC_DATA     *pMac = OBJ_NIL;
         GENWIN_DATA     *pWin = OBJ_NIL;
         NODELIB_DATA    *pLib = OBJ_NIL;
         NODEPGM_DATA    *pPgm = OBJ_NIL;
+        ASTRC_DATA      *pWrkC;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1595,11 +1642,12 @@ extern "C" {
 #endif
      
         pLib = SrcParse_getLib(pPrs);
-        if (OBJ_NIL == pLib) {
-            pPgm = SrcParse_getPgm(pPrs);
-            if (OBJ_NIL == pPgm) {
-                fprintf(stderr, "Error - Neither Program nor Library Nodes found in source!");
-                exit(12);
+        pPgm = SrcParse_getPgm(pPrs);
+        if (pPgm) {
+            pWrkC = NodePgm_getMain(pPgm);
+            if (pWrkC) {
+                eRc = Dict_AddUpdateA(this->pDict, mainID, AStrC_getData(pWrkC));
+                pWrkC = OBJ_NIL;
             }
         }
 
@@ -1608,40 +1656,54 @@ extern "C" {
          convert them into 1 or more simple routines/tests. The simple
          routines/tests are then easily converted to Makefile entries.
          */
-        pExpand = ExpandNodes_New();
-        if (OBJ_NIL == pExpand) {
+        this->pExpand = ExpandNodes_New();
+        if (OBJ_NIL == this->pExpand) {
             DEBUG_BREAK();
             return ERESULT_OUT_OF_MEMORY;
         }
         
+        ExpandNodes_setLib(this->pExpand, SrcParse_getLib(pPrs));
+        ExpandNodes_setPgm(this->pExpand, SrcParse_getPgm(pPrs));
+        ExpandNodes_SetupDeps(this->pExpand, this->pDict);
+        
         // Expand the Objects.
         pArray = SrcParse_getObjs(pPrs);
         if (pArray) {
-            pErr = ExpandNodes_ExpandObjs(pExpand, pArray);
+            pErr = ExpandNodes_ExpandObjs(this->pExpand, pArray);
             if (pErr) {
                 eResult_Fprint(pErr, stderr);
                 exit(12);
             }
-            ExpandNodes_Sort(pExpand);
+            ExpandNodes_Sort(this->pExpand);
         }
 
         // Expand the Routines.
         pArray = SrcParse_getRtns(pPrs);
         if (pArray) {
-            pErr = ExpandNodes_ExpandRtns(pExpand, pArray);
+            pErr = ExpandNodes_ExpandRtns(this->pExpand, pArray);
             if (pErr) {
                 eResult_Fprint(pErr, stderr);
                 exit(12);
             }
-            ExpandNodes_Sort(pExpand);
+            ExpandNodes_Sort(this->pExpand);
         }
 
-        pErr = ExpandNodes_CheckNodes(pExpand, this->pOsArch, this->pOsName);
+        if (OBJ_NIL == this->pOsName) {
+            // O/S Name is required!
+            DEBUG_BREAK();
+            fprintf(stderr, "Error: GenMake - Missing required O/S Name!\n");
+            exit(12);
+        }
+        pErr = ExpandNodes_CheckNodes(this->pExpand, this->pOsArch, this->pOsName);
         if (pErr) {
             eResult_Fprint(pErr, stderr);
             exit(12);
         }
 
+        if (pPgm) {
+            eRc = Dict_Add(this->pDict, mainID, NodePgm_getMain(pPgm));
+        }
+        
         /*  Now pExpand contains two arrays, Routines and Tests. Routines
             are compile only and form the library or program parts. Tests
             are full programs used to test the parts. These two arrays
@@ -1668,7 +1730,7 @@ extern "C" {
                     exit(12);
                 }
 
-                pArray = ExpandNodes_getRtns(pExpand);
+                pArray = ExpandNodes_getRtns(this->pExpand);
                 if (pArray) {
                     pErr = GenMac_GenCompileRtns(pMac, pArray, this->pDict);
                     if (pErr) {
@@ -1677,7 +1739,7 @@ extern "C" {
                     }
                 }
                 
-                pArray = ExpandNodes_getTests(pExpand);
+                pArray = ExpandNodes_getTests(this->pExpand);
                 if (pArray) {
                     pErr = GenMac_GenBuildTests(pMac, pArray, this->pDict);
                     if (pErr) {
@@ -1713,8 +1775,6 @@ extern "C" {
         }
         
         // Return to caller.
-        obj_Release(pExpand);
-        pExpand = OBJ_NIL;
         obj_Release(pMac);
         pMac = OBJ_NIL;
         obj_Release(pWin);

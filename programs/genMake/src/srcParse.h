@@ -572,6 +572,11 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     SrcParse_ToString (
+        SRCPARSE_DATA   *this
+    );
+
+
 
     
 #ifdef	__cplusplus

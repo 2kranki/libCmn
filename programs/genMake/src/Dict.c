@@ -673,6 +673,17 @@ extern "C" {
         }
     #endif
         
+        pStr = AStr_NewA("mainProgram.c");
+        if (pStr) {
+            eRc = Dict_AddUpdate(this, mainID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", mainID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        
         pStr = AStr_NewA("d");
         if (pStr) {
             eRc = Dict_AddUpdate(this, makeTypeID, pStr);

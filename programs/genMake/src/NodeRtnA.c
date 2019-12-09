@@ -367,49 +367,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          P r i o r i t y
-    //---------------------------------------------------------------
-    
-    uint16_t        NodeRtnA_getPriority (
-        NODERTNA_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeRtnA_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        //return this->priority;
-        return 0;
-    }
-
-
-    bool            NodeRtnA_setPriority (
-        NODERTNA_DATA     *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeRtnA_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        //this->priority = value;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -470,54 +427,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * NodeRtnA_getStr (
-        NODERTNA_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeRtnA_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        NodeRtnA_setStr (
-        NODERTNA_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeRtnA_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -802,8 +711,6 @@ extern "C" {
             ((NODERTNA_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        NodeRtnA_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1406,7 +1313,36 @@ extern "C" {
     }
     
     
-    
+         ASTR_DATA *    NodeRtnA_ToString (
+            NODERTNA_DATA   *this
+        )
+        {
+            ERESULT         eRc;
+            ASTR_DATA       *pStr;
+            ASTR_DATA       *pWrk;
+            
+    #ifdef NDEBUG
+    #else
+            if (!NodeRtnA_Validate(this)) {
+                DEBUG_BREAK();
+                return OBJ_NIL;
+            }
+    #endif
+            
+            pStr = AStr_New();
+            if (pStr) {
+                eRc =   AStr_AppendA(pStr, "===> RTNA:\n");
+                pWrk = NodeBase_ToString(NodeRtnA_getNodeBase(this));
+                eRc = AStr_Append(pStr, pWrk);
+                obj_Release(pWrk);
+                eRc = AStr_AppendA(pStr, "\n\n");
+            }
+            
+            return pStr;
+        }
+                
+                
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

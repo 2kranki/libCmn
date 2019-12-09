@@ -587,6 +587,36 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                        C l e a n
+    //---------------------------------------------------------------
+
+    void            SrcParse_Clean (
+        SRCPARSE_DATA   *this
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SrcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
+
+        SrcParse_setLib(this, OBJ_NIL);
+        SrcParse_setObjs(this, OBJ_NIL);
+        SrcParse_setPgm(this, OBJ_NIL);
+        SrcParse_setRtns(this, OBJ_NIL);
+        SrcParse_setTests(this, OBJ_NIL);
+        SrcParse_setNodes(this, OBJ_NIL);
+
+        // Return to caller.
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -1757,7 +1787,121 @@ extern "C" {
     }
     
     
+    ASTR_DATA *     SrcParse_ToString (
+        SRCPARSE_DATA   *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        NODEOBJ_DATA    *pObj = OBJ_NIL;
+        NODERTN_DATA    *pRtn = OBJ_NIL;
+        NODETEST_DATA   *pTest = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SrcParse_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+              
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        eRc = AStr_AppendPrint(pStr, "==================  SrcParse Output "
+                               "=================\n");
+
+        if (this->pLib) {
+            pWrk = NodeLib_ToString(this->pLib);
+            if (pWrk) {
+                eRc = AStr_Append(pStr, pWrk);
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+                AStr_AppendA(pStr, "\n");
+            }
+        }
+        if (this->pPgm) {
+            pWrk = NodePgm_ToString(this->pPgm);
+            if (pWrk) {
+                eRc = AStr_Append(pStr, pWrk);
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+                AStr_AppendA(pStr, "\n");
+            }
+        }
+        if (this->pObjs) {
+            iMax = nodeArray_getSize(this->pObjs);
+            if (iMax > 0) {
+                eRc = AStr_AppendPrint(pStr, "-----------------  SrcParse %d Objects "
+                                       "-----------------\n", iMax);
+            }
+            for (i=0; i<iMax; i++) {
+                pObj = (NODEOBJ_DATA *)nodeArray_Get(this->pObjs, i+1);
+                if (pObj) {
+                    pWrk = NodeObj_ToString(pObj);
+                    if (pWrk) {
+                        eRc = AStr_Append(pStr, pWrk);
+                        obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+            AStr_AppendA(pStr, "\n");
+        }
+        if (this->pRtns) {
+            iMax = nodeArray_getSize(this->pRtns);
+            if (iMax > 0) {
+                eRc = AStr_AppendPrint(pStr, "-----------------  SrcParse %d Routines "
+                                       "-----------------\n", iMax);
+            }
+            for (i=0; i<iMax; i++) {
+                pRtn = (NODERTN_DATA *)nodeArray_Get(this->pRtns, i+1);
+                if (pRtn) {
+                    pWrk = NodeRtn_ToString(pRtn);
+                    if (pWrk) {
+                        eRc = AStr_Append(pStr, pWrk);
+                        obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+            AStr_AppendA(pStr, "\n");
+        }
+        if (this->pTests) {
+            iMax = nodeArray_getSize(this->pTests);
+            if (iMax > 0) {
+                eRc = AStr_AppendPrint(pStr, "-----------------  SrcParse %d Tests "
+                                       "-----------------\n", iMax);
+            }
+            for (i=0; i<iMax; i++) {
+                pTest = (NODETEST_DATA *)nodeArray_Get(this->pTests, i+1);
+                if (pTest) {
+                    pWrk = NodeTest_ToString(pTest);
+                    if (pWrk) {
+                        eRc = AStr_Append(pStr, pWrk);
+                        obj_Release(pWrk);
+                        pWrk = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+            AStr_AppendA(pStr, "\n");
+        }
+
+        return pStr;
+    }
     
+        
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

@@ -309,11 +309,14 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    NodePgm_ToDebugString (
-        NODEPGM_DATA     *this,
+        NODEPGM_DATA    *this,
         int             indent
     );
     
     
+    ASTR_DATA *     NodePgm_ToString (
+        NODEPGM_DATA     *this
+    );
 
     
 #ifdef	__cplusplus

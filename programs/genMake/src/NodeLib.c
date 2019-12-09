@@ -537,54 +537,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * NodeLib_getStr (
-        NODELIB_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NodeLib_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        NodeLib_setStr (
-        NODELIB_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeLib_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
@@ -822,8 +774,6 @@ extern "C" {
             ((NODELIB_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        NodeLib_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1410,7 +1360,36 @@ extern "C" {
     }
     
     
-    
+     ASTR_DATA *    NodeLib_ToString (
+        NODELIB_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrk;
+        
+#ifdef NDEBUG
+#else
+        if (!NodeLib_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pStr = AStr_New();
+        if (pStr) {
+            eRc =   AStr_AppendA(pStr, "===> LIB:\n");
+            pWrk = NodeBase_ToString(NodeLib_getNodeBase(this));
+            eRc = AStr_Append(pStr, pWrk);
+            obj_Release(pWrk);
+            eRc = AStr_AppendA(pStr, "\n\n");
+        }
+        
+        return pStr;
+    }
+            
+            
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

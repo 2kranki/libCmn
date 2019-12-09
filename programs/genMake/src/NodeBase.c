@@ -91,6 +91,55 @@ extern "C" {
     /*!
      Given an node array of strings accumulate them into the given
      ASTR array.
+     @param     pStr        AStr object pointer
+     @param     pArray      String array object pointer (Where strings are to be accumulated)
+     @return    If successful, a ERESULT_SUCCESS, otherwise an ERESULT_* error code.
+     */
+    ERESULT_DATA *  NodeBase_AccumString(
+        ASTR_DATA       *pStr,
+        ASTRCARRAY_DATA *pArray
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT_DATA    *pErr = OBJ_NIL;
+        NODE_DATA       *pNode;
+        ASTRC_DATA      *pStrC;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing AStr Pointer!");
+            return pErr;
+        }
+        if (OBJ_NIL == pArray) {
+            DEBUG_BREAK();
+            pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
+                                   "Error: Missing Array Pointer!");
+            return pErr;
+        }
+#endif
+
+        pStrC = AStrC_NewFromAStr(pStr);
+        if (pStrC) {
+            if (0 == AStrCArray_Find(pArray, pStrC)) {
+                eRc = AStrCArray_AppendAStrC(pArray, pStrC, NULL);
+            }
+            obj_Release(pStrC);
+            pStrC = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return pErr;
+    }
+
+
+
+    /*!
+     Given an node array of strings accumulate them into the given
+     ASTR array.
      @param     pNodes      Node array object pointer
      @param     pArray      String array object pointer (Where strings are to be accumulated)
      @return    If successful, a ERESULT_SUCCESS, otherwise an ERESULT_* error code.
@@ -132,12 +181,17 @@ extern "C" {
                 pStr = jsonIn_CheckNodeForString(pNode);
                 if (pStr) {
                     pStrC = AStrC_NewFromAStr(pStr);
-                    eRc = AStrCArray_AppendAStrC(pArray, pStrC, NULL);
-                    obj_Release(pStrC);
-                    pStrC = OBJ_NIL;
-                    if (ERESULT_FAILED(eRc)) {
-                        pErr = eResult_NewStrA(eRc, NULL);
-                        break;
+                    if (pStrC) {
+                        if (0 == AStrCArray_Find(pArray, pStrC)) {
+                            eRc = AStrCArray_AppendAStrC(pArray, pStrC, NULL);
+                        }
+                        if (ERESULT_FAILED(eRc)) {
+                            DEBUG_BREAK();
+                            pErr = eResult_NewStrA(eRc, NULL);
+                            break;
+                        }
+                        obj_Release(pStrC);
+                        pStrC = OBJ_NIL;
                     }
                 }
             }
@@ -251,10 +305,10 @@ extern "C" {
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                   eRc = AStrCArray_AppendAStr(NodeBase_getArches(*ppBase), pStr, NULL);
-                   if (ERESULT_FAILED(eRc)) {
-                       return eResult_NewStrA(eRc, NULL);
-                   }
+                    pErr = NodeBase_AccumString(pStr, NodeBase_getArches(*ppBase));
+                    if (pErr) {
+                        return pErr;
+                    }
                 } else {
                    pArray = jsonIn_CheckNodeDataForArray(pHashItem);
                    if (pArray) {
@@ -270,9 +324,9 @@ extern "C" {
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                    eRc = AStrCArray_AppendAStr(NodeBase_getDeps(*ppBase), pStr, NULL);
-                    if (ERESULT_FAILED(eRc)) {
-                        return eResult_NewStrA(eRc, NULL);
+                    pErr = NodeBase_AccumString(pStr, NodeBase_getDeps(*ppBase));
+                    if (pErr) {
+                        return pErr;
                     }
                 } else {
                     pArray = jsonIn_CheckNodeDataForArray(pHashItem);
@@ -289,9 +343,9 @@ extern "C" {
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                    eRc = AStrCArray_AppendAStr(NodeBase_getHdrs(*ppBase), pStr, NULL);
-                    if (ERESULT_FAILED(eRc)) {
-                        return eResult_NewStrA(eRc, NULL);
+                    pErr = NodeBase_AccumString(pStr, NodeBase_getHdrs(*ppBase));
+                    if (pErr) {
+                        return pErr;
                     }
                 } else {
                     pArray = jsonIn_CheckNodeDataForArray(pHashItem);
@@ -308,9 +362,9 @@ extern "C" {
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                    eRc = AStrCArray_AppendAStr(NodeBase_getSrcs(*ppBase), pStr, NULL);
-                    if (ERESULT_FAILED(eRc)) {
-                        return eResult_NewStrA(eRc, NULL);
+                    pErr = NodeBase_AccumString(pStr, NodeBase_getSrcs(*ppBase));
+                    if (pErr) {
+                        return pErr;
                     }
                 } else {
                     pArray = jsonIn_CheckNodeDataForArray(pHashItem);
@@ -351,9 +405,9 @@ extern "C" {
             if (pHashItem) {
                 pStr = jsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
-                    eRc = AStrCArray_AppendAStr(NodeBase_getOSs(*ppBase), pStr, NULL);
-                    if (ERESULT_FAILED(eRc)) {
-                        return eResult_NewStrA(eRc, NULL);
+                    pErr = NodeBase_AccumString(pStr, NodeBase_getOSs(*ppBase));
+                    if (pErr) {
+                        return pErr;
                     }
                 } else {
                     pArray = jsonIn_CheckNodeDataForArray(pHashItem);
@@ -2025,41 +2079,73 @@ extern "C" {
             if (this->pExt) {
                 AStr_AppendPrint(pStr, "\text: %s\n", AStrC_getData(this->pExt));
             }
+            if (NodeBase_IsEnabled(this)) {
+                AStr_AppendA(pStr, "\t...Enabled\n");
+            }
             if (this->pArches) {
-                AStr_AppendPrint(pStr, "\tarches[\n");
                 iMax = AStrCArray_getSize(this->pArches);
+                if (iMax > 0) {
+                    AStr_AppendA(pStr, "\tarches[\n");
+                }
                 for (i=0; i<iMax; i++) {
                     AStr_AppendPrint(pStr, "\t\t%s\n",
                                      AStrC_getData(AStrCArray_Get(this->pArches, i+1)));
                 }
-                AStr_AppendPrint(pStr, "\t]\n");
+                if (iMax > 0) {
+                    AStr_AppendA(pStr, "\t]\n");
+                }
             }
             if (this->pOSs) {
-                AStr_AppendPrint(pStr, "\tOSs[\n");
                 iMax = AStrCArray_getSize(this->pOSs);
+                if (iMax > 0) {
+                    AStr_AppendA(pStr, "\tOSs[\n");
+                }
                 for (i=0; i<iMax; i++) {
                     AStr_AppendPrint(pStr, "\t\t%s\n",
                                      AStrC_getData(AStrCArray_Get(this->pOSs, i+1)));
                 }
-                AStr_AppendPrint(pStr, "\t]\n");
+                if (iMax > 0) {
+                    AStr_AppendA(pStr, "\t]\n");
+                }
             }
             if (this->pDeps) {
-                AStr_AppendPrint(pStr, "\tdeps[\n");
                 iMax = AStrCArray_getSize(this->pDeps);
+                if (iMax > 0) {
+                    AStr_AppendA(pStr, "\tdeps[\n");
+                }
                 for (i=0; i<iMax; i++) {
                     AStr_AppendPrint(pStr, "\t\t%s\n",
                                      AStrC_getData(AStrCArray_Get(this->pDeps, i+1)));
                 }
-                AStr_AppendPrint(pStr, "\t]\n");
+                if (iMax > 0) {
+                    AStr_AppendA(pStr, "\t]\n");
+                }
+            }
+            if (this->pHdrs) {
+                iMax = AStrCArray_getSize(this->pHdrs);
+                if (iMax > 0) {
+                    AStr_AppendA(pStr, "\thdrs[\n");
+                }
+                for (i=0; i<iMax; i++) {
+                    AStr_AppendPrint(pStr, "\t\t%s\n",
+                                     AStrC_getData(AStrCArray_Get(this->pHdrs, i+1)));
+                }
+                if (iMax > 0) {
+                    AStr_AppendA(pStr, "\t]\n");
+                }
             }
             if (this->pSrcs) {
-                AStr_AppendPrint(pStr, "\tsrcs[\n");
                 iMax = AStrCArray_getSize(this->pSrcs);
+                if (iMax > 0) {
+                    AStr_AppendA(pStr, "\tsrcs[\n");
+                }
                 for (i=0; i<iMax; i++) {
                     AStr_AppendPrint(pStr, "\t\t%s\n",
                                      AStrC_getData(AStrCArray_Get(this->pSrcs, i+1)));
                 }
-                AStr_AppendPrint(pStr, "\t]\n");
+                if (iMax > 0) {
+                    AStr_AppendA(pStr, "\t]\n");
+                }
             }
 
             return pStr;

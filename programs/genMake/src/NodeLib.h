@@ -311,6 +311,9 @@ extern "C" {
     );
     
     
+    ASTR_DATA *    NodeLib_ToString (
+        NODELIB_DATA    *this
+    );
 
     
 #ifdef	__cplusplus
