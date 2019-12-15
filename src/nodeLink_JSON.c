@@ -279,7 +279,7 @@ extern "C" {
         );
 
         if (this) {
-            pWrkStr = node_ToJSON((NODE_DATA *)this);
+            pWrkStr = node_ToJson((NODE_DATA *)this);
             AStr_AppendA(pStr, "\t\"node\":");
             AStr_Append(pStr, pWrkStr);\
             obj_Release(pWrkStr);

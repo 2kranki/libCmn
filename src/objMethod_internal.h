@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   objMethod_internal.h
- *	Generated 10/28/2017 08:51:04
+ * File:   ObjMethod_internal.h
+ *	Generated 12/15/2019 14:20:32
  *
  * Notes:
  *  --	N/A
@@ -39,11 +39,16 @@
 
 
 
-#include    <objMethod.h>
+#include        <ObjMethod.h>
+#include        <jsonIn.h>
 
 
 #ifndef OBJMETHOD_INTERNAL_H
 #define	OBJMETHOD_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -58,15 +63,14 @@ extern "C" {
     //                  Object Data Description
     //---------------------------------------------------------------
 
- #pragma pack(push, 1)
-struct objMethod_data_s	{
+#pragma pack(push, 1)
+struct ObjMethod_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     OBJ_ID          *pObject;       // Object Pointer
     void            *pMethod;       // Method Pointer
     ASTR_DATA       *pObjectName;   // Object Name as provided in objInfo
@@ -79,12 +83,27 @@ struct objMethod_data_s	{
 #pragma pack(pop)
 
     extern
-    const
-    struct objMethod_class_data_s  objMethod_ClassObj;
+    struct ObjMethod_class_data_s  ObjMethod_ClassObj;
 
     extern
     const
-    OBJMETHOD_VTBL         objMethod_Vtbl;
+    OBJMETHOD_VTBL         ObjMethod_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  OBJMETHOD_SINGLETON
+    OBJMETHOD_DATA *     ObjMethod_getSingleton (
+        void
+    );
+
+    bool            ObjMethod_setSingleton (
+     OBJMETHOD_DATA       *pValue
+);
+#endif
 
 
 
@@ -92,58 +111,66 @@ struct objMethod_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool        objMethod_setDesc(
+    bool            ObjMethod_setDesc(
         OBJMETHOD_DATA  *this,
         ASTR_DATA       *pValue
     );
     
     
-   bool            objMethod_setLastError(
-        OBJMETHOD_DATA     *this,
-        ERESULT         value
-    );
-
-
-    bool        objMethod_setMethodName(
+    bool            ObjMethod_setMethodName(
         OBJMETHOD_DATA  *this,
         ASTR_DATA       *pValue
     );
     
     
-    bool            objMethod_setObject(
+    bool            ObjMethod_setObject(
         OBJMETHOD_DATA  *this,
         OBJ_ID          pValue
     );
     
     
-    bool        objMethod_setObjectName(
+    bool            ObjMethod_setObjectName(
         OBJMETHOD_DATA  *this,
         ASTR_DATA       *pValue
     );
     
     
-    void            objMethod_Dealloc(
+    OBJ_IUNKNOWN *  ObjMethod_getSuperVtbl (
+        OBJMETHOD_DATA     *this
+    );
+
+
+    void            ObjMethod_Dealloc (
         OBJ_ID          objId
     );
 
 
-    void *          objMethod_QueryInfo(
+#ifdef  OBJMETHOD_JSON_SUPPORT
+    OBJMETHOD_DATA * ObjMethod_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          ObjMethod_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     objMethod_ToJSON(
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     ObjMethod_ToJson (
         OBJMETHOD_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			objMethod_Validate(
+    bool			ObjMethod_Validate (
         OBJMETHOD_DATA       *this
     );
 #endif

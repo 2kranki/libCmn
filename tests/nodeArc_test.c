@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <nodeArc_internal.h>
+#include    <NodeArc_internal.h>
 
 
 
@@ -74,7 +74,7 @@ int         tearDown(
 
 
 
-int         test_nodeArc_OpenClose(
+int         test_NodeArc_OpenClose(
     const
     char        *pTestName
 )
@@ -83,9 +83,9 @@ int         test_nodeArc_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = nodeArc_Alloc( );
+    pObj = NodeArc_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = nodeArc_Init( pObj );
+    pObj = NodeArc_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -102,11 +102,11 @@ int         test_nodeArc_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_nodeArc);
-  TINYTEST_ADD_TEST(test_nodeArc_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_NodeArc);
+  TINYTEST_ADD_TEST(test_NodeArc_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_nodeArc);
+TINYTEST_MAIN_SINGLE_SUITE(test_NodeArc);
 
 
 

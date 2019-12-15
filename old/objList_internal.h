@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   nodeArc_internal.h
- *	Generated 07/14/2016 21:52:08
+ * File:   objList_internal.h
+ *	Generated 09/14/2016 11:48:53
  *
  * Notes:
  *  --	N/A
@@ -37,12 +37,14 @@
 
 
 
-#include    <nodeArc.h>
-#include    <node_internal.h>
+#include    <objList.h>
+#include    <listdl.h>
+#include    <blocks_internal.h>
 
 
-#ifndef NODEARC_INTERNAL_H
-#define	NODEARC_INTERNAL_H
+
+#ifndef OBJLIST_INTERNAL_H
+#define	OBJLIST_INTERNAL_H
 
 
 
@@ -51,51 +53,73 @@ extern "C" {
 #endif
 
 
+    //      Hash Node Descriptor
+#pragma pack(push, 1)
+    typedef struct  objList_record_s {
+        LISTDL_NODE     list;
+        OBJ_ID          pObject;
+        uint32_t        unique;
+        uint32_t        user;
+    } OBJLIST_RECORD;
+#pragma pack(pop)
+    
+    
 
 
 #pragma pack(push, 1)
-struct nodeArc_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
+struct objList_data_s	{
+    /* Warning - BLOCKS_DATA must be first in this object!
      */
-    NODE_DATA       super;
-    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-
+    BLOCKS_DATA     super;
+    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+#define LIST_FLAG_ORDERED OBJ_FLAG_USER1
+    
     // Common Data
-    NODELINK_DATA   *pOut;          // Outbound Node for this arc
-    NODELINK_DATA   *pIn;           // Inbound Node for this arc
-    uint32_t        weight;
-    bool            fAdjacent;
+    LISTDL_DATA     list;           // Main List
+    OBJLIST_RECORD  *pCur;
+    uint32_t        unique;
+    
 
 };
 #pragma pack(pop)
 
     extern
     const
-    struct nodeArc_class_data_s  nodeArc_ClassObj;
+    struct objList_class_data_s  objList_ClassObj;
 
     extern
     const
-    NODEARC_VTBL         nodeArc_Vtbl;
+    OBJLIST_VTBL    objList_Vtbl;
 
 
     // Internal Functions
-    void            nodeArc_Dealloc(
+    LISTDL_DATA *   objList_getList(
+        OBJLIST_DATA    *this
+    );
+    
+    
+    void            objList_Dealloc(
         OBJ_ID          objId
     );
 
 
-    void *          nodeArc_QueryInfo(
+    OBJLIST_RECORD * objList_FindObj(
+        OBJLIST_DATA    *this,
+        OBJ_ID          pObj
+    );
+    
+    
+    void *          objList_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
-        const
-        char            *pStr
+        void            *pData
     );
     
     
 #ifdef NDEBUG
 #else
-    bool			nodeArc_Validate(
-        NODEARC_DATA       *cbp
+    bool			objList_Validate(
+        OBJLIST_DATA    *this
     );
 #endif
 
@@ -105,5 +129,5 @@ struct nodeArc_data_s	{
 }
 #endif
 
-#endif	/* NODEARC_INTERNAL_H */
+#endif	/* OBJLIST_INTERNAL_H */
 

@@ -772,7 +772,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return psxExec_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return psxExec_ToJSON;
                         }
                         break;
@@ -786,7 +786,7 @@ extern "C" {
                 if (pData == psxExec_ToDebugString)
                     return "ToDebugString";
                 if (pData == psxExec_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

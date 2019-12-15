@@ -1449,7 +1449,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return array_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return array_ToJSON;
                         }
                         break;
@@ -1463,7 +1463,7 @@ extern "C" {
                 if (pData == array_ToDebugString)
                     return "ToDebugString";
                 if (pData == array_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

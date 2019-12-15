@@ -124,7 +124,7 @@ void *          obj_ClassQueryInfo(
                     if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                         return number_ToDebugString;
                     }
-                    if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                    if (str_Compare("ToJson", (char *)pStr) == 0) {
                         return number_ToJSON;
                     }
                     break;

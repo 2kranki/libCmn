@@ -449,7 +449,7 @@ extern "C" {
         pInfo = objHash_Vtbl.iVtbl.pInfo;
 
         // Scan the Hash Table insuring that all entries have
-        // an "ToJSON" method.
+        // an "ToJson" method.
         fRc = true;
         for (i=0; ((i < this->cHash) && fRc); ++i) {
             pNodeList = &this->pHash[i];
@@ -460,7 +460,7 @@ extern "C" {
                     pToJSON = (*pQueryInfo)(
                                 pNode->pObject,
                                 OBJ_QUERYINFO_TYPE_METHOD,
-                                "ToJSON"
+                                "ToJson"
                             );
                     if (NULL == pToJSON) {
                         fRc = false;
@@ -500,7 +500,7 @@ extern "C" {
                     pToJSON =   (*pQueryInfo)(
                                           pNode->pObject,
                                           OBJ_QUERYINFO_TYPE_METHOD,
-                                          "ToJSON"
+                                          "ToJson"
                                 );
                     if (pToJSON) {
                         pData = (*pToJSON)(pNode->pObject);

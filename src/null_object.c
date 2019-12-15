@@ -126,7 +126,7 @@ void *          obj_ClassQueryInfo(
                         return null_ToDebugString;
                     }
 #ifdef XYZZY
-                    if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                    if (str_Compare("ToJson", (char *)pStr) == 0) {
                         return null_ToJSON;
                     }
 #endif

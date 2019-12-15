@@ -1170,7 +1170,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return jsonPP_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return jsonPP_ToJSON;
                         }
                         break;
@@ -1184,7 +1184,7 @@ extern "C" {
                 if (pData == jsonPP_ToDebugString)
                     return "ToDebugString";
                 if (pData == jsonPP_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

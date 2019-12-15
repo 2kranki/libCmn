@@ -1043,7 +1043,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (ASTRC_DATA *)obj_Init( this, cbSize, OBJ_IDENT_ASTRC );
+        this = (ASTRC_DATA *)obj_Init(this, cbSize, OBJ_IDENT_ASTRC);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);

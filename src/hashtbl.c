@@ -740,7 +740,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return hashtbl_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return hashtbl_ToJSON;
                         }
                         break;
@@ -754,7 +754,7 @@ extern "C" {
                 if (pData == hashtbl_ToDebugString)
                     return "ToDebugString";
                 if (pData == hashtbl_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

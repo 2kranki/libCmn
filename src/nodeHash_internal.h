@@ -91,7 +91,8 @@ struct nodeHash_data_s	{
     //                              // added to the hash table
     uint32_t        size;
     uint32_t        cHash;          // Number of Hash Buckets
-    RBT_TREE        *pHash;         // Main Hash Table
+    RBT_TREE        *pHash;         // Main Hash Table (each bucket is an RBT to
+    //                              // accerate searches)
 
 };
 #pragma pack(pop)
@@ -147,7 +148,7 @@ struct nodeHash_data_s	{
     );
 
 
-    ASTR_DATA *     nodeHash_ToJSON(
+    ASTR_DATA *     nodeHash_ToJson(
         NODEHASH_DATA      *this
     );
 

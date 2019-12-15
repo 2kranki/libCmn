@@ -535,7 +535,7 @@ extern "C" {
                             return SrcLoc_ToDebugString;
                         }
 #ifdef XYZZY
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return SrcLoc_ToJSON;
                         }
 #endif

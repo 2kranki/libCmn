@@ -377,6 +377,18 @@ extern "C" {
                 }
             }
 
+            pHashItem = nodeHash_FindA(pHash, 0, "desc");
+            if (pHashItem) {
+                ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
+                ASTRC_DATA      *pStrC;
+                if (pStr) {
+                    pStrC = AStrC_NewFromAStr(pStr);
+                    NodeBase_setDesc(*ppBase, pStrC);
+                    obj_Release(pStrC);
+                    pStrC = OBJ_NIL;
+                }
+            }
+
             pHashItem = nodeHash_FindA(pHash, 0, "name");
             if (pHashItem) {
                 ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
@@ -535,6 +547,54 @@ extern "C" {
         }
 #endif
         this->pDeps = pValue;
+        
+        return true;
+    }
+        
+        
+        
+    //---------------------------------------------------------------
+    //                        D e s c
+    //---------------------------------------------------------------
+    
+    ASTRC_DATA *    NodeBase_getDesc (
+        NODEBASE_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pDesc;
+    }
+    
+    
+    bool            NodeBase_setDesc (
+        NODEBASE_DATA   *this,
+        ASTRC_DATA      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_DESC_OWNED
+        obj_Retain(pValue);
+        if (this->pDesc) {
+            obj_Release(this->pDesc);
+        }
+#endif
+        this->pDesc = pValue;
         
         return true;
     }
@@ -1290,6 +1350,10 @@ extern "C" {
             obj_Release(pOther->pDeps);
             pOther->pDeps = OBJ_NIL;
         }
+        if (pOther->pDesc) {
+            obj_Release(pOther->pDesc);
+            pOther->pDesc = OBJ_NIL;
+        }
         if (pOther->pHdrs) {
             obj_Release(pOther->pHdrs);
             pOther->pHdrs = OBJ_NIL;
@@ -1329,6 +1393,15 @@ extern "C" {
             else {
                 obj_Retain(this->pDeps);
                 pOther->pDeps = this->pDeps;
+            }
+        }
+        if (this->pDesc) {
+            if (obj_getVtbl(this->pDesc)->pCopy) {
+                pOther->pDesc = obj_getVtbl(this->pDesc)->pCopy(this->pDesc);
+            }
+            else {
+                obj_Retain(this->pDesc);
+                pOther->pDesc = this->pDesc;
             }
         }
         if (this->pExt) {
@@ -1573,6 +1646,7 @@ extern "C" {
 
         NodeBase_setArches(this, OBJ_NIL);
         NodeBase_setDeps(this, OBJ_NIL);
+        NodeBase_setDesc(this, OBJ_NIL);
         NodeBase_setHdrs(this, OBJ_NIL);
         NodeBase_setName(this, OBJ_NIL);
         NodeBase_setOSs(this, OBJ_NIL);

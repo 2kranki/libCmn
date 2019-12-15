@@ -2255,7 +2255,7 @@ extern "C" {
                             return W32Str_ToDebugString;
                         }
 #ifdef XYZZY
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return W32Str_ToJSON;
                         }
 #endif

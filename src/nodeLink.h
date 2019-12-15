@@ -262,12 +262,17 @@ extern "C" {
     
     /*!
      @return    If successful, a UTF-8 string which must be freed
-     with mem_Free(), otherwise NULL.
+                with mem_Free(), otherwise NULL.
      */
     char *          nodeLink_getNameUTF8(
         NODELINK_DATA   *this
     );
     
+
+    NODE_DATA *     nodeLink_getNode(
+        NODELINK_DATA   *this
+    );
+
 
     OBJ_ID          nodeLink_getOther(
         NODELINK_DATA   *this

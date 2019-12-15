@@ -40,7 +40,7 @@ NODELINK_DATA   *pNodes[64];
 
 
 
-// Example from Knuth's "The Art of Computer Programming - Volume 1", page 332???
+// Example from Knuth's "The Art of Computer Programming - Volume 1 (3rd Ed.)", page 332
 // which consists of a forest (two trees) that have sibling roots.
 static
 NODETREE_DATA * createTestTree01(
@@ -436,6 +436,24 @@ void            visitor(
 
 
 static
+void            visitorPrint(
+    OBJ_ID          pObject,            // Object supplied below
+    NODETREE_DATA   *pTree,             // Our Tree
+    NODELINK_DATA   *pNode,             // Current Node
+    uint16_t        indent
+)
+{
+    const
+    char            *pStrA;
+    fprintf(stderr, "%3d ", indent);
+    pStrA = node_getNameUTF8(nodeLink_getNode(pNode));
+    fprintf(stderr, "%s\n", pStrA);
+    mem_Free((void *)pStrA);
+    pStrA = NULL;
+}
+
+
+static
 void            visitorReset(
 )
 {
@@ -634,42 +652,6 @@ int         test_nodeTree_UpDown01(
         XCTAssertTrue( (nodeLink_getSibling(pEntry) == 0) );
         XCTAssertTrue( (nodeLink_getParent(pEntry) == 7) );
 
-#ifdef XYZZY
-        visitorReset();
-        eRc = nodeTree_VisitInorder(pObj, visitor, NULL);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        fprintf(stderr, "\nInorder(%d):\n", count);
-        XCTAssertTrue( (10 == count) );
-        fprintf(stderr, "\tABCKDEHFJG (should be)\n\t");
-        for (i=0; i<count; ++i) {
-            pStrA = node_getNameUTF8((NODE_DATA *)pNodes[i]);
-            fprintf(stderr, "%c", *pStrA);
-            mem_Free((void *)pStrA);
-            pStrA = NULL;
-        }
-        fprintf(stderr, " (actual)\n");
-        eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[0]),"A");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[1]),"B");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[2]),"C");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[3]),"K");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[4]),"D");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[5]),"E");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[6]),"H");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[7]),"F");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[8]),"J");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[9]),"G");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-#endif
-
         visitorReset();
         eRc = nodeTree_VisitPostorder(pObj, visitor, NULL);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
@@ -703,6 +685,8 @@ int         test_nodeTree_UpDown01(
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[9]),"D");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        eRc = nodeTree_VisitPostorder(pObj, visitorPrint, NULL);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
 
         visitorReset();
         eRc = nodeTree_VisitPreorder(pObj, visitor, NULL);
@@ -737,6 +721,8 @@ int         test_nodeTree_UpDown01(
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[9]),"G");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        eRc = nodeTree_VisitPreorder(pObj, visitorPrint, NULL);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
 
         visitorReset();
         eRc = nodeTree_VisitBreadthFirst(pObj, visitor, NULL);
@@ -771,6 +757,8 @@ int         test_nodeTree_UpDown01(
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         eRc = name_CompareA(node_getName((NODE_DATA *)pNodes[9]),"J");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        eRc = nodeTree_VisitBreadthFirst(pObj, visitorPrint, NULL);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
 
         pArray = nodeTree_ToLinearizationPost(pObj);
         XCTAssertFalse( (OBJ_NIL == pArray) );
@@ -893,51 +881,6 @@ int         test_nodeTree_UpDown01(
         obj_Release(pArray);
         pArray = OBJ_NIL;
         fprintf(stderr, "\n\n\n");
-        
-#ifdef XYZZY
-        eRc = nodeTree_NodeDelete(pObj, 3);     // Delete E(3) which includes F(7),G(9),H(8)
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        
-        // Verify that the linkage fields are correct.
-        pEntry = nodeArray_Get(pObj->pArray, 1);
-        XCTAssertFalse( (pEntry == OBJ_NIL) );
-        XCTAssertTrue( (node_getIndex(pEntry) == 1) );
-        XCTAssertTrue( (node_getSibling(pEntry) == 0) );
-        XCTAssertTrue( (node_getChild(pEntry) == 2) );
-        XCTAssertTrue( (node_getParent(pEntry) == 0) );
-        pEntry = nodeArray_Get(pObj->pArray, 2);
-        XCTAssertFalse( (pEntry == OBJ_NIL) );
-        XCTAssertTrue( (node_getIndex(pEntry) == 2) );
-        XCTAssertTrue( (node_getSibling(pEntry) == 4) );
-        XCTAssertTrue( (node_getChild(pEntry) == 5) );
-        XCTAssertTrue( (node_getParent(pEntry) == 1) );
-        pEntry = nodeArray_Get(pObj->pArray, 3);
-        XCTAssertTrue( (pEntry == OBJ_NIL) );
-        pEntry = nodeArray_Get(pObj->pArray, 4);
-        XCTAssertFalse( (pEntry == OBJ_NIL) );
-        XCTAssertTrue( (node_getIndex(pEntry) == 4) );
-        XCTAssertTrue( (node_getSibling(pEntry) == 0) );
-        XCTAssertTrue( (node_getChild(pEntry) == 0) );
-        XCTAssertTrue( (node_getParent(pEntry) == 1) );
-        pEntry = nodeArray_Get(pObj->pArray, 5);
-        XCTAssertFalse( (pEntry == OBJ_NIL) );
-        XCTAssertTrue( (node_getIndex(pEntry) == 5) );
-        XCTAssertTrue( (node_getSibling(pEntry) == 6) );
-        XCTAssertTrue( (node_getChild(pEntry) == 0) );
-        XCTAssertTrue( (node_getParent(pEntry) == 2) );
-        pEntry = nodeArray_Get(pObj->pArray, 6);
-        XCTAssertFalse( (pEntry == OBJ_NIL) );
-        XCTAssertTrue( (node_getIndex(pEntry) == 6) );
-        XCTAssertTrue( (node_getSibling(pEntry) == 0) );
-        XCTAssertTrue( (node_getChild(pEntry) == 0) );
-        XCTAssertTrue( (node_getParent(pEntry) == 2) );
-        pEntry = nodeArray_Get(pObj->pArray, 7);
-        XCTAssertTrue( (pEntry == OBJ_NIL) );
-        pEntry = nodeArray_Get(pObj->pArray, 8);
-        XCTAssertTrue( (pEntry == OBJ_NIL) );
-        pEntry = nodeArray_Get(pObj->pArray, 9);
-        XCTAssertTrue( (pEntry == OBJ_NIL) );
-#endif
         
         XCTAssertTrue( (obj_IsFlag(pObj, OBJ_FLAG_ALLOC)) );
         obj_Release(pObj);

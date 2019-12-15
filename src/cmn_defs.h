@@ -270,6 +270,8 @@ extern "C" {
         OBJ_IDENT_FILEREF_CLASS,
         OBJ_IDENT_GENOBJ,               // Generate an Object
         OBJ_IDENT_GENOBJ_CLASS,
+        OBJ_IDENT_GRAPHNODE,            // Graph Node
+        OBJ_IDENT_GRAPHNODE_CLASS,
         OBJ_IDENT_GREG,                 // Gregorian Date
         OBJ_IDENT_GREG_CLASS,
         OBJ_IDENT_HASH32,               // 32-Bit Key Hash Table
@@ -328,6 +330,8 @@ extern "C" {
         OBJ_IDENT_NODEBTREE_CLASS,
         OBJ_IDENT_NODEBTP,              // A Binary Tree of Nodes using pointer linkage
         OBJ_IDENT_NODEBTP_CLASS,        //      between nodes
+        OBJ_IDENT_NODEDIGRAPH,          // Directed Graph of Nodes
+        OBJ_IDENT_NODEDIGRAPH_CLASS,
         OBJ_IDENT_NODEENTRY,            // A Node to be used in other containers
         OBJ_IDENT_NODEENTRY_CLASS,
         OBJ_IDENT_NODEENUM,             // Node Enumeration

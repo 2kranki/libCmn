@@ -991,8 +991,8 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    ASTRCARRAY_DATA *   AStrCArray_Init (
-        ASTRCARRAY_DATA       *this
+    ASTRCARRAY_DATA * AStrCArray_Init (
+        ASTRCARRAY_DATA *this
     )
     {
         uint32_t        cbSize = sizeof(ASTRCARRAY_DATA);
@@ -1240,8 +1240,8 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return AStrCArray_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return AStrCArray_ToJSON;
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return AStrCArray_ToJson;
                         }
                         break;
                         
@@ -1253,8 +1253,8 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == AStrCArray_ToDebugString)
                     return "ToDebugString";
-                if (pData == AStrCArray_ToJSON)
-                    return "ToJSON";
+                if (pData == AStrCArray_ToJson)
+                    return "ToJson";
                 break;
                 
             default:
@@ -1302,7 +1302,7 @@ extern "C" {
     //                       T o  J S O N
     //---------------------------------------------------------------
     
-     ASTR_DATA *     AStrCArray_ToJSON (
+     ASTR_DATA *     AStrCArray_ToJson (
         ASTRCARRAY_DATA      *this
     )
     {

@@ -133,7 +133,7 @@ int             test_msgBus_Broadcast01(
         // The test receivers just accumulate the messages in the order
         // that they are received into one large array.
         for (i=0; i<NUM_OBJ; ++i) {
-            pMethod = objMethod_NewObjectA(pTest, "TestMethod01");
+            pMethod = ObjMethod_NewObjectA(pTest, "TestMethod01");
             TINYTEST_FALSE( (OBJ_NIL == pMethod) );
             eRc = msgBus_RegisterObjectMethod(pObj, pMethod, &token);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );

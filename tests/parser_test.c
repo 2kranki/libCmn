@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 08/21/2017 13:03:04
+ *	Generated 12/15/2019 15:07:38
  */
 
 
@@ -23,16 +24,14 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <pplex.h>
 #include    <trace.h>
-#include    <parser_internal.h>
-#include    <szTbl.h>
+#include    <Parser_internal.h>
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -44,18 +43,28 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
     szTbl_SharedReset( );
     trace_SharedReset( ); 
-    mem_Dump( );
+    if (mem_Dump( ) ) {
+        fprintf(
+                stderr,
+                "\x1b[1m"
+                "\x1b[31m"
+                "ERROR: "
+                "\x1b[0m"
+                "Leaked memory areas were found!\n"
+        );
+        exitCode = 4;
+        return 0;
+    }
     mem_Release( );
     
     return 1; 
@@ -66,64 +75,60 @@ int         tearDown(
 
 
 
-int         test_parser_OpenClose(
+int             test_Parser_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    PARSER_DATA	*pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    PARSER_DATA	    *pObj = OBJ_NIL;
    
-    pObj = parser_Alloc( );
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Parser_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = parser_Init(pObj, 4);
+    pObj = Parser_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        fprintf(stderr, "PPLEX_OP_ADD=%d\n",PPLEX_OP_ADD);
-        fprintf(stderr, "PPLEX_SPCL_COLON=%d\n",PPLEX_SPCL_COLON);
-        fprintf(stderr, "PPLEX_KWD_GOAL=%d\n",PPLEX_KWD_GOAL);
-        fprintf(stderr, "PPLEX_IDENTIFIER=%d\n",PPLEX_IDENTIFIER);
-        fprintf(stderr, "PPLEX_KWD_INTERNAL=%d\n",PPLEX_KWD_INTERNAL);
-        fprintf(stderr, "PPLEX_SEP_LPAREN=%d\n",PPLEX_SEP_LPAREN);
-        fprintf(stderr, "PPLEX_OP_MUL=%d\n",PPLEX_OP_MUL);
-        fprintf(stderr, "PPLEX_OP_QUESTION=%d\n",PPLEX_OP_QUESTION);
-        fprintf(stderr, "PPLEX_SEP_RPAREN=%d\n",PPLEX_SEP_RPAREN);
-        fprintf(stderr, "PPLEX_SEP_SEMICOLON=%d\n",PPLEX_SEP_SEMICOLON);
-        fprintf(stderr, "PPLEX_KWD_TERM=%d\n",PPLEX_KWD_TERM);
-        fprintf(stderr, "PPLEX_SPCL_WHITESPACE=%d\n",PPLEX_SPCL_WHITESPACE);
+        //obj_TraceSet(pObj, true);       
+        
+        // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
-   
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_parser_Properties01(
+int         test_Parser_Properties01(
     const
     char        *pTestName
 )
 {
-    PARSER_DATA	*pObj = OBJ_NIL;
+    PARSER_DATA    *pObj = OBJ_NIL;
     NODE_DATA       *pNode;
     NODE_DATA       *pNode2;
     ERESULT         eRc;
    
-    pObj = parser_Alloc( );
+    pObj = Parser_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = parser_Init(pObj, 4);
+    pObj = Parser_Init(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        XCTAssertTrue( (0 == parser_PropertyCount(pObj)) );
+        XCTAssertTrue( (0 == Parser_PropertyCount(pObj)) );
         pNode = node_NewWithUTF8AndClass(0, "abc", OBJ_NIL);
         XCTAssertFalse( (OBJ_NIL == pObj) );
-        eRc = parser_PropertyAdd(pObj, pNode);
+        eRc = Parser_PropertyAdd(pObj, pNode);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-        XCTAssertTrue( (1 == parser_PropertyCount(pObj)) );
-        pNode2 = parser_Property(pObj, "abc");
+        XCTAssertTrue( (1 == Parser_PropertyCount(pObj)) );
+        pNode2 = Parser_Property(pObj, "abc");
         XCTAssertTrue( (pNode == pNode2) );
         obj_Release(pNode);
         pNode = OBJ_NIL;
@@ -138,12 +143,12 @@ int         test_parser_Properties01(
 
 
 
-TINYTEST_START_SUITE(test_parser);
-  TINYTEST_ADD_TEST(test_parser_Properties01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_parser_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_Parser);
+    TINYTEST_ADD_TEST(test_Parser_Properties01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Parser_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_parser);
+TINYTEST_MAIN_SINGLE_SUITE(test_Parser);
 
 
 

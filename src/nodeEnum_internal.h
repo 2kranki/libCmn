@@ -125,7 +125,7 @@ struct nodeEnum_data_s	{
     );
 
 
-    NODEENUM_DATA * nodeEnum_ParseObject (
+    NODEENUM_DATA * nodeEnum_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -137,7 +137,7 @@ struct nodeEnum_data_s	{
     );
 
 
-    ASTR_DATA *     nodeEnum_ToJSON (
+    ASTR_DATA *     nodeEnum_ToJson (
         NODEENUM_DATA      *this
     );
 

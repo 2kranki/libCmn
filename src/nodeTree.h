@@ -11,6 +11,10 @@
  *          Un-ordered means that the tree nodes are not in order
  *          by name (ie key). They are in order by placement.
  *
+ *          This method of representation is called "The Binary
+ *          Tree Representation of Trees", section 2.3.2 of
+ *          "Fundamental Algorithms" (3rd Ed).
+ *
  * Remarks
  *  1,      The left pointer of nodeEntry is used for nextSibling
  *          and the right index for nextChild.
@@ -32,6 +36,8 @@
  *              Knuth's definition.
  *  07/01/2018  Changed base node to nodeLink for all the nodes of the
  *              tree.
+ *  12/13/2018  Removed the inorder traversal of the tree. See p. 336
+ *              of "Fundamental Algorithms", Knuth, 3rd Edition.
  *
  * References
  *  --      Donald Knuth, "The Art of Computer Programming - Fundamental
@@ -132,16 +138,6 @@ extern "C" {
                                 NODELINK_DATA   *,
                                 uint16_t
                             ),
-            OBJ_ID          pObject
-        );
-        ERESULT         (*pVisitInorder)(
-            OBJ_ID,
-            void            (pVisitor)(
-                                     OBJ_ID          ,
-                                     NODETREE_DATA   *,
-                                     NODELINK_DATA   *,
-                                     uint16_t
-                                     ),
             OBJ_ID          pObject
         );
         ERESULT         (*pVisitPreorder)(
@@ -560,7 +556,7 @@ extern "C" {
      This is also known as a depth-first traversal.
      @param     this     NODETREE_DATA object pointer
      @param     pVisitor Function pointer to the routine called as each
-                 node is visited
+                        node is visited
      @return    LastError (If successful, LastError == ERESULT_SUCCESS,
                 otherwise LastError == ERESULT_* error code).
      */
@@ -572,20 +568,6 @@ extern "C" {
             NODELINK_DATA   *,              // Current Node
             uint16_t                        // Indent level * 4
         ),
-        OBJ_ID          pObject
-    );
-    
-    
-    /* Visit each child then the root (or current node) recursively.
-     */
-    ERESULT         nodeTree_VisitInorder(
-        NODETREE_DATA	*this,
-        void            (pVisitor)(
-                                   OBJ_ID,              // Object supplied below
-                                   NODETREE_DATA *,     // Our Tree
-                                   NODELINK_DATA *,     // Current Node
-                                   uint16_t             // Indent level * 4
-                                   ),
         OBJ_ID          pObject
     );
     

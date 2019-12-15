@@ -205,7 +205,8 @@ extern	"C" {
         "Base Object",
         (OBJ_DATA *)&obj_ClassObj,
         (OBJ_DATA *)&obj_ClassObj,
-        (OBJ_IUNKNOWN *)&obj_Vtbl
+        (OBJ_IUNKNOWN *)&obj_Vtbl,
+        sizeof(OBJ_DATA)
     };
     
     
@@ -238,7 +239,8 @@ extern	"C" {
         "Shaered Base Object",
         (OBJ_DATA *)&obj_ClassObj,
         (OBJ_DATA *)&obj_ClassObj,
-        (OBJ_IUNKNOWN *)&obj_VtblShared
+        (OBJ_IUNKNOWN *)&obj_VtblShared,
+        sizeof(OBJ_DATA)
     };
     
     

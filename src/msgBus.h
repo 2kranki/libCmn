@@ -61,7 +61,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <msgData.h>
-#include        <objMethod.h>
+#include        <ObjMethod.h>
 
 
 #ifndef         MSGBUS_H

@@ -869,7 +869,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return memFile_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return memFile_ToJSON;
                         }
                         break;
@@ -883,7 +883,7 @@ extern "C" {
                 if (pData == memFile_ToDebugString)
                     return "ToDebugString";
                 if (pData == memFile_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

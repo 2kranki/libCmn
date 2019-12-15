@@ -351,7 +351,7 @@ extern "C" {
                 switch (*pStr) {
                         
                     case 'T':
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return greg_ToJSON;
                         }
                         break;

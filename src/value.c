@@ -1262,8 +1262,8 @@ extern "C" {
                             return value_ToDebugString;
                         }
 #ifdef XYZZY
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return value_ToJSON;
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return value_ToJson;
                         }
 #endif
                         break;

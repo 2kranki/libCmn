@@ -208,7 +208,9 @@ OBJ_INFO        lex_Info = {
     "lex",
     "Lexical Analyzer Base",
     (OBJ_DATA *)&lex_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&lex_Vtbl,
+    sizeof(LEX_DATA)
 };
 
 

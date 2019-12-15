@@ -96,7 +96,7 @@ def         perform_actions():
         print('*      Deploying the Application        *')
         print('*****************************************')
         print()
-    rc = util.do_cmd("make -f Makefile.macos64.tst install")
+    rc = util.do_cmd("make -f Makefile.macos64.txt install")
     if not rc == 0:
         print("Error: Deploying failed!\n")
         return 4

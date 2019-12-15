@@ -75,7 +75,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    VALUE_DATA *    value_ParseObject(
+    VALUE_DATA *    value_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -226,7 +226,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = value_ParseObject(pParser);
+        pObject = value_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -262,7 +262,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     value_ToJSON(
+    ASTR_DATA *     value_ToJson(
         VALUE_DATA      *this
     )
     {
@@ -284,7 +284,7 @@ extern "C" {
 #endif
         pInfo = obj_getInfo(this);
         
-        // We can't convert any object that doesn't support "ToJSON".
+        // We can't convert any object that doesn't support "ToJson".
         if (this->type == VALUE_TYPE_OBJECT) {
             if (this->value.pObject) {
                 pVtbl = obj_getVtbl(this->value.pObject);
@@ -292,7 +292,7 @@ extern "C" {
                     pToJSON =   pVtbl->pQueryInfo(
                                             this->value.pObject,
                                             OBJ_QUERYINFO_TYPE_METHOD,
-                                            "ToJSON"
+                                            "ToJson"
                                 );
                     if (pToJSON == NULL) {
                         return OBJ_NIL;
@@ -441,7 +441,7 @@ extern "C" {
                         pToJSON =   pVtbl->pQueryInfo(
                                                     this->value.pObject,
                                                     OBJ_QUERYINFO_TYPE_METHOD,
-                                                    "ToJSON"
+                                                    "ToJson"
                                     );
                         if (pToJSON) {
                             pWrk = (*pToJSON)(this->value.pObject);

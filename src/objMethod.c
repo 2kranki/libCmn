@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   objMethod.c
- *	Generated 10/28/2017 08:51:04
+ * File:   ObjMethod.c
+ *	Generated 12/15/2019 14:20:32
  *
  */
 
@@ -41,7 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <objMethod_internal.h>
+#include        <ObjMethod_internal.h>
+#include        <trace.h>
+
+
+
 
 
 
@@ -60,7 +64,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            objMethod_task_body(
+    void            ObjMethod_task_body (
         void            *pData
     )
     {
@@ -80,15 +84,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    OBJMETHOD_DATA * objMethod_Alloc(
+    OBJMETHOD_DATA *     ObjMethod_Alloc (
+        void
     )
     {
-        OBJMETHOD_DATA  *this;
+        OBJMETHOD_DATA       *this;
         uint32_t        cbSize = sizeof(OBJMETHOD_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -96,20 +101,22 @@ extern "C" {
 
 
 
-    OBJMETHOD_DATA * objMethod_New(
+    OBJMETHOD_DATA *     ObjMethod_New (
+        void
     )
     {
-        OBJMETHOD_DATA       *this;
+        OBJMETHOD_DATA  *this;
         
-        this = objMethod_Alloc( );
+        this = ObjMethod_Alloc( );
         if (this) {
-            this = objMethod_Init(this);
+            this = ObjMethod_Init(this);
         } 
         return this;
     }
 
 
-    OBJMETHOD_DATA * objMethod_NewObjectA(
+
+    OBJMETHOD_DATA * ObjMethod_NewObjectA(
         OBJ_ID          pObject,
         const
         char            *pMethodA
@@ -147,11 +154,11 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = objMethod_Alloc( );
+        this = ObjMethod_Alloc( );
         if (this) {
-            this = objMethod_Init(this);
+            this = ObjMethod_Init(this);
             if (this) {
-                objMethod_setObject(this, pObject);
+                ObjMethod_setObject(this, pObject);
                 this->pMethod = pMethod;
                 this->pObjectName = AStr_NewA(pInfo->pClassName);
                 if (OBJ_NIL == this->pObjectName) {
@@ -172,6 +179,8 @@ extern "C" {
 
     
 
+
+
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
@@ -180,7 +189,7 @@ extern "C" {
     //                      D e s c r i p t i o n
     //---------------------------------------------------------------
     
-    ASTR_DATA * objMethod_getDesc(
+    ASTR_DATA * ObjMethod_getDesc(
         OBJMETHOD_DATA  *this
     )
     {
@@ -188,25 +197,24 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return this->pDesc;
     }
     
     
-    bool        objMethod_setDesc(
+    bool        ObjMethod_setDesc(
         OBJMETHOD_DATA  *this,
         ASTR_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -218,60 +226,16 @@ extern "C" {
         }
         this->pDesc = pValue;
         
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT     objMethod_getLastError(
-        OBJMETHOD_DATA  *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !objMethod_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool        objMethod_setLastError(
-        OBJMETHOD_DATA  *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !objMethod_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
         
-        this->eRc = value;
         
-        return true;
-    }
-    
-    
-
+        
     //---------------------------------------------------------------
     //                          M e t h o d
     //---------------------------------------------------------------
     
-    void *          objMethod_getMethod(
+    void *          ObjMethod_getMethod(
         OBJMETHOD_DATA  *this
     )
     {
@@ -281,13 +245,12 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        objMethod_setLastError(this, ERESULT_DATA_NOT_FOUND);
         pUnk = obj_getVtbl(this->pObject);
         if (pUnk && pUnk->pQueryInfo) {
             pMethod =   pUnk->pQueryInfo(
@@ -295,9 +258,6 @@ extern "C" {
                             OBJ_QUERYINFO_TYPE_METHOD,
                             (void *)AStr_getData(this->pMethodName)
                         );
-            if (pMethod) {
-                objMethod_setLastError(this, ERESULT_SUCCESS);
-            }
         }
         
         return pMethod;
@@ -309,7 +269,7 @@ extern "C" {
     //                     M e t h o d  N a m e
     //---------------------------------------------------------------
     
-    ASTR_DATA *     objMethod_getMethodName(
+    ASTR_DATA *     ObjMethod_getMethodName(
         OBJMETHOD_DATA  *this
     )
     {
@@ -317,25 +277,24 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return this->pMethodName;
     }
     
     
-    bool            objMethod_setMethodName(
+    bool            ObjMethod_setMethodName(
         OBJMETHOD_DATA  *this,
         ASTR_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -347,7 +306,6 @@ extern "C" {
         }
         this->pMethodName = pValue;
         
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -357,7 +315,7 @@ extern "C" {
     //                      O b j e c t
     //---------------------------------------------------------------
     
-    OBJ_ID          objMethod_getObject(
+    OBJ_ID          ObjMethod_getObject(
         OBJMETHOD_DATA  *this
     )
     {
@@ -365,25 +323,24 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return this->pObject;
     }
     
     
-    bool            objMethod_setObject(
+    bool            ObjMethod_setObject(
         OBJMETHOD_DATA  *this,
         OBJ_ID          pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -395,7 +352,6 @@ extern "C" {
         }
         this->pObject = pValue;
         
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -405,7 +361,7 @@ extern "C" {
     //                      O b j e c t  N a m e
     //---------------------------------------------------------------
     
-    ASTR_DATA *     objMethod_getObjectName(
+    ASTR_DATA *     ObjMethod_getObjectName(
         OBJMETHOD_DATA  *this
     )
     {
@@ -413,25 +369,24 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return this->pObjectName;
     }
     
     
-    bool            objMethod_setObjectName(
+    bool            ObjMethod_setObjectName(
         OBJMETHOD_DATA  *this,
         ASTR_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -443,17 +398,61 @@ extern "C" {
         }
         this->pObjectName = pValue;
         
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
+        
+        
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
     
+    uint32_t        ObjMethod_getSize (
+        OBJMETHOD_DATA       *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!ObjMethod_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return 0;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
     
+    OBJ_IUNKNOWN *  ObjMethod_getSuperVtbl (
+        OBJMETHOD_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ObjMethod_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return this->pSuperVtbl;
+    }
+    
+  
+
     //---------------------------------------------------------------
     //                      U s e r  D a t a
     //---------------------------------------------------------------
     
-    uint32_t        objMethod_getUser32(
+    uint32_t        ObjMethod_getUser32(
         OBJMETHOD_DATA  *this
     )
     {
@@ -461,25 +460,24 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        this->eRc = ERESULT_SUCCESS;
         return this->user32;
     }
     
     
-    bool            objMethod_setUser32(
+    bool            ObjMethod_setUser32(
         OBJMETHOD_DATA  *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if( !ObjMethod_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -489,11 +487,10 @@ extern "C" {
         
         return true;
     }
-    
-    
-    
+        
+        
+        
 
-    
 
     //===============================================================
     //                          M e t h o d s
@@ -510,27 +507,28 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = objMethod__Assign(this,pOther);
+        ERESULT eRc = ObjMethod_Assign(this,pOther);
      @endcode 
-     @param     this    OBJMETHOD object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another OBJMETHOD object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         objMethod_Assign(
-        OBJMETHOD_DATA	*this,
-        OBJMETHOD_DATA  *pOther
+    ERESULT         ObjMethod_Assign (
+        OBJMETHOD_DATA		*this,
+        OBJMETHOD_DATA     *pOther
     )
     {
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if (!ObjMethod_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !objMethod_Validate(pOther) ) {
+        if (!ObjMethod_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -577,15 +575,73 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        objMethod_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        objMethod_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return objMethod_getLastError(this);
+        return eRc;
     }
     
     
     
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         ObjMethod_Compare (
+        OBJMETHOD_DATA     *this,
+        OBJMETHOD_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!ObjMethod_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!ObjMethod_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
+    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -594,14 +650,14 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        objMethod      *pCopy = objMethod_Copy(this);
+        ObjMethod      *pCopy = ObjMethod_Copy(this);
      @endcode 
-     @param     this    OBJMETHOD object pointer
-     @return    If successful, a OBJMETHOD object which must be released,
-                otherwise OBJ_NIL.
-     @warning  Remember to release the returned the OBJMETHOD object.
+     @param     this    object pointer
+     @return    If successful, a OBJMETHOD object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    OBJMETHOD_DATA *     objMethod_Copy(
+    OBJMETHOD_DATA *     ObjMethod_Copy (
         OBJMETHOD_DATA       *this
     )
     {
@@ -611,15 +667,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if (!ObjMethod_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = objMethod_New( );
+        pOther = ObjMethod_New( );
         if (pOther) {
-            eRc = objMethod_Assign(this, pOther);
+            eRc = ObjMethod_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -628,7 +684,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -638,7 +693,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            objMethod_Dealloc(
+    void            ObjMethod_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -650,7 +705,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if (!ObjMethod_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -662,14 +717,15 @@ extern "C" {
         }
 #endif
 
-        objMethod_setDesc(this, OBJ_NIL);
-        objMethod_setMethodName(this, OBJ_NIL);
-        objMethod_setObject(this, OBJ_NIL);
-        objMethod_setObjectName(this, OBJ_NIL);
+        ObjMethod_setDesc(this, OBJ_NIL);
+        ObjMethod_setMethodName(this, OBJ_NIL);
+        ObjMethod_setObject(this, OBJ_NIL);
+        ObjMethod_setObjectName(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        //other_Dealloc(this);          // Needed for inheritance
-        obj_Dealloc(this);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -681,21 +737,24 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         objMethod_Disable(
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ObjMethod_Disable (
         OBJMETHOD_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
-        if (NULL == this) {
-            objMethod_setLastError(this, ERESULT_INVALID_OBJECT);
-            return ERESULT_INVALID_OBJECT;
-        }
     #ifdef NDEBUG
     #else
-        if( !objMethod_Validate(this) ) {
+        if (!ObjMethod_Validate(this)) {
             DEBUG_BREAK();
-            return objMethod_getLastError(this);
+            return ERESULT_INVALID_OBJECT;
         }
     #endif
 
@@ -704,7 +763,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -714,15 +772,22 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         objMethod_Enable(
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ObjMethod_Enable (
         OBJMETHOD_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !objMethod_Validate(this) ) {
+        if (!ObjMethod_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -733,7 +798,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        objMethod_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -743,11 +807,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    OBJMETHOD_DATA *   objMethod_Init(
+    OBJMETHOD_DATA *   ObjMethod_Init (
         OBJMETHOD_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(OBJMETHOD_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -771,26 +836,28 @@ extern "C" {
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_OBJMETHOD);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&objMethod_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&ObjMethod_Vtbl);
         
-        objMethod_setLastError(this, ERESULT_GENERAL_FAILURE);
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        */
 
     #ifdef NDEBUG
     #else
-        if( !objMethod_Validate(this) ) {
+        if (!ObjMethod_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "objMethod::offsetof(eRc) = %lu\n", offsetof(OBJMETHOD_DATA,eRc));
-        //fprintf(stderr, "objMethod::sizeof(OBJMETHOD_DATA) = %lu\n", sizeof(OBJMETHOD_DATA));
+        fprintf(stderr, "ObjMethod::sizeof(OBJMETHOD_DATA) = %lu\n", sizeof(OBJMETHOD_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(OBJMETHOD_DATA));
     #endif
 
@@ -803,27 +870,26 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         objMethod_IsEnabled(
+    ERESULT         ObjMethod_IsEnabled (
         OBJMETHOD_DATA		*this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if (!ObjMethod_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            objMethod_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        objMethod_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -839,38 +905,38 @@ extern "C" {
      object information structure.
      Example:
      @code
-     // Return a method pointer for a string or NULL if not found.
-     void        *pMethod = objMethod_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
-     @endcode
-     @param     objId   OBJTEST object pointer
+        // Return a method pointer for a string or NULL if not found. 
+        void        *pMethod = ObjMethod_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode 
+     @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
-                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
-                         character string which represents the method name without
-                         the object name, "objMethod", prefix,
-                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
-                         address of the method to be found.
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
+                        character string which represents the method name without
+                        the object name, "ObjMethod", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
-                 OBJ_QUERYINFO_TYPE_INFO: info pointer,
-                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
-                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          objMethod_QueryInfo(
+    void *          ObjMethod_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        OBJMETHOD_DATA   *this = objId;
+        OBJMETHOD_DATA     *this = objId;
         const
         char            *pStr = pData;
-
+        
         if (OBJ_NIL == this) {
             return NULL;
         }
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if (!ObjMethod_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -878,11 +944,33 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(OBJMETHOD_DATA);
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(OBJMETHOD_DATA);
+            break;
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)ObjMethod_Class();
                 break;
                 
-            case OBJ_QUERYINFO_TYPE_INFO:
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -891,28 +979,39 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return objMethod_Disable;
+                            return ObjMethod_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return objMethod_Enable;
+                            return ObjMethod_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return objMethod_ToDebugString;
+                            return ObjMethod_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return objMethod_ToJSON;
+#ifdef  SRCREF_JSON_SUPPORT
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return ObjMethod_ToJson;
                         }
+#endif
                         break;
                         
                     default:
                         break;
                 }
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == ObjMethod_ToDebugString)
+                    return "ToDebugString";
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == ObjMethod_ToJson)
+                    return "ToJson";
+#endif
                 break;
                 
             default:
@@ -925,6 +1024,98 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       T o  J S O N
+    //---------------------------------------------------------------
+    
+#ifdef  OBJMETHOD_JSON_SUPPORT
+     ASTR_DATA *     ObjMethod_ToJson (
+        OBJMETHOD_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        //int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if (!ObjMethod_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        if (pStr) {
+            eRc =   AStr_AppendPrint(
+                        pStr,
+                        "{\"objectType\":\"%s\"",
+                        pInfo->pClassName
+                    );
+            
+            pUnk = obj_getVtbl(this->pDesc);
+            if (pUnk && pUnk->pQueryInfo) {
+                pToJSON =   pUnk->pQueryInfo(
+                                       this->pDesc,
+                                       OBJ_QUERYINFO_TYPE_METHOD,
+                                       "To_Json"
+                           );
+                if (pToJSON) {
+                    pStr2 = pToJSON(this->pDesc);
+                    if (pStr2) {
+                        AStr_AppendPrint(pStr, "\"desc\":$s,\n", AStr_getData(pStr2));
+                        obj_Release(pStr2);
+                        pStr2 = OBJ_NIL;
+                    }
+                }
+            }
+            
+            pUnk = obj_getVtbl(this->pMethodName);
+            if (pUnk && pUnk->pQueryInfo) {
+                pToJSON =   pUnk->pQueryInfo(
+                                             this->pMethodName,
+                                             OBJ_QUERYINFO_TYPE_METHOD,
+                                             "To_Json"
+                                             );
+                if (pToJSON) {
+                    pStr2 = pToJSON(this->pMethodName);
+                    if (pStr2) {
+                        AStr_AppendPrint(pStr, "\"method\": $s,\n", AStr_getData(pStr2));
+                        obj_Release(pStr2);
+                        pStr2 = OBJ_NIL;
+                    }
+                }
+            }
+            
+            pUnk = obj_getVtbl(this->pObjectName);
+            if (pUnk && pUnk->pQueryInfo) {
+                pToJSON =   pUnk->pQueryInfo(
+                                             this->pObjectName,
+                                             OBJ_QUERYINFO_TYPE_METHOD,
+                                             "To_Json"
+                                             );
+                if (pToJSON) {
+                    pStr2 = pToJSON(this->pObjectName);
+                    if (pStr2) {
+                        AStr_AppendPrint(pStr, "\"name\": $s,\n", AStr_getData(pStr2));
+                        obj_Release(pStr2);
+                        pStr2 = OBJ_NIL;
+                    }
+                }
+            }
+            
+            AStr_AppendA(pStr, "}\n");
+        }
+        
+        return pStr;
+    }
+#endif
+    
+    
+    
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -932,16 +1123,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = objMethod_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = ObjMethod_ToDebugString(this,4);
      @endcode 
-     @param     this    OBJMETHOD object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     objMethod_ToDebugString(
-        OBJMETHOD_DATA  *this,
+    ASTR_DATA *     ObjMethod_ToDebugString (
+        OBJMETHOD_DATA      *this,
         int             indent
     )
     {
@@ -951,33 +1142,40 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objMethod_Validate(this) ) {
+        if (!ObjMethod_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = objMethod_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
         }
-        eRc =   AStr_AppendPrint(
+        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s)\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
-                    pInfo->pClassName
-               );
+                    pInfo->pClassName,
+                    ObjMethod_getSize(this),
+                    obj_getRetainCount(this)
+            );
 
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
-        }
-        eRc =   AStr_AppendPrint(pStr, " objectName:\n");
         if (this->pObjectName) {
+            if (indent) {
+                AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            }
+            eRc =   AStr_AppendPrint(pStr, " objectName:\n");
             if (((OBJ_DATA *)(this->pObjectName))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pObjectName))->pVtbl->pToDebugString(
                                                     this->pObjectName,
@@ -987,12 +1185,12 @@ extern "C" {
                 obj_Release(pWrkStr);
             }
         }
-        
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
-        }
-        eRc =   AStr_AppendPrint(pStr, " methodName:\n");
+
         if (this->pMethodName) {
+            if (indent) {
+                AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            }
+            eRc =   AStr_AppendPrint(pStr, " methodName:\n");
             if (((OBJ_DATA *)(this->pMethodName))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pMethodName))->pVtbl->pToDebugString(
                                                     this->pMethodName,
@@ -1002,104 +1200,16 @@ extern "C" {
                 obj_Release(pWrkStr);
             }
         }
-        
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
-        }
-        eRc =   AStr_AppendPrint(
-                                 pStr,
-                                 "%p(%s)}\n",
-                                 this,
-                                 pInfo->pClassName
-                );
 
-        objMethod_setLastError(this, ERESULT_SUCCESS);
-        return pStr;
-    }
-    
-    
-    
-    ASTR_DATA *     objMethod_ToJSON(
-        OBJMETHOD_DATA  *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        ASTR_DATA       *pStr2;
-        const
-        OBJ_INFO        *pInfo;
-        OBJ_IUNKNOWN    *pUnk;
-        ASTR_DATA *     (*pToJSON)(OBJ_ID);
-        
-#ifdef NDEBUG
-#else
-        if( !objMethod_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
         eRc =   AStr_AppendPrint(
-                     pStr,
-                     "{\"objectType\":\"%s\",",
-                     pInfo->pClassName
+                    pStr,
+                    " %p(%s)}\n", 
+                    this, 
+                    pInfo->pClassName
                 );
-        
-        pUnk = obj_getVtbl(this->pDesc);
-        if (pUnk && pUnk->pQueryInfo) {
-            pToJSON =   pUnk->pQueryInfo(
-                                   this->pDesc,
-                                   OBJ_QUERYINFO_TYPE_METHOD,
-                                   "To_JSON"
-                       );
-            if (pToJSON) {
-                pStr2 = pToJSON(this->pDesc);
-                if (pStr2) {
-                    AStr_AppendPrint(pStr, "\"desc\":$s,\n", AStr_getData(pStr2));
-                    obj_Release(pStr2);
-                    pStr2 = OBJ_NIL;
-                }
-            }
-        }
-        
-        pUnk = obj_getVtbl(this->pMethodName);
-        if (pUnk && pUnk->pQueryInfo) {
-            pToJSON =   pUnk->pQueryInfo(
-                                         this->pMethodName,
-                                         OBJ_QUERYINFO_TYPE_METHOD,
-                                         "To_JSON"
-                                         );
-            if (pToJSON) {
-                pStr2 = pToJSON(this->pMethodName);
-                if (pStr2) {
-                    AStr_AppendPrint(pStr, "\"method\": $s,\n", AStr_getData(pStr2));
-                    obj_Release(pStr2);
-                    pStr2 = OBJ_NIL;
-                }
-            }
-        }
-        
-        pUnk = obj_getVtbl(this->pObjectName);
-        if (pUnk && pUnk->pQueryInfo) {
-            pToJSON =   pUnk->pQueryInfo(
-                                         this->pObjectName,
-                                         OBJ_QUERYINFO_TYPE_METHOD,
-                                         "To_JSON"
-                                         );
-            if (pToJSON) {
-                pStr2 = pToJSON(this->pObjectName);
-                if (pStr2) {
-                    AStr_AppendPrint(pStr, "\"name\": $s,\n", AStr_getData(pStr2));
-                    obj_Release(pStr2);
-                    pStr2 = OBJ_NIL;
-                }
-            }
-        }
-        
-        AStr_AppendA(pStr, "}\n");
         
         return pStr;
     }
@@ -1112,15 +1222,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            objMethod_Validate(
+    bool            ObjMethod_Validate (
         OBJMETHOD_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_OBJMETHOD) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_OBJMETHOD))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1136,13 +1246,11 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(OBJMETHOD_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+        if (!(obj_getSize(this) >= sizeof(OBJMETHOD_DATA))) {
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

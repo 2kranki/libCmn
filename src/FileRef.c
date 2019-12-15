@@ -921,7 +921,7 @@ extern "C" {
                             return FileRef_ToDebugString;
                         }
 #ifdef  SRCREF_JSON_SUPPORT
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return FileRef_ToJson;
                         }
 #endif
@@ -937,7 +937,7 @@ extern "C" {
                     return "ToDebugString";
 #ifdef  SRCREF_JSON_SUPPORT
                 if (pData == FileRef_ToJson)
-                    return "ToJSON";
+                    return "ToJson";
 #endif
                 break;
                 

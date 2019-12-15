@@ -1067,7 +1067,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return md5ChkSum_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return md5ChkSum_ToJSON;
                         }
                         break;
@@ -1081,7 +1081,7 @@ extern "C" {
                 if (pData == md5ChkSum_ToDebugString)
                     return "ToDebugString";
                 if (pData == md5ChkSum_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

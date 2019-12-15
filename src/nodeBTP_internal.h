@@ -169,7 +169,7 @@ struct nodeBTP_data_s	{
     );
     
     
-    NODEBTP_DATA *  nodeBTP_ParseObject (
+    NODEBTP_DATA *  nodeBTP_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -181,7 +181,7 @@ struct nodeBTP_data_s	{
     );
 
 
-    ASTR_DATA *     nodeBTP_ToJSON (
+    ASTR_DATA *     nodeBTP_ToJson (
         NODEBTP_DATA      *this
     );
 

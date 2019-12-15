@@ -99,7 +99,7 @@ extern "C" {
         VALUE_TYPE_UINT16,          // int16_t
         VALUE_TYPE_UINT32,          // int32_t
         VALUE_TYPE_UINT64,          // int64_t
-        VALUE_TYPE_OBJECT,          // Any object that supports "ToJSON" method
+        VALUE_TYPE_OBJECT,          // Any object that supports "ToJson" method
         VALUE_TYPE_DATA,            // Any data (pointer and length) (pointer and length
         //                          // must be valid for life of object)
         VALUE_TYPE_DATA_FREE,       // Any data (pointer and length) which will be freed

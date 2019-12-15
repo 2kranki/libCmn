@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   parser_internal.h
- *	Generated 07/03/2015 21:39:30
+ * File:   Parser_internal.h
+ *	Generated 12/15/2019 15:07:38
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,13 +39,19 @@
 
 
 
-#include    <parser.h>
-#include    <objArray.h>
-#include    <srcErrors.h>
+#include        <Parser.h>
+#include        <jsonIn.h>
+#include        <objArray.h>
+#include        <srcErrors.h>
 
 
 #ifndef PARSER_INTERNAL_H
 #define	PARSER_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
+
 
 
 #ifdef	__cplusplus
@@ -52,91 +59,134 @@ extern "C" {
 #endif
 
 
-    
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-    struct parser_data_s	{
-        /* Warning - OBJ_DATA must be first in this object!
-         */
-        OBJ_DATA        super;
-        OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define PARSER_INIT_DONE    5
+struct Parser_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
+     */
+    OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    #define PARSER_INIT_DONE    OBJ_FLAG_USER1
 
-        // Common Data
-        COMPILER_DATA   *pCompiler;
-        SRCERRORS_DATA  *pErrors;
-        OBJ_ID          pAux1;
-        OBJ_ID          pAux2;
-        NODEHASH_DATA   *pProperties;
+    // Common Data
+    COMPILER_DATA   *pCompiler;
+    SRCERRORS_DATA  *pErrors;
+    OBJ_ID          pAux1;
+    OBJ_ID          pAux2;
+    NODEHASH_DATA   *pProperties;
 
-        // Input Data/Routines
-        TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID, uint16_t);
-        TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID, uint16_t);
-        OBJ_ID          pSrcObj;
-        uint16_t        sizeInputs;
-        uint16_t        curInputs;
-        TOKEN_DATA      *pInputs;
-        
-        // Parse Data
-        bool            (*pParse)(OBJ_ID, NODETREE_DATA **);
-        OBJ_ID          pParseObj;
-        OBJARRAY_DATA   *pSemanticStack;
-        
-        uint32_t        numErrors;
+    // Input Data/Routines
+    TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID, uint16_t);
+    TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID, uint16_t);
+    OBJ_ID          pSrcObj;
+    uint16_t        sizeInputs;
+    uint16_t        curInputs;
+    TOKEN_DATA      *pInputs;
+    
+    // Parse Data
+    bool            (*pParse)(OBJ_ID, NODETREE_DATA **);
+    OBJ_ID          pParseObj;
+    NODEARRAY_DATA  *pSemanticStack;
+    
+    uint32_t        numErrors;
 
-    };
+};
 #pragma pack(pop)
 
-    
+    extern
+    struct Parser_class_data_s  Parser_ClassObj;
+
     extern
     const
-    struct parser_class_data_s  parser_ClassObj;
-    
-    extern
-    const
-    PARSER_VTBL     parser_Vtbl;
+    PARSER_VTBL         Parser_Vtbl;
 
 
 
-    // Internal Functions
-    void            parser_Dealloc(
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  PARSER_SINGLETON
+    PARSER_DATA *     Parser_getSingleton (
+        void
+    );
+
+    bool            Parser_setSingleton (
+     PARSER_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  Parser_getSuperVtbl (
+        PARSER_DATA     *this
+    );
+
+
+    void            Parser_Dealloc (
         OBJ_ID          objId
     );
 
-    
-    TOKEN_DATA *    parser_InputAdvance(
+
+    TOKEN_DATA *    Parser_InputAdvance(
         PARSER_DATA     *cbp,
         uint16_t        numChrs
     );
-    
-    
-    TOKEN_DATA *    parser_InputLookAhead(
+
+
+    TOKEN_DATA *    Parser_InputLookAhead(
         PARSER_DATA     *cbp,
         uint16_t        num
     );
-    
-    
-    ERESULT         parser_InputNextChar(
+
+
+    ERESULT         Parser_InputNextChar(
         PARSER_DATA     *cbp
     );
-    
-    
-    TOKEN_DATA *    parser_MatchInputChr(
+
+
+    TOKEN_DATA *    Parser_MatchInputChr(
         PARSER_DATA     *cbp,
         int32_t         chr
     );
-    
-    
-    void *          parser_QueryInfo(
+
+
+#ifdef  PARSER_JSON_SUPPORT
+    PARSER_DATA *       Parser_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          Parser_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
+
+
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     Parser_ToJson (
+        PARSER_DATA      *this
+    );
+#endif
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			parser_Validate(
-        PARSER_DATA       *cbp
+    bool			Parser_Validate (
+        PARSER_DATA       *this
     );
 #endif
 

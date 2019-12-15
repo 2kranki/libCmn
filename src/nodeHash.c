@@ -244,11 +244,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODEHASH_DATA *     nodeHash_Alloc (
+    NODEHASH_DATA * nodeHash_Alloc (
         void
     )
     {
-        NODEHASH_DATA       *this;
+        NODEHASH_DATA   *this;
         uint32_t        cbSize = sizeof(NODEHASH_DATA);
         
         // Do initialization.
@@ -261,7 +261,7 @@ extern "C" {
 
 
 
-    NODEHASH_DATA *     nodeHash_New (
+    NODEHASH_DATA * nodeHash_New (
         void
     )
     {
@@ -275,11 +275,11 @@ extern "C" {
     }
 
 
-    NODEHASH_DATA *     nodeHash_NewWithSize (
+    NODEHASH_DATA * nodeHash_NewWithSize (
         uint16_t        cHash       // [in] Hash Table Size
     )
     {
-        NODEHASH_DATA       *this;
+        NODEHASH_DATA   *this;
         
         this = nodeHash_Alloc( );
         if (this) {
@@ -343,7 +343,7 @@ extern "C" {
 
 
     bool            nodeHash_setPriority (
-        NODEHASH_DATA     *this,
+        NODEHASH_DATA   *this,
         uint16_t        value
     )
     {
@@ -367,7 +367,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     uint32_t        nodeHash_getSize (
-        NODEHASH_DATA       *this
+        NODEHASH_DATA   *this
     )
     {
 #ifdef NDEBUG
@@ -388,7 +388,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     OBJ_IUNKNOWN *  nodeHash_getSuperVtbl (
-        NODEHASH_DATA     *this
+        NODEHASH_DATA   *this
     )
     {
 
@@ -504,7 +504,7 @@ extern "C" {
     }
     
     
-    ERESULT         nodeHash_AddUpdate(
+    ERESULT         nodeHash_AddUpdate (
         NODEHASH_DATA   *this,
         NODE_DATA       *pNode
     )
@@ -830,12 +830,6 @@ extern "C" {
         if (!nodeHash_Validate(this)) {
             DEBUG_BREAK();
             return;
-        }
-#endif
-
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((NODEHASH_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
@@ -1692,8 +1686,8 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return nodeHash_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return nodeHash_ToJSON;
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return nodeHash_ToJson;
                         }
                         if (str_Compare("ToString", (char *)pStr) == 0) {
                             return nodeHash_ToString;
@@ -1708,8 +1702,8 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == nodeHash_ToDebugString)
                     return "ToDebugString";
-                if (pData == nodeHash_ToJSON)
-                    return "ToJSON";
+                if (pData == nodeHash_ToJson)
+                    return "ToJson";
                 break;
                 
             default:

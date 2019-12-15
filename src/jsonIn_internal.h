@@ -41,7 +41,7 @@
 
 #include    <jsonIn.h>
 #include    <hjson.h>
-#include    <objList.h>
+#include    <ObjList.h>
 
 
 #ifndef JSONIN_INTERNAL_H
@@ -106,7 +106,7 @@ struct jsonIn_data_s	{
     );
 
 
-    ASTR_DATA *     jsonIn_ToJSON(
+    ASTR_DATA *     jsonIn_ToJson(
         JSONIN_DATA      *this
     );
 

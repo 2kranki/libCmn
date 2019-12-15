@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   objList_internal.h
- *	Generated 09/14/2016 11:48:53
+ * File:   ObjList_internal.h
+ *	Generated 12/15/2019 12:58:04
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,14 +38,19 @@
 
 
 
-#include    <objList.h>
+
+#include    <ObjList.h>
+#include    <jsonIn.h>
 #include    <listdl.h>
 #include    <blocks_internal.h>
 
 
-
 #ifndef OBJLIST_INTERNAL_H
 #define	OBJLIST_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -58,65 +64,111 @@ extern "C" {
     typedef struct  objList_record_s {
         LISTDL_NODE     list;
         OBJ_ID          pObject;
+        uint32_t        unique;
+        uint32_t        user;
     } OBJLIST_RECORD;
 #pragma pack(pop)
     
     
 
 
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct objList_data_s	{
-    /* Warning - BLOCKS_DATA must be first in this object!
+struct ObjList_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
      */
     BLOCKS_DATA     super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define LIST_FLAG_ORDERED OBJ_FLAG_USER1
-    
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    #define LIST_FLAG_ORDERED OBJ_FLAG_USER1
+
     // Common Data
     LISTDL_DATA     list;           // Main List
     OBJLIST_RECORD  *pCur;
-    
+    uint32_t        unique;
 
 };
 #pragma pack(pop)
 
     extern
-    const
-    struct objList_class_data_s  objList_ClassObj;
+    struct ObjList_class_data_s  ObjList_ClassObj;
 
     extern
     const
-    OBJLIST_VTBL    objList_Vtbl;
+    OBJLIST_VTBL         ObjList_Vtbl;
 
 
-    // Internal Functions
-    LISTDL_DATA *   objList_getList(
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  OBJLIST_SINGLETON
+    OBJLIST_DATA *     ObjList_getSingleton (
+        void
+    );
+
+    bool            ObjList_setSingleton (
+     OBJLIST_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    LISTDL_DATA *   ObjList_getList (
         OBJLIST_DATA    *this
     );
-    
-    
-    void            objList_Dealloc(
+
+
+    OBJ_IUNKNOWN *  ObjList_getSuperVtbl (
+        OBJLIST_DATA     *this
+    );
+
+
+    void            ObjList_Dealloc (
         OBJ_ID          objId
     );
 
 
-    OBJLIST_RECORD * objList_FindObj(
+    OBJLIST_RECORD * ObjList_FindObj(
         OBJLIST_DATA    *this,
         OBJ_ID          pObj
     );
-    
-    
-    void *          objList_QueryInfo(
+
+
+#ifdef  OBJLIST_JSON_SUPPORT
+    OBJLIST_DATA *       ObjList_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          ObjList_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
+
+
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     ObjList_ToJson (
+        OBJLIST_DATA      *this
+    );
+#endif
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			objList_Validate(
-        OBJLIST_DATA    *this
+    bool			ObjList_Validate (
+        OBJLIST_DATA       *this
     );
 #endif
 

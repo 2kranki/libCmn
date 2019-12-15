@@ -695,6 +695,28 @@ extern "C" {
     
     
 
+        //---------------------------------------------------------------
+        //                          N o d e
+        //---------------------------------------------------------------
+        
+        NODE_DATA *     nodeLink_getNode(
+            NODELINK_DATA   *this
+        )
+        {
+            
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if( !nodeLink_Validate(this) ) {
+                DEBUG_BREAK();
+                return OBJ_NIL;
+            }
+    #endif
+            
+            return (NODE_DATA *)this;
+        }
+
+        
     //---------------------------------------------------------------
     //                          O t h e r
     //---------------------------------------------------------------
@@ -1531,7 +1553,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return nodeLink_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return nodeLink_ToJSON;
                         }
                         break;
@@ -1545,7 +1567,7 @@ extern "C" {
                 if (pData == nodeLink_ToDebugString)
                     return "ToDebugString";
                 if (pData == nodeLink_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

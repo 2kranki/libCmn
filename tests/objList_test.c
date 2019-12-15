@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 06/05/2017 21:57:10
+ *	Generated 12/15/2019 12:58:04
  */
 
 
@@ -23,16 +24,16 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <trace.h>
 #include    <name.h>
 #include    <szTbl.h>
-#include    <objList_internal.h>
+#include    <trace.h>
+#include    <ObjList_internal.h>
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -44,17 +45,16 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
     szTbl_SharedReset();
-    trace_SharedReset( ); 
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -77,39 +77,43 @@ int         tearDown(
 
 
 
-int         test_objList_OpenClose(
+int             test_ObjList_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    OBJLIST_DATA *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    OBJLIST_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pObj = objList_Alloc( );
+
+    pObj = ObjList_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = objList_Init( pObj );
+    pObj = ObjList_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);       
+        
         // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_objList_BasicList01(
+int         test_ObjList_BasicList01(
     const
     char        *pTestName
 )
 {
-    OBJLIST_DATA	*pObj = OBJ_NIL;
+    OBJLIST_DATA    *pObj = OBJ_NIL;
     OBJLIST_DATA    *pObj2 = OBJ_NIL;
     NAME_DATA       *pNameA = OBJ_NIL;
     NAME_DATA       *pNameB = OBJ_NIL;
@@ -123,9 +127,9 @@ int         test_objList_BasicList01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = objList_Alloc( );
+    pObj = ObjList_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = objList_Init( pObj );
+    pObj = ObjList_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -140,67 +144,67 @@ int         test_objList_BasicList01(
         pNameE = name_NewUTF8("E");
         XCTAssertFalse( (OBJ_NIL == pNameE) );
         
-        eRc = objList_Add2Head(pObj, pNameA);
+        eRc = ObjList_Add2Head(pObj, pNameA);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = objList_Add2Head(pObj, pNameB);
+        eRc = ObjList_Add2Head(pObj, pNameB);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = objList_Add2Head(pObj, pNameC);
+        eRc = ObjList_Add2Head(pObj, pNameC);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
         // Verify that the linkage fields are correct.
-        pEntry = objList_Head(pObj);
+        pEntry = ObjList_Head(pObj);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameC) );
-        pEntry = objList_Index(pObj, 1);
+        pEntry = ObjList_Index(pObj, 1);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameC) );
-        pEntry = objList_Index(pObj, 2);
+        pEntry = ObjList_Index(pObj, 2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameB) );
-        pEntry = objList_Index(pObj, 3);
+        pEntry = ObjList_Index(pObj, 3);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameA) );
-        pEntry = objList_Tail(pObj);
+        pEntry = ObjList_Tail(pObj);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameA) );
         
-        pStr = objList_ToDebugString(pObj, 0);
+        pStr = ObjList_ToDebugString(pObj, 0);
         fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
-        pObj2 = objList_Copy(pObj);
+        pObj2 = ObjList_Copy(pObj);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         XCTAssertTrue( (!(pObj == pObj2)) );
-        XCTAssertTrue( (objList_getSize(pObj) == objList_getSize(pObj2)) );
+        XCTAssertTrue( (ObjList_getSize(pObj) == ObjList_getSize(pObj2)) );
 
-        pStr = objList_ToDebugString(pObj2, 0);
+        pStr = ObjList_ToDebugString(pObj2, 0);
         fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
         // Verify that the linkage fields are correct.
-        pEntry = objList_Head(pObj2);
+        pEntry = ObjList_Head(pObj2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameC) );
         eRc = name_CompareA(pEntry, "C");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        pEntry = objList_Index(pObj2, 1);
+        pEntry = ObjList_Index(pObj2, 1);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameC) );
         eRc = name_CompareA(pEntry, "C");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        pEntry = objList_Index(pObj2, 2);
+        pEntry = ObjList_Index(pObj2, 2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameB) );
         eRc = name_CompareA(pEntry, "B");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        pEntry = objList_Index(pObj2, 3);
+        pEntry = ObjList_Index(pObj2, 3);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameA) );
         eRc = name_CompareA(pEntry, "A");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        pEntry = objList_Tail(pObj2);
+        pEntry = ObjList_Tail(pObj2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameA) );
         eRc = name_CompareA(pEntry, "A");
@@ -209,37 +213,37 @@ int         test_objList_BasicList01(
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
-        pObj2 = objList_DeepCopy(pObj);
+        pObj2 = ObjList_DeepCopy(pObj);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         XCTAssertTrue( (!(pObj == pObj2)) );
-        XCTAssertTrue( (objList_getSize(pObj) == objList_getSize(pObj2)) );
+        XCTAssertTrue( (ObjList_getSize(pObj) == ObjList_getSize(pObj2)) );
 
-        pStr = objList_ToDebugString(pObj2, 0);
+        pStr = ObjList_ToDebugString(pObj2, 0);
         fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
         // Verify that the linkage fields are correct.
-        pEntry = objList_Head(pObj2);
+        pEntry = ObjList_Head(pObj2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( !(pEntry == pNameC) );
         eRc = name_CompareA(pEntry, "C");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        pEntry = objList_Index(pObj2, 1);
+        pEntry = ObjList_Index(pObj2, 1);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( !(pEntry == pNameC) );
         eRc = name_CompareA(pEntry, "C");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        pEntry = objList_Index(pObj2, 2);
+        pEntry = ObjList_Index(pObj2, 2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( !(pEntry == pNameB) );
         eRc = name_CompareA(pEntry, "B");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        pEntry = objList_Index(pObj2, 3);
+        pEntry = ObjList_Index(pObj2, 3);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( !(pEntry == pNameA) );
         eRc = name_CompareA(pEntry, "A");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
-        pEntry = objList_Tail(pObj2);
+        pEntry = ObjList_Tail(pObj2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( !(pEntry == pNameA) );
         eRc = name_CompareA(pEntry, "A");
@@ -270,7 +274,7 @@ int         test_objList_BasicList01(
 
 
 
-int         test_objList_Shift(
+int         test_ObjList_Shift(
     const
     char        *pTestName
 )
@@ -288,9 +292,9 @@ int         test_objList_Shift(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = objList_Alloc( );
+    pObj = ObjList_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = objList_Init( pObj );
+    pObj = ObjList_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -305,54 +309,54 @@ int         test_objList_Shift(
         pNameE = name_NewUTF8("E");
         XCTAssertFalse( (OBJ_NIL == pNameE) );
         
-        eRc = objList_Add2Head(pObj, pNameA);
+        eRc = ObjList_Add2Head(pObj, pNameA);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = objList_Add2Head(pObj, pNameB);
+        eRc = ObjList_Add2Head(pObj, pNameB);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = objList_Add2Head(pObj, pNameC);
+        eRc = ObjList_Add2Head(pObj, pNameC);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = objList_Add2Head(pObj, pNameD);
+        eRc = ObjList_Add2Head(pObj, pNameD);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = objList_Add2Head(pObj, pNameE);
+        eRc = ObjList_Add2Head(pObj, pNameE);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
 
         // Verify that the linkage fields are correct.
-        pEntry = objList_Head(pObj);
+        pEntry = ObjList_Head(pObj);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameE) );
-        pEntry = objList_Index(pObj, 1);
+        pEntry = ObjList_Index(pObj, 1);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameE) );
-        pEntry = objList_Index(pObj, 2);
+        pEntry = ObjList_Index(pObj, 2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameD) );
-        pEntry = objList_Index(pObj, 3);
+        pEntry = ObjList_Index(pObj, 3);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameC) );
-        pEntry = objList_Index(pObj, 4);
+        pEntry = ObjList_Index(pObj, 4);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameB) );
-        pEntry = objList_Index(pObj, 5);
+        pEntry = ObjList_Index(pObj, 5);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameA) );
         
-        pStr = objList_ToDebugString(pObj, 0);
+        pStr = ObjList_ToDebugString(pObj, 0);
         fprintf(stderr, "Debug = %s\n\n\n",AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
-        pEntry = objList_ShiftHead(pObj);
+        pEntry = ObjList_ShiftHead(pObj);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameA) );
-        pStr = objList_ToDebugString(pObj, 0);
+        pStr = ObjList_ToDebugString(pObj, 0);
         fprintf(stderr, "After ShiftHead = %s\n\n\n",AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
-        pEntry = objList_ShiftTail(pObj);
+        pEntry = ObjList_ShiftTail(pObj);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameE) );
-        pStr = objList_ToDebugString(pObj, 0);
+        pStr = ObjList_ToDebugString(pObj, 0);
         fprintf(stderr, "After ShiftTail = %s\n\n\n",AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
@@ -380,13 +384,13 @@ int         test_objList_Shift(
 
 
 
-TINYTEST_START_SUITE(test_objList);
-    TINYTEST_ADD_TEST(test_objList_Shift,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_objList_BasicList01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_objList_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_ObjList);
+    TINYTEST_ADD_TEST(test_ObjList_Shift,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_ObjList_BasicList01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_ObjList_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_objList);
+TINYTEST_MAIN_SINGLE_SUITE(test_ObjList);
 
 
 

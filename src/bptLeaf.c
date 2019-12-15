@@ -746,7 +746,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return bptLeaf_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return bptLeaf_ToJSON;
                         }
                         break;
@@ -760,7 +760,7 @@ extern "C" {
                 if (pData == bptLeaf_ToDebugString)
                     return "ToDebugString";
                 if (pData == bptLeaf_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

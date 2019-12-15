@@ -1419,7 +1419,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return nodeLnkP_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return nodeLnkP_ToJSON;
                         }
                         break;
@@ -1433,7 +1433,7 @@ extern "C" {
                 if (pData == nodeLnkP_ToDebugString)
                     return "ToDebugString";
                 if (pData == nodeLnkP_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

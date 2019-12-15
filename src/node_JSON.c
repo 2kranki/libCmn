@@ -301,7 +301,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     node_ToJSON(
+    ASTR_DATA *     node_ToJson(
         NODE_DATA       *this
     )
     {
@@ -356,7 +356,7 @@ extern "C" {
                 pToJSON =   (*pQueryInfo)(
                                           this->pData,
                                           OBJ_QUERYINFO_TYPE_METHOD,
-                                          "ToJSON"
+                                          "ToJson"
                                           );
                 if (pToJSON) {
                     pWrkStr = (*pToJSON)(this->pData);
@@ -377,7 +377,7 @@ extern "C" {
                 pToJSON =   (*pQueryInfo)(
                                           this->pOther,
                                           OBJ_QUERYINFO_TYPE_METHOD,
-                                          "ToJSON"
+                                          "ToJson"
                                           );
                 if (pToJSON) {
                     pWrkStr = (*pToJSON)(this->pOther);
@@ -398,7 +398,7 @@ extern "C" {
                 pToJSON =   (*pQueryInfo)(
                                           this->pExtra,
                                           OBJ_QUERYINFO_TYPE_METHOD,
-                                          "ToJSON"
+                                          "ToJson"
                                           );
                 if (pToJSON) {
                     pWrkStr = (*pToJSON)(this->pExtra);
@@ -419,7 +419,7 @@ extern "C" {
                 pToJSON =   (*pQueryInfo)(
                                           this->pProperties,
                                           OBJ_QUERYINFO_TYPE_METHOD,
-                                          "ToJSON"
+                                          "ToJson"
                                           );
                 if (pToJSON) {
                     pWrkStr = (*pToJSON)(this->pProperties);

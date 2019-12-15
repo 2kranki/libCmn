@@ -93,7 +93,7 @@ def         perform_actions():
         print('*       Building the Applications       *')
         print('*****************************************')
         print()
-    rc = util.do_cmd("make -f Makefile.macos64.tst all")
+    rc = util.do_cmd("make -f Makefile.macos64.txt all")
     if not rc == 0:
         print("Error: Failed to build!\n")
         return 4

@@ -42,7 +42,7 @@
 #include        <nodeList.h>
 #include        <jsonIn.h>
 #include        <nodeEnum_internal.h>
-#include        <objList_internal.h>
+#include        <ObjList_internal.h>
 
 
 #ifndef NODELIST_INTERNAL_H

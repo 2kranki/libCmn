@@ -249,7 +249,7 @@ extern "C" {
         if (this->pData) {
             pUnk = obj_getVtbl(this->pData);
             if (pUnk->pQueryInfo) {
-                pToJSON = pUnk->pQueryInfo(this->pData, OBJ_QUERYINFO_TYPE_METHOD, "ToJSON");
+                pToJSON = pUnk->pQueryInfo(this->pData, OBJ_QUERYINFO_TYPE_METHOD, "ToJson");
                 if (pToJSON) {
                     pWrkStr = pToJSON(this->pData);
                     if (pWrkStr) {

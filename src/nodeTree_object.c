@@ -216,7 +216,6 @@ NODETREE_VTBL     nodeTree_Vtbl = {
     (void *)nodeTree_ToLinearizationPost,
     (void *)nodeTree_ToLinearizationPre,
     (void *)nodeTree_VisitBreadthFirst,
-    (void *)nodeTree_VisitInorder,
     (void *)nodeTree_VisitPostorder,
     (void *)nodeTree_VisitPreorder,
 };

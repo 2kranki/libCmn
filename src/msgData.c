@@ -747,7 +747,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return msgData_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return msgData_ToJSON;
                         }
                         break;
@@ -761,7 +761,7 @@ extern "C" {
                 if (pData == msgData_ToDebugString)
                     return "ToDebugString";
                 if (pData == msgData_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

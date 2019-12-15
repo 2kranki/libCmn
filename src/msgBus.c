@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include    <msgBus_internal.h>
-#include    <objMethod.h>
+#include    <ObjMethod.h>
 #include    <value.h>
 
 
@@ -98,8 +98,8 @@ extern "C" {
                         nodeID = (uint32_t)node_getNameInt(pNode);
                         if (nodeID == dest) {
                             pMethod = node_getData(pNode);
-                            pMsgOutBody = objMethod_getMethod(pMethod);
-                            pMsgOutData = objMethod_getObject(pMethod);
+                            pMsgOutBody = ObjMethod_getMethod(pMethod);
+                            pMsgOutData = ObjMethod_getObject(pMethod);
                             pCopy = msgData_Copy(pEntry);
                             pMsgOutBody(pMsgOutData, pCopy);
                             obj_Release(pCopy);
@@ -119,8 +119,8 @@ extern "C" {
                             ;
                         else {
                             pMethod = node_getData(pNode);
-                            pMsgOutBody = objMethod_getMethod(pMethod);
-                            pMsgOutData = objMethod_getObject(pMethod);
+                            pMsgOutBody = ObjMethod_getMethod(pMethod);
+                            pMsgOutData = ObjMethod_getObject(pMethod);
                             pCopy = msgData_Copy(pEntry);
                             msgData_setNum32(pCopy, nodeID);
                             pMsgOutBody(pMsgOutData, pCopy);

@@ -1,25 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Object Method Pointer (objMethod) Header
+//          OBJMETHOD Console Transmit Task (ObjMethod) Header
 //****************************************************************
 /*
  * Program
- *			Object Method Pointer (objMethod)
+ *			Separate ObjMethod (ObjMethod)
  * Purpose
- *			This object provides a standardized way of passing
- *          an object and method which can be written to a JSON
- *          string and relinked later.
- *
- *          The method must be defined within the QueryInfo method
- *          of the object.  The object's info must be registered
- *          with objRegistry (to be done).
+ *			This object provides a standardized way of handling
+ *          a separate ObjMethod to run things without complications
+ *          of interfering with the main ObjMethod. A ObjMethod may be 
+ *          called a ObjMethod on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	10/28/2017 Generated
+ *	12/15/2019 Generated
  */
 
 
@@ -62,6 +59,12 @@
 #define         OBJMETHOD_H
 
 
+//#define   OBJMETHOD_JSON_SUPPORT 1
+//#define   OBJMETHOD_SINGLETON    1
+
+
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -73,16 +76,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct objMethod_data_s	OBJMETHOD_DATA;    // Inherits from OBJ.
+    typedef struct ObjMethod_data_s	OBJMETHOD_DATA;            // Inherits from OBJ
+    typedef struct ObjMethod_class_data_s OBJMETHOD_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct objMethod_vtbl_s	{
+    typedef struct ObjMethod_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in objMethod_object.c.
+        // method names to the vtbl definition in ObjMethod_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(OBJMETHOD_DATA *);
     } OBJMETHOD_VTBL;
+
+    typedef struct ObjMethod_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in ObjMethod_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(OBJMETHOD_DATA *);
+    } OBJMETHOD_CLASS_VTBL;
+
 
 
 
@@ -95,20 +109,37 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  OBJMETHOD_SINGLETON
+    OBJMETHOD_DATA * ObjMethod_Shared (
+        void
+    );
+
+    bool            ObjMethod_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to objMethod object if successful, otherwise OBJ_NIL.
+     @return    pointer to ObjMethod object if successful, otherwise OBJ_NIL.
      */
-    OBJMETHOD_DATA * objMethod_Alloc(
+    OBJMETHOD_DATA * ObjMethod_Alloc (
         void
     );
     
     
-    OBJMETHOD_DATA * objMethod_New(
+    OBJ_ID          ObjMethod_Class (
         void
     );
+    
+    
+    OBJMETHOD_DATA * ObjMethod_New (
+        void
+    );
+    
     
     /*!
      Create a new objMethod object from an object pointer and its method name.
@@ -117,62 +148,58 @@ extern "C" {
                  QueryInfo method.
      @return    If successful, a new object, otherwise OBJ_NIL.
      */
-    OBJMETHOD_DATA * objMethod_NewObjectA(
+    OBJMETHOD_DATA * ObjMethod_NewObjectA(
         OBJ_ID          pObject,
         const
         char            *pMethodA
     );
-    
+
 
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ASTR_DATA *     objMethod_getDesc(
+    ASTR_DATA *     ObjMethod_getDesc(
         OBJMETHOD_DATA  *this
     );
-    
-    bool            objMethod_setDesc(
+
+    bool            ObjMethod_setDesc(
         OBJMETHOD_DATA  *this,
         ASTR_DATA       *pValue
     );
-    
-
-    ERESULT         objMethod_getLastError(
-        OBJMETHOD_DATA	*this
-    );
 
 
-    void *          objMethod_getMethod(
+    void *          ObjMethod_getMethod(
         OBJMETHOD_DATA  *this
     );
-    
-    
-    ASTR_DATA *     objMethod_getMethodName(
+
+
+    ASTR_DATA *     ObjMethod_getMethodName(
         OBJMETHOD_DATA  *this
     );
-    
-    
-    OBJ_ID          objMethod_getObject(
+
+
+    OBJ_ID          ObjMethod_getObject(
         OBJMETHOD_DATA  *this
     );
-    
-    
-    ASTR_DATA *     objMethod_getObjectName(
+
+
+    ASTR_DATA *     ObjMethod_getObjectName(
         OBJMETHOD_DATA  *this
     );
-    
-    
-    uint32_t        objMethod_getUser32(
+
+
+    uint32_t        ObjMethod_getUser32(
         OBJMETHOD_DATA  *this
     );
-    
-    bool            objMethod_setUser32(
+
+    bool            ObjMethod_setUser32(
         OBJMETHOD_DATA  *this,
         uint32_t        value
     );
-    
+
+
 
 
     
@@ -180,7 +207,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    OBJMETHOD_DATA * objMethod_Init(
+    OBJMETHOD_DATA * ObjMethod_Init (
         OBJMETHOD_DATA  *this
     );
 
@@ -189,16 +216,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = objMethod_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = ObjMethod_ToDebugString(this,4);
      @endcode 
-     @param     this    OBJMETHOD object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     objMethod_ToDebugString(
-        OBJMETHOD_DATA  *this,
+    ASTR_DATA *    ObjMethod_ToDebugString (
+        OBJMETHOD_DATA     *this,
         int             indent
     );
     

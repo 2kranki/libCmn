@@ -1100,7 +1100,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return sgraph_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return sgraph_ToJSON;
                         }
                         break;
@@ -1114,7 +1114,7 @@ extern "C" {
                 if (pData == sgraph_ToDebugString)
                     return "ToDebugString";
                 if (pData == sgraph_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

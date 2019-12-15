@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <nodeGraph_internal.h>
+#include    <NodeGraph_internal.h>
 
 
 
@@ -74,7 +74,7 @@ int         tearDown(
 
 
 
-int         test_nodeGraph_OpenClose(
+int         test_NodeGraph_OpenClose(
     const
     char        *pTestName
 )
@@ -83,9 +83,9 @@ int         test_nodeGraph_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = nodeGraph_Alloc( );
+    pObj = NodeGraph_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = nodeGraph_Init( pObj );
+    pObj = NodeGraph_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -100,30 +100,85 @@ int         test_nodeGraph_OpenClose(
 }
 
 
-
-int         test_nodeGraph_Simple01(
+/* Simple01 is taken from "Data Structures Using C", Tenenbaum et al,
+ * Prentice Hall, 1990
+ */
+int         test_NodeGraph_Simple01(
     const
     char        *pTestName
 )
 {
-    NODEGRAPH_DATA *pObj = OBJ_NIL;
-    ERESULT     eRc;
+    NODEGRAPH_DATA  *pObj = OBJ_NIL;
+    NODE_DATA       *pFrom;
+    NODE_DATA       *pTo;
+    ERESULT         eRc;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = nodeGraph_Alloc( );
+    pObj = NodeGraph_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = nodeGraph_Init( pObj );
+    pObj = NodeGraph_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = nodeGraph_NodeAddA(pObj, 0, "1", OBJ_NIL);
+        eRc = NodeGraph_NodeAddA(pObj, 0, "A", OBJ_NIL);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = nodeGraph_NodeAddA(pObj, 0, "2", OBJ_NIL);
+        eRc = NodeGraph_NodeAddA(pObj, 0, "B", OBJ_NIL);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = nodeGraph_NodeAddA(pObj, 0, "3", OBJ_NIL);
+        eRc = NodeGraph_NodeAddA(pObj, 0, "C", OBJ_NIL);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = nodeGraph_NodeAddA(pObj, 0, "4", OBJ_NIL);
+        eRc = NodeGraph_NodeAddA(pObj, 0, "D", OBJ_NIL);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = NodeGraph_NodeAddA(pObj, 0, "E", OBJ_NIL);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pFrom = NodeGraph_NodeFindA(pObj, 0, "B");
+        TINYTEST_FALSE( (OBJ_NIL == pFrom) );
+        pTo = NodeGraph_NodeFindA(pObj, 0, "C");
+        TINYTEST_FALSE( (OBJ_NIL == pTo) );
+        //FIXME: eRc = NodeGraph_ArcAdd(pObj, pFrom, pTo, "B->C");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pFrom = NodeGraph_NodeFindA(pObj, 0, "A");
+        TINYTEST_FALSE( (OBJ_NIL == pFrom) );
+        pTo = NodeGraph_NodeFindA(pObj, 0, "C");
+        TINYTEST_FALSE( (OBJ_NIL == pTo) );
+        //FIXME: eRc = NodeGraph_ArcAdd(pObj, pFrom, pTo, "A->C");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pFrom = NodeGraph_NodeFindA(pObj, 0, "A");
+        TINYTEST_FALSE( (OBJ_NIL == pFrom) );
+        pTo = NodeGraph_NodeFindA(pObj, 0, "D");
+        TINYTEST_FALSE( (OBJ_NIL == pTo) );
+        //FIXME: eRc = NodeGraph_ArcAdd(pObj, pFrom, pTo, "A->D");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pFrom = NodeGraph_NodeFindA(pObj, 0, "C");
+        TINYTEST_FALSE( (OBJ_NIL == pFrom) );
+        pTo = NodeGraph_NodeFindA(pObj, 0, "D");
+        TINYTEST_FALSE( (OBJ_NIL == pTo) );
+        //FIXME: eRc = NodeGraph_ArcAdd(pObj, pFrom, pTo, "C->D");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pFrom = NodeGraph_NodeFindA(pObj, 0, "C");
+        TINYTEST_FALSE( (OBJ_NIL == pFrom) );
+        pTo = NodeGraph_NodeFindA(pObj, 0, "E");
+        TINYTEST_FALSE( (OBJ_NIL == pTo) );
+        //FIXME: eRc = NodeGraph_ArcAdd(pObj, pFrom, pTo, "C->E");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pFrom = NodeGraph_NodeFindA(pObj, 0, "D");
+        TINYTEST_FALSE( (OBJ_NIL == pFrom) );
+        pTo = NodeGraph_NodeFindA(pObj, 0, "E");
+        TINYTEST_FALSE( (OBJ_NIL == pTo) );
+        //FIXME: eRc = NodeGraph_ArcAdd(pObj, pFrom, pTo, "D->E");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pFrom = NodeGraph_NodeFindA(pObj, 0, "E");
+        TINYTEST_FALSE( (OBJ_NIL == pFrom) );
+        pTo = NodeGraph_NodeFindA(pObj, 0, "D");
+        TINYTEST_FALSE( (OBJ_NIL == pTo) );
+        //FIXME: eRc = NodeGraph_ArcAdd(pObj, pFrom, pTo, "E->D");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
@@ -137,12 +192,12 @@ int         test_nodeGraph_Simple01(
 
 
 
-TINYTEST_START_SUITE(test_nodeGraph);
-    TINYTEST_ADD_TEST(test_nodeGraph_Simple01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_nodeGraph_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_NodeGraph);
+    TINYTEST_ADD_TEST(test_NodeGraph_Simple01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_NodeGraph_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_nodeGraph);
+TINYTEST_MAIN_SINGLE_SUITE(test_NodeGraph);
 
 
 

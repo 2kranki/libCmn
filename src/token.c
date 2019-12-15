@@ -1241,7 +1241,7 @@ extern "C" {
                             return token_ToDebugString;
                         }
 #ifdef XYZZY
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return token_ToJSON;
                         }
 #endif

@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'parser'
-//	Generated 01/23/2016 23:28:57
+//	Class Object Metods and Tables for 'Parser'
+//	Generated 12/15/2019 15:07:38
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,23 +32,32 @@
  */
 
 
-#include        "parser_internal.h"
+
+
+#define			PARSER_OBJECT_C	    1
+#include        <Parser_internal.h>
+#ifdef  PARSER_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
-//-----------------------------------------------------------
+//===========================================================
 //                  Class Object Definition
-//-----------------------------------------------------------
+//===========================================================
 
-struct parser_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct Parser_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  PARSER_SINGLETON
+    volatile
+    PARSER_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
+    //OBJ_ID          pObjCatalog;
 };
-typedef struct parser_class_data_s PARSER_CLASS_DATA;
 
 
 
@@ -59,34 +69,47 @@ typedef struct parser_class_data_s PARSER_CLASS_DATA;
 
 
 static
-const
-OBJ_INFO        parser_Info;            // Forward Reference
-
-
-
-OBJ_ID          parser_Class(
-    void
+void *          ParserClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
 );
+
+
+static
+const
+OBJ_INFO        Parser_Info;            // Forward Reference
+
 
 
 
 static
-bool            parser_ClassIsKindOf(
+bool            ParserClass_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_PARSER_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(Parser_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		parser_ClassWhoAmI(
+uint16_t		ParserClass_WhoAmI (
     void
 )
 {
@@ -94,16 +117,26 @@ uint16_t		parser_ClassWhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
 static
 const
-OBJ_IUNKNOWN    class_Vtbl = {
-	&parser_Info,
-    parser_ClassIsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    parser_Class,
-    parser_ClassWhoAmI
+PARSER_CLASS_VTBL    class_Vtbl = {
+    {
+        &Parser_Info,
+        ParserClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        Parser_Class,
+        ParserClass_WhoAmI,
+        (P_OBJ_QUERYINFO)ParserClass_QueryInfo,
+        NULL                        // ParserClass_ToDebugString
+    },
 };
 
 
@@ -112,52 +145,234 @@ OBJ_IUNKNOWN    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
-PARSER_CLASS_DATA  parser_ClassObj = {
+PARSER_CLASS_DATA  Parser_ClassObj = {
     {
-        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
-        sizeof(PARSER_CLASS_DATA),          // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(PARSER_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
     },
 	//0
 };
 
 
 
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  PARSER_SINGLETON
+PARSER_DATA *     Parser_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(Parser_ClassObj.pSingleton);
+}
+
+
+bool            Parser_setSingleton (
+    PARSER_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (Parser_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Parser_ClassObj.pSingleton));
+    }
+    Parser_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+PARSER_DATA *     Parser_Shared (
+    void
+)
+{
+    PARSER_DATA       *this = (OBJ_ID)(Parser_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = Parser_New( );
+        Parser_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // Parser_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            Parser_SharedReset (
+    void
+)
+{
+    PARSER_DATA       *this = (OBJ_ID)(Parser_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        Parser_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
+
+
+
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
 static
-bool            parser_IsKindOf(
+void *          ParserClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    PARSER_CLASS_DATA *this = objId;
+    const
+    char            *pStr = pData;
+    
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
+    switch (type) {
+      
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(PARSER_DATA);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&Parser_Info;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return Parser_New;
+                    }
+                    break;
+                    
+                case 'P':
+                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
+                        //return Parser_ParseJsonObject;
+                    }
+                    break;
+ 
+                 case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return ParserClass_WhoAmI;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
+
+
+
+static
+bool            Parser_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_PARSER == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(Parser_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            parser_Dealloc(
+void            Parser_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          parser_Class(
+OBJ_ID          Parser_Class (
     void
 )
 {
-    return (OBJ_ID)&parser_ClassObj;
+    return (OBJ_ID)&Parser_ClassObj;
 }
 
 
 static
-uint16_t		parser_WhoAmI(
+uint16_t		Parser_WhoAmI (
     void
 )
 {
@@ -165,38 +380,56 @@ uint16_t		parser_WhoAmI(
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
-PARSER_VTBL     parser_Vtbl = {
+PARSER_VTBL     Parser_Vtbl = {
     {
-        &parser_Info,
-        parser_IsKindOf,
+        &Parser_Info,
+        Parser_IsKindOf,
+#ifdef  PARSER_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
-        parser_Dealloc,
-        parser_Class,
-        parser_WhoAmI,
-        (P_OBJ_QUERYINFO)parser_QueryInfo,
-        NULL,           // (P_OBJ_TOSTRING)parser_ToDebugString,
-        NULL,			// parser_Enable,
-        NULL,			// parser_Disable,
-        NULL,			// (P_OBJ_ASSIGN)parser_Assign,
-        NULL,			// (P_OBJ_COMPARE)parser_Compare,
-        NULL, 			// (P_OBJ_PTR)parser_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
-        NULL 			// (P_OBJ_HASH)parser_Hash
+#endif
+        Parser_Dealloc,
+        Parser_Class,
+        Parser_WhoAmI,
+        (P_OBJ_QUERYINFO)Parser_QueryInfo,
+        (P_OBJ_TOSTRING)Parser_ToDebugString,
+        NULL,			// Parser_Enable,
+        NULL,			// Parser_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Parser_Assign,
+        NULL,			// (P_OBJ_COMPARE)Parser_Compare,
+        NULL, 			// (P_OBJ_PTR)Parser_Copy,
+        NULL, 			// (P_OBJ_PTR)Parser_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Parser_Hash,
     },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //Parser_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        parser_Info = {
-    "parser",
-    "parser",	
-    (OBJ_DATA *)&parser_ClassObj,
+OBJ_INFO        Parser_Info = {
+    "Parser",
+    "Parser Base",
+    (OBJ_DATA *)&Parser_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&parser_Vtbl
+    (OBJ_IUNKNOWN *)&Parser_Vtbl,
+    sizeof(PARSER_DATA)
 };
 
 

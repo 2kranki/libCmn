@@ -693,7 +693,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return SRecords_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return SRecords_ToJSON;
                         }
                         break;
@@ -707,7 +707,7 @@ extern "C" {
                 if (pData == SRecords_ToDebugString)
                     return "ToDebugString";
                 if (pData == SRecords_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

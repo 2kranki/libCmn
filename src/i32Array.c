@@ -810,7 +810,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return i32Array_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return i32Array_ToJSON;
                         }
                         break;
@@ -824,7 +824,7 @@ extern "C" {
                 if (pData == i32Array_ToDebugString)
                     return "ToDebugString";
                 if (pData == i32Array_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

@@ -875,7 +875,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return blks_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return blks_ToJSON;
                         }
                         break;
@@ -889,7 +889,7 @@ extern "C" {
                 if (pData == blks_ToDebugString)
                     return "ToDebugString";
                 if (pData == blks_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

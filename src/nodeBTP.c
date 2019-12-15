@@ -1630,8 +1630,8 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return nodeBTP_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return nodeBTP_ToJSON;
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return nodeBTP_ToJson;
                         }
                         break;
                         
@@ -1643,8 +1643,8 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == nodeBTP_ToDebugString)
                     return "ToDebugString";
-                if (pData == nodeBTP_ToJSON)
-                    return "ToJSON";
+                if (pData == nodeBTP_ToJson)
+                    return "ToJson";
                 break;
                 
             default:

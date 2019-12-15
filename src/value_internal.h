@@ -117,7 +117,7 @@ struct value_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    VALUE_DATA *    value_ParseObject(
+    VALUE_DATA *    value_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
     
@@ -129,7 +129,7 @@ struct value_data_s	{
     );
 
 
-    ASTR_DATA *     value_ToJSON(
+    ASTR_DATA *     value_ToJson(
         VALUE_DATA      *this
     );
 

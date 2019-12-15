@@ -257,6 +257,19 @@ extern "C" {
     );
 
 
+    /*! Property: Description provides a short description of the
+       object, routine, program or test. 
+    */
+    ASTRC_DATA *        NodeBase_getDesc (
+        NODEBASE_DATA       *this
+    );
+
+    bool                NodeBase_setDesc (
+        NODEBASE_DATA       *this,
+        ASTRC_DATA          *pValue
+    );
+
+
     /*! Property: file name extension (optional)
         The optional file extension suffix to be used with name.
      */

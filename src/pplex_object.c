@@ -198,7 +198,8 @@ OBJ_INFO        pplex_Info = {
     "Preprocessor Lexical Analyzer/Scanner",
     (OBJ_DATA *)&pplex_ClassObj,
     (OBJ_DATA *)&lex_ClassObj,
-    (OBJ_IUNKNOWN *)&pplex_Vtbl
+    (OBJ_IUNKNOWN *)&pplex_Vtbl,
+    sizeof(PPLEX_DATA)
 };
 
 

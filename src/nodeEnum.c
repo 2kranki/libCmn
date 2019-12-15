@@ -806,8 +806,8 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return nodeEnum_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return nodeEnum_ToJSON;
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return nodeEnum_ToJson;
                         }
                         break;
                         
@@ -819,8 +819,8 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == nodeEnum_ToDebugString)
                     return "ToDebugString";
-                if (pData == nodeEnum_ToJSON)
-                    return "ToJSON";
+                if (pData == nodeEnum_ToJson)
+                    return "ToJson";
                 break;
                 
             default:
@@ -940,10 +940,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       T o  J S O N
+    //                       T o  J s o n
     //---------------------------------------------------------------
     
-     ASTR_DATA *     nodeEnum_ToJSON(
+     ASTR_DATA *     nodeEnum_ToJson (
         NODEENUM_DATA      *this
     )
     {

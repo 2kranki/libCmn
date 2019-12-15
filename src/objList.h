@@ -1,20 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//              List of Objects (objList) Header
+//          OBJLIST Console Transmit Task (ObjList) Header
 //****************************************************************
 /*
  * Program
- *			A List of Objects (objList)
+ *			Separate ObjList (ObjList)
  * Purpose
- *			This object provides a list of objects which provides
- *          for fast addition and deletion of objects.
+ *			This object provides a standardized way of handling
+ *          a separate ObjList to run things without complications
+ *          of interfering with the main ObjList. A ObjList may be 
+ *          called a ObjList on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	09/14/2016 Generated
+ *	12/15/2019 Generated
  */
 
 
@@ -59,6 +61,12 @@
 #define         OBJLIST_H
 
 
+//#define   OBJLIST_JSON_SUPPORT 1
+//#define   OBJLIST_SINGLETON    1
+
+
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -70,16 +78,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct objList_data_s	OBJLIST_DATA;    // Inherits from OBJ.
+    typedef struct ObjList_data_s	OBJLIST_DATA;            // Inherits from OBJ
+    typedef struct ObjList_class_data_s OBJLIST_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct objList_vtbl_s	{
+    typedef struct ObjList_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in objList_object.c.
+        // method names to the vtbl definition in ObjList_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(OBJLIST_DATA *);
     } OBJLIST_VTBL;
+
+    typedef struct ObjList_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in ObjList_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(OBJLIST_DATA *);
+    } OBJLIST_CLASS_VTBL;
+
 
 
 
@@ -92,12 +111,34 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    OBJLIST_DATA *  objList_Alloc (
+#ifdef  OBJLIST_SINGLETON
+    OBJLIST_DATA *     ObjList_Shared (
+        void
+    );
+
+    bool            ObjList_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to ObjList object if successful, otherwise OBJ_NIL.
+     */
+    OBJLIST_DATA *     ObjList_Alloc (
         void
     );
     
     
-    OBJLIST_DATA *  objList_New (
+    OBJ_ID          ObjList_Class (
+        void
+    );
+    
+    
+    OBJLIST_DATA *     ObjList_New (
         void
     );
     
@@ -112,37 +153,38 @@ extern "C" {
      vtbl compare routine.  For Ordered to work properly all objects
      in the list should be of the same type.
      */
-    bool            objList_getOrdered (
+    bool            ObjList_getOrdered (
         OBJLIST_DATA    *this
     );
-    
-    bool            objList_setOrdered (
+
+    bool            ObjList_setOrdered (
         OBJLIST_DATA    *this,
         bool            fValue
     );
-    
+
 
     /*!
      Size property is the numbers of objects on the list.
      */
-    uint32_t        objList_getSize (
+    uint32_t        ObjList_getSize (
         OBJLIST_DATA   *this
     );
-    
-    
+
+
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         objList_Add2Head (
+    ERESULT         ObjList_Add2Head (
         OBJLIST_DATA    *this,
         OBJ_ID          pObject
     );
     
     
-    ERESULT         objList_Add2Tail (
+    ERESULT         ObjList_Add2Tail (
         OBJLIST_DATA    *this,
         OBJ_ID          pObject
     );
@@ -154,35 +196,35 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code
-     ERESULT eRc = objList__Assign(this,pOther);
+        ERESULT eRc = ObjList_Assign(this,pOther);
      @endcode
-     @param     this    OBJLIST object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another OBJLIST object
      @return    If successful, ERESULT_SUCCESS otherwise an
-     ERESULT_* error
+                ERESULT_* error
      */
-    ERESULT         objList_Assign (
+    ERESULT         ObjList_Assign (
         OBJLIST_DATA    *this,
         OBJLIST_DATA    *pOther
     );
-    
-    
+
+
     /*!
      Copy the current object creating a new object.
      Example:
      @code
-     objList      *pCopy = objList_Copy(this);
+        ObjList      *pCopy = ObjList_Copy(this);
      @endcode
-     @param     this    OBJLIST object pointer
-     @return    If successful, a OBJLIST object which must be released,
-     otherwise OBJ_NIL.
-     @warning   Remember to release the returned the OBJLIST object.
+     @param     this    object pointer
+     @return    If successful, a OBJLIST object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    OBJLIST_DATA *     objList_Copy (
-        OBJLIST_DATA       *this
+    OBJLIST_DATA *  ObjList_Copy (
+        OBJLIST_DATA    *this
     );
-    
-    
+
+   
     /*!
      Copy the current object creating a new object.
      Example:
@@ -194,71 +236,71 @@ extern "C" {
      otherwise OBJ_NIL.
      @warning   Remember to release the returned the OBJLIST object.
      */
-    OBJLIST_DATA *  objList_DeepCopy (
+    OBJLIST_DATA *  ObjList_DeepCopy (
         OBJLIST_DATA    *this
     );
     
     
-    ERESULT         objList_DeleteHead (
-        OBJLIST_DATA	*this
+    ERESULT         ObjList_DeleteHead (
+        OBJLIST_DATA    *this
     );
     
-    ERESULT         objList_DeleteIndex (
+    ERESULT         ObjList_DeleteIndex (
         OBJLIST_DATA    *this,
         uint32_t        index
     );
     
-    ERESULT         objList_DeleteTail (
-        OBJLIST_DATA	*this
-    );
-    
-    
-    /*! Create an enumerator for the list.
-     @return    If successful, an ENUM object is returned.  Otherwise,
-     OBJ_NIL.
-     @warning   Remember to release the returned ENUM object.
-     */
-    OBJENUM_DATA *  objList_Enum (
+    ERESULT         ObjList_DeleteTail (
         OBJLIST_DATA    *this
     );
     
     
-    ERESULT         objList_ForEach (
-        OBJLIST_DATA    *this,
-        P_ERESULT_EXIT3 pScan,
-        OBJ_ID          pObject,        // Used as first parameter of scan method
-        //                              // Second Argument is current list element
-        void            *pArg3          // Third Argument of Scan
-    );
+     /*! Create an enumerator for the list.
+      @return    If successful, an ENUM object is returned.  Otherwise,
+      OBJ_NIL.
+      @warning   Remember to release the returned ENUM object.
+      */
+     OBJENUM_DATA * ObjList_Enum (
+         OBJLIST_DATA   *this
+     );
+     
+     
+     ERESULT        ObjList_ForEach (
+         OBJLIST_DATA   *this,
+         P_ERESULT_EXIT3 pScan,
+         OBJ_ID         pObject,        // Used as first parameter of scan method
+         //                             // Second Argument is current list element
+         void           *pArg3          // Third Argument of Scan
+     );
+     
+     
+     OBJ_ID         ObjList_Head (
+         OBJLIST_DATA   *this
+     );
+
     
-    
-    OBJ_ID          objList_Head (
+     OBJ_ID         ObjList_Index (
+         OBJLIST_DATA   *this,
+         int32_t        index                    // (relative to 1)
+     );
+     
+     
+    OBJLIST_DATA *  ObjList_Init (
         OBJLIST_DATA    *this
     );
 
-   
-    OBJ_ID          objList_Index (
-        OBJLIST_DATA    *this,
-        int32_t			index					// (relative to 1)
-    );
-    
-    
-    OBJLIST_DATA *   objList_Init (
-        OBJLIST_DATA    *this
-    );
 
-
-    OBJ_ID          objList_Next (
+    OBJ_ID          ObjList_Next (
         OBJLIST_DATA    *this
     );
     
     
-    OBJARRAY_DATA *  objList_Objects (
+    OBJARRAY_DATA * ObjList_Objects (
         OBJLIST_DATA    *this
     );
     
     
-    OBJ_ID          objList_Prev (
+    OBJ_ID          ObjList_Prev (
         OBJLIST_DATA    *this
     );
     
@@ -267,7 +309,7 @@ extern "C" {
      @return    If successful, the current head bject is returned.
                 Otherwise, OBJ_NIL.
      */
-    OBJ_ID          objList_ShiftHead (
+    OBJ_ID          ObjList_ShiftHead (
         OBJLIST_DATA    *this
     );
     
@@ -276,17 +318,17 @@ extern "C" {
      @return    If successful, the current head bject is returned.
                 Otherwise, OBJ_NIL.
      */
-    OBJ_ID          objList_ShiftTail (
+    OBJ_ID          ObjList_ShiftTail (
         OBJLIST_DATA    *this
     );
     
     
-    ERESULT         objList_SortAscending (
+    ERESULT         ObjList_SortAscending (
         OBJLIST_DATA    *this
     );
     
     
-    OBJ_ID          objList_Tail (
+    OBJ_ID          ObjList_Tail (
         OBJLIST_DATA    *this
     );
     
@@ -294,16 +336,16 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = objList_ToDebugString(this,4);
-     @endcode
-     @param     this    OBJLIST object pointer
+     @code 
+        ASTR_DATA      *pDesc = ObjList_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    objList_ToDebugString (
+    ASTR_DATA *    ObjList_ToDebugString (
         OBJLIST_DATA     *this,
         int             indent
     );

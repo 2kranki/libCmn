@@ -94,7 +94,8 @@ extern "C" {
 
 
     typedef struct node_data_s              NODE_DATA;
-    typedef struct nodeArc_data_s           NODEARC_DATA;
+    //typedef struct NodeArc_data_s           NODEARC_DATA;
+    //typedef struct NodeArc_class_data_s     NODEARC_CLASS_DATA;   // Inherits from OBJ
     typedef struct nodeArray_data_s         NODEARRAY_DATA;
     typedef struct nodeArray_class_data_s   NODEARRAY_CLASS_DATA;
     typedef struct nodeATree_data_s         NODEATREE_DATA;
@@ -103,7 +104,8 @@ extern "C" {
     typedef struct nodeEntry_data_s         NODEENTRY_DATA;
     typedef struct nodeEnum_data_s          NODEENUM_DATA;
     typedef struct nodeEnum_class_data_s    NODEENUM_CLASS_DATA;
-    typedef struct nodeGraph_data_s         NODEGRAPH_DATA;
+    //typedef struct NodeGraph_data_s         NODEGRAPH_DATA;
+    //typedef struct NodeGraph_class_data_s   NODEGRAPH_CLASS_DATA; // Inherits from OBJ
     typedef struct nodeHash_data_s          NODEHASH_DATA;
     typedef struct nodeLink_data_s          NODELINK_DATA;
     typedef struct nodeList_data_s          NODELIST_DATA;
@@ -515,7 +517,7 @@ extern "C" {
      @return    If successful, an AStr object which must be released,
      otherwise OBJ_NIL.
      */
-    ASTR_DATA *     node_ToJSON(
+    ASTR_DATA *     node_ToJson(
         NODE_DATA       *this
     );
     

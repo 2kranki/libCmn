@@ -522,7 +522,7 @@ extern "C" {
         pInfo = obj_getInfo(this);
 
         // Scan the Hash Table insuring that all entries are Nodes
-        // which have the "ToJSON" method.
+        // which have the "ToJson" method.
         fRc = true;
 #ifdef XYZZY
         for (i=0; ((i < this->cHash) && fRc); ++i) {
@@ -563,7 +563,7 @@ extern "C" {
                     pToJSON =   (*pQueryInfo)(
                                           pEntry->pNode,
                                           OBJ_QUERYINFO_TYPE_METHOD,
-                                          "ToJSON"
+                                          "ToJson"
                                 );
                     if (pToJSON) {
                         pData = (*pToJSON)(pEntry->pNode);

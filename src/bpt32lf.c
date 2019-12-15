@@ -1471,7 +1471,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return bpt32lf_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return bpt32lf_ToJSON;
                         }
                         break;
@@ -1491,7 +1491,7 @@ extern "C" {
                 if (pData == bpt32lf_ToDebugString)
                     return "ToDebugString";
                 if (pData == bpt32lf_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

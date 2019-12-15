@@ -495,7 +495,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     nodeHash_ToJSON(
+    ASTR_DATA *     nodeHash_ToJson(
         NODEHASH_DATA   *this
     )
     {
@@ -529,7 +529,7 @@ extern "C" {
         pInfo = obj_getInfo(this);
 
         // Scan the Hash Table insuring that all entries are Nodes
-        // which have the "ToJSON" method.
+        // which have the "ToJson" method.
         fRc = true;
         pList = blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
@@ -546,7 +546,7 @@ extern "C" {
                 pToJSON = (*pQueryInfo)(
                                         pNode->pKey,
                                         OBJ_QUERYINFO_TYPE_METHOD,
-                                        "ToJSON"
+                                        "ToJson"
                                         );
                 if (NULL == pToJSON) {
                     fRc = false;
@@ -588,7 +588,7 @@ extern "C" {
                 pToJSON =   (*pQueryInfo)(
                                       pNode->pKey,
                                       OBJ_QUERYINFO_TYPE_METHOD,
-                                      "ToJSON"
+                                      "ToJson"
                             );
                 if (pToJSON) {
                     pData = (*pToJSON)(pNode->pKey);

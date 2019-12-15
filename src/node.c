@@ -1564,6 +1564,10 @@ extern "C" {
                 return (void *)obj_getInfo(this);
                 break;
                 
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)node_Class();
+                break;
+                    
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
@@ -1577,8 +1581,8 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return node_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return node_ToJSON;
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return node_ToJson;
                         }
                         if (str_Compare("ToString", (char *)pStr) == 0) {
                             return node_ToString;
@@ -1590,6 +1594,15 @@ extern "C" {
                 }
                 break;
                 
+                case OBJ_QUERYINFO_TYPE_PTR:
+                    if (pData == node_ToDebugString)
+                        return "ToDebugString";
+#ifdef  SRCREF_JSON_SUPPORT
+                    if (pData == Node_ToJson)
+                        return "ToJson";
+#endif
+                    break;
+                            
             default:
                 break;
         }

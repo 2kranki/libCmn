@@ -50,13 +50,14 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        "nodeTree_internal.h"
-#include        "name_internal.h"
-#include        "node_internal.h"
-#include        "nodeLink_internal.h"
-#include        "nodeArray.h"
-#include        "nodeHash.h"
-#include        "objList.h"
+#include        <nodeTree_internal.h>
+#include        <name_internal.h>
+#include        <node_internal.h>
+#include        <nodeLink_internal.h>
+#include        <nodeArray.h>
+#include        <nodeHash.h>
+#include        <ObjList.h>
+#include        <value.h>
 #include        <stdarg.h>
 #include        <stdio.h>
 
@@ -248,82 +249,7 @@ extern "C" {
 
     
     //---------------------------------------------------------------
-    //                      N o d e  I n o r d e r
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeTree_NodeInorder(
-        NODETREE_DATA	*this,
-        void            (pVisitor)(
-            OBJ_ID          ,           // Object supplied below
-            NODETREE_DATA   *,          // Our Tree
-            NODELINK_DATA   *,          // Current Node
-            uint16_t                    // Indent level * 4
-        ),
-        OBJ_ID          pObject,
-        uint32_t        index,
-        uint16_t        indent
-    )
-    {
-        NODELINK_DATA   *pEntry;
-        uint32_t        childIndex;
-        ERESULT         eRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !nodeTree_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
-        if (pEntry) {
-            // Follow Child chain.
-            childIndex = nodeLink_getChild(pEntry);
-            if (childIndex) {
-                eRc = nodeTree_NodeInorder(
-                                                   this,
-                                                   pVisitor,
-                                                   pObject,
-                                                   childIndex,
-                                                   indent
-                                                   );
-                if (ERESULT_FAILED(eRc)) {
-                    return eRc;
-                }
-            }
-            // visit current node.
-            if (pEntry) {
-                pVisitor(pObject, this, pEntry, indent);
-            }
-            else {
-                DEBUG_BREAK();
-            }
-            if (childIndex) {
-                eRc = nodeTree_NodeInorder(
-                                                   this,
-                                                   pVisitor,
-                                                   pObject,
-                                                   childIndex,
-                                                   indent
-                                                   );
-                if (ERESULT_FAILED(eRc)) {
-                    return eRc;
-                }
-            }
-            // Follow Sibling chain.
-            childIndex = nodeLink_getSibling(pEntry);
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      N o d e  P o s t o r d e r
+    //                  N o d e  P o s t o r d e r
     //---------------------------------------------------------------
     
     ERESULT         nodeTree_NodePostorder(
@@ -362,7 +288,7 @@ extern "C" {
                                                   pVisitor,
                                                   pObject,
                                                   childIndex,
-                                                  indent
+                                                  indent+1
                                                   );
                 if (ERESULT_FAILED(eRc)) {
                     return eRc;
@@ -2155,7 +2081,7 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        pQueue = objList_New();
+        pQueue = ObjList_New();
         if (pQueue == OBJ_NIL) {
             DEBUG_BREAK();
             return ERESULT_OUT_OF_MEMORY;
@@ -2165,65 +2091,29 @@ extern "C" {
         if (pEntry == OBJ_NIL) {
             return ERESULT_SUCCESS;
         }
-        objList_Add2Head(pQueue, pEntry);
-        while (objList_getSize(pQueue)) {
-            pEntry = objList_Head(pQueue);
-            objList_DeleteHead(pQueue);
+        ObjList_Add2Head(pQueue, pEntry);
+        while (ObjList_getSize(pQueue)) {
+            pEntry = ObjList_Head(pQueue);
+            ObjList_DeleteHead(pQueue);
             pVisitor(pObject, this, pEntry, indent);
             index = nodeLink_getChild(pEntry);
             if (index) {
                 pNext = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
                 if (pNext) {
-                    objList_Add2Tail(pQueue, pNext);
+                    ObjList_Add2Tail(pQueue, pNext);
                 }
             }
             index = nodeLink_getSibling(pEntry);
             if (index) {
                 pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
                 if (pEntry) {
-                    objList_Add2Head(pQueue, pEntry);
+                    ObjList_Add2Head(pQueue, pEntry);
                 }
             }
         }
         
         obj_Release(pQueue);
         pQueue = OBJ_NIL;
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                    V i s i t  I n o r d e r
-    //---------------------------------------------------------------
-    
-    ERESULT         nodeTree_VisitInorder(
-        NODETREE_DATA	*this,
-        void            (pVisitor)(
-            OBJ_ID          ,           // Object supplied below
-            NODETREE_DATA   *,          // Our Tree
-            NODELINK_DATA   *,          // Current Node
-            uint16_t                    // Indent level * 4
-        ),
-        OBJ_ID          pObject
-        )
-    {
-        
-        // Do initialization.
-        if (NULL == this) {
-            return ERESULT_INVALID_OBJECT;
-        }
-#ifdef NDEBUG
-#else
-        if( !nodeTree_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        nodeTree_NodeInorder(this, pVisitor, pObject, 1, 0);
         
         // Return to caller.
         return ERESULT_SUCCESS;

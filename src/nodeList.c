@@ -158,7 +158,7 @@ extern "C" {
         }
 #endif
         
-        return objList_getOrdered((OBJLIST_DATA *)this);
+        return ObjList_getOrdered((OBJLIST_DATA *)this);
     }
  
     
@@ -175,7 +175,7 @@ extern "C" {
         }
 #endif
        
-        fRc = objList_setOrdered((OBJLIST_DATA *)this, fValue);
+        fRc = ObjList_setOrdered((OBJLIST_DATA *)this, fValue);
         
         return fRc;
     }
@@ -241,7 +241,7 @@ extern "C" {
         }
 #endif
 
-        return objList_getSize((OBJLIST_DATA *)this);
+        return ObjList_getSize((OBJLIST_DATA *)this);
     }
 
 
@@ -347,7 +347,7 @@ extern "C" {
         }
 #endif
         
-        eRc = objList_Add2Head((OBJLIST_DATA *)this, pNode);
+        eRc = ObjList_Add2Head((OBJLIST_DATA *)this, pNode);
         
         // Return to caller.
         return eRc;
@@ -376,7 +376,7 @@ extern "C" {
         
         pNode = node_NewWithUTF8AndClass(cls, pName, pData);
         if (pNode) {
-            eRc = objList_Add2Head((OBJLIST_DATA *)this, pNode);
+            eRc = ObjList_Add2Head((OBJLIST_DATA *)this, pNode);
             if (ERESULT_FAILED(eRc))
                 ;
             else {
@@ -410,7 +410,7 @@ extern "C" {
         }
 #endif
         
-        eRc = objList_Add2Tail((OBJLIST_DATA *)this, pNode);
+        eRc = ObjList_Add2Tail((OBJLIST_DATA *)this, pNode);
         
         // Return to caller.
         return eRc;
@@ -439,7 +439,7 @@ extern "C" {
         
         pNode = node_NewWithUTF8AndClass(cls, pName, pData);
         if (pNode) {
-            eRc = objList_Add2Tail((OBJLIST_DATA *)this, pNode);
+            eRc = ObjList_Add2Tail((OBJLIST_DATA *)this, pNode);
             if (ERESULT_FAILED(eRc))
                 ;
             else {
@@ -733,7 +733,7 @@ extern "C" {
         }
 #endif
         
-        eRc = objList_DeleteHead((OBJLIST_DATA *)this);
+        eRc = ObjList_DeleteHead((OBJLIST_DATA *)this);
         
         // Return to caller.
         return eRc;
@@ -755,7 +755,7 @@ extern "C" {
         }
 #endif
         
-        eRc = objList_DeleteTail((OBJLIST_DATA *)this);
+        eRc = ObjList_DeleteTail((OBJLIST_DATA *)this);
         
         // Return to caller.
         return eRc;
@@ -839,7 +839,7 @@ extern "C" {
         }
 #endif
         
-        eRc = objList_ForEach((OBJLIST_DATA *)this, (void *)nodeList_EnumExit, this, pEnum);
+        eRc = ObjList_ForEach((OBJLIST_DATA *)this, (void *)nodeList_EnumExit, this, pEnum);
         if (ERESULT_FAILED(eRc)) {
             obj_Release(pEnum);
             pEnum = OBJ_NIL;
@@ -883,7 +883,7 @@ extern "C" {
         }
 #endif
         
-        pList = objList_getList((OBJLIST_DATA *)this);
+        pList = ObjList_getList((OBJLIST_DATA *)this);
         if (NULL == pList)
             return OBJ_NIL;
         if (listdl_Count(pList) < 1) {
@@ -932,7 +932,7 @@ extern "C" {
         }
 #endif
         
-        eRc = objList_ForEach((OBJLIST_DATA *)this, pScan, pObj, pArg3);
+        eRc = ObjList_ForEach((OBJLIST_DATA *)this, pScan, pObj, pArg3);
         
         // Return to caller.
         return eRc;
@@ -960,7 +960,7 @@ extern "C" {
         }
 #endif
         
-        pNode = objList_Index((OBJLIST_DATA *)this, index);
+        pNode = ObjList_Index((OBJLIST_DATA *)this, index);
         
         // Return to caller.
         return pNode;
@@ -990,7 +990,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)objList_Init((OBJLIST_DATA *)this);   // Needed for Inheritance
+        this = (OBJ_ID)ObjList_Init((OBJLIST_DATA *)this);   // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODELIST);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -1073,7 +1073,7 @@ extern "C" {
         
         pKeys = nodeArray_New();
         if (pKeys) {
-            eRc =   objList_ForEach(
+            eRc =   ObjList_ForEach(
                                     (OBJLIST_DATA *)this,
                                     (void *)nodeList_NodesExit,
                                     this,
@@ -1118,7 +1118,7 @@ extern "C" {
         }
 #endif
         
-        pList = objList_getList((OBJLIST_DATA *)this);
+        pList = ObjList_getList((OBJLIST_DATA *)this);
         if (NULL == pList)
             return ERESULT_GENERAL_FAILURE;
         if (listdl_Count(pList) < 2) {
@@ -1232,7 +1232,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return nodeList_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return nodeList_ToJSON;
                         }
                         break;
@@ -1246,7 +1246,7 @@ extern "C" {
                 if (pData == nodeList_ToDebugString)
                     return "ToDebugString";
                 if (pData == nodeList_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

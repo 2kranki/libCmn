@@ -801,7 +801,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return AStrCReader_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return AStrCReader_ToJSON;
                         }
                         break;
@@ -815,7 +815,7 @@ extern "C" {
                 if (pData == AStrCReader_ToDebugString)
                     return "ToDebugString";
                 if (pData == AStrCReader_ToJSON)
-                    return "ToJSON";
+                    return "ToJson";
                 break;
                 
             default:

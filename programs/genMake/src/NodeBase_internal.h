@@ -53,6 +53,7 @@
 
 
 #define     PROPERTY_DEPS_OWNED 1
+#define     PROPERTY_DESC_OWNED 1
 #define     PROPERTY_HDRS_OWNED 1
 #define     PROPERTY_NAME_OWNED 1
 #define     PROPERTY_EXT_OWNED 1
@@ -85,6 +86,7 @@ struct NodeBase_data_s	{
     uint16_t        rsvd16;
     ASTRCARRAY_DATA *pArches;
     ASTRCARRAY_DATA *pDeps;
+    ASTRC_DATA      *pDesc;
     ASTRCARRAY_DATA *pHdrs;
     ASTRC_DATA      *pName;
     ASTRCARRAY_DATA *pOSs;

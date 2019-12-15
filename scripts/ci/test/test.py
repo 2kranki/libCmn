@@ -96,7 +96,7 @@ def         perform_actions():
         print('*        Testing the Application        *')
         print('*****************************************')
         print()
-    rc = util.do_cmd("make -f Makefile.macos64.tst all")
+    rc = util.do_cmd("make -f Makefile.macos64.txt test")
     if not rc == 0:
         print("Error: Testing failed!\n")
         return 4

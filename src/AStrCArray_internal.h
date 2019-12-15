@@ -116,7 +116,7 @@ struct AStrCArray_data_s	{
     );
 
 
-    ASTRCARRAY_DATA * AStrCArray_ParseObject (
+    ASTRCARRAY_DATA * AStrCArray_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -128,7 +128,7 @@ struct AStrCArray_data_s	{
     );
 
 
-    ASTR_DATA *     AStrCArray_ToJSON (
+    ASTR_DATA *     AStrCArray_ToJson (
         ASTRCARRAY_DATA      *this
     );
 

@@ -355,7 +355,7 @@ int         test_nodeHash_JSON01(
             pNode = OBJ_NIL;
         }
         
-        pStr = nodeHash_ToJSON(pHash);
+        pStr = nodeHash_ToJson(pHash);
         XCTAssertFalse( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON=\"%s\"\n", AStr_getData(pStr));
         iRc = str_CompareSpcl(AStr_getData(pStr), pJsonStrA, &index);

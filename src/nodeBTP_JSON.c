@@ -106,7 +106,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned null object must be released.
      */
-    NODEBTP_DATA *  nodeBTP_ParseObject(
+    NODEBTP_DATA *  nodeBTP_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -496,7 +496,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     nodeBTP_ToJSON(
+    ASTR_DATA *     nodeBTP_ToJson(
         NODEBTP_DATA    *this
     )
     {
@@ -526,7 +526,7 @@ extern "C" {
         pInfo = obj_getInfo(this);
 
         // Scan the Tree insuring that all entries are Nodes
-        // which have the "ToJSON" method.
+        // which have the "ToJson" method.
         fRc = true;
         pList = blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
@@ -549,7 +549,7 @@ extern "C" {
                 pToJSON =   (*pQueryInfo)(
                                         pNode->pKey,
                                         OBJ_QUERYINFO_TYPE_METHOD,
-                                        "ToJSON"
+                                        "ToJson"
                             );
                 if (pToJSON)
                     ;
@@ -596,7 +596,7 @@ extern "C" {
                 pToJSON =   (*pQueryInfo)(
                                           pNode->pKey,
                                           OBJ_QUERYINFO_TYPE_METHOD,
-                                          "ToJSON"
+                                          "ToJson"
                                           );
                 if (pToJSON) {
                     ASTR_DATA       *pData;

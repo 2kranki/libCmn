@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 10/28/2017 08:51:04
+ *	Generated 12/15/2019 14:20:32
  */
 
 
@@ -24,13 +25,13 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <objMethod_internal.h>
+#include    <ObjMethod_internal.h>
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -42,9 +43,9 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -74,34 +75,38 @@ int         tearDown(
 
 
 
-int         test_objMethod_OpenClose(
+int             test_ObjMethod_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    OBJMETHOD_DATA	*pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    OBJMETHOD_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = objMethod_Alloc( );
+    pObj = ObjMethod_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = objMethod_Init( pObj );
+    pObj = ObjMethod_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);       
+        
         // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_objMethod_Create01(
+int         test_ObjMethod_Create01(
         const
         char        *pTestName
 )
@@ -113,21 +118,21 @@ int         test_objMethod_Create01(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = objMethod_New( );
+    pObj = ObjMethod_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pObj2 = objMethod_NewObjectA((OBJ_ID)pObj, "ToJSON");
+        pObj2 = ObjMethod_NewObjectA((OBJ_ID)pObj, "ToDebugString");
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
         if (pObj2) {
             
-            pObj3 = objMethod_getObject(pObj2);
+            pObj3 = ObjMethod_getObject(pObj2);
             TINYTEST_FALSE( (OBJ_NIL == pObj3) );
             TINYTEST_TRUE( (pObj == pObj3) );
             
-            pVoid = objMethod_getMethod(pObj2);
+            pVoid = ObjMethod_getMethod(pObj2);
             TINYTEST_FALSE( (OBJ_NIL == pVoid) );
-            TINYTEST_TRUE( (objMethod_ToJSON == pVoid) );
+            TINYTEST_TRUE( (ObjMethod_ToDebugString == pVoid) );
 
             obj_Release(pObj2);
             pObj2 = OBJ_NIL;
@@ -144,12 +149,12 @@ int         test_objMethod_Create01(
 
 
 
-TINYTEST_START_SUITE(test_objMethod);
-    TINYTEST_ADD_TEST(test_objMethod_Create01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_objMethod_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_ObjMethod);
+    TINYTEST_ADD_TEST(test_ObjMethod_Create01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_ObjMethod_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_objMethod);
+TINYTEST_MAIN_SINGLE_SUITE(test_ObjMethod);
 
 
 

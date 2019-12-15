@@ -1083,7 +1083,7 @@ extern "C" {
         }
 #endif
 
-        while (objList_getSize(this->pList)) {
+        while (ObjList_getSize(this->pList)) {
             jsonIn_SubobjectEnd(this);
         }
         jsonIn_setHash(this, OBJ_NIL);
@@ -1381,7 +1381,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&jsonIn_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
-        this->pList = objList_New( );
+        this->pList = ObjList_New( );
 
     #ifdef NDEBUG
     #else
@@ -1554,7 +1554,7 @@ extern "C" {
         pInfo = obj_getInfo(nodeBTP_Class());
         eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)nodeBTP_ParseObject(this);
+            pObj = (OBJ_ID)nodeBTP_ParseJsonObject(this);
             return pObj;
         }
         
@@ -1722,8 +1722,8 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return jsonIn_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return jsonIn_ToJSON;
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return jsonIn_ToJson;
                         }
                         break;
                         
@@ -1735,8 +1735,8 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == jsonIn_ToDebugString)
                     return "ToDebugString";
-                if (pData == jsonIn_ToJSON)
-                    return "ToJSON";
+                if (pData == jsonIn_ToJson)
+                    return "ToJson";
                 break;
                 
             default:
@@ -1767,9 +1767,9 @@ extern "C" {
         }
 #endif
         
-        if (objList_getSize(this->pList) > 0) {
-            this->pHash = objList_Tail(this->pList);
-            objList_DeleteTail(this->pList);
+        if (ObjList_getSize(this->pList) > 0) {
+            this->pHash = ObjList_Tail(this->pList);
+            ObjList_DeleteTail(this->pList);
             eRc = ERESULT_SUCCESS;
         }
         
@@ -1802,7 +1802,7 @@ extern "C" {
         }
 #endif
         
-        objList_Add2Tail(this->pList, this->pHash);
+        ObjList_Add2Tail(this->pList, this->pHash);
         this->pHash = pHash;
         
         return ERESULT_SUCCESS;
@@ -1840,7 +1840,7 @@ extern "C" {
             return ERESULT_DATA_ERROR;
         }
         
-        objList_Add2Tail(this->pList, this->pHash);
+        ObjList_Add2Tail(this->pList, this->pHash);
         this->pHash = node_getData(pNode);
         
         return ERESULT_SUCCESS;
@@ -1925,7 +1925,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     jsonIn_ToJSON(
+    ASTR_DATA *     jsonIn_ToJson(
         JSONIN_DATA      *this
     )
     {

@@ -51,6 +51,7 @@ int         tearDown(
     // test method in the class.
 
     
+    szTbl_SharedReset( );
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

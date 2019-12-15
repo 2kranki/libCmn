@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   objList.c
- *	Generated 09/14/2016 11:48:53
+ * File:   ObjList.c
+ *	Generated 12/15/2019 12:58:04
  *
  */
 
@@ -41,8 +41,12 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <objList_internal.h>
-#include    <objEnum_internal.h>
+#include        <ObjList_internal.h>
+#include        <objEnum_internal.h>
+#include        <trace.h>
+
+
+
 
 
 
@@ -59,59 +63,57 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    
-    OBJLIST_RECORD * objList_FindObj (
-        OBJLIST_DATA    *this,
-        OBJ_ID          pObj
-    )
-    {
-        OBJLIST_RECORD  *pObjInt;
-        ERESULT         eRc;
-        P_OBJ_COMPARE   pCompare = obj_getVtbl(pObj)->pCompare;
+OBJLIST_RECORD * ObjList_FindObj (
+    OBJLIST_DATA    *this,
+    OBJ_ID          pObj
+)
+{
+    OBJLIST_RECORD  *pObjInt;
+    ERESULT         eRc;
+    P_OBJ_COMPARE   pCompare = obj_getVtbl(pObj)->pCompare;
 
-        pObjInt = listdl_Head(&this->list);
-        while ( pObjInt ) {
-            eRc = pCompare(pObj, pObjInt->pObject);
-            if (ERESULT_SUCCESS_GREATER_THAN == eRc)
-                ;
-            else {
-                // pObj <= the current entry
-                return pObjInt;
-            }
-            pObjInt = listdl_Next(&this->list, pObjInt);
+    pObjInt = listdl_Head(&this->list);
+    while ( pObjInt ) {
+        eRc = pCompare(pObj, pObjInt->pObject);
+        if (ERESULT_SUCCESS_GREATER_THAN == eRc)
+            ;
+        else {
+            // pObj <= the current entry
+            return pObjInt;
         }
-        
-        // Return to caller.
-        return NULL;
+        pObjInt = listdl_Next(&this->list, pObjInt);
     }
     
+    // Return to caller.
+    return NULL;
+}
+
+
+static
+int             ObjList_SortCompare (
+    OBJ_ID          pNode1,
+    OBJ_ID          pNode2
+)
+{
+    int             iRc;
+    ERESULT         eRc;
+    P_OBJ_COMPARE   pCompare = obj_getVtbl(pNode1)->pCompare;
     
-    static
-    int             objList_SortCompare (
-        OBJ_ID          pNode1,
-        OBJ_ID          pNode2
-    )
-    {
-        int             iRc;
-        ERESULT         eRc;
-        P_OBJ_COMPARE   pCompare = obj_getVtbl(pNode1)->pCompare;
-        
-        if (NULL == pCompare)
-            return -1;
-        eRc = pCompare(pNode1, pNode2);
-        if (ERESULT_SUCCESS_EQUAL == eRc)
-            iRc = 0;
-        else if (ERESULT_SUCCESS_LESS_THAN == eRc)
-            iRc = -1;
-        else
-            iRc = 1;
-        
-        // Return to caller.
-        return iRc;
-    }
+    if (NULL == pCompare)
+        return -1;
+    eRc = pCompare(pNode1, pNode2);
+    if (ERESULT_SUCCESS_EQUAL == eRc)
+        iRc = 0;
+    else if (ERESULT_SUCCESS_LESS_THAN == eRc)
+        iRc = -1;
+    else
+        iRc = 1;
     
-    
-    
+    // Return to caller.
+    return iRc;
+}
+
+
 
 
 
@@ -124,16 +126,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    OBJLIST_DATA *  objList_Alloc (
+    OBJLIST_DATA *     ObjList_Alloc (
         void
     )
     {
-        OBJLIST_DATA    *this;
+        OBJLIST_DATA       *this;
         uint32_t        cbSize = sizeof(OBJLIST_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -141,15 +143,15 @@ extern "C" {
 
 
 
-    OBJLIST_DATA *     objList_New (
+    OBJLIST_DATA *     ObjList_New (
         void
     )
     {
         OBJLIST_DATA       *this;
         
-        this = objList_Alloc( );
+        this = ObjList_Alloc( );
         if (this) {
-            this = objList_Init(this);
+            this = ObjList_Init(this);
         } 
         return this;
     }
@@ -162,27 +164,27 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    LISTDL_DATA *   objList_getList (
+    LISTDL_DATA *   ObjList_getList (
         OBJLIST_DATA    *this
     )
     {
 #ifdef NDEBUG
 #else
-        if(!objList_Validate(this)) {
+        if(!ObjList_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
         return &this->list;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                       O r d e r e d
     //---------------------------------------------------------------
     
-    bool            objList_getOrdered (
+    bool            ObjList_getOrdered (
         OBJLIST_DATA    *this
     )
     {
@@ -190,7 +192,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -201,7 +203,7 @@ extern "C" {
             return false;
     }
     
-    bool            objList_setOrdered (
+    bool            ObjList_setOrdered (
         OBJLIST_DATA    *this,
         bool            fValue
     )
@@ -210,7 +212,7 @@ extern "C" {
         ERESULT         eRc;
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
         }
 #endif
@@ -219,32 +221,60 @@ extern "C" {
             fOrdered = true;
         obj_FlagSet(this, LIST_FLAG_ORDERED, fValue);
         if (!fOrdered && fValue) {
-            eRc = objList_SortAscending(this);
+            eRc = ObjList_SortAscending(this);
             if (ERESULT_FAILED(eRc))
                 return false;
         }
         
         return true;
     }
-    
+        
 
+        
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
     
-    uint32_t        objList_getSize (
-        OBJLIST_DATA    *this
+    uint32_t        ObjList_getSize (
+        OBJLIST_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if (!ObjList_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
+
         return listdl_Count(&this->list);
     }
 
 
 
+    //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
+    
+    OBJ_IUNKNOWN *  ObjList_getSuperVtbl (
+        OBJLIST_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ObjList_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return this->pSuperVtbl;
+    }
+    
+  
 
     
 
@@ -257,7 +287,7 @@ extern "C" {
     //                          A d d
     //---------------------------------------------------------------
     
-    ERESULT         objList_Add2Head (
+    ERESULT         ObjList_Add2Head (
         OBJLIST_DATA    *this,
         OBJ_ID          pObject
     )
@@ -267,7 +297,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -284,10 +314,11 @@ extern "C" {
         
         obj_Retain(pObject);
         pEntry->pObject = pObject;
+        pEntry->unique = ++this->unique;
         if (obj_Flag(this, LIST_FLAG_ORDERED)) {
             OBJLIST_RECORD      *pObjInt;
             // Find insertion point.
-            pObjInt = objList_FindObj(this, pObject);
+            pObjInt = ObjList_FindObj(this, pObject);
             // Do the insertion.
             if (pObjInt) {
                 listdl_AddBefore(&this->list, pObjInt, pEntry);
@@ -303,7 +334,7 @@ extern "C" {
     }
     
     
-    ERESULT         objList_Add2Tail (
+    ERESULT         ObjList_Add2Tail (
         OBJLIST_DATA    *this,
         OBJ_ID          pObject
     )
@@ -313,7 +344,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -330,10 +361,11 @@ extern "C" {
 
         obj_Retain(pObject);
         pEntry->pObject = pObject;
+        pEntry->unique = ++this->unique;
         if (obj_Flag(this, LIST_FLAG_ORDERED)) {
             OBJLIST_RECORD      *pObjInt;
             // Find insertion point.
-            pObjInt = objList_FindObj(this, pObject);
+            pObjInt = ObjList_FindObj(this, pObject);
             // Do the insertion.
             if (pObjInt) {
                 listdl_AddBefore(&this->list, pObjInt, pEntry);
@@ -347,9 +379,9 @@ extern "C" {
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -359,38 +391,38 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code
-        ERESULT eRc = objList__Assign(this,pOther);
-     @endcode
-     @param     this    OBJLIST object pointer
+     @code 
+        ERESULT eRc = ObjList_Assign(this,pOther);
+     @endcode 
+     @param     this    object pointer
      @param     pOther  a pointer to another OBJLIST object
-     @return    If successful, ERESULT_SUCCESS otherwise an
+     @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         objList_Assign (
-        OBJLIST_DATA    *this,
+    ERESULT         ObjList_Assign (
+        OBJLIST_DATA	*this,
         OBJLIST_DATA    *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc;
         OBJLIST_RECORD  *pEntry = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if (!ObjList_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !objList_Validate(pOther) ) {
+        if (!ObjList_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
         // Release objects and areas in other object.
-        while (objList_getSize(pOther)) {
-            eRc = objList_DeleteHead(pOther);
+        while (ObjList_getSize(pOther)) {
+            eRc = ObjList_DeleteHead(pOther);
             if (ERESULT_FAILED(eRc)) {
                 break;
             }
@@ -401,7 +433,7 @@ extern "C" {
         pEntry = listdl_Head(&this->list);
         while ( pEntry ) {
             if (pEntry->pObject) {
-                eRc = objList_Add2Tail(pOther, pEntry->pObject);
+                eRc = ObjList_Add2Tail(pOther, pEntry->pObject);
                 if (ERESULT_FAILED(eRc)) {
                     break;
                 }
@@ -416,39 +448,99 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         ObjList_Compare (
+        OBJLIST_DATA     *this,
+        OBJLIST_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!ObjList_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!ObjList_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
+    
+   
+ 
+    //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     
     /*!
      Copy the current object creating a new object.
      Example:
-     @code
-        objList      *pCopy = objList_Copy(this);
-     @endcode
-     @param     this    OBJLIST object pointer
-     @return    If successful, a OBJLIST object which must be released,
-                otherwise OBJ_NIL.
-     @warning   Remember to release the returned the OBJLIST object.
+     @code 
+        ObjList      *pCopy = ObjList_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a OBJLIST object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    OBJLIST_DATA *     objList_Copy (
+    OBJLIST_DATA *     ObjList_Copy (
         OBJLIST_DATA       *this
     )
     {
-        OBJLIST_DATA       *pOther = OBJ_NIL;
+        OBJLIST_DATA    *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if (!ObjList_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = objList_New();
+        pOther = ObjList_New( );
         if (pOther) {
-            eRc = objList_Assign(this, pOther);
+            eRc = ObjList_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -456,6 +548,7 @@ extern "C" {
         }
         
         // Return to caller.
+        //obj_Release(pOther);
         return pOther;
     }
     
@@ -465,7 +558,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            objList_Dealloc (
+    void            ObjList_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -478,7 +571,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if (!ObjList_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -492,10 +585,10 @@ extern "C" {
             }
             listdl_DeleteHead(&this->list);
         }
-        
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)this->pSuperVtbl);
-        // pSuperVtbl is saved immediately after the super object which we
-        // inherit from is initialized.
+
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
         this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
@@ -512,14 +605,14 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code
-     objList      *pCopy = objList_DeepCopy(this);
+     objList      *pCopy = ObjList_DeepCopy(this);
      @endcode
      @param     this    OBJLIST object pointer
      @return    If successful, a OBJLIST object which must be released,
      otherwise OBJ_NIL.
      @warning   Remember to release the returned the OBJLIST object.
      */
-    OBJLIST_DATA *  objList_DeepCopy (
+    OBJLIST_DATA *  ObjList_DeepCopy (
         OBJLIST_DATA    *this
     )
     {
@@ -531,13 +624,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = objList_New();
+        pOther = ObjList_New();
         if (pOther) {
             pEntry = listdl_Head(&this->list);
             while ( pEntry ) {
@@ -550,7 +643,7 @@ extern "C" {
                             obj_Retain(pEntry->pObject);
                             pObject = pEntry->pObject;
                         }
-                        eRc = objList_Add2Tail(pOther, pObject);
+                        eRc = ObjList_Add2Tail(pOther, pObject);
                         if (ERESULT_FAILED(eRc)) {
                             break;
                         }
@@ -564,15 +657,15 @@ extern "C" {
         // Return to caller.
         return pOther;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                          D e l e t e
     //---------------------------------------------------------------
     
-    ERESULT         objList_DeleteHead (
-        OBJLIST_DATA	*this
+    ERESULT         ObjList_DeleteHead (
+        OBJLIST_DATA    *this
     )
     {
         OBJLIST_RECORD  *pEntry = OBJ_NIL;
@@ -580,7 +673,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -601,7 +694,7 @@ extern "C" {
     }
     
     
-    ERESULT         objList_DeleteIndex (
+    ERESULT         ObjList_DeleteIndex (
         OBJLIST_DATA    *this,
         uint32_t        index
     )
@@ -611,7 +704,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -632,8 +725,8 @@ extern "C" {
     }
     
     
-    ERESULT         objList_DeleteTail (
-        OBJLIST_DATA	*this
+    ERESULT         ObjList_DeleteTail (
+        OBJLIST_DATA    *this
     )
     {
         OBJLIST_RECORD  *pEntry = OBJ_NIL;
@@ -641,7 +734,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -660,14 +753,84 @@ extern "C" {
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+        
+        
+        
+    //---------------------------------------------------------------
+    //                      D i s a b l e
+    //---------------------------------------------------------------
+
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ObjList_Disable (
+        OBJLIST_DATA		*this
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!ObjList_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+
+        // Put code here...
+
+        obj_Disable(this);
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          E n a b l e
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ObjList_Enable (
+        OBJLIST_DATA		*this
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!ObjList_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+        
+        obj_Enable(this);
+
+        // Put code here...
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                        E n u m
     //---------------------------------------------------------------
     
-    OBJENUM_DATA *  objList_Enum (
+    OBJENUM_DATA *  ObjList_Enum (
         OBJLIST_DATA    *this
     )
     {
@@ -678,7 +841,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -708,7 +871,7 @@ extern "C" {
     //                          F o r  E a c h
     //---------------------------------------------------------------
     
-    ERESULT         objList_ForEach (
+    ERESULT         ObjList_ForEach (
         OBJLIST_DATA    *this,
         P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObject,        // Used as first parameter of scan method
@@ -721,7 +884,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -750,7 +913,7 @@ extern "C" {
     //                          H e a d
     //---------------------------------------------------------------
 
-    OBJ_ID          objList_Head (
+    OBJ_ID          ObjList_Head (
         OBJLIST_DATA    *this
     )
     {
@@ -760,7 +923,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return pObject;
         }
@@ -782,9 +945,9 @@ extern "C" {
     //                          I n d e x
     //---------------------------------------------------------------
     
-    OBJ_ID          objList_Index (
+    OBJ_ID          ObjList_Index (
         OBJLIST_DATA    *this,
-        int32_t			index					// (relative to 1)
+        int32_t            index                    // (relative to 1)
     )
     {
         OBJ_ID          pObject = OBJ_NIL;
@@ -793,7 +956,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return pObject;
         }
@@ -807,15 +970,15 @@ extern "C" {
         // Return to caller.
         return pObject;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    OBJLIST_DATA *  objList_Init (
-        OBJLIST_DATA    *this
+    OBJLIST_DATA *   ObjList_Init (
+        OBJLIST_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(OBJLIST_DATA);
@@ -835,16 +998,16 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)blocks_Init((BLOCKS_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)blocks_Init((BLOCKS_DATA *)this);        // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OBJLIST);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                          // Needed for Inheritance
+        obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&objList_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&ObjList_Vtbl);
         
         eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(OBJLIST_RECORD));
         if (ERESULT_FAILED(eRc)) {
@@ -852,17 +1015,20 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        
+
         listdl_Init(&this->list, offsetof(OBJLIST_RECORD, list));
         
-    #ifdef NDEBUG
+#ifdef NDEBUG
     #else
-        if( !objList_Validate(this) ) {
+        if (!ObjList_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        BREAK_NOT_BOUNDARY4(&this->list);
+#ifdef __APPLE__
+        //fprintf(stderr, "ObjList::sizeof(OBJLIST_DATA) = %lu\n", sizeof(OBJLIST_DATA));
+#endif
+        BREAK_NOT_BOUNDARY4(sizeof(OBJLIST_DATA));
     #endif
 
         return this;
@@ -871,10 +1037,39 @@ extern "C" {
      
 
     //---------------------------------------------------------------
+    //                       I s E n a b l e d
+    //---------------------------------------------------------------
+    
+    ERESULT         ObjList_IsEnabled (
+        OBJLIST_DATA		*this
+    )
+    {
+        //ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ObjList_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (obj_IsEnabled(this)) {
+            return ERESULT_SUCCESS_TRUE;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS_FALSE;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          N e x t
     //---------------------------------------------------------------
     
-    OBJ_ID          objList_Next (
+    OBJ_ID          ObjList_Next (
         OBJLIST_DATA    *this
     )
     {
@@ -884,7 +1079,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return pObject;
         }
@@ -910,7 +1105,7 @@ extern "C" {
     //                        O b j e c t s
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * objList_Objects (
+    OBJARRAY_DATA * ObjList_Objects (
         OBJLIST_DATA    *this
     )
     {
@@ -921,7 +1116,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -951,7 +1146,7 @@ extern "C" {
     //                          P r e v
     //---------------------------------------------------------------
     
-    OBJ_ID          objList_Prev (
+    OBJ_ID          ObjList_Prev (
         OBJLIST_DATA    *this
     )
     {
@@ -961,7 +1156,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return pObject;
         }
@@ -980,9 +1175,9 @@ extern "C" {
         // Return to caller.
         return pObject;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -993,29 +1188,29 @@ extern "C" {
      object information structure.
      Example:
      @code
-     // Return a method pointer for a string or NULL if not found.
-     void        *pMethod = name_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
-     @endcode
-     @param     objId   OBJTEST object pointer
+        // Return a method pointer for a string or NULL if not found. 
+        void        *pMethod = ObjList_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode 
+     @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
-     for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
-     character string which represents the method name without
-     the object name, "name", prefix,
-     for OBJ_QUERYINFO_TYPE_PTR, this field contains the
-     address of the method to be found.
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
+                        character string which represents the method name without
+                        the object name, "ObjList", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
-     OBJ_QUERYINFO_TYPE_INFO: info pointer,
-     OBJ_QUERYINFO_TYPE_METHOD: method pointer,
-     OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          objList_QueryInfo (
+    void *          ObjList_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        OBJLIST_DATA    *this = objId;
+        OBJLIST_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1024,7 +1219,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if (!ObjList_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1032,21 +1227,60 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(OBJLIST_DATA);
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(OBJLIST_DATA);
+            break;
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)ObjList_Class();
                 break;
                 
-            case OBJ_QUERYINFO_TYPE_INFO:
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
+                    case 'D':
+                        if (str_Compare("Disable", (char *)pStr) == 0) {
+                            return ObjList_Disable;
+                        }
+                        break;
+
+                    case 'E':
+                        if (str_Compare("Enable", (char *)pStr) == 0) {
+                            return ObjList_Enable;
+                        }
+                        break;
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return objList_ToDebugString;
+                            return ObjList_ToDebugString;
                         }
+#ifdef  SRCREF_JSON_SUPPORT
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return ObjList_ToJson;
+                        }
+#endif
                         break;
                         
                     default:
@@ -1054,11 +1288,20 @@ extern "C" {
                 }
                 break;
                 
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == ObjList_ToDebugString)
+                    return "ToDebugString";
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == ObjList_ToJson)
+                    return "ToJson";
+#endif
+                break;
+                
             default:
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pData);
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
     
     
@@ -1067,7 +1310,7 @@ extern "C" {
     //                         S o r t
     //---------------------------------------------------------------
     
-    ERESULT         objList_SortAscending (
+    ERESULT         ObjList_SortAscending (
         OBJLIST_DATA    *this
     )
     {
@@ -1080,7 +1323,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1090,7 +1333,7 @@ extern "C" {
             return ERESULT_SUCCESS;
         }
         
-        fRc = listdl_Sort(&this->list, (void *)objList_SortCompare);
+        fRc = listdl_Sort(&this->list, (void *)ObjList_SortCompare);
         if (fRc)
             eRc = ERESULT_SUCCESS;
         
@@ -1104,7 +1347,7 @@ extern "C" {
     //                      S h i f t  H e a d
     //---------------------------------------------------------------
     
-    OBJ_ID          objList_ShiftHead (
+    OBJ_ID          ObjList_ShiftHead (
         OBJLIST_DATA    *this
     )
     {
@@ -1114,7 +1357,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return pObject;
         }
@@ -1136,7 +1379,7 @@ extern "C" {
     //                      S h i f t  T a i l
     //---------------------------------------------------------------
     
-    OBJ_ID          objList_ShiftTail (
+    OBJ_ID          ObjList_ShiftTail (
         OBJLIST_DATA    *this
     )
     {
@@ -1146,7 +1389,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return pObject;
         }
@@ -1168,7 +1411,7 @@ extern "C" {
     //                          T a i l
     //---------------------------------------------------------------
     
-    OBJ_ID          objList_Tail (
+    OBJ_ID          ObjList_Tail (
         OBJLIST_DATA    *this
     )
     {
@@ -1178,7 +1421,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !objList_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return pObject;
         }
@@ -1193,6 +1436,47 @@ extern "C" {
         // Return to caller.
         return pObject;
     }
+        
+        
+        
+    //---------------------------------------------------------------
+    //                       T o  J S O N
+    //---------------------------------------------------------------
+    
+#ifdef  OBJLIST_JSON_SUPPORT
+     ASTR_DATA *     ObjList_ToJson (
+        OBJLIST_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        //int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if (!ObjList_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        if (pStr) {
+            eRc =   AStr_AppendPrint(
+                        pStr,
+                        "{\"objectType\":\"%s\"",
+                        pInfo->pClassName
+                    );
+            
+            AStr_AppendA(pStr, "}\n");
+        }
+        
+        return pStr;
+    }
+#endif
     
     
     
@@ -1203,43 +1487,55 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
-        ASTR_DATA      *pDesc = objList_ToDebugString(this,4);
-     @endcode:
-     @param     this    OBJLIST object pointer
+     @code 
+        ASTR_DATA      *pDesc = ObjList_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     objList_ToDebugString (
+    ASTR_DATA *     ObjList_ToDebugString (
         OBJLIST_DATA      *this,
         int             indent
     )
     {
-        char            str[256];
-        int             j;
+        ERESULT         eRc;
+        //int             j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
+        const
+        OBJ_INFO        *pInfo;
         OBJLIST_RECORD  *pEntry = OBJ_NIL;
-        
-        if (OBJ_NIL == this) {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ObjList_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+              
+        pInfo = obj_getInfo(this);
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
             return OBJ_NIL;
         }
         
-        pStr = AStr_New();
         if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(objList) size=%d\n",
-                     this,
-                     objList_getSize(this)
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "{%p(%s) size=%d retain=%d\n",
+                    this,
+                    pInfo->pClassName,
+                    ObjList_getSize(this),
+                    obj_getRetainCount(this)
             );
-        AStr_AppendA(pStr, str);
 
         pEntry = listdl_Head(&this->list);
         while ( pEntry ) {
@@ -1253,12 +1549,16 @@ extern "C" {
             }
             pEntry = listdl_Next(&this->list, pEntry);
         }
-        
+
         if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        j = snprintf(str, sizeof(str), " %p(objList)}\n", this);
-        AStr_AppendA(pStr, str);
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    " %p(%s)}\n", 
+                    this, 
+                    pInfo->pClassName
+                );
         
         return pStr;
     }
@@ -1271,20 +1571,33 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            objList_Validate (
+    bool            ObjList_Validate (
         OBJLIST_DATA      *this
     )
     {
-        if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_OBJLIST) )
+ 
+        // WARNING: We have established that we have a valid pointer
+        //          in 'this' yet.
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_OBJLIST))
                 ;
-            else
+            else {
+                // 'this' is not our kind of data. We really don't
+                // know what that it is at this point. 
                 return false;
+            }
         }
-        else
+        else {
+            // 'this' is NULL.
             return false;
-        if( !(obj_getSize(this) >= sizeof(OBJLIST_DATA)) )
+        }
+        // Now, we have validated that we have a valid pointer in
+        // 'this'.
+
+
+        if (!(obj_getSize(this) >= sizeof(OBJLIST_DATA))) {
             return false;
+        }
 
         // Return to caller.
         return true;

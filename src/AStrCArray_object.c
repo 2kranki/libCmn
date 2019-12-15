@@ -138,7 +138,7 @@ ASTRCARRAY_CLASS_VTBL    class_Vtbl = {
 ASTRCARRAY_CLASS_DATA  AStrCArray_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(ASTRCARRAY_CLASS_DATA),                  // cbSize
+        sizeof(ASTRCARRAY_CLASS_DATA),          // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
