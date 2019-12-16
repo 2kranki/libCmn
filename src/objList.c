@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include        <ObjList_internal.h>
-#include        <objEnum_internal.h>
+#include        <ObjEnum_internal.h>
 #include        <trace.h>
 
 
@@ -847,11 +847,11 @@ int             ObjList_SortCompare (
         }
 #endif
         
-        pEnum = objEnum_New();
+        pEnum = ObjEnum_New();
         if (pEnum) {
             pEntry = listdl_Head(&this->list);
             while ( pEntry ) {
-                eRc = objEnum_Append(pEnum, pEntry->pObject);
+                eRc = ObjEnum_AppendObj(pEnum, pEntry->pObject);
                 if (ERESULT_FAILED(eRc)) {
                     obj_Release(pEnum);
                     pEnum = OBJ_NIL;

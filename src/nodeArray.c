@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include    <nodeArray_internal.h>
-#include    <nodeEnum_internal.h>
+#include    <NodeEnum_internal.h>
 #include    <i32Array.h>
 #include    <utf8.h>
 
@@ -675,11 +675,11 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pEnum = nodeEnum_New();
+            pEnum = NodeEnum_New();
             size = objArray_getSize(this->pArray);
             for (index = 0; index < size; ++index) {
                 pNode = objArray_Get(this->pArray, index+1);
-                eRc = nodeEnum_Append(pEnum, pNode);
+                eRc = NodeEnum_AppendObj(pEnum, pNode);
             }
         }
         

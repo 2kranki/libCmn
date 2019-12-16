@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   nodeList_internal.h
- *	Generated 11/23/2018 17:15:11
+ * File:   nodeEnum_internal.h
+ *	Generated 11/23/2018 21:35:43
  *
  * Notes:
  *  --	N/A
@@ -39,14 +39,13 @@
 
 
 
-#include        <nodeList.h>
+#include        <nodeEnum.h>
 #include        <jsonIn.h>
-#include        <NodeEnum_internal.h>
-#include        <ObjList_internal.h>
+#include        <ObjEnum_internal.h>
 
 
-#ifndef NODELIST_INTERNAL_H
-#define	NODELIST_INTERNAL_H
+#ifndef NODEENUM_INTERNAL_H
+#define	NODEENUM_INTERNAL_H
 
 
 
@@ -62,10 +61,10 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct nodeList_data_s	{
-    /* Warning - OBJLIST_DATA must be first in this object!
+struct nodeEnum_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJLIST_DATA    super;
+    OBJENUM_DATA    super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
@@ -82,11 +81,11 @@ struct nodeList_data_s	{
 #pragma pack(pop)
 
     extern
-    struct nodeList_class_data_s  nodeList_ClassObj;
+    struct nodeEnum_class_data_s  nodeEnum_ClassObj;
 
     extern
     const
-    NODELIST_VTBL         nodeList_Vtbl;
+    NODEENUM_VTBL         nodeEnum_Vtbl;
 
 
 
@@ -94,13 +93,13 @@ struct nodeList_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NODELIST_SINGLETON
-    NODELIST_DATA * nodeList_getSingleton(
+#ifdef  NODEENUM_SINGLETON
+    NODEENUM_DATA * nodeEnum_getSingleton (
         void
     );
 
-    bool            nodeList_setSingleton(
-        NODELIST_DATA   *pValue
+    bool            nodeEnum_setSingleton (
+     NODEENUM_DATA       *pValue
 );
 #endif
 
@@ -110,30 +109,36 @@ struct nodeList_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  nodeList_getSuperVtbl(
-        NODELIST_DATA   *this
+    OBJ_IUNKNOWN *  nodeEnum_getSuperVtbl (
+        NODEENUM_DATA     *this
     );
 
 
-    void            nodeList_Dealloc(
+    ERESULT         nodeEnum_Append (
+        NODEENUM_DATA   *this,
+        NODE_DATA       *pNode
+    );
+    
+    
+    void            nodeEnum_Dealloc (
         OBJ_ID          objId
     );
 
 
-    NODELIST_DATA * nodeList_ParseJsonObject(
+    NODEENUM_DATA * nodeEnum_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          nodeList_QueryInfo(
+    void *          nodeEnum_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     nodeList_ToJSON(
-        NODELIST_DATA      *this
+    ASTR_DATA *     nodeEnum_ToJson (
+        NODEENUM_DATA      *this
     );
 
 
@@ -141,8 +146,8 @@ struct nodeList_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			nodeList_Validate(
-        NODELIST_DATA       *this
+    bool			nodeEnum_Validate (
+        NODEENUM_DATA       *this
     );
 #endif
 
@@ -152,5 +157,5 @@ struct nodeList_data_s	{
 }
 #endif
 
-#endif	/* NODELIST_INTERNAL_H */
+#endif	/* NODEENUM_INTERNAL_H */
 

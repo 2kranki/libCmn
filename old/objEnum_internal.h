@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   nodeList_internal.h
- *	Generated 11/23/2018 17:15:11
+ * File:   objEnum_internal.h
+ *	Generated 10/15/2017 09:38:35
  *
  * Notes:
  *  --	N/A
@@ -39,14 +39,12 @@
 
 
 
-#include        <nodeList.h>
-#include        <jsonIn.h>
-#include        <NodeEnum_internal.h>
-#include        <ObjList_internal.h>
+#include    <objEnum.h>
+#include    <objArray.h>
 
 
-#ifndef NODELIST_INTERNAL_H
-#define	NODELIST_INTERNAL_H
+#ifndef OBJENUM_INTERNAL_H
+#define	OBJENUM_INTERNAL_H
 
 
 
@@ -61,48 +59,30 @@ extern "C" {
     //                  Object Data Description
     //---------------------------------------------------------------
 
-#pragma pack(push, 1)
-struct nodeList_data_s	{
-    /* Warning - OBJLIST_DATA must be first in this object!
+ #pragma pack(push, 1)
+struct objEnum_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJLIST_DATA    super;
-    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;     // Needed for Inheritance
+    #define OBJENUM_SORTED  OBJ_FLAG_USER1  // File Path is open
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        reserved;
-    ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
+    ERESULT         eRc;
+    OBJARRAY_DATA   *pArray;
+    uint32_t        current;
+    uint32_t        rsvd32;         // (sizeof(OBJENUM) % 8) == 0
 
 };
 #pragma pack(pop)
 
     extern
-    struct nodeList_class_data_s  nodeList_ClassObj;
+    const
+    struct objEnum_class_data_s  objEnum_ClassObj;
 
     extern
     const
-    NODELIST_VTBL         nodeList_Vtbl;
-
-
-
-    //---------------------------------------------------------------
-    //              Class Object Method Forward Definitions
-    //---------------------------------------------------------------
-
-#ifdef  NODELIST_SINGLETON
-    NODELIST_DATA * nodeList_getSingleton(
-        void
-    );
-
-    bool            nodeList_setSingleton(
-        NODELIST_DATA   *pValue
-);
-#endif
+    OBJENUM_VTBL         objEnum_Vtbl;
 
 
 
@@ -110,30 +90,47 @@ struct nodeList_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  nodeList_getSuperVtbl(
-        NODELIST_DATA   *this
+    OBJARRAY_DATA * objEnum_getArray(
+        OBJENUM_DATA    *this
+    );
+    
+    bool            objEnum_setArray(
+        OBJENUM_DATA    *this,
+        OBJARRAY_DATA   *pValue
+    );
+    
+
+   bool            objEnum_setLastError(
+        OBJENUM_DATA     *this,
+        ERESULT         value
     );
 
 
-    void            nodeList_Dealloc(
+    ERESULT         objEnum_Append(
+        OBJENUM_DATA    *this,
+        OBJ_ID          pObject
+    );
+    
+    
+    void            objEnum_Dealloc(
         OBJ_ID          objId
     );
 
 
-    NODELIST_DATA * nodeList_ParseJsonObject(
-        JSONIN_DATA     *pParser
-    );
-
-
-    void *          nodeList_QueryInfo(
+    void *          objEnum_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     nodeList_ToJSON(
-        NODELIST_DATA      *this
+    ERESULT         objEnum_SortAscending(
+        OBJENUM_DATA    *this
+    );
+    
+    
+    ASTR_DATA *     objEnum_ToJSON(
+        OBJENUM_DATA      *this
     );
 
 
@@ -141,8 +138,8 @@ struct nodeList_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			nodeList_Validate(
-        NODELIST_DATA       *this
+    bool			objEnum_Validate(
+        OBJENUM_DATA       *this
     );
 #endif
 
@@ -152,5 +149,5 @@ struct nodeList_data_s	{
 }
 #endif
 
-#endif	/* NODELIST_INTERNAL_H */
+#endif	/* OBJENUM_INTERNAL_H */
 

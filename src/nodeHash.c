@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <nodeHash_internal.h>
 #include        <ascii.h>
-#include        <nodeEnum_internal.h>
+#include        <NodeEnum_internal.h>
 #include        <trace.h>
 
 
@@ -100,7 +100,7 @@ extern "C" {
         NODE_DATA       *pNode = pRecord->node.pKey;
         
         if (pNode && pEnum) {
-            eRc = nodeEnum_Append(pEnum, pNode);
+            eRc = NodeEnum_AppendObj(pEnum, pNode);
         }
         
         return eRc;
@@ -1003,7 +1003,7 @@ extern "C" {
         }
 #endif
         
-        pEnum = nodeEnum_New();
+        pEnum = NodeEnum_New();
         if (pEnum) {
             eRc =   blocks_ForEach(
                                    (BLOCKS_DATA *)this,

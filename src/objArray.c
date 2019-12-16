@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include    <objArray_internal.h>
-#include    <objEnum_internal.h>
+#include    <ObjEnum_internal.h>
 
 
 
@@ -696,12 +696,12 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pEnum = objEnum_New();
+            pEnum = ObjEnum_New();
             if (pEnum) {
                 for (i=0; i<array_getSize(this->pArray); ++i) {
                     ppObj = array_Ptr(this->pArray, (i + 1));
                     if (*ppObj) {
-                        eRc = objEnum_Append(pEnum, *ppObj);
+                        eRc = ObjEnum_AppendObj(pEnum, *ppObj);
                     }
                 }
                 eRc = objArray_SortAscending(pEnum->pArray, NULL);

@@ -53,7 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <objEnum.h>
+#include        <ObjEnum.h>
 
 
 #ifndef         OBJARRAY_H

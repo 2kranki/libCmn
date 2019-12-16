@@ -74,7 +74,7 @@
 #include        <blocks.h>
 #include        <node.h>
 #include        <nodeArray.h>
-#include        <nodeEnum.h>
+#include        <NodeEnum.h>
 
 
 #ifndef         NODEHASH_H

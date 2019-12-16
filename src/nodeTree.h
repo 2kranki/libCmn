@@ -552,13 +552,13 @@ extern "C" {
     
     
     /*!
-     Visit the root (or current node) then visit each child recursively.
-     This is also known as a depth-first traversal.
-     @param     this     NODETREE_DATA object pointer
+     Visit every node on each level of the tree level by level.
+     This is also known as a breadth-first traversal.
+     @param     this     object pointer
      @param     pVisitor Function pointer to the routine called as each
                         node is visited
-     @return    LastError (If successful, LastError == ERESULT_SUCCESS,
-                otherwise LastError == ERESULT_* error code).
+     @return    If success, ERESULT_SUCCESS. Otherwise an ERESULT_*
+                error code.
      */
     ERESULT         nodeTree_VisitBreadthFirst(
         NODETREE_DATA	*this,
@@ -574,7 +574,7 @@ extern "C" {
     
     /*!
      Visit each node in post order which conforms to "Polish Notation".
-     @param     this     NODETREE_DATA object pointer
+     @param     this     object pointer
      @param     pVisitor Function pointer to the routine called as each
                 node is visited
      @return    LastError (If successful, LastError == ERESULT_SUCCESS,
@@ -595,7 +595,7 @@ extern "C" {
     /*!
      Visit the root (or current node) then visit each child recursively.
      This is also known as a depth-first traversal.
-     @param     this     NODETREE_DATA object pointer
+     @param     this     object pointer
      @param     pVisitor Function pointer to the routine called as each
                         node is visited
      @return    LastError (If successful, LastError == ERESULT_SUCCESS,

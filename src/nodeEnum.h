@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODEENUM Console Transmit Task (nodeEnum) Header
+//          NODEENUM Console Transmit Task (NodeEnum) Header
 //****************************************************************
 /*
  * Program
- *			Separate nodeEnum (nodeEnum)
+ *			Separate NodeEnum (NodeEnum)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate nodeEnum to run things without complications
- *          of interfering with the main nodeEnum. A nodeEnum may be 
- *          called a nodeEnum on other O/S's.
+ *          a separate NodeEnum to run things without complications
+ *          of interfering with the main NodeEnum. A NodeEnum may be 
+ *          called a NodeEnum on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	11/23/2018 Generated
+ *	12/16/2019 Generated
  */
 
 
@@ -54,13 +54,19 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <node.h>
+#include        <ObjEnum.h>
 
 
 #ifndef         NODEENUM_H
 #define         NODEENUM_H
 
 
+//#define   NODEENUM_JSON_SUPPORT 1
 //#define   NODEENUM_SINGLETON    1
+
+
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -72,21 +78,20 @@ extern "C" {
     //****************************************************************
 
 
-    // NODEENUM_DATA is defined in node.h
 
-    typedef struct nodeEnum_vtbl_s	{
+    typedef struct NodeEnum_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in nodeEnum_object.c.
+        // method names to the vtbl definition in NodeEnum_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(NODEENUM_DATA *);
     } NODEENUM_VTBL;
 
-    typedef struct nodeEnum_class_vtbl_s	{
+    typedef struct NodeEnum_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in nodeEnum_object.c.
+        // method names to the vtbl definition in NodeEnum_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(NODEENUM_DATA *);
@@ -105,11 +110,11 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  NODEENUM_SINGLETON
-    NODEENUM_DATA *     nodeEnum_Shared(
+    NODEENUM_DATA * NodeEnum_Shared (
         void
     );
 
-    bool            nodeEnum_SharedReset(
+    bool            NodeEnum_SharedReset (
         void
     );
 #endif
@@ -119,19 +124,19 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to nodeEnum object if successful, otherwise OBJ_NIL.
+     @return    pointer to NodeEnum object if successful, otherwise OBJ_NIL.
      */
-    NODEENUM_DATA * nodeEnum_Alloc(
+    NODEENUM_DATA * NodeEnum_Alloc (
         void
     );
     
     
-    OBJ_ID          nodeEnum_Class(
+    OBJ_ID          NodeEnum_Class (
         void
     );
     
     
-    NODEENUM_DATA * nodeEnum_New(
+    NODEENUM_DATA * NodeEnum_New (
         void
     );
     
@@ -141,20 +146,58 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        nodeEnum_getSize(
+    OBJENUM_DATA *  NodeEnum_getObjEnum (
+        NODEENUM_DATA   *this
+    );
+
+
+    uint32_t        NodeEnum_getSize(
         NODEENUM_DATA   *this
     );
     
     
 
-
-    
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    NODEENUM_DATA *   nodeEnum_Init(
-        NODEENUM_DATA     *this
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = NodeEnum_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another NODEENUM object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         NodeEnum_Assign (
+        NODEENUM_DATA   *this,
+        NODEENUM_DATA   *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        NodeEnum      *pCopy = NodeEnum_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a NODEENUM object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    NODEENUM_DATA * NodeEnum_Copy (
+        NODEENUM_DATA   *this
+    );
+
+   
+    NODEENUM_DATA * NodeEnum_Init (
+        NODEENUM_DATA   *this
     );
 
 
@@ -169,7 +212,7 @@ extern "C" {
      @return    If successful ERESULT_SUCCESS and data returned in ppVoid,
      otherwise an ERESULT_* error.
      */
-    ERESULT         nodeEnum_LookAhead(
+    ERESULT         NodeEnum_LookAhead(
         NODEENUM_DATA   *this,
         uint32_t        offset,
         OBJ_ID          *ppObj
@@ -190,7 +233,7 @@ extern "C" {
      with the number of returned elements in pNumReturned, otherwise
      an ERESULT_* error and 0 in pNumReturned.
      */
-    ERESULT         nodeEnum_Next(
+    ERESULT         NodeEnum_Next(
         NODEENUM_DATA   *this,
         uint32_t        arraySize,
         OBJ_ID          *ppObjArray,
@@ -203,7 +246,7 @@ extern "C" {
      @param     this    OBJENUM object pointer
      @return    The number of items left to be enumerated
      */
-    uint32_t        nodeEnum_Remaining(
+    uint32_t        NodeEnum_Remaining(
         NODEENUM_DATA   *this
     );
     
@@ -213,7 +256,7 @@ extern "C" {
      @param     this    OBJENUM object pointer
      @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
      */
-    ERESULT         nodeEnum_Reset(
+    ERESULT         NodeEnum_Reset(
         NODEENUM_DATA   *this
     );
     
@@ -225,7 +268,7 @@ extern "C" {
      @param     numSkip number of elements to skip
      @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
      */
-    ERESULT         nodeEnum_Skip(
+    ERESULT         NodeEnum_Skip(
         NODEENUM_DATA   *this,
         uint32_t        numSkip
     );
@@ -235,15 +278,15 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = nodeEnum_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = NodeEnum_ToDebugString(this,4);
      @endcode 
-     @param     this    NODEENUM object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     nodeEnum_ToDebugString(
+    ASTR_DATA *    NodeEnum_ToDebugString (
         NODEENUM_DATA   *this,
         int             indent
     );

@@ -1,22 +1,23 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          OBJENUM Console Transmit Task (ObjEnum) Header
+//          OBJENUM Console Transmit Task (objEnum) Header
 //****************************************************************
 /*
  * Program
- *			Separate ObjEnum (ObjEnum)
+ *			Separate objEnum (objEnum)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate ObjEnum to run things without complications
- *          of interfering with the main ObjEnum. A ObjEnum may be 
- *          called a ObjEnum on other O/S's.
+ *          a separate objEnum to run things without complications
+ *          of interfering with the main objEnum. A objEnum may be 
+ *          called a objEnum on other O/S's.
  *
  * Remarks
- *	1.      None
+ *    1.    Objects, Enum and objEnum, must be kept synchronized
+ *          in their interfaces.
  *
  * History
- *	12/16/2019 Generated
+ *	10/15/2017 Generated
  */
 
 
@@ -59,12 +60,6 @@
 #define         OBJENUM_H
 
 
-//#define   OBJENUM_JSON_SUPPORT 1
-//#define   OBJENUM_SINGLETON    1
-
-
-
-
 
 #ifdef	__cplusplus
 extern "C" {
@@ -76,27 +71,20 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct ObjEnum_data_s	OBJENUM_DATA;            // Inherits from OBJ
-    typedef struct ObjEnum_class_data_s OBJENUM_CLASS_DATA;   // Inherits from OBJ
+    typedef struct objEnum_data_s	OBJENUM_DATA;    // Inherits from OBJ.
 
-    typedef struct ObjEnum_vtbl_s	{
+    typedef struct objEnum_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in ObjEnum_object.c.
+        // method names to the vtbl definition in objEnum_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(OBJENUM_DATA *);
+        ERESULT         (*pNext)(OBJENUM_DATA *, uint32_t, void **, uint32_t *);
+        ERESULT         (*pSkip)(OBJENUM_DATA *, uint32_t);
+        ERESULT         (*pReset)(OBJENUM_DATA *);
+        ERESULT         (*pLookAhead)(OBJENUM_DATA *, uint32_t, OBJ_ID *);
+        uint32_t        (*pRemaining)(OBJENUM_DATA *);
     } OBJENUM_VTBL;
-
-    typedef struct ObjEnum_class_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in ObjEnum_object.c.
-        // Properties:
-        // Methods:
-        //bool        (*pIsEnabled)(OBJENUM_DATA *);
-    } OBJENUM_CLASS_VTBL;
-
 
 
 
@@ -109,34 +97,18 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  OBJENUM_SINGLETON
-    OBJENUM_DATA *     ObjEnum_Shared (
-        void
-    );
-
-    bool            ObjEnum_SharedReset (
-        void
-    );
-#endif
-
-
-   /*!
+    /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to ObjEnum object if successful, otherwise OBJ_NIL.
+     @return    pointer to objEnum object if successful, otherwise OBJ_NIL.
      */
-    OBJENUM_DATA *     ObjEnum_Alloc (
+    OBJENUM_DATA *     objEnum_Alloc(
         void
     );
     
     
-    OBJ_ID          ObjEnum_Class (
-        void
-    );
-    
-    
-    OBJENUM_DATA *     ObjEnum_New (
+    OBJENUM_DATA *     objEnum_New(
         void
     );
     
@@ -146,11 +118,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        ObjEnum_getSize (
-        OBJENUM_DATA       *this
+    ERESULT         objEnum_getLastError(
+        OBJENUM_DATA    *this
     );
 
 
+    uint32_t        objEnum_getSize(
+        OBJENUM_DATA    *this
+    );
+    
+    
 
     
     //---------------------------------------------------------------
@@ -163,36 +140,36 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code
-        ERESULT eRc = ObjEnum_Assign(this,pOther);
+     ERESULT eRc = objEnum__Assign(this,pOther);
      @endcode
-     @param     this    object pointer
+     @param     this    OBJENUM object pointer
      @param     pOther  a pointer to another OBJENUM object
      @return    If successful, ERESULT_SUCCESS otherwise an
-                ERESULT_* error
+     ERESULT_* error
      */
-    ERESULT         ObjEnum_Assign (
+    ERESULT         objEnum_Assign(
         OBJENUM_DATA    *this,
         OBJENUM_DATA    *pOther
     );
-
-   
+    
+    
     /*!
      Copy the current object creating a new object.
      Example:
      @code
-        ObjEnum      *pCopy = ObjEnum_Copy(this);
+     objEnum      *pCopy = objEnum_Copy(this);
      @endcode
-     @param     this    object pointer
-     @return    If successful, a OBJENUM object which must be
-                released, otherwise OBJ_NIL.
-     @warning   Remember to release the returned object.
+     @param     this    OBJENUM object pointer
+     @return    If successful, a OBJENUM object which must be released,
+     otherwise OBJ_NIL.
+     @warning  Remember to release the returned the OBJENUM object.
      */
-    OBJENUM_DATA *   ObjEnum_Copy (
+    OBJENUM_DATA *  objEnum_Copy(
         OBJENUM_DATA    *this
     );
-
-
-    OBJENUM_DATA *   ObjEnum_Init (
+    
+    
+    OBJENUM_DATA *  objEnum_Init(
         OBJENUM_DATA    *this
     );
 
@@ -202,13 +179,13 @@ extern "C" {
      of 0 returns the current item. Do not alter which item is the current one.
      If the offset is beyond the range of items, then ERESULT_OUT_OF_RANGE is
      returned.
-     @param     this    object pointer
+     @param     this    OBJENUM object pointer
      @param     offset  offset of object to return (relative to zero)
      @param     ppObj   where the object address should be returned
      @return    If successful ERESULT_SUCCESS and data returned in ppVoid,
                  otherwise an ERESULT_* error.
      */
-    ERESULT         ObjEnum_LookAhead (
+    ERESULT         objEnum_LookAhead(
         OBJENUM_DATA    *this,
         uint32_t        offset,
         OBJ_ID          *ppObj
@@ -219,17 +196,17 @@ extern "C" {
      Return the next arraySize of elements if available in ppVoidArray and set
      NumReturned to the number of elements returned. If the enumerator has gone
      past the end, zero will be returned in NumReturned.
-     @param     this        object pointer
-     @param     arraySize   size of ppVoidArray
-     @param     ppObjArray  an array of void pointers which are filled in by this
-                            this method if any elements are left to enumerate.
+     @param     this    OBJENUM object pointer
+     @param     arraySize size of ppVoidArray
+     @param     ppObjArray      an array of void pointers which are filled in by this
+                                this method if any elements are left to enumerate.
      @param     pNumReturned    where the number of returned objected pointers is
                                 to be put (optional);
      @return    If successful ERESULT_SUCCESS and data returned in ppObjArray
                  with the number of returned elements in pNumReturned, otherwise
                  an ERESULT_* error and 0 in pNumReturned.
      */
-    ERESULT         ObjEnum_Next (
+    ERESULT         objEnum_Next(
         OBJENUM_DATA    *this,
         uint32_t        arraySize,
         OBJ_ID          *ppObjArray,
@@ -239,11 +216,11 @@ extern "C" {
     
     /*!
      Return the remaining number of items left to be enumerated.
-     @param     this    object pointer
+     @param     this    OBJENUM object pointer
      @return    The number of items left to be enumerated
      */
-    uint32_t        ObjEnum_Remaining (
-        OBJENUM_DATA    *this
+    uint32_t        objEnum_Remaining(
+        OBJENUM_DATA       *this
     );
     
     
@@ -252,8 +229,8 @@ extern "C" {
      @param     this    OBJENUM object pointer
      @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
      */
-    ERESULT         ObjEnum_Reset (
-        OBJENUM_DATA    *this
+    ERESULT         objEnum_Reset(
+        OBJENUM_DATA       *this
     );
     
     
@@ -264,7 +241,7 @@ extern "C" {
      @param     numSkip number of elements to skip
      @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
      */
-    ERESULT         ObjEnum_Skip (
+    ERESULT         objEnum_Skip(
         OBJENUM_DATA    *this,
         uint32_t        numSkip
     );
@@ -274,16 +251,16 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = ObjEnum_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = objEnum_ToDebugString(this,4);
      @endcode 
-     @param     this    object pointer
+     @param     this    OBJENUM object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    ObjEnum_ToDebugString (
-        OBJENUM_DATA    *this,
+    ASTR_DATA *    objEnum_ToDebugString(
+        OBJENUM_DATA     *this,
         int             indent
     );
     

@@ -52,7 +52,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <objArray.h>
-#include        <objEnum.h>
+#include        <ObjEnum.h>
 
 
 #ifndef         OBJLIST_H

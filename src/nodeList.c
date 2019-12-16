@@ -68,7 +68,7 @@ extern "C" {
     {
         ERESULT         eRc;
         
-        eRc = nodeEnum_Append(pEnum, pNode);
+        eRc = NodeEnum_AppendObj(pEnum, pNode);
         
         return eRc;
     }

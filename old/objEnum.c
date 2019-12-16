@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   ObjEnum.c
- *	Generated 12/16/2019 11:38:07
+ * File:   objEnum.c
+ *	Generated 10/15/2017 09:38:35
  *
  */
 
@@ -41,11 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <ObjEnum_internal.h>
-#include        <trace.h>
-
-
-
+#include <objEnum_internal.h>
 
 
 
@@ -64,7 +60,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            ObjEnum_task_body (
+    void            objEnum_task_body(
         void            *pData
     )
     {
@@ -84,16 +80,15 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    OBJENUM_DATA *     ObjEnum_Alloc (
-        void
+    OBJENUM_DATA *     objEnum_Alloc(
     )
     {
-        OBJENUM_DATA       *this;
+        OBJENUM_DATA    *this;
         uint32_t        cbSize = sizeof(OBJENUM_DATA);
         
         // Do initialization.
         
-         this = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -101,15 +96,14 @@ extern "C" {
 
 
 
-    OBJENUM_DATA *     ObjEnum_New (
-        void
+    OBJENUM_DATA *     objEnum_New(
     )
     {
         OBJENUM_DATA       *this;
         
-        this = ObjEnum_Alloc( );
+        this = objEnum_Alloc( );
         if (this) {
-            this = ObjEnum_Init(this);
+            this = objEnum_Init(this);
         } 
         return this;
     }
@@ -126,7 +120,7 @@ extern "C" {
     //                          A r r a y
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * ObjEnum_getArray(
+    OBJARRAY_DATA * objEnum_getArray(
         OBJENUM_DATA    *this
     )
     {
@@ -134,24 +128,25 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !ObjEnum_Validate(this) ) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
+        objEnum_setLastError(this, ERESULT_SUCCESS);
         return this->pArray;
     }
     
     
-    bool            ObjEnum_setArray(
+    bool            objEnum_setArray(
         OBJENUM_DATA    *this,
         OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !ObjEnum_Validate(this) ) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -163,22 +158,111 @@ extern "C" {
         }
         this->pArray = pValue;
         
+        objEnum_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
-        
-        
-        
+    
+    
+    
     //---------------------------------------------------------------
-    //                              S i z e
+    //                      L a s t  E r r o r
     //---------------------------------------------------------------
     
-    uint32_t        ObjEnum_getSize (
+    ERESULT         objEnum_getLastError(
+        OBJENUM_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !objEnum_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        //this->eRc = ERESULT_SUCCESS;
+        return this->eRc;
+    }
+
+
+    bool            objEnum_setLastError(
+        OBJENUM_DATA     *this,
+        ERESULT         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objEnum_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        this->eRc = value;
+        
+        return true;
+    }
+    
+    
+
+    //---------------------------------------------------------------
+    //                         P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        objEnum_getPriority(
+        OBJENUM_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !objEnum_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        objEnum_setLastError(this, ERESULT_SUCCESS);
+        //return this->priority;
+        return 0;
+    }
+
+
+    bool            objEnum_setPriority(
+        OBJENUM_DATA     *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !objEnum_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        //this->priority = value;
+
+        objEnum_setLastError(this, ERESULT_SUCCESS);
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        objEnum_getSize(
         OBJENUM_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!ObjEnum_Validate(this)) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -188,30 +272,6 @@ extern "C" {
     }
 
 
-
-    //---------------------------------------------------------------
-    //                          S u p e r
-    //---------------------------------------------------------------
-    
-    OBJ_IUNKNOWN *  ObjEnum_getSuperVtbl (
-        OBJENUM_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!ObjEnum_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        
-        return this->pSuperVtbl;
-    }
-    
-  
 
     
 
@@ -224,7 +284,7 @@ extern "C" {
     //                          A p p e n d
     //---------------------------------------------------------------
     
-    ERESULT         ObjEnum_AppendObj(
+    ERESULT         objEnum_Append(
         OBJENUM_DATA    *this,
         OBJ_ID          pObject
     )
@@ -234,31 +294,30 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ObjEnum_Validate(this) ) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
         if (OBJ_NIL == pObject) {
             DEBUG_BREAK();
+            objEnum_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
+        }
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            objEnum_setLastError(this, ERESULT_INVALID_PARAMETER);
+            return ERESULT_GENERAL_FAILURE;
         }
 #endif
         
-        if (OBJ_NIL == this->pArray) {
-            this->pArray = objArray_New( );
-            if (OBJ_NIL == this->pArray) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-       }
-        
         eRc = objArray_AppendObj(this->pArray, pObject, NULL);
         
+        objEnum_setLastError(this, eRc);
         return eRc;
     }
-        
-        
-        
+    
+    
+    
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -268,29 +327,28 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code 
-        ERESULT eRc = ObjEnum_Assign(this,pOther);
-     @endcode 
-     @param     this    object pointer
+     @code
+        ERESULT eRc = objEnum__Assign(this,pOther);
+     @endcode
+     @param     this    OBJENUM object pointer
      @param     pOther  a pointer to another OBJENUM object
-     @return    If successful, ERESULT_SUCCESS otherwise an 
+     @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
      */
-    ERESULT         ObjEnum_Assign (
+    ERESULT         objEnum_Assign(
         OBJENUM_DATA	*this,
         OBJENUM_DATA    *pOther
     )
     {
-        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ObjEnum_Validate(this)) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!ObjEnum_Validate(pOther)) {
+        if( !objEnum_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -316,77 +374,17 @@ extern "C" {
 
         // Copy other data from this object to other.
         pOther->current = this->current;
-
+        
         //goto eom;
 
         // Return to caller.
-        eRc = ERESULT_SUCCESS;
+        objEnum_setLastError(this, ERESULT_SUCCESS);
     eom:
-        return eRc;
+        return objEnum_getLastError(this);
     }
     
     
     
-    //---------------------------------------------------------------
-    //                      C o m p a r e
-    //---------------------------------------------------------------
-    
-    /*!
-     Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
-     */
-    ERESULT         ObjEnum_Compare (
-        OBJENUM_DATA     *this,
-        OBJENUM_DATA     *pOther
-    )
-    {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
-#ifdef NDEBUG
-#else
-        if (!ObjEnum_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (!ObjEnum_Validate(pOther)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
-
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
-    }
-    
-   
- 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -394,33 +392,33 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code 
-        ObjEnum      *pCopy = ObjEnum_Copy(this);
-     @endcode 
-     @param     this    object pointer
-     @return    If successful, a OBJENUM object which must be 
-                released, otherwise OBJ_NIL.
-     @warning   Remember to release the returned object.
+     @code
+        objEnum      *pCopy = objEnum_Copy(this);
+     @endcode
+     @param     this    OBJENUM object pointer
+     @return    If successful, a OBJENUM object which must be released,
+                otherwise OBJ_NIL.
+     @warning  Remember to release the returned the OBJENUM object.
      */
-    OBJENUM_DATA *     ObjEnum_Copy (
-        OBJENUM_DATA       *this
+    OBJENUM_DATA *  objEnum_Copy(
+        OBJENUM_DATA    *this
     )
     {
-        OBJENUM_DATA       *pOther = OBJ_NIL;
+        OBJENUM_DATA    *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ObjEnum_Validate(this)) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = ObjEnum_New( );
+        pOther = objEnum_New( );
         if (pOther) {
-            eRc = ObjEnum_Assign(this, pOther);
+            eRc = objEnum_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -429,6 +427,7 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
+        objEnum_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -438,11 +437,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            ObjEnum_Dealloc (
+    void            objEnum_Dealloc(
         OBJ_ID          objId
     )
     {
-        OBJENUM_DATA   *this = objId;
+        OBJENUM_DATA    *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -450,18 +449,20 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!ObjEnum_Validate(this)) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        ObjEnum_setArray(this, OBJ_NIL);
+        if (this->pArray) {
+            obj_Release(this->pArray);
+            this->pArray = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
-        // pSuperVtbl is saved immediately after the super
-        // object which we inherit from is initialized.
-        this->pSuperVtbl->pDealloc(this);
+        //other_Dealloc(this);          // Needed for inheritance
+        obj_Dealloc(this);
         this = OBJ_NIL;
 
         // Return to caller.
@@ -473,24 +474,21 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    /*!
-     Disable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         ObjEnum_Disable (
-        OBJENUM_DATA		*this
+    ERESULT         objEnum_Disable(
+        OBJENUM_DATA	*this
     )
     {
-        //ERESULT         eRc;
 
         // Do initialization.
+        if (NULL == this) {
+            objEnum_setLastError(this, ERESULT_INVALID_OBJECT);
+            return ERESULT_INVALID_OBJECT;
+        }
     #ifdef NDEBUG
     #else
-        if (!ObjEnum_Validate(this)) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return objEnum_getLastError(this);
         }
     #endif
 
@@ -499,6 +497,7 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
+        objEnum_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -508,22 +507,15 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    /*!
-     Enable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         ObjEnum_Enable (
-        OBJENUM_DATA		*this
+    ERESULT         objEnum_Enable(
+        OBJENUM_DATA	*this
     )
     {
-        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!ObjEnum_Validate(this)) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -534,6 +526,7 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
+        objEnum_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -543,12 +536,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    OBJENUM_DATA *   ObjEnum_Init (
-        OBJENUM_DATA       *this
+    OBJENUM_DATA *   objEnum_Init(
+        OBJENUM_DATA     *this
     )
     {
         uint32_t        cbSize = sizeof(OBJENUM_DATA);
-        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -572,19 +564,25 @@ extern "C" {
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_OBJENUM);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&ObjEnum_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&objEnum_Vtbl);
         
+        objEnum_setLastError(this, ERESULT_GENERAL_FAILURE);
+        this->pArray = objArray_New( );
+
     #ifdef NDEBUG
     #else
-        if (!ObjEnum_Validate(this)) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "ObjEnum::sizeof(OBJENUM_DATA) = %lu\n", sizeof(OBJENUM_DATA));
+        //fprintf(stderr, "offsetof(eRc) = %lu\n", offsetof(OBJENUM_DATA,eRc));
+        //fprintf(stderr, "sizeof(OBJENUM_DATA) = %lu\n", sizeof(OBJENUM_DATA));
 #endif
+        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(OBJENUM_DATA));
     #endif
 
@@ -597,26 +595,27 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         ObjEnum_IsEnabled (
-        OBJENUM_DATA		*this
+    ERESULT         objEnum_IsEnabled(
+        OBJENUM_DATA	*this
     )
     {
-        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ObjEnum_Validate(this)) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
+            objEnum_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
+        objEnum_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -626,7 +625,7 @@ extern "C" {
     //                      L o o k  A h e a d
     //---------------------------------------------------------------
     
-    ERESULT         ObjEnum_LookAhead(
+    ERESULT         objEnum_LookAhead(
         OBJENUM_DATA    *this,
         uint32_t        offset,
         void            **ppObject
@@ -637,18 +636,17 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ObjEnum_Validate(this) ) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             //objEnum_setLastError(this, ERESULT_INVALID_OBJECT);
             return ERESULT_INVALID_OBJECT;
         }
         if (NULL == ppObject) {
             DEBUG_BREAK();
+            objEnum_setLastError(this, ERESULT_INVALID_PARAMETER);
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        if (OBJ_NIL == this->pArray)
-            return ERESULT_SUCCESS;
         
         if (obj_Flag(this, OBJENUM_SORTED))
             ;
@@ -660,11 +658,13 @@ extern "C" {
         if ((this->current + offset) < objArray_getSize(this->pArray)) {
         }
         else {
+            objEnum_setLastError(this, ERESULT_OUT_OF_RANGE);
             return ERESULT_OUT_OF_RANGE;
         }
         
         *ppObject = objArray_Get(this->pArray, (this->current + offset + 1));
         
+        objEnum_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -674,7 +674,7 @@ extern "C" {
     //                          N e x t
     //---------------------------------------------------------------
     
-    ERESULT         ObjEnum_Next(
+    ERESULT         objEnum_Next(
         OBJENUM_DATA    *this,
         uint32_t        cElems,
         OBJ_ID          *ppArray,
@@ -688,7 +688,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ObjEnum_Validate(this) ) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -697,9 +697,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        if (OBJ_NIL == this->pArray)
-            return ERESULT_SUCCESS;
-
+        
         if (obj_Flag(this, OBJENUM_SORTED))
             ;
         else {
@@ -738,53 +736,32 @@ extern "C" {
         if (pReturnAmt) {
             *pReturnAmt = count;
         }
+        objEnum_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
-        
-        
-        
+    
+    
+    
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    /*!
-     Return information about this object. This method can translate
-     methods to strings and vice versa, return the address of the
-     object information structure.
-     Example:
-     @code
-        // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = ObjEnum_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
-     @endcode 
-     @param     objId   object pointer
-     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
-     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
-                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
-                        character string which represents the method name without
-                        the object name, "ObjEnum", prefix,
-                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
-                        address of the method to be found.
-     @return    If unsuccessful, NULL. Otherwise, for:
-                OBJ_QUERYINFO_TYPE_INFO: info pointer,
-                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
-                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
-     */
-    void *          ObjEnum_QueryInfo (
+    void *          objEnum_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        OBJENUM_DATA     *this = objId;
+        OBJENUM_DATA    *this = objId;
         const
         char            *pStr = pData;
-        
+
         if (OBJ_NIL == this) {
             return NULL;
         }
 #ifdef NDEBUG
 #else
-        if (!ObjEnum_Validate(this)) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -792,33 +769,11 @@ extern "C" {
         
         switch (type) {
                 
-        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(OBJENUM_DATA);
-            break;
-            
-            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)ObjEnum_Class();
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(OBJENUM_DATA);
                 break;
                 
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -827,25 +782,23 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return ObjEnum_Disable;
+                            return objEnum_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return ObjEnum_Enable;
+                            return objEnum_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return ObjEnum_ToDebugString;
+                            return objEnum_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return ObjEnum_ToJson;
+                            return objEnum_ToJSON;
                         }
-#endif
                         break;
                         
                     default:
@@ -853,20 +806,11 @@ extern "C" {
                 }
                 break;
                 
-            case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == ObjEnum_ToDebugString)
-                    return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
-                if (pData == ObjEnum_ToJson)
-                    return "ToJson";
-#endif
-                break;
-                
             default:
                 break;
         }
         
-        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+        return obj_QueryInfo(objId, type, pData);
     }
     
     
@@ -875,7 +819,7 @@ extern "C" {
     //                      R e m a i n i n g
     //---------------------------------------------------------------
     
-    uint32_t        ObjEnum_Remaining(
+    uint32_t        objEnum_Remaining(
         OBJENUM_DATA    *this
     )
     {
@@ -883,17 +827,16 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ObjEnum_Validate(this) ) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        if (OBJ_NIL == this->pArray)
-            return 0;
-
+        
         count = objArray_getSize(this->pArray) - this->current;
         
         // Return to caller.
+        objEnum_setLastError(this, ERESULT_SUCCESS);
         return count;
     }
     
@@ -903,7 +846,7 @@ extern "C" {
     //                          R e s e t
     //---------------------------------------------------------------
     
-    ERESULT         ObjEnum_Reset(
+    ERESULT         objEnum_Reset(
         OBJENUM_DATA    *this
     )
     {
@@ -911,7 +854,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ObjEnum_Validate(this) ) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -920,16 +863,17 @@ extern "C" {
         this->current = 0;
         
         // Return to caller.
+        objEnum_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
-        
-        
-        
+    
+    
+    
     //---------------------------------------------------------------
     //                          S k i p
     //---------------------------------------------------------------
     
-    ERESULT         ObjEnum_Skip(
+    ERESULT         objEnum_Skip(
         OBJENUM_DATA    *this,
         uint32_t        cElems
     )
@@ -938,7 +882,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ObjEnum_Validate(this) ) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -947,6 +891,7 @@ extern "C" {
         this->current += cElems;
         
         // Return to caller.
+        objEnum_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
     
@@ -956,70 +901,29 @@ extern "C" {
     //                          S o r t
     //---------------------------------------------------------------
     
-    ERESULT         ObjEnum_SortAscending(
+    ERESULT         objEnum_SortAscending(
         OBJENUM_DATA    *this
     )
     {
-        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !ObjEnum_Validate(this) ) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-#endif
         if (NULL == this->pArray) {
-            return ERESULT_SUCCESS;
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
         }
-
-        eRc = objArray_SortAscending(this->pArray, NULL);
+#endif
+        
+        this->eRc = objArray_SortAscending(this->pArray, NULL);
         obj_FlagOn(this, OBJENUM_SORTED);
         
-        return eRc;
+        return this->eRc;
     }
-        
-        
-        
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-#ifdef  OBJENUM_JSON_SUPPORT
-     ASTR_DATA *     ObjEnum_ToJson (
-        OBJENUM_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!ObjEnum_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-#endif
     
     
     
@@ -1030,54 +934,47 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code 
-        ASTR_DATA      *pDesc = ObjEnum_ToDebugString(this,4);
-     @endcode 
-     @param     this    object pointer
-     @param     indent  number of characters to indent every line of output, can be 0
-     @return    If successful, an AStr object which must be released containing the
+     @code:
+        ASTR_DATA      *pDesc = objEnum_ToDebugString(this,4);
+     @endcode:
+     @param:    this    OBJENUM object pointer
+     @param:    indent  number of characters to indent every line of output, can be 0
+     @return:   If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning  Remember to release the returned AStr object.
+     @warning: Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ObjEnum_ToDebugString (
+    ASTR_DATA *     objEnum_ToDebugString(
         OBJENUM_DATA      *this,
         int             indent
     )
     {
-        ERESULT         eRc;
-        //int             j;
+        char            str[256];
+        int             j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
-        const
-        OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ObjEnum_Validate(this)) {
+        if( !objEnum_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = obj_getInfo(this);
         pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        
         if (indent) {
-            AStr_AppendCharRepeatA(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        eRc = AStr_AppendPrint(
-                    pStr,
-                    "{%p(%s) size=%d retain=%d\n",
-                    this,
-                    pInfo->pClassName,
-                    ObjEnum_getSize(this),
-                    obj_getRetainCount(this)
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{%p(objEnum) size=%d\n",
+                     this,
+                     objEnum_getSize(this)
             );
+        AStr_AppendA(pStr, str);
 
         if (this->pArray) {
             if (((OBJ_DATA *)(this->pArray))->pVtbl->pToDebugString) {
@@ -1091,14 +988,47 @@ extern "C" {
         }
         
         if (indent) {
-            AStr_AppendCharRepeatA(pStr, indent, ' ');
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    " %p(%s)}\n", 
-                    this, 
-                    pInfo->pClassName
-                );
+        j = snprintf(str, sizeof(str), " %p(objEnum)}\n", this);
+        AStr_AppendA(pStr, str);
+        
+        objEnum_setLastError(this, ERESULT_SUCCESS);
+        return pStr;
+    }
+    
+    
+    
+    ASTR_DATA *     objEnum_ToJSON(
+        OBJENUM_DATA      *this
+    )
+    {
+        char            str[256];
+        int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if( !objEnum_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        str[0] = '\0';
+        j = snprintf(
+                     str,
+                     sizeof(str),
+                     "{\"objectType\":\"%s\"",
+                     pInfo->pClassName
+                     );
+        AStr_AppendA(pStr, str);
+        
+        AStr_AppendA(pStr, "}\n");
         
         return pStr;
     }
@@ -1111,15 +1041,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            ObjEnum_Validate (
+    bool            objEnum_Validate(
         OBJENUM_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_OBJENUM))
+       if( this ) {
+            if ( obj_IsKindOf(this,OBJ_IDENT_OBJENUM) )
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1135,11 +1065,13 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(OBJENUM_DATA))) {
+        if( !(obj_getSize(this) >= sizeof(OBJENUM_DATA)) ) {
+            this->eRc = ERESULT_INVALID_OBJECT;
             return false;
         }
 
         // Return to caller.
+        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

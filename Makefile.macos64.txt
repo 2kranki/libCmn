@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/15/2019 21:06:01.000)
+# (12/16/2019 18:57:18.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -104,6 +104,16 @@ $(OBJDIR)/FileRef.o: $(SRCDIR)/FileRef.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $
 OBJS += $(OBJDIR)/FileRef_object.o
 
 $(OBJDIR)/FileRef_object.o: $(SRCDIR)/FileRef_object.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NodeEnum.o
+
+$(OBJDIR)/NodeEnum.o: $(SRCDIR)/NodeEnum.c $(SRCDIR)/NodeEnum.h $(SRCDIR)/NodeEnum_internal.h $(SRCDIR)/node.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NodeEnum_object.o
+
+$(OBJDIR)/NodeEnum_object.o: $(SRCDIR)/NodeEnum_object.c $(SRCDIR)/NodeEnum.h $(SRCDIR)/NodeEnum_internal.h $(SRCDIR)/node.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/ObjList.o
@@ -926,16 +936,6 @@ OBJS += $(OBJDIR)/nodeBTP_object.o
 $(OBJDIR)/nodeBTP_object.o: $(SRCDIR)/nodeBTP_object.c $(SRCDIR)/node.h $(SRCDIR)/nodeBTP.h $(SRCDIR)/nodeBTP_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/nodeEnum.o
-
-$(OBJDIR)/nodeEnum.o: $(SRCDIR)/nodeEnum.c $(SRCDIR)/node.h $(SRCDIR)/nodeEnum.h $(SRCDIR)/nodeEnum_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/nodeEnum_object.o
-
-$(OBJDIR)/nodeEnum_object.o: $(SRCDIR)/nodeEnum_object.c $(SRCDIR)/node.h $(SRCDIR)/nodeEnum.h $(SRCDIR)/nodeEnum_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/nodeHash.o
 
 $(OBJDIR)/nodeHash.o: $(SRCDIR)/nodeHash.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/listdl.h $(SRCDIR)/node.h $(SRCDIR)/nodeHash.h $(SRCDIR)/nodeHash_internal.h 
@@ -1742,6 +1742,12 @@ FileRef_test: $(TEST_SRC)/FileRef_test.c $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += NodeEnum_test
+
+NodeEnum_test: $(TEST_SRC)/NodeEnum_test.c $(SRCDIR)/NodeEnum.h $(SRCDIR)/NodeEnum_internal.h $(SRCDIR)/node.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += ObjList_test
 
 ObjList_test: $(TEST_SRC)/ObjList_test.c $(SRCDIR)/ObjList.h $(SRCDIR)/ObjList_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/listdl.h 
@@ -2189,12 +2195,6 @@ nodeArray_test: $(TEST_SRC)/nodeArray_test.c $(SRCDIR)/nodeArray.h $(SRCDIR)/nod
 TESTS += nodeBTP_test
 
 nodeBTP_test: $(TEST_SRC)/nodeBTP_test.c $(SRCDIR)/nodeBTP.h $(SRCDIR)/nodeBTP_internal.h $(SRCDIR)/node.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += nodeEnum_test
-
-nodeEnum_test: $(TEST_SRC)/nodeEnum_test.c $(SRCDIR)/nodeEnum.h $(SRCDIR)/nodeEnum_internal.h $(SRCDIR)/node.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

@@ -47,7 +47,7 @@
 
 /* Header File Inclusion */
 #include    <dir_internal.h>
-#include    <objEnum_internal.h>
+#include    <ObjEnum_internal.h>
 
 
 
@@ -79,7 +79,7 @@ extern "C" {
         
         pEntry = dirEntry_Copy(pDir);
         if (pEntry) {
-            eRc = objEnum_Append(pEnum, pEntry);
+            eRc = ObjEnum_AppendObj(pEnum, pEntry);
             if (ERESULT_FAILED(eRc)) {
                 return false;
             }
@@ -413,7 +413,7 @@ extern "C" {
         }
 #endif
         
-        pEnum = objEnum_New();
+        pEnum = ObjEnum_New();
         if( OBJ_NIL == pEnum ) {
             return OBJ_NIL;
         }
@@ -425,7 +425,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        eRc = objEnum_SortAscending(pEnum);
+        eRc = ObjEnum_SortAscending(pEnum);
         
         // Return to caller.
         return pEnum;

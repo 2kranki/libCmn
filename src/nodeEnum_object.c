@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'nodeEnum'
-//	Generated 11/23/2018 21:35:43
+//	Class Object Metods and Tables for 'NodeEnum'
+//	Generated 12/16/2019 13:08:24
 
 
 /*
@@ -35,7 +35,7 @@
 
 
 #define			NODEENUM_OBJECT_C	    1
-#include        <nodeEnum_internal.h>
+#include        <NodeEnum_internal.h>
 #ifdef  NODEENUM_SINGLETON
 #include        <psxLock.h>
 #endif
@@ -46,7 +46,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct nodeEnum_class_data_s	{
+struct NodeEnum_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -69,7 +69,7 @@ struct nodeEnum_class_data_s	{
 
 
 static
-void *          nodeEnumClass_QueryInfo(
+void *          NodeEnumClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,31 +78,38 @@ void *          nodeEnumClass_QueryInfo(
 
 static
 const
-OBJ_INFO        nodeEnum_Info;            // Forward Reference
+OBJ_INFO        NodeEnum_Info;            // Forward Reference
 
 
 
 
 static
-bool            nodeEnumClass_IsKindOf(
+bool            NodeEnumClass_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_NODEENUM_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_OBJENUM_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(NodeEnum_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		nodeEnumClass_WhoAmI(
+uint16_t		NodeEnumClass_WhoAmI (
     void
 )
 {
@@ -120,15 +127,15 @@ static
 const
 NODEENUM_CLASS_VTBL    class_Vtbl = {
     {
-        &nodeEnum_Info,
-        nodeEnumClass_IsKindOf,
+        &NodeEnum_Info,
+        NodeEnumClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        nodeEnum_Class,
-        nodeEnumClass_WhoAmI,
-        (P_OBJ_QUERYINFO)nodeEnumClass_QueryInfo,
-        NULL                        // nodeEnumClass_ToDebugString
+        NodeEnum_Class,
+        NodeEnumClass_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeEnumClass_QueryInfo,
+        NULL                        // NodeEnumClass_ToDebugString
     },
 };
 
@@ -138,13 +145,13 @@ NODEENUM_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NODEENUM_CLASS_DATA  nodeEnum_ClassObj = {
+NODEENUM_CLASS_DATA  NodeEnum_ClassObj = {
     {
-        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
-        sizeof(NODEENUM_CLASS_DATA),        // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(NODEENUM_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
     },
 	//0
 };
@@ -156,22 +163,22 @@ NODEENUM_CLASS_DATA  nodeEnum_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  NODEENUM_SINGLETON
-NODEENUM_DATA *     nodeEnum_getSingleton(
+NODEENUM_DATA *     NodeEnum_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(nodeEnum_ClassObj.pSingleton);
+    return (OBJ_ID)(NodeEnum_ClassObj.pSingleton);
 }
 
 
-bool            nodeEnum_setSingleton(
+bool            NodeEnum_setSingleton (
     NODEENUM_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
     bool            fRc;
     
-    pLock = psxLock_New();
+    pLock = psxLock_New( );
     if (OBJ_NIL == pLock) {
         DEBUG_BREAK();
         return false;
@@ -185,10 +192,10 @@ bool            nodeEnum_setSingleton(
     }
     
     obj_Retain(pValue);
-    if (nodeEnum_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(nodeEnum_ClassObj.pSingleton));
+    if (NodeEnum_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(NodeEnum_ClassObj.pSingleton));
     }
-    nodeEnum_ClassObj.pSingleton = pValue;
+    NodeEnum_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -198,17 +205,17 @@ bool            nodeEnum_setSingleton(
 
 
 
-NODEENUM_DATA *     nodeEnum_Shared(
+NODEENUM_DATA *     NodeEnum_Shared (
     void
 )
 {
-    NODEENUM_DATA       *this = (OBJ_ID)(nodeEnum_ClassObj.pSingleton);
+    NODEENUM_DATA       *this = (OBJ_ID)(NodeEnum_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = nodeEnum_New( );
-        nodeEnum_setSingleton(this);
+        this = NodeEnum_New( );
+        NodeEnum_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // nodeEnum_ClassObj.pSingleton = OBJ_NIL;
+        // NodeEnum_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -216,15 +223,15 @@ NODEENUM_DATA *     nodeEnum_Shared(
 
 
 
-void            nodeEnum_SharedReset(
+void            NodeEnum_SharedReset (
     void
 )
 {
-    NODEENUM_DATA       *this = (OBJ_ID)(nodeEnum_ClassObj.pSingleton);
+    NODEENUM_DATA       *this = (OBJ_ID)(NodeEnum_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        nodeEnum_ClassObj.pSingleton = OBJ_NIL;
+        NodeEnum_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -240,7 +247,7 @@ void            nodeEnum_SharedReset(
 //---------------------------------------------------------------
 
 static
-void *          nodeEnumClass_QueryInfo(
+void *          NodeEnumClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -272,7 +279,7 @@ void *          nodeEnumClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&nodeEnum_Info;
+                        return (void *)&NodeEnum_Info;
                     }
                     break;
                     
@@ -290,13 +297,19 @@ void *          nodeEnumClass_QueryInfo(
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return nodeEnum_New;
+                        return NodeEnum_New;
                     }
                     break;
                     
+                case 'P':
+                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
+                        //return NodeEnum_ParseJsonObject;
+                    }
+                    break;
+ 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return nodeEnumClass_WhoAmI;
+                        return NodeEnumClass_WhoAmI;
                     }
                     break;
                     
@@ -316,40 +329,50 @@ void *          nodeEnumClass_QueryInfo(
 
 
 static
-bool            nodeEnum_IsKindOf(
+bool            NodeEnum_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_NODEENUM == classID) {
        return true;
-    }
-    if (OBJ_IDENT_OBJENUM == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(NodeEnum_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            nodeEnum_Dealloc(
+void            NodeEnum_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          nodeEnum_Class(
+OBJ_ID          NodeEnum_Class (
     void
 )
 {
-    return (OBJ_ID)&nodeEnum_ClassObj;
+    return (OBJ_ID)&NodeEnum_ClassObj;
 }
 
 
 static
-uint16_t		nodeEnum_WhoAmI(
+uint16_t		NodeEnum_WhoAmI (
     void
 )
 {
@@ -365,10 +388,10 @@ uint16_t		nodeEnum_WhoAmI(
 //===========================================================
 
 const
-NODEENUM_VTBL     nodeEnum_Vtbl = {
+NODEENUM_VTBL     NodeEnum_Vtbl = {
     {
-        &nodeEnum_Info,
-        nodeEnum_IsKindOf,
+        &NodeEnum_Info,
+        NodeEnum_IsKindOf,
 #ifdef  NODEENUM_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
@@ -376,23 +399,23 @@ NODEENUM_VTBL     nodeEnum_Vtbl = {
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        nodeEnum_Dealloc,
-        nodeEnum_Class,
-        nodeEnum_WhoAmI,
-        (P_OBJ_QUERYINFO)nodeEnum_QueryInfo,
-        (P_OBJ_TOSTRING)nodeEnum_ToDebugString,
-        NULL,			// nodeEnum_Enable,
-        NULL,			// nodeEnum_Disable,
-        NULL,			// (P_OBJ_ASSIGN)nodeEnum_Assign,
-        NULL,			// (P_OBJ_COMPARE)nodeEnum_Compare,
-        NULL, 			// (P_OBJ_PTR)nodeEnum_Copy,
-        NULL, 			// (P_OBJ_PTR)nodeEnum_DeepCopy,
-        NULL 			// (P_OBJ_HASH)nodeEnum_Hash,
+        NodeEnum_Dealloc,
+        NodeEnum_Class,
+        NodeEnum_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeEnum_QueryInfo,
+        (P_OBJ_TOSTRING)NodeEnum_ToDebugString,
+        NULL,			// NodeEnum_Enable,
+        NULL,			// NodeEnum_Disable,
+        NULL,			// (P_OBJ_ASSIGN)NodeEnum_Assign,
+        NULL,			// (P_OBJ_COMPARE)NodeEnum_Compare,
+        NULL, 			// (P_OBJ_PTR)NodeEnum_Copy,
+        NULL, 			// (P_OBJ_PTR)NodeEnum_DeepCopy,
+        NULL 			// (P_OBJ_HASH)NodeEnum_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //nodeEnum_IsEnabled,
+    //NodeEnum_IsEnabled,
  
 };
 
@@ -400,12 +423,12 @@ NODEENUM_VTBL     nodeEnum_Vtbl = {
 
 static
 const
-OBJ_INFO        nodeEnum_Info = {
-    "nodeEnum",
+OBJ_INFO        NodeEnum_Info = {
+    "NodeEnum",
     "Node Emumerator",
-    (OBJ_DATA *)&nodeEnum_ClassObj,
-    (OBJ_DATA *)&objEnum_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeEnum_Vtbl,
+    (OBJ_DATA *)&NodeEnum_ClassObj,
+    (OBJ_DATA *)&ObjEnum_ClassObj,
+    (OBJ_IUNKNOWN *)&NodeEnum_Vtbl,
     sizeof(NODEENUM_DATA)
 };
 

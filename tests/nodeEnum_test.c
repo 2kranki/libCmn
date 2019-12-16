@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 11/23/2018 21:35:43
+ *	Generated 12/16/2019 13:08:24
  */
 
 
@@ -24,12 +25,11 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <nodeEnum_internal.h>
-
+#include    <NodeEnum_internal.h>
 
 
 static
-char    *pStringTable[] = {
+char            *pStringTable[] = {
     "now",
     "before",
     "after",
@@ -39,6 +39,7 @@ char    *pStringTable[] = {
 };
 static
 int             cStringTable = 6;
+
 
 
 
@@ -89,22 +90,28 @@ int             tearDown(
 
 
 
-int             test_nodeEnum_OpenClose(
+int             test_NodeEnum_OpenClose(
     const
     char            *pTestName
 )
 {
-    NODEENUM_DATA	    *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    NODEENUM_DATA	*pObj = OBJ_NIL;
+    bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = nodeEnum_Alloc( );
+    pObj = NodeEnum_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = nodeEnum_Init( pObj );
+    pObj = NodeEnum_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_OBJENUM);
+        TINYTEST_TRUE( (fRc) );
+
         // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -116,23 +123,21 @@ int             test_nodeEnum_OpenClose(
 
 
 
-int         test_nodeEnum_Test01(
+int         test_NodeEnum_Test01(
     const
     char        *pTestName
 )
 {
     NODEENUM_DATA   *pObj = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
     ERESULT         eRc;
     uint32_t        i;
-    uint32_t        j = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = nodeEnum_Alloc( );
+    pObj = NodeEnum_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = nodeEnum_Init( pObj );
+    pObj = NodeEnum_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -140,7 +145,7 @@ int         test_nodeEnum_Test01(
         for(i=0; i<cStringTable; ++i) {
             pNode = node_NewWithUTF8AndClass(0, pStringTable[i], OBJ_NIL);
             if (pNode) {
-                eRc = nodeEnum_Append(pObj, pNode);
+                eRc = NodeEnum_AppendObj(pObj, pNode);
                 TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
                 fprintf(stderr, "\t%2d - %s\n", i, pStringTable[i]);
                 obj_Release(pNode);
@@ -152,7 +157,7 @@ int         test_nodeEnum_Test01(
         i = 0;
         for (;;) {
             char        *pStrA;
-            eRc = nodeEnum_Next(pObj, 1, (OBJ_ID *)&pNode, &i);
+            eRc = NodeEnum_Next(pObj, 1, (OBJ_ID *)&pNode, &i);
             if (ERESULT_FAILED(eRc)) {
                 break;
             }
@@ -177,12 +182,12 @@ int         test_nodeEnum_Test01(
 
 
 
-TINYTEST_START_SUITE(test_nodeEnum);
-    TINYTEST_ADD_TEST(test_nodeEnum_Test01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_nodeEnum_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_NodeEnum);
+    TINYTEST_ADD_TEST(test_NodeEnum_Test01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_NodeEnum_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_nodeEnum);
+TINYTEST_MAIN_SINGLE_SUITE(test_NodeEnum);
 
 
 

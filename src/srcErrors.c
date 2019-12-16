@@ -1132,8 +1132,8 @@ extern "C" {
         
         pEnum = srcErrors_EnumErrors(this);
         if (pEnum) {
-            while (objEnum_Remaining(pEnum)) {
-                eRc = objEnum_Next(pEnum, 1, (void **)&pError, NULL);
+            while (ObjEnum_Remaining(pEnum)) {
+                eRc = ObjEnum_Next(pEnum, 1, (void **)&pError, NULL);
                 if (ERESULT_SUCCESSFUL(eRc)) {
                     pStr = srcError_ToString(pError);
                     if (pStr) {

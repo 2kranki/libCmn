@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include    <objHash_internal.h>
-#include    <objEnum_internal.h>
+#include    <ObjEnum_internal.h>
 #include    <stdio.h>
 
 
@@ -1026,7 +1026,7 @@ extern "C" {
         }
 #endif
         
-        pEnum = objEnum_New();
+        pEnum = ObjEnum_New();
         if (OBJ_NIL == pEnum) {
             this->eRc = ERESULT_OUT_OF_MEMORY;
             return OBJ_NIL;
@@ -1036,11 +1036,11 @@ extern "C" {
             pNodeList = &this->pHash[i];
             pNode = listdl_Head(pNodeList);
             while (pNode) {
-                objEnum_Append(pEnum, pNode->pObject);
+                ObjEnum_AppendObj(pEnum, pNode->pObject);
                 pNode = listdl_Next(pNodeList, pNode);
             }
         }
-        eRc = objEnum_SortAscending(pEnum);
+        eRc = ObjEnum_SortAscending(pEnum);
         
         // Return to caller.
         return pEnum;
@@ -1495,7 +1495,7 @@ extern "C" {
             DEBUG_BREAK();
             return pEnum;
         }
-        pEnum = objEnum_New();
+        pEnum = ObjEnum_New();
         if (OBJ_NIL == pEnum) {
             this->eRc = ERESULT_OUT_OF_MEMORY;
             return OBJ_NIL;
@@ -1506,10 +1506,10 @@ extern "C" {
             if (NULL == pNode) {
                 break;
             }
-            objEnum_Append(pEnum, pNode->pObject);
+            ObjEnum_AppendObj(pEnum, pNode->pObject);
             next = pNode->scopeNext;
         }
-        eRc = objEnum_SortAscending(pEnum);
+        eRc = ObjEnum_SortAscending(pEnum);
         
         // Return to caller.
         return pEnum;

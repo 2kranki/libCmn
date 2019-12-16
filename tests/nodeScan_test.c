@@ -271,7 +271,7 @@ int         test_nodeScan_Scanf01(
     fprintf(stderr, "\n");
     pEnum = nodeArray_Enum(pArray);
     TINYTEST_FALSE( (OBJ_NIL == pEnum) );
-    while (ERESULT_SUCCESS == nodeEnum_Next(pEnum, 1, (void *)&pNode, &count)) {
+    while (ERESULT_SUCCESS == NodeEnum_Next(pEnum, 1, (void *)&pNode, &count)) {
         if (pNode && (count == 1)) {
             pWrkStr = name_ToUTF8(node_getName(pNode));
             fprintf(stderr, "\t%s\n", pWrkStr);

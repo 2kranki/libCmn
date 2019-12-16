@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   nodeEnum_internal.h
- *	Generated 11/23/2018 21:35:43
+ * File:   NodeEnum_internal.h
+ *	Generated 12/16/2019 13:08:24
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,17 @@
 
 
 
-#include        <nodeEnum.h>
+#include        <NodeEnum.h>
 #include        <jsonIn.h>
-#include        <objEnum_internal.h>
+#include        <ObjEnum_internal.h>
 
 
 #ifndef NODEENUM_INTERNAL_H
 #define	NODEENUM_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -61,31 +65,23 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct nodeEnum_data_s	{
+struct NodeEnum_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJENUM_DATA    super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        reserved;
-    ASTR_DATA       *pStr;
-
-    volatile
-    int32_t         numRead;
-    // WARNING - 'elems' must be last element of this structure!
-    uint32_t        elems[0];
 
 };
 #pragma pack(pop)
 
     extern
-    struct nodeEnum_class_data_s  nodeEnum_ClassObj;
+    struct NodeEnum_class_data_s  NodeEnum_ClassObj;
 
     extern
     const
-    NODEENUM_VTBL         nodeEnum_Vtbl;
+    NODEENUM_VTBL         NodeEnum_Vtbl;
 
 
 
@@ -94,11 +90,11 @@ struct nodeEnum_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  NODEENUM_SINGLETON
-    NODEENUM_DATA * nodeEnum_getSingleton (
+    NODEENUM_DATA * NodeEnum_getSingleton (
         void
     );
 
-    bool            nodeEnum_setSingleton (
+    bool            NodeEnum_setSingleton (
      NODEENUM_DATA       *pValue
 );
 #endif
@@ -109,45 +105,49 @@ struct nodeEnum_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  nodeEnum_getSuperVtbl (
-        NODEENUM_DATA     *this
+    OBJ_IUNKNOWN *  NodeEnum_getSuperVtbl (
+        NODEENUM_DATA   *this
     );
 
 
-    ERESULT         nodeEnum_Append (
-        NODEENUM_DATA   *this,
-        NODE_DATA       *pNode
+    ERESULT         NodeEnum_AppendObj (
+       NODEENUM_DATA   *this,
+       NODE_DATA       *pNode
     );
-    
-    
-    void            nodeEnum_Dealloc (
+      
+
+    void            NodeEnum_Dealloc (
         OBJ_ID          objId
     );
 
 
-    NODEENUM_DATA * nodeEnum_ParseJsonObject (
+#ifdef  NODEENUM_JSON_SUPPORT
+    NODEENUM_DATA * NodeEnum_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+#endif
 
 
-    void *          nodeEnum_QueryInfo (
+    void *          NodeEnum_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     nodeEnum_ToJson (
-        NODEENUM_DATA      *this
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     NodeEnum_ToJson (
+        NODEENUM_DATA   *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			nodeEnum_Validate (
-        NODEENUM_DATA       *this
+    bool			NodeEnum_Validate (
+        NODEENUM_DATA   *this
     );
 #endif
 

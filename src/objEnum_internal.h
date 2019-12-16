@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   objEnum_internal.h
- *	Generated 10/15/2017 09:38:35
+ * File:   ObjEnum_internal.h
+ *	Generated 12/16/2019 11:38:07
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,16 @@
 
 
 
-#include    <objEnum.h>
-#include    <objArray.h>
+#include        <ObjEnum.h>
+#include        <jsonIn.h>
 
 
 #ifndef OBJENUM_INTERNAL_H
 #define	OBJENUM_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -59,16 +63,15 @@ extern "C" {
     //                  Object Data Description
     //---------------------------------------------------------------
 
- #pragma pack(push, 1)
-struct objEnum_data_s	{
+#pragma pack(push, 1)
+struct ObjEnum_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;     // Needed for Inheritance
-    #define OBJENUM_SORTED  OBJ_FLAG_USER1  // File Path is open
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+#define OBJENUM_SORTED  OBJ_FLAG_USER1  // File Path is open
 
     // Common Data
-    ERESULT         eRc;
     OBJARRAY_DATA   *pArray;
     uint32_t        current;
     uint32_t        rsvd32;         // (sizeof(OBJENUM) % 8) == 0
@@ -77,12 +80,27 @@ struct objEnum_data_s	{
 #pragma pack(pop)
 
     extern
-    const
-    struct objEnum_class_data_s  objEnum_ClassObj;
+    struct ObjEnum_class_data_s  ObjEnum_ClassObj;
 
     extern
     const
-    OBJENUM_VTBL         objEnum_Vtbl;
+    OBJENUM_VTBL         ObjEnum_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  OBJENUM_SINGLETON
+    OBJENUM_DATA *  ObjEnum_getSingleton (
+        void
+    );
+
+    bool            ObjEnum_setSingleton (
+     OBJENUM_DATA       *pValue
+);
+#endif
 
 
 
@@ -90,55 +108,62 @@ struct objEnum_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * objEnum_getArray(
+    OBJARRAY_DATA * ObjEnum_getArray(
         OBJENUM_DATA    *this
     );
     
-    bool            objEnum_setArray(
+    bool            ObjEnum_setArray(
         OBJENUM_DATA    *this,
         OBJARRAY_DATA   *pValue
     );
     
 
-   bool            objEnum_setLastError(
-        OBJENUM_DATA     *this,
-        ERESULT         value
+    OBJ_IUNKNOWN *  ObjEnum_getSuperVtbl (
+        OBJENUM_DATA     *this
     );
 
 
-    ERESULT         objEnum_Append(
+    ERESULT         ObjEnum_AppendObj(
         OBJENUM_DATA    *this,
         OBJ_ID          pObject
     );
-    
-    
-    void            objEnum_Dealloc(
+
+
+    void            ObjEnum_Dealloc (
         OBJ_ID          objId
     );
 
 
-    void *          objEnum_QueryInfo(
+#ifdef  OBJENUM_JSON_SUPPORT
+    OBJENUM_DATA *       ObjEnum_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          ObjEnum_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ERESULT         objEnum_SortAscending(
-        OBJENUM_DATA    *this
-    );
-    
-    
-    ASTR_DATA *     objEnum_ToJSON(
+   ERESULT         ObjEnum_SortAscending(
+       OBJENUM_DATA    *this
+   );
+   
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     ObjEnum_ToJson (
         OBJENUM_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			objEnum_Validate(
+    bool			ObjEnum_Validate (
         OBJENUM_DATA       *this
     );
 #endif

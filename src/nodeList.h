@@ -53,7 +53,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <nodeArray.h>
-#include        <nodeEnum.h>
+#include        <NodeEnum.h>
 
 
 #ifndef         NODELIST_H

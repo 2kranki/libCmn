@@ -294,7 +294,7 @@ int         test_dir_Enum01(
             if (pEnum) {
                 i = 1;
                 for (;;) {
-                    eRc = objEnum_Next(pEnum, 1, (void **)&pEntry, &count);
+                    eRc = ObjEnum_Next(pEnum, 1, (void **)&pEntry, &count);
                     if (ERESULT_FAILED(eRc)) {
                         break;
                     }

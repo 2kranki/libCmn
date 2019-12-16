@@ -144,11 +144,11 @@ int         test_objHash_OpenClose(
 
         pEnum = objHash_Enum(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pEnum) );
-        TINYTEST_TRUE( (cStringTable == objEnum_getSize(pEnum)) );
+        TINYTEST_TRUE( (cStringTable == ObjEnum_getSize(pEnum)) );
 
         fprintf(stderr, "\tEnumerate data:\n");
         for (i=0; ; ++i) {
-            eRc = objEnum_Next(pEnum, 1, (OBJ_ID *)&pStr, &size);
+            eRc = ObjEnum_Next(pEnum, 1, (OBJ_ID *)&pStr, &size);
             if (ERESULT_FAILED(eRc)) {
                 break;
             }

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   nodeEnum.c
- *	Generated 11/23/2018 21:35:43
+ * File:   NodeEnum.c
+ *	Generated 12/16/2019 13:08:24
  *
  */
 
@@ -41,8 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <nodeEnum_internal.h>
+#include        <NodeEnum_internal.h>
 #include        <trace.h>
+
+
+
 
 
 
@@ -61,7 +64,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            nodeEnum_task_body(
+    void            NodeEnum_task_body (
         void            *pData
     )
     {
@@ -81,7 +84,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODEENUM_DATA *     nodeEnum_Alloc(
+    NODEENUM_DATA *     NodeEnum_Alloc (
         void
     )
     {
@@ -98,15 +101,15 @@ extern "C" {
 
 
 
-    NODEENUM_DATA *     nodeEnum_New(
+    NODEENUM_DATA *     NodeEnum_New (
         void
     )
     {
         NODEENUM_DATA       *this;
         
-        this = nodeEnum_Alloc( );
+        this = NodeEnum_Alloc( );
         if (this) {
-            this = nodeEnum_Init(this);
+            this = NodeEnum_Init(this);
         } 
         return this;
     }
@@ -120,120 +123,54 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          P r i o r i t y
+    //                      O b j E n u m
     //---------------------------------------------------------------
     
-    uint16_t        nodeEnum_getPriority(
-        NODEENUM_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !nodeEnum_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        //return this->priority;
-        return 0;
-    }
-
-
-    bool            nodeEnum_setPriority(
-        NODEENUM_DATA     *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeEnum_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        //this->priority = value;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                              S i z e
-    //---------------------------------------------------------------
-    
-    uint32_t        nodeEnum_getSize(
+    OBJENUM_DATA *  NodeEnum_getObjEnum (
         NODEENUM_DATA   *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !nodeEnum_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return objEnum_getSize((OBJENUM_DATA *)this);
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * nodeEnum_getStr(
-        NODEENUM_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        return this->pStr;
+        return (OBJENUM_DATA *)this;
     }
+
     
+        
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
     
-    bool        nodeEnum_setStr(
-        NODEENUM_DATA     *this,
-        ASTR_DATA   *pValue
+    uint32_t        NodeEnum_getSize (
+        NODEENUM_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
-            return false;
+            return 0;
         }
 #endif
 
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
+        return ObjEnum_getSize((OBJENUM_DATA *)this);
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  nodeEnum_getSuperVtbl(
+    OBJ_IUNKNOWN *  NodeEnum_getSuperVtbl (
         NODEENUM_DATA     *this
     )
     {
@@ -241,7 +178,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -264,7 +201,7 @@ extern "C" {
     //                          A p p e n d
     //---------------------------------------------------------------
     
-    ERESULT         nodeEnum_Append(
+    ERESULT         NodeEnum_AppendObj (
         NODEENUM_DATA   *this,
         NODE_DATA       *pNode
     )
@@ -274,7 +211,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if( !NodeEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -284,13 +221,13 @@ extern "C" {
         }
 #endif
         
-        eRc = objEnum_Append((OBJENUM_DATA *)this, pNode);
+        eRc = ObjEnum_AppendObj((OBJENUM_DATA *)this, pNode);
         
         return eRc;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -301,16 +238,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = nodeEnum_Assign(this,pOther);
+        ERESULT eRc = NodeEnum_Assign(this,pOther);
      @endcode 
-     @param     this    NODEENUM object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another NODEENUM object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         nodeEnum_Assign(
-        NODEENUM_DATA		*this,
-        NODEENUM_DATA     *pOther
+    ERESULT         NodeEnum_Assign (
+        NODEENUM_DATA	*this,
+        NODEENUM_DATA   *pOther
     )
     {
         ERESULT     eRc;
@@ -318,47 +255,19 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !nodeEnum_Validate(pOther) ) {
+        if (!NodeEnum_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
-        }
-#endif
-
-        // Create a copy of objects and areas in this object placing
-        // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
-            }
-            else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
-            }
-        }
-#endif
-
-        // Copy other data from this object to other.
-        
-        //goto eom;
+        eRc = ObjEnum_Assign(NodeEnum_getObjEnum(this), NodeEnum_getObjEnum(pOther));
 
         // Return to caller.
-        eRc = ERESULT_SUCCESS;
-    eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -374,7 +283,7 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         nodeEnum_Compare(
+    ERESULT         NodeEnum_Compare (
         NODEENUM_DATA     *this,
         NODEENUM_DATA     *pOther
     )
@@ -390,11 +299,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !nodeEnum_Validate(pOther) ) {
+        if (!NodeEnum_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -422,7 +331,8 @@ extern "C" {
         return eRc;
     }
     
-    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -431,32 +341,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        nodeEnum      *pCopy = nodeEnum_Copy(this);
+        NodeEnum      *pCopy = NodeEnum_Copy(this);
      @endcode 
-     @param     this    NODEENUM object pointer
+     @param     this    object pointer
      @return    If successful, a NODEENUM object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    NODEENUM_DATA *     nodeEnum_Copy(
-        NODEENUM_DATA       *this
+    NODEENUM_DATA * NodeEnum_Copy (
+        NODEENUM_DATA   *this
     )
     {
-        NODEENUM_DATA       *pOther = OBJ_NIL;
+        NODEENUM_DATA   *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = nodeEnum_New( );
+        pOther = NodeEnum_New( );
         if (pOther) {
-            eRc = nodeEnum_Assign(this, pOther);
+            eRc = NodeEnum_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -474,7 +384,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            nodeEnum_Dealloc(
+    void            NodeEnum_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -486,7 +396,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -497,8 +407,6 @@ extern "C" {
             ((NODEENUM_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        nodeEnum_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -515,15 +423,22 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         nodeEnum_Disable(
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeEnum_Disable (
         NODEENUM_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -543,15 +458,22 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         nodeEnum_Enable(
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeEnum_Enable (
         NODEENUM_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -571,11 +493,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    NODEENUM_DATA *   nodeEnum_Init(
+    NODEENUM_DATA *   NodeEnum_Init (
         NODEENUM_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(NODEENUM_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -591,29 +514,35 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)objEnum_Init((OBJENUM_DATA *)this);  // Needed for Inheritance
+        this = (OBJ_ID)ObjEnum_Init((OBJENUM_DATA *)this);      // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEENUM);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                          // Needed for Inheritance
+        obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeEnum_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeEnum_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        */
 
     #ifdef NDEBUG
     #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "nodeEnum::sizeof(NODEENUM_DATA) = %lu\n", sizeof(NODEENUM_DATA));
+        //fprintf(stderr, "NodeEnum::sizeof(NODEENUM_DATA) = %lu\n", sizeof(NODEENUM_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODEENUM_DATA));
     #endif
@@ -627,15 +556,16 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         nodeEnum_IsEnabled(
+    ERESULT         NodeEnum_IsEnabled (
         NODEENUM_DATA		*this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -655,7 +585,7 @@ extern "C" {
     //                      L o o k  A h e a d
     //---------------------------------------------------------------
     
-    ERESULT         nodeEnum_LookAhead(
+    ERESULT         NodeEnum_LookAhead (
         NODEENUM_DATA   *this,
         uint32_t        offset,
         void            **ppObject
@@ -666,13 +596,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if( !NodeEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        eRc = objEnum_LookAhead((OBJENUM_DATA *)this, offset, ppObject);
+        eRc = ObjEnum_LookAhead((OBJENUM_DATA *)this, offset, ppObject);
 
         return eRc;
     }
@@ -683,7 +613,7 @@ extern "C" {
     //                          N e x t
     //---------------------------------------------------------------
     
-    ERESULT         nodeEnum_Next(
+    ERESULT         NodeEnum_Next (
         NODEENUM_DATA   *this,
         uint32_t        cElems,
         OBJ_ID          *ppArray,
@@ -695,19 +625,19 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if( !NodeEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        eRc = objEnum_Next((OBJENUM_DATA *)this, cElems, ppArray, pReturnAmt);
+        eRc = ObjEnum_Next((OBJENUM_DATA *)this, cElems, ppArray, pReturnAmt);
         
         return eRc;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -719,14 +649,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = nodeEnum_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = NodeEnum_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "nodeEnum", prefix,
+                        the object name, "NodeEnum", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -734,7 +664,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          nodeEnum_QueryInfo(
+    void *          NodeEnum_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -749,7 +679,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -762,7 +692,7 @@ extern "C" {
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)nodeEnum_Class();
+                return (void *)NodeEnum_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -792,23 +722,25 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return nodeEnum_Disable;
+                            return NodeEnum_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return nodeEnum_Enable;
+                            return NodeEnum_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return nodeEnum_ToDebugString;
+                            return NodeEnum_ToDebugString;
                         }
+#ifdef  SRCREF_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return nodeEnum_ToJson;
+                            return NodeEnum_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -817,10 +749,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == nodeEnum_ToDebugString)
+                if (pData == NodeEnum_ToDebugString)
                     return "ToDebugString";
-                if (pData == nodeEnum_ToJson)
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == NodeEnum_ToJson)
                     return "ToJson";
+#endif
                 break;
                 
             default:
@@ -836,7 +770,7 @@ extern "C" {
     //                      R e m a i n i n g
     //---------------------------------------------------------------
     
-    uint32_t        nodeEnum_Remaining(
+    uint32_t        NodeEnum_Remaining (
         NODEENUM_DATA   *this
     )
     {
@@ -844,13 +778,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if( !NodeEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        count = objEnum_Remaining((OBJENUM_DATA *)this);
+        count = ObjEnum_Remaining((OBJENUM_DATA *)this);
         
         // Return to caller.
         return count;
@@ -862,7 +796,7 @@ extern "C" {
     //                          R e s e t
     //---------------------------------------------------------------
     
-    ERESULT         nodeEnum_Reset(
+    ERESULT         NodeEnum_Reset (
         NODEENUM_DATA   *this
     )
     {
@@ -871,13 +805,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if( !NodeEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        eRc = objEnum_Reset((OBJENUM_DATA *)this);
+        eRc = ObjEnum_Reset((OBJENUM_DATA *)this);
 
         // Return to caller.
         return eRc;
@@ -889,7 +823,7 @@ extern "C" {
     //                          S k i p
     //---------------------------------------------------------------
     
-    ERESULT         nodeEnum_Skip(
+    ERESULT         NodeEnum_Skip (
         NODEENUM_DATA   *this,
         uint32_t        cElems
     )
@@ -899,13 +833,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if( !NodeEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        eRc = objEnum_Skip((OBJENUM_DATA *)this, cElems);
+        eRc = ObjEnum_Skip((OBJENUM_DATA *)this, cElems);
 
         // Return to caller.
         return eRc;
@@ -917,7 +851,7 @@ extern "C" {
     //                          S o r t
     //---------------------------------------------------------------
     
-    ERESULT         nodeEnum_SortAscending(
+    ERESULT         NodeEnum_SortAscending (
         NODEENUM_DATA   *this
     )
     {
@@ -926,24 +860,25 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if( !NodeEnum_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        eRc = objEnum_SortAscending((OBJENUM_DATA *)this);
+        eRc = ObjEnum_SortAscending((OBJENUM_DATA *)this);
         
         return eRc;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
-    //                       T o  J s o n
+    //                       T o  J S O N
     //---------------------------------------------------------------
     
-     ASTR_DATA *     nodeEnum_ToJson (
+#ifdef  NODEENUM_JSON_SUPPORT
+     ASTR_DATA *     NodeEnum_ToJson (
         NODEENUM_DATA      *this
     )
     {
@@ -955,7 +890,7 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -963,16 +898,19 @@ extern "C" {
         pInfo = obj_getInfo(this);
         
         pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
+        if (pStr) {
+            eRc =   AStr_AppendPrint(
+                        pStr,
+                        "{\"objectType\":\"%s\"",
+                        pInfo->pClassName
+                    );
+            
+            AStr_AppendA(pStr, "}\n");
+        }
         
         return pStr;
     }
+#endif
     
     
     
@@ -984,15 +922,15 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = nodeEnum_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = NodeEnum_ToDebugString(this,4);
      @endcode 
-     @param     this    NODEENUM object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     nodeEnum_ToDebugString(
+    ASTR_DATA *     NodeEnum_ToDebugString (
         NODEENUM_DATA      *this,
         int             indent
     )
@@ -1000,16 +938,14 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !nodeEnum_Validate(this) ) {
+        if (!NodeEnum_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1027,10 +963,11 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    nodeEnum_getSize(this)
+                    NodeEnum_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -1067,15 +1004,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            nodeEnum_Validate(
+    bool            NodeEnum_Validate (
         NODEENUM_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_NODEENUM) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_NODEENUM))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1091,7 +1028,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(NODEENUM_DATA)) ) {
+        if (!(obj_getSize(this) >= sizeof(NODEENUM_DATA))) {
             return false;
         }
 
