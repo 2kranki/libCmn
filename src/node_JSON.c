@@ -75,7 +75,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned null object must be released.
      */
-    NODE_DATA *     node_ParseObject(
+    NODE_DATA *     node_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -98,7 +98,7 @@ extern "C" {
             goto exit00;
         }
         
-        eRc = node_ParseObjectFields(pParser, pObject);
+        eRc = node_ParseJsonObjectFields(pParser, pObject);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - Parsing Fields failed!\n");
             goto exit00;
@@ -120,7 +120,7 @@ extern "C" {
      @return    ERESULT_SUCCESS if successful, otherwise, an
                 ERESULT_* error code
      */
-    ERESULT         node_ParseObjectFields(
+    ERESULT         node_ParseJsonObjectFields(
         JSONIN_DATA     *pParser,
         NODE_DATA       *pObject
     )
@@ -173,6 +173,15 @@ extern "C" {
         eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
         int32   = (int32_t)intIn;
         node_setType(pObject, int32);
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
+        uint32   = (uint32_t)intIn;
+        node_setMisc(pObject, uint32);
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "misc1", &intIn);
+        uint32   = (uint32_t)intIn;
+        node_setMisc1(pObject, uint32);
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "misc2", &intIn);
+        uint32   = (uint32_t)intIn;
+        node_setMisc2(pObject, uint32);
 
         eRc = jsonIn_SubobjectInHash(pParser, "data");
         if (ERESULT_FAILED(eRc)) {
@@ -334,11 +343,17 @@ extern "C" {
                      "{ \"objectType\":\"%s\", "
                          "\"class\":%d, "
                          "\"type\":%d, "
-                         "\"unique\":%d,\n",
+                         "\"unique\":%d, "
+                         "\"misc\":%d, "
+                         "\"misc1\":%d, "
+                         "\"misc2\":%d, \n",
                      pInfo->pClassName,
                      this->cls,
                      this->type,
-                     this->unique
+                     this->unique,
+                     this->misc,
+                     node_getMisc1(this),
+                     node_getMisc2(this)
         );
 
         if (this->pName) {

@@ -1540,7 +1540,7 @@ extern "C" {
         pInfo = obj_getInfo(node_Class());
         eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)node_ParseObject(this);
+            pObj = (OBJ_ID)node_ParseJsonObject(this);
             return pObj;
         }
         

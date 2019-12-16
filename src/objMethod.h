@@ -1,22 +1,26 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          OBJMETHOD Console Transmit Task (ObjMethod) Header
+//          Object Method Pointer (ObjMethod) Header
 //****************************************************************
 /*
  * Program
- *			Separate ObjMethod (ObjMethod)
+ *			Object Method Pointer (ObjMethod)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate ObjMethod to run things without complications
- *          of interfering with the main ObjMethod. A ObjMethod may be 
- *          called a ObjMethod on other O/S's.
+ *          This object provides a standardized way of passing
+ *          an object and method which can be written to a JSON
+ *          string and relinked later.
+ *
+ *          The method must be defined within the QueryInfo method
+ *          of the object.  The object's info must be registered
+ *          with objRegistry (to be done).
  *
  * Remarks
  *	1.      None
  *
  * History
- *	12/15/2019 Generated
+ *  10/28/2017 Generated
+ *	12/15/2019 Reenerated
  */
 
 

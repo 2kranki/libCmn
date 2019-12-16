@@ -143,6 +143,44 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     Misc may be used as needed. Be aware that
+     nodeTree_VisitBreadthFirst uses this field when it is
+     executed and will overwrite it..
+     */
+    uint32_t        nodeLink_getMisc (
+        NODELINK_DATA   *this
+    );
+    
+    bool            nodeLink_setMisc (
+        NODE_DATA       *this,
+        uint32_t        value
+    );
+
+    
+    /*!
+     Misc1 and Misc2 may be used as needed.
+     */
+    uint16_t        nodeLink_getMisc1(
+        NODELINK_DATA   *this
+    );
+    
+    bool            nodeLink_setMisc1(
+        NODELINK_DATA   *this,
+        uint16_t        value
+    );
+
+    
+    uint16_t        nodeLink_getMisc2(
+        NODELINK_DATA   *this
+    );
+    
+    bool            nodeLink_setMisc2(
+        NODELINK_DATA   *this,
+        uint16_t        value
+    );
+    
+
+    /*!
      Ordered property when set causes the list to be kept in sorted
      order.
      */

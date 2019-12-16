@@ -616,6 +616,43 @@ extern "C" {
     //                          M i s c
     //---------------------------------------------------------------
     
+    uint32_t        nodeLink_getMisc (
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return node_getMisc(&this->super);
+    }
+    
+    
+    bool            nodeLink_setMisc(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        node_setMisc1(&this->super, value);
+        
+        return true;
+    }
+        
+        
     uint16_t        nodeLink_getMisc1(
         NODELINK_DATA   *this
     )
@@ -653,7 +690,44 @@ extern "C" {
     }
     
     
+    uint16_t        nodeLink_getMisc2(
+        NODELINK_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return node_getMisc2(&this->super);
+    }
     
+    
+    bool            nodeLink_setMisc2 (
+        NODELINK_DATA   *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !nodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        node_setMisc(&this->super, value);
+        
+        return true;
+    }
+        
+        
+
     //---------------------------------------------------------------
     //                          N a m e
     //---------------------------------------------------------------

@@ -480,6 +480,43 @@ extern "C" {
     //                          M i s c
     //---------------------------------------------------------------
     
+    uint32_t        node_getMisc (
+        NODE_DATA       *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        
+        return this->misc;
+    }
+    
+    
+    bool            node_setMisc (
+        NODE_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->misc = value;
+        
+        return true;
+    }
+        
+        
     uint16_t        node_getMisc1(
         NODE_DATA       *this
     )

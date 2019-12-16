@@ -94,6 +94,7 @@ struct node_data_s	{
     int32_t         cls;
     int32_t         type;
     uint32_t        unique;
+    uint32_t        misc;
     NAME_DATA       *pName;
     OBJ_ID          pData;
     OBJ_ID          pExtra;
@@ -163,12 +164,12 @@ struct node_data_s	{
     );
     
     
-    NODE_DATA *     node_ParseObject(
+    NODE_DATA *     node_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
     
     
-    ERESULT         node_ParseObjectFields(
+    ERESULT         node_ParseJsonObjectFields(
         JSONIN_DATA     *pParser,
         NODE_DATA       *pObject
     );

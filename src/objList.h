@@ -1,16 +1,14 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          OBJLIST Console Transmit Task (ObjList) Header
+//          List of Objects (ObjList) Header
 //****************************************************************
 /*
  * Program
- *			Separate ObjList (ObjList)
+ *			List of Objects (ObjList)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate ObjList to run things without complications
- *          of interfering with the main ObjList. A ObjList may be 
- *          called a ObjList on other O/S's.
+ *          This object provides a list of objects which provides
+ *          for fast addition and deletion of objects.
  *
  * Remarks
  *	1.      None

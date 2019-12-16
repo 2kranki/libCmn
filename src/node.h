@@ -276,7 +276,22 @@ extern "C" {
     
     
     /*!
-     Misc1 and Misc2 can optionally be used as needed.
+     Misc can optionally be used as needed. Be aware that
+     nodeTree_VisitBreadthFirst uses this field if it is
+     executed.
+     */
+    uint32_t        node_getMisc (
+        NODE_DATA       *this
+    );
+    
+    bool            node_setMisc (
+        NODE_DATA       *this,
+        uint32_t        value
+    );
+
+    
+    /*!
+     Misc1 and Misc2 may be used as needed.
      */
     uint16_t        node_getMisc1(
         NODE_DATA       *this

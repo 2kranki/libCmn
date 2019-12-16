@@ -150,7 +150,7 @@ extern "C" {
 
         eRc = jsonIn_SubobjectInHash(pParser, "node");
         if (ERESULT_FAILED(eRc)) {
-            eRc = node_ParseObjectFields(pParser, (NODE_DATA *)pObject);
+            eRc = node_ParseJsonObjectFields(pParser, (NODE_DATA *)pObject);
             jsonIn_SubobjectEnd(pParser);
             if (pNode) {
                 obj_Release(pNode);

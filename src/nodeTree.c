@@ -2091,15 +2091,18 @@ extern "C" {
         if (pEntry == OBJ_NIL) {
             return ERESULT_SUCCESS;
         }
+        node_setMisc(nodeLink_getNode(pEntry), indent);
         ObjList_Add2Head(pQueue, pEntry);
         while (ObjList_getSize(pQueue)) {
             pEntry = ObjList_Head(pQueue);
+            indent = node_getMisc(nodeLink_getNode(pEntry));
             ObjList_DeleteHead(pQueue);
             pVisitor(pObject, this, pEntry, indent);
             index = nodeLink_getChild(pEntry);
             if (index) {
                 pNext = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
                 if (pNext) {
+                    node_setMisc(nodeLink_getNode(pNext), indent+1);
                     ObjList_Add2Tail(pQueue, pNext);
                 }
             }
@@ -2107,6 +2110,7 @@ extern "C" {
             if (index) {
                 pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
                 if (pEntry) {
+                    node_setMisc(nodeLink_getNode(pEntry), indent);
                     ObjList_Add2Head(pQueue, pEntry);
                 }
             }
