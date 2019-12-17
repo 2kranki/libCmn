@@ -312,6 +312,10 @@ extern "C" {
     );
     
     
+    uint32_t        blocks_UniqueFromData(
+        BLOCKS_DATA     *this,
+        void            *pData
+    );
 
     
 #ifdef	__cplusplus

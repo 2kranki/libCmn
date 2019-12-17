@@ -964,6 +964,32 @@ extern "C" {
     
     
     
+        uint32_t        blocks_UniqueFromData(
+            BLOCKS_DATA     *this,
+            void            *pData
+        )
+        {
+            //uint32_t        i;
+            BLOCKS_NODE     *pNode;
+
+            // Do initialization.
+    #ifdef NDEBUG
+    #else
+            if( !blocks_Validate(this) ) {
+                DEBUG_BREAK();
+                //return ERESULT_INVALID_OBJECT;
+                return 0;
+            }
+    #endif
+            
+            pNode = Ptr2Node(pData);
+            
+            // Return to caller.
+            return pNode->unique;
+        }
+        
+        
+        
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

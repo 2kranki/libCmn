@@ -68,7 +68,10 @@ extern "C" {
         uint8_t         data[0];
     } BLOCKS_NODE;
 #pragma pack(pop)
-    
+#define            Node2Ptr(pNode)   ((void *)(pNode->data)
+#define            Ptr2Node(pData)   ((BLOCKS_NODE *)\
+                                        ((uint8_t *)pData - offsetof(BLOCKS_NODE, data)))
+
     
     typedef struct blocks_block_s {
         LISTDL_NODE     list;           // Chain for block list

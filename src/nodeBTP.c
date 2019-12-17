@@ -564,6 +564,7 @@ extern "C" {
         NODEBTP_RECORD  *pRecord = NULL;
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         int             iRc;
+        uint32_t        unique;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -578,12 +579,12 @@ extern "C" {
         }
 #endif
         
-        pRecord = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
+        pRecord = blocks_RecordNew((BLOCKS_DATA *)this, &unique);
         if (NULL == pRecord) {
             return ERESULT_OUT_OF_MEMORY;
         }
         pRecord->node.pKey = pNode;
-        pRecord->unique = blocks_getUnique((BLOCKS_DATA *)this);
+        pRecord->unique = unique;
         pRecord->node.color = RBT_RED;
 
         iRc = rbt_InsertNode(&this->tree, (RBT_NODE *)pRecord);
@@ -650,6 +651,7 @@ extern "C" {
         NODEBTP_RECORD  *pRecord = NULL;
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         int             iRc;
+        uint32_t        unique;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -669,12 +671,12 @@ extern "C" {
             eRc = nodeBTP_Delete(this, pNode);
         }
         
-        pRecord = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
+        pRecord = blocks_RecordNew((BLOCKS_DATA *)this, &unique);
         if (NULL == pRecord) {
             return ERESULT_OUT_OF_MEMORY;
         }
         pRecord->node.pKey = pNode;
-        pRecord->unique = blocks_getUnique((BLOCKS_DATA *)this);
+        pRecord->unique = unique;
         pRecord->node.color = RBT_RED;
         
         iRc = rbt_InsertNode(&this->tree, (RBT_NODE *)pRecord);
