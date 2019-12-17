@@ -103,7 +103,7 @@
                             json:true},
         {name:"nodeLnkP", deps:["cmn_defs.h","name.h","node.h","str.h"]},
         {name:"nodeMatrix", deps:["cmn_defs.h","AStr.h","node.h","objMatrix.h"]},
-        {name:"nodeScan", deps:["cmn_defs.h","AStr.h","node.h","nodeArray.h"]},
+        {name:"NodeScan", deps:["cmn_defs.h","AStr.h","node.h","nodeArray.h"]},
         {name:"nodeTree", deps:["cmn_defs.h","AStr.h","node.h","nodeHash.h",
                                 "ObjList.h","szTbl.h"]},
         {name:"null", deps:["cmn_defs.h","AStr.h"], json:true},

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   NodeScan_internal.h
- *	Generated 12/17/2019 10:10:16
+ * File:   nodeScan_internal.h
+ *	Generated 10/16/2015 09:19:12
  *
  * Notes:
  *  --	N/A
@@ -38,28 +38,17 @@
 
 
 
-
-#include        <NodeScan.h>
-#include        <jsonIn.h>
+#include    <nodeScan.h>
+#include    <nodeArray.h>
 
 
 #ifndef NODESCAN_INTERNAL_H
 #define	NODESCAN_INTERNAL_H
 
 
-
-#define     PROPERTY_ARRAY_OWNED 1
-#define     PROPERTY_CLOSE_OWNED 1
-#define     PROPERTY_OPEN_OWNED 1
-#define     PROPERTY_TREE_OWNED 1
-
-
-
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
-
 
     typedef enum tok_typ_e {
         TOK_TYP_EOF=-1,
@@ -83,17 +72,12 @@ extern "C" {
 #define MAX_SCANNER_ENTRIES     32
 #define MAX_SCANNER_LABELS      16
 
-
-    //---------------------------------------------------------------
-    //                  Object Data Description
-    //---------------------------------------------------------------
-
 #pragma pack(push, 1)
-struct NodeScan_data_s	{
+struct nodeScan_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;
 
     // Common Data
     uint32_t        index;      // Scan Index (relative to 0)
@@ -122,89 +106,54 @@ struct NodeScan_data_s	{
 #pragma pack(pop)
 
     extern
-    struct NodeScan_class_data_s  NodeScan_ClassObj;
-
+    const
+    NODESCAN_VTBL   nodeScan_Vtbl;
     extern
     const
-    NODESCAN_VTBL         NodeScan_Vtbl;
+    struct nodeScan_class_data_s   nodeScan_ClassObj;
 
 
 
-    //---------------------------------------------------------------
-    //              Class Object Method Forward Definitions
-    //---------------------------------------------------------------
-
-#ifdef  NODESCAN_SINGLETON
-    NODESCAN_DATA * NodeScan_getSingleton (
-        void
-    );
-
-    bool            NodeScan_setSingleton (
-     NODESCAN_DATA       *pValue
-);
-#endif
-
-
-
-    //---------------------------------------------------------------
-    //              Internal Method Forward Definitions
-    //---------------------------------------------------------------
-
-    bool            NodeScan_setCloseNode(
+    // Internal Functions
+    bool            nodeScan_setCloseNode(
         NODESCAN_DATA   *this,
         NODELINK_DATA   *pValue
     );
     
     
-    bool            NodeScan_setOpenNode(
+    bool            nodeScan_setOpenNode(
         NODESCAN_DATA   *this,
         NODELINK_DATA   *pValue
     );
     
     
-    bool            NodeScan_setTree(
+    bool            nodeScan_setTree(
         NODESCAN_DATA   *this,
         NODETREE_DATA   *pValue
     );
     
     
-    OBJ_IUNKNOWN *  NodeScan_getSuperVtbl (
-        NODESCAN_DATA     *this
-    );
-
-
-    void            NodeScan_Dealloc (
+    void            nodeScan_Dealloc(
         OBJ_ID          objId
     );
 
 
-#ifdef  NODESCAN_JSON_SUPPORT
-    NODESCAN_DATA * NodeScan_ParseJsonObject (
-        JSONIN_DATA     *pParser
+    int             nodeScan_Lex(
+        NODESCAN_DATA  *this
     );
-#endif
-
-
-    void *          NodeScan_QueryInfo (
+    
+    
+    void *          nodeScan_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
-
-#ifdef  SRCREF_JSON_SUPPORT
-    ASTR_DATA *     NodeScan_ToJson (
-        NODESCAN_DATA      *this
-    );
-#endif
-
-
-
-
+    
 #ifdef NDEBUG
 #else
-    bool			NodeScan_Validate (
-        NODESCAN_DATA       *this
+    bool			nodeScan_Validate(
+        NODESCAN_DATA       *cbp
     );
 #endif
 

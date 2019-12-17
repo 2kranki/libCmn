@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/16/2019 18:57:18.000)
+# (12/17/2019 16:41:00.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -114,6 +114,16 @@ $(OBJDIR)/NodeEnum.o: $(SRCDIR)/NodeEnum.c $(SRCDIR)/NodeEnum.h $(SRCDIR)/NodeEn
 OBJS += $(OBJDIR)/NodeEnum_object.o
 
 $(OBJDIR)/NodeEnum_object.o: $(SRCDIR)/NodeEnum_object.c $(SRCDIR)/NodeEnum.h $(SRCDIR)/NodeEnum_internal.h $(SRCDIR)/node.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NodeScan.o
+
+$(OBJDIR)/NodeScan.o: $(SRCDIR)/NodeScan.c $(SRCDIR)/AStr.h $(SRCDIR)/NodeScan.h $(SRCDIR)/NodeScan_internal.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NodeScan_object.o
+
+$(OBJDIR)/NodeScan_object.o: $(SRCDIR)/NodeScan_object.c $(SRCDIR)/AStr.h $(SRCDIR)/NodeScan.h $(SRCDIR)/NodeScan_internal.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/ObjList.o
@@ -1001,16 +1011,6 @@ OBJS += $(OBJDIR)/nodeMatrix_object.o
 $(OBJDIR)/nodeMatrix_object.o: $(SRCDIR)/nodeMatrix_object.c $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/nodeMatrix.h $(SRCDIR)/nodeMatrix_internal.h $(SRCDIR)/objMatrix.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/nodeScan.o
-
-$(OBJDIR)/nodeScan.o: $(SRCDIR)/nodeScan.c $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeScan.h $(SRCDIR)/nodeScan_internal.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/nodeScan_object.o
-
-$(OBJDIR)/nodeScan_object.o: $(SRCDIR)/nodeScan_object.c $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeScan.h $(SRCDIR)/nodeScan_internal.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/nodeTree.o
 
 $(OBJDIR)/nodeTree.o: $(SRCDIR)/nodeTree.c $(SRCDIR)/AStr.h $(SRCDIR)/ObjList.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/nodeHash.h $(SRCDIR)/nodeTree.h $(SRCDIR)/nodeTree_internal.h $(SRCDIR)/szTbl.h 
@@ -1748,6 +1748,12 @@ NodeEnum_test: $(TEST_SRC)/NodeEnum_test.c $(SRCDIR)/NodeEnum.h $(SRCDIR)/NodeEn
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += NodeScan_test
+
+NodeScan_test: $(TEST_SRC)/NodeScan_test.c $(SRCDIR)/NodeScan.h $(SRCDIR)/NodeScan_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += ObjList_test
 
 ObjList_test: $(TEST_SRC)/ObjList_test.c $(SRCDIR)/ObjList.h $(SRCDIR)/ObjList_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/listdl.h 
@@ -2225,12 +2231,6 @@ nodeLnkP_test: $(TEST_SRC)/nodeLnkP_test.c $(SRCDIR)/nodeLnkP.h $(SRCDIR)/nodeLn
 TESTS += nodeMatrix_test
 
 nodeMatrix_test: $(TEST_SRC)/nodeMatrix_test.c $(SRCDIR)/nodeMatrix.h $(SRCDIR)/nodeMatrix_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/objMatrix.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += nodeScan_test
-
-nodeScan_test: $(TEST_SRC)/nodeScan_test.c $(SRCDIR)/nodeScan.h $(SRCDIR)/nodeScan_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

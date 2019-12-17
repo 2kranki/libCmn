@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Node Tree Scanner (NodeScan) Header
+//                  Node Scanner (nodeScan) Header
 //****************************************************************
 /*
  * Program
- *			Node Tree Scanner (NodeScan)
+ *			Node Scanner (nodeScan)
  * Purpose
- *          This object supports scanning a NodeTree that was con-
- *          verted to a NodeArray with up/down members. See
+ *			This object supports scanning a NodeTree that was con-
+ *          verted to a NodeArray with up/down members. See 
  *          nodeTree_ToLinearizationPost or nodeTree_ToLinearizationPre.
  *
  * Remarks
- *	1.      None
+ *	1.      Many ideas for this object were taken from PCCTS, a public domain
+ *          parser generator.
  *
  * History
- *  10/16/2015 Generated
- *	12/17/2019 Regenerated
+ *	10/16/2015 Generated
  */
 
 
@@ -50,21 +50,13 @@
 
 
 
-
 #include        <cmn_defs.h>
-#include        <AStr.h>
 #include        <node.h>
-#include        <nodeTree.h>
+#include        <AStr.h>
 
 
 #ifndef         NODESCAN_H
 #define         NODESCAN_H
-
-
-//#define   NODESCAN_JSON_SUPPORT 1
-//#define   NODESCAN_SINGLETON    1
-
-
 
 
 
@@ -78,27 +70,13 @@ extern "C" {
     //****************************************************************
 
 
-    // See Node.h
-    //typedef struct NodeScan_data_s	NODESCAN_DATA;            // Inherits from OBJ
-    //typedef struct NodeScan_class_data_s NODESCAN_CLASS_DATA;   // Inherits from OBJ
-
-    typedef struct NodeScan_vtbl_s	{
+    typedef struct nodeScan_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in NodeScan_object.c.
+        // method names to the vtbl definition in $P_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODESCAN_DATA *);
     } NODESCAN_VTBL;
-
-    typedef struct NodeScan_class_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in NodeScan_object.c.
-        // Properties:
-        // Methods:
-        //bool        (*pIsEnabled)(NODESCAN_DATA *);
-    } NODESCAN_CLASS_VTBL;
 
 
 
@@ -112,122 +90,96 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  NODESCAN_SINGLETON
-    NODESCAN_DATA * NodeScan_Shared (
-        void
-    );
-
-    bool            NodeScan_SharedReset (
-        void
-    );
-#endif
-
-
-   /*!
-     Allocate a new Object and partially initialize. Also, this sets an
-     indicator that the object was alloc'd which is tested when the object is
-     released.
-     @return    pointer to NodeScan object if successful, otherwise OBJ_NIL.
-     */
-    NODESCAN_DATA * NodeScan_Alloc (
+    NODESCAN_DATA * nodeScan_Alloc(
         void
     );
     
     
-    OBJ_ID          NodeScan_Class (
+    NODESCAN_DATA * nodeScan_New(
         void
     );
     
     
-    NODESCAN_DATA * NodeScan_New (
-        void
-    );
-    
-    
-    NODESCAN_DATA * NodeScan_NewFromArray(
-        NODETREE_DATA   *pTree,
+    NODESCAN_DATA * nodeScan_NewFromArray(
         NODEARRAY_DATA  *pArray     // Tree converted to array with up/down members.
     );
-
-
-    // Convert the tree to a postorder array and
-    // create a scanner from that.
-    NODESCAN_DATA * NodeScan_NewFromTreePost(
-        NODETREE_DATA   *pTree
-    );
-
-
+    
+    
     // Convert the tree to a preorder array and
     // create a scanner from that.
-    NODESCAN_DATA * NodeScan_NewFromTreePre(
+    NODESCAN_DATA * nodeScan_NewFromTree(
         NODETREE_DATA   *pTree
     );
-
-
+    
+    
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    NODEARRAY_DATA * NodeScan_getArray(
+    NODEARRAY_DATA * nodeScan_getArray(
         NODESCAN_DATA    *this
     );
-
-    bool            NodeScan_setArray(
+    
+    bool            nodeScan_setArray(
         NODESCAN_DATA   *this,
         NODEARRAY_DATA  *pValue
     );
-
-
-    NODELINK_DATA * NodeScan_getCloseNode(
+    
+    
+    NODELINK_DATA * nodeScan_getCloseNode(
         NODESCAN_DATA   *this
     );
-
-
+    
+    
     /*!
      All matching and scanning uses the index property
      to know where to start the next match or scan.
      */
-    uint32_t        NodeScan_getIndex(
+    uint32_t        nodeScan_getIndex(
         NODESCAN_DATA   *this
     );
-
-    bool            NodeScan_setIndex(
+    
+    bool            nodeScan_setIndex(
         NODESCAN_DATA   *this,
         uint32_t        value
     );
-
-
-    NODELINK_DATA * NodeScan_getOpenNode(
+    
+    
+    NODELINK_DATA * nodeScan_getOpenNode(
         NODESCAN_DATA   *this
     );
-
-
+    
+    
     /*!
      All matching and scanning set the start property
      to indicate where the scan started.
      */
-    uint32_t        NodeScan_getStart(
+    uint32_t        nodeScan_getStart(
+        NODESCAN_DATA   *this
+    );
+    
+    
+    NODETREE_DATA * nodeScan_getTree(
         NODESCAN_DATA   *this
     );
 
-
-    NODETREE_DATA * NodeScan_getTree(
-        NODESCAN_DATA   *this
-    );
-
-
-
+    
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    NODESCAN_DATA * NodeScan_Init (
+    NODESCAN_DATA * nodeScan_Init(
         NODESCAN_DATA   *this
     );
 
+    NODESCAN_DATA * nodeScan_InitArray(
+        NODESCAN_DATA   *this,
+        NODEARRAY_DATA  *pValue
+    );
+    
 
     /*!
      Advance the scan the provided number of nodes.
@@ -236,8 +188,8 @@ extern "C" {
      @return    If successful, the current node, otherwise OBJ_NIL
                 and Last Error contains an error reason.
      */
-    NODE_DATA *     NodeScan_InputAdvance(
-        NODESCAN_DATA   *this,
+    NODE_DATA *     nodeScan_InputAdvance(
+        NODESCAN_DATA	*this,
         uint32_t        numChrs
     );
 
@@ -250,25 +202,25 @@ extern "C" {
      @return    If successful, the node in advance of the current one, otherwise
                 OBJ_NIL and Last Error contains an error reason.
      */
-    NODE_DATA *     NodeScan_InputLookAhead(
+    NODE_DATA *     nodeScan_InputLookAhead(
         NODESCAN_DATA   *this,
         uint32_t        num
     );
 
     
-    NODE_DATA *     NodeScan_MatchName(
-        NODESCAN_DATA    *this,
+    NODE_DATA *     nodeScan_MatchName(
+        NODESCAN_DATA	*this,
         char            *pStr
     );
 
     
-    NODE_DATA *     NodeScan_MatchClass(
-        NODESCAN_DATA    *this,
+    NODE_DATA *     nodeScan_MatchClass(
+        NODESCAN_DATA	*this,
         int32_t         cls
     );
 
     
-    NODE_DATA *     NodeScan_MatchClasses(
+    NODE_DATA *     nodeScan_MatchClasses(
         NODESCAN_DATA   *this,
         int32_t         *pSet
     );
@@ -282,7 +234,7 @@ extern "C" {
      @return    If successful, a starting index of the match relative to 1,
                 otherwise 0.
      */
-    NODE_DATA *     NodeScan_MatchClassesRegex(
+    NODE_DATA *     nodeScan_MatchClassesRegex(
         NODESCAN_DATA   *this,
         int32_t         *pRegex             // [in] Zero-terminated array of
                                             //      node types
@@ -297,25 +249,19 @@ extern "C" {
      @return    If successful, an index of the match relative to 1,
                 otherwise 0.
      */
-    NODE_DATA *     NodeScan_ScanClassUntil(
+    NODE_DATA *     nodeScan_ScanClassUntil(
         NODESCAN_DATA   *this,
         int32_t         cls
     );
     
     
     /*!
-     Create a string that describes this object and the objects within it.
-     Example:
-     @code 
-        ASTR_DATA      *pDesc = NodeScan_ToDebugString(this,4);
-     @endcode 
-     @param     this    object pointer
-     @param     indent  number of characters to indent every line of output, can be 0
-     @return    If successful, an AStr object which must be released containing the
-                description, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
+     Create a string that describes this object and the
+     objects within it.
+     @return    If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
      */
-    ASTR_DATA *    NodeScan_ToDebugString (
+    ASTR_DATA *     nodeScan_ToDebugString(
         NODESCAN_DATA   *this,
         int             indent
     );

@@ -114,7 +114,8 @@ extern "C" {
     typedef struct nodeLnkP_data_s          NODELNKP_DATA;
     typedef struct nodeLnkP_class_data_s    NODELNKP_CLASS_DATA;
     typedef struct nodeMatrix_data_s	    NODEMATRIX_DATA;
-    typedef struct nodeScan_data_s          NODESCAN_DATA;
+    typedef struct NodeScan_data_s          NODESCAN_DATA;
+    typedef struct NodeScan_class_data_s    NODESCAN_CLASS_DATA;
     typedef struct nodeTree_data_s          NODETREE_DATA;
 
     
