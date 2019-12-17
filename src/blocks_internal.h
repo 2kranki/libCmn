@@ -59,10 +59,12 @@ extern "C" {
 #endif
 
 
-    // Node Descriptor
+    // Node/Record Descriptor
 #pragma pack(push, 1)
     typedef struct  blocks_node_s {
         LISTDL_NODE     list;
+        uint32_t        unique;
+        uint32_t        filler;         // Boundary 8
         uint8_t         data[0];
     } BLOCKS_NODE;
 #pragma pack(pop)

@@ -71,7 +71,7 @@ extern "C" {
         
         // Allocate a block if no free nodes.
         if (NULL == pNode) {
-            pNode = blocks_RecordNew((BLOCKS_DATA *)this);
+            pNode = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
             if (pNode == NULL) {
                 return NULL;
             }

@@ -77,7 +77,7 @@ struct rbt_tree_s {
     uint32_t            size;
     uint32_t            dataSize;
     
-    RBT_NODE *          (*pNodeAlloc)(OBJ_ID);
+    RBT_NODE *          (*pNodeAlloc)(OBJ_ID, uint32_t *);
     void                (*pNodeFree)(OBJ_ID, RBT_NODE *);
     OBJ_ID              pObjAllocFree;
     
@@ -115,7 +115,7 @@ RBT_TREE *      rbt_Init (
     RBT_TREE        *pTree,
     int             (*pCmp)(void *, void *),
     uint32_t        dataSize,
-    RBT_NODE *      (*pNodeAlloc)(OBJ_ID),
+    RBT_NODE *      (*pNodeAlloc)(OBJ_ID, uint32_t *),
     void            (*pNodeFree)(OBJ_ID, RBT_NODE *),
     OBJ_ID          pObjAllocFree
 );

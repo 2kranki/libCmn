@@ -578,7 +578,7 @@ extern "C" {
         }
 #endif
         
-        pRecord = blocks_RecordNew((BLOCKS_DATA *)this);
+        pRecord = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
         if (NULL == pRecord) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -669,7 +669,7 @@ extern "C" {
             eRc = nodeBTP_Delete(this, pNode);
         }
         
-        pRecord = blocks_RecordNew((BLOCKS_DATA *)this);
+        pRecord = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
         if (NULL == pRecord) {
             return ERESULT_OUT_OF_MEMORY;
         }

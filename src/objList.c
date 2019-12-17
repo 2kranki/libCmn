@@ -307,7 +307,7 @@ int             ObjList_SortCompare (
         }
 #endif
         
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)this);
+        pEntry = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
         if (NULL == pEntry) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -354,7 +354,7 @@ int             ObjList_SortCompare (
         }
 #endif
         
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)this);
+        pEntry = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
         if (NULL == pEntry) {
             return ERESULT_OUT_OF_MEMORY;
         }

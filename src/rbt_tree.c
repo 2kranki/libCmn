@@ -67,7 +67,7 @@ RBT_NODE *      rbt_NodeNew (
 {
     RBT_NODE        *pNode;
     
-    pNode = this->pNodeAlloc(this->pObjAllocFree);
+    pNode = this->pNodeAlloc(this->pObjAllocFree, NULL);
     if (pNode) {
         rbt_NodeInit(this, pNode, pKey, pValue);
     }
@@ -158,7 +158,7 @@ RBT_TREE *      rbt_Init(
     RBT_TREE        *pTree,
     int             (*pCmp)(void *, void *),
     uint32_t        dataSize,
-    RBT_NODE *      (*pNodeAlloc)(OBJ_ID),
+    RBT_NODE *      (*pNodeAlloc)(OBJ_ID, uint32_t *),
     void            (*pNodeFree)(OBJ_ID, RBT_NODE *),
     OBJ_ID          pObjAllocFree
 ) 

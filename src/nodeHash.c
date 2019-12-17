@@ -443,7 +443,7 @@ extern "C" {
         
         pTree = nodeHash_TreeFromHash(this, node_getHash(pNode));
         if (pTree) {
-            pRecord = blocks_RecordNew((BLOCKS_DATA *)this);
+            pRecord = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
             if (NULL == pRecord) {
                 return ERESULT_OUT_OF_MEMORY;
             }

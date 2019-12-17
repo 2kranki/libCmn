@@ -1,3 +1,4 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
  *	Generated 06/30/2017 09:01:13
  */
@@ -115,6 +116,7 @@ int         test_blocks_Add(
     void            *pWrk;
     uint8_t         *pRcds[8] = {NULL};
     uint32_t        cRcds = 0;
+    uint32_t        unique = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = blocks_Alloc( );
@@ -150,7 +152,8 @@ int         test_blocks_Add(
         XCTAssertTrue( (85 == blocks_getRecordsPerBlock(pObj)) );
 #endif
 
-        pRcd1 = blocks_RecordNew(pObj);
+        pRcd1 = blocks_RecordNew(pObj, &unique);
+        XCTAssertTrue( (1 == unique) );
         pWrk = pObj->blocks.pHead;
         fprintf(stderr, "\tBlock 1  = %p\n", pWrk);
         fprintf(stderr, "\tRecord 1  = %p\n", pRcd1);
@@ -164,7 +167,8 @@ int         test_blocks_Add(
 #if defined(__WIN64_ENV__)
         XCTAssertTrue( (32 == (int)(pRcd1 - pWrk)) );
 #endif
-        pRcd2 = blocks_RecordNew(pObj);
+        pRcd2 = blocks_RecordNew(pObj, &unique);
+        XCTAssertTrue( (2 == unique) );
         fprintf(stderr, "\tRecord 2  = %p\n", pRcd2);
         fprintf(stderr, "\tOffset 2  = %d\n", (int)(pRcd2 - pWrk));
 #if defined(__MACOSX_ENV__)
@@ -176,12 +180,14 @@ int         test_blocks_Add(
 #if defined(__WIN64_ENV__)
         XCTAssertTrue( (80 == (int)(pRcd2 - pWrk)) );
 #endif
-        pRcd3 = blocks_RecordNew(pObj);
+        pRcd3 = blocks_RecordNew(pObj, &unique);
+        XCTAssertTrue( (3 == unique) );
         fprintf(stderr, "\tRecord 3  = %p\n", pRcd3);
         eRc = blocks_RecordFree(pObj, pRcd2);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         fprintf(stderr, "\tFreed Record 2  = %p\n", pRcd2);
-        pRcd4 = blocks_RecordNew(pObj);
+        pRcd4 = blocks_RecordNew(pObj, &unique);
+        XCTAssertTrue( (4 == unique) );
         fprintf(stderr, "\tRecord 4  = %p\n", pRcd4);
         XCTAssertTrue( (pRcd2 == pRcd4) );
         pRcd2 = NULL;

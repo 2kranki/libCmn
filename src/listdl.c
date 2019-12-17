@@ -687,7 +687,7 @@ void * 			listdl_Next(
 		pNode = pCB->pHead;
     }
 	else {
-		pNode = Ptr2Node( pCurrent );
+		pNode = Ptr2Node(pCurrent);
 		pNode = pNode->pNext;
 	}
 	if( pNode && (pCB->cCount > 0) )
@@ -696,7 +696,7 @@ void * 			listdl_Next(
 		return( NULL );
 
 	// Return to caller.
-	return( Node2Ptr( pNode ) );
+	return Node2Ptr(pNode);
 }
 
 

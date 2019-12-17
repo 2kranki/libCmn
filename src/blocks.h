@@ -10,11 +10,17 @@
  *			This object provides a updatable list of data blocks.
  *          Many collections allocate smaller areas. This object
  *          provides an easy way to allocate those smaller areas
- *          in blocks to facilitate memory management.
+ *          in blocks to facilitate memory management. It only
+ *          supports fixed-lenth records!
  *
  * Remarks
  *	1.      Internally, blocks are made up of nodes which have
  *          have a fixed size.
+ *  2.      The unique number returned on a RecordNew will be
+ *          unique for the entire lifetime of this object and
+ *          will not be re-used even if the record is deleted
+ *          and then re-used.
+ *  3.      This object only support fixed length records.
  *
  * History
  *	09/04/2016 Generated
@@ -261,8 +267,15 @@ extern "C" {
     );
     
     
+    void *          blocks_RecordGetUnique(
+        BLOCKS_DATA    *this,
+        uint32_t       unique
+    );
+
+
     void *          blocks_RecordNew(
-        BLOCKS_DATA     *this
+        BLOCKS_DATA     *this,
+        uint32_t        *pUnique            // Optional Unique Number.
     );
     
     

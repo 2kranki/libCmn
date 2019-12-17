@@ -700,7 +700,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&this->thread);
+        BREAK_NOT_BOUNDARY8(offsetof(BLOCKS_NODE, data));
     #endif
 
         return this;
@@ -773,8 +773,38 @@ extern "C" {
     
     
     
+    void *          blocks_RecordGetUnique(
+        BLOCKS_DATA    *this,
+        uint32_t       unique
+    )
+    {
+        BLOCKS_NODE     *pNode = NULL;
+        
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        while ((pNode = listdl_Next(&this->activeList, pNode))) {
+            if (pNode->unique == unique) {
+                return pNode->data;
+            }
+        }
+        
+        // Return to caller.
+        return NULL;
+    }
+        
+        
+        
     void *          blocks_RecordNew(
-        BLOCKS_DATA     *this
+        BLOCKS_DATA     *this,
+        uint32_t        *pUnique
     )
     {
         bool            fRc;
@@ -802,10 +832,13 @@ extern "C" {
             memset(pNode->data, 0, (this->recordSize - sizeof(BLOCKS_NODE)));
             listdl_Add2Head(&this->activeList, pNode);
         }
-        ++this->unique;
+        pNode->unique = ++this->unique;
         
         // Return to caller.
-        return &pNode->data;
+        if (pUnique) {
+            *pUnique = pNode->unique;
+        }
+        return pNode->data;
     }
     
     

@@ -25,6 +25,8 @@
  *	1.          To keep the same terminology as Knuth, we use the
  *              left index as the child index in a multi-way tree
  *              and the right index becomes the sibling index.
+ *  2.          The object's misc2 field is being used by the Name
+ *              object.
  *
  * History
  *	06/30/2015  Generated
