@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 06/05/2017 21:57:10
+ *	Generated 12/18/2019 08:00:17
  */
 
 
@@ -24,13 +25,13 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <bitSet_internal.h>
+#include    <BitSet_internal.h>
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -42,9 +43,9 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -74,66 +75,107 @@ int         tearDown(
 
 
 
-int         test_bitSet_OpenClose(
+int             test_BitSet_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    BITSET_DATA	*pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    BITSET_DATA	    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pObj = bitSet_Alloc(0);
+
+    pObj = BitSet_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = bitSet_Init( pObj );
+    pObj = BitSet_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);       
+        
         // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_bitSet_GetPut01(
+int         test_BitSet_GetPut01(
     const
     char        *pTestName
 )
 {
-    BITSET_DATA	*pObj = OBJ_NIL;
-    uint16_t    i;
-    ERESULT     eRc;
-    ASTR_DATA   *pStr;
-    bool        fRc;
+    BITSET_DATA     *pObj = OBJ_NIL;
+    BITSET_DATA     *pObj2 = OBJ_NIL;
+    uint32_t        i;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr;
+    bool            fRc;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = bitSet_Alloc(16);
+    pObj = BitSet_Alloc();
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = bitSet_Init( pObj );
+    pObj = BitSet_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pStr = bitSet_ToDebugString(pObj, 0);
-        fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+        pStr = BitSet_ToDebugString(pObj, 0);
+        fprintf(stderr, "Initial:\n%s\n\n\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        for (i=0; i<16; ++i) {
-            eRc = bitSet_Set(pObj, i+1, true);
+        for (i=0; i<33; ++i) {
+            eRc = BitSet_Set(pObj, i+1, true);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-            fRc = bitSet_Get(pObj, i+1);
+            fRc = BitSet_Get(pObj, i+1);
             XCTAssertTrue( (fRc) );
+            pStr = BitSet_ToDebugString(pObj, 3);
+            fprintf(stderr, "After setting bit %d:\n%s\n\n\n", i+1, AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
         }
-        pStr = bitSet_ToDebugString(pObj, 0);
-        fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+        pStr = BitSet_ToDebugString(pObj, 0);
+        fprintf(stderr, "After setting 33 bits:\n%s\n\n\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
+        
+        pObj2 = BitSet_New();
+        XCTAssertFalse( (OBJ_NIL == pObj2) );
+        eRc = BitSet_Expand(pObj2, 33);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        eRc = BitSet_SetAll(pObj2);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        pStr = BitSet_ToDebugString(pObj2, 0);
+        fprintf(stderr, "After SetAll(pObj2):\n%s\n\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        eRc = BitSet_Zero(pObj2);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        pStr = BitSet_ToDebugString(pObj2, 0);
+        fprintf(stderr, "After SetEmpty(pObj2):\n%s\n\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        eRc = BitSet_Invert(pObj2);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        pStr = BitSet_ToDebugString(pObj2, 0);
+        fprintf(stderr, "After Invert(pObj2):\n%s\n\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        eRc = BitSet_Invert(pObj2);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        pStr = BitSet_ToDebugString(pObj2, 0);
+        fprintf(stderr, "After Invert2(pObj2):\n%s\n\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -146,12 +188,12 @@ int         test_bitSet_GetPut01(
 
 
 
-TINYTEST_START_SUITE(test_bitSet);
-  TINYTEST_ADD_TEST(test_bitSet_GetPut01,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_bitSet_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_BitSet);
+    TINYTEST_ADD_TEST(test_BitSet_GetPut01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_BitSet_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_bitSet);
+TINYTEST_MAIN_SINGLE_SUITE(test_BitSet);
 
 
 

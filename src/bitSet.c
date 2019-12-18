@@ -1,8 +1,12 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   bitSet.c
- *	Generated 06/21/2015 14:16:25
+ * File:   BitSet.c
+ *	Generated 12/18/2019 08:00:17
  *
+ *  --  This object uses an Array object to store its data. However,
+ *      it does not use the Array's methods to manipulate the data.
+ *      Instead, it directly accesses the data.
+
  */
 
  
@@ -41,8 +45,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include "bitSet_internal.h"
-#include <stdio.h>
+#include        <BitSet_internal.h>
+#include        <trace.h>
+
+
+
 
 
 
@@ -59,6 +66,54 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    uint32_t        BitSet_GetInternal (
+        uint32_t        *pData,
+        uint32_t        index
+    )
+    {
+        uint32_t        i;
+        uint32_t        j;
+        
+        --index;
+        //i = index / 32;                    /* horizontal - word */
+        i = index >> 5;
+        //j = (32-1) - (index % 32);        /* horizontal - bit */
+        j = index & (32 - 1);
+
+        i = (pData[i] & (1 << j)) >> j;
+        
+        // Return to caller.
+        return i;
+    }
+    
+    
+    ERESULT         BitSet_SetInternal (
+        uint32_t        *pData,
+        uint32_t        index,
+        bool            value
+    )
+    {
+        uint32_t        i;
+        uint32_t        j;
+        
+        --index;
+        //i = index / 32;                    /* horizontal - word */
+        i = index >> 5;
+        //j = (32-1) - (index % 32);        /* horizontal - bit */
+        j = index & (32 - 1);
+        
+        if (value )
+            pData[i] |= (1 << j);
+        else
+            pData[i] &= ~(1 << j);
+        
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
 
 
     /****************************************************************
@@ -70,27 +125,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    BITSET_DATA *   bitSet_Alloc(
-        uint16_t        size            // set size (in bits)
+    BITSET_DATA *     BitSet_Alloc (
+        void
     )
     {
-        BITSET_DATA     *this;
+        BITSET_DATA       *this;
         uint32_t        cbSize = sizeof(BITSET_DATA);
-        uint16_t        alloc;
         
         // Do initialization.
         
-        if (0 == size) {
-            size = 256;
-        }
-        alloc = ROUNDUP32(size);
-        if (alloc < size) {
-            return OBJ_NIL;
-        }
-        cbSize += (alloc / 8);
-        this = obj_Alloc( cbSize );
-        obj_setMisc1(this, size);
-        obj_setMisc2(this, alloc);
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -98,92 +142,119 @@ extern "C" {
 
 
 
-    BITSET_DATA *  bitSet_New(
-        uint16_t        size
+    BITSET_DATA *     BitSet_New (
+        void
     )
     {
-        BITSET_DATA     *this;
-        //ERESULT         eRc;
+        BITSET_DATA       *this;
         
-        this = bitSet_Alloc( size );
-        this = bitSet_Init(this);
-        
-        // Return to caller.
+        this = BitSet_Alloc( );
+        if (this) {
+            this = BitSet_Init(this);
+        } 
         return this;
     }
-    
-    
-    
+
+
+
     
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
-    uint16_t        bitSet_getPriority(
-        BITSET_DATA     *cbp
+    //---------------------------------------------------------------
+    //                         D a t a
+    //---------------------------------------------------------------
+    
+    ARRAY_DATA * BitSet_getData (
+        BITSET_DATA *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!BitSet_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pData;
+    }
+    
+    
+    bool        BitSet_setData (
+        BITSET_DATA *this,
+        ARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!BitSet_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_DATA_OWNED
+        obj_Retain(pValue);
+        if (this->pData) {
+            obj_Release(this->pData);
+        }
+#endif
+        this->pData = pValue;
+        
+        return true;
+    }
+        
+        
+        
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        BitSet_getSize (
+        BITSET_DATA       *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!BitSet_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->cBits;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
+    
+    OBJ_IUNKNOWN *  BitSet_getSuperVtbl (
+        BITSET_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if (!BitSet_Validate(this)) {
             DEBUG_BREAK();
+            return 0;
         }
 #endif
 
-        //return cbp->priority;
-        return 0;
-    }
-
-    bool            bitSet_setPriority(
-        BITSET_DATA     *cbp,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !bitSet_Validate( cbp ) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        //cbp->priority = value;
-        return true;
-    }
-
-
-
-    uint16_t        bitSet_getSize(
-        BITSET_DATA       *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !bitSet_Validate( this ) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        return this->xMax;
-    }
-
-
-
-    uint16_t        bitSet_getSizeUsed(
-        BITSET_DATA       *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !bitSet_Validate( this ) ) {
-            DEBUG_BREAK();
-        }
-#endif
-        return this->cElems;
+        
+        return this->pSuperVtbl;
     }
     
-    
-    
+  
 
     
 
@@ -196,72 +267,147 @@ extern "C" {
     //                       A s s i g n
     //---------------------------------------------------------------
     
-    ERESULT         bitSet_Assign(
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before 
+     a copy of the object is performed.
+     Example:
+     @code 
+        ERESULT eRc = BitSet_Assign(this,pOther);
+     @endcode 
+     @param     this    object pointer
+     @param     pOther  a pointer to another BITSET object
+     @return    If successful, ERESULT_SUCCESS otherwise an 
+                ERESULT_* error 
+     */
+    ERESULT         BitSet_Assign (
         BITSET_DATA		*this,
-        BITSET_DATA		*pOther
+        BITSET_DATA     *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        uint32_t        i;
-        uint32_t        j;
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( this ) ) {
+        if (!BitSet_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !bitSet_Validate( pOther ) ) {
+        if (!BitSet_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
-        }
-        if( this->xMax == pOther->xMax )
-            ;
-        else {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
-        for (i=0; i<this->cElems; ++i) {
-            j = this->elems[i];
-            this->elems[i] = pOther->elems[i];
-            if (j != this->elems[i]) {
-                eRc = ERESULT_SUCCESS_DATA_CHANGED;
+
+        // Release objects and areas in other object.
+        if (pOther->pData) {
+            obj_Release(pOther->pData);
+            pOther->pData = OBJ_NIL;
+        }
+
+        // Create a copy of objects and areas in this object placing
+        // them in other.
+        if (this->pData) {
+            eRc = array_Assign(this->pData, pOther->pData);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                return eRc;
             }
         }
+
+        // Copy other data from this object to other.
+        pOther->cBits = this->cBits;
         
         // Return to caller.
-        return eRc;
+        return ERESULT_SUCCESS;
     }
     
     
     
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         BitSet_Compare (
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!BitSet_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!BitSet_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
+    
+   
+ 
     //---------------------------------------------------------------
     //                       C o n t a i n s
     //---------------------------------------------------------------
     
-    ERESULT         bitSet_Contains(
-        BITSET_DATA		*this,
-        BITSET_DATA		*pOther
+    ERESULT         BitSet_Contains (
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
     )
     {
         ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
-        BITSET_DATA		*pWork;
+        BITSET_DATA     *pWork;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( this ) ) {
+        if (!BitSet_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !bitSet_Validate( pOther ) ) {
+        if (!BitSet_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( this->xMax == pOther->xMax )
+        if (this->cBits == pOther->cBits)
             ;
         else {
             DEBUG_BREAK();
@@ -269,54 +415,64 @@ extern "C" {
         }
 #endif
         
-        pWork = bitSet_Copy(this);
+        pWork = BitSet_Copy(this);
         if (OBJ_NIL == pWork) {
             return ERESULT_INSUFFICIENT_MEMORY;
         }
         
-        eRc = bitSet_Intersect(pWork, pOther);
+        eRc = BitSet_Intersect(pWork, pOther);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            eRc = bitSet_IsEqual(pWork,pOther);
+            eRc = BitSet_IsEqual(pWork,pOther);
         }
         
         // Return to caller.
         return eRc;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     
-    BITSET_DATA *   bitSet_Copy(
-        BITSET_DATA		*this
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        BitSet      *pCopy = BitSet_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a BITSET object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    BITSET_DATA *     BitSet_Copy (
+        BITSET_DATA       *this
     )
     {
-        BITSET_DATA     *pOther;
-        uint32_t        i;
+        BITSET_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( this ) ) {
+        if (!BitSet_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-
-        pOther = bitSet_Alloc(this->xMax);
-        pOther = bitSet_Init(pOther);
-        if (OBJ_NIL == pOther) {
-            return OBJ_NIL;
-        }
         
-        for (i=0; i<this->cElems; ++i) {
-            pOther->elems[i] = this->elems[i];
+        pOther = BitSet_New( );
+        if (pOther) {
+            eRc = BitSet_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
         }
         
         // Return to caller.
-        return( pOther );
+        return pOther;
     }
     
     
@@ -325,11 +481,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            bitSet_Dealloc(
+    void            BitSet_Dealloc (
         OBJ_ID          objId
     )
     {
-        BITSET_DATA     *this = objId;
+        BITSET_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -337,14 +493,26 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( this ) ) {
+        if (!BitSet_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        obj_Dealloc( this );
-        this = NULL;
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((BITSET_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+        }
+#endif
+
+        BitSet_setData(this, OBJ_NIL);
+        this->cBits = 0;
+
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
 
         // Return to caller.
     }
@@ -352,26 +520,72 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          E l e m e n t
+    //                         E x p a n d
     //---------------------------------------------------------------
     
-    bool            bitSet_Element(
-        BITSET_DATA		*this,
-        uint16_t        index
+    ERESULT         BitSet_Expand (
+        BITSET_DATA     *this,
+        uint32_t        size
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        i;
-        uint32_t        j;
+        uint32_t        iMax;
         bool            fRc = false;
+        uint32_t        cBits;
+        uint32_t        *pData;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!BitSet_Validate(this)) {
+            DEBUG_BREAK();
+            return fRc;
+        }
+#endif
+        cBits = this->cBits;
+        
+        if (size > this->cBits) {
+            // Convert to bytes.
+            i = ROUNDUP32(size);
+            eRc = array_Expand(this->pData, (i >> 5));
+            this->cBits = size;
+            // Clear the high bits in the current highest word.
+            if (cBits) {
+                pData = (uint32_t *)array_getData(this->pData);
+                iMax = size - cBits;
+                for (i=0; i<iMax; i++) {
+                    eRc = BitSet_SetInternal(pData, cBits+i+1, false);
+                }
+            }
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+            
+            
+            
+    //---------------------------------------------------------------
+    //                              G e t
+    //---------------------------------------------------------------
+    
+    bool            BitSet_Get (
+        BITSET_DATA     *this,
+        uint32_t        index
+    )
+    {
+        bool            fRc = false;
+        uint32_t        *pData;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( this ) ) {
+        if(!BitSet_Validate(this)) {
             DEBUG_BREAK();
             return fRc;
         }
-        if ((index-1) < this->xMax)
+        if (index && ((index-1) < this->cBits))
             ;
         else {
             DEBUG_BREAK();
@@ -379,96 +593,71 @@ extern "C" {
         }
 #endif
         
-        --index;
-        //i = index / 32;			        /* horizontal - word */
-        i = index >> 5;
-        //j = (32-1) - (index % 32);	    /* horizontal - bit */
-        j = (32-1) - (index & 0x1F);
-        
-        if ( this->elems[i] & (1 << j) ) {
+        pData = (uint32_t *)array_getData(this->pData);
+        if (BitSet_GetInternal(pData, index)) {
             fRc = true;
         }
         
         // Return to caller.
         return fRc;
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          G e t
-    //---------------------------------------------------------------
-
-    bool            bitSet_Get(
-        BITSET_DATA		*this,
-        uint16_t        index
-    )
-    {
-        uint32_t        i;
-        uint32_t        j;
-        bool            fRc = false;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !bitSet_Validate( this ) ) {
-            DEBUG_BREAK();
-            return fRc;
-        }
-        if ((index-1) < this->xMax)
-            ;
-        else {
-            DEBUG_BREAK();
-            return fRc;
-        }
-    #endif
         
-        --index;
-        //i = index / 32;			        /* horizontal - word */
-        i = index >> 5;
-        //j = (32-1) - (index % 32);	    /* horizontal - bit */
-        j = (32-1) - (index & 0x1F);
         
-        if ( this->elems[i] & (1 << j) ) {
-            fRc = true;
-        }
         
-        // Return to caller.
-        return fRc;
-    }
-
-
-
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    BITSET_DATA *   bitSet_Init(
-        BITSET_DATA       *this
+    BITSET_DATA *   BitSet_Init (
+        BITSET_DATA     *this
     )
     {
+        uint32_t        cbSize = sizeof(BITSET_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
         
-        this = obj_Init( this, obj_getSize(this), OBJ_IDENT_BITSET );
-        if (OBJ_NIL == this) {
+        /* cbSize can be zero if Alloc() was not called and we are
+         * are passed the address of a zero'd area.
+         */
+        //cbSize = obj_getSize(this);       // cbSize must be set in Alloc().
+        if (cbSize == 0) {
+            DEBUG_BREAK();
+            obj_Release(this);
             return OBJ_NIL;
         }
+
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BITSET);
+        if (OBJ_NIL == this) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&bitSet_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&BitSet_Vtbl);
         
-        this->xMax = obj_getMisc1(this);
-        this->cElems = obj_getMisc2(this) / 32;
+        this->pData = array_NewWithSize(4); // Allocate in 4 byte groups.
+        if (OBJ_NIL == this->pData) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
-        if( !bitSet_Validate(this) ) {
+        if (!BitSet_Validate(this)) {
             DEBUG_BREAK();
+            obj_Release(this);
             return OBJ_NIL;
         }
-        //BREAK_NOT_BOUNDARY4(&this->thread);
+#ifdef __APPLE__
+        //fprintf(stderr, "BitSet::sizeof(BITSET_DATA) = %lu\n", sizeof(BITSET_DATA));
+#endif
+        BREAK_NOT_BOUNDARY4(sizeof(BITSET_DATA));
     #endif
 
         return this;
@@ -480,27 +669,30 @@ extern "C" {
     //                       I n t e r s e c t
     //---------------------------------------------------------------
     
-    ERESULT         bitSet_Intersect(
-        BITSET_DATA		*this,
-        BITSET_DATA		*pOther
+    ERESULT         BitSet_Intersect (
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        *pData1;
+        uint32_t        *pData2;
         uint32_t        i;
+        uint32_t        iMax;
         uint32_t        j;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( this ) ) {
+        if( !BitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !bitSet_Validate( pOther ) ) {
+        if( !BitSet_Validate( pOther ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( this->xMax == pOther->xMax )
+        if( this->cBits == pOther->cBits )
             ;
         else {
             DEBUG_BREAK();
@@ -508,14 +700,17 @@ extern "C" {
         }
 #endif
         
-        for (i=0; i<this->cElems; ++i) {
-            j = this->elems[i];
-            this->elems[i] &= pOther->elems[i];
-            if (j != this->elems[i]) {
+        pData1 = (uint32_t *)array_getData(this->pData);
+        pData2 = (uint32_t *)array_getData(pOther->pData);
+        iMax = (ROUNDUP32(this->cBits) >> 5);
+        for (i=0; i<iMax; ++i) {
+            j = pData1[i];
+            pData1[i] &= pData2[i];
+            if (j != pData1[i]) {
                 eRc = ERESULT_SUCCESS_DATA_CHANGED;
             }
         }
-        
+
         // Return to caller.
         return eRc;
     }
@@ -526,52 +721,60 @@ extern "C" {
     //                         I n v e r t
     //---------------------------------------------------------------
     
-    ERESULT         bitSet_Invert(
-        BITSET_DATA		*this
+    ERESULT         BitSet_Invert (
+        BITSET_DATA     *this
     )
     {
+        uint32_t        *pData;
         uint32_t        i;
-        
+        uint32_t        iMax;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( this ) ) {
+        if( !BitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        for (i=0; i<this->cElems; ++i) {
-            this->elems[i] = ~this->elems[i];
+        pData = (uint32_t *)array_getData(this->pData);
+        iMax = (ROUNDUP32(this->cBits) >> 5);
+        for (i=0; i<iMax; ++i) {
+            pData[i] = ~pData[i];
         }
 
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                         I s E m p t y
     //---------------------------------------------------------------
     
-    ERESULT         bitSet_IsEmpty(
-        BITSET_DATA		*this
+    ERESULT         BitSet_IsEmpty (
+        BITSET_DATA     *this
     )
     {
+        uint32_t        *pData;
         uint32_t        i;
-        
+        uint32_t        iMax;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( this ) ) {
+        if( !BitSet_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        for (i=0; i<this->cElems; ++i) {
-            if (this->elems[i]) {
+        pData = (uint32_t *)array_getData(this->pData);
+        iMax = (ROUNDUP32(this->cBits) >> 5);
+        for (i=0; i<iMax; ++i) {
+            if (pData[i]) {
                 return ERESULT_SUCCESS_FALSE;
             }
         }
@@ -583,38 +786,72 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       I s  E q u a l
+    //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         bitSet_IsEqual(
-        BITSET_DATA		*cbp,
-        BITSET_DATA		*pOther
+    ERESULT         BitSet_IsEnabled (
+        BITSET_DATA		*this
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_TRUE;
-        uint32_t        i;
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if (!BitSet_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !bitSet_Validate( pOther ) ) {
+#endif
+        
+        if (obj_IsEnabled(this)) {
+            return ERESULT_SUCCESS_TRUE;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS_FALSE;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       I s  E q u a l
+    //---------------------------------------------------------------
+    
+    ERESULT         BitSet_IsEqual (
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS_TRUE;
+        uint32_t        *pData1;
+        uint32_t        *pData2;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !BitSet_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( cbp->xMax == pOther->xMax )
+        if( !BitSet_Validate( pOther ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( this->cBits == pOther->cBits )
             ;
         else {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
-        for (i=0; i<cbp->cElems; ++i) {
-            if (cbp->elems[i] == pOther->elems[i])
+        pData1 = (uint32_t *)array_getData(this->pData);
+        pData2 = (uint32_t *)array_getData(pOther->pData);
+        iMax = (ROUNDUP32(this->cBits) >> 5);
+        for (i=0; i<iMax; ++i) {
+            if (pData1[i] == pData2[i])
                 ;
             else {
                 eRc = ERESULT_SUCCESS_FALSE;
@@ -625,6 +862,122 @@ extern "C" {
         // Return to caller.
         return eRc;
     }
+        
+        
+        
+    //---------------------------------------------------------------
+    //                     Q u e r y  I n f o
+    //---------------------------------------------------------------
+    
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+        // Return a method pointer for a string or NULL if not found. 
+        void        *pMethod = BitSet_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode 
+     @param     objId   object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
+                        character string which represents the method name without
+                        the object name, "BitSet", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          BitSet_QueryInfo (
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    )
+    {
+        BITSET_DATA     *this = objId;
+        const
+        char            *pStr = pData;
+        
+        if (OBJ_NIL == this) {
+            return NULL;
+        }
+#ifdef NDEBUG
+#else
+        if (!BitSet_Validate(this)) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        switch (type) {
+                
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(BITSET_DATA);
+            break;
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)BitSet_Class();
+                break;
+                
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
+                return (void *)obj_getInfo(this);
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_METHOD:
+                switch (*pStr) {
+                        
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return BitSet_ToDebugString;
+                        }
+#ifdef  SRCREF_JSON_SUPPORT
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return BitSet_ToJson;
+                        }
+#endif
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == BitSet_ToDebugString)
+                    return "ToDebugString";
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == BitSet_ToJson)
+                    return "ToJson";
+#endif
+                break;
+                
+            default:
+                break;
+        }
+        
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
+    }
     
     
     
@@ -632,102 +985,98 @@ extern "C" {
     //                          S e t
     //---------------------------------------------------------------
     
-    ERESULT         bitSet_Set(
-        BITSET_DATA		*cbp,
-        uint16_t        index,
+    ERESULT         BitSet_Set (
+        BITSET_DATA     *this,
+        uint32_t        index,
         bool            value
     )
     {
-        uint32_t        i;
-        uint32_t        j;
+        ERESULT         eRc;
+        uint32_t        *pData;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !BitSet_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if ((index-1) < cbp->xMax)
-            ;
-        else {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
         
-        --index;
-        //i = index / 32;			        /* horizontal - word */
-        i = index >> 5;
-        //j = (32-1) - (index % 32);	    /* horizontal - bit */
-        j = (32-1) - (index & 0x1F);
-        
-        if (value )
-            cbp->elems[i] |= (1 << j);
-        else
-            cbp->elems[i] &= ~(1 << j);
-        
+        if (index > this->cBits) {
+            eRc = BitSet_Expand(this, index);
+        }
+        pData = (uint32_t *)array_getData(this->pData);
+
+        BitSet_SetInternal(pData, index, value);
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
     
     //---------------------------------------------------------------
-    //                         S e t  E m p t y
+    //                         S e t  A l l
     //---------------------------------------------------------------
     
-    ERESULT         bitSet_SetEmpty(
-        BITSET_DATA		*cbp
+    ERESULT         BitSet_SetAll(
+        BITSET_DATA     *this
     )
     {
+        uint32_t        *pData;
         uint32_t        i;
-        
+        uint32_t        iMax;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !BitSet_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        for (i=0; i<cbp->cElems; ++i) {
-            cbp->elems[i] = 0;
+        pData = (uint32_t *)array_getData(this->pData);
+        iMax = (ROUNDUP32(this->cBits) >> 5);
+        for (i=0; i<iMax; ++i) {
+            pData[i] = -1;
         }
         
         // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                       S u b t r a c t
     //---------------------------------------------------------------
     
-    ERESULT         bitSet_Subtract(
-        BITSET_DATA		*cbp,
-        BITSET_DATA		*pOther
+    ERESULT         BitSet_Subtract(
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        *pData1;
+        uint32_t        *pData2;
         uint32_t        i;
+        uint32_t        iMax;
         uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !BitSet_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !bitSet_Validate( pOther ) ) {
+        if( !BitSet_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( cbp->xMax == pOther->xMax )
+        if( this->cBits == pOther->cBits )
             ;
         else {
             DEBUG_BREAK();
@@ -735,10 +1084,13 @@ extern "C" {
         }
 #endif
         
-        for (i=0; i<cbp->cElems; ++i) {
-            j = cbp->elems[i];
-            cbp->elems[i] &= ~pOther->elems[i];
-            if (j != cbp->elems[i]) {
+        pData1 = (uint32_t *)array_getData(this->pData);
+        pData2 = (uint32_t *)array_getData(pOther->pData);
+        iMax = array_getSizeInBytes(this->pData) >> 2;
+        for (i=0; i<iMax; ++i) {
+            j = pData1[i];
+            pData1[i] &= ~pData2[i];
+            if (j != pData1[i]) {
                 eRc = ERESULT_SUCCESS_DATA_CHANGED;
             }
         }
@@ -746,6 +1098,82 @@ extern "C" {
         // Return to caller.
         return eRc;
     }
+        
+        
+        
+    //---------------------------------------------------------------
+    //                       T o  A r r a y
+    //---------------------------------------------------------------
+    
+    U32ARRAY_DATA * BitSet_ToArrayU32 (
+        BITSET_DATA     *this
+    )
+    {
+        ERESULT         eRc;
+        U32ARRAY_DATA   *pArray;
+        uint32_t        i;
+        
+#ifdef NDEBUG
+#else
+        if (!BitSet_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pArray = u32Array_New();
+        if (pArray) {
+            for (i=0; i<this->cBits; i++) {
+                if (BitSet_Get(this, i+1)) {
+                    eRc = u32Array_AppendData(pArray, i+1);
+                }
+            }
+            
+        }
+        
+        return pArray;
+    }
+    
+        
+        
+    //---------------------------------------------------------------
+    //                       T o  J S O N
+    //---------------------------------------------------------------
+    
+#ifdef  BITSET_JSON_SUPPORT
+     ASTR_DATA *     BitSet_ToJson (
+        BITSET_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        //int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if (!BitSet_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        if (pStr) {
+            eRc =   AStr_AppendPrint(
+                        pStr,
+                        "{\"objectType\":\"%s\"",
+                        pInfo->pClassName
+                    );
+            
+            AStr_AppendA(pStr, "}\n");
+        }
+        
+        return pStr;
+    }
+#endif
     
     
     
@@ -753,139 +1181,114 @@ extern "C" {
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
-    ASTR_DATA *     bitSet_ToDataString(
-        BITSET_DATA		*this
-    )
-    {
-        char            str[256];
-        uint32_t        j;
-        uint32_t        jMax;
-        ASTR_DATA       *pStr;
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        pStr = AStr_New();
-        
-        jMax = this->cElems;
-        for (j=0; j<jMax-1; ++j) {
-            j = snprintf(
-                         str,
-                         sizeof(str),
-                         "\t0x%08X, ",
-                         this->elems[j]
-                );
-            AStr_AppendA(pStr, str);
-        }
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "\t0x%08X",
-                     this->elems[jMax-1]
-            );
-        AStr_AppendA(pStr, str);
-        
-        return pStr;
-    }
-    
-    
-    
-    ASTR_DATA *     bitSet_ToDebugString(
-        BITSET_DATA		*cbp,
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = BitSet_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     BitSet_ToDebugString (
+        BITSET_DATA      *this,
         int             indent
     )
     {
-        char            str[256];
-        int             j;
-        int             x;
+        ERESULT         eRc;
+        //int             j;
         ASTR_DATA       *pStr;
-        
-        if (OBJ_NIL == cbp) {
+        //ASTR_DATA       *pWrkStr;
+        const
+        OBJ_INFO        *pInfo;
+        uint32_t        *pData;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BitSet_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+              
+        pInfo = obj_getInfo(this);
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
             return OBJ_NIL;
         }
         
-        pStr = AStr_New();
-        AStr_AppendCharRepeatA(pStr, indent, ' ');
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(bitset) xMax=%d  size=%d\n",
-                     cbp,
-                     cbp->xMax,
-                     cbp->cElems
-                     );
-        AStr_AppendA(pStr, str);
-        
-        AStr_AppendCharRepeatA(pStr, indent+3, ' ');
-        AStr_AppendA(pStr, " ");
-        for (x=1; x<=cbp->xMax; ++x) {
-            AStr_AppendCharRepeatW32(pStr, 1, '0'+(x % 10));
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        AStr_AppendA(pStr, "\n");
-        AStr_AppendCharRepeatA(pStr, indent+3, ' ');
-        AStr_AppendA(pStr, "|");
-        for (x=1; x<=cbp->xMax; ++x) {
-            if (bitSet_Get(cbp, x)) {
-                AStr_AppendA(pStr, "1");
-            }
-            else {
-                AStr_AppendA(pStr, " ");
-            }
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "{%p(%s) size=%d arraySize=%d,%d retain=%d\n",
+                    this,
+                    pInfo->pClassName,
+                    BitSet_getSize(this),
+                    array_getSize(this->pData),
+                    array_getSizeInBytes(this->pData),
+                    obj_getRetainCount(this)
+            );
+
+        pData = (uint32_t *)array_getData(this->pData);
+        eRc =   AStr_AppendHexData(
+                                 pStr,
+                                 pData,
+                                 (ROUNDUP32(this->cBits) >> 3),
+                                 indent+3
+                );
+
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        AStr_AppendA(pStr, "|\n");
-        AStr_AppendCharRepeatA(pStr, indent, ' ');
-        j = snprintf( str, sizeof(str), " %p(bitset)}\n", cbp );
-        AStr_AppendA(pStr, str);
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    " %p(%s)}\n", 
+                    this, 
+                    pInfo->pClassName
+                );
         
         return pStr;
     }
     
     
-    ASTR_DATA *     bitSet_ToUint32String(
-        BITSET_DATA     *this,
-        const
-        char            *pName
+    ASTR_DATA *     bitSet_ToString(
+        BITSET_DATA        *this
     )
     {
+        ERESULT         eRc;
+        uint32_t        *pData;
         uint32_t        i;
+        uint32_t        iMax;
         ASTR_DATA       *pStr;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( this ) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        if( NULL == pName ) {
+        if (!BitSet_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-        
+                      
         pStr = AStr_New();
-        AStr_AppendPrint(
-                         pStr,
-                         "static\nconst\nuint32_t\t%s[%d] = {\n",
-                         pName,
-                         this->cElems
-        );
-        
-        for (i=0; i<this->cElems-1; ++i) {
-            AStr_AppendPrint(
-                             pStr,
-                             "\t0x%08X,\n",
-                             this->elems[i]
-            );
+        if (0 == this->cBits) {
+            return pStr;
         }
-        AStr_AppendPrint(
-                         pStr,
-                         "\t0x%08X\n};\n",
-                         this->elems[this->cElems-1]
-        );
         
-        // Return to caller.
+        pData = (uint32_t *)array_getData(this->pData);
+        iMax = array_getSizeInBytes(this->pData) >> 2;
+        for (i=0; i<iMax-1; i++) {
+            eRc = AStr_AppendPrint(pStr, "0x08X, ", pData[i]);
+        }
+        eRc = AStr_AppendPrint(pStr, "0x08X", pData[i]);
+        
         return pStr;
     }
     
@@ -895,29 +1298,30 @@ extern "C" {
     //                          U n i o n
     //---------------------------------------------------------------
     
-    ERESULT         bitSet_Union(
-        BITSET_DATA		*cbp,
-        BITSET_DATA		*pOther
+    ERESULT         BitSet_Union(
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        *pData1;
+        uint32_t        *pData2;
         uint32_t        i;
+        uint32_t        iMax;
         uint32_t        j;
-        uint32_t        *pCbpW;
-        uint32_t        *pOtrW;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !bitSet_Validate( cbp ) ) {
+        if( !BitSet_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !bitSet_Validate( pOther ) ) {
+        if( !BitSet_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( cbp->xMax == pOther->xMax )
+        if( this->cBits == pOther->cBits )
             ;
         else {
             DEBUG_BREAK();
@@ -925,44 +1329,56 @@ extern "C" {
         }
 #endif
         
-        pCbpW = cbp->elems;
-        pOtrW = pOther->elems;
-        for (i=0; i<cbp->cElems; ++i) {
-            j = *pCbpW;
-            *pCbpW |= *pOtrW;
-            if (j != *pCbpW) {
+        pData1 = (uint32_t *)array_getData(this->pData);
+        pData2 = (uint32_t *)array_getData(pOther->pData);
+        iMax = array_getSizeInBytes(this->pData) >> 2;
+        for (i=0; i<iMax; ++i) {
+            j = pData1[i];
+            pData1[i] |= pData2[i];
+            if (j != pData1[i]) {
                 eRc = ERESULT_SUCCESS_DATA_CHANGED;
             }
-            ++pCbpW;
-            ++pOtrW;
         }
-        
+
         // Return to caller.
         return eRc;
     }
-    
-    
-    
+        
+        
+        
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
     #ifdef NDEBUG
     #else
-    bool            bitSet_Validate(
-        BITSET_DATA      *cbp
+    bool            BitSet_Validate (
+        BITSET_DATA      *this
     )
     {
-        if( cbp ) {
-            if ( obj_IsKindOf(cbp,OBJ_IDENT_BITSET) )
+ 
+        // WARNING: We have established that we have a valid pointer
+        //          in 'this' yet.
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_BITSET))
                 ;
-            else
+            else {
+                // 'this' is not our kind of data. We really don't
+                // know what that it is at this point. 
                 return false;
+            }
         }
-        else
+        else {
+            // 'this' is NULL.
             return false;
-        if( !(obj_getSize(cbp) >= sizeof(BITSET_DATA)) )
+        }
+        // Now, we have validated that we have a valid pointer in
+        // 'this'.
+
+
+        if (!(obj_getSize(this) >= sizeof(BITSET_DATA))) {
             return false;
+        }
 
         // Return to caller.
         return true;
@@ -971,7 +1387,40 @@ extern "C" {
 
 
     
+    //---------------------------------------------------------------
+    //                         Z e r o
+    //---------------------------------------------------------------
     
+    ERESULT         BitSet_Zero(
+        BITSET_DATA     *this
+    )
+    {
+        uint32_t        *pData;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !BitSet_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        pData = (uint32_t *)array_getData(this->pData);
+        iMax = (ROUNDUP32(this->cBits) >> 5);
+        for (i=0; i<iMax; ++i) {
+            pData[i] = 0;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+        
+        
+        
+
     
 #ifdef	__cplusplus
 }

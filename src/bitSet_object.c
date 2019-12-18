@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'bitSet'
-//	Generated 05/10/2016 22:49:28
+//	Class Object Metods and Tables for 'BitSet'
+//	Generated 12/18/2019 08:00:17
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,24 +32,32 @@
  */
 
 
+
+
 #define			BITSET_OBJECT_C	    1
-#include        "bitSet_internal.h"
+#include        <BitSet_internal.h>
+#ifdef  BITSET_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
-//-----------------------------------------------------------
+//===========================================================
 //                  Class Object Definition
-//-----------------------------------------------------------
+//===========================================================
 
-struct bitSet_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct BitSet_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  BITSET_SINGLETON
+    volatile
+    BITSET_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
+    //OBJ_ID          pObjCatalog;
 };
-typedef struct bitSet_class_data_s BITSET_CLASS_DATA;
 
 
 
@@ -60,34 +69,47 @@ typedef struct bitSet_class_data_s BITSET_CLASS_DATA;
 
 
 static
-const
-OBJ_INFO        bitSet_Info;            // Forward Reference
-
-
-
-OBJ_ID          bitSet_Class(
-    void
+void *          BitSetClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
 );
+
+
+static
+const
+OBJ_INFO        BitSet_Info;            // Forward Reference
+
 
 
 
 static
-bool            bitSet_ClassIsKindOf(
+bool            BitSetClass_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_BITSET_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(BitSet_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		BitSetClass_WhoAmI (
     void
 )
 {
@@ -95,18 +117,26 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
-	&bitSet_Info,
-    bitSet_ClassIsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    bitSet_Class,
-    obj_ClassWhoAmI,
-    NULL,                       // class_QueryInfo
-    NULL                        // class_ToDebugString
+BITSET_CLASS_VTBL    class_Vtbl = {
+    {
+        &BitSet_Info,
+        BitSetClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        BitSet_Class,
+        BitSetClass_WhoAmI,
+        (P_OBJ_QUERYINFO)BitSetClass_QueryInfo,
+        NULL                        // BitSetClass_ToDebugString
+    },
 };
 
 
@@ -115,53 +145,234 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-static
-const
-BITSET_CLASS_DATA  bitSet_ClassObj = {
+BITSET_CLASS_DATA  BitSet_ClassObj = {
     {
-        &obj_Vtbl,                          // pVtbl
-        sizeof(BITSET_CLASS_DATA),          // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(BITSET_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
     },
 	//0
 };
 
 
 
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  BITSET_SINGLETON
+BITSET_DATA *     BitSet_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(BitSet_ClassObj.pSingleton);
+}
+
+
+bool            BitSet_setSingleton (
+    BITSET_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (BitSet_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(BitSet_ClassObj.pSingleton));
+    }
+    BitSet_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+BITSET_DATA *     BitSet_Shared (
+    void
+)
+{
+    BITSET_DATA       *this = (OBJ_ID)(BitSet_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = BitSet_New( );
+        BitSet_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // BitSet_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            BitSet_SharedReset (
+    void
+)
+{
+    BITSET_DATA       *this = (OBJ_ID)(BitSet_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        BitSet_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
+
+
+
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
 static
-bool            bitSet_IsKindOf(
+void *          BitSetClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    BITSET_CLASS_DATA *this = objId;
+    const
+    char            *pStr = pData;
+    
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
+    switch (type) {
+      
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(BITSET_DATA);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&BitSet_Info;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return BitSet_New;
+                    }
+                    break;
+                    
+                case 'P':
+                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
+                        //return BitSet_ParseJsonObject;
+                    }
+                    break;
+ 
+                 case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return BitSetClass_WhoAmI;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
+
+
+
+static
+bool            BitSet_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_BITSET == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(BitSet_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            bitSet_Dealloc(
+void            BitSet_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          bitSet_Class(
+OBJ_ID          BitSet_Class (
     void
 )
 {
-    return (OBJ_ID)&bitSet_ClassObj;
+    return (OBJ_ID)&BitSet_ClassObj;
 }
 
 
 static
-uint16_t		bitSet_WhoAmI(
+uint16_t		BitSet_WhoAmI (
     void
 )
 {
@@ -169,29 +380,42 @@ uint16_t		bitSet_WhoAmI(
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
-BITSET_VTBL     bitSet_Vtbl = {
+BITSET_VTBL     BitSet_Vtbl = {
     {
-        &bitSet_Info,
-        bitSet_IsKindOf,
+        &BitSet_Info,
+        BitSet_IsKindOf,
+#ifdef  BITSET_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
-        bitSet_Dealloc,
-        bitSet_Class,
-        bitSet_WhoAmI,
-        NULL,
-        (P_OBJ_TOSTRING)bitSet_ToDebugString,
-        NULL,			// bitSet_Enable,
-        NULL,			// bitSet_Disable,
-        NULL,			// (P_OBJ_ASSIGN)bitSet_Assign,
-        NULL,			// (P_OBJ_COMPARE)bitSet_Compare,
-        NULL, 			// (P_OBJ_PTR)bitSet_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
-        NULL 			// (P_OBJ_HASH)bitSet_Hash
+#endif
+        BitSet_Dealloc,
+        BitSet_Class,
+        BitSet_WhoAmI,
+        (P_OBJ_QUERYINFO)BitSet_QueryInfo,
+        (P_OBJ_TOSTRING)BitSet_ToDebugString,
+        NULL,			// BitSet_Enable,
+        NULL,			// BitSet_Disable,
+        NULL,			// (P_OBJ_ASSIGN)BitSet_Assign,
+        NULL,			// (P_OBJ_COMPARE)BitSet_Compare,
+        NULL, 			// (P_OBJ_PTR)BitSet_Copy,
+        NULL, 			// (P_OBJ_PTR)BitSet_DeepCopy,
+        NULL 			// (P_OBJ_HASH)BitSet_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
+    //BitSet_IsEnabled,
  
 };
 
@@ -199,12 +423,12 @@ BITSET_VTBL     bitSet_Vtbl = {
 
 static
 const
-OBJ_INFO        bitSet_Info = {
-    "bitSet",
+OBJ_INFO        BitSet_Info = {
+    "BitSet",
     "Set of Bits",
-    (OBJ_DATA *)&bitSet_ClassObj,
+    (OBJ_DATA *)&BitSet_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&bitSet_Vtbl,
+    (OBJ_IUNKNOWN *)&BitSet_Vtbl,
     sizeof(BITSET_DATA)
 };
 

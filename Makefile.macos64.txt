@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/17/2019 16:41:00.000)
+# (12/18/2019 20:09:59.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -94,6 +94,31 @@ $(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_int
 OBJS += $(OBJDIR)/AStr_object.o
 
 $(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BitMatrix.o
+
+$(OBJDIR)/BitMatrix.o: $(SRCDIR)/BitMatrix.c $(SRCDIR)/AStr.h $(SRCDIR)/BitMatrix.h $(SRCDIR)/BitMatrix_internal.h $(SRCDIR)/BitSet.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BitMatrix_json.o
+
+$(OBJDIR)/BitMatrix_json.o: $(SRCDIR)/BitMatrix_json.c $(SRCDIR)/BitMatrix.h $(SRCDIR)/BitMatrix_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/BitSet.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BitMatrix_object.o
+
+$(OBJDIR)/BitMatrix_object.o: $(SRCDIR)/BitMatrix_object.c $(SRCDIR)/AStr.h $(SRCDIR)/BitMatrix.h $(SRCDIR)/BitMatrix_internal.h $(SRCDIR)/BitSet.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BitSet.o
+
+$(OBJDIR)/BitSet.o: $(SRCDIR)/BitSet.c $(SRCDIR)/BitSet.h $(SRCDIR)/BitSet_internal.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BitSet_object.o
+
+$(OBJDIR)/BitSet_object.o: $(SRCDIR)/BitSet_object.c $(SRCDIR)/BitSet.h $(SRCDIR)/BitSet_internal.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/FileRef.o
@@ -254,31 +279,6 @@ $(OBJDIR)/audioWAV.o: $(SRCDIR)/audioWAV.c $(SRCDIR)/AStr.h $(SRCDIR)/audioWAV.h
 OBJS += $(OBJDIR)/audioWAV_object.o
 
 $(OBJDIR)/audioWAV_object.o: $(SRCDIR)/audioWAV_object.c $(SRCDIR)/AStr.h $(SRCDIR)/audioWAV.h $(SRCDIR)/audioWAV_internal.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bitMatrix.o
-
-$(OBJDIR)/bitMatrix.o: $(SRCDIR)/bitMatrix.c $(SRCDIR)/AStr.h $(SRCDIR)/bitMatrix.h $(SRCDIR)/bitMatrix_internal.h $(SRCDIR)/bitSet.h $(SRCDIR)/u16Matrix.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bitMatrix_json.o
-
-$(OBJDIR)/bitMatrix_json.o: $(SRCDIR)/bitMatrix_json.c $(SRCDIR)/bitMatrix.h $(SRCDIR)/bitMatrix_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/bitSet.h $(SRCDIR)/u16Matrix.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bitMatrix_object.o
-
-$(OBJDIR)/bitMatrix_object.o: $(SRCDIR)/bitMatrix_object.c $(SRCDIR)/AStr.h $(SRCDIR)/bitMatrix.h $(SRCDIR)/bitMatrix_internal.h $(SRCDIR)/bitSet.h $(SRCDIR)/u16Matrix.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bitSet.o
-
-$(OBJDIR)/bitSet.o: $(SRCDIR)/bitSet.c $(SRCDIR)/bitSet.h $(SRCDIR)/bitSet_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bitSet_object.o
-
-$(OBJDIR)/bitSet_object.o: $(SRCDIR)/bitSet_object.c $(SRCDIR)/bitSet.h $(SRCDIR)/bitSet_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/blkdrcds16.o
@@ -1316,16 +1316,6 @@ OBJS += $(OBJDIR)/screen_object.o
 $(OBJDIR)/screen_object.o: $(SRCDIR)/screen_object.c $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/screen.h $(SRCDIR)/screen_internal.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/sgraph.o
-
-$(OBJDIR)/sgraph.o: $(SRCDIR)/sgraph.c $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/sgraph.h $(SRCDIR)/sgraph_internal.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/sgraph_object.o
-
-$(OBJDIR)/sgraph_object.o: $(SRCDIR)/sgraph_object.c $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/sgraph.h $(SRCDIR)/sgraph_internal.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/shellSortPtrs.o
 
 $(OBJDIR)/shellSortPtrs.o: $(SRCDIR)/shellSortPtrs.c $(SRCDIR)/cmn_defs.h 
@@ -1484,16 +1474,6 @@ $(OBJDIR)/table.o: $(SRCDIR)/table.c $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRC
 OBJS += $(OBJDIR)/table_object.o
 
 $(OBJDIR)/table_object.o: $(SRCDIR)/table_object.c $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/listdl.h $(SRCDIR)/table.h $(SRCDIR)/table_internal.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/ternary.o
-
-$(OBJDIR)/ternary.o: $(SRCDIR)/ternary.c $(SRCDIR)/AStr.h $(SRCDIR)/blocks.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/ternary.h $(SRCDIR)/ternary_internal.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/ternary_object.o
-
-$(OBJDIR)/ternary_object.o: $(SRCDIR)/ternary_object.c $(SRCDIR)/AStr.h $(SRCDIR)/blocks.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/ternary.h $(SRCDIR)/ternary_internal.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/textIn.o
@@ -1736,6 +1716,18 @@ AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += BitMatrix_test
+
+BitMatrix_test: $(TEST_SRC)/BitMatrix_test.c $(SRCDIR)/BitMatrix.h $(SRCDIR)/BitMatrix_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/BitSet.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += BitSet_test
+
+BitSet_test: $(TEST_SRC)/BitSet_test.c $(SRCDIR)/BitSet.h $(SRCDIR)/BitSet_internal.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += FileRef_test
 
 FileRef_test: $(TEST_SRC)/FileRef_test.c $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/AStrC.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
@@ -1823,18 +1815,6 @@ audioCW_test: $(TEST_SRC)/audioCW_test.c $(SRCDIR)/audioCW.h $(SRCDIR)/audioCW_i
 TESTS += audioWAV_test
 
 audioWAV_test: $(TEST_SRC)/audioWAV_test.c $(SRCDIR)/audioWAV.h $(SRCDIR)/audioWAV_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += bitMatrix_test
-
-bitMatrix_test: $(TEST_SRC)/bitMatrix_test.c $(SRCDIR)/bitMatrix.h $(SRCDIR)/bitMatrix_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/bitSet.h $(SRCDIR)/u16Matrix.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += bitSet_test
-
-bitSet_test: $(TEST_SRC)/bitSet_test.c $(SRCDIR)/bitSet.h $(SRCDIR)/bitSet_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2408,12 +2388,6 @@ screen_test: $(TEST_SRC)/screen_test.c $(SRCDIR)/screen.h $(SRCDIR)/screen_inter
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += sgraph_test
-
-sgraph_test: $(TEST_SRC)/sgraph_test.c $(SRCDIR)/sgraph.h $(SRCDIR)/sgraph_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += sidx_test
 
 sidx_test: $(TEST_SRC)/sidx_test.c $(SRCDIR)/sidx.h $(SRCDIR)/sidx_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
@@ -2495,12 +2469,6 @@ szTbl_test: $(TEST_SRC)/szTbl_test.c $(SRCDIR)/szTbl.h $(SRCDIR)/szTbl_internal.
 TESTS += table_test
 
 table_test: $(TEST_SRC)/table_test.c $(SRCDIR)/table.h $(SRCDIR)/table_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h $(SRCDIR)/listdl.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += ternary_test
-
-ternary_test: $(TEST_SRC)/ternary_test.c $(SRCDIR)/ternary.h $(SRCDIR)/ternary_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/blocks.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

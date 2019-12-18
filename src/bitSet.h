@@ -1,20 +1,20 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Bit Set (bitset) Header
+//                  Set of Bits (BitSet) Header
 //****************************************************************
 /*
  * Program
- *				Bit Set (bitset)
+ *			Set of Bits (BitSet)
  * Purpose
- *				This object provides a standardized way of handling
- *              a Bit Set.
+ *			This object provides Set of Bits (on/off).
  *
  * Remarks
- *	1.      All indices are relative to one.
+ *  1.      All indices are relative to one.
  *
  * History
- *	06/21/2015 Generated
+ *  06/21/2015 Generated
+ *	12/18/2019 Regenerated
  */
 
 
@@ -51,10 +51,17 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <u32Array.h>
 
 
-#ifndef         bitSet_H
-#define         bitSet_H
+#ifndef         BITSET_H
+#define         BITSET_H
+
+
+//#define   BITSET_JSON_SUPPORT 1
+//#define   BITSET_SINGLETON    1
+
+
 
 
 
@@ -68,17 +75,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct bitSet_data_s	BITSET_DATA;
+    typedef struct BitSet_data_s	BITSET_DATA;            // Inherits from OBJ
+    typedef struct BitSet_class_data_s BITSET_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct bitSet_vtbl_s	{
+    typedef struct BitSet_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in $P_object.c.
+        // method names to the vtbl definition in BitSet_object.c.
         // Properties:
         // Methods:
+        //bool        (*pIsEnabled)(BITSET_DATA *);
     } BITSET_VTBL;
-    
-    
+
+    typedef struct BitSet_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in BitSet_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(BITSET_DATA *);
+    } BITSET_CLASS_VTBL;
+
 
 
 
@@ -91,17 +108,34 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    BITSET_DATA *   bitSet_Alloc(
-        uint16_t        size        // Maximum Number of bits in set
+#ifdef  BITSET_SINGLETON
+    BITSET_DATA *   BitSet_Shared (
+        void
+    );
+
+    bool            BitSet_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to BitSet object if successful, otherwise OBJ_NIL.
+     */
+    BITSET_DATA *   BitSet_Alloc (
+        void
     );
     
     
-    BITSET_DATA *   bitSet_New(
-        uint16_t        size        // Maximum Number of bits in set
+    OBJ_ID          BitSet_Class (
+        void
     );
     
     
-    OBJ_ID          bitSet_Class(
+    BITSET_DATA *   BitSet_New (
         void
     );
     
@@ -111,69 +145,88 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint16_t        bitSet_getSize(
-        BITSET_DATA     *this
-    );
-    
-    
-    // Number of 32-bit elements used in bitset
-    uint16_t        bitSet_getSizeUsed(
-        BITSET_DATA     *this
-    );
-    
-    
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    // this = pOther;
-    ERESULT         bitSet_Assign(
-        BITSET_DATA		*this,
-        BITSET_DATA		*pOther
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = BitSet_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another BITSET object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         BitSet_Assign (
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
     );
-    
-    
-    // Returns ERESULT_SUCCESSFUL_COMPLETION if the Other set is fully
+
+
+    // Returns ERESULT_SUCCESS if the Other set is fully
     // contained within our set.
-    ERESULT         bitSet_Contains(
-        BITSET_DATA		*this,
-        BITSET_DATA		*pOther
+    ERESULT         BitSet_Contains (
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
     );
     
     
-    BITSET_DATA *   bitSet_Copy(
-        BITSET_DATA		*this
-    );
-    
-    
-    bool            bitSet_Get(
-        BITSET_DATA		*this,
-        uint16_t        index
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        BitSet      *pCopy = BitSet_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a BITSET object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    BITSET_DATA *   BitSet_Copy (
+        BITSET_DATA     *this
     );
 
 
-    BITSET_DATA *   bitSet_Init(
+    ERESULT         BitSet_Expand (
+        BITSET_DATA     *this,
+        uint32_t        size
+    );
+
+
+    bool            BitSet_Get (
+        BITSET_DATA     *this,
+        uint32_t        index
+    );
+
+
+    BITSET_DATA *   BitSet_Init (
         BITSET_DATA     *this
     );
 
 
     // this = this & pOther;
-    ERESULT         bitSet_Intersect(
-        BITSET_DATA		*this,
-        BITSET_DATA		*pOther
+    ERESULT         BitSet_Intersect (
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
     );
     
     
     // this = -this;
-    ERESULT         bitSet_Invert(
-        BITSET_DATA		*this
+    ERESULT         BitSet_Invert (
+        BITSET_DATA     *this
     );
     
     
-    ERESULT         bitSet_IsEmpty(
-        BITSET_DATA		*this
+    ERESULT         BitSet_IsEmpty (
+        BITSET_DATA     *this
     );
     
     
@@ -181,78 +234,98 @@ extern "C" {
     // two sets are equal. Otherwise, it
     // returns ERESULT_SUCCESS_FALSE. Note:
     // both are successful result codes.
-    ERESULT         bitSet_IsEqual(
-        BITSET_DATA		*this,
-        BITSET_DATA		*pOther
+    ERESULT         BitSet_IsEqual (
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
     );
     
     
-    ERESULT         bitSet_Set(
-        BITSET_DATA		*this,
-        uint16_t        index,
+    ERESULT         BitSet_Set (
+        BITSET_DATA     *this,
+        uint32_t        index,
         bool            value
     );
     
     
-    ERESULT         bitSet_SetEmpty(
-        BITSET_DATA		*this
+    ERESULT         BitSet_SetAll (
+        BITSET_DATA     *this
     );
     
     
     // this = this - pOther;
     // which is the same as:
     // this = this & ^pOther;
-    ERESULT         bitSet_Subtract(
-        BITSET_DATA		*this,
-        BITSET_DATA		*pOther
-    );
-    
-    
-    // The string returned must be obj_Release()'d.
-    ASTR_DATA *     bitSet_ToDataString(
-        BITSET_DATA     *this
+    ERESULT         BitSet_Subtract (
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
     );
     
     
     /*!
-     Create a string that describes this object and the
-     objects within it.
-     @return:   If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+     Create a u32Array that contains the index to every element in this
+     set.
+     @param     this    object pointer
+     @return    If successful, an u32Array object which must be released
+                containing the set element numbers, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     bitSet_ToDebugString(
+    U32ARRAY_DATA * BitSet_ToArrayU32 (
+        BITSET_DATA     *this
+    );
+
+
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = BitSet_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     BitSet_ToDebugString (
         BITSET_DATA     *this,
         int             indent
     );
     
     
     /*!
-     Create a string that describes this object as a static const 
-     uint32_t array with the given name.
-     @return:   If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+     Create a string that contains this set as a collection of 4-byte integers
+     using normal C/C++ syntax (ie. 0X01234). If multiple numbers are required,
+     they are separated by ", ".
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                data, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     bitSet_ToUint32String(
-        BITSET_DATA     *this,
-        const
-        char            *pName
+    ASTR_DATA *     BitSet_ToString (
+        BITSET_DATA     *this
     );
     
     
     // this = this | pOther;
     // Returns:
-    //      ERESULT_SUCCESSFUL_COMPLETION (if nothing changed)
+    //      ERESULT_SUCCESS (if nothing changed)
     //      ERESULT_DATA_CHANGED (if bitset changed)
-    ERESULT         bitSet_Union(
-        BITSET_DATA		*this,
-        BITSET_DATA		*pOther
+    ERESULT         BitSet_Union (
+        BITSET_DATA     *this,
+        BITSET_DATA     *pOther
     );
-    
+
+
+    ERESULT         BitSet_Zero (
+        BITSET_DATA     *this
+    );
+
+
 
     
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* bitSet_H */
+#endif	/* BITSET_H */
 

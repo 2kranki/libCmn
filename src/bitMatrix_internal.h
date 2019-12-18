@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   bitMatrix_internal.h
- *	Generated 08/12/2018 15:05:02
+ * File:   BitMatrix_internal.h
+ *	Generated 12/18/2019 08:00:28
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,16 @@
 
 
 
-#include        <bitMatrix.h>
+#include        <BitMatrix.h>
 #include        <jsonIn.h>
 
 
 #ifndef BITMATRIX_INTERNAL_H
 #define	BITMATRIX_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -60,7 +64,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct bitMatrix_data_s	{
+struct BitMatrix_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -78,12 +82,27 @@ struct bitMatrix_data_s	{
 #pragma pack(pop)
 
     extern
-    const
-    struct bitMatrix_class_data_s  bitMatrix_ClassObj;
+    struct BitMatrix_class_data_s  BitMatrix_ClassObj;
 
     extern
     const
-    BITMATRIX_VTBL         bitMatrix_Vtbl;
+    BITMATRIX_VTBL         BitMatrix_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  BITMATRIX_SINGLETON
+    BITMATRIX_DATA * BitMatrix_getSingleton (
+        void
+    );
+
+    bool            BitMatrix_setSingleton (
+     BITMATRIX_DATA       *pValue
+);
+#endif
 
 
 
@@ -91,38 +110,49 @@ struct bitMatrix_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  bitMatrix_getSuperVtbl(
+    OBJ_IUNKNOWN *  BitMatrix_getSuperVtbl (
         BITMATRIX_DATA     *this
     );
 
 
-    void            bitMatrix_Dealloc(
+    void            BitMatrix_Dealloc (
         OBJ_ID          objId
     );
 
 
-    BITMATRIX_DATA * bitMatrix_ParseObject(
+#ifdef  BITMATRIX_JSON_SUPPORT
+    BITMATRIX_DATA * BitMatrix_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+#endif
 
 
-    void *          bitMatrix_QueryInfo(
+    void *          BitMatrix_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     bitMatrix_ToJSON(
+    ERESULT         BitMatrix_SetSize(
+        BITMATRIX_DATA  *this,
+        uint32_t        ySize,
+        uint32_t        xSize
+    );
+
+
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     BitMatrix_ToJson (
         BITMATRIX_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			bitMatrix_Validate(
+    bool			BitMatrix_Validate (
         BITMATRIX_DATA       *this
     );
 #endif

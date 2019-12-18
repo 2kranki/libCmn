@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   bitMatrix_JSON.c
+ * File:   BitMatrix_JSON.c
  *
  * Created on 01/18/2018 from szTbl_JSON.c
  *
@@ -53,7 +53,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <bitMatrix_internal.h>
+#include    <BitMatrix_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -82,7 +82,7 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
-    void            bitMatrix_Int64ToChrClean(
+    void            BitMatrix_Int64ToChrClean(
         int64_t         num,
         char            *pBuffer
     )
@@ -117,7 +117,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    BITMATRIX_DATA * bitMatrix_ParseObject(
+    BITMATRIX_DATA * BitMatrix_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -137,7 +137,7 @@ extern "C" {
         ASTR_DATA       *pStr = OBJ_NIL;
         int64_t         intIn;
 
-        pInfo = obj_getInfo(bitMatrix_Class());
+        pInfo = obj_getInfo(BitMatrix_Class());
         
         eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -158,7 +158,7 @@ extern "C" {
         cElems = (uint32_t)intIn;
         fprintf(stderr, "\tcElems = %u\n", cElems);
 
-        pObject = bitMatrix_New(ySize, xSize);
+        pObject = BitMatrix_NewWithSizes(ySize, xSize);
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
@@ -217,7 +217,7 @@ extern "C" {
     //===============================================================
     
 
-    BITMATRIX_DATA * bitMatrix_NewFromJSONString(
+    BITMATRIX_DATA * BitMatrix_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
@@ -242,7 +242,7 @@ extern "C" {
         }
 #endif
 
-        pObject = bitMatrix_ParseObject(pParser);
+        pObject = BitMatrix_ParseJsonObject(pParser);
         
         
         // Return to caller.
@@ -256,7 +256,7 @@ extern "C" {
     
     
 
-    BITMATRIX_DATA * bitMatrix_NewFromJSONStringA(
+    BITMATRIX_DATA * BitMatrix_NewFromJsonStringA(
         const
         char            *pString
     )
@@ -266,7 +266,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pObject = bitMatrix_NewFromJSONString(pStr);
+            pObject = BitMatrix_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -277,7 +277,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     bitMatrix_ToJSON(
+    ASTR_DATA *     BitMatrix_ToJson(
         BITMATRIX_DATA  *this
     )
     {
@@ -288,7 +288,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !bitMatrix_Validate(this) ) {
+        if( !BitMatrix_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;

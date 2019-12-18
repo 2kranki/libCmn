@@ -1,27 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          BITMATRIX Console Transmit Task (bitMatrix) Header
+//          BITMATRIX Console Transmit Task (BitMatrix) Header
 //****************************************************************
 /*
  * Program
- *			Separate bitMatrix (bitMatrix)
+ *			Separate BitMatrix (BitMatrix)
  * Purpose
  *			This object provides a standardized way of handling
- *          a Bit Matrix. There is one bit per (x,y) address that
- *          can be 1 or 0.  Usually, the x-axis is horizontal and
- *          the y-axis is vertical.  The upper left-hand corner is
- *          (0,0).
+ *          a separate BitMatrix to run things without complications
+ *          of interfering with the main BitMatrix. A BitMatrix may be 
+ *          called a BitMatrix on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	07/21/2015  Generated
- *	08/12/2018  Generated again and source merged from old bitMatrix.
- *  08/12/2018  Changed matrix to be dynamically allocated instead
- *              of being an extension of the object which limited
- *              its size to less than 64k.
+ *	12/18/2019 Generated
  */
 
 
@@ -58,13 +53,18 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <bitSet.h>
-#include        <u16Matrix.h>
+#include        <BitSet.h>
 #include        <u32Array.h>
 
 
 #ifndef         BITMATRIX_H
 #define         BITMATRIX_H
+
+
+#define   BITMATRIX_JSON_SUPPORT 1
+//#define   BITMATRIX_SINGLETON    1
+
+
 
 
 
@@ -78,16 +78,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct bitMatrix_data_s	BITMATRIX_DATA;    // Inherits from OBJ.
+    typedef struct BitMatrix_data_s	BITMATRIX_DATA;            // Inherits from OBJ
+    typedef struct BitMatrix_class_data_s BITMATRIX_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct bitMatrix_vtbl_s	{
+    typedef struct BitMatrix_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in bitMatrix_object.c.
+        // method names to the vtbl definition in BitMatrix_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(BITMATRIX_DATA *);
     } BITMATRIX_VTBL;
+
+    typedef struct BitMatrix_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in BitMatrix_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(BITMATRIX_DATA *);
+    } BITMATRIX_CLASS_VTBL;
+
 
 
 
@@ -100,34 +111,48 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  BITMATRIX_SINGLETON
+    BITMATRIX_DATA * BitMatrix_Shared (
+        void
+    );
+
+    bool            BitMatrix_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to bitMatrix object if successful, otherwise OBJ_NIL.
+     @return    pointer to BitMatrix object if successful, otherwise OBJ_NIL.
      */
-    BITMATRIX_DATA * bitMatrix_Alloc(
+    BITMATRIX_DATA * BitMatrix_Alloc (
         void
     );
     
     
-    OBJ_ID          bitMatrix_Class(
+    OBJ_ID          BitMatrix_Class (
         void
     );
     
     
-    BITMATRIX_DATA * bitMatrix_New(
+    BITMATRIX_DATA * BitMatrix_New (
+        void
+    );
+    
+    BITMATRIX_DATA * BitMatrix_NewWithSizes (
         uint32_t        ySize,
         uint32_t        xSize
     );
     
-    
-    BITMATRIX_DATA * bitMatrix_NewFromJSONString(
+    BITMATRIX_DATA * BitMatrix_NewFromJsonString(
         ASTR_DATA       *pString
     );
     
     
-    BITMATRIX_DATA * bitMatrix_NewFromJSONStringA(
+    BITMATRIX_DATA * BitMatrix_NewFromJsonStringA(
         const
         char            *pString
     );
@@ -139,32 +164,33 @@ extern "C" {
      @param     xSize   x-axis and y-axis size in bits
      @return    If successful, an Identity Matrix.  Otherwise, OBJ_NIL.
      */
-    BITMATRIX_DATA * bitMatrix_NewIdentity(
+    BITMATRIX_DATA * BitMatrix_NewIdentity(
         uint32_t        xSize
     );
     
     
-    BITMATRIX_DATA * bitMatrix_NewSquare(
+    BITMATRIX_DATA * BitMatrix_NewSquare(
         uint32_t        xSize
     );
     
     
-    
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        bitMatrix_getXSize(
+    uint32_t        BitMatrix_getXSize(
         BITMATRIX_DATA  *this
     );
-    
-    
-    uint32_t        bitMatrix_getYSize(
+
+
+    uint32_t        BitMatrix_getYSize(
         BITMATRIX_DATA  *this
     );
-    
-    
+
+
 
 
     
@@ -172,30 +198,54 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         bitMatrix_Assign(
-        BITMATRIX_DATA	*this,
-        BITMATRIX_DATA	*pOther
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = BitMatrix_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another BITMATRIX object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         BitMatrix_Assign (
+        BITMATRIX_DATA  *this,
+        BITMATRIX_DATA  *pOther
     );
-    
-    
-    BITMATRIX_DATA * bitMatrix_Copy(
-        BITMATRIX_DATA	*this
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        BitMatrix      *pCopy = BitMatrix_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a BITMATRIX object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    BITMATRIX_DATA * BitMatrix_Copy (
+        BITMATRIX_DATA  *this
     );
-    
-    
+
+
     /*!
      Zero all elements of the matrix.
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         bitMatrix_Empty(
-        BITMATRIX_DATA	*this
+    ERESULT         BitMatrix_Empty (
+        BITMATRIX_DATA  *this
     );
 
 
-    ERESULT         bitMatrix_Get(
-        BITMATRIX_DATA	*this,
+    ERESULT         BitMatrix_Get (
+        BITMATRIX_DATA  *this,
         uint32_t        y,
         uint32_t        x
     );
@@ -213,8 +263,8 @@ extern "C" {
      @return    If successful, bitSet object.  Otherwise,
                 OBJ_NIL and an ERESULT_* error code is set.
      */
-    BITSET_DATA *   bitMatrix_GetCol(
-        BITMATRIX_DATA	*this,
+    BITSET_DATA *   BitMatrix_GetCol (
+        BITMATRIX_DATA  *this,
         uint32_t        y,
         uint32_t        x,
         uint32_t        len
@@ -235,8 +285,8 @@ extern "C" {
      @return    If successful, u32Array object.  Otherwise,
      OBJ_NIL and an ERESULT_* error code is set.
      */
-    U32ARRAY_DATA *   bitMatrix_GetColU32(
-        BITMATRIX_DATA    *this,
+    U32ARRAY_DATA * BitMatrix_GetColU32 (
+        BITMATRIX_DATA  *this,
         uint32_t        y,
         uint32_t        x,
         uint32_t        len
@@ -255,8 +305,8 @@ extern "C" {
      @return    If successful, bitSet object.  Otherwise,
                 OBJ_NIL and an ERESULT_* error code is set.
      */
-    BITSET_DATA *   bitMatrix_GetRow(
-        BITMATRIX_DATA	*this,
+    BITSET_DATA *   BitMatrix_GetRow (
+        BITMATRIX_DATA  *this,
         uint32_t        y,
         uint32_t        x,
         uint32_t        len
@@ -277,8 +327,8 @@ extern "C" {
      @return    If successful, u32Array object.  Otherwise,
                 OBJ_NIL and an ERESULT_* error code is set.
      */
-    U32ARRAY_DATA *   bitMatrix_GetRowU32(
-        BITMATRIX_DATA    *this,
+    U32ARRAY_DATA * BitMatrix_GetRowU32 (
+        BITMATRIX_DATA  *this,
         uint32_t        y,
         uint32_t        x,
         uint32_t        len
@@ -293,7 +343,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an
                 ERESULT_* error code.
      */
-    ERESULT         bitMatrix_InflateX(
+    ERESULT         BitMatrix_InflateX(
         BITMATRIX_DATA  *this,
         uint32_t        amt
     );
@@ -307,27 +357,25 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an
                 ERESULT_* error code.
      */
-    ERESULT         bitMatrix_InflateY(
+    ERESULT         BitMatrix_InflateY(
         BITMATRIX_DATA  *this,
         uint32_t        amt
     );
     
     
-    BITMATRIX_DATA * bitMatrix_Init(
+    BITMATRIX_DATA * BitMatrix_Init (
+        BITMATRIX_DATA  *this
+    );
+
+
+    ERESULT         BitMatrix_Intersect (
         BITMATRIX_DATA  *this,
-        uint32_t        ySize,
-        uint32_t        xSize
-    );
-
-
-    ERESULT         bitMatrix_Intersect(
-        BITMATRIX_DATA	*this,
-        BITMATRIX_DATA	*pOther
+        BITMATRIX_DATA  *pOther
     );
     
     
-    ERESULT         bitMatrix_Invert(
-        BITMATRIX_DATA	*this
+    ERESULT         BitMatrix_Invert (
+        BITMATRIX_DATA  *this
     );
     
     
@@ -338,8 +386,8 @@ extern "C" {
                 ERESULT_FAILURE_FALSE.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         bitMatrix_IsEmpty(
-        BITMATRIX_DATA	*this
+    ERESULT         BitMatrix_IsEmpty (
+        BITMATRIX_DATA  *this
     );
     
     
@@ -354,70 +402,71 @@ extern "C" {
      @return    If successful, a new product matrix.  Otherwise,
                 an ERESULT_* error code.
      */
-    BITMATRIX_DATA * bitMatrix_Product(
-        BITMATRIX_DATA	*this,
-        BITMATRIX_DATA	*pOther
+    BITMATRIX_DATA * BitMatrix_Product(
+        BITMATRIX_DATA  *this,
+        BITMATRIX_DATA  *pOther
     );
     
     
-    ERESULT         bitMatrix_ReflectiveTransitiveClosure(
-        BITMATRIX_DATA	*this
+    ERESULT         BitMatrix_ReflectiveTransitiveClosure(
+        BITMATRIX_DATA  *this
     );
     
     
-    ERESULT         bitMatrix_Set(
-        BITMATRIX_DATA	*this,
+    ERESULT         BitMatrix_Set(
+        BITMATRIX_DATA  *this,
         uint32_t        y,
         uint32_t        x,
         bool            value
     );
 
     
+    ASTR_DATA *     BitMatrix_ToJson(
+        BITMATRIX_DATA  *this
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = bitMatrix_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = BitMatrix_ToDebugString(this,4);
      @endcode 
-     @param     this    BITMATRIX object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     bitMatrix_ToDebugString(
+    ASTR_DATA *     BitMatrix_ToDebugString (
         BITMATRIX_DATA  *this,
         int             indent
     );
     
     
-    U16MATRIX_DATA * bitMatrix_ToU16Matrix(
-        BITMATRIX_DATA	*this
+    ERESULT         BitMatrix_TransitiveClosure (
+        BITMATRIX_DATA  *this
     );
-    
-    
-    ERESULT         bitMatrix_TransitiveClosure(
-        BITMATRIX_DATA	*this
+
+
+    ERESULT         BitMatrix_Union (
+        BITMATRIX_DATA  *this,
+        BITMATRIX_DATA  *pOther
     );
-    
-    
-    ERESULT         bitMatrix_Union(
-        BITMATRIX_DATA	*this,
-        BITMATRIX_DATA	*pOther
-    );
-    
-    
+
+
     /*!
      Zero all elements of the matrix.
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         bitMatrix_Zero(
+    ERESULT         BitMatrix_Zero (
         BITMATRIX_DATA  *this
     );
-    
-    
+
+
+
 
     
 #ifdef	__cplusplus

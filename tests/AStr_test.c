@@ -406,7 +406,6 @@ int         test_AStr_AppendPrint02 (
     char        *pTestName
 )
 {
-    ERESULT     eRc;
     ASTR_DATA	*pObj = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -617,8 +616,6 @@ int         test_AStr_File(
     ERESULT     eRc;
     PATH_DATA   *pPath = OBJ_NIL;
     ASTR_DATA	*pOther = OBJ_NIL;
-    const
-    char        *pPathA = "~/git/libCmn/tests/files/test.txt";
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     

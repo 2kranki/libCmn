@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <jsonIn_internal.h>
 #include        <AStr_internal.h>
-#include        <bitMatrix_internal.h>
+#include        <BitMatrix_internal.h>
 #include        <dec.h>
 #include        <hex.h>
 #include        <name_internal.h>
@@ -1523,10 +1523,10 @@ extern "C" {
             return pObj;
         }
         
-        pInfo = obj_getInfo(bitMatrix_Class());
+        pInfo = obj_getInfo(BitMatrix_Class());
         eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)bitMatrix_ParseObject(this);
+            pObj = (OBJ_ID)BitMatrix_ParseJsonObject(this);
             return pObj;
         }
         

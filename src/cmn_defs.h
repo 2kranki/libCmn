@@ -476,8 +476,6 @@ extern "C" {
         OBJ_IDENT_SZTBL_CLASS,
         OBJ_IDENT_TABLE,
         OBJ_IDENT_TABLE_CLASS,
-        OBJ_IDENT_TERNARY,              // Ternary Tree
-        OBJ_IDENT_TERNARY_CLASS,
         OBJ_IDENT_TEXTIN,               // Text Input Class
         OBJ_IDENT_TEXTIN_CLASS,
         OBJ_IDENT_TEXTOUT,              // Text Output Class
