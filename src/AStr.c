@@ -883,10 +883,10 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
-        if (0 == len) {
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
+        if (0 == len) {
+            return ERESULT_SUCCESS;
+        }
         
         offset = array_getSize(this->pData);
         eRc =   array_InsertSpacing(
@@ -929,10 +929,10 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
-        if (0 == len) {
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
+        if (0 == len) {
+            return ERESULT_SUCCESS;
+        }
         chrsLen = utf8_W32ToUtf8(chr, chrs);
         
         offset = array_getSize(this->pData);
