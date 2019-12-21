@@ -1288,13 +1288,13 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeBase_Validate(this)) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
         }
-    #endif
+#endif
         
         if (0 == AStrCArray_Find(this->pSrcs, pStrC))
             eRc = AStrCArray_AppendAStrC(this->pSrcs, pStrC, NULL);

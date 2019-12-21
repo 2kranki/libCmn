@@ -80,7 +80,7 @@ extern "C" {
         // Methods:
     } ASCII_VTBL;
 
-    
+    //  Common Ascii Character Definitions
 #define     ASCII_NUL       0x00
 #define     ASCII_SOH       0x01
 #define     ASCII_STX       0x02
@@ -181,12 +181,12 @@ extern "C" {
      * propriate default is chosen. The stack size is passed to Init()
      * via obj_misc1.
      */
-    ASCII_DATA *        ascii_Alloc(
+    ASCII_DATA *        ascii_Alloc (
         void
     );
     
     
-    ASCII_DATA *        ascii_New(
+    ASCII_DATA *        ascii_New (
         void
     );
     
@@ -196,31 +196,31 @@ extern "C" {
      @return:   If valid hexadecimal character, return it converted to
                 binary (ie 0..15), otherwise -1.
      */
-    int                 ascii_FromHexW32(
+    int                 ascii_FromHexW32 (
         W32CHR_T            w32Char
     );
     
     
-    bool                ascii_isAlphaA(
+    bool                ascii_isAlphaA (
         char                asciiChar
     );
     
-    bool                ascii_isAlphaW32(
+    bool                ascii_isAlphaW32 (
         W32CHR_T            asciiChar
     );
     
 
-    bool                ascii_isAlphanumericA(
+    bool                ascii_isAlphanumericA (
         char                asciiChar
     );
     
     
-    bool                ascii_isAlphanumericW32(
+    bool                ascii_isAlphanumericW32 (
         W32CHR_T            w32Char
     );
     
     
-    bool                ascii_isAsciiW32(
+    bool                ascii_isAsciiW32 (
         W32CHR_T            w32Char
     );
     
@@ -229,7 +229,7 @@ extern "C" {
      @return:   true if w32Char is [a..f] or [A..F] or [0..9].
                 Otherwise, false is returned.
      */
-    bool                ascii_isHexW32(
+    bool                ascii_isHexW32 (
         W32CHR_T            w32Char
     );
     
@@ -238,7 +238,7 @@ extern "C" {
      @return:   true if asciiChar is [a..z] or [A..Z] or [0..9] or '_'.
                 Otherwise, false is returned.
      */
-    bool                ascii_isLabelCharW32(
+    bool                ascii_isLabelCharW32 (
         W32CHR_T            asciiChar
     );
     
@@ -247,46 +247,66 @@ extern "C" {
      @return:   true if asciiChar is [a..z] or [A..Z] or '_'.
                 Otherwise, false is returned.
      */
-    bool                ascii_isLabelFirstCharW32(
+    bool                ascii_isLabelFirstCharW32 (
         W32CHR_T            asciiChar
     );
     
     
-    bool                ascii_isLowerA(
+    /*!
+     @return:   true if asciiChar is [a..z].
+                Otherwise, false is returned.
+     */
+    bool                ascii_isLowerA (
         char                asciiChar
     );
     
-    
-    bool                ascii_isNumericA(
+    bool                ascii_isLowerW32 (
+        W32CHR_T            unicodeChar
+    );
+
+
+    bool                ascii_isNumericA (
         char                asciiChar
     );
     
-    
-    bool                ascii_isPrintableA(
+    bool                ascii_isNumericW32 (
+        W32CHR_T            unicodeChar
+    );
+
+
+    bool                ascii_isPrintableA (
         char                asciiChar
     );
     
-    bool                ascii_isPrintableW32(
+    bool                ascii_isPrintableW32 (
         W32CHR_T            w32Char
     );
     
 
-    bool                ascii_isQuoteA(
+    bool                ascii_isQuoteA (
         char                asciiChar
     );
     
     
-    bool                ascii_isUpperA(
+    /*!
+     @return:   true if asciiChar is [A..Z].
+                Otherwise, false is returned.
+     */
+    bool                ascii_isUpperA (
         char                asciiChar
     );
     
-    
-    bool                ascii_isWhiteSpaceA(
+    bool                ascii_isUpperW32 (
+        W32CHR_T            unicodeChar
+    );
+
+
+    bool                ascii_isWhiteSpaceA (
         char                asciiChar
     );
     
-    bool                ascii_isWhiteSpaceW32(
-        W32CHR_T            w32Char
+    bool                ascii_isWhiteSpaceW32 (
+        W32CHR_T            unicodeChar
     );
     
     
@@ -295,32 +315,32 @@ extern "C" {
      * or the character itself if it doesn't fit into any
      * class.
      */
-    int32_t             ascii_toLexicalClassA(
+    int32_t             ascii_toLexicalClassA (
         char                asciiChar
     );
     
-    W32CHR_T            ascii_toLexicalClassW32(
-        W32CHR_T            w32Char
+    W32CHR_T            ascii_toLexicalClassW32 (
+        W32CHR_T            unicodeChar
     );
     
     
-    char                ascii_toLowerA(
-        char                asciiChar
-    );
-    
-    
-    W32CHR_T            ascii_toLowerW32(
-        W32CHR_T            w32Char
-    );
-    
-    
-    char                ascii_toUpperA(
+    char                ascii_toLowerA (
         char                asciiChar
     );
     
     
-    W32CHR_T            ascii_toUpperW32(
-        W32CHR_T            w32Char
+    W32CHR_T            ascii_toLowerW32 (
+        W32CHR_T            unicodeChar
+    );
+    
+    
+    char                ascii_toUpperA (
+        char                asciiChar
+    );
+    
+    
+    W32CHR_T            ascii_toUpperW32 (
+        W32CHR_T            unicodeChar
     );
     
     
@@ -340,8 +360,8 @@ extern "C" {
      * and initializes other fields needed. Init() assumes 
      * that the size of the stack is passed to in obj_misc1.
      */
-    ASCII_DATA *    ascii_Init(
-        ASCII_DATA     *cbp
+    ASCII_DATA *    ascii_Init (
+        ASCII_DATA     *this
     );
 
 
@@ -351,8 +371,8 @@ extern "C" {
      @return:   If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *     ascii_ToDebugString(
-        ASCII_DATA      *cbp,
+    ASTR_DATA *     ascii_ToDebugString (
+        ASCII_DATA      *this,
         int             indent
     );
     

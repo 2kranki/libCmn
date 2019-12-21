@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          ARRAY Console Transmit Task (array) Header
+//          Dynamic Array (array) Header
 //****************************************************************
 /*
  * Program
- *			Separate array (array)
+ *			Dynamic Array (array)
  * Purpose
  *			This object provides a standardized way of handling
  *          a separate array to run things without complications

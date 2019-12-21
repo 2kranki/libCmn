@@ -103,14 +103,22 @@ extern "C" {
 
     typedef enum obj_genObject_idents_e {
         OBJ_GENOBJECT_IDENT_BASE=OBJ_IDENT_USER_ENTRIES,
-        OBJ_IDENT_DBPRS,
-        OBJ_IDENT_DBPRS_CLASS,
+        OBJ_IDENT_DICT,
+        OBJ_IDENT_DICT_CLASS,
         OBJ_IDENT_GENBASE,
         OBJ_IDENT_GENBASE_CLASS,
-        //OBJ_IDENT_MAIN,               // Defined in cmn_defs
+        //OBJ_IDENT_MAIN,                   // Defined in cmn_defs
         //OBJ_IDENT_MAIN_CLASS
-        OBJ_IDENT_PROPERTY,
-        OBJ_IDENT_PROPERTY_CLASS,
+        OBJ_IDENT_NODEBASE,
+        OBJ_IDENT_NODEBASE_CLASS,
+        OBJ_IDENT_NODEBODY,
+        OBJ_IDENT_NODEBODY_CLASS,
+        OBJ_IDENT_NODECLASS,
+        OBJ_IDENT_NODECLASS_CLASS,
+        OBJ_IDENT_NODEFIELD,
+        OBJ_IDENT_NODEFIELD_CLASS,
+        OBJ_IDENT_NODEPROP,
+        OBJ_IDENT_NODEPROP_CLASS,
     } OBJ_GENOBJECT_IDENTS;
     
 

@@ -55,8 +55,8 @@
 #include        <number.h>
 #include        <objHash.h>
 #include        <SrcLoc.h>
-#include        <symAttr.h>
-#include        <symEntry.h>
+//#include        <symAttr.h>
+//#include        <symEntry.h>
 #include        <szData_internal.h>
 #include        <szTbl.h>
 #include        <token_internal.h>

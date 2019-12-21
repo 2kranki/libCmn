@@ -55,7 +55,6 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <NodeEnum.h>
-#include        <nodeLnkP.h>
 
 
 #ifndef         NODEBTP_H

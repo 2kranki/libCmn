@@ -194,6 +194,10 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                         M i s c
+    //---------------------------------------------------------------
+    
     uint16_t        u8Array_getMisc(
         U8ARRAY_DATA    *this
     )
@@ -229,7 +233,11 @@ extern "C" {
     
     
     
-    uint32_t        u8Array_getSize(
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        u8Array_getSize (
         U8ARRAY_DATA    *this
     )
     {
@@ -244,6 +252,24 @@ extern "C" {
     }
 
 
+    bool            u8Array_setSize (
+        U8ARRAY_DATA    *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        array_AdjustSize(this->pData, value);
+        
+        return true;
+    }
+        
+        
 
 
     
@@ -1296,6 +1322,32 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                         T r u n c a t e
+    //---------------------------------------------------------------
+    
+    bool            u8Array_Truncate (
+        U8ARRAY_DATA    *this,
+        uint32_t        value
+    )
+    {
+        bool            fRc;
+        
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        fRc = array_Truncate(this->pData, value);
+        
+        return fRc;
+    }
+            
+            
+
     //---------------------------------------------------------------
     //                  W r i t e  T o  F i l e
     //---------------------------------------------------------------

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   main_internal.h
- *	Generated 11/30/2018 16:54:35
+ * File:   Main_internal.h
+ *	Generated 12/19/2019 08:55:05
  *
  * Notes:
  *  --	N/A
@@ -39,15 +39,16 @@
 
 
 
-#include        <main.h>
-#include        <appl_internal.h>
+#include        <Main.h>
 #include        <jsonIn.h>
-#include        <nodeBTP.h>
-#include        <textOut.h>
 
 
 #ifndef MAIN_INTERNAL_H
 #define	MAIN_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -63,35 +64,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct main_data_s	{
+struct Main_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    APPL_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        osType;         // See OSTYPE
-    uint16_t        outType;        // See OUTTYPE
-    uint16_t        fBackup;        // true == backup output file if it exists
+    uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
-    NODEBTP_DATA    *pDict;
-    DBPRS_DATA      *pPrs;
-    OBJ_ID          pGen;
-    PATH_DATA       *pFilePath;
-    PATH_DATA       *pOutputPath;
-    TEXTOUT_DATA    *pOutput;
-    NODE_DATA       *pNodes;
-    ASTR_DATA       *pOut;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct main_class_data_s  main_ClassObj;
+    struct Main_class_data_s  Main_ClassObj;
 
     extern
     const
-    MAIN_VTBL         main_Vtbl;
+    MAIN_VTBL         Main_Vtbl;
 
 
 
@@ -100,11 +92,11 @@ struct main_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  MAIN_SINGLETON
-    MAIN_DATA *     main_getSingleton (
+    MAIN_DATA *     Main_getSingleton (
         void
     );
 
-    bool            main_setSingleton (
+    bool            Main_setSingleton (
      MAIN_DATA       *pValue
 );
 #endif
@@ -115,135 +107,42 @@ struct main_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            main_setParser (
-        MAIN_DATA       *this,
-        DBPRS_DATA      *pValue
-    );
-    
-    
-    OBJ_IUNKNOWN *  main_getSuperVtbl (
+    OBJ_IUNKNOWN *  Main_getSuperVtbl (
         MAIN_DATA     *this
     );
 
 
-    void            main_Dealloc (
+    void            Main_Dealloc (
         OBJ_ID          objId
     );
 
 
-    ERESULT         main_DictAdd(
-                                 MAIN_DATA       *this,
-                                 const
-                                 char            *pName,
-                                 OBJ_ID          pData
-                                 );
-    
-    ERESULT         main_DictAddA(
-                                  MAIN_DATA       *this,
-                                  const
-                                  char            *pName,
-                                  const
-                                  char            *pData
-                                  );
-    
-    ERESULT         main_DictAddUpdate(
-                                       MAIN_DATA       *this,
-                                       const
-                                       char            *pName,
-                                       OBJ_ID          pData
-                                       );
-    
-    ERESULT         main_DictAddUpdateA(
-                                        MAIN_DATA        *this,
-                                        const
-                                        char            *pName,
-                                        const
-                                        char            *pData
-                                        );
-    
-    ERESULT         main_ParseArgsDefault(
-                                          MAIN_DATA        *this
-                                          );
-    
-    int             main_ParseArgsLong(
-                                       MAIN_DATA       *this,
-                                       int             *pArgC,
-                                       const
-                                       char            ***pppArgV
-                                       );
-    
-    int             main_ParseArgsShort(
-                                        MAIN_DATA       *this,
-                                        int             *pArgC,
-                                        const
-                                        char            ***pppArgV
-                                        );
-    
-    ERESULT         main_ParseInputFile(
-                                        MAIN_DATA       *this,
-                                        PATH_DATA       *pPath
-                                        );
-    
-    ERESULT         main_ParseInputStr(
-                                       MAIN_DATA       *this,
-                                       const
-                                       char            *pStr
-                                       );
-    
-    ERESULT         main_ProcessInit(
-                                     MAIN_DATA       *this
-                                     );
-    
-    ERESULT         main_ProcessArg(
-                                    MAIN_DATA       *this,
-                                    ASTR_DATA       *pStr
-                                    );
-
-    
-    MAIN_DATA *       main_ParseObject (
+#ifdef  MAIN_JSON_SUPPORT
+    MAIN_DATA *       Main_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+#endif
 
 
-    void *          main_QueryInfo (
+    void *          Main_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     main_ToJSON (
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     Main_ToJson (
         MAIN_DATA      *this
     );
+#endif
 
 
-    ERESULT         main_UsageDesc(
-        MAIN_DATA       *this,
-        FILE            *pOutput,
-        PATH_DATA       *pProgramPath
-    );
-    
-    
-    ERESULT         main_UsageProgLine(
-        MAIN_DATA       *this,
-        FILE            *pOutput,
-        PATH_DATA       *pProgramPath,
-        const
-        char            *pNameA
-    );
-    
-    
-    ERESULT         main_UsageOptions(
-        MAIN_DATA       *this,
-        FILE            *pOutput
-    );
-    
-    
 
 
 #ifdef NDEBUG
 #else
-    bool			main_Validate (
+    bool			Main_Validate (
         MAIN_DATA       *this
     );
 #endif

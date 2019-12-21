@@ -438,14 +438,11 @@ extern "C" {
     {
         bool                fRc = false;
         
-        if ( asciiChar > 127 ) {
-            fRc = false;
-        }
-        else if ( CharTypeTable[(asciiChar & 0x7F)] & CharType_Alpha ) {
-            fRc = true;
-        }
+        fRc = ascii_isLowerW32(asciiChar);
+        if (!fRc)
+            fRc = ascii_isUpperW32(asciiChar);
         
-        return( fRc );
+        return fRc;
     }
     
     
@@ -481,17 +478,11 @@ extern "C" {
     {
         bool                fRc = false;
         
-        if ( asciiChar > 127 ) {
-            fRc = false;
-        }
-        else if ( CharTypeTable[(asciiChar & 0x7F)] & CharType_Alpha ) {
-            fRc = true;
-        }
-        else if ( CharTypeTable[(asciiChar & 0x7F)] & CharType_Numeric ) {
-            fRc = true;
-        }
+        fRc = ascii_isAlphaW32(asciiChar);
+        if (!fRc)
+            fRc = ascii_isNumericW32(asciiChar);
         
-        return( fRc );
+        return fRc;
     }
     
     
@@ -582,7 +573,24 @@ extern "C" {
     }
     
     
+    bool                ascii_isLowerW32(
+        W32CHR_T            unicodeChar
+    )
+    {
+        bool                fRc = false;
+        
+        if ( (unicodeChar >= 'a') && (unicodeChar <= 'z') ) {
+            fRc = true;
+        } else if ((unicodeChar >= 0xFF41) && (unicodeChar >= 0xFF5A)) {
+                fRc = true;
+        }
+        
+        return( fRc );
+        
+    }
     
+    
+
     
     //**********************************************************
     //                  i s N u m e r i c
@@ -601,11 +609,29 @@ extern "C" {
             fRc = true;
         }
         
-        return( fRc );
+        return fRc;
     }
     
     
+    bool                ascii_isNumericW32(
+        W32CHR_T            unicodeChar
+    )
+    {
+        bool                fRc = false;
+        
+        if ((unicodeChar >= 0xFF10) && (unicodeChar >= 0xFF19)) {
+            fRc = true;
+        } else if ( unicodeChar > 127 ) {
+            fRc = false;
+        } else if ( CharTypeTable[(unicodeChar & 0x7F)] & CharType_Numeric ) {
+            fRc = true;
+        }
+
+        return fRc;
+    }
     
+    
+
     
     //**********************************************************
     //                  i s P r i n t a b l e
@@ -685,7 +711,24 @@ extern "C" {
     }
     
     
+    bool                ascii_isUpperW32(
+        W32CHR_T            unicodeChar
+    )
+    {
+        bool                fRc = false;
+        
+        if ( (unicodeChar >= 'A') && (unicodeChar <= 'Z') ) {
+            fRc = true;
+        } else if ((unicodeChar >= 0xFF21) && (unicodeChar >= 0xFF3A)) {
+                fRc = true;
+        }
+        
+        return( fRc );
+        
+    }
     
+    
+
     
     //**********************************************************
     //                  i s W h i t e S p a c e
@@ -716,36 +759,34 @@ extern "C" {
                 fRc = true;
             }
         }
-        else if (unicodeChar == 0x0085) {       // NEL - Next Line (same as ebcdic NL)
-            fRc = true;
-        }
-        else if (unicodeChar == 0x00A0) {       // no-break space
-            fRc = true;
-        }
-        else if (unicodeChar == 0x1680) {       // OGHAM space mark
-            fRc = true;
-        }
-        else if ((unicodeChar >= 0x2000)        // General Punctuation space
-                 && (unicodeChar <= 0x200B)) {
-            fRc = true;
-        }
-        else if (unicodeChar == 0x2028) {       // LS - Line Separator
-            fRc = true;
-        }
-        else if (unicodeChar == 0x2029) {       // PS - Paragraph Separator
-            fRc = true;
-        }
-        else if (unicodeChar == 0x205F) {       // Medium Mathematical space
-            fRc = true;
-        }
-        else if (unicodeChar == 0x202F) {       // Narrow No-Break space
-            fRc = true;
-        }
-        else if (unicodeChar == 0x3000) {       // ideographic space
-            fRc = true;
-        }
-        else if (unicodeChar == 0xFEFF) {       // zero width no-break space
-            fRc = true;
+        else {
+            switch (unicodeChar) {
+                case 0x0085:            // NEL - Next Line (same as ebcdic NL)
+                case 0x00A0:            // no-break space
+                case 0x1680:            // OGHAM space mark
+                case 0x2000:            // General Punctuation space
+                case 0x2001:
+                case 0x2002:
+                case 0x2003:
+                case 0x2004:
+                case 0x2005:
+                case 0x2006:
+                case 0x2007:
+                case 0x2008:
+                case 0x2009:
+                case 0x200A:
+                case 0x200B:
+                case 0x2028:            // LS - Line Separator
+                case 0x2029:            // PS - Paragraph Separator
+                case 0x205F:            // Medium Mathematical space
+                case 0x202F:            // Narrow No-Break space
+                case 0x3000:            // ideographic space
+                case 0xFEFF:            // zero width no-break space
+                    fRc = true;
+                    break;
+                default:
+                    break;
+            }
         }
         
         return( fRc );
@@ -764,20 +805,21 @@ extern "C" {
     {
         bool                fRc = false;
         
-        if ( asciiChar > 127 ) {
-            fRc = false;
-        }
-        else if ( CharTypeTable[(asciiChar & 0x7F)] & CharType_Alpha ) {
-            fRc = true;
-        }
-        else if ( CharTypeTable[(asciiChar & 0x7F)] & CharType_Numeric ) {
-            fRc = true;
-        }
-        else if ('_' == asciiChar) {
-            fRc = true;
+        fRc = ascii_isAlphaW32(asciiChar);
+        if (!fRc)
+            fRc = ascii_isNumericW32(asciiChar);
+        if (!fRc) {
+            switch (asciiChar) {
+                case '_':
+                case 0xFF3F:                // Full Width Low Line
+                    fRc = true;
+                    break;
+                default:
+                    break;
+            }
         }
 
-        return( fRc );
+        return fRc;
     }
     
     

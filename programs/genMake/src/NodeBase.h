@@ -113,7 +113,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  NODEBASE_SINGLETON
-    NODEBASE_DATA *     NodeBase_Shared (
+    NODEBASE_DATA * NodeBase_Shared (
         void
     );
 

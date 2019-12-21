@@ -391,6 +391,12 @@ extern "C" {
     );
 
     
+    bool            u8Array_Truncate (
+        U8ARRAY_DATA    *this,
+        uint32_t        value
+    );
+
+
     ERESULT         u8Array_WriteToFile(
         U8ARRAY_DATA    *this,
         PATH_DATA       *pPath

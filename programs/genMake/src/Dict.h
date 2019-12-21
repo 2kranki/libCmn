@@ -1,16 +1,14 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          DICT Console Transmit Task (Dict) Header
+//              Program Dictionary (Dict) Header
 //****************************************************************
 /*
  * Program
- *			Separate Dict (Dict)
+ *			Program Dictionary (Dict)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate Dict to run things without complications
- *          of interfering with the main Dict. A Dict may be 
- *          called a Dict on other O/S's.
+ *			This object provides a Dictionary of Data needed for the
+ *          generation process.
  *
  * Remarks
  *	1.      None

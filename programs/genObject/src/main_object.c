@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'main'
-//	Generated 11/30/2018 16:54:35
+//	Class Object Metods and Tables for 'Main'
+//	Generated 12/19/2019 08:55:05
 
 
 /*
@@ -35,7 +35,7 @@
 
 
 #define			MAIN_OBJECT_C	    1
-#include        <main_internal.h>
+#include        <Main_internal.h>
 #ifdef  MAIN_SINGLETON
 #include        <psxLock.h>
 #endif
@@ -46,7 +46,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct main_class_data_s	{
+struct Main_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -69,7 +69,7 @@ struct main_class_data_s	{
 
 
 static
-void *          mainClass_QueryInfo (
+void *          MainClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,31 +78,38 @@ void *          mainClass_QueryInfo (
 
 static
 const
-OBJ_INFO        main_Info;            // Forward Reference
+OBJ_INFO        Main_Info;            // Forward Reference
 
 
 
 
 static
-bool            mainClass_IsKindOf (
+bool            MainClass_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_MAIN_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_APPL_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(Main_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		mainClass_WhoAmI (
+uint16_t		MainClass_WhoAmI (
     void
 )
 {
@@ -120,15 +127,15 @@ static
 const
 MAIN_CLASS_VTBL    class_Vtbl = {
     {
-        &main_Info,
-        mainClass_IsKindOf,
+        &Main_Info,
+        MainClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        main_Class,
-        mainClass_WhoAmI,
-        (P_OBJ_QUERYINFO)mainClass_QueryInfo,
-        NULL                        // mainClass_ToDebugString
+        Main_Class,
+        MainClass_WhoAmI,
+        (P_OBJ_QUERYINFO)MainClass_QueryInfo,
+        NULL                        // MainClass_ToDebugString
     },
 };
 
@@ -138,13 +145,13 @@ MAIN_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-MAIN_CLASS_DATA  main_ClassObj = {
+MAIN_CLASS_DATA  Main_ClassObj = {
     {
-        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
-        sizeof(MAIN_CLASS_DATA),            // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(MAIN_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
     },
 	//0
 };
@@ -156,15 +163,15 @@ MAIN_CLASS_DATA  main_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  MAIN_SINGLETON
-MAIN_DATA *     main_getSingleton (
+MAIN_DATA *     Main_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(main_ClassObj.pSingleton);
+    return (OBJ_ID)(Main_ClassObj.pSingleton);
 }
 
 
-bool            main_setSingleton (
+bool            Main_setSingleton (
     MAIN_DATA       *pValue
 )
 {
@@ -185,10 +192,10 @@ bool            main_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (main_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(main_ClassObj.pSingleton));
+    if (Main_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Main_ClassObj.pSingleton));
     }
-    main_ClassObj.pSingleton = pValue;
+    Main_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -198,17 +205,17 @@ bool            main_setSingleton (
 
 
 
-MAIN_DATA *     main_Shared (
+MAIN_DATA *     Main_Shared (
     void
 )
 {
-    MAIN_DATA       *this = (OBJ_ID)(main_ClassObj.pSingleton);
+    MAIN_DATA       *this = (OBJ_ID)(Main_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = main_New( );
-        main_setSingleton(this);
+        this = Main_New( );
+        Main_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // main_ClassObj.pSingleton = OBJ_NIL;
+        // Main_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -216,15 +223,15 @@ MAIN_DATA *     main_Shared (
 
 
 
-void            main_SharedReset (
+void            Main_SharedReset (
     void
 )
 {
-    MAIN_DATA       *this = (OBJ_ID)(main_ClassObj.pSingleton);
+    MAIN_DATA       *this = (OBJ_ID)(Main_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        main_ClassObj.pSingleton = OBJ_NIL;
+        Main_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -240,7 +247,7 @@ void            main_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          mainClass_QueryInfo (
+void *          MainClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -272,7 +279,7 @@ void *          mainClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&main_Info;
+                        return (void *)&Main_Info;
                     }
                     break;
                     
@@ -290,13 +297,19 @@ void *          mainClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return main_New;
+                        return Main_New;
                     }
                     break;
                     
+                case 'P':
+                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
+                        //return Main_ParseJsonObject;
+                    }
+                    break;
+ 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return mainClass_WhoAmI;
+                        return MainClass_WhoAmI;
                     }
                     break;
                     
@@ -316,40 +329,50 @@ void *          mainClass_QueryInfo (
 
 
 static
-bool            main_IsKindOf (
+bool            Main_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_MAIN == classID) {
        return true;
-    }
-    if (OBJ_IDENT_APPL == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(Main_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            main_Dealloc (
+void            Main_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          main_Class (
+OBJ_ID          Main_Class (
     void
 )
 {
-    return (OBJ_ID)&main_ClassObj;
+    return (OBJ_ID)&Main_ClassObj;
 }
 
 
 static
-uint16_t		main_WhoAmI (
+uint16_t		Main_WhoAmI (
     void
 )
 {
@@ -365,10 +388,10 @@ uint16_t		main_WhoAmI (
 //===========================================================
 
 const
-MAIN_VTBL     main_Vtbl = {
+MAIN_VTBL     Main_Vtbl = {
     {
-        &main_Info,
-        main_IsKindOf,
+        &Main_Info,
+        Main_IsKindOf,
 #ifdef  MAIN_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
@@ -376,23 +399,23 @@ MAIN_VTBL     main_Vtbl = {
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        main_Dealloc,
-        main_Class,
-        main_WhoAmI,
-        (P_OBJ_QUERYINFO)main_QueryInfo,
-        (P_OBJ_TOSTRING)main_ToDebugString,
-        NULL,			// main_Enable,
-        NULL,			// main_Disable,
-        NULL,			// (P_OBJ_ASSIGN)main_Assign,
-        NULL,			// (P_OBJ_COMPARE)main_Compare,
-        NULL, 			// (P_OBJ_PTR)main_Copy,
-        NULL, 			// (P_OBJ_PTR)main_DeepCopy,
-        NULL 			// (P_OBJ_HASH)main_Hash,
+        Main_Dealloc,
+        Main_Class,
+        Main_WhoAmI,
+        (P_OBJ_QUERYINFO)Main_QueryInfo,
+        (P_OBJ_TOSTRING)Main_ToDebugString,
+        NULL,			// Main_Enable,
+        NULL,			// Main_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Main_Assign,
+        NULL,			// (P_OBJ_COMPARE)Main_Compare,
+        NULL, 			// (P_OBJ_PTR)Main_Copy,
+        NULL, 			// (P_OBJ_PTR)Main_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Main_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //main_IsEnabled,
+    //Main_IsEnabled,
  
 };
 
@@ -400,12 +423,12 @@ MAIN_VTBL     main_Vtbl = {
 
 static
 const
-OBJ_INFO        main_Info = {
-    "main",
-    "Main Object for Object Generation Program",
-    (OBJ_DATA *)&main_ClassObj,
+OBJ_INFO        Main_Info = {
+    "Main",
+    "Main",	// <-- Fill in description
+    (OBJ_DATA *)&Main_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&main_Vtbl,
+    (OBJ_IUNKNOWN *)&Main_Vtbl,
     sizeof(MAIN_DATA)
 };
 

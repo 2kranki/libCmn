@@ -496,8 +496,10 @@ extern "C" {
         OBJ_IDENT_TRANSMIT_CLASS,
         OBJ_IDENT_TRCTBL,
         OBJ_IDENT_TRCTBL_CLASS,
-        OBJ_IDENT_TRIE,
-        OBJ_IDENT_TRIE_CLASS,
+        OBJ_IDENT_TREGEX,               // Tiny Regex
+        OBJ_IDENT_TREGEX_CLASS,
+        OBJ_IDENT_TREGEX32,             // Tiny Regex - int32_t
+        OBJ_IDENT_TREGEX32_CLASS,
         OBJ_IDENT_TRIEMP,               // Minimal Prefix Trie
         OBJ_IDENT_TRIEMP_CLASS,
         OBJ_IDENT_TRUE,

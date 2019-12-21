@@ -293,7 +293,7 @@ extern "C" {
     //                  A d d  /  A d d U p d a t e
     //---------------------------------------------------------------
     
-    ERESULT         Dict_Add(
+    ERESULT         Dict_Add (
         DICT_DATA       *this,
         const
         char            *pName,
@@ -318,7 +318,7 @@ extern "C" {
     }
     
     
-    ERESULT         Dict_AddA(
+    ERESULT         Dict_AddA (
         DICT_DATA       *this,
         const
         char            *pName,
@@ -356,7 +356,7 @@ extern "C" {
     }
     
     
-    ERESULT         Dict_AddUpdate(
+    ERESULT         Dict_AddUpdate (
         DICT_DATA       *this,
         const
         char            *pName,
@@ -384,7 +384,7 @@ extern "C" {
     }
     
     
-    ERESULT         Dict_AddUpdateA(
+    ERESULT         Dict_AddUpdateA (
         DICT_DATA        *this,
         const
         char            *pName,
@@ -642,10 +642,6 @@ extern "C" {
     }
 
 
-
-    //---------------------------------------------------------------
-    //                      D e f a u l t s
-    //---------------------------------------------------------------
 
     //---------------------------------------------------------------
     //                      D e f a u l t s

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   main.c
- *	Generated 11/30/2018 16:54:35
+ * File:   Main.c
+ *	Generated 12/19/2019 08:55:05
  *
  */
 
@@ -41,9 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <main_internal.h>
-#include        <hjson.h>
-#include        <srcErrors.h>
+#include        <Main_internal.h>
 #include        <trace.h>
 
 
@@ -58,313 +56,22 @@ extern "C" {
 
     
 
-    ERESULT         main_ArgLibInclude(
-                                       MAIN_DATA       *this,
-                                       ASTR_DATA       *pStr
-                                       );
-    ERESULT         main_ArgMacos(
-                                  MAIN_DATA       *this,
-                                  ASTR_DATA       *pStr
-                                  );
-    ERESULT         main_ArgMsc32(
-                                  MAIN_DATA       *this,
-                                  ASTR_DATA       *pStr
-                                  );
-    ERESULT         main_ArgMsc64(
-                                  MAIN_DATA       *this,
-                                  ASTR_DATA       *pStr
-                                  );
-    ERESULT         main_DefaultsMacos(
-                                       MAIN_DATA       *this
-                                       );
-    ERESULT         main_DefaultsMsc32(
-                                       MAIN_DATA       *this
-                                       );
-    ERESULT         main_DefaultsMsc64(
-                                       MAIN_DATA       *this
-                                       );
-    
-    
-    static
-    CMDUTL_OPTION       pPgmOptions[] = {
-        {
-            "backup",
-            'n',
-            CMDUTL_ARG_OPTION_NONE,
-            CMDUTL_TYPE_INCR,
-            offsetof(MAIN_DATA, fBackup),
-            NULL,
-            "Backup output file if it exists"
-        },
-        {
-            "file",
-            'f',
-            CMDUTL_ARG_OPTION_REQUIRED,
-            CMDUTL_TYPE_PATH,
-            offsetof(MAIN_DATA, pFilePath),
-            NULL,
-            "Input File Path"
-        },
-        {
-            "libInclude",
-            'I',
-            CMDUTL_ARG_OPTION_REQUIRED,
-            CMDUTL_TYPE_PATH,
-            0,
-            (void *)main_ArgLibInclude,
-            "Library Include Base Path"
-        },
-        {
-            "macos",
-            'X',
-            CMDUTL_ARG_OPTION_NONE,
-            CMDUTL_TYPE_EXEC,
-            0,
-            (void *)main_ArgMacos,
-            "Generate MacOS Makefile (default)"
-        },
-        {
-            "msc32",
-            'S',
-            CMDUTL_ARG_OPTION_NONE,
-            CMDUTL_TYPE_EXEC,
-            0,
-            (void *)main_ArgMsc32,
-            "Generate Msc32 Makefile"
-        },
-        {
-            "msc64",
-            'M',
-            CMDUTL_ARG_OPTION_NONE,
-            CMDUTL_TYPE_EXEC,
-            0,
-            (void *)main_ArgMsc64,
-            "Generate Msc64 Makefile"
-        },
-        {
-            "out",
-            'o',
-            CMDUTL_ARG_OPTION_REQUIRED,
-            CMDUTL_TYPE_PATH,
-            offsetof(MAIN_DATA, pOutputPath),
-            NULL,
-            "Output File Path"
-        },
-        {
-            "dirtmp",
-            't',
-            CMDUTL_ARG_OPTION_REQUIRED,
-            CMDUTL_TYPE_PATH,
-            offsetof(MAIN_DATA, pOutputPath),
-            NULL,
-            "Temporary Directory Base Path"
-        },
-        {0}
-    };
-    
-    
-    
-    
-    
 
  
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    //---------------------------------------------------------------
-    //                     A r g  R o u t i n e s
-    //---------------------------------------------------------------
-    
-    ERESULT         main_ArgLibInclude(
-                                       MAIN_DATA       *this,
-                                       ASTR_DATA       *pStr
-                                       )
+#ifdef XYZZY
+    static
+    void            Main_task_body (
+        void            *pData
+    )
     {
-        //ERESULT         eRc;
+        //MAIN_DATA  *this = pData;
         
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        //eRc = main_DefaultsMacos(this);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
     }
-    
-    
-    ERESULT         main_ArgMacos(
-                                  MAIN_DATA       *this,
-                                  ASTR_DATA       *pStr
-                                  )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
 #endif
-        
-        eRc = main_DefaultsMacos(this);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    ERESULT         main_ArgMsc32(
-                                  MAIN_DATA       *this,
-                                  ASTR_DATA       *pStr
-                                  )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        eRc = main_DefaultsMsc32(this);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    ERESULT         main_ArgMsc64(
-                                  MAIN_DATA       *this,
-                                  ASTR_DATA       *pStr
-                                  )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        eRc = main_DefaultsMsc64(this);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                D e f a u l t  R o u t i n e s
-    //---------------------------------------------------------------
-    
-    ERESULT         main_DefaultsMacos(
-                                       MAIN_DATA       *this
-                                       )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        this->osType = OSTYPE_MACOS;
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    ERESULT         main_DefaultsMsc32(
-                                       MAIN_DATA       *this
-                                       )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        this->osType = OSTYPE_MSC32;
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    ERESULT         main_DefaultsMsc64(
-                                       MAIN_DATA       *this
-                                       )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        const
-        char            *pKey;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        this->osType = OSTYPE_MSC64;
-        pKey = osTypeID;
-        pStr = AStr_NewA("msc64");
-        if (pStr) {
-            eRc = nodeBTP_AddUpdateA(main_getDict(this), 0, pKey, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        //FIXME: eRc = main_DictAddUpdate(this, 0, "outBase", "\\\\C:\\");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'outBase' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        
-        //FIXME: eRc = main_DictAddUpdate(this, 0, "tmpBase", "\\TEMP");
-        if (ERESULT_FAILED(eRc) ) {
-            fprintf(stderr, "FATAL - Failed to add 'tmpBase' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
 
 
 
@@ -377,7 +84,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    MAIN_DATA *     main_Alloc (
+    MAIN_DATA *     Main_Alloc (
         void
     )
     {
@@ -394,42 +101,20 @@ extern "C" {
 
 
 
-    MAIN_DATA *     main_New (
+    MAIN_DATA *     Main_New (
         void
     )
     {
         MAIN_DATA       *this;
         
-        this = main_Alloc( );
+        this = Main_Alloc( );
         if (this) {
-            this = main_Init(this);
+            this = Main_Init(this);
         } 
         return this;
     }
 
 
-
-    MAIN_DATA *     main_NewFromArgV(
-        uint16_t        cArgs,
-        char            **ppArgs,
-        char            **ppEnv
-    )
-    {
-        MAIN_DATA       *this;
-        ERESULT         eRc;
-        
-        this = main_Alloc( );
-        if (this) {
-            this = main_Init(this);
-            if (this) {
-                eRc =   main_SetupFromArgV(this, cArgs, ppArgs, ppEnv);
-            }
-        }
-        return this;
-    }
-    
-    
-    
 
     
 
@@ -438,392 +123,10 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      A p p l i c a t i o n
-    //---------------------------------------------------------------
-    
-    APPL_DATA *     main_getAppl(
-        MAIN_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return (APPL_DATA *)this;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  D i c t i o n a r y
-    //---------------------------------------------------------------
-    
-    NODEBTP_DATA *  main_getDict(
-        MAIN_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pDict;
-    }
-    
-    
-    bool            main_setDict(
-        MAIN_DATA       *this,
-        NODEBTP_DATA    *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pDict) {
-            obj_Release(this->pDict);
-        }
-        this->pDict = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  F i l e  P a t h
-    //---------------------------------------------------------------
-    
-    PATH_DATA *     main_getFilePath(
-                                     MAIN_DATA       *this
-                                     )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pFilePath;
-    }
-    
-    
-    bool            main_setFilePath(
-                                     MAIN_DATA       *this,
-                                     PATH_DATA       *pValue
-                                     )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pFilePath) {
-            obj_Release(this->pFilePath);
-        }
-        this->pFilePath = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          N o d e s
-    //---------------------------------------------------------------
-    
-    NODE_DATA *     main_getNodes(
-                                  MAIN_DATA       *this
-                                  )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pNodes;
-    }
-    
-    
-    bool            main_setNodes(
-                                  MAIN_DATA       *this,
-                                  NODE_DATA       *pValue
-                                  )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pNodes) {
-            obj_Release(this->pNodes);
-        }
-        this->pNodes = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      O/S  T y p e
-    //---------------------------------------------------------------
-    
-    uint16_t        main_getOsType(
-                                   MAIN_DATA       *this
-                                   )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->osType;
-    }
-    
-    
-    bool            main_setOsType(
-                                   MAIN_DATA       *this,
-                                   uint16_t        value
-                                   )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->osType = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      O u t p u t
-    //---------------------------------------------------------------
-    
-    TEXTOUT_DATA *  main_getOutput(
-                                   MAIN_DATA       *this
-                                   )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pOutput;
-    }
-    
-    
-    bool            main_setOutput(
-                                   MAIN_DATA       *this,
-                                   TEXTOUT_DATA    *pValue
-                                   )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pOutput) {
-            obj_Release(this->pOutput);
-        }
-        this->pOutput = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  O u t p u t  P a t h
-    //---------------------------------------------------------------
-    
-    PATH_DATA *     main_getOutputPath(
-                                       MAIN_DATA       *this
-                                       )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pOutputPath;
-    }
-    
-    
-    bool            main_setOutputPath(
-                                       MAIN_DATA       *this,
-                                       PATH_DATA       *pValue
-                                       )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pOutputPath) {
-            obj_Release(this->pOutputPath);
-        }
-        this->pOutputPath = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      O u t  T y p e
-    //---------------------------------------------------------------
-    
-    uint16_t        main_getOutType(
-                                    MAIN_DATA       *this
-                                    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        return this->outType;
-    }
-    
-    
-    bool            main_setOutType(
-                                    MAIN_DATA       *this,
-                                    uint16_t        value
-                                    )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->outType = value;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          P a r s e r
-    //---------------------------------------------------------------
-    
-    DBPRS_DATA *    main_getParser(
-                                   MAIN_DATA       *this
-                                   )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pPrs;
-    }
-    
-    
-    bool            main_setParser(
-                                   MAIN_DATA       *this,
-                                   DBPRS_DATA      *pValue
-                                   )
-    {
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pPrs) {
-            obj_Release(this->pPrs);
-        }
-        this->pPrs = pValue;
-        
-        return true;
-    }
-    
-    
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        main_getPriority (
+    uint16_t        Main_getPriority (
         MAIN_DATA     *this
     )
     {
@@ -831,7 +134,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -842,14 +145,14 @@ extern "C" {
     }
 
 
-    bool            main_setPriority (
+    bool            Main_setPriority (
         MAIN_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -866,13 +169,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        main_getSize (
+    uint32_t        Main_getSize (
         MAIN_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -884,10 +187,58 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA * Main_getStr (
+        MAIN_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Main_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool        Main_setStr (
+        MAIN_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Main_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_STR_OWNED
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+#endif
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  main_getSuperVtbl (
+    OBJ_IUNKNOWN *  Main_getSuperVtbl (
         MAIN_DATA     *this
     )
     {
@@ -895,7 +246,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -924,14 +275,14 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = main_Assign(this,pOther);
+        ERESULT eRc = Main_Assign(this,pOther);
      @endcode 
-     @param     this    MAIN object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another MAIN object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         main_Assign (
+    ERESULT         Main_Assign (
         MAIN_DATA		*this,
         MAIN_DATA     *pOther
     )
@@ -941,11 +292,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!main_Validate(pOther)) {
+        if (!Main_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -997,7 +348,7 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         main_Compare (
+    ERESULT         Main_Compare (
         MAIN_DATA     *this,
         MAIN_DATA     *pOther
     )
@@ -1013,11 +364,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!main_Validate(pOther)) {
+        if (!Main_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -1045,7 +396,8 @@ extern "C" {
         return eRc;
     }
     
-    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -1054,14 +406,14 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        main      *pCopy = main_Copy(this);
+        Main      *pCopy = Main_Copy(this);
      @endcode 
-     @param     this    MAIN object pointer
+     @param     this    object pointer
      @return    If successful, a MAIN object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    MAIN_DATA *     main_Copy (
+    MAIN_DATA *     Main_Copy (
         MAIN_DATA       *this
     )
     {
@@ -1071,15 +423,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = main_New( );
+        pOther = Main_New( );
         if (pOther) {
-            eRc = main_Assign(this, pOther);
+            eRc = Main_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -1097,7 +449,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            main_Dealloc (
+    void            Main_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -1109,7 +461,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -1121,17 +473,8 @@ extern "C" {
         }
 #endif
 
-        if (this->pGen) {
-            obj_Release(this->pGen);
-            this->pGen = OBJ_NIL;
-        }
-        main_setDict(this, OBJ_NIL);
-        main_setFilePath(this, OBJ_NIL);
-        main_setNodes(this, OBJ_NIL);
-        main_setOutput(this, OBJ_NIL);
-        main_setOutputPath(this, OBJ_NIL);
-        main_setParser(this, OBJ_NIL);
-        
+        Main_setStr(this, OBJ_NIL);
+
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -1144,183 +487,25 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //             D i c t i o n a r y  M e t h o d s
-    //---------------------------------------------------------------
-    
-    ERESULT         main_DictAdd(
-                                 MAIN_DATA       *this,
-                                 const
-                                 char            *pName,
-                                 OBJ_ID          pData
-                                 )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeBTP_New( );
-            if (OBJ_NIL == this->pDict) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        
-        eRc = nodeBTP_AddA(this->pDict, 0, pName, (void *)pData);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    ERESULT         main_DictAddA(
-        MAIN_DATA       *this,
-        const
-        char            *pName,
-        const
-        char            *pData
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == pData) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        pStr = AStr_NewA(pData);
-        if (OBJ_NIL == pStr) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        
-        if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeBTP_New( );
-            if (OBJ_NIL == this->pDict) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        
-        eRc = nodeBTP_AddA(this->pDict, 0, pName, pStr);
-        
-        // Return to caller.
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        return eRc;
-    }
-    
-    
-    ERESULT         main_DictAddUpdate(
-                                       MAIN_DATA       *this,
-                                       const
-                                       char            *pName,
-                                       OBJ_ID          pData
-                                       )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeBTP_New( );
-            if (OBJ_NIL == this->pDict) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        
-        if (nodeBTP_FindA(this->pDict, 0, pName)) {
-            eRc = nodeBTP_DeleteA(this->pDict, 0, pName);
-        }
-        eRc = nodeBTP_AddA(this->pDict, 0, pName, (void *)pData);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    ERESULT         main_DictAddUpdateA(
-                                        MAIN_DATA        *this,
-                                        const
-                                        char            *pName,
-                                        const
-                                        char            *pData
-                                        )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pStr = AStr_NewA(pData);
-        if (OBJ_NIL == pStr) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        
-        if (OBJ_NIL == this->pDict) {
-            this->pDict = nodeBTP_New( );
-            if (OBJ_NIL == this->pDict) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        
-        if (nodeBTP_FindA(this->pDict, 0, pName)) {
-            eRc = nodeBTP_DeleteA(this->pDict, 0, pName);
-        }
-        eRc = nodeBTP_AddA(this->pDict, 0, pName, pStr);
-        
-        // Return to caller.
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         main_Disable (
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Main_Disable (
         MAIN_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1340,15 +525,22 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         main_Enable(
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Main_Enable (
         MAIN_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1365,325 +557,15 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          E x e c
-    //---------------------------------------------------------------
-    
-    int             main_Exec (
-        MAIN_DATA       *this
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        bool            fRc;
-        int             iRc;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        char            *pChrStr;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        eRc = main_ParseArgsDefault(this);
-        if (ERESULT_FAILED(eRc)) {
-            appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly set defaults!");
-            exit(8);
-        }
-        
-        for (;;) {
-            
-            fRc = appl_IsMore((APPL_DATA *)this);
-            if (!fRc) {
-                break;
-            }
-            
-            eRc = appl_ProcessOptions((APPL_DATA *)this);
-            if (ERESULT_FAILED(eRc)) {
-                appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly parse command line!");
-                exit(8);
-            }
-            
-            pChrStr = appl_NextArg((APPL_DATA *)this);
-            if (NULL == pChrStr) {
-                break;
-            }
-            pStr = AStr_NewA(pChrStr);
-            iRc = main_ProcessArg(this, pStr);
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-            if (iRc) {
-                return iRc;
-            }
-        }
-        
-        // Return to caller.
-        return 0;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                  G e n  M a k e  F i l e
-    //---------------------------------------------------------------
-    
-    ERESULT         main_GenMakefile (
-        MAIN_DATA       *this
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
-        NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODEHASH_DATA   *pHash = OBJ_NIL;
-        NODEHASH_DATA   *pHashWrk = OBJ_NIL;
-        GENBASE_DATA    *pGen;
-        DBPRS_DATA      *pPrs;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == this->pDict) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_MISSING;
-        }
-        if (OBJ_NIL == this->pNodes) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_MISSING;
-        }
-#endif
-        
-        pGen = genBase_NewWithDict(this->pDict);
-        if (OBJ_NIL == pGen) {
-            fprintf(stderr, "FATAL - Could not create generator object!\n\n\n");
-            exit(12);
-        }
-        
-        pPrs = dbPrs_NewWithDictAndGen(this->pDict, pGen);
-        if (OBJ_NIL == pPrs) {
-            fprintf(stderr, "FATAL - Could not create database parser object!\n\n\n");
-            exit(12);
-        }
-        dbPrs_setNodes(pPrs, this->pNodes);
-        
-        pHash = node_getData(this->pNodes);
-        if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_DATA;
-        }
-        pNode = nodeHash_FindA(pHash, 0, "library");
-        if (pNode) {
-            pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
-            if (pHashWrk) {
-                //genBase_setMakeType(pGen, GENMAKE_TYPE_LIB);
-                //eRc = dbPrs_ParseLibrary(pPrs, pHashWrk);
-                if (ERESULT_FAILED(eRc)) {
-                    fprintf(
-                            stderr,
-                            "FATAL - Could not parse \"library\" "
-                            "node in database hash object!\n\n\n"
-                            );
-                    exit(12);
-                }
-                main_setOutType(this, OUTTYPE_LIB);
-            }
-            else {
-                fprintf(
-                        stderr,
-                        "FATAL - Found \"library\" "
-                        "node in database, but it is not a hash object!\n\n\n"
-                        );
-                exit(12);
-            }
-        }
-        else {
-            pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "program");
-            if (pNode) {
-                pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
-                if (pHashWrk) {
-                    //genBase_setMakeType(pGen, GENMAKE_TYPE_PGM);
-                    //eRc = dbprs_ParseProgram(pPrs, pHashWrk);
-                    if (ERESULT_FAILED(eRc)) {
-                        fprintf(
-                                stderr,
-                                "FATAL - Could not parse \"program\" "
-                                "node in database hash object!\n\n\n"
-                                );
-                        exit(12);
-                    }
-                    main_setOutType(this, OUTTYPE_CLP);
-                }
-                else {
-                    fprintf(
-                            stderr,
-                            "FATAL - Found \"program\" "
-                            "node in database, but it is not a hash object!\n\n\n"
-                            );
-                    exit(12);
-                }
-            }
-            else {
-                fprintf(
-                        stderr,
-                        "FATAL - Could not find \"library\" or"
-                        " \"program\" node in database hash object!\n\n\n"
-                        );
-                exit(12);
-            }
-        }
-        
-        pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "objects");
-        if (pNode) {
-            pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
-            if (pHashWrk) {
-                eRc = dbPrs_ParseObjects(pPrs, pHashWrk);
-                if (ERESULT_FAILED(eRc)) {
-                    fprintf(
-                            stderr,
-                            "FATAL - Could not parse \"objects\" "
-                            "node in database hash object!\n\n\n"
-                            );
-                    exit(12);
-                }
-            }
-            else {
-                fprintf(
-                        stderr,
-                        "FATAL - Found \"objects\" "
-                        "node in database, but it is not a hash object!\n\n\n"
-                        );
-                exit(12);
-            }
-        }
-        
-        pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "routines");
-        if (pNode) {
-            pArray = jsonIn_CheckNodeDataForArray(pNode);
-            if (pArray) {
-                //eRc = dbPrs_ParseRoutines(pPrs, pArray);
-            }
-            else {
-                fprintf(
-                        stderr,
-                        "FATAL - Found \"routines\" "
-                        "node in database, but it is not an array object!\n\n\n"
-                        );
-                exit(12);
-            }
-        }
-        
-        pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "tests");
-        if (pNode) {
-            pArray = jsonIn_CheckNodeDataForArray(pNode);
-            if (pArray) {
-                //eRc = dbPrs_ParseTests(pPrs, pArray);
-            }
-            else {
-                fprintf(
-                        stderr,
-                        "FATAL - Found \"tests\" "
-                        "node in database, but it is not an array object!\n\n\n"
-                        );
-                exit(12);
-            }
-        }
-        
-        switch (this->osType) {
-                
-            case OSTYPE_MACOS:
-                pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "macosx");
-                if (pNode) {
-                    pArray = jsonIn_CheckNodeDataForArray(pNode);
-                    if (pArray) {
-                        //eRc = dbPrs_ParseRoutines(pPrs, pArray);
-                    }
-                    else {
-                        fprintf(
-                                stderr,
-                                "FATAL - Found \"macosx\" "
-                                "node in database, but it is not an array object!\n\n\n"
-                                );
-                        exit(12);
-                    }
-                }
-                
-                break;
-                
-            case OSTYPE_MSC32:
-                pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "win32");
-                if (pNode) {
-                    pArray = jsonIn_CheckNodeDataForArray(pNode);
-                    if (pArray) {
-                        //eRc = dbPrs_ParseRoutines(pPrs, pArray);
-                    }
-                    else {
-                        fprintf(
-                                stderr,
-                                "FATAL - Found \"win32\" "
-                                "node in database, but it is not an array object!\n\n\n"
-                                );
-                        exit(12);
-                    }
-                }
-                break;
-                
-            case OSTYPE_MSC64:
-                pNode = nodeHash_FindA(node_getData(this->pNodes), 0, "win64");
-                if (pNode) {
-                    pArray = jsonIn_CheckNodeDataForArray(pNode);
-                    if (pArray) {
-                        //eRc = dbPrs_ParseRoutines(pPrs, pArray);
-                    }
-                    else {
-                        fprintf(
-                                stderr,
-                                "FATAL - Found \"win64\" "
-                                "node in database, but it is not an array object!\n\n\n"
-                                );
-                        exit(12);
-                    }
-                }
-                break;
-                
-            default:
-                appl_Usage(
-                           (APPL_DATA *)this,
-                           "ERROR - Failed to indicate type of makefile to generate!\n\n\n"
-                           );
-                exit(8);
-        }
-        eRc = dbPrs_Finalize(pPrs);
-        
-        pStr = dbPrs_getStr(pPrs);
-        if (pStr) {
-            textOut_PutA(this->pOutput, AStr_getData(pStr));
-        }
-        
-        // Return to caller.
-        obj_Release(pPrs);
-        pPrs = OBJ_NIL;
-        obj_Release(pGen);
-        pGen = OBJ_NIL;
-        return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    MAIN_DATA *   main_Init(
+    MAIN_DATA *   Main_Init (
         MAIN_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(MAIN_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1699,40 +581,35 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)appl_Init((APPL_DATA *)this);    // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MAIN);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MAIN);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                        // Needed for Inheritance
+        //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&main_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Main_Vtbl);
         
-        this->pDict = nodeBTP_New( );
-        if (OBJ_NIL == this->pDict) {
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        appl_setUsage(
-                      (APPL_DATA *)this,
-                      this,
-                      (void *)main_UsageDesc,
-                      (void *)main_UsageProgLine,
-                      (void *)main_UsageOptions
-                      );
-        
-#ifdef NDEBUG
+        */
+
+    #ifdef NDEBUG
     #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "main::sizeof(MAIN_DATA) = %lu\n", sizeof(MAIN_DATA));
+        fprintf(stderr, "Main::sizeof(MAIN_DATA) = %lu\n", sizeof(MAIN_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(MAIN_DATA));
     #endif
@@ -1746,15 +623,16 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         main_IsEnabled(
+    ERESULT         Main_IsEnabled (
         MAIN_DATA		*this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1771,458 +649,20 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //              P a r s e  A r g s  D e f a u l t
+    //                P a r s e  J s o n  O b j e c t
     //---------------------------------------------------------------
     
-    ERESULT         main_ParseArgsDefault (
-        MAIN_DATA        *this
+#ifdef  MAIN_JSON_SUPPORT
+     MAIN_DATA * Main_ParseJsonObject (
+         JSONIN_DATA     *pParser
     )
     {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-#if defined(__MACOSX_ENV__)
-        this->osType = OSTYPE_MACOS;
-        pStr = AStr_NewA("macos");
-#endif
-#if defined(__WIN32_ENV__)
-        this->osType = OSTYPE_WIN32;
-        pStr = AStr_NewA("win32");
-#endif
-#if defined(__WIN64_ENV__)
-        this->osType = OSTYPE_WIN64;
-        pStr = AStr_NewA("win64");
-#endif
-        if (pStr) {
-            eRc = nodeBTP_AddA(main_getDict(this), 0, osTypeID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        eRc = main_DefaultsMacos(this);
-        
-        pStr = AStr_NewA("d");
-        if (pStr) {
-            eRc = nodeBTP_AddA(main_getDict(this), 0, makeTypeID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", makeTypeID);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        pStr = AStr_NewA("lib");
-        if (pStr) {
-            eRc = nodeBTP_AddA(main_getDict(this), 0, resultTypeID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        resultTypeID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-#if defined(__MACOSX_ENV__)
-        pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        pStr = AStr_NewA("C:/PROGRAMS");
-#endif
-        if (pStr) {
-            eRc = nodeBTP_AddA(main_getDict(this), 0, libBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        outBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-#if defined(__MACOSX_ENV__)
-        pStr = AStr_NewA("$(HOME)/Support/bin");
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        pStr = AStr_NewA("C:/PROGRAMS");
-#endif
-        if (pStr) {
-            eRc = nodeBTP_AddA(main_getDict(this), 0, outBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        outBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        pStr = AStr_NewA("./src");
-        if (pStr) {
-            eRc = nodeBTP_AddA(main_getDict(this), 0, srcBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        srcBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-#if defined(__MACOSX_ENV__)
-        pStr = AStr_NewA("${TMPDIR}");
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        pStr = AStr_NewA("${TMP}");
-#endif
-        if (pStr) {
-            eRc = nodeBTP_AddA(main_getDict(this), 0, tmpBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        tmpBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
+        return OBJ_NIL;
     }
-
-
-    
-    //---------------------------------------------------------------
-    //              P a r s e  I n p u t  F i l e
-    //---------------------------------------------------------------
-    
-    ERESULT         main_ParseInputFile (
-        MAIN_DATA       *this,
-        PATH_DATA       *pPath
-    )
-    {
-        //ERESULT         eRc;
-        HJSON_DATA      *pObj = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        NODEHASH_DATA   *pHash;
-        NODE_DATA       *pFileNode;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pPath) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        pObj = hjson_NewFromPath(pPath, 4);
-        if (pObj) {
-            
-            if  (appl_getDebug((APPL_DATA *)this)) {
-                obj_TraceSet(pObj, true);
-            }
-            pFileNode = hjson_ParseFileHash(pObj);
-            if (pFileNode) {
-                this->pNodes = pFileNode;
-                if (appl_getDebug((APPL_DATA *)this)) {
-                    pStr = node_ToDebugString(pFileNode, 0);
-                    fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
-            }
-            
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-        srcErrors_ExitOnFatal(OBJ_NIL);
-        
-        if (this->pNodes) {
-            pHash = node_getData(this->pNodes);
-            if (OBJ_NIL == pHash) {
-                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-                exit(12);
-            }
-            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
-                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
-                exit(12);
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-            exit(12);
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    ERESULT         main_ParseInputStr(
-                                       MAIN_DATA       *this,
-                                       const
-                                       char            *pStrA
-                                       )
-    {
-        //ERESULT         eRc;
-        HJSON_DATA      *pObj = OBJ_NIL;
-        ASTR_DATA       *pWrk = OBJ_NIL;
-        NODE_DATA       *pFileNode;
-        NODEHASH_DATA   *pHash;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == pStrA) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        pObj = hjson_NewA(pStrA, 4);
-        if (pObj) {
-            
-            if  (appl_getDebug((APPL_DATA *)this)) {
-                obj_TraceSet(pObj, true);
-            }
-            pFileNode = hjson_ParseFileHash(pObj);
-            if (pFileNode) {
-                this->pNodes = pFileNode;
-                if (appl_getDebug((APPL_DATA *)this)) {
-                    pWrk = node_ToDebugString(pFileNode, 0);
-                    fprintf(stderr, "%s\n\n\n", AStr_getData(pWrk));
-                    obj_Release(pWrk);
-                    pWrk = OBJ_NIL;
-                }
-            }
-            
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-        srcErrors_ExitOnFatal(OBJ_NIL);
-        
-        if (this->pNodes) {
-            pHash = node_getData(this->pNodes);
-            if (OBJ_NIL == pHash) {
-                fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-                exit(12);
-            }
-            if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
-                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
-                exit(12);
-            }
-        }
-        else {
-            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
-            exit(12);
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //              P r o c e s s  A r g s
-    //---------------------------------------------------------------
-    
-    ERESULT         main_ProcessInit(
-                                     MAIN_DATA       *this
-                                     )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
 #endif
         
         
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    ERESULT         main_ProcessArg(
-                                    MAIN_DATA       *this,
-                                    ASTR_DATA       *pStr
-                                    )
-    {
-        PATH_DATA       *pPath = OBJ_NIL;
-        ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pDrive = OBJ_NIL;
-        PATH_DATA       *pDir = OBJ_NIL;
-        PATH_DATA       *pFileName = OBJ_NIL;
-        PATH_DATA       *pArgDir = OBJ_NIL;
-        PATH_DATA       *pMakefile = OBJ_NIL;
-        PATH_DATA       *pMakepath = OBJ_NIL;
         
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pStr) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        if (!appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\tProcessing - %s...\n", AStr_getData(pStr));
-        }
-        
-        pPath = path_NewFromAStr(pStr);
-        appl_ErrorFatalOnBool(
-                              (OBJ_NIL == pPath),
-                              "FATAL - Failed to create path \"from\" \n"
-                              );
-        eRc = path_Clean(pPath);
-        appl_ErrorFatalOnEresult(
-                                 eRc,
-                                 "FATAL - File, %s, does not exist or is not a file!\n",
-                                 path_getData(pPath)
-                                 );
-        eRc = path_IsFile(pPath);
-        appl_ErrorFatalOnEresult(
-                                 eRc,
-                                 "FATAL - File, %s, does not exist or is not a file!\n",
-                                 path_getData(pPath)
-                                 );
-        eRc = path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
-        appl_ErrorFatalOnEresult(
-                                 eRc,
-                                 "FATAL - Unable to extract directory from File, %s!\n",
-                                 path_getData(pPath)
-                                 );
-        pArgDir = path_NewFromDriveDirFilename(pDrive, pDir, OBJ_NIL);
-        appl_ErrorFatalOnBool(
-                              (OBJ_NIL == pArgDir),
-                              "FATAL - Unable to extract directory from File, %s!\n",
-                              path_getData(pPath)
-                              );
-        eRc = main_DictAddA(this, srcBaseID, (void *)pArgDir);
-        
-        eRc = main_DictAddA(this, srcFileID, path_getData(pPath));
-        if (ERESULT_FAILED(eRc) ) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Failed to add 'srcFile' to Dictionary\n");
-            exit(EXIT_FAILURE);
-        }
-        
-        eRc = main_ParseInputFile(this, pPath);
-        obj_Release(pPath);
-        pPath = OBJ_NIL;
-        
-        if (OBJ_NIL == this->pOutputPath) {
-            pMakefile = path_NewA("Makefile.${" osTypeID "}.txt");
-            if (OBJ_NIL == pMakefile) {
-                DEBUG_BREAK();
-                fprintf(
-                        stderr,
-                        "FATAL - Unable to create Makefile name!\n"
-                        );
-                exit(EXIT_FAILURE);
-            }
-            pMakepath = path_NewFromDriveDirFilename(pDrive, pDir, pMakefile);
-            if (OBJ_NIL == pMakefile) {
-                DEBUG_BREAK();
-                fprintf(
-                        stderr,
-                        "FATAL - Unable to create Makepath!\n"
-                        );
-                exit(EXIT_FAILURE);
-            }
-            eRc = path_ExpandVars(pMakepath, this->pDict);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to expand Makepath\n");
-                exit(EXIT_FAILURE);
-            }
-            eRc = path_IsFile(pMakepath);
-            if (!ERESULT_FAILED(eRc) && this->fBackup) {
-                eRc = path_VersionedRename(pMakepath);
-            }
-            this->pOutputPath = pMakepath;
-            this->pOutput = textOut_NewFromPath(pMakepath);
-            if (OBJ_NIL == this->pOutput) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to open \n");
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pMakefile);
-            pMakefile = OBJ_NIL;
-        }
-        if (!appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\t\tCreating %s\n", path_getData(this->pOutputPath));
-        }
-        
-        eRc = main_GenMakefile(this);
-        
-        obj_Release(this->pOutput);
-        this->pOutput = OBJ_NIL;
-        
-        // Return to caller.
-        obj_Release(pMakepath);
-        pMakepath = OBJ_NIL;
-        obj_Release(pArgDir);
-        pArgDir = OBJ_NIL;
-        obj_Release(pDrive);
-        pDrive = OBJ_NIL;
-        obj_Release(pDir);
-        pDrive = OBJ_NIL;
-        obj_Release(pFileName);
-        pFileName = OBJ_NIL;
-        return eRc;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -2234,14 +674,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = main_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Main_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "main", prefix,
+                        the object name, "Main", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -2249,7 +689,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          main_QueryInfo(
+    void *          Main_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -2264,7 +704,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -2277,7 +717,7 @@ extern "C" {
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)main_Class();
+                return (void *)Main_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -2307,23 +747,25 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return main_Disable;
+                            return Main_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return main_Enable;
+                            return Main_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return main_ToDebugString;
+                            return Main_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return main_ToJSON;
+#ifdef  SRCREF_JSON_SUPPORT
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return Main_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -2332,10 +774,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == main_ToDebugString)
+                if (pData == Main_ToDebugString)
                     return "ToDebugString";
-                if (pData == main_ToJSON)
-                    return "ToJSON";
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == Main_ToJson)
+                    return "ToJson";
+#endif
                 break;
                 
             default:
@@ -2348,85 +792,23 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  S e t u p  F r o m  A r g V
-    //---------------------------------------------------------------
-    
-    ERESULT         main_SetupFromArgV(
-                                       MAIN_DATA       *this,
-                                       uint16_t        cArgs,
-                                       char            *ppArgV[],
-                                       char            **ppEnv
-                                       )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        eRc = appl_SetupFromArgV((APPL_DATA *)this, cArgs, ppArgV, ppEnv, pPgmOptions);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //             S e t u p  T e x t O u t
-    //---------------------------------------------------------------
-    
-    ERESULT         main_SetupTextOutAStr(
-                                          MAIN_DATA        *this
-                                          )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (this->pOutput) {
-            DEBUG_BREAK();
-            return ERESULT_GENERAL_FAILURE;
-        }
-#endif
-        
-        this->pOutput = textOut_NewAStr( );
-        if (OBJ_NIL == this->pOutput) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------
     
-     ASTR_DATA *     main_ToJSON(
+#ifdef  MAIN_JSON_SUPPORT
+     ASTR_DATA *     Main_ToJson (
         MAIN_DATA      *this
     )
     {
         ERESULT         eRc;
-        int             j;
+        //int             j;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
         
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -2434,16 +816,19 @@ extern "C" {
         pInfo = obj_getInfo(this);
         
         pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
+        if (pStr) {
+            eRc =   AStr_AppendPrint(
+                        pStr,
+                        "{\"objectType\":\"%s\"",
+                        pInfo->pClassName
+                    );
+            
+            AStr_AppendA(pStr, "}\n");
+        }
         
         return pStr;
     }
+#endif
     
     
     
@@ -2455,15 +840,15 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = main_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Main_ToDebugString(this,4);
      @endcode 
-     @param     this    MAIN object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     main_ToDebugString(
+    ASTR_DATA *     Main_ToDebugString (
         MAIN_DATA      *this,
         int             indent
     )
@@ -2471,16 +856,14 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!main_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -2498,10 +881,11 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    main_getSize(this)
+                    Main_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -2533,116 +917,12 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  U s a g e  H e l p
-    //---------------------------------------------------------------
-    
-    /*!
-     Print the program description with a trailing '\n' and leading "  ".
-     @param     this        Object Pointer
-     @param     pOutput     File to write to
-     @param     pPgmPath    Program's Path
-     @return    ERESULT_SUCCESS if successful, otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT         main_UsageDesc(
-                                   MAIN_DATA       *this,
-                                   FILE            *pOutput,
-                                   PATH_DATA       *pPgmPath
-                                   )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        fprintf(
-                pOutput,
-                "  Generate a make or nmake file for the object system created\n"
-                "  in libCmn given an input json file.\n"
-                );
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    // Note: --debug(-d), --force(-f), --help(-?,-h), --verbose(-v) are already
-    //      taken care of in appl_Usage().
-    ERESULT         main_UsageOptions(
-                                      MAIN_DATA       *this,
-                                      FILE            *pOutput
-                                      )
-    {
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        fprintf(pOutput, "  --clp              Set type to Command Line Program\n");
-        fprintf(pOutput, "                     (Default is Library)\n");
-        fprintf(pOutput, "  --macosx           Generate MacOSX nmake file (default)\n");
-        fprintf(pOutput, "  --msc32            Generate MSC Win32 nmake file\n");
-        fprintf(pOutput, "  --msc64            Generate MSC Win64 nmake file\n");
-        fprintf(pOutput, "  (--out | -o) path  Output the generated data to <path>\n");
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    /*!
-     Print the program usage line with a trailing '\n' and leading "  ".
-     @param     this        Object Pointer
-     @param     pOutput     File to write to
-     @param     pPgmPath    Program's Path
-     @param     pNameA      Program's name
-     @return    ERESULT_SUCCESS if successful, otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT         main_UsageProgLine(
-                                       MAIN_DATA       *this,
-                                       FILE            *pOutput,
-                                       PATH_DATA       *pPgmPath,
-                                       const
-                                       char            *pNameA
-                                       )
-    {
-        //ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        fprintf(pOutput, "  %s [options] input_path\n", pNameA);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
     #ifdef NDEBUG
     #else
-    bool            main_Validate(
+    bool            Main_Validate (
         MAIN_DATA      *this
     )
     {
