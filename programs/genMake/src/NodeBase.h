@@ -552,14 +552,24 @@ extern "C" {
 
 
     /*!
-     Merge an array into the dependencies list.
+     Merge an array into the list specified in the name.
      @param     this    object pointer
      @param     pArray  Array of other deps
      @return    If successful, OBJ_NIL is returne, otherwise a new
                 ERESULT_DATA error object is returned.
      @warning   The ERESULT_DATA error object must be released.
      */
+    ERESULT_DATA *  NodeBase_MergeArches (
+        NODEBASE_DATA   *this,
+        ASTRCARRAY_DATA *pArray
+    );
+
     ERESULT_DATA *  NodeBase_MergeDeps (
+        NODEBASE_DATA   *this,
+        ASTRCARRAY_DATA *pArray
+    );
+
+    ERESULT_DATA *  NodeBase_MergeOSs (
         NODEBASE_DATA   *this,
         ASTRCARRAY_DATA *pArray
     );

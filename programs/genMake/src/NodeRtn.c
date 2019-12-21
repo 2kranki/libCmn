@@ -203,6 +203,16 @@ extern "C" {
                         obj_Release(pTestName);
                         pTestName = OBJ_NIL;
                     }
+                    pErr =  NodeBase_MergeArches(
+                                        NodeTest_getNodeBase(pRtn->pTest),
+                                        NodeRtn_getArches(pRtn)
+                            );
+                    obj_Release(pErr);
+                    pErr =  NodeBase_MergeOSs(
+                                        NodeTest_getNodeBase(pRtn->pTest),
+                                        NodeRtn_getOSs(pRtn)
+                            );
+                    obj_Release(pErr);
                 }
             }
             *ppBase = pRtn;

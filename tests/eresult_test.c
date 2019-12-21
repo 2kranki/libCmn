@@ -1,3 +1,4 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
  *	Generated 06/05/2017 21:57:10
  */
@@ -74,12 +75,12 @@ int         tearDown(
 
 
 
-int         test_eResult_OpenClose(
+int             test_eResult_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    ERESULT_DATA *pObj = OBJ_NIL;
+    ERESULT_DATA    *pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -95,7 +96,61 @@ int         test_eResult_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         	test_eResult_PERR1(
+    const
+    char        	*pTestName
+)
+{
+    ERESULT_DATA 	*pObj = OBJ_NIL;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = eResult_NewAStr(ERESULT_NOT_IMPLEMENTED, OBJ_NIL);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        fprintf(stderr, "You should see an error message following this\n"
+                "similar to: \"Error: Not Implemented (-6)\"\n");
+        eResult_Fprint(pObj, stderr);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_eResult_PERR2(
+    const
+    char            *pTestName
+)
+{
+    ERESULT_DATA     *pObj = OBJ_NIL;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = eResult_NewStrA(ERESULT_NOT_IMPLEMENTED, "Test Message!");
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        fprintf(stderr, "You should see an error message following this\n"
+                "similar to: \"Error: Not Implemented (-6) - Test Message!\"\n");
+        eResult_Fprint(pObj, stderr);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -103,6 +158,8 @@ int         test_eResult_OpenClose(
 
 
 TINYTEST_START_SUITE(test_eResult);
+  TINYTEST_ADD_TEST(test_eResult_PERR2,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_eResult_PERR1,setUp,tearDown);
   TINYTEST_ADD_TEST(test_eResult_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

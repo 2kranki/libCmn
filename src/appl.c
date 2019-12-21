@@ -464,7 +464,7 @@ extern "C" {
                 (pFileName ? pFileName : ""),
                 linnum,
                 colnum
-                );
+        );
         vfprintf( stderr, fmt, argsp );
         va_end( argsp );
         fprintf( stderr, "\n\n\n" );

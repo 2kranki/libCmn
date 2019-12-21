@@ -213,31 +213,17 @@ extern "C" {
         int             Key
     )
     {
-        size_t          High = cErrorTable - 1;
-        size_t          Low = 0;
-        size_t          Mid;
-        int             rc;
+        uint32_t        i;
+        uint32_t        iMax = cErrorTable;
 
         /* Search the array.
          */
-        while (Low < High) {
-            Mid = (High + Low) / 2;
-            rc = Key - errorTable[Mid].errorCode;
-            if( rc < 0 )
-                High = Mid;
-            else if( rc == 0 )
-                return &errorTable[Mid];
-            else
-                Low = Mid + 1;
-        }
-        if (High == Low) {
-            rc = Key - errorTable[Low].errorCode;
-            if( rc == 0 )
-                return &errorTable[Low];
+        for (i=0; i<iMax; i++) {
+            if (Key == errorTable[i].errorCode)
+                return &errorTable[i];
         }
 
-        /* Return to caller.
-         */
+        // Return to caller.
         return NULL;
     }
 
@@ -293,26 +279,15 @@ extern "C" {
     )
     {
         ERESULT_DATA    *this;
-        ERROR_ENTRY     *pError;
         
         // Do initialization.
         
         this = eResult_Alloc( );
         if (this) {
             this = eResult_Init(this);
-            if (this && pValue) {
+            if (this) {
                 this->eRc = eRc;
                 if (pValue) {
-                    eResult_setError(this, pValue);
-                } else {
-                    pError = SearchErrors(eRc);
-                    if (pError) {
-                        if (pError->pError) {
-                            pValue = AStr_NewFromPrint("Error: %s!\n", pError->pError);
-                        } else {
-                            pValue = AStr_NewFromPrint("Error: %d - Undocumented Error!\n");
-                        }
-                    }
                     eResult_setError(this, pValue);
                 }
             }
@@ -323,7 +298,37 @@ extern "C" {
     }
     
     
-    
+    ERESULT_DATA *  eResult_NewStrA(
+        ERESULT         eRc,
+        const
+        char            *pValue
+    )
+    {
+        ERESULT_DATA    *this = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+
+        if (pValue) {
+            this = eResult_New( );
+            if (this) {
+                this->eRc = eRc;
+                if (pValue) {
+                    pStr = AStr_NewA(pValue);
+                    eResult_setError(this, pStr);
+                    obj_Release(pStr);
+                }
+            }
+        } else {
+            return eResult_NewAStr(eRc, OBJ_NIL);
+        }
+
+        // Return to caller.
+        return this;
+    }
+
+
+
     ERESULT_DATA *	eResult_Shared(
     )
     {
@@ -372,36 +377,6 @@ extern "C" {
         this->eRc = value;
         
         return true;
-    }
-
-
-
-    ERESULT_DATA *  eResult_NewStrA(
-        ERESULT         eRc,
-        const
-        char            *pValue
-    )
-    {
-        ERESULT_DATA    *this = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-
-        // Do initialization.
-
-        if (pValue)
-            pStr = AStr_NewA(pValue);
-        if (pStr) {
-            this = eResult_New( );
-            if (this) {
-                this->eRc = eRc;
-                eResult_setError(this, pStr);
-            }
-        }
-        else {
-            return eResult_NewAStr(eRc, OBJ_NIL);
-        }
-
-        // Return to caller.
-        return this;
     }
 
 
@@ -581,6 +556,8 @@ void            eResult_ErrorFatalOn(
             return;
         }
 #endif
+        
+        eResult_setError(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super

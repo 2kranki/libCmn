@@ -979,16 +979,19 @@ extern "C" {
         if (pFileNode) {
             pHash = node_getData(pFileNode);
             if (OBJ_NIL == pHash) {
-                fprintf(stderr, "ERROR - No JSON Hash to process\n\n\n");
+                DEBUG_BREAK();
+                fprintf(stderr, "Error: No JSON Hash to process\n\n\n");
                 exit(12);
             }
             if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
-                fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
+                DEBUG_BREAK();
+                fprintf(stderr, "Error: Missing JSON Hash to process\n\n\n");
                 exit(12);
             }
         }
         else {
-            fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
+            DEBUG_BREAK();
+            fprintf(stderr, "Error: No JSON Nodes to process\n\n\n");
             exit(12);
         }
         
@@ -1035,15 +1038,18 @@ extern "C" {
         if (pFileNode) {
             pHash = node_getData(pFileNode);
             if (OBJ_NIL == pHash) {
+                DEBUG_BREAK();
                 fprintf(stderr, "ERROR - No JSON Hash to process\n\n\n");
                 exit(12);
             }
             if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
+                DEBUG_BREAK();
                 fprintf(stderr, "ERROR - Missing JSON Hash to process\n\n\n");
                 exit(12);
             }
         }
         else {
+            DEBUG_BREAK();
             fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
             exit(12);
         }
@@ -1151,9 +1157,12 @@ extern "C" {
             pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
                 pErr = SrcParse_ParseLibrary(this, node_getData(pNode));
-                if (pErr)
+                if (pErr) {
+                    DEBUG_BREAK();
                     return pErr;
+                }
             } else {
+                DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_DATA,
                                        "Missing 'library' JSON Hash");
             }
@@ -1164,13 +1173,17 @@ extern "C" {
                 pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
                 if (pHashWrk) {
                     pErr = SrcParse_ParseProgram(this, node_getData(pNode));
-                    if (pErr)
+                    if (pErr) {
+                        DEBUG_BREAK();
                         return pErr;
+                    }
                 } else {
+                    DEBUG_BREAK();
                     return eResult_NewStrA(ERESULT_INVALID_DATA,
                                            "Missing 'program' JSON Hash");
                 }
             } else {
+                DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_DATA,
                                        "Missing 'library' or 'program' JSON nodes");
             }
@@ -1181,9 +1194,12 @@ extern "C" {
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
                 pErr = SrcParse_ParseObjects(this, node_getData(pNode));
-                if (pErr)
+                if (pErr) {
+                    DEBUG_BREAK();
                     return pErr;
+                }
             } else {
+                DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_DATA,
                                        "Missing 'objects' JSON Array");
             }
@@ -1194,9 +1210,12 @@ extern "C" {
             pArray = jsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
                 pErr = SrcParse_ParseRoutines(this, node_getData(pNode));
-                if (pErr)
+                if (pErr) {
+                    DEBUG_BREAK();
                     return pErr;
+                }
             } else {
+                DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_DATA,
                                        "Missing 'routines' JSON Array");
             }

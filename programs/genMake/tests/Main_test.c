@@ -42,7 +42,8 @@ char            *pGoodJsonA =
     "}\n,"
     "objects: [\n"
         "{name:\"AStr\", json:true},\n"
-        "{name:\"appl\"}\n"
+        "{name:\"appl\"},\n"
+        "{name:\"Xyzzy\", os:[\"win32\"]}\n"          // Should not be generated!
     "],\n"
     "routines: [\n"
             "{name:\"dllist\"}\n"
@@ -153,7 +154,8 @@ char            *pGoodJsonB =
     "}\n,"
     "\"objects\": [\n"
         "{name:\"AStr\", \"json\":true},\n"
-        "{name:\"appl\"}\n"
+        "{name:\"appl\"},\n"
+        "{name:\"Xyzzy\", os:[\"win32\"]}\n"            // Should not be generated!
     "],\n"
     "\"routines\": [\n"
             "{name:\"dllist\", \"os\":[\"win32\"]},\n"  // Should not be generated!
@@ -262,7 +264,8 @@ char            *pGoodJsonC =
     "}\n,"
     "\"objects\": [\n"
         "{name:\"NodeBase\", \"json\":true},\n"
-        "{name:\"NodeLib\"}\n"
+        "{name:\"NodeLib\"},\n"
+        "{name:\"Xyzzy\", os:[\"win32\"]}\n"            // Should not be generated!
     "],\n"
     "\"routines\": [\n"
             "{name:\"dllist\", \"os\":[\"win32\"]},\n"  // Should not be generated!
@@ -945,8 +948,91 @@ int         test_Main_Generation05(
 
 
 
+int         test_Main_Generation06(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    MAIN_DATA       *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    PATH_DATA       *pInputPath = OBJ_NIL;
+    PATH_DATA       *pOutputPath = OBJ_NIL;
+    int             iRc;
+    int             offset = 0;
+    bool            fDump = true;
+    uint32_t        i;
+    const
+    char            *pChr;
+    static
+    const
+    char            *pInputPathA = "~/git/libCmn/objects.json.txt";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = Main_New();
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+        
+        pInputPath = path_NewA(pInputPathA);
+        TINYTEST_FALSE( (OBJ_NIL == pInputPath) );
+
+        pObj->osType = OSTYPE_MACOS64;
+        eRc = Main_SetupOsArch(pObj);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = Main_ProcessArg(pObj, path_getAStr(pInputPath));
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        
+        pOutputPath =   Main_CreateOutputPath(
+                                            pObj,
+                                            path_getAStr(pInputPath),
+                                            pObj->pOsName
+                        );
+        TINYTEST_FALSE( (OBJ_NIL == pOutputPath) );
+        
+        pStr = AStr_NewFromUtf8File(pOutputPath);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (fDump) {
+            fprintf(stderr, "GEN_BEGIN:\n%sGEN_END:\n\n\n", AStr_getData(pStr));
+        }
+        
+#ifdef XYZZY
+        // Skip first 3 lines of output.
+        pChr = AStr_getData(pStr);
+        for (i=0; i<3; i++) {
+            while (*pChr && (*pChr != '\n')) {
+                pChr++;
+            }
+            pChr++;
+        }
+        
+        iRc = str_CompareSpcl(pChr, pOutputB, &offset);
+        fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
+        TINYTEST_TRUE( (0 == iRc) );
+#endif
+        
+        eRc = path_Delete(pOutputPath);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        obj_Release(pOutputPath);
+        pOutputPath = OBJ_NIL;
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        obj_Release(pInputPath);
+        pInputPath = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_Main);
+    TINYTEST_ADD_TEST(test_Main_Generation06,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_Generation05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_Generation04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_Generation03,setUp,tearDown);

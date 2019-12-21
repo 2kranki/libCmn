@@ -704,7 +704,9 @@ extern "C" {
                         eRc = ObjEnum_AppendObj(pEnum, *ppObj);
                     }
                 }
-                eRc = objArray_SortAscending(pEnum->pArray, NULL);
+                if (pEnum->pArray) {
+                    eRc = objArray_SortAscending(pEnum->pArray, NULL);
+                }
             }
         }
         

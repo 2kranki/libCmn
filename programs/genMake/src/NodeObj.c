@@ -204,10 +204,12 @@ extern "C" {
                                         NodeObj_getNodeBase(pObj),
                                         "$(SRCDIR)/"
                         );
+                obj_Release(pErr);
                 pErr =  NodeBase_AddPrefixSrcsA(
                                         NodeObj_getNodeBase(pObj),
                                         "$(SRCDIR)/"
                         );
+                obj_Release(pErr);
             }
 
             // Scan off the test stuff if present.
@@ -255,6 +257,16 @@ extern "C" {
                     obj_Release(pExt);
                     pExt = OBJ_NIL;
                 }
+                pErr =  NodeBase_MergeArches(
+                                    NodeRtn_getNodeBase(pObj->pJson),
+                                    NodeObj_getArches(pObj)
+                        );
+                obj_Release(pErr);
+                pErr =  NodeBase_MergeOSs(
+                                    NodeRtn_getNodeBase(pObj->pJson),
+                                    NodeObj_getOSs(pObj)
+                        );
+                obj_Release(pErr);
             }
 
             // Scan off the test stuff if present.
@@ -289,12 +301,24 @@ extern "C" {
                 pObj->pTest = NodeTest_New();
             }
             endTest:
-            pNameTest = NodeTest_getName(pObj->pTest);
-            if (OBJ_NIL == pNameTest) {
-                pNameTest = AStrC_AppendA(pName, "_test");
-                NodeTest_setName(pObj->pTest, pNameTest);
-                obj_Release(pNameTest);
-                pNameTest = OBJ_NIL;
+            if (pObj->pTest) {
+                pNameTest = NodeTest_getName(pObj->pTest);
+                if (OBJ_NIL == pNameTest) {
+                    pNameTest = AStrC_AppendA(pName, "_test");
+                    NodeTest_setName(pObj->pTest, pNameTest);
+                    obj_Release(pNameTest);
+                    pNameTest = OBJ_NIL;
+                }
+                pErr =  NodeBase_MergeArches(
+                                    NodeTest_getNodeBase(pObj->pTest),
+                                    NodeObj_getArches(pObj)
+                        );
+                obj_Release(pErr);
+                pErr =  NodeBase_MergeOSs(
+                                    NodeTest_getNodeBase(pObj->pTest),
+                                    NodeObj_getOSs(pObj)
+                        );
+                obj_Release(pErr);
             }
 
             *ppBase = pObj;

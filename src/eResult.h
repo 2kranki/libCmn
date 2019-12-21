@@ -273,16 +273,6 @@ extern "C" {
     );
     
     
-    ERESULT_DATA *  eResult_Shared(
-        void
-    );
-    
-    
-    bool            eResult_SharedReset(
-        void
-    );
-    
-
     /*!
      Create a new eResult object that contains an error code and an error message. If
      pValue is NULL, then an error message will be contructed from the error code.
@@ -297,6 +287,16 @@ extern "C" {
         char            *pValue
     );
 
+
+    ERESULT_DATA *  eResult_Shared(
+        void
+    );
+    
+    
+    bool            eResult_SharedReset(
+        void
+    );
+    
 
 
 

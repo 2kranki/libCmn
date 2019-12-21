@@ -1854,6 +1854,43 @@ extern "C" {
     //                          M e r g e
     //---------------------------------------------------------------
 
+    ERESULT_DATA *  NodeBase_MergeArches (
+        NODEBASE_DATA   *this,
+        ASTRCARRAY_DATA *pArray
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTRC_DATA      *pStrC;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pArray) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        
+        iMax = AStrCArray_getSize(pArray);
+        for (i=0; i<iMax; i++) {
+            pStrC = AStrCArray_Get(pArray, i+1);
+            if (pStrC && (0 == AStrCArray_Find(this->pArches, pStrC))) {
+                eRc = AStrCArray_AppendAStrC(this->pArches, pStrC, NULL);
+            }
+        }
+        
+
+        // Return to caller.
+        return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
+    }
+
+
     ERESULT_DATA *  NodeBase_MergeDeps (
         NODEBASE_DATA   *this,
         ASTRCARRAY_DATA *pArray
@@ -1889,6 +1926,44 @@ extern "C" {
         // Return to caller.
         return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
     }
+
+
+    ERESULT_DATA *  NodeBase_MergeOSs (
+        NODEBASE_DATA   *this,
+        ASTRCARRAY_DATA *pArray
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTRC_DATA      *pStrC;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeBase_Validate(this)) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
+        }
+        if (OBJ_NIL == pArray) {
+            DEBUG_BREAK();
+            return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
+        }
+#endif
+        
+        iMax = AStrCArray_getSize(pArray);
+        for (i=0; i<iMax; i++) {
+            pStrC = AStrCArray_Get(pArray, i+1);
+            if (pStrC && (0 == AStrCArray_Find(this->pOSs, pStrC))) {
+                eRc = AStrCArray_AppendAStrC(this->pOSs, pStrC, NULL);
+            }
+        }
+        
+
+        // Return to caller.
+        return ERESULT_FAILED(eRc) ? eResult_NewStrA(eRc, NULL) : OBJ_NIL;
+    }
+
 
 
     //---------------------------------------------------------------

@@ -139,22 +139,22 @@ extern "C" {
             "Generate MacOS Makefile (default)"
         },
         {
-            "msc32",
+            "win32",
             'S',
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_EXEC,
             0,
             (void *)Main_ArgMsc32,
-            "Generate Msc32 Makefile"
+            "Generate Win32 Makefile"
         },
         {
-            "msc64",
+            "win64",
             'M',
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_EXEC,
             0,
             (void *)Main_ArgMsc64,
-            "Generate Msc64 Makefile"
+            "Generate Win64 Makefile"
         },
         {
             "out",
@@ -1671,6 +1671,7 @@ extern "C" {
         if (pArray) {
             pErr = ExpandNodes_ExpandObjs(this->pExpand, pArray);
             if (pErr) {
+                DEBUG_BREAK();
                 eResult_Fprint(pErr, stderr);
                 exit(12);
             }
@@ -1682,6 +1683,7 @@ extern "C" {
         if (pArray) {
             pErr = ExpandNodes_ExpandRtns(this->pExpand, pArray);
             if (pErr) {
+                DEBUG_BREAK();
                 eResult_Fprint(pErr, stderr);
                 exit(12);
             }
@@ -1696,6 +1698,7 @@ extern "C" {
         }
         pErr = ExpandNodes_CheckNodes(this->pExpand, this->pOsArch, this->pOsName);
         if (pErr) {
+            DEBUG_BREAK();
             eResult_Fprint(pErr, stderr);
             exit(12);
         }
@@ -1726,6 +1729,7 @@ extern "C" {
                     pErr = GenMac_GenPgmBegin(pMac, pPgm, this->pDict);
                 }
                 if (pErr) {
+                    DEBUG_BREAK();
                     eResult_Fprint(pErr, stderr);
                     exit(12);
                 }
@@ -1734,6 +1738,7 @@ extern "C" {
                 if (pArray) {
                     pErr = GenMac_GenCompileRtns(pMac, pArray, this->pDict);
                     if (pErr) {
+                        DEBUG_BREAK();
                         eResult_Fprint(pErr, stderr);
                         exit(12);
                     }
@@ -1743,6 +1748,7 @@ extern "C" {
                 if (pArray) {
                     pErr = GenMac_GenBuildTests(pMac, pArray, this->pDict);
                     if (pErr) {
+                        DEBUG_BREAK();
                         eResult_Fprint(pErr, stderr);
                         exit(12);
                     }
@@ -1754,6 +1760,7 @@ extern "C" {
                     pErr = GenMac_GenPgmEnd(pMac, pPgm, this->pDict);
                 }
                 if (pErr) {
+                    DEBUG_BREAK();
                     eResult_Fprint(pErr, stderr);
                     exit(12);
                 }
@@ -2089,14 +2096,17 @@ extern "C" {
             eResult_Fprint(pErr, stderr);
             exit(12);
         }
+        srcErrors_Print(srcErrors_Shared());
         srcErrors_ExitOnFatal(OBJ_NIL);
         
         pErr = SrcParse_ParseNodes(pParser);
+        srcErrors_Print(srcErrors_Shared());
         if (pErr) {
             eResult_Fprint(pErr, stderr);
             exit(12);
         }
-        
+        srcErrors_ExitOnFatal(OBJ_NIL);
+
         Main_setParser(this, pParser);
         obj_Release(pParser);
         pParser = OBJ_NIL;
@@ -2233,9 +2243,17 @@ extern "C" {
         );
 
         eRc = Main_ParseInputFile(this, pPath);
+        appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - Failed to parse input: %s",
+                    path_getData(pPath)
+        );
+        if (!appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\tParsed input: %s...\n", path_getData(pPath));
+        }
         obj_Release(pPath);
         pPath = OBJ_NIL;
-        
+
         pMakepath = Main_CreateOutputPath(this, pStr, this->pOsName);
         appl_ErrorFatalOnBool(
                     (OBJ_NIL == pMakepath),
@@ -2244,7 +2262,12 @@ extern "C" {
 
         // Generate the Makefile.
         eRc = Main_GenMakefile(this);
-        
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Generate Makefile failed! \n");
+            exit(EXIT_FAILURE);
+        }
+
         if (!appl_getQuiet((APPL_DATA *)this)) {
             fprintf(stderr, "\tCreating - %s...\n", path_getData(pMakepath));
         }
@@ -2603,8 +2626,8 @@ extern "C" {
         fprintf(pOutput, "                     (Default is Library)\n");
         fprintf(pOutput, "  --macos32          Generate MacOS 32-bit nmake file (default)\n");
         fprintf(pOutput, "  --macos64          Generate MacOS 64-bit nmake file (default)\n");
-        fprintf(pOutput, "  --msc32            Generate MSC Win32 nmake file\n");
-        fprintf(pOutput, "  --msc64            Generate MSC Win64 nmake file\n");
+        fprintf(pOutput, "  --win32            Generate MSC Win32 nmake file\n");
+        fprintf(pOutput, "  --win64            Generate MSC Win64 nmake file\n");
         fprintf(pOutput, "  (--out | -o) path  Output the generated data to <path>\n");
         
         // Return to caller.
