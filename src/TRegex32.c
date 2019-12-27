@@ -44,6 +44,7 @@
 #include        <TRegex32_internal.h>
 #include        <ascii.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
@@ -56,20 +57,6 @@ extern "C" {
     
 
     
-    // Warning: This must be kept in sync with REGEX_TYPES.
-    static
-    const
-    char                *pTypesToStrA[] = {
-        "UNUSED",
-        "DOT", "BEGIN", "END",
-        "QUESTIONMARK", "STAR", "PLUS",
-        "CHAR", "CHAR_CLASS", "INV_CHAR_CLASS",
-        "DIGIT", "NOT_DIGIT",
-        "ALPHA", "NOT_ALPHA",
-        "WHITESPACE", "NOT_WHITESPACE",
-        "BRANCH"
-    };
-
 
 
 
@@ -78,297 +65,1490 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    ERESULT         TRegex32_ExpandCompiled(
+    #define UNUSED(variable) (void)(variable)
+        
+        /* compileOne: compiles one regex token, returns number of chars eaten */
+        int             TRegex32_CompileOne(
+            TREGEX32_DATA   *this,
+            re_Token        *pCompiled,
+            const
+            W32CHR_T        *pPattern,
+            ClassChar       cclbuf[CCLBUFLEN],
+            int             *ccli
+        );
+        /* compileoneclc: compiles one class character, returns number of chars eaten */
+        int             TRegex32_CompileOneCLC(
+            ClassChar       *pCompiled,
+            const
+            W32CHR_T        *pPattern
+        );
+        /* compilerange: compiles a range, returns number of chars eaten */
+        int             TRegex32_CompileRange(
+            ClassChar       *pCompiled,
+            const
+            W32CHR_T        *pPattern
+        );
+        /* compilequantifier: compiles a quantifier, returns number of chars eaten */
+        int             TRegex32_CompileQuantifier(
+            re_Token        *pCompiled,
+            const
+            W32CHR_T        *pPattern
+        );
+        /* compilegreedy: sets whether the quantifier is greedy, returns number of chars eaten */
+        int             TRegex32_CompileGreedy(
+            re_Token        *pCompiled,
+            const
+            W32CHR_T        *pPattern
+        );
+        /* compileatomic: sets whether the quantifier is atomic, returns number of chars eaten */
+        int             TRegex32_CompileAtomic(
+            re_Token        *pCompiled,
+            const
+            W32CHR_T        *pPattern
+        );
+
+        /* matchpattern: matches one pattern on a string, returns number of chars eaten */
+        int             TRegex32_MatchPattern(
+            TREGEX32_DATA   *this,
+            const
+            re_Token        *pPattern,
+            MatchData       *pMatchData,
+            int             pi,
+            const
+            W32CHR_T        *pText,
+            int             i
+        );
+        /* backtrack: backtrack into the pattern, returns new starting index */
+        int             TRegex32_BackTrack(
+            TREGEX32_DATA   *this,
+            const
+            re_Token        *pattern,
+            MatchData       *pMatchData,
+            int             pi
+        );
+        /* matchcount: matches one regex token including quantifiers and sets count
+        for number of quantifiers, returns number of characters eaten */
+        int             TRegex32_MatchCount(
+            TREGEX32_DATA     *this,
+            const
+            re_Token        *pattern,
+            MatchData       *pMatchData,
+            int             pi,
+            const
+            W32CHR_T        *pText,
+            int             i
+        );
+        /* matchone: matches one regex token ignoring quantifiers, returns number of characters eaten */
+        int             TRegex32_MatchOne(
+            TREGEX32_DATA   *this,
+            const
+            re_Token        *pattern,
+            MatchData       *pMatchData,
+            int             pi,
+            const
+            W32CHR_T        *pText,
+            int             i
+        );
+        /* matchOneCLC: matches one class character, returns number of chars eaten */
+        int             TRegex32_MatchOneCLC(
+            ClassChar       pattern,
+            const
+            W32CHR_T        *pText,
+            int             i,
+            Modifiers       modifiers
+        );
+        /* more matching functions which must ALL have the same interface */
+        int             TRegex32_MatchWhiteSpace(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+        int TRegex32_MatchNotWhiteSpace(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+        int TRegex32_MatchDigit(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+        int TRegex32_MatchNotDigit(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+        int TRegex32_MatchWordChar(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+        int TRegex32_MatchNotWordChar(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+        int TRegex32_MatchNewLine(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+        int TRegex32_MatchWordBoundary(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+        int TRegex32_MatchNotWordBoundary(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+
+        int TRegex32_MatchStart(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+        int TRegex32_MatchEnd(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+        int TRegex32_MatchAny(
+            const
+            W32CHR_T        *pText,         // Text pointer
+            int             i,              // Index into pText
+            Modifiers       modifiers
+        );
+
+        /* the array of all Metabsls (sequences that begin with a backslash) */
+        static
+        const
+        struct {
+            W32CHR_T        pattern;
+            int             (*validator)(const W32CHR_T *, int, Modifiers);
+        } Metabsls[] = {
+            {'s', TRegex32_MatchWhiteSpace},
+            {'S', TRegex32_MatchNotWhiteSpace},
+            {'d', TRegex32_MatchDigit},
+            {'D', TRegex32_MatchNotDigit},
+            {'w', TRegex32_MatchWordChar},
+            {'W', TRegex32_MatchNotWordChar},
+            {'R', TRegex32_MatchNewLine},
+            {'b', TRegex32_MatchWordBoundary},
+            {'B', TRegex32_MatchNotWordBoundary}
+        };
+        static
+        const
+        int     cMetabsls =  sizeof(Metabsls)/sizeof(Metabsls[0]);
+
+        
+        /* the array of all metachars */
+        static
+        const
+        struct {
+             W32CHR_T       pattern;
+             int            (*validator)(const W32CHR_T *, int, Modifiers);
+        } MetaChars[] = {
+             {'^', TRegex32_MatchStart},
+             {'$', TRegex32_MatchEnd},
+             {'.', TRegex32_MatchAny}
+        };
+        static
+        const
+        int     cMetaChars =  sizeof(MetaChars)/sizeof(MetaChars[0]);
+
+        
+         /* the array of all quantifiers */
+        static
+        const
+        struct {
+             W32CHR_T       pattern;
+             Quantifier     min;
+             Quantifier     max;
+         } Quantifiers[] = {
+             {'?', 0, 1},
+             {'*', 0, QUANTIFIER_MAX},
+             {'+', 1, QUANTIFIER_MAX}
+         };
+        static
+        const
+        int     cQuantifiers =  sizeof(Quantifiers)/sizeof(Quantifiers[0]);
+
+     #define MOD_I 0b00000001
+     #define MOD_S 0b00000010
+     #define MOD_B 0b00000100
+
+        static
+        const
+        struct {
+            W32CHR_T        pattern;
+            Modifiers       modifier;
+        } ModifierChars[] = {
+            {'i', MOD_I}, /* case Insensitive */
+            {'s', MOD_S}, /* Single line (DOTALL) */
+            {'<', MOD_B}  /* backwards */
+        };
+        static
+        const
+        int     cModifierChars =  sizeof(ModifierChars)/sizeof(ModifierChars[0]);
+
+        
+     /*
+      * GLOBAL VARIABLES
+      */
+
+     // stack of pointers to GROUP/CGROUP/LOOKAROUND/INVLOOKAROUND tokens
+     //re_Token* groupstack[MAXGROUPS] = {0};
+     //int groupstacki = 0;
+
+     // ====================== END OF NEW ==============================
+
+
+        /****************************************************************
+        * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
+        ****************************************************************/
+
+    // ====================== NEW =====================================
+    /*
+     * COMPILATION FUNCTIONS
+     */
+
+    int             TRegex32_CompileGreedy(
+        re_Token        *pToken,
+        const
+        W32CHR_T        *pPattern
+    )
+    {
+        switch (pPattern[0]) {
+            case '?':
+                pToken->greedy = false;
+                return 1;
+            default:
+                pToken->greedy = true;
+                return 0;
+        }
+    }
+
+
+
+    int             TRegex32_CompileAtomic(
+        re_Token        *pToken,
+        const
+        W32CHR_T        *pPattern
+    )
+    {
+        switch (pPattern[0]) {
+            case '+':
+                pToken->atomic = true;
+                return 1;
+            default:
+                pToken->atomic = false;
+                return 0;
+        }
+    }
+
+
+
+    int             TRegex32_CompileQuantifier(
+        re_Token        *pToken,
+        const
+        W32CHR_T        *pPattern
+    )
+    {
+        int             i;
+
+        pToken->quantifierMin = 1;
+        pToken->quantifierMax = 1;
+
+        /* is a quantifier char */
+        for (int i = 0; i < cQuantifiers; ++i) {
+            if (pPattern[0] == Quantifiers[i].pattern) {
+                pToken->quantifierMin = Quantifiers[i].min;
+                pToken->quantifierMax = Quantifiers[i].max;
+                return 1;
+            }
+        }
+        if (pPattern[0] != '{')
+            /* there is no quantifier */
+            return 0;
+
+        /* from now in, it checks inside the {} */
+
+        /* loop to check min quantifier */
+        pToken->quantifierMin = 0;
+        for (i = 1; pPattern[i]; ++i) {
+            if (ascii_isNumericA(pPattern[i])) {
+                pToken->quantifierMin *= 10;
+                pToken->quantifierMin += pPattern[i] - '0';
+            } else if (pPattern[i] == ',') {
+                /* start entering the max, but first if there is no max set it to
+                 *  QUANTIFIERMAX (infinity)
+                 */
+                ++i;
+                if (pPattern[i] == '}') {
+                    pToken->quantifierMax = QUANTIFIER_MAX;
+                    return i+1;
+                }
+                break;
+            } else if (pPattern[i] == '}') {
+                // it only has one value with no comma
+                pToken->quantifierMax = pToken->quantifierMin;
+                return i+1;
+            } else {
+                /* invalid character in {}, treat entire thing as literal */
+                pToken->quantifierMin = 1;
+                pToken->quantifierMax = 1;
+                return 0;
+            }
+        }
+        /* loop to check max quantifier */
+        pToken->quantifierMax = 0;
+        for (; pPattern[i]; ++i) {
+            if (ascii_isNumericA(pPattern[i])) {
+                pToken->quantifierMax *= 10;
+                pToken->quantifierMax += pPattern[i] - '0';
+            } else if (pPattern[i] == '}') {
+                /* finish entering max */
+                return i+1;
+            } else {
+                /* invalid character in {}, treat entire thing as literal */
+                pToken->quantifierMin = 1;
+                pToken->quantifierMax = 1;
+                return 0;
+            }
+        }
+        if (!pPattern[i])
+            /* pattern ends on an open {, treat entire thing as literal */
+            return 0;
+
+        return i+1;
+    }
+
+
+
+    /*
+     Compile one class character,
+     return number of chars eaten
+     */
+    int             TRegex32_CompileOneCLC(
+        ClassChar       *pCCL,
+        const
+        W32CHR_T        *pPattern
+    )
+    {
+        switch (pPattern[0]) {
+            case '\\':
+                if (!pPattern[1]) {
+                    /* invalid regex, doesn't end the \ or close the [ */
+                    errno = EINVAL;
+                    return 0;
+                }
+                /* is a metabsls */
+                for (int i = 0; i < cMetabsls; ++i) {
+                    if (pPattern[1] == Metabsls[i].pattern) {
+                        pCCL->type = CCL_METABSL;
+                        pCCL->meta = i;
+                        return 2;
+                    }
+                }
+                /* literal escaped char */
+                pCCL->type = CCL_CHARRANGE;
+                pCCL->first = pPattern[1];
+                return 2;
+            case '\0': /* FALLTHROUGH */
+            case ']':
+                /* shouldn't happen */
+                errno = EINVAL;
+                return 0;
+            default:
+                /* literal char */
+                pCCL->type = CCL_CHARRANGE;
+                pCCL->first = pPattern[0];
+                return 1;
+        }
+        /* UNREACHABLE */
+    }
+
+
+
+    int         TRegex32_CompileRange(
+        ClassChar   *pCCL,
+        const
+        W32CHR_T    *pPattern
+    )
+    {
+        if (pPattern[0] != '-') {
+            /* not a range */
+            if (pCCL->type == CCL_CHARRANGE)
+                pCCL->last = pCCL->first;
+            return 0;
+        }
+        if (pCCL->type != CCL_CHARRANGE) {
+            /* the previous char was not range-able (e.g. was a Metabsl [\w-b] ) */
+            errno = EINVAL;
+            return 0;
+        }
+        // pattern[0] == '-'
+        switch (pPattern[1]) {
+            case '\\':
+                if (pPattern[2] == '\0') {
+                    /* invalid regex, ends on a backslash */
+                    errno = EINVAL;
+                    return 0;
+                }
+                for (int i = 0; i < cMetabsls; ++i) {
+                    if (pPattern[2] == Metabsls[i].pattern) {
+                        /* a range from a character to a metabsl; error (e.g. [b-\w] )*/
+                        errno = EINVAL;
+                        return 0;
+                    }
+                }
+                /* range from a character to an escaped literal char (e.g. [H-\Z]) */
+                pCCL->last = pPattern[2];
+                return 4;
+            case ']':
+                /* ccl ends on dash; (e.g. [asdf-]); treat dash as literal */
+                pCCL->last = pCCL->first;
+                return 0;
+            case '\0':
+                /* ccl ends unclosed on dash; error */
+                errno = EINVAL;
+                return 0;
+            default:
+                /* regular range from char to char */
+                pCCL->last = pPattern[1];
+                return 2;
+        }
+        /* UNREACHABLE */
+    }
+
+
+
+    /*
+     Compile one regex token,
+     return number of chars eaten
+     */
+    int         TRegex32_CompileOne(
         TREGEX32_DATA   *this,
-        uint16_t        num
-    )
-    {
-        void            *pWork;
-        uint32_t        oldMax;
-        uint32_t        cbSize;
-        uint16_t        elemSize = sizeof(regex_t);
-        
-        // Do initialization.
-        if( this == NULL )
-            return ERESULT_INVALID_OBJECT;
-        if (num < this->maxCompiled) {
-            return ERESULT_SUCCESSFUL_COMPLETION;
-        }
-        
-        // Expand the Array.
-        oldMax = this->maxCompiled;
-        if (0 == oldMax) {
-            oldMax = 1;
-        }
-        this->maxCompiled = oldMax << 1;                // max *= 2
-        while (num > this->maxCompiled) {
-            this->maxCompiled = this->maxCompiled << 1;
-        }
-        cbSize = this->maxCompiled * elemSize;
-        pWork = (void *)mem_Malloc(cbSize);
-        if( NULL == pWork ) {
-            this->maxCompiled = oldMax;
-            return ERESULT_INSUFFICIENT_MEMORY;
-        }
-        
-        // Copy the old entries into the new array.
-        if( this->pCompiled == NULL )
-            ;
-        else {
-            memmove(pWork, this->pCompiled, (oldMax * elemSize));
-            mem_Free(this->pCompiled);
-            // this->pCompiled = NULL;
-        }
-        this->pCompiled = pWork;
-        memset(&this->pCompiled[oldMax], 0, ((this->maxCompiled - oldMax) * elemSize));
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    static
-    bool        matchPattern(
-        regex_t     *pattern,
+        re_Token        *pToken,
         const
-        W32CHR_T    *text
-    );
-    
-    
-    static
-    bool        matchRange(
-        W32CHR_T    c,
-        const
-        W32CHR_T    *pStr
-    )
+        W32CHR_T        *pPattern,
+        ClassChar       cclbuf[CCLBUFLEN],
+        int             *ccli)
     {
-        return ((c != '-') && (pStr[0] != '\0') && (pStr[0] != '-')
-                && (pStr[1] == '-') && (pStr[1] != '\0')
-                && (pStr[2] != '\0')
-                && ((c >= pStr[0]) && (c <= pStr[2])));
-    }
-    
-    
-    static
-    bool        isMetaChar(
-        W32CHR_T    c
-    )
-    {
-        return ((c == 's') || (c == 'S') == (c == 'w') || (c == 'W')
-                || (c == 'd') || (c == 'D'));
-    }
-
-    
-    static
-    bool        matchMetaChar(
-        W32CHR_T    c,
-        const
-        W32CHR_T    *pStr
-    )
-    {
-        switch (pStr[0]) {
-            case 'd':
-                return  ascii_isNumericW32(c);
-            case 'D':
-                return !ascii_isNumericW32(c);
-            case 'w':
-                return  ascii_isLabelFirstCharW32(c);
-            case 'W':
-                return !ascii_isLabelFirstCharW32(c);
-            case 's':
-                return ascii_isWhiteSpaceW32(c);
-            case 'S':
-                return !(ascii_isWhiteSpaceW32(c));
-            default:
-                return (c == pStr[0]);
-        }
-    }
-
-    
-    static
-    bool        matchCharClass(
-        W32CHR_T    c,
-        const
-        W32CHR_T    *pStr
-    )
-    {
-        do {
-            if (matchRange(c, pStr)) {
-                return true;
-            }
-            else if (pStr[0] == '\\') {
-                /* Escape-char: increment str-ptr and match on next char */
-                pStr += 1;
-                if (matchMetaChar(c, pStr)) {
-                    return true;
-                } else if ((c == pStr[0]) && !isMetaChar(c)) {
-                    return true;
+        int             i;
+        
+        switch (pPattern[0]) {
+            case '\\':
+                if (!pPattern[1]) {
+                    /* invalid regex, has \ as last character */
+                    errno = EINVAL;
+                    return 0;
                 }
-            } else if (c == pStr[0]) {
-                if (c == '-') {
-                    return ((pStr[-1] == '\0') || (pStr[1] == '\0'));
-                } else {
-                    return true;
+                /* is a metabsls */
+                for (int i = 0; i < cMetabsls; ++i) {
+                    if (pPattern[1] == Metabsls[i].pattern) {
+                        /* metabackslash */
+                        pToken->type = TOKEN_METABSL;
+                        pToken->meta = i;
+                        /* used by both compilation and matching to store modifiers of groups */
+                        return 2;
+                    }
+                }
+                /* literal escaped char */
+                pToken->type = TOKEN_CHAR;
+                pToken->ch = pPattern[1];
+                return 2;
+            case '[':
+                /* character class */
+                pToken->type = TOKEN_CHARCLASS;
+                pToken->ccl = &cclbuf[*ccli];
+                i = 1;
+                if (pPattern[i] == '^') {
+                    ++i;
+                    pToken->type = TOKEN_INVCHARCLASS;
+                }
+                while (pPattern[i] && pPattern[i] != ']') {
+                    errno = 0;
+                    if (*ccli >= CCLBUFLEN) {
+                        /* buffer is too small */
+                        errno = ENOBUFS; /* technically, this errno code refers to
+                                          buffer space in a file stream, but I think
+                                          it is still appropriate */
+                        return 0;
+                    }
+                    i += TRegex32_CompileOneCLC(&cclbuf[*ccli], pPattern+i);
+                    if (errno)
+                        return 0;
+                    i += TRegex32_CompileRange(&cclbuf[*ccli], pPattern+i);
+                    if (errno)
+                        return 0;
+                    ++*ccli;
+                }
+                if (pPattern[i] == '\0') {
+                    /* invalid regex, doesn't close the [ */
+                    errno = EINVAL;
+                    return 0;
+                }
+                if (*ccli >= CCLBUFLEN) {
+                    /* buffer is too small for null terminator */
+                    errno = ENOBUFS;
+                    return 0;
+                }
+                cclbuf[(*ccli)++].type = CCL_END;
+                return i+1;
+            case '(':
+                /* group, cgroup, lookahead or inverted lookahead */
+                i = 1;
+
+                pToken->type = TOKEN_CGROUP;
+                if (pPattern[i] == '?') {
+                    pToken->type = TOKEN_GROUP;
+                    ++i;
+                }
+
+                for (;;) {
+                    for (int j = 0; j < cModifierChars; ++j) {
+                        if (pPattern[i] == ModifierChars[j].pattern) {
+                            pToken->modifiers |= ModifierChars[j].modifier;
+                            ++i;
+                            goto modifierFound;
+                        }
+                    }
+                    if (pPattern[i] == '-') {
+                        ++i;
+                        for (int j = 0; j < cModifierChars; ++j) {
+                            if (pPattern[i] == ModifierChars[j].pattern) {
+                                pToken->modifiers &= ~ModifierChars[j].modifier;
+                                ++i;
+                                goto modifierFound;
+                            }
+                        }
+                        --i;
+                    }
+                    break;
+    modifierFound:
+                    continue;
+                }
+
+                if (pPattern[i] == '=') {
+                    pToken->type = TOKEN_LOOKAROUND;
+                    ++i;
+                } else if (pPattern[i] == '!') {
+                    pToken->type = TOKEN_INVLOOKAROUND;
+                    ++i;
+                } else if (pPattern[i] == ':') {
+                    ++i;
+                }
+
+                ptrArray_PushData(this->pTokenStack, pToken);
+
+                return i;
+            case ')':
+                /* group end */
+                pToken->type = TOKEN_END;
+                if (0 == ptrArray_getSize(this->pTokenStack)) {
+                    errno = EINVAL;
+                    return 0;
+                }
+                re_Token        *pSavedToken = ptrArray_PopData(this->pTokenStack);
+                pToken->grouplen = pSavedToken->grouplen
+                                 = (int)(pToken->index - pSavedToken->index);
+                return 1;
+            case '\0':
+                /* shouldn't happen */
+                errno = EINVAL;
+                return 0;
+            default:
+                /* is a metachar */
+                for (int i = 0; i < cMetaChars; ++i) {
+                    if (pPattern[0] == MetaChars[i].pattern) {
+                        pToken->type = TOKEN_METACHAR;
+                        pToken->meta = i;
+                        return 1;
+                    }
+                }
+                
+                /* literal char */
+                pToken->type = TOKEN_CHAR;
+                pToken->ch = pPattern[0];
+                return 1;
+        }
+        /* UNREACHABLE */
+    }
+
+
+
+    void            TRegex32_CompilePattern(
+        TREGEX32_DATA   *this,
+        const
+        W32CHR_T        *pPattern
+    )
+    {
+        int             pi = 0; /* index into pattern  */
+        int             ri = 0; /* index into tokens */
+
+        ptrArray_DeleteAll(this->pTokenStack);
+        TRegex32_DeleteTokens(this);
+        this->ccli = 0;
+
+        while (pPattern[pi] != '\0') {
+            errno = 0;
+            TRegex32_ExpandTokens(this, ri+1);
+            ++this->sizeTokens;
+            if (!ri)
+                this->pTokens[ri].modifiers = 0;
+            else
+                this->pTokens[ri].modifiers = this->pTokens[ri-1].modifiers;
+            pi +=   TRegex32_CompileOne(
+                                    this,
+                                    &this->pTokens[ri],
+                                    &pPattern[pi],
+                                    this->cclbuf,
+                                    &this->ccli
+                    );
+            if (errno)
+                return;
+        
+            pi += TRegex32_CompileQuantifier(&this->pTokens[ri], &pPattern[pi]);
+            if (errno)
+                return;
+            pi += TRegex32_CompileGreedy(&this->pTokens[ri], &pPattern[pi]);
+            if (errno)
+                return;
+            pi += TRegex32_CompileAtomic(&this->pTokens[ri], &pPattern[pi]);
+            if (errno)
+                return;
+            
+            if (this->pTokens[ri].type == TOKEN_END) {
+                int         adj = ri - this->pTokens[ri].grouplen;
+                this->pTokens[adj].quantifierMin = this->pTokens[ri].quantifierMin;
+                this->pTokens[adj].quantifierMax = this->pTokens[ri].quantifierMax;
+                this->pTokens[adj].atomic = this->pTokens[ri].atomic;
+                this->pTokens[adj].greedy = this->pTokens[ri].greedy;
+            }
+
+            ++ri;
+        }
+
+        /* indicate the end of the regex */
+        TRegex32_ExpandTokens(this, ri+1);
+        ++this->sizeTokens;
+        this->pTokens[ri].type = TOKEN_END;
+        this->pTokens[ri].grouplen = -1;
+
+        if (ptrArray_getSize(this->pTokenStack))
+            errno = EINVAL;
+    }
+
+
+
+    /*
+     * MATCHING FUNCTIONS
+     */
+
+        int         TRegex32_MatchWhiteSpace(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers)
+        {
+            UNUSED(modifiers);
+            if (!ascii_isWhiteSpaceA(pText[i])) {
+                errno = EINVAL;
+                return 0;
+            }
+            return 1;
+        }
+            
+            
+            
+        int         TRegex32_MatchNotWhiteSpace(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            UNUSED(modifiers);
+            if (!pText[i] || ascii_isWhiteSpaceA(pText[i])) {
+                errno = EINVAL;
+                return 0;
+            }
+            return 1;
+        }
+            
+            
+            
+        int         TRegex32_MatchDigit(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            UNUSED(modifiers);
+            if (!ascii_isNumericA(pText[i])) {
+                errno = EINVAL;
+                return 0;
+            }
+            return 1;
+        }
+            
+            
+            
+        int         TRegex32_MatchNotDigit(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            UNUSED(modifiers);
+            if (!pText[i] || ascii_isNumericA(pText[i])) {
+                errno = EINVAL;
+                return 0;
+            }
+            return 1;
+        }
+            
+            
+
+        int         TRegex32_MatchWordChar(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            UNUSED(modifiers);
+            if (!ascii_isLabelCharW32(pText[i])) {
+                errno = EINVAL;
+                return 0;
+            }
+            return 1;
+        }
+            
+            
+
+        int         TRegex32_MatchNotWordChar(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            UNUSED(modifiers);
+            if (!pText[i] || ascii_isLabelCharW32(pText[i])) {
+                errno = EINVAL;
+                return 0;
+            }
+            return 1;
+        }
+            
+            
+            
+        int     TRegex32_MatchNewLine(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            UNUSED(modifiers);
+            if (pText[i] == '\r' && pText[i+1] == '\n')
+                return 2;
+            else if (pText[i] == '\n')
+                return 1;
+            errno = EINVAL;
+            return 0;
+        }
+            
+            
+        int     TRegex32_MatchWordBoundary(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            UNUSED(modifiers);
+            if (
+                (i > 0 && ascii_isLabelCharW32(pText[i-1]) != !ascii_isLabelCharW32(pText[i]))
+                || (i == 0 && !ascii_isLabelCharW32(pText[0]))
+            ) {
+                errno = EINVAL;
+                return 0;
+            }
+            return 0;
+        }
+            
+            
+
+        int         TRegex32_MatchNotWordBoundary(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            UNUSED(modifiers);
+            if (
+                (i > 0 && ascii_isLabelCharW32(pText[i-1]) == !ascii_isLabelCharW32(pText[i]))
+                || (i == 0 && ascii_isLabelCharW32(pText[0]))
+            ) {
+                errno = EINVAL;
+                return 0;
+            }
+            return 0;
+        }
+
+            
+
+        int         TRegex32_MatchStart(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            UNUSED(pText);
+            UNUSED(modifiers);
+            if (i) {
+                errno = EINVAL;
+                return 0;
+            }
+            return 0;
+        }
+            
+            
+
+        int         TRegex32_MatchEnd(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            UNUSED(modifiers);
+            if (pText[i] != '\0') {
+                errno = EINVAL;
+                return 0;
+            }
+            return 0;
+        }
+            
+            
+
+        int         TRegex32_MatchAny(
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            if (pText[i] == '\0' || (!(modifiers & MOD_S) && pText[i] == '\n')) {
+                errno = EINVAL;
+                return 0;
+            }
+            return 1;
+        }
+
+
+
+        int         TRegex32_MatchOneCLC(
+            ClassChar   pattern,
+            const
+            W32CHR_T    *pText,
+            int         i,
+            Modifiers   modifiers
+        )
+        {
+            /* this function always returns 1 */
+            switch (pattern.type) {
+                case CCL_METABSL:
+                    errno = 0;
+                    Metabsls[pattern.meta].validator(pText, i, modifiers);
+                    if (errno)
+                        return 0;
+                    return 1;
+                case CCL_CHARRANGE:
+                    if (
+                        ( (modifiers & MOD_I)
+                         && (ascii_toLowerW32(pText[i]) < ascii_toLowerW32(pattern.first)
+                             || ascii_toLowerW32(pText[i]) > ascii_toLowerW32(pattern.last)))
+                        || (!(modifiers & MOD_I) && (pText[i]  <  pattern.first
+                                            || pText[i] > pattern.last ))
+                    ) {
+                        errno = EINVAL;
+                        return 0;
+                    }
+                    return 1;
+                default:
+                    /* should never happen */
+                    errno = EINVAL;
+                    return 0;
+            }
+            /* UNREACHABLE */
+        }
+
+            
+            
+        /*  Compiles one regex token,
+            returns number of chars eaten
+         */
+        int         TRegex32_MatchOne(
+            TREGEX32_DATA     *this,
+            const
+            re_Token        *pPattern,
+            MatchData       *pMatchData,
+            int             pi,
+            const
+            W32CHR_T        *pText,
+            int             i
+        )
+        {
+            int             cChars;
+            int             ccli;
+            
+            switch (pPattern[pi].type) {
+                case TOKEN_CGROUP:
+                    /* TODO capturing */
+                    /* FALLTHROUGH */
+                case TOKEN_GROUP:
+                    cChars = TRegex32_MatchPattern(this, pPattern, pMatchData, pi+1, pText, i);
+                    return cChars;
+                case TOKEN_LOOKAROUND:
+                    cChars = TRegex32_MatchPattern(this, pPattern, pMatchData, pi+1, pText, i);
+                    return 0;
+                case TOKEN_INVLOOKAROUND:
+                    cChars = TRegex32_MatchPattern(this, pPattern, pMatchData, pi+1, pText, i);
+                    if (errno == EINVAL)
+                        errno = 0;
+                    else if (!errno)
+                        errno = EINVAL;
+                    return 0;
+                case TOKEN_METABSL:
+                    errno = 0;
+                    cChars =     Metabsls[pPattern[pi].meta].validator(
+                                                                  pText,
+                                                                  i,
+                                                                  pPattern[pi].modifiers
+                                );
+                    if (errno)
+                        return 0;
+                    return cChars;
+                case TOKEN_METACHAR:
+                    errno = 0;
+                    cChars = MetaChars[pPattern[pi].meta].validator(
+                                                            pText,
+                                                            i,
+                                                            pPattern[pi].modifiers
+                            );
+                    if (errno)
+                        return 0;
+                    return cChars;
+                case TOKEN_CHARCLASS:
+                    ccli = 0;
+                    while (pPattern[pi].ccl[ccli].type != CCL_END) {
+                        errno = 0;
+                        i +=    TRegex32_MatchOneCLC(
+                                            pPattern[pi].ccl[ccli],
+                                            pText,
+                                            i,
+                                            pPattern[pi].modifiers
+                                );
+                        if (!errno)
+                            return 1;
+                        ++ccli;
+                    }
+                    // all the chars in the class failed; matching failed
+                    errno = EINVAL;
+                    return 0;
+                case TOKEN_INVCHARCLASS:
+                    if (!pText[i]) {
+                        errno = EINVAL;
+                        return 0;
+                    }
+                    ccli = 0;
+                    while (pPattern[pi].ccl[ccli].type != CCL_END) {
+                        errno = 0;
+                        i += TRegex32_MatchOneCLC(pPattern[pi].ccl[ccli], pText, i, pPattern[pi].modifiers);
+                        if (!errno) {
+                            // matchOneCLC succeeded; fail the charclass
+                            errno = EINVAL;
+                            return 0;
+                        }
+                        ++ccli;
+                    }
+                    /* all the chars in the class failed; matching succeeded */
+                    errno = 0;
+                    return 1;
+                case TOKEN_CHAR:
+                    if (
+                        ( (pPattern[pi].modifiers & MOD_I) && ascii_toLowerA(pPattern[pi].ch) != ascii_toLowerA(pText[i])) ||
+                        (!(pPattern[pi].modifiers & MOD_I) && pPattern[pi].ch != pText[i] )
+                    ) {
+                        errno = EINVAL;
+                        return 0;
+                    }
+                    return 1;
+                default:
+                    // unknown re_Token type: should never happen
+                    errno = EINVAL;
+                    return 0;
+            }
+            /* UNREACHABLE */
+        }
+            
+            
+
+    /*
+     match one pattern on a string,
+     return number of chars eaten
+     */
+    int             TRegex32_MatchPattern(
+        TREGEX32_DATA   *this,
+        const
+        re_Token        *pToken,
+        MatchData       *pMatchData,
+        int             pi,
+        const
+        W32CHR_T        *pText,
+        int             i
+    )
+    {
+        int         pos = i;
+
+        for (; pToken[pi].type != TOKEN_END; ++pi) {
+            pMatchData[pi].position = pos;
+            pos += TRegex32_MatchCount(this, pToken, pMatchData, pi, pText, pos);
+
+            while (pMatchData[pi].count < pToken[pi].quantifierMin) {
+                errno = 0;
+                pi = TRegex32_BackTrack(this, pToken, pMatchData, pi);
+                if (errno)
+                    return 0;
+
+                pos = pMatchData[pi].position;
+                pos += TRegex32_MatchCount(this, pToken, pMatchData, pi, pText, pos);
+            }
+            if (    pToken[pi].type == TOKEN_GROUP
+                ||  pToken[pi].type == TOKEN_CGROUP
+                ||  pToken[pi].type == TOKEN_LOOKAROUND
+                ||  pToken[pi].type == TOKEN_INVLOOKAROUND
+                ) {
+                pi += pToken[pi].grouplen;
+            }
+        }
+        errno = 0;
+        return pos-i;
+    }
+
+        
+
+    /*
+     Backtrack into the pattern, (why? and where?)
+     returns new starting index
+     */
+    int         TRegex32_BackTrack(
+        TREGEX32_DATA   *this,
+        const
+        re_Token        *pPattern,
+        MatchData       *pMatchData,
+        int             pi
+    )
+    {
+        
+        while (pi--) {
+            if (    pPattern[pi].type == TOKEN_GROUP
+                ||  pPattern[pi].type == TOKEN_CGROUP
+                ||  pPattern[pi].type == TOKEN_LOOKAROUND
+                ||  pPattern[pi].type == TOKEN_INVLOOKAROUND
+                ) {
+                errno = EINVAL;
+                return 0;
+            }
+            if (pPattern[pi].type == TOKEN_END) {
+                const
+                int         endpi = pi;
+                pi -= pPattern[pi].grouplen;
+                if (    pPattern[pi].type == TOKEN_LOOKAROUND
+                    ||  pPattern[pi].type == TOKEN_INVLOOKAROUND
+                    ||  pPattern[pi].atomic
+                    ) {
+                    continue;
+                }
+
+                errno = 0;
+                TRegex32_BackTrack(this, pPattern, pMatchData, endpi);
+                if (!errno)
+                    return pi;
+            }
+            if (!pPattern[pi].atomic
+                &&  pPattern[pi].greedy
+                &&  pMatchData[pi].count > pPattern[pi].quantifierMin
+                ) {
+                --pMatchData[pi].count;
+                for (int j = pi+1; j < this->sizeTokens; ++j) {
+                    pMatchData[j].count = pPattern[j].greedy
+                                        ? pPattern[j].quantifierMax
+                                        : pPattern[j].quantifierMin;
+                }
+                errno = 0;
+                return pi;
+            } else if (     !pPattern[pi].atomic
+                       &&   !pPattern[pi].greedy
+                       &&   pMatchData[pi].count < pPattern[pi].quantifierMax
+                       ) {
+                ++pMatchData[pi].count;
+                for (int j = pi+1; j < this->sizeTokens; ++j) {
+                    pMatchData[j].count = pPattern[j].greedy
+                                        ? pPattern[j].quantifierMax
+                                        : pPattern[j].quantifierMin;
+                }
+                errno = 0;
+                return pi;
+            }
+        }
+        
+        /* all backtracking has been done, fail */
+        errno = EINVAL;
+        return 0;
+    }
+
+        
+            
+    /*
+     Match one regex token including quantifiers and set count
+     for number of quantifiers,
+     returns number of characters eaten
+     */
+    int             TRegex32_MatchCount(
+        TREGEX32_DATA   *this,
+        const
+        re_Token        *pToken,
+        MatchData       *pMatchData,
+        int             pi,
+        const
+        W32CHR_T        *pText,
+        int             i
+    )
+    {
+        const
+        int             oldi = i;
+        Quantifier      c;
+
+        for (c = 0; c < pMatchData[pi].count; ++c) {
+            errno = 0;
+            i += TRegex32_MatchOne(this, pToken, pMatchData, pi, pText, i);
+            if (errno) {
+                pMatchData[pi].count = c;
+                return i - oldi;
+            }
+        }
+        return i - oldi;
+    }
+
+        
+
+    // re_match
+    /*
+     re_match: returns index of first match of pattern in text
+     stores the length of the match in length if it is not NULL
+     */
+    int             TRegex32_MatchInt(
+        TREGEX32_DATA   *this,
+        const
+        W32CHR_T        *pText,
+        int             *pLength
+    )
+    {
+        int             i;
+        int             j;
+        MatchData       *pMatchData;
+
+        if (0 == this->sizeTokens) {
+            errno = ENODATA;
+            return 0;
+        }
+        pMatchData = mem_Malloc(this->sizeTokens * sizeof(MatchData));
+        if (NULL == pMatchData) {
+            errno = ENOMEM;
+            if (pLength)
+                pLength = 0;
+            return 0;
+        }
+
+        for (i = 0; ((i == 0) || pText[i-1]); i++) {
+            int             lengthBuf;
+
+            errno = 0;
+            for (j = 0; j < this->sizeTokens; j++) {
+                pMatchData[j].count = this->pTokens[j].greedy
+                            ? this->pTokens[j].quantifierMax
+                            : this->pTokens[j].quantifierMin;
+                
+            }
+            lengthBuf = TRegex32_MatchPattern(this, this->pTokens, pMatchData, 0, pText, i);
+            if (!errno) {
+                mem_Free(pMatchData);
+                /* first successful match */
+                if (pLength)
+                    *pLength = lengthBuf;
+                return i;
+            }
+        }
+        
+        /* no matches */
+        mem_Free(pMatchData);
+        errno = EINVAL;
+        if (pLength)
+            pLength = 0;
+        return 0;
+    }
+
+        
+
+    /*
+     re_matchg: returns number of matches of pattern in text
+     */
+    int             TRegex32_Matchg(
+        TREGEX32_DATA   *this,
+        const
+        W32CHR_T        *pText
+    )
+    {
+        int             i = 0;
+        int             c = 0;
+        int             length = 0;
+
+        while (pText[i]) {
+            errno = 0;
+            i += TRegex32_MatchInt(this, pText+i, &length);
+            if (errno)
+                return c;
+            ++c;
+            i += length;
+        }
+        
+        return c;
+    }
+
+        
+        
+        
+
+
+        /*
+         * PRINTING FUNCTIONS
+         */
+
+        static
+        ASTR_DATA *     TRegex32_PrintOneCLC(
+            ClassChar       *pPattern
+        )
+        {
+            ASTR_DATA       *pStr;
+            
+            pStr = AStr_New();
+            if (OBJ_NIL == pStr) {
+                return pStr;
+            }
+            
+            switch (pPattern->type) {
+                case CCL_METABSL:
+                    AStr_AppendPrint(pStr, "\\%c", Metabsls[pPattern->meta].pattern);
+                    break;
+                case CCL_CHARRANGE:
+                    AStr_AppendCharA(pStr, pPattern->first);
+                    if (pPattern->last != pPattern->first) {
+                        AStr_AppendCharA(pStr, pPattern->last);
+                    }
+                    break;
+                default:
+                    /* shouldn't happen */
+                    errno = EINVAL;
+                    obj_Release(pStr);
+                    return OBJ_NIL;
+            }
+            
+            return pStr;
+        }
+
+        
+        
+        static
+        ASTR_DATA *     TRegex32_PrintOne(
+            re_Token        *pToken
+        )
+        {
+            ASTR_DATA       *pStr;
+            ASTR_DATA       *pStrWrk;
+
+            pStr = AStr_New();
+            if (OBJ_NIL == pStr) {
+                return pStr;
+            }
+            
+            switch (pToken->type) {
+                case TOKEN_END:
+                    AStr_AppendA(pStr, ")");
+                    break;
+                case TOKEN_GROUP:
+                    AStr_AppendA(pStr, "(?:");
+                    return pStr;
+                case TOKEN_CGROUP:
+                    AStr_AppendA(pStr, "(");
+                    return pStr;
+                case TOKEN_LOOKAROUND:
+                    AStr_AppendA(pStr, "(?=");
+                    return pStr;
+                case TOKEN_INVLOOKAROUND:
+                    AStr_AppendA(pStr, "(?!");
+                    return pStr;
+                case TOKEN_METABSL:
+                    AStr_AppendPrint(pStr, "\\%c", Metabsls[pToken->meta].pattern);
+                    break;
+                case TOKEN_METACHAR:
+                    AStr_AppendCharA(pStr, MetaChars[pToken->meta].pattern);
+                    break;
+                case TOKEN_CHARCLASS: /* fallthrough */
+                case TOKEN_INVCHARCLASS:
+                    AStr_AppendA(pStr, "[");
+                    if (pToken->type == TOKEN_INVCHARCLASS)
+                        printf("^");
+                    for (int i = 0; pToken->ccl[i].type != CCL_END; ++i) {
+                        pStrWrk = TRegex32_PrintOneCLC(&pToken->ccl[i]);
+                        AStr_Append(pStr, pStrWrk);
+                        obj_Release(pStrWrk);
+                    }
+                    AStr_AppendA(pStr, "]");
+                    break;
+                case TOKEN_CHAR:
+                    AStr_AppendCharA(pStr, pToken->ch);
+                    break;
+                default:
+                    /* unknown token type: shouldn't happen */
+                    errno = EINVAL;
+                    obj_Release(pStr);
+                    return OBJ_NIL;
+            }
+            for (int i = 0; i < sizeof(Quantifiers)/sizeof(Quantifiers[0]); ++i) {
+                if (pToken->quantifierMin == Quantifiers[i].min && pToken->quantifierMax == Quantifiers[i].max) {
+                    AStr_AppendCharA(pStr, Quantifiers[i].pattern);
+                    goto nocharquantifier;
                 }
             }
-        }
-        
-        // Skip to end of string.
-        while (*pStr++ != '\0')
-            ;
-        
-        return false;
-    }
-
-    
-    static
-    bool        matchOne(
-        regex_t     p,
-        W32CHR_T    c
-    )
-    {
-        switch (p.type) {
-            case DOT:
-                return true;
-            case CHAR_CLASS:
-                return  matchCharClass(c, (const W32CHR_T *)p.ccl);
-            case INV_CHAR_CLASS:
-                return !matchCharClass(c, (const W32CHR_T *)p.ccl);
-            case DIGIT:
-                return  ascii_isNumericW32(c);
-            case NOT_DIGIT:
-                return !ascii_isNumericW32(c);
-            case ALPHA:
-                return  ascii_isLabelFirstCharW32(c);
-            case NOT_ALPHA:
-                return !ascii_isLabelFirstCharW32(c);
-            case WHITESPACE:
-                return  ascii_isWhiteSpaceW32(c);
-            case NOT_WHITESPACE:
-                return !(ascii_isWhiteSpaceW32(c));
-            default:
-                return  (p.ch == c);
-        }
-    }
-
-    
-    static
-    bool        matchStar(
-        regex_t     p,
-        regex_t     *pattern,
-        const
-        W32CHR_T    *text
-    )
-    {
-        do {
-            if (matchPattern(pattern, text))
-                return true;
-        } while ((text[0] != '\0') && matchOne(p, *text++));
-        
-        return false;
-    }
-
-    
-    static
-    bool        matchPlus(
-        regex_t     p,
-        regex_t     *pattern,
-        const
-        W32CHR_T    *text
-    )
-    {
-        while ((text[0] != '\0') && matchOne(p, *text++)) {
-            if (matchPattern(pattern, text))
-                return true;
-        }
-        return false;
-    }
-
-    
-    static
-    bool        matchQuestion(
-        regex_t     p,
-        regex_t     *pattern,
-        const
-        W32CHR_T    *text
-    )
-    {
-        if ((text[0] == '\0') && p.type != UNUSED) {
-            return matchPattern(pattern, &text[0]);
-        }
-        if ((text[0] != '\0') && matchOne(p, text[0])) {
-            bool             match;
-            match = matchPattern(pattern, &text[0]);
-            if (!match) {
-                return matchPattern(pattern, &text[1]);
+            if (pToken->quantifierMin != 1 || pToken->quantifierMax != 1) {
+                AStr_AppendA(pStr, "{");
+                if (pToken->quantifierMin != 0)
+                    AStr_AppendPrint(pStr, "%d", pToken->quantifierMin);
+                if (pToken->quantifierMax == QUANTIFIER_MAX)
+                    AStr_AppendA(pStr, ",");
+                else if (pToken->quantifierMax != pToken->quantifierMin)
+                    AStr_AppendPrint(pStr, "%d", pToken->quantifierMax);
+                AStr_AppendA(pStr, "}");
             }
-            return match;
+        nocharquantifier:
+            if (!pToken->greedy)
+                AStr_AppendA(pStr, "?");
+            if (pToken->atomic)
+                AStr_AppendA(pStr, "+");
+
+            return pStr;
         }
-        return true;
-    }
 
-
-#ifdef  TREGEX_RECURSIVE
-
-    /* Recursive matching */
-    static
-    bool        matchPattern(
-        regex_t     *pPattern,
-        const
-        W32CHR_T    *text
-    )
-    {
-        if ((pPattern[0].type == UNUSED) || (pPattern[1].type == QUESTIONMARK)) {
-            return matchQuestion(pPattern[1], &pPattern[2], text);
-        } else if (pPattern[1].type == STAR) {
-            return matchStar(pPattern[0], &pPattern[2], text);
-        } else if (pPattern[1].type == PLUS) {
-            return matchPlus(pPattern[0], &pPattern[2], text);
-        } else if ((pPattern[0].type == END) && pPattern[1].type == UNUSED) {
-            return text[0] == '\0';
-        } else if ((text[0] != '\0') && matchone(pPattern[0], text[0])) {
-            return matchPattern(&pPattern[1], text+1);
-        } else {
-            return false;
-        }
-    }
-
-#else
-
-    /* Iterative matching */
-    static
-    bool        matchPattern(
-        regex_t     *pPattern,
-        const
-        W32CHR_T    *pText
-    )
-    {
-        do {
-            if ((pPattern[0].type == UNUSED) || (pPattern[1].type == QUESTIONMARK)) {
-                return matchQuestion(pPattern[0], &pPattern[2], pText);
-            } else if (pPattern[1].type == STAR) {
-                return matchStar(pPattern[0], &pPattern[2], pText);
-            } else if (pPattern[1].type == PLUS) {
-                return matchPlus(pPattern[0], &pPattern[2], pText);
-            } else if ((pPattern[0].type == END) && pPattern[1].type == UNUSED) {
-                return (pText[0] == '\0');
-            }
-            /*  Branching is not working properly
-             else if (pPattern[1].type == BRANCH)
-             {
-             return (matchPattern(pPattern, text) || matchPattern(&pPattern[2], text));
-             }
-             */
-        } while ((pText[0] != '\0') && matchOne(*pPattern++, *pText++));
         
-        return false;
-    }
 
-#endif
-
-
+        ERESULT         TRegex32_DeleteTokens(
+            TREGEX32_DATA   *this
+        )
+        {
+            
+            // Do initialization.
+            if( this == NULL )
+                return ERESULT_INVALID_OBJECT;
+            
+            if (this->pTokens) {
+                mem_Free(this->pTokens);
+                this->pTokens = NULL;
+                this->sizeTokens = 0;
+                this->maxTokens = 0;
+            }
+            
+            // Return to caller.
+            return ERESULT_SUCCESS;
+        }
+        
+        
+        
+        ERESULT         TRegex32_ExpandTokens(
+            TREGEX32_DATA   *this,
+            int             num
+        )
+        {
+            void            *pWork;
+            uint32_t        oldMax;
+            uint32_t        cbSize;
+            int             elemSize = sizeof(re_Token);
+            int             i;
+            
+            // Do initialization.
+            if( this == NULL )
+                return ERESULT_INVALID_OBJECT;
+            if (num < this->maxTokens) {
+                return ERESULT_SUCCESSFUL_COMPLETION;
+            }
+            
+            // Expand the Array.
+            oldMax = this->maxTokens;
+            if (0 == oldMax) {
+                oldMax = 1;
+            }
+            this->maxTokens = oldMax << 1;                // max *= 2
+            while (num > this->maxTokens) {
+                this->maxTokens = this->maxTokens << 1;
+            }
+            cbSize = this->maxTokens * elemSize;
+            pWork = (void *)mem_Malloc(cbSize);
+            if( NULL == pWork ) {
+                this->maxTokens = oldMax;
+                return ERESULT_INSUFFICIENT_MEMORY;
+            }
+            
+            // Copy the old entries into the new array.
+            if( this->pTokens == NULL )
+                ;
+            else {
+                memmove(pWork, this->pTokens, (oldMax * elemSize));
+                mem_Free(this->pTokens);
+                // this->pTokens = NULL;
+            }
+            this->pTokens = pWork;
+            memset(&this->pTokens[oldMax], 0, ((this->maxTokens - oldMax) * elemSize));
+            for (i=oldMax; i<this->maxTokens; i++) {
+                this->pTokens[i].index = i;
+            }
+            
+            // Return to caller.
+            return ERESULT_SUCCESS;
+        }
+        
+        
+        
 
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -487,8 +1667,8 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         TRegex32_Assign (
-        TREGEX32_DATA		*this,
-        TREGEX32_DATA     *pOther
+        TREGEX32_DATA   *this,
+        TREGEX32_DATA   *pOther
     )
     {
         ERESULT     eRc;
@@ -612,10 +1792,6 @@ extern "C" {
         W32CHR_T        *pPattern
     )
     {
-        ERESULT         eRc;
-        int             ccl_bufidx = 1;
-        char            c;              /* current char in pattern  */
-        int             i = 0;          /* index into pattern       */
 
 #ifdef NDEBUG
 #else
@@ -624,142 +1800,10 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        this->sizeCompiled = 0;
+        this->sizeTokens = 0;
 
-        while (pPattern[i] != '\0') {
-            c = pPattern[i];
-            if (++this->sizeCompiled > this->maxCompiled) {
-                eRc = TRegex32_ExpandCompiled(this, this->sizeCompiled);
-                if (ERESULT_FAILED(eRc)) {
-                    DEBUG_BREAK();
-                    return -1;
-                }
-            }
-            
-            switch (c) {
-                    /* Meta-characters: */
-                case '^':
-                    this->pCompiled[this->sizeCompiled-1].type = BEGIN;
-                    break;
-                case '$':
-                    this->pCompiled[this->sizeCompiled-1].type = END;
-                    break;
-                case '.':
-                    this->pCompiled[this->sizeCompiled-1].type = DOT;
-                    break;
-                case '*':
-                    this->pCompiled[this->sizeCompiled-1].type = STAR;
-                    break;
-                case '+':
-                    this->pCompiled[this->sizeCompiled-1].type = PLUS;
-                    break;
-                case '?':
-                    this->pCompiled[this->sizeCompiled-1].type = QUESTIONMARK;
-                    break;
-                    /*
-                     --> NOT Working properly <--
-                     case '|':
-                            this->pCompiled[this->sizeCompiled-1].type = BRANCH;
-                            break;
-                     */
-                    
-                    /* Escaped character-classes (\s \w ...): */
-                case '\\': {
-                    if (pPattern[i+1] != '\0') {
-                        /* Skip the escape-char '\\' */
-                        i += 1;
-                        /* ... and check the next */
-                        switch (pPattern[i]) {
-                                /* Meta-character: */
-                            case 'd':
-                                this->pCompiled[this->sizeCompiled-1].type = DIGIT;
-                                break;
-                            case 'D':
-                                this->pCompiled[this->sizeCompiled-1].type = NOT_DIGIT;
-                                break;
-                            case 'w':
-                                this->pCompiled[this->sizeCompiled-1].type = ALPHA;
-                                break;
-                            case 'W':
-                                this->pCompiled[this->sizeCompiled-1].type = NOT_ALPHA;
-                                break;
-                            case 's':
-                                this->pCompiled[this->sizeCompiled-1].type = WHITESPACE;
-                                break;
-                            case 'S':
-                                this->pCompiled[this->sizeCompiled-1].type = NOT_WHITESPACE;
-                                break;
-                                
-                                /* Escaped character, e.g. '.' or '$' */
-                            default:
-                                this->pCompiled[this->sizeCompiled-1].type = CHAR;
-                                this->pCompiled[this->sizeCompiled-1].ch = pPattern[i];
-                                break;
-                        }
-                    }
-                    /* '\\' as last char in pattern -> invalid regular expression. */
-                    /*
-                     else {
-                        this->pCompiled[this->sizeCompiled-1].type = CHAR;
-                        this->pCompiled[this->sizeCompiled-1].ch = pPattern[i];
-                     }
-                     */
-                }
-                break;
-                    
-                    /* Character class: */
-                case '[':
-                {
-                    /* Remember where the char-buffer starts. */
-                    int buf_begin = ccl_bufidx;
-                    
-                    /* Look-ahead to determine if negated */
-                    if (pPattern[i+1] == '^') {
-                        this->pCompiled[this->sizeCompiled-1].type = INV_CHAR_CLASS;
-                        i += 1; /* Increment i to avoid including '^' in the char-buffer */
-                    } else {
-                        this->pCompiled[this->sizeCompiled-1].type = CHAR_CLASS;
-                    }
-                    
-                    /* Copy characters inside [..] to buffer */
-                    while (    (pPattern[++i] != ']')
-                           && (pPattern[i]   != '\0')) /* Missing ] */
-                    {
-                        if (ccl_bufidx >= MAX_CHAR_CLASS_LEN) {
-                            //fputs("exceeded internal buffer!\n", stderr);
-                            return 0;
-                        }
-                        this->ccl_buf[ccl_bufidx++] = pPattern[i];
-                    }
-                    if (ccl_bufidx >= MAX_CHAR_CLASS_LEN) {
-                        /* Catches cases such as [00000000000000000000000000000000000000][ */
-                        //fputs("exceeded internal buffer!\n", stderr);
-                        return 0;
-                    }
-                    /* Null-terminate string end */
-                    this->ccl_buf[ccl_bufidx++] = 0;
-                    this->pCompiled[this->sizeCompiled-1].ccl = &this->ccl_buf[buf_begin];
-                }
-                break;
-                    
-                    /* Other characters: */
-                default:
-                    this->pCompiled[this->sizeCompiled-1].type = CHAR;
-                    this->pCompiled[this->sizeCompiled-1].ch = c;
-                    break;
-            }
-            i += 1;
-        }
-        
-        // 'UNUSED' is a sentinel used to indicate end-of-pattern.
-        if (++this->sizeCompiled > this->maxCompiled) {
-            eRc = TRegex32_ExpandCompiled(this, this->sizeCompiled);
-            if (ERESULT_FAILED(eRc)) {
-                DEBUG_BREAK();
-                return -1;
-            }
-        }
-        this->pCompiled[this->sizeCompiled-1].type = UNUSED;
+        TRegex32_CompilePattern(this, pPattern);
+
 
       return ERESULT_SUCCESS;
     }
@@ -841,11 +1885,15 @@ extern "C" {
         }
 #endif
 
-        if (this->pCompiled) {
-            mem_Free(this->pCompiled);
-            this->pCompiled = NULL;
-            this->maxCompiled = 0;
-            this->sizeCompiled = 0;
+        if (this->pTokens) {
+            mem_Free(this->pTokens);
+            this->pTokens = NULL;
+            this->maxTokens = 0;
+            this->sizeTokens = 0;
+        }
+        if (this->pTokenStack) {
+            obj_Release(this->pTokenStack);
+            this->pTokenStack = OBJ_NIL;
         }
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -965,15 +2013,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&TRegex32_Vtbl);
         
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
+        this->pTokenStack = ptrArray_New();
+        if (OBJ_NIL == this->pTokenStack) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
-
+        
     #ifdef NDEBUG
     #else
         if (!TRegex32_Validate(this)) {
@@ -982,7 +2028,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "TRegex32::sizeof(TREGEX32_DATA) = %lu\n", sizeof(TREGEX32_DATA));
+        //fprintf(stderr, "TRegex32::sizeof(TREGEX32_DATA) = %lu\n", sizeof(TREGEX32_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(TREGEX32_DATA));
     #endif
@@ -1028,10 +2074,13 @@ extern "C" {
     int             TRegex32_MatchP(
         TREGEX32_DATA   *this,
         const
-        W32CHR_T        *pText
+        W32CHR_T        *pText,
+        int             *pLength
     )
     {
-        
+        int             idx = 0;
+        int             length = 0;
+
                 // Do initialization.
         #ifdef NDEBUG
         #else
@@ -1042,25 +2091,13 @@ extern "C" {
                 }
         #endif
                         
-        if (this->pCompiled != NULL) {
-            if (this->pCompiled[0].type == BEGIN) {
-                return ((matchPattern(&this->pCompiled[1], pText)) ? 0 : -1);
-            } else {
-                int idx = -1;
-                
-                do {
-                    idx += 1;
-                    
-                    if (matchPattern(this->pCompiled, pText)) {
-                        if (pText[0] == '\0')
-                            return -1;
-                        
-                        return idx;
-                    }
-                } while (*pText++ != '\0');
-            }
+        if (this->pTokens != NULL) {
+            idx = TRegex32_MatchInt(this, pText, &length);
         }
-        return -1;
+
+        if (pLength)
+            *pLength = length;
+        return idx;
     }
 
     
@@ -1069,7 +2106,8 @@ extern "C" {
         const
         W32CHR_T        *pPattern,
         const
-        W32CHR_T        *pText
+        W32CHR_T        *pText,
+        int             *pLength
     )
     {
         ERESULT         eRc;
@@ -1087,10 +2125,12 @@ extern "C" {
         eRc = TRegex32_Compile(this, pPattern);
         if (ERESULT_FAILED(eRc)) {
             //return eRc;
-            return -1;
+            if (pLength)
+                *pLength = 0;
+            return 0;
         }
         
-      return TRegex32_MatchP(this, pText);
+      return TRegex32_MatchP(this, pText, pLength);
     }
 
         
@@ -1283,6 +2323,133 @@ extern "C" {
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
+    ASTR_DATA *     TRegex32_ToDebugStringTokens (
+        TREGEX32_DATA   *this,
+        int             indent,
+        re_Token        *pToken
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        int             i;
+        //ASTR_DATA       *pWrkStr;
+        char            work[16];
+        W32CHR_T        wchr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TRegex32_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+                  
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "{Token %d type=%d - ",
+                    pToken->index,
+                    pToken->type
+            );
+
+        switch (pToken->type) {
+            case TOKEN_END:
+                eRc = AStr_AppendPrint(pStr, "TOKEN_END - \")\" len: %d",
+                                       pToken->grouplen);
+                break;
+            case TOKEN_GROUP:
+                eRc = AStr_AppendPrint(pStr,
+                                       "TOKEN_GROUP - \"(?:\" len: %d",
+                                       pToken->grouplen);
+                break;
+            case TOKEN_CGROUP:
+                 eRc = AStr_AppendPrint(pStr,
+                                        "TOKEN_CGROUP - \"(\" len: %d",
+                                        pToken->grouplen);
+                break;
+            case TOKEN_LOOKAROUND:
+                eRc = AStr_AppendPrint(pStr,
+                                       "TOKEN_LOOKAROUND - \"(?=\" len: %d",
+                                       pToken->grouplen);
+                break;
+            case TOKEN_INVLOOKAROUND:
+                eRc = AStr_AppendPrint(pStr,
+                                       "TOKEN_INVLOOKAROUND - \"(?!\" len: %d",
+                                       pToken->grouplen);
+                break;
+            case TOKEN_METABSL:
+                eRc = AStr_AppendPrint(pStr,
+                                       "TOKEN_METABSL - \"\\%c\"",
+                                       Metabsls[pToken->meta].pattern);
+                break;
+            case TOKEN_METACHAR:
+                eRc = AStr_AppendPrint(pStr,
+                                       "TOKEN_METACHAR - \"\\%c\"",
+                                       MetaChars[pToken->meta].pattern);
+                break;
+            case TOKEN_CHARCLASS:
+                eRc = AStr_AppendPrint(pStr, "TOKEN_CHARCLASS - \"[");
+                for (i=0; pToken->ccl[i].type != CCL_END; i++) {
+                    if (pToken->ccl[i].type == CCL_METABSL) {
+                        eRc = AStr_AppendPrint(pStr, "\\%c",
+                                               Metabsls[pToken->ccl->meta].pattern);
+                    } else if (pToken->ccl[i].type == CCL_CHARRANGE) {
+                        eRc = AStr_AppendPrint(pStr, "%c", pToken->ccl->first);
+                        if (pToken->ccl->first != pToken->ccl->last) {
+                            eRc = AStr_AppendPrint(pStr, "-%c", pToken->ccl->last);
+                        }
+                    } else {
+                        eRc = AStr_AppendA(pStr, "???Unkown CCL Type???");
+                    }
+                }
+                eRc = AStr_AppendA(pStr, "]");
+                break;
+            case TOKEN_INVCHARCLASS:
+                eRc = AStr_AppendPrint(pStr, "TOKEN_INVCHARCLASS - \"[^");
+                for (i=0; pToken->ccl[i].type != CCL_END; i++) {
+                    if (pToken->ccl[i].type == CCL_METABSL) {
+                        eRc = AStr_AppendPrint(pStr, "\\%c",
+                                               Metabsls[pToken->ccl->meta].pattern);
+                    } else if (pToken->ccl[i].type == CCL_CHARRANGE) {
+                        eRc = AStr_AppendPrint(pStr, "%c", pToken->ccl->first);
+                        if (pToken->ccl->first != pToken->ccl->last) {
+                            eRc = AStr_AppendPrint(pStr, "-%c", pToken->ccl->last);
+                        }
+                    } else {
+                        eRc = AStr_AppendA(pStr, "???Unkown CCL Type???");
+                    }
+                }
+                eRc = AStr_AppendA(pStr, "]");
+                break;
+            case TOKEN_CHAR:
+                wchr = pToken->ch;
+                utf8_W32ToChrCon(wchr, work);
+                eRc = AStr_AppendPrint(pStr, "TOKEN_CHAR - \"%s\"", work);
+                break;
+            default:
+                eRc = AStr_AppendA(pStr, "???");
+                break;
+        }
+        
+        eRc =   AStr_AppendPrint(pStr,
+                             " %s %s}\n",
+                             pToken->greedy ? "greedy" : "",
+                             pToken->atomic ? "atomic" : ""
+                );
+        
+        return pStr;
+    }
+    
+    
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -1296,14 +2463,14 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     TRegex32_ToDebugString (
-        TREGEX32_DATA      *this,
+        TREGEX32_DATA   *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
+        int             i;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
@@ -1335,18 +2502,21 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
+        if (this->pTokens) {
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent, ' ');
+            }
+            eRc = AStr_AppendPrint(pStr, "===> %d Tokens:\n", this->sizeTokens);
+            for (i=0; i < this->sizeTokens; i++) {
+                pWrkStr =   TRegex32_ToDebugStringTokens(
+                                                this,
+                                                indent+3,
+                                                &this->pTokens[i]
                             );
-                AStr_Append(pStr, pWrkStr);
+                eRc = AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
-#endif
         
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -1366,11 +2536,10 @@ extern "C" {
         TREGEX32_DATA   *this
     )
     {
-        ERESULT         eRc;
         ASTR_DATA       *pStr;
+        ASTR_DATA       *pStrWrk;
         int             i;
         int             iMax;
-        regex_t         *pattern = this->pCompiled;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1386,35 +2555,19 @@ extern "C" {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
+        AStr_AppendPrint(pStr, "\tcTokens: %d\n", this->sizeTokens);
         
-        iMax = this->sizeCompiled;
+        iMax = this->sizeTokens;
         for (i = 0; i < iMax; i++) {
-            if (pattern[i].type == UNUSED) {
+            if (this->pTokens[i].type == TOKEN_END) {
                 break;
             }
-            
-            eRc =   AStr_AppendPrint(
-                                   pStr,
-                                   "\t%2d - type: %s ",
-                                   i,
-                                   pTypesToStrA[pattern[i].type]
-                    );
-            if (pattern[i].type == CHAR_CLASS || pattern[i].type == INV_CHAR_CLASS) {
-                int         j;
-                char        c;
-                eRc = AStr_AppendA(pStr, "[");
-                for (j = 0; j < MAX_CHAR_CLASS_LEN; ++j) {
-                    c = pattern[i].ccl[j];
-                    if ((c == '\0') || (c == ']')) {
-                        break;
-                    }
-                    eRc = AStr_AppendCharW32(pStr, c);
-                }
-                eRc = AStr_AppendA(pStr, "]");
-            } else if (pattern[i].type == CHAR) {
-                eRc = AStr_AppendCharW32(pStr, pattern[i].ch);
+            if (this->pTokens[i].grouplen == SIZE_MAX) {
+                break;
             }
-            eRc = AStr_AppendA(pStr,"\n");
+            pStrWrk = TRegex32_PrintOne(&this->pTokens[i]);
+            obj_Release(pStrWrk);
+            pStrWrk = OBJ_NIL;
         }
         
         return pStr;

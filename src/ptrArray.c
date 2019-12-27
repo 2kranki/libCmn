@@ -304,6 +304,31 @@ extern "C" {
     }
     
     
+    ERESULT         ptrArray_DeleteAll(
+        PTRARRAY_DATA    *this
+    )
+    {
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ptrArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (this->ppArray) {
+            while (this->size) {
+                --this->size;
+                this->ppArray[this->size] = NULL;
+            }
+        }
+        
+        return ERESULT_SUCCESS;
+    }
+        
+        
     void *          ptrArray_DeleteFirst(
         PTRARRAY_DATA	*this
     )
@@ -539,6 +564,59 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                         P o p
+    //---------------------------------------------------------------
+    
+    void *          ptrArray_PopData(
+        PTRARRAY_DATA   *this
+    )
+    {
+        void            *pObj;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ptrArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        
+        pObj = ptrArray_DeleteLast(this);
+        
+        return pObj;
+    }
+            
+            
+            
+    //---------------------------------------------------------------
+    //                         P u s h
+    //---------------------------------------------------------------
+    
+    ERESULT         ptrArray_PushData(
+        PTRARRAY_DATA   *this,
+        void            *pData
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ptrArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        eRc = ptrArray_AppendData(this, pData, NULL);
+        
+        return eRc;
+    }
+        
+        
+        
     //---------------------------------------------------------------
     //                       S o r t
     //---------------------------------------------------------------

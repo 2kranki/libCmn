@@ -15,7 +15,8 @@
  *	1.      None
  *
  * History
- *	07/02/2015 Generated
+ *	07/02/2015  Generated
+ *  12/23/2019  Added Push()/Pop() and DeleteAll().
  */
 
 
@@ -133,6 +134,11 @@ extern "C" {
     );
     
     
+    ERESULT         ptrArray_DeleteAll(
+        PTRARRAY_DATA   *this
+    );
+
+
     void *          ptrArray_DeleteFirst(
         PTRARRAY_DATA	*this
     );
@@ -179,6 +185,17 @@ extern "C" {
     ERESULT         ptrArray_InsertData(
         PTRARRAY_DATA	*this,
         uint32_t        index,
+        void            *pData
+    );
+    
+    
+    void *          ptrArray_PopData(
+        PTRARRAY_DATA   *this
+    );
+
+
+    ERESULT         ptrArray_PushData(
+        PTRARRAY_DATA   *this,
         void            *pData
     );
     

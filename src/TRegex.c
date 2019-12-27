@@ -55,71 +55,1431 @@ extern "C" {
 #endif
     
 
-    // Warning: This must be kept in sync with REGEX_TYPES.
+
+
+#define UNUSED(variable) (void)(variable)
+    
+    /* compileOne: compiles one regex token, returns number of chars eaten */
+    int             TRegex_CompileOne(
+        TREGEX_DATA     *this,
+        re_Token        *pCompiled,
+        const
+        char            *pPattern,
+        ClassChar       cclbuf[CCLBUFLEN],
+        int             *ccli
+    );
+    /* compileoneclc: compiles one class character, returns number of chars eaten */
+    int             TRegex_CompileOneCLC(
+        ClassChar       *pCompiled,
+        const
+        char            *pPattern
+    );
+    /* compilerange: compiles a range, returns number of chars eaten */
+    int             TRegex_CompileRange(
+        ClassChar       *pCompiled,
+        const
+        char            *pPattern
+    );
+    /* compilequantifier: compiles a quantifier, returns number of chars eaten */
+    int             TRegex_CompileQuantifier(
+        re_Token        *pCompiled,
+        const
+        char            *pPattern
+    );
+    /* compilegreedy: sets whether the quantifier is greedy, returns number of chars eaten */
+    int             TRegex_CompileGreedy(
+        re_Token        *pCompiled,
+        const
+        char            *pPattern
+    );
+    /* compileatomic: sets whether the quantifier is atomic, returns number of chars eaten */
+    int             TRegex_CompileAtomic(
+        re_Token        *pCompiled,
+        const
+        char            *pPattern
+    );
+
+    /* matchpattern: matches one pattern on a string, returns number of chars eaten */
+    int             TRegex_MatchPattern(
+        TREGEX_DATA     *this,
+        const
+        re_Token        *pPattern,
+        MatchData       *pMatchData,
+        int             pi,
+        const
+        char            *pText,
+        int             i
+    );
+    /* backtrack: backtrack into the pattern, returns new starting index */
+    int             TRegex_BackTrack(
+        TREGEX_DATA     *this,
+        const
+        re_Token        *pattern,
+        MatchData       *pMatchData,
+        int             pi
+    );
+    /* matchcount: matches one regex token including quantifiers and sets count
+    for number of quantifiers, returns number of characters eaten */
+    int             TRegex_MatchCount(
+        TREGEX_DATA     *this,
+        const
+        re_Token        *pattern,
+        MatchData       *pMatchData,
+        int             pi,
+        const
+        char            *text,
+        int             i
+    );
+    /* matchone: matches one regex token ignoring quantifiers, returns number of characters eaten */
+    int             TRegex_MatchOne(
+        TREGEX_DATA     *this,
+        const
+        re_Token        *pattern,
+        MatchData       *pMatchData,
+        int             pi,
+        const
+        char            *text,
+        int             i
+    );
+    /* matchOneCLC: matches one class character, returns number of chars eaten */
+    int             TRegex_MatchOneCLC(
+        ClassChar       pattern,
+        const
+        char            *pText,
+        int             i,
+        Modifiers       modifiers
+    );
+    /* more matching functions which must ALL have the same interface */
+    int             TRegex_MatchWhiteSpace(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+    int TRegex_MatchNotWhiteSpace(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+    int TRegex_MatchDigit(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+    int TRegex_MatchNotDigit(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+    int TRegex_MatchWordChar(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+    int TRegex_MatchNotWordChar(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+    int TRegex_MatchNewLine(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+    int TRegex_MatchWordBoundary(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+    int TRegex_MatchNotWordBoundary(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+
+    int TRegex_MatchStart(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+    int TRegex_MatchEnd(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+    int TRegex_MatchAny(
+        const
+        char            *pText,         // Text pointer
+        int             i,              // Index into pText
+        Modifiers       modifiers
+    );
+
+    /* the array of all Metabsls (sequences that begin with a backslash) */
     static
     const
-    char                *pTypesToStrA[] = {
-        "UNUSED",
-        "DOT", "BEGIN", "END",
-        "QUESTIONMARK", "STAR", "PLUS",
-        "CHAR", "CHAR_CLASS", "INV_CHAR_CLASS",
-        "DIGIT", "NOT_DIGIT",
-        "ALPHA", "NOT_ALPHA",
-        "WHITESPACE", "NOT_WHITESPACE",
-        "BRANCH"
+    struct {
+        char       pattern;
+        int        (*validator)(const char*, int, Modifiers);
+    } Metabsls[] = {
+        {'s', TRegex_MatchWhiteSpace},
+        {'S', TRegex_MatchNotWhiteSpace},
+        {'d', TRegex_MatchDigit},
+        {'D', TRegex_MatchNotDigit},
+        {'w', TRegex_MatchWordChar},
+        {'W', TRegex_MatchNotWordChar},
+        {'R', TRegex_MatchNewLine},
+        {'b', TRegex_MatchWordBoundary},
+        {'B', TRegex_MatchNotWordBoundary}
     };
+    static
+    const
+    int     cMetabsls =  sizeof(Metabsls)/sizeof(Metabsls[0]);
+
+    
+    /* the array of all metachars */
+    static
+    const
+    struct {
+         char       pattern;
+         int        (*validator)(const char*, int, Modifiers);
+    } MetaChars[] = {
+         {'^', TRegex_MatchStart},
+         {'$', TRegex_MatchEnd},
+         {'.', TRegex_MatchAny}
+    };
+    static
+    const
+    int     cMetaChars =  sizeof(MetaChars)/sizeof(MetaChars[0]);
+
+    
+     /* the array of all quantifiers */
+    static
+    const
+    struct {
+         char       pattern;
+         Quantifier min;
+         Quantifier max;
+     } Quantifiers[] = {
+         {'?', 0, 1},
+         {'*', 0, QUANTIFIER_MAX},
+         {'+', 1, QUANTIFIER_MAX}
+     };
+    static
+    const
+    int     cQuantifiers =  sizeof(Quantifiers)/sizeof(Quantifiers[0]);
+
+ #define MOD_I 0b00000001
+ #define MOD_S 0b00000010
+ #define MOD_B 0b00000100
+
+    static
+    const
+    struct {
+        char       pattern;
+        Modifiers  modifier;
+    } ModifierChars[] = {
+        {'i', MOD_I}, /* case Insensitive */
+        {'s', MOD_S}, /* Single line (DOTALL) */
+        {'<', MOD_B}  /* backwards */
+    };
+    static
+    const
+    int     cModifierChars =  sizeof(ModifierChars)/sizeof(ModifierChars[0]);
+
+    
+ /*
+  * GLOBAL VARIABLES
+  */
+
+ // stack of pointers to GROUP/CGROUP/LOOKAROUND/INVLOOKAROUND tokens
+ //re_Token* groupstack[MAXGROUPS] = {0};
+ //int groupstacki = 0;
+
+ // ====================== END OF NEW ==============================
 
 
-
- 
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    ERESULT         TRegex_ExpandCompiled(
-        TREGEX_DATA     *this,
-        uint16_t        num
+// ====================== NEW =====================================
+/*
+ * COMPILATION FUNCTIONS
+ */
+
+int         TRegex_CompileGreedy(
+    re_Token*       pToken,
+    const
+    char*           pPattern
+)
+{
+    switch (pPattern[0]) {
+        case '?':
+            pToken->greedy = false;
+            return 1;
+        default:
+            pToken->greedy = true;
+            return 0;
+    }
+}
+
+
+
+int          TRegex_CompileAtomic(
+    re_Token*       pToken,
+    const
+    char*           pPattern
+)
+{
+    switch (pPattern[0]) {
+        case '+':
+            pToken->atomic = true;
+            return 1;
+        default:
+            pToken->atomic = false;
+            return 0;
+    }
+}
+
+
+
+int      TRegex_CompileQuantifier(
+    re_Token    *pToken,
+    const
+    char        *pPattern
+)
+{
+    int         i;
+
+    pToken->quantifierMin = 1;
+    pToken->quantifierMax = 1;
+
+    /* is a quantifier char */
+    for (int i = 0; i < cQuantifiers; ++i) {
+        if (pPattern[0] == Quantifiers[i].pattern) {
+            pToken->quantifierMin = Quantifiers[i].min;
+            pToken->quantifierMax = Quantifiers[i].max;
+            return 1;
+        }
+    }
+    if (pPattern[0] != '{')
+        /* there is no quantifier */
+        return 0;
+
+    /* from now in, it checks inside the {} */
+
+    /* loop to check min quantifier */
+    pToken->quantifierMin = 0;
+    for (i = 1; pPattern[i]; ++i) {
+        if (ascii_isNumericA(pPattern[i])) {
+            pToken->quantifierMin *= 10;
+            pToken->quantifierMin += pPattern[i] - '0';
+        } else if (pPattern[i] == ',') {
+            /* start entering the max, but first if there is no max set it to
+             *  QUANTIFIERMAX (infinity)
+             */
+            ++i;
+            if (pPattern[i] == '}') {
+                pToken->quantifierMax = QUANTIFIER_MAX;
+                return i+1;
+            }
+            break;
+        } else if (pPattern[i] == '}') {
+            // it only has one value with no comma
+            pToken->quantifierMax = pToken->quantifierMin;
+            return i+1;
+        } else {
+            /* invalid character in {}, treat entire thing as literal */
+            pToken->quantifierMin = 1;
+            pToken->quantifierMax = 1;
+            return 0;
+        }
+    }
+    /* loop to check max quantifier */
+    pToken->quantifierMax = 0;
+    for (; pPattern[i]; ++i) {
+        if (ascii_isNumericA(pPattern[i])) {
+            pToken->quantifierMax *= 10;
+            pToken->quantifierMax += pPattern[i] - '0';
+        } else if (pPattern[i] == '}') {
+            /* finish entering max */
+            return i+1;
+        } else {
+            /* invalid character in {}, treat entire thing as literal */
+            pToken->quantifierMin = 1;
+            pToken->quantifierMax = 1;
+            return 0;
+        }
+    }
+    if (!pPattern[i])
+        /* pattern ends on an open {, treat entire thing as literal */
+        return 0;
+
+    return i+1;
+}
+
+
+
+/*
+ Compile one class character,
+ return number of chars eaten
+ */
+int          TRegex_CompileOneCLC(
+    ClassChar       *pCCL,
+    const
+    char*           pPattern
+)
+{
+    switch (pPattern[0]) {
+        case '\\':
+            if (!pPattern[1]) {
+                /* invalid regex, doesn't end the \ or close the [ */
+                errno = EINVAL;
+                return 0;
+            }
+            /* is a metabsls */
+            for (int i = 0; i < cMetabsls; ++i) {
+                if (pPattern[1] == Metabsls[i].pattern) {
+                    pCCL->type = CCL_METABSL;
+                    pCCL->meta = i;
+                    return 2;
+                }
+            }
+            /* literal escaped char */
+            pCCL->type = CCL_CHARRANGE;
+            pCCL->first = pPattern[1];
+            return 2;
+        case '\0': /* FALLTHROUGH */
+        case ']':
+            /* shouldn't happen */
+            errno = EINVAL;
+            return 0;
+        default:
+            /* literal char */
+            pCCL->type = CCL_CHARRANGE;
+            pCCL->first = pPattern[0];
+            return 1;
+    }
+    /* UNREACHABLE */
+}
+
+
+
+int         TRegex_CompileRange(
+    ClassChar*  pCCL,
+    const
+    char*       pattern
+)
+{
+    if (pattern[0] != '-') {
+        /* not a range */
+        if (pCCL->type == CCL_CHARRANGE)
+            pCCL->last = pCCL->first;
+        return 0;
+    }
+    if (pCCL->type != CCL_CHARRANGE) {
+        /* the previous char was not range-able (e.g. was a Metabsl [\w-b] ) */
+        errno = EINVAL;
+        return 0;
+    }
+    // pattern[0] == '-'
+    switch (pattern[1]) {
+        case '\\':
+            if (pattern[2] == '\0') {
+                /* invalid regex, ends on a backslash */
+                errno = EINVAL;
+                return 0;
+            }
+            for (int i = 0; i < cMetabsls; ++i) {
+                if (pattern[2] == Metabsls[i].pattern) {
+                    /* a range from a character to a metabsl; error (e.g. [b-\w] )*/
+                    errno = EINVAL;
+                    return 0;
+                }
+            }
+            /* range from a character to an escaped literal char (e.g. [H-\Z]) */
+            pCCL->last = pattern[2];
+            return 4;
+        case ']':
+            /* ccl ends on dash; (e.g. [asdf-]); treat dash as literal */
+            pCCL->last = pCCL->first;
+            return 0;
+        case '\0':
+            /* ccl ends unclosed on dash; error */
+            errno = EINVAL;
+            return 0;
+        default:
+            /* regular range from char to char */
+            pCCL->last = pattern[1];
+            return 2;
+    }
+    /* UNREACHABLE */
+}
+
+
+
+/*
+ Compile one regex token,
+ return number of chars eaten
+ */
+int         TRegex_CompileOne(
+    TREGEX_DATA     *this,
+    re_Token        *pToken,
+    const
+    char            *pPattern,
+    ClassChar       cclbuf[CCLBUFLEN],
+    int             *ccli)
+{
+    int             i;
+    
+    switch (pPattern[0]) {
+        case '\\':
+            if (!pPattern[1]) {
+                /* invalid regex, has \ as last character */
+                errno = EINVAL;
+                return 0;
+            }
+            /* is a metabsls */
+            for (int i = 0; i < cMetabsls; ++i) {
+                if (pPattern[1] == Metabsls[i].pattern) {
+                    /* metabackslash */
+                    pToken->type = TOKEN_METABSL;
+                    pToken->meta = i;
+                    /* used by both compilation and matching to store modifiers of groups */
+                    return 2;
+                }
+            }
+            /* literal escaped char */
+            pToken->type = TOKEN_CHAR;
+            pToken->ch = pPattern[1];
+            return 2;
+        case '[':
+            /* character class */
+            pToken->type = TOKEN_CHARCLASS;
+            pToken->ccl = &cclbuf[*ccli];
+            i = 1;
+            if (pPattern[i] == '^') {
+                ++i;
+                pToken->type = TOKEN_INVCHARCLASS;
+            }
+            while (pPattern[i] && pPattern[i] != ']') {
+                errno = 0;
+                if (*ccli >= CCLBUFLEN) {
+                    /* buffer is too small */
+                    errno = ENOBUFS; /* technically, this errno code refers to
+                                      buffer space in a file stream, but I think
+                                      it is still appropriate */
+                    return 0;
+                }
+                i += TRegex_CompileOneCLC(&cclbuf[*ccli], pPattern+i);
+                if (errno)
+                    return 0;
+                i += TRegex_CompileRange(&cclbuf[*ccli], pPattern+i);
+                if (errno)
+                    return 0;
+                ++*ccli;
+            }
+            if (!pPattern[i]) {
+                /* invalid regex, doesn't close the [ */
+                errno = EINVAL;
+                return 0;
+            }
+            if (*ccli >= CCLBUFLEN) {
+                /* buffer is too small for null terminator */
+                errno = ENOBUFS;
+                return 0;
+            }
+            cclbuf[(*ccli)++].type = CCL_END;
+            return i+1;
+        case '(':
+            /* group, cgroup, lookahead or inverted lookahead */
+            i = 1;
+
+            pToken->type = TOKEN_CGROUP;
+            if (pPattern[i] == '?') {
+                pToken->type = TOKEN_GROUP;
+                ++i;
+            }
+
+            for (;;) {
+                for (int j = 0; j < cModifierChars; ++j) {
+                    if (pPattern[i] == ModifierChars[j].pattern) {
+                        pToken->modifiers |= ModifierChars[j].modifier;
+                        ++i;
+                        goto modifierFound;
+                    }
+                }
+                if (pPattern[i] == '-') {
+                    ++i;
+                    for (int j = 0; j < cModifierChars; ++j) {
+                        if (pPattern[i] == ModifierChars[j].pattern) {
+                            pToken->modifiers &= ~ModifierChars[j].modifier;
+                            ++i;
+                            goto modifierFound;
+                        }
+                    }
+                    --i;
+                }
+                break;
+modifierFound:
+                continue;
+            }
+
+            if (pPattern[i] == '=') {
+                pToken->type = TOKEN_LOOKAROUND;
+                ++i;
+            } else if (pPattern[i] == '!') {
+                pToken->type = TOKEN_INVLOOKAROUND;
+                ++i;
+            } else if (pPattern[i] == ':') {
+                ++i;
+            }
+
+            ptrArray_PushData(this->pTokenStack, pToken);
+
+            return i;
+        case ')':
+            /* group end */
+            pToken->type = TOKEN_END;
+            if (0 == ptrArray_getSize(this->pTokenStack)) {
+                errno = EINVAL;
+                return 0;
+            }
+            re_Token        *pSavedToken = ptrArray_PopData(this->pTokenStack);
+            pToken->grouplen = pSavedToken->grouplen
+                             = (int)(pToken - pSavedToken);
+            return 1;
+        case '\0':
+            /* shouldn't happen */
+            errno = EINVAL;
+            return 0;
+        default:
+            /* is a metachar */
+            for (int i = 0; i < cMetaChars; ++i) {
+                if (pPattern[0] == MetaChars[i].pattern) {
+                    pToken->type = TOKEN_METACHAR;
+                    pToken->meta = i;
+                    return 1;
+                }
+            }
+            
+            /* literal char */
+            pToken->type = TOKEN_CHAR;
+            pToken->ch = pPattern[0];
+            return 1;
+    }
+    /* UNREACHABLE */
+}
+
+
+
+void            TRegex_CompilePattern(
+    TREGEX_DATA     *this,
+    const
+    char            *pPattern
+)
+{
+    int         pi = 0; /* index into pattern  */
+    int         ri = 0; /* index into tokens */
+
+    ptrArray_DeleteAll(this->pTokenStack);
+    TRegex_DeleteTokens(this);
+    this->ccli = 0;
+
+    while (pPattern[pi] != '\0') {
+        errno = 0;
+        TRegex_ExpandTokens(this, ri+1);
+        ++this->sizeTokens;
+        if (!ri)
+            this->pTokens[ri].modifiers = 0;
+        else
+            this->pTokens[ri].modifiers = this->pTokens[ri-1].modifiers;
+        pi +=   TRegex_CompileOne(
+                                this,
+                                &this->pTokens[ri],
+                                &pPattern[pi],
+                                this->cclbuf,
+                                &this->ccli
+                );
+        if (errno)
+            return;
+    
+        pi += TRegex_CompileQuantifier(&this->pTokens[ri], &pPattern[pi]);
+        if (errno)
+            return;
+        pi += TRegex_CompileGreedy(&this->pTokens[ri], &pPattern[pi]);
+        if (errno)
+            return;
+        pi += TRegex_CompileAtomic(&this->pTokens[ri], &pPattern[pi]);
+        if (errno)
+            return;
+        
+        if (this->pTokens[ri].type == TOKEN_END) {
+            int         adj = ri - this->pTokens[ri].grouplen;
+            this->pTokens[adj].quantifierMin = this->pTokens[ri].quantifierMin;
+            this->pTokens[adj].quantifierMax = this->pTokens[ri].quantifierMax;
+            this->pTokens[adj].atomic = this->pTokens[ri].atomic;
+            this->pTokens[adj].greedy = this->pTokens[ri].greedy;
+        }
+
+        ++ri;
+    }
+
+    /* indicate the end of the regex */
+    TRegex_ExpandTokens(this, ri+1);
+    ++this->sizeTokens;
+    this->pTokens[ri].type = TOKEN_END;
+    this->pTokens[ri].grouplen = -1;
+
+    if (ptrArray_getSize(this->pTokenStack))
+        errno = EINVAL;
+}
+
+
+
+/*
+ * MATCHING FUNCTIONS
+ */
+
+    int         TRegex_MatchWhiteSpace(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers)
+    {
+        UNUSED(modifiers);
+        if (!ascii_isWhiteSpaceA(pText[i])) {
+            errno = EINVAL;
+            return 0;
+        }
+        return 1;
+    }
+        
+        
+        
+    int         TRegex_MatchNotWhiteSpace(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
     )
     {
-        void            *pWork;
-        uint32_t        oldMax;
-        uint32_t        cbSize;
-        uint16_t        elemSize = sizeof(regex_t);
+        UNUSED(modifiers);
+        if (!pText[i] || ascii_isWhiteSpaceA(pText[i])) {
+            errno = EINVAL;
+            return 0;
+        }
+        return 1;
+    }
+        
+        
+        
+    int         TRegex_MatchDigit(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        UNUSED(modifiers);
+        if (!ascii_isNumericA(pText[i])) {
+            errno = EINVAL;
+            return 0;
+        }
+        return 1;
+    }
+        
+        
+        
+    int         TRegex_MatchNotDigit(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        UNUSED(modifiers);
+        if (!pText[i] || ascii_isNumericA(pText[i])) {
+            errno = EINVAL;
+            return 0;
+        }
+        return 1;
+    }
+        
+        
+
+    int         TRegex_MatchWordChar(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        UNUSED(modifiers);
+        if (!ascii_isLabelCharW32(pText[i])) {
+            errno = EINVAL;
+            return 0;
+        }
+        return 1;
+    }
+        
+        
+
+    int         TRegex_MatchNotWordChar(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        UNUSED(modifiers);
+        if (!pText[i] || ascii_isLabelCharW32(pText[i])) {
+            errno = EINVAL;
+            return 0;
+        }
+        return 1;
+    }
+        
+        
+        
+    int     TRegex_MatchNewLine(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        UNUSED(modifiers);
+        if (pText[i] == '\r' && pText[i+1] == '\n')
+            return 2;
+        else if (pText[i] == '\n')
+            return 1;
+        errno = EINVAL;
+        return 0;
+    }
+        
+        
+    int     TRegex_MatchWordBoundary(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        UNUSED(modifiers);
+        if (
+            (i > 0 && ascii_isLabelCharW32(pText[i-1]) != !ascii_isLabelCharW32(pText[i]))
+            || (i == 0 && !ascii_isLabelCharW32(pText[0]))
+        ) {
+            errno = EINVAL;
+            return 0;
+        }
+        return 0;
+    }
+        
+        
+
+    int         TRegex_MatchNotWordBoundary(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        UNUSED(modifiers);
+        if (
+            (i > 0 && ascii_isLabelCharW32(pText[i-1]) == !ascii_isLabelCharW32(pText[i]))
+            || (i == 0 && ascii_isLabelCharW32(pText[0]))
+        ) {
+            errno = EINVAL;
+            return 0;
+        }
+        return 0;
+    }
+
+        
+
+    int         TRegex_MatchStart(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        UNUSED(pText);
+        UNUSED(modifiers);
+        if (i) {
+            errno = EINVAL;
+            return 0;
+        }
+        return 0;
+    }
+        
+        
+
+    int         TRegex_MatchEnd(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        UNUSED(modifiers);
+        if (pText[i] != '\0') {
+            errno = EINVAL;
+            return 0;
+        }
+        return 0;
+    }
+        
+        
+
+    int         TRegex_MatchAny(
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        if (pText[i] == '\0' || (!(modifiers & MOD_S) && pText[i] == '\n')) {
+            errno = EINVAL;
+            return 0;
+        }
+        return 1;
+    }
+
+
+
+    int         TRegex_MatchOneCLC(
+        ClassChar   pattern,
+        const
+        char        *pText,
+        int         i,
+        Modifiers   modifiers
+    )
+    {
+        /* this function always returns 1 */
+        switch (pattern.type) {
+            case CCL_METABSL:
+                errno = 0;
+                Metabsls[pattern.meta].validator(pText, i, modifiers);
+                if (errno)
+                    return 0;
+                return 1;
+            case CCL_CHARRANGE:
+                if (
+                    ( (modifiers & MOD_I)
+                     && (ascii_toLowerA(pText[i]) < ascii_toLowerA(pattern.first)
+                            || ascii_toLowerA(pText[i]) > ascii_toLowerA(pattern.last)))
+                    || (!(modifiers & MOD_I) && (pText[i]  <  pattern.first
+                                        || pText[i] > pattern.last ))
+                ) {
+                    errno = EINVAL;
+                    return 0;
+                }
+                return 1;
+            default:
+                /* should never happen */
+                errno = EINVAL;
+                return 0;
+        }
+        /* UNREACHABLE */
+    }
+
+        
+        
+    /*  Compiles one regex token,
+        returns number of chars eaten
+     */
+    int         TRegex_MatchOne(
+        TREGEX_DATA     *this,
+        const
+        re_Token        *pPattern,
+        MatchData       *pMatchData,
+        int             pi,
+        const
+        char            *pText,
+        int             i
+    )
+    {
+        int             cChars;
+        int             ccli;
+        
+        switch (pPattern[pi].type) {
+            case TOKEN_CGROUP:
+                /* TODO capturing */
+                /* FALLTHROUGH */
+            case TOKEN_GROUP:
+                cChars = TRegex_MatchPattern(this, pPattern, pMatchData, pi+1, pText, i);
+                return cChars;
+            case TOKEN_LOOKAROUND:
+                cChars = TRegex_MatchPattern(this, pPattern, pMatchData, pi+1, pText, i);
+                return 0;
+            case TOKEN_INVLOOKAROUND:
+                cChars = TRegex_MatchPattern(this, pPattern, pMatchData, pi+1, pText, i);
+                if (errno == EINVAL)
+                    errno = 0;
+                else if (!errno)
+                    errno = EINVAL;
+                return 0;
+            case TOKEN_METABSL:
+                errno = 0;
+                cChars =     Metabsls[pPattern[pi].meta].validator(
+                                                              pText,
+                                                              i,
+                                                              pPattern[pi].modifiers
+                            );
+                if (errno)
+                    return 0;
+                return cChars;
+            case TOKEN_METACHAR:
+                errno = 0;
+                cChars = MetaChars[pPattern[pi].meta].validator(
+                                                        pText,
+                                                        i,
+                                                        pPattern[pi].modifiers
+                        );
+                if (errno)
+                    return 0;
+                return cChars;
+            case TOKEN_CHARCLASS:
+                ccli = 0;
+                while (pPattern[pi].ccl[ccli].type != CCL_END) {
+                    errno = 0;
+                    i +=    TRegex_MatchOneCLC(
+                                        pPattern[pi].ccl[ccli],
+                                        pText,
+                                        i,
+                                        pPattern[pi].modifiers
+                            );
+                    if (!errno)
+                        return 1;
+                    ++ccli;
+                }
+                // all the chars in the class failed; matching failed
+                errno = EINVAL;
+                return 0;
+            case TOKEN_INVCHARCLASS:
+                if (!pText[i]) {
+                    errno = EINVAL;
+                    return 0;
+                }
+                ccli = 0;
+                while (pPattern[pi].ccl[ccli].type != CCL_END) {
+                    errno = 0;
+                    i += TRegex_MatchOneCLC(pPattern[pi].ccl[ccli], pText, i, pPattern[pi].modifiers);
+                    if (!errno) {
+                        // matchOneCLC succeeded; fail the charclass
+                        errno = EINVAL;
+                        return 0;
+                    }
+                    ++ccli;
+                }
+                /* all the chars in the class failed; matching succeeded */
+                errno = 0;
+                return 1;
+            case TOKEN_CHAR:
+                if (
+                    ( (pPattern[pi].modifiers & MOD_I) && ascii_toLowerA(pPattern[pi].ch) != ascii_toLowerA(pText[i])) ||
+                    (!(pPattern[pi].modifiers & MOD_I) && pPattern[pi].ch != pText[i] )
+                ) {
+                    errno = EINVAL;
+                    return 0;
+                }
+                return 1;
+            default:
+                // unknown re_Token type: should never happen
+                errno = EINVAL;
+                return 0;
+        }
+        /* UNREACHABLE */
+    }
+        
+        
+
+/*
+ match one pattern on a string,
+ return number of chars eaten
+ */
+int             TRegex_MatchPattern(
+    TREGEX_DATA     *this,
+    const
+    re_Token        *pToken,
+    MatchData       *pMatchData,
+    int             pi,
+    const
+    char            *pText,
+    int             i
+)
+{
+    int         pos = i;
+
+    for (; pToken[pi].type != TOKEN_END; ++pi) {
+        pMatchData[pi].position = pos;
+        pos += TRegex_MatchCount(this, pToken, pMatchData, pi, pText, pos);
+
+        while (pMatchData[pi].count < pToken[pi].quantifierMin) {
+            errno = 0;
+            pi = TRegex_BackTrack(this, pToken, pMatchData, pi);
+            if (errno)
+                return 0;
+
+            pos = pMatchData[pi].position;
+            pos += TRegex_MatchCount(this, pToken, pMatchData, pi, pText, pos);
+        }
+        if (    pToken[pi].type == TOKEN_GROUP
+            ||  pToken[pi].type == TOKEN_CGROUP
+            ||  pToken[pi].type == TOKEN_LOOKAROUND
+            ||  pToken[pi].type == TOKEN_INVLOOKAROUND
+            ) {
+            pi += pToken[pi].grouplen;
+        }
+    }
+    errno = 0;
+    return pos-i;
+}
+
+    
+
+/*
+ Backtrack into the pattern, (why? and where?)
+ returns new starting index
+ */
+int         TRegex_BackTrack(
+    TREGEX_DATA     *this,
+    const
+    re_Token        *pPattern,
+    MatchData       *pMatchData,
+    int             pi
+)
+{
+    
+    while (pi--) {
+        if (    pPattern[pi].type == TOKEN_GROUP
+            ||  pPattern[pi].type == TOKEN_CGROUP
+            ||  pPattern[pi].type == TOKEN_LOOKAROUND
+            ||  pPattern[pi].type == TOKEN_INVLOOKAROUND
+            ) {
+            errno = EINVAL;
+            return 0;
+        }
+        if (pPattern[pi].type == TOKEN_END) {
+            const
+            int         endpi = pi;
+            pi -= pPattern[pi].grouplen;
+            if (    pPattern[pi].type == TOKEN_LOOKAROUND
+                ||  pPattern[pi].type == TOKEN_INVLOOKAROUND
+                ||  pPattern[pi].atomic
+                ) {
+                continue;
+            }
+
+            errno = 0;
+            TRegex_BackTrack(this, pPattern, pMatchData, endpi);
+            if (!errno)
+                return pi;
+        }
+        if (!pPattern[pi].atomic
+            &&  pPattern[pi].greedy
+            &&  pMatchData[pi].count > pPattern[pi].quantifierMin
+            ) {
+            --pMatchData[pi].count;
+            for (int j = pi+1; j < this->sizeTokens; ++j) {
+                pMatchData[j].count = pPattern[j].greedy
+                                    ? pPattern[j].quantifierMax
+                                    : pPattern[j].quantifierMin;
+            }
+            errno = 0;
+            return pi;
+        } else if (     !pPattern[pi].atomic
+                   &&   !pPattern[pi].greedy
+                   &&   pMatchData[pi].count < pPattern[pi].quantifierMax
+                   ) {
+            ++pMatchData[pi].count;
+            for (int j = pi+1; j < this->sizeTokens; ++j) {
+                pMatchData[j].count = pPattern[j].greedy
+                                    ? pPattern[j].quantifierMax
+                                    : pPattern[j].quantifierMin;
+            }
+            errno = 0;
+            return pi;
+        }
+    }
+    
+    /* all backtracking has been done, fail */
+    errno = EINVAL;
+    return 0;
+}
+
+    
+        
+/*
+ Match one regex token including quantifiers and set count
+ for number of quantifiers,
+ returns number of characters eaten
+ */
+int             TRegex_MatchCount(
+    TREGEX_DATA     *this,
+    const
+    re_Token        *pToken,
+    MatchData       *pMatchData,
+    int             pi,
+    const
+    char            *pText,
+    int             i
+)
+{
+    const
+    int             oldi = i;
+    Quantifier      c;
+
+    for (c = 0; c < pMatchData[pi].count; ++c) {
+        errno = 0;
+        i += TRegex_MatchOne(this, pToken, pMatchData, pi, pText, i);
+        if (errno) {
+            pMatchData[pi].count = c;
+            return i - oldi;
+        }
+    }
+    return i - oldi;
+}
+
+    
+
+// re_match
+/*
+ re_match: returns index of first match of pattern in text
+ stores the length of the match in length if it is not NULL
+ */
+int             TRegex_MatchInt(
+    TREGEX_DATA     *this,
+    const
+    char            *pText,
+    int             *pLength
+)
+{
+    int             i;
+    int             j;
+    MatchData       *pMatchData;
+
+    if (0 == this->sizeTokens) {
+        errno = ENODATA;
+        return 0;
+    }
+    pMatchData = mem_Malloc(this->sizeTokens * sizeof(MatchData));
+    if (NULL == pMatchData) {
+        errno = ENOMEM;
+        if (pLength)
+            pLength = 0;
+        return 0;
+    }
+
+    for (i = 0; (i == 0 || pText[i-1]); i++) {
+        int             lengthBuf;
+
+        errno = 0;
+        for (j = 0; j < this->sizeTokens; j++) {
+            pMatchData[j].count = this->pTokens[j].greedy
+                        ? this->pTokens[j].quantifierMax
+                        : this->pTokens[j].quantifierMin;
+            
+        }
+        lengthBuf = TRegex_MatchPattern(this, this->pTokens, pMatchData, 0, pText, i);
+        if (!errno) {
+            mem_Free(pMatchData);
+            /* first successful match */
+            if (pLength)
+                *pLength = lengthBuf;
+            return i;
+        }
+    }
+    
+    /* no matches */
+    mem_Free(pMatchData);
+    errno = EINVAL;
+    if (pLength)
+        pLength = 0;
+    return 0;
+}
+
+    
+
+/*
+ re_matchg: returns number of matches of pattern in text
+ */
+int             TRegex_Matchg(
+    TREGEX_DATA     *this,
+    const
+    char            *pText
+)
+{
+    int             i = 0;
+    int             c = 0;
+    int             length = 0;
+
+    while (pText[i]) {
+        errno = 0;
+        i += TRegex_MatchInt(this, pText+i, &length);
+        if (errno)
+            return c;
+        ++c;
+        i += length;
+    }
+    
+    return c;
+}
+
+    
+    
+    
+
+
+    /*
+     * PRINTING FUNCTIONS
+     */
+
+    static
+    ASTR_DATA *     TRegex_PrintOneCLC(
+        ClassChar       *pPattern
+    )
+    {
+        ASTR_DATA       *pStr;
+        
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return pStr;
+        }
+        
+        switch (pPattern->type) {
+            case CCL_METABSL:
+                AStr_AppendPrint(pStr, "\\%c", Metabsls[pPattern->meta].pattern);
+                break;
+            case CCL_CHARRANGE:
+                AStr_AppendCharA(pStr, pPattern->first);
+                if (pPattern->last != pPattern->first) {
+                    AStr_AppendCharA(pStr, pPattern->last);
+                }
+                break;
+            default:
+                /* shouldn't happen */
+                errno = EINVAL;
+                obj_Release(pStr);
+                return OBJ_NIL;
+        }
+        
+        return pStr;
+    }
+
+    
+    
+    static
+    ASTR_DATA *     TRegex_PrintOne(
+        re_Token        *pToken
+    )
+    {
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pStrWrk;
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return pStr;
+        }
+        
+        switch (pToken->type) {
+            case TOKEN_END:
+                AStr_AppendA(pStr, ")");
+                break;
+            case TOKEN_GROUP:
+                AStr_AppendA(pStr, "(?:");
+                return pStr;
+            case TOKEN_CGROUP:
+                AStr_AppendA(pStr, "(");
+                return pStr;
+            case TOKEN_LOOKAROUND:
+                AStr_AppendA(pStr, "(?=");
+                return pStr;
+            case TOKEN_INVLOOKAROUND:
+                AStr_AppendA(pStr, "(?!");
+                return pStr;
+            case TOKEN_METABSL:
+                AStr_AppendPrint(pStr, "\\%c", Metabsls[pToken->meta].pattern);
+                break;
+            case TOKEN_METACHAR:
+                AStr_AppendCharA(pStr, MetaChars[pToken->meta].pattern);
+                break;
+            case TOKEN_CHARCLASS: /* fallthrough */
+            case TOKEN_INVCHARCLASS:
+                AStr_AppendA(pStr, "[");
+                if (pToken->type == TOKEN_INVCHARCLASS)
+                    printf("^");
+                for (int i = 0; pToken->ccl[i].type != CCL_END; ++i) {
+                    pStrWrk = TRegex_PrintOneCLC(&pToken->ccl[i]);
+                    AStr_Append(pStr, pStrWrk);
+                    obj_Release(pStrWrk);
+                }
+                AStr_AppendA(pStr, "]");
+                break;
+            case TOKEN_CHAR:
+                AStr_AppendCharA(pStr, pToken->ch);
+                break;
+            default:
+                /* unknown token type: shouldn't happen */
+                errno = EINVAL;
+                obj_Release(pStr);
+                return OBJ_NIL;
+        }
+        for (int i = 0; i < sizeof(Quantifiers)/sizeof(Quantifiers[0]); ++i) {
+            if (pToken->quantifierMin == Quantifiers[i].min && pToken->quantifierMax == Quantifiers[i].max) {
+                AStr_AppendCharA(pStr, Quantifiers[i].pattern);
+                goto nocharquantifier;
+            }
+        }
+        if (pToken->quantifierMin != 1 || pToken->quantifierMax != 1) {
+            AStr_AppendA(pStr, "{");
+            if (pToken->quantifierMin != 0)
+                AStr_AppendPrint(pStr, "%d", pToken->quantifierMin);
+            if (pToken->quantifierMax == QUANTIFIER_MAX)
+                AStr_AppendA(pStr, ",");
+            else if (pToken->quantifierMax != pToken->quantifierMin)
+                AStr_AppendPrint(pStr, "%d", pToken->quantifierMax);
+            AStr_AppendA(pStr, "}");
+        }
+    nocharquantifier:
+        if (!pToken->greedy)
+            AStr_AppendA(pStr, "?");
+        if (pToken->atomic)
+            AStr_AppendA(pStr, "+");
+
+        return pStr;
+    }
+
+    
+
+    ERESULT         TRegex_DeleteTokens(
+        TREGEX_DATA     *this
+    )
+    {
         
         // Do initialization.
         if( this == NULL )
             return ERESULT_INVALID_OBJECT;
-        if (num < this->maxCompiled) {
-            return ERESULT_SUCCESSFUL_COMPLETION;
-        }
         
-        // Expand the Array.
-        oldMax = this->maxCompiled;
-        if (0 == oldMax) {
-            oldMax = 1;
+        if (this->pTokens) {
+            mem_Free(this->pTokens);
+            this->pTokens = NULL;
+            this->sizeTokens = 0;
+            this->maxTokens = 0;
         }
-        this->maxCompiled = oldMax << 1;                // max *= 2
-        while (num > this->maxCompiled) {
-            this->maxCompiled = this->maxCompiled << 1;
-        }
-        cbSize = this->maxCompiled * elemSize;
-        pWork = (void *)mem_Malloc(cbSize);
-        if( NULL == pWork ) {
-            this->maxCompiled = oldMax;
-            return ERESULT_INSUFFICIENT_MEMORY;
-        }
-        
-        // Copy the old entries into the new array.
-        if( this->pCompiled == NULL )
-            ;
-        else {
-            memmove(pWork, this->pCompiled, (oldMax * elemSize));
-            mem_Free(this->pCompiled);
-            // this->pCompiled = NULL;
-        }
-        this->pCompiled = pWork;
-        memset(&this->pCompiled[oldMax], 0, ((this->maxCompiled - oldMax) * elemSize));
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -127,289 +1487,60 @@ extern "C" {
     
     
     
-    static
-    int         matchPattern(
-        regex_t     *pattern,
-        const
-        char        *text
-    );
-    
-    
-    static
-    int         matchDigit(
-        char        c
+    ERESULT         TRegex_ExpandTokens(
+        TREGEX_DATA     *this,
+        int             num
     )
     {
-      return ((c >= '0') && (c <= '9'));
-    }
-    
-    
-    static
-    int         matchAlpha(
-        char        c
-    )
-    {
-      return ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'));
-    }
-    
-    
-    static
-    int         matchWhiteSpace(
-        char        c
-    )
-    {
-      return ((c == ' ') || (c == '\t') || (c == '\n') || (c == '\r')
-              || (c == '\f') || (c == '\v'));
-    }
-    
-    
-    static
-    int         matchAlphaNumeric(
-        char        c
-    )
-    {
-      return ((c == '_') || matchAlpha(c) || matchDigit(c));
-    }
-    
-    
-    static
-    int         matchRange(
-        char        c,
-        const
-        char        *pStr
-    )
-    {
-      return ((c != '-') && (pStr[0] != '\0') && (pStr[0] != '-') &&
-             (pStr[1] == '-') && (pStr[1] != '\0') &&
-             (pStr[2] != '\0') && ((c >= pStr[0]) && (c <= pStr[2])));
-    }
-    
-    
-    static
-    int         isMetaChar(
-        char        c
-    )
-    {
-      return ((c == 's') || (c == 'S') == (c == 'w') || (c == 'W')
-              || (c == 'd') || (c == 'D'));
-    }
-
-    
-    static
-    int         matchMetaChar(
-        char        c,
-        const
-        char        *pStr
-    )
-    {
-      switch (pStr[0])
-      {
-        case 'd': return  matchDigit(c);
-        case 'D': return !matchDigit(c);
-        case 'w': return  matchAlphaNumeric(c);
-        case 'W': return !matchAlphaNumeric(c);
-        case 's': return  matchWhiteSpace(c);
-        case 'S': return !matchWhiteSpace(c);
-        default:  return (c == pStr[0]);
-      }
-    }
-
-    
-    static
-    int         matchCharClass(
-        char        c,
-        const
-        char        *pStr
-    )
-    {
-      do
-      {
-        if (matchRange(c, pStr))
-        {
-          return 1;
-        }
-        else if (pStr[0] == '\\')
-        {
-          /* Escape-char: increment str-ptr and match on next char */
-          pStr += 1;
-          if (matchMetaChar(c, pStr))
-          {
-            return 1;
-          }
-          else if ((c == pStr[0]) && !isMetaChar(c))
-          {
-            return 1;
-          }
-        }
-        else if (c == pStr[0])
-        {
-          if (c == '-')
-          {
-            return ((pStr[-1] == '\0') || (pStr[1] == '\0'));
-          }
-          else
-          {
-            return 1;
-          }
-        }
-      }
-      while (*pStr++ != '\0');
-
-      return 0;
-    }
-
-    
-    static
-    int         matchone(
-        regex_t     p,
-        char        c
-    )
-    {
-      switch (p.type)
-      {
-        case DOT:            return 1;
-        case CHAR_CLASS:     return  matchCharClass(c, (const char*)p.ccl);
-        case INV_CHAR_CLASS: return !matchCharClass(c, (const char*)p.ccl);
-        case DIGIT:          return  matchDigit(c);
-        case NOT_DIGIT:      return !matchDigit(c);
-        case ALPHA:          return  matchAlphaNumeric(c);
-        case NOT_ALPHA:      return !matchAlphaNumeric(c);
-        case WHITESPACE:     return  matchWhiteSpace(c);
-        case NOT_WHITESPACE: return !matchWhiteSpace(c);
-        default:             return  (p.ch == c);
-      }
-    }
-
-    
-    static
-    int         matchstar(
-        regex_t     p,
-        regex_t     *pattern,
-        const
-        char        *text
-    )
-    {
-      do
-      {
-        if (matchPattern(pattern, text))
-          return 1;
-      }
-      while ((text[0] != '\0') && matchone(p, *text++));
-
-      return 0;
-    }
-
-    
-    static
-    int         matchplus(
-        regex_t     p,
-        regex_t     *pattern,
-        const
-        char        *text
-    )
-    {
-      while ((text[0] != '\0') && matchone(p, *text++))
-      {
-        if (matchPattern(pattern, text))
-          return 1;
-      }
-      return 0;
-    }
-
-    
-    static
-    int         matchquestion(
-        regex_t     p,
-        regex_t     *pattern,
-        const
-        char        *text
-    )
-    {
-      if ((text[0] == '\0') && p.type != UNUSED)
-      {
-        return matchPattern(pattern, &text[0]);
-      }
-      if ((text[0] != '\0') && matchone(p, text[0]))
-      {
-        int match = 0;
-        match = matchPattern(pattern, &text[0]);
-        if (!match) {
-          return matchPattern(pattern, &text[1]);
-        }
-        return match;
-      }
-      return 1;
-    }
-
-
-#ifdef  TREGEX_RECURSIVE
-
-    /* Recursive matching */
-    static
-    int         matchPattern(
-        regex_t     *pPattern,
-        const
-        char        *text
-    )
-    {
-        if ((pPattern[0].type == UNUSED) || (pPattern[1].type == QUESTIONMARK))
-        {
-            return matchquestion(pPattern[1], &pPattern[2], text);
-        }
-        else if (pPattern[1].type == STAR)
-        {
-            return matchstar(pPattern[0], &pPattern[2], text);
-        }
-        else if (pPattern[1].type == PLUS)
-        {
-            return matchplus(pPattern[0], &pPattern[2], text);
-        }
-        else if ((pPattern[0].type == END) && pPattern[1].type == UNUSED)
-        {
-            return text[0] == '\0';
-        }
-        else if ((text[0] != '\0') && matchone(pPattern[0], text[0]))
-        {
-            return matchPattern(&pPattern[1], text+1);
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-#else
-
-    /* Iterative matching */
-    static
-    int         matchPattern(
-        regex_t     *pPattern,
-        const
-        char        *text
-    )
-    {
-        do {
-            if ((pPattern[0].type == UNUSED) || (pPattern[1].type == QUESTIONMARK)) {
-                return matchquestion(pPattern[0], &pPattern[2], text);
-            } else if (pPattern[1].type == STAR) {
-                return matchstar(pPattern[0], &pPattern[2], text);
-            } else if (pPattern[1].type == PLUS) {
-                return matchplus(pPattern[0], &pPattern[2], text);
-            } else if ((pPattern[0].type == END) && pPattern[1].type == UNUSED) {
-                return (text[0] == '\0');
-            }
-            /*  Branching is not working properly
-             else if (pPattern[1].type == BRANCH)
-             {
-             return (matchPattern(pPattern, text) || matchPattern(&pPattern[2], text));
-             }
-             */
-        } while ((text[0] != '\0') && matchone(*pPattern++, *text++));
+        void            *pWork;
+        uint32_t        oldMax;
+        uint32_t        cbSize;
+        int             elemSize = sizeof(re_Token);
+        int             i;
         
-        return 0;
+        // Do initialization.
+        if( this == NULL )
+            return ERESULT_INVALID_OBJECT;
+        if (num < this->maxTokens) {
+            return ERESULT_SUCCESSFUL_COMPLETION;
+        }
+        
+        // Expand the Array.
+        oldMax = this->maxTokens;
+        if (0 == oldMax) {
+            oldMax = 1;
+        }
+        this->maxTokens = oldMax << 1;                // max *= 2
+        while (num > this->maxTokens) {
+            this->maxTokens = this->maxTokens << 1;
+        }
+        cbSize = this->maxTokens * elemSize;
+        pWork = (void *)mem_Malloc(cbSize);
+        if( NULL == pWork ) {
+            this->maxTokens = oldMax;
+            return ERESULT_INSUFFICIENT_MEMORY;
+        }
+        
+        // Copy the old entries into the new array.
+        if( this->pTokens == NULL )
+            ;
+        else {
+            memmove(pWork, this->pTokens, (oldMax * elemSize));
+            mem_Free(this->pTokens);
+            // this->pTokens = NULL;
+        }
+        this->pTokens = pWork;
+        memset(&this->pTokens[oldMax], 0, ((this->maxTokens - oldMax) * elemSize));
+        for (i=oldMax; i<this->maxTokens; i++) {
+            this->pTokens[i].index = i;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
-
-#endif
+    
+    
+    
 
 
     /****************************************************************
@@ -591,13 +1722,9 @@ extern "C" {
     ERESULT         TRegex_Compile (
         TREGEX_DATA     *this,
         const
-        char            *pattern
+        char            *pPattern
     )
     {
-        ERESULT         eRc;
-        int             ccl_bufidx = 1;
-        char            c;              /* current char in pattern  */
-        int             i = 0;          /* index into pattern       */
 
 #ifdef NDEBUG
 #else
@@ -606,144 +1733,11 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        this->sizeCompiled = 0;
+        this->sizeTokens = 0;
 
-        while (pattern[i] != '\0') {
-            c = pattern[i];
-            if (++this->sizeCompiled > this->maxCompiled) {
-                eRc = TRegex_ExpandCompiled(this, this->sizeCompiled);
-                if (ERESULT_FAILED(eRc)) {
-                    DEBUG_BREAK();
-                    return -1;
-                }
-            }
-            
-            switch (c) {
-                    /* Meta-characters: */
-                case '^':
-                    this->pCompiled[this->sizeCompiled-1].type = BEGIN;
-                    break;
-                case '$':
-                    this->pCompiled[this->sizeCompiled-1].type = END;
-                    break;
-                case '.':
-                    this->pCompiled[this->sizeCompiled-1].type = DOT;
-                    break;
-                case '*':
-                    this->pCompiled[this->sizeCompiled-1].type = STAR;
-                    break;
-                case '+':
-                    this->pCompiled[this->sizeCompiled-1].type = PLUS;
-                    break;
-                case '?':
-                    this->pCompiled[this->sizeCompiled-1].type = QUESTIONMARK;
-                    break;
-                    /*
-                     --> NOT Working properly <--
-                     case '|':
-                            this->pCompiled[this->sizeCompiled-1].type = BRANCH;
-                            break;
-                     */
-                    
-                    /* Escaped character-classes (\s \w ...): */
-                case '\\': {
-                    if (pattern[i+1] != '\0') {
-                        /* Skip the escape-char '\\' */
-                        i += 1;
-                        /* ... and check the next */
-                        switch (pattern[i]) {
-                                /* Meta-character: */
-                            case 'd':
-                                this->pCompiled[this->sizeCompiled-1].type = DIGIT;
-                                break;
-                            case 'D':
-                                this->pCompiled[this->sizeCompiled-1].type = NOT_DIGIT;
-                                break;
-                            case 'w':
-                                this->pCompiled[this->sizeCompiled-1].type = ALPHA;
-                                break;
-                            case 'W':
-                                this->pCompiled[this->sizeCompiled-1].type = NOT_ALPHA;
-                                break;
-                            case 's':
-                                this->pCompiled[this->sizeCompiled-1].type = WHITESPACE;
-                                break;
-                            case 'S':
-                                this->pCompiled[this->sizeCompiled-1].type = NOT_WHITESPACE;
-                                break;
-                                
-                                /* Escaped character, e.g. '.' or '$' */
-                            default:
-                                this->pCompiled[this->sizeCompiled-1].type = CHAR;
-                                this->pCompiled[this->sizeCompiled-1].ch = pattern[i];
-                                break;
-                        }
-                    }
-                    /* '\\' as last char in pattern -> invalid regular expression. */
-                    /*
-                     else {
-                        this->pCompiled[this->sizeCompiled-1].type = CHAR;
-                        this->pCompiled[this->sizeCompiled-1].ch = pattern[i];
-                     }
-                     */
-                }
-                break;
-                    
-                    /* Character class: */
-                case '[':
-                {
-                    /* Remember where the char-buffer starts. */
-                    int buf_begin = ccl_bufidx;
-                    
-                    /* Look-ahead to determine if negated */
-                    if (pattern[i+1] == '^') {
-                        this->pCompiled[this->sizeCompiled-1].type = INV_CHAR_CLASS;
-                        i += 1; /* Increment i to avoid including '^' in the char-buffer */
-                    } else {
-                        this->pCompiled[this->sizeCompiled-1].type = CHAR_CLASS;
-                    }
-                    
-                    /* Copy characters inside [..] to buffer */
-                    while (    (pattern[++i] != ']')
-                           && (pattern[i]   != '\0')) /* Missing ] */
-                    {
-                        if (ccl_bufidx >= MAX_CHAR_CLASS_LEN) {
-                            //fputs("exceeded internal buffer!\n", stderr);
-                            return 0;
-                        }
-                        this->ccl_buf[ccl_bufidx++] = pattern[i];
-                    }
-                    if (ccl_bufidx >= MAX_CHAR_CLASS_LEN) {
-                        /* Catches cases such as [00000000000000000000000000000000000000][ */
-                        //fputs("exceeded internal buffer!\n", stderr);
-                        return 0;
-                    }
-                    /* Null-terminate string end */
-                    this->ccl_buf[ccl_bufidx++] = 0;
-                    this->pCompiled[this->sizeCompiled-1].ccl = &this->ccl_buf[buf_begin];
-                }
-                break;
-                    
-                    /* Other characters: */
-                default:
-                    this->pCompiled[this->sizeCompiled-1].type = CHAR;
-                    this->pCompiled[this->sizeCompiled-1].ch = c;
-                    break;
-            }
-            i += 1;
-        }
-        
-        // 'UNUSED' is a sentinel used to indicate end-of-pattern.
-        if (++this->sizeCompiled > this->maxCompiled) {
-            eRc = TRegex_ExpandCompiled(this, this->sizeCompiled);
-            if (ERESULT_FAILED(eRc)) {
-                DEBUG_BREAK();
-                return -1;
-            }
-        }
-        this->pCompiled[this->sizeCompiled-1].type = UNUSED;
+        TRegex_CompilePattern(this, pPattern);
 
-      return ERESULT_SUCCESS;
+        return ERESULT_SUCCESS;
     }
 
 
@@ -883,11 +1877,15 @@ extern "C" {
         }
 #endif
 
-        if (this->pCompiled) {
-            mem_Free(this->pCompiled);
-            this->pCompiled = NULL;
-            this->maxCompiled = 0;
-            this->sizeCompiled = 0;
+        if (this->pTokens) {
+            mem_Free(this->pTokens);
+            this->pTokens = NULL;
+            this->maxTokens = 0;
+            this->sizeTokens = 0;
+        }
+        if (this->pTokenStack) {
+            obj_Release(this->pTokenStack);
+            this->pTokenStack = OBJ_NIL;
         }
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -1007,6 +2005,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&TRegex_Vtbl);
         
+        this->pTokenStack = ptrArray_New();
+        if (OBJ_NIL == this->pTokenStack) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        
     #ifdef NDEBUG
     #else
         if (!TRegex_Validate(this)) {
@@ -1061,10 +2066,13 @@ extern "C" {
     int             TRegex_MatchP(
         TREGEX_DATA     *this,
         const
-        char            *text
+        char            *pText,
+        int             *pLength
     )
     {
-        
+        int             idx = 0;
+        int             length = 0;
+
                 // Do initialization.
         #ifdef NDEBUG
         #else
@@ -1074,26 +2082,14 @@ extern "C" {
                     return -1;
                 }
         #endif
-                        
-        if (this->pCompiled != NULL) {
-            if (this->pCompiled[0].type == BEGIN) {
-                return ((matchPattern(&this->pCompiled[1], text)) ? 0 : -1);
-            } else {
-                int idx = -1;
-                
-                do {
-                    idx += 1;
-                    
-                    if (matchPattern(this->pCompiled, text)) {
-                        if (text[0] == '\0')
-                            return -1;
-                        
-                        return idx;
-                    }
-                } while (*text++ != '\0');
-            }
+
+        if (this->pTokens != NULL) {
+            idx = TRegex_MatchInt(this, pText, &length);
         }
-        return -1;
+
+        if (pLength)
+            *pLength = length;
+        return idx;
     }
 
     
@@ -1102,7 +2098,8 @@ extern "C" {
         const
         char            *pattern,
         const
-        char            *text
+        char            *pText,
+        int             *pLength
     )
     {
         ERESULT         eRc;
@@ -1123,7 +2120,7 @@ extern "C" {
             return -1;
         }
         
-      return TRegex_MatchP(this, text);
+      return TRegex_MatchP(this, pText, pLength);
     }
 
     
@@ -1399,11 +2396,10 @@ extern "C" {
         TREGEX_DATA     *this
     )
     {
-        ERESULT         eRc;
         ASTR_DATA       *pStr;
+        ASTR_DATA       *pStrWrk;
         int             i;
         int             iMax;
-        regex_t         *pattern = this->pCompiled;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1419,35 +2415,19 @@ extern "C" {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
+        AStr_AppendPrint(pStr, "\tcTokens: %d\n", this->sizeTokens);
         
-        iMax = this->sizeCompiled;
+        iMax = this->sizeTokens;
         for (i = 0; i < iMax; i++) {
-            if (pattern[i].type == UNUSED) {
+            if (this->pTokens[i].type == TOKEN_END) {
                 break;
             }
-            
-            eRc =   AStr_AppendPrint(
-                                   pStr,
-                                   "\t%2d - type: %s ",
-                                   i,
-                                   pTypesToStrA[pattern[i].type]
-                    );
-            if (pattern[i].type == CHAR_CLASS || pattern[i].type == INV_CHAR_CLASS) {
-                int         j;
-                char        c;
-                eRc = AStr_AppendA(pStr, "[");
-                for (j = 0; j < MAX_CHAR_CLASS_LEN; ++j) {
-                    c = pattern[i].ccl[j];
-                    if ((c == '\0') || (c == ']')) {
-                        break;
-                    }
-                    eRc = AStr_AppendCharA(pStr, c);
-                }
-                eRc = AStr_AppendA(pStr, "]");
-            } else if (pattern[i].type == CHAR) {
-                eRc = AStr_AppendCharA(pStr, pattern[i].ch);
+            if (this->pTokens[i].grouplen == SIZE_MAX) {
+                break;
             }
-            eRc = AStr_AppendA(pStr,"\n");
+            pStrWrk = TRegex_PrintOne(&this->pTokens[i]);
+            obj_Release(pStrWrk);
+            pStrWrk = OBJ_NIL;
         }
         
         return pStr;

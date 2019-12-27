@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 06/05/2017 21:57:10
+ *	Generated 12/22/2019 10:06:17
  */
 
 
@@ -24,8 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <blkdrcds16_internal.h>
-
+#include    <BlkdRcds16_internal.h>
 
 
 static
@@ -66,9 +66,9 @@ char    *pWord6h = "OPQRST";
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -80,9 +80,9 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -112,12 +112,46 @@ int         tearDown(
 
 
 
-int         test_blkdrcds16_OpenClose(
+int             test_BlkdRcds16_OpenClose(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    BLKDRCDS16_DATA	*pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = BlkdRcds16_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = BlkdRcds16_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_BLKDRCDS16);
+        TINYTEST_TRUE( (fRc) );
+        
+        // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_BlkdRcds16_Test01(
     const
     char        *pTestName
 )
 {
-    BLKDRCDS16_DATA	*pObj = OBJ_NIL;
+    BLKDRCDS16_DATA *pObj = OBJ_NIL;
     uint16_t        size = 0;
     uint16_t        index = 0;
     ERESULT         eRc;
@@ -125,106 +159,104 @@ int         test_blkdrcds16_OpenClose(
     char            data[16];
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = blkdrcds16_Alloc( );
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = blkdrcds16_InitWithSizes(pObj, 32, 0);
+    pObj = BlkdRcds16_NewWithSizes(32, 0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        size = blkdrcds16_getNumRecords(pObj);
+        size = BlkdRcds16_getNumRecords(pObj);
         XCTAssertTrue( (0 == size) );
         
         fprintf(stderr, "*** Just after Initialization ***\n");
-        pStr = blkdrcds16_ToDebugString(pObj, 4);
+        pStr = BlkdRcds16_ToDebugString(pObj, 4);
         fprintf(stderr, "%s\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
-        eRc = blkdrcds16_RecordAdd(pObj, 6, (void *)pWord6, &index);
+        eRc = BlkdRcds16_RecordAdd(pObj, 6, (void *)pWord6, &index);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (1 == index) );
         fprintf(stderr, "*** Just after Add Record 1 ***\n");
-        pStr = blkdrcds16_ToDebugString(pObj, 4);
+        pStr = BlkdRcds16_ToDebugString(pObj, 4);
         fprintf(stderr, "%s\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
-        size = blkdrcds16_getNumRecords(pObj);
+        size = BlkdRcds16_getNumRecords(pObj);
         XCTAssertTrue( (1 == size) );
-        eRc = blkdrcds16_RecordGetSize(pObj, 1, &size);
+        eRc = BlkdRcds16_RecordGetSize(pObj, 1, &size);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (6 == size) );
-        eRc = blkdrcds16_RecordGet(pObj, 1, 0, NULL, &size);
+        eRc = BlkdRcds16_RecordGet(pObj, 1, 0, NULL, &size);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (0 == size) );
-        eRc = blkdrcds16_RecordGet(pObj, 1, 16, data, &size);
+        eRc = BlkdRcds16_RecordGet(pObj, 1, 16, data, &size);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (6 == size) );
 
-        eRc = blkdrcds16_RecordAdd(pObj, 4, (void *)pWord4, &index);
+        eRc = BlkdRcds16_RecordAdd(pObj, 4, (void *)pWord4, &index);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (2 == index) );
         fprintf(stderr, "*** Just after Add Record 2 ***\n");
-        pStr = blkdrcds16_ToDebugString(pObj, 4);
+        pStr = BlkdRcds16_ToDebugString(pObj, 4);
         fprintf(stderr, "%s\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
-        size = blkdrcds16_getNumRecords(pObj);
+        size = BlkdRcds16_getNumRecords(pObj);
         XCTAssertTrue( (2 == size) );
-        eRc = blkdrcds16_RecordGetSize(pObj, index, &size);
+        eRc = BlkdRcds16_RecordGetSize(pObj, index, &size);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (4 == size) );
-        eRc = blkdrcds16_RecordGet(pObj, index, 0, NULL, &size);
+        eRc = BlkdRcds16_RecordGet(pObj, index, 0, NULL, &size);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (0 == size) );
-        size = blkdrcds16_getUnused(pObj);
+        size = BlkdRcds16_getUnused(pObj);
         XCTAssertTrue( (6 == size) );
-        eRc = blkdrcds16_RecordGet(pObj, index, 16, data, &size);
+        eRc = BlkdRcds16_RecordGet(pObj, index, 16, data, &size);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (4 == size) );
         XCTAssertTrue( (0 == strncmp(data, pWord4, size)) );
 
-        eRc = blkdrcds16_RecordAdd(pObj, 2, (void *)pWord2, &index);
+        eRc = BlkdRcds16_RecordAdd(pObj, 2, (void *)pWord2, &index);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (3 == index) );
         fprintf(stderr, "*** Just after Add Record 3 ***\n");
-        pStr = blkdrcds16_ToDebugString(pObj, 4);
+        pStr = BlkdRcds16_ToDebugString(pObj, 4);
         fprintf(stderr, "%s\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
-        size = blkdrcds16_getNumRecords(pObj);
+        size = BlkdRcds16_getNumRecords(pObj);
         XCTAssertTrue( (3 == size) );
-        eRc = blkdrcds16_RecordGetSize(pObj, 3, &size);
+        eRc = BlkdRcds16_RecordGetSize(pObj, 3, &size);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (2 == size) );
-        eRc = blkdrcds16_RecordGet(pObj, index, 0, NULL, &size);
+        eRc = BlkdRcds16_RecordGet(pObj, index, 0, NULL, &size);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (0 == size) );
-        size = blkdrcds16_getUnused(pObj);
+        size = BlkdRcds16_getUnused(pObj);
         XCTAssertTrue( (0 == size) );
-        eRc = blkdrcds16_RecordGet(pObj, index, 12, data, &size);
+        eRc = BlkdRcds16_RecordGet(pObj, index, 12, data, &size);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (2 == size) );
         data[size] = 0;
         XCTAssertTrue( (0 == strncmp(data, pWord2, size)) );
         
-        eRc = blkdrcds16_RecordGet(pObj, 2, 12, data, &size);
+        eRc = BlkdRcds16_RecordGet(pObj, 2, 12, data, &size);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (4 == size) );
         data[size] = 0;
         XCTAssertTrue( (0 == strcmp(data, pWord4)) );
         
-        eRc = blkdrcds16_RecordDelete(pObj, 3);
+        eRc = BlkdRcds16_RecordDelete(pObj, 3);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        size = blkdrcds16_getUnused(pObj);
+        size = BlkdRcds16_getUnused(pObj);
         XCTAssertTrue( (6 == size) );
-        size = blkdrcds16_getNumRecords(pObj);
+        size = BlkdRcds16_getNumRecords(pObj);
         XCTAssertTrue( (2 == size) );
         
         fprintf(stderr, "*** Just after Delete Record 3 ***\n");
-        pStr = blkdrcds16_ToDebugString(pObj, 4);
+        pStr = BlkdRcds16_ToDebugString(pObj, 4);
         fprintf(stderr, "%s\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
@@ -233,13 +265,13 @@ int         test_blkdrcds16_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_blkdrcds16_Calc(
+int         test_BlkdRcds16_Calc(
     const
     char        *pTestName
 )
@@ -247,23 +279,24 @@ int         test_blkdrcds16_Calc(
     uint16_t        size = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    size = blkdrcds16_CalcBlockSize(10, 8, 64);
+    size = BlkdRcds16_CalcBlockSize(10, 8, 64);
     XCTAssertTrue( (562 == size) );
     
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_blkdrcds16);
-  TINYTEST_ADD_TEST(test_blkdrcds16_Calc,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_blkdrcds16_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_BlkdRcds16);
+    TINYTEST_ADD_TEST(test_BlkdRcds16_Calc,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_BlkdRcds16_Test01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_BlkdRcds16_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_blkdrcds16);
+TINYTEST_MAIN_SINGLE_SUITE(test_BlkdRcds16);
 
 
 

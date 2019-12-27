@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   blkdrcds16_internal.h
- *	Generated 03/10/2017 19:43:23
+ * File:   BlkdRcds16_internal.h
+ *	Generated 12/22/2019 10:06:17
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,16 @@
 
 
 
-
-#include    <blkdrcds16.h>
+#include        <BlkdRcds16.h>
+#include        <jsonIn.h>
 
 
 #ifndef BLKDRCDS16_INTERNAL_H
 #define	BLKDRCDS16_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -75,8 +79,7 @@ extern "C" {
      * index. The reserved area is just above the data or at the end of block.
      * WARNING -- Only use offsets, NO pointers/addresses within the block!
      */
-    
-    
+        
 #pragma pack(push, 1)
     typedef struct data_block_s {
         uint16_t        cbSize;         // Total Size of BLock excluding this header
@@ -91,71 +94,95 @@ extern "C" {
         INDEX_RECORD    index[0];       // Index
     } DATA_BLOCK;
 #pragma pack(pop)
-    
-    
-    
-    
-    
+        
+            
+            
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct blkdrcds16_data_s	{
+struct BlkdRcds16_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
+    uint16_t        blockSize;
+    uint16_t        rsvdSize;
+    ASTR_DATA       *pStr;
     DATA_BLOCK      *pBlock;
 
 };
 #pragma pack(pop)
 
     extern
-    const
-    struct blkdrcds16_class_data_s  blkdrcds16_ClassObj;
+    struct BlkdRcds16_class_data_s  BlkdRcds16_ClassObj;
 
     extern
     const
-    BLKDRCDS16_VTBL         blkdrcds16_Vtbl;
+    BLKDRCDS16_VTBL         BlkdRcds16_Vtbl;
 
 
-    // Internal Functions
-    bool            blkdrcds16_setData(
-        BLKDRCDS16_DATA *this,
-        uint8_t         *pValue
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  BLKDRCDS16_SINGLETON
+    BLKDRCDS16_DATA *     BlkdRcds16_getSingleton (
+        void
     );
-    
-    
-    void            blkdrcds16_Dealloc(
+
+    bool            BlkdRcds16_setSingleton (
+     BLKDRCDS16_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  BlkdRcds16_getSuperVtbl (
+        BLKDRCDS16_DATA     *this
+    );
+
+
+    void            BlkdRcds16_Dealloc (
         OBJ_ID          objId
     );
 
-    
-    uint16_t		blkdrcds16_CalcNewRecordOffset(
-        BLKDRCDS16_DATA *this,
-        uint16_t        recordSize,
-        uint16_t        *pActualSize
-    );
 
-    
-    void *          blkdrcds16_QueryInfo(
+#ifdef  BLKDRCDS16_JSON_SUPPORT
+    BLKDRCDS16_DATA *       BlkdRcds16_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          BlkdRcds16_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
-    bool            blkdrcds16_setLastError(
-        BLKDRCDS16_DATA     *this,
-        ERESULT         value
+
+
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     BlkdRcds16_ToJson (
+        BLKDRCDS16_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			blkdrcds16_Validate(
+    bool			BlkdRcds16_Validate (
         BLKDRCDS16_DATA       *this
     );
 #endif

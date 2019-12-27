@@ -23,7 +23,7 @@
         {name:"audioWAV", deps:["AStr.h","fbso.h","u8Array.h"]},
         {name:"BitMatrix", deps:["AStr.h","BitSet.h","u32Array.h"], "json":true},
         {name:"BitSet", deps:["u32Array.h"]},
-        {name:"blkdrcds16"},
+        {name:"BlkdRcds16"},
         {name:"blks"},
         {name:"block16"},
         {name:"block32"},
@@ -163,7 +163,6 @@
         {name:"visitor"},
         {name:"W32Str", json:true},
         {name:"W32StrC"},
-        {name:"wav"},
         {name:"wisp", json:false},
         {name:"xml"}
     ],

@@ -1,15 +1,12 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Block of Variable-sized Records (blkdrcds16) Header
+//          Block of Variable-sized Records (BlkdRcds16) Header
 //****************************************************************
 /*
- * Program
- *			Block of Variable-sized Records (blkdrcds16)
- * Purpose
- *			These subroutines provide a general purpose set of
- *			routines to build and manipulate a block of variable
- *			length data records. The block size is restricted to
+ *          These subroutines provide a general purpose set of
+ *          routines to build and manipulate a block of variable
+ *          length data records. The block size is restricted to
  *          32,768.
  *
  *          All offsets within the block are numeric. No addresses
@@ -20,19 +17,21 @@
  *          any use. Just specify the amount at open time.
  *
  * Remarks
- *	1.			Records are numbered starting with 1.  If
- *				zero is returned for a record index, it should be
- *				considered an error.
+ *    1.          Records are numbered starting with 1.  If
+ *                zero is returned for a record index, it should be
+ *                considered an error.
  *
- * History
- *		"Data Structures and Algorithms", Alfred V. Aho et al,
- *			Addison-Wesley, 1985
- *		"Data Structures using C", Aaron M. Tenenbaum et al,
- *			Prentice-Hall, 1990
- *		"Programs and Data Structures in C", Leendert Ammeraal,
- *			John Wiley & Sons, 1987
- *      "VSAM: Architecture, Theory and Applications", Larry Brumbaugh,
+ * References:
+ *  *      "Data Structures and Algorithms", Alfred V. Aho et al,
+ *          Addison-Wesley, 1985
+ *  *       "Data Structures using C", Aaron M. Tenenbaum et al,
+ *          Prentice-Hall, 1990
+ *  *      "Programs and Data Structures in C", Leendert Ammeraal,
+ *          John Wiley & Sons, 1987
+ *  *      "VSAM: Architecture, Theory and Applications", Larry Brumbaugh,
  *          McGraw-Hill, 1993
+ * History
+ *	12/22/2019 Regenerated
  */
 
 
@@ -67,13 +66,18 @@
 
 
 
-
 #include        <cmn_defs.h>
 #include        <AStr.h>
 
 
 #ifndef         BLKDRCDS16_H
 #define         BLKDRCDS16_H
+
+
+//#define   BLKDRCDS16_JSON_SUPPORT 1
+//#define   BLKDRCDS16_SINGLETON    1
+
+
 
 
 
@@ -87,16 +91,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct blkdrcds16_data_s	BLKDRCDS16_DATA;    // Inherits from OBJ.
+    typedef struct BlkdRcds16_data_s	BLKDRCDS16_DATA;            // Inherits from OBJ
+    typedef struct BlkdRcds16_class_data_s BLKDRCDS16_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct blkdrcds16_vtbl_s	{
+    typedef struct BlkdRcds16_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in blkdrcds16_object.c.
+        // method names to the vtbl definition in BlkdRcds16_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(BLKDRCDS16_DATA *);
     } BLKDRCDS16_VTBL;
+
+    typedef struct BlkdRcds16_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in BlkdRcds16_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(BLKDRCDS16_DATA *);
+    } BLKDRCDS16_CLASS_VTBL;
+
 
 
 
@@ -109,141 +124,153 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  BLKDRCDS16_SINGLETON
+    BLKDRCDS16_DATA * BlkdRcds16_Shared (
+        void
+    );
+
+    bool            BlkdRcds16_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to blkdrcds16 object if successful, otherwise OBJ_NIL.
+     @return    pointer to BlkdRcds16 object if successful, otherwise OBJ_NIL.
      */
-    BLKDRCDS16_DATA * blkdrcds16_Alloc(
+    BLKDRCDS16_DATA * BlkdRcds16_Alloc (
         void
     );
     
     
-    uint16_t        blkdrcds16_CalcBlockSize(
+    uint16_t        BlkdRcds16_CalcBlockSize(
         uint16_t        rsvdSize,
         uint16_t        numRecords,
         uint16_t        recordSize              // Average Record Size
     );
     
     
-    OBJ_ID          blkdrcds16_Class(
+    OBJ_ID          BlkdRcds16_Class (
         void
     );
     
     
-    BLKDRCDS16_DATA * blkdrcds16_New(
+    BLKDRCDS16_DATA * BlkdRcds16_New (
         void
     );
     
+    BLKDRCDS16_DATA * BlkdRcds16_NewWithSizes (
+        uint16_t        blockSize,
+        uint16_t        rsvdSize
+    );
     
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint8_t *       blkdrcds16_getData(
+    uint8_t *       BlkdRcds16_getData (
         BLKDRCDS16_DATA *this
-    );
-    
-    
-    ERESULT         blkdrcds16_getLastError(
-        BLKDRCDS16_DATA	*this
     );
 
 
-    uint16_t        blkdrcds16_getNumRecords(
+    uint16_t        BlkdRcds16_getNumRecords (
         BLKDRCDS16_DATA *this
     );
-    
-    
-    uint16_t        blkdrcds16_getUnused(
+
+
+    uint16_t        BlkdRcds16_getUnused (
         BLKDRCDS16_DATA *this
     );
-    
-    
+
+
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    BLKDRCDS16_DATA * blkdrcds16_Init(
+    BLKDRCDS16_DATA * BlkdRcds16_Init (
         BLKDRCDS16_DATA *this
     );
-    
-    
-    BLKDRCDS16_DATA * blkdrcds16_InitWithSizes(
+
+
+    ERESULT         BlkdRcds16_RecordAdd (
+       BLKDRCDS16_DATA *this,
+       uint16_t        size,
+       void            *pData,
+       uint16_t        *pIndex             // (Optional) Returned Output Index
+    );
+
+
+    ERESULT         BlkdRcds16_RecordDelete (
+       BLKDRCDS16_DATA *this,
+       uint16_t        index
+    );
+
+
+    /*!
+    Copy a record from the block into a supplied area.
+    @param     this        BLKDRCDS16 object pointer
+    @param     index       record number (relative to 1)
+    @param     dataSize    size of the supplied data area
+    @param     pData       Optional pointer to the data area. If NULL, no data
+                           is copied.
+    @param     pSizeUsed   Optional pointer to a size to be returned. The size
+                           used will be the record size if it fits in the area
+                           provided or the truncated size of the area provided.
+                           If NULL, no size is returned.
+    @return    If successful, ERESULT_SUCCESS. An ERESULT_* error code.
+    */
+    ERESULT         BlkdRcds16_RecordGet (
+       BLKDRCDS16_DATA *this,
+       uint16_t        index,
+       uint16_t        dataSize,
+       void            *pData,             // Optional
+       uint16_t        *pSizeUsed          // Optional
+    );
+
+
+    ERESULT         BlkdRcds16_RecordGetSize (
+       BLKDRCDS16_DATA *this,
+       uint16_t        index,
+       uint16_t        *pSize
+    );
+
+
+    ERESULT         BlkdRcds16_RecordUpdate (
+       BLKDRCDS16_DATA *this,
+       uint16_t        index,
+       uint16_t        dataSize,
+       void            *pData
+    );
+
+
+    ERESULT         BlkdRcds16_SetupDataBlock (
         BLKDRCDS16_DATA *this,
         uint16_t        blockSize,
         uint16_t        rsvdSize
     );
 
 
-    ERESULT         blkdrcds16_RecordAdd(
-        BLKDRCDS16_DATA *this,
-        uint16_t        size,
-        void            *pData,
-        uint16_t        *pIndex             // (Optional) Returned Output Index
-    );
-    
-    
-    ERESULT         blkdrcds16_RecordDelete(
-        BLKDRCDS16_DATA	*this,
-        uint16_t        index
-    );
-    
-    
-    /*!
-     Copy a record from the block into a supplied area.
-     @param     this        BLKDRCDS16 object pointer
-     @param     index       record number (relative to 1)
-     @param     dataSize    size of the supplied data area
-     @param     pData       Optional pointer to the data area. If NULL, no data
-                            is copied.
-     @param     pSizeUsed   Optional pointer to a size to be returned. The size
-                            used will be the record size if it fits in the area
-                            provided or the truncated size of the area provided.
-                            If NULL, no size is returned.
-     @return    If successful, ERESULT_SUCCESS. An ERESULT_* error code.
-     */
-    ERESULT         blkdrcds16_RecordGet(
-        BLKDRCDS16_DATA	*this,
-        uint16_t        index,
-        uint16_t        dataSize,
-        void            *pData,             // Optional
-        uint16_t        *pSizeUsed          // Optional
-    );
-    
-    
-    ERESULT         blkdrcds16_RecordGetSize(
-        BLKDRCDS16_DATA	*this,
-        uint16_t        index,
-        uint16_t        *pSize
-    );
-    
- 
-    ERESULT         blkdrcds16_RecordUpdate(
-        BLKDRCDS16_DATA	*this,
-        uint16_t        index,
-        uint16_t        dataSize,
-        void            *pData
-    );
-    
-    
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = blkdrcds16_ToDebugString(this,4);
-     @endcode
-     @param     this    BLKDRCDS16 object pointer
+     @code 
+        ASTR_DATA      *pDesc = BlkdRcds16_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     blkdrcds16_ToDebugString(
+    ASTR_DATA *    BlkdRcds16_ToDebugString (
         BLKDRCDS16_DATA *this,
         int             indent
     );

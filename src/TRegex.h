@@ -7,31 +7,47 @@
  * Program
  *			Tiny Regex (TRegex)
  * Purpose
+ *          This object provides a version of Rob Pike's recursive
+ *          regex code. Primary, it checks to see if the regex pat-
+ *          tern exists in the supplied text.
+ *
  *          Mini regex-module inspired by Rob Pike's regex code described in:
  *          http://www.cs.princeton.edu/courses/archive/spr09/cos333/beautiful.html
  *
  *          This object is based on the work of kokke and was found at:
- *          https://github.com/kokke/tiny-regex-c
+ *              https://github.com/kokke/tiny-regex-c
+ *              https://github.com/Koxiaet/tiny-regex-c
  *          This library is licensed by the Unlicense maintaining the
  *          primary license for this library.
  *
  * Supports:
  * ---------
- *   '.'        Dot, matches any character
- *   '^'        Start anchor, matches beginning of string
- *   '$'        End anchor, matches end of string
- *   '*'        Asterisk, match zero or more (greedy)
- *   '+'        Plus, match one or more (greedy)
- *   '?'        Question, match zero or one (non-greedy)
- *   '[abc]'    Character class, match if one of {'a', 'b', 'c'}
- *   '[^abc]'   Inverted class, match if NOT one of {'a', 'b', 'c'} -- NOTE: feature is currently broken!
- *   '[a-zA-Z]' Character ranges, the character set of the ranges { a-z | A-Z }
- *   '\s'       Whitespace, \t \f \r \n \v and spaces
- *   '\S'       Non-whitespace
- *   '\w'       Alphanumeric, [a-zA-Z0-9_]
- *   '\W'       Non-alphanumeric
- *   '\d'       Digits, [0-9]
- *   '\D'       Non-digits
+ *  '.'         Dot, matches any character
+ *  '^'         Start anchor, matches beginning of string
+ *  '$'         End anchor, matches end of string
+ *  '*'         Asterisk, match zero or more (greedy)
+ *  '+'         Plus, match one or more (greedy)
+ *  '?'         Question, match zero or one (non-greedy)
+ *  '?'         Question, make quantifier non-greedy
+ *  '[abc]'     Character class, match if one of {'a', 'b', 'c'}
+ *  '[^abc]'    Inverted class, match if NOT one of {'a', 'b', 'c'}
+ *  '[a-zA-Z]'  Character ranges, the character set of the ranges { a-z | A-Z }
+ *  '\s'        Whitespace, \t \f \r \n \v and spaces
+ *  '\S'        Non-whitespace
+ *  '\w'        Alphanumeric, [a-zA-Z0-9_]
+ *  '\W'        Non-alphanumeric
+ *  '\d'        Digits, [0-9]
+ *  '\D'        Non-digits
+ *  '\R'        Any newline (\r\n or \n)
+ *  '\b'        A word boundary (where one side is \w and the other is \W)
+ *  '\B'        Non-word boundary
+ *  'i'         case Insensitive modifier
+ *  's'         Single line modifier (where a dot matches newlines too)
+ *  '()'        Groups (capturing is not currently implemented)
+ *  '(?:)'      Non-capturing groups
+ *  '(?is:)'    Non-capturing groups with modifiers
+ *  '(?=)'      Lookaheads
+ *  '(?!)'      Inverted lookaheads
  *
  * Remarks
  *	1.      None
@@ -191,18 +207,30 @@ extern "C" {
      @param     this        object pointer
      @param     pPattern    Regex Pattern
      @param     pText       Nul-terminated string
-     @return    If unsuccessful or the pattern was not found, -1. Otherwise,
-                an index into where pattern starts to match the text.
+     @param     pLength     Returned length of match (0 == no match)
+     @return    If unsuccessful or the pattern was not found, 0 and
+                 length of zero. Otherwise, an index into where pat-
+                 tern starts to match the text and the length of the
+                 match.
      */
     int             TRegex_Match(
         TREGEX_DATA     *this,
         const
         char            *pPattern,
         const
-        char            *pText
+        char            *pText,
+        int             *pLength
     );
     
  
+    int             TRegex_MatchP(
+        TREGEX_DATA     *this,
+        const
+        char            *text,
+        int             *pLength
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

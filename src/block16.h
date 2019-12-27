@@ -94,22 +94,22 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    BLOCK16_DATA *  block16_Alloc(
+    BLOCK16_DATA *  block16_Alloc (
         void
     );
     
     
-    uint32_t		block16_CalcBlockSize(
+    uint32_t		block16_CalcBlockSize (
         uint16_t        headerSize,
         uint16_t        dataSize
     );
     
     
-    BLOCK16_DATA *  block16_New(
+    BLOCK16_DATA *  block16_New (
         void
     );
     
-    BLOCK16_DATA *  block16_NewWithSizes(
+    BLOCK16_DATA *  block16_NewWithSizes (
         uint16_t        headerSize,
         uint16_t        dataSize
     );
@@ -121,17 +121,17 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    void *          block16_getData(
+    void *          block16_getData (
         BLOCK16_DATA   *this
     );
     
     
-    uint16_t        block16_getDataOffset(
+    uint16_t        block16_getDataOffset (
         BLOCK16_DATA   *this
     );
     
     
-    uint16_t        block16_getDataSize(
+    uint16_t        block16_getDataSize (
         BLOCK16_DATA   *this
     );
     
@@ -141,27 +141,27 @@ extern "C" {
      to know or control how much of the data area has been used.
      @warning: The addData() method relies on .
      */
-    uint16_t        block16_getDataUsed(
+    uint16_t        block16_getDataUsed (
         BLOCK16_DATA    *this
     );
     
-    bool            block_setDataUsed(
+    bool            block16_setDataUsed (
         BLOCK16_DATA    *this,
         uint16_t        value
     );
     
     
-    void *          block16_getHeader(
+    void *          block16_getHeader (
         BLOCK16_DATA   *this
     );
     
     
-    uint16_t        block16_getHeaderSize(
+    uint16_t        block16_getHeaderSize (
         BLOCK16_DATA   *this
     );
     
     
-    ERESULT         block16_getLastError(
+    ERESULT         block16_getLastError (
         BLOCK16_DATA   *this
     );
     
@@ -177,7 +177,7 @@ extern "C" {
      @param     this    BLOCK32 object pointer
      @return    true if successful, otherwise false.
      */
-    bool			block16_AddData(
+    bool			block16_AddData (
         BLOCK16_DATA	*this,
         uint16_t        size,
         void            *pData
@@ -187,7 +187,7 @@ extern "C" {
     // block_DataPtr returns a pointer to the beginning of the data
     // in the block. Care must be taken how this pointer is used to
     // maintain the integrity of the block.
-    void *          block16_DataPtr(
+    void *          block16_DataPtr (
         BLOCK16_DATA   *this
     );
     
@@ -196,11 +196,11 @@ extern "C" {
      * and initializes other fields needed. Init() assumes 
      * that the size of the stack is passed to in obj_misc1.
      */
-    BLOCK16_DATA *  block16_Init(
+    BLOCK16_DATA *  block16_Init (
         BLOCK16_DATA   *this
     );
 
-    BLOCK16_DATA *  block16_InitWithSizes(
+    BLOCK16_DATA *  block16_InitWithSizes (
         BLOCK16_DATA    *this,
         uint16_t        headerSize,
         uint16_t        dataSize
@@ -219,7 +219,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    block16_ToDebugString(
+    ASTR_DATA *    block16_ToDebugString (
         BLOCK16_DATA    *this,
         int             indent
     );

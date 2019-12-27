@@ -800,6 +800,15 @@ extern "C" {
                     return 2;
                     break;
                     
+                case 11:
+                    if (pDest) {
+                        *pDest++ = '\\';
+                        *pDest++ = 'v';
+                        *pDest = '\0';
+                    }
+                    return 2;
+                    break;
+                    
                 case 12:
                     if (pDest) {
                         *pDest++ = '\\';
@@ -812,7 +821,7 @@ extern "C" {
                 case 13:
                     if (pDest) {
                         *pDest++ = '\\';
-                        *pDest++ = 'n';
+                        *pDest++ = 'r';
                         *pDest = '\0';
                     }
                     return 2;

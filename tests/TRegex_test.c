@@ -29,82 +29,80 @@
 
 
 
-#define OK    1
-#define NOK   0
-
 struct {
-    int     fOk;
+    bool    fOk;
     char    *pPattern;
     char    *pData;
     int     index;
+    int     length;
 } test_vector[] =
 {
-  { OK,  "\\d",                       "5",                       0},   //  0
-  { OK,  "\\w+",                      "hej",                     0},   //  1
-  { OK,  "\\s",                       "\t \n",                   0},   //  2
-  { NOK, "\\S",                       "\t \n",                  -1},   //  3
-  { OK,  "[\\s]",                     "\t \n",                   0},   //  4
-  { NOK, "[\\S]",                     "\t \n",                  -1},   //  5
-  { NOK, "\\D",                       "5",                      -1},   //  6
-  { NOK, "\\W+",                      "hej",                    -1},   //  7
-  { OK,  "[0-9]+",                    "12345",                   0},   //  8
-  { OK,  "\\D",                       "hej",                     0},   //  9
-  { NOK, "\\d",                       "hej",                    -1},   // 10
-  { OK,  "[^\\w]",                    "\\",                      0},   // 11
-  { OK,  "[\\W]",                     "\\",                      0},   // 12
-  { NOK, "[\\w]",                     "\\",                     -1},   // 13
-  { OK,  "[^\\d]",                    "d",                       0},   // 14
-  { NOK, "[\\d]",                     "d",                      -1},   // 15
-  { NOK, "[^\\D]",                    "d",                      -1},   // 16
-  { OK,  "[\\D]",                     "d",                       0},   // 17
-  { OK,  "^.*\\\\.*$",                "c:\\Tools",               0},   // 18
-  { OK,  "^[\\+-]*[\\d]+$",           "+27",                     0},   // 19
-  { OK,  "[abc]",                     "1c2",                     1},   // 20
-  { NOK, "[abc]",                     "1C2",                    -1},   // 21
-  { OK,  "[1-5]+",                    "0123456789",              1},   // 22
-  { OK,  "[.2]",                      "1C2",                     2},   // 23
-  { OK,  "a*$",                       "Xaa",                     1},   // 24
-  { OK,  "a*$",                       "Xaa",                     1},   // 25
-  { OK,  "[a-h]+",                    "abcdefghxxx",             0},   // 26
-  { NOK, "[a-h]+",                    "ABCDEFGH",               -1},   // 27
-  { OK,  "[A-H]+",                    "ABCDEFGH",                0},   // 28
-  { NOK, "[A-H]+",                    "abcdefgh",               -1},   // 29
-  { OK,  "[^\\s]+",                   "abc def",                 0},   // 30
-  { OK,  "[^fc]+",                    "abc def",                 0},   // 31
-  { OK,  "[^d\\sf]+",                 "abc def",                 0},   // 32
-  { OK,  "\n",                        "abc\ndef",                3},   // 33
-  { OK,  "b.\\s*\n",                  "aa\r\nbb\r\ncc\r\n\r\n",  4},   // 34
-  { OK,  ".*c",                       "abcabc",                  0},   // 35
-  { OK,  ".+c",                       "abcabc",                  0},   // 36
-  { OK,  "[b-z].*",                   "ab",                      1},   // 37
-  { OK,  "b[k-z]*",                   "ab",                      1},   // 38
-  { NOK, "[0-9]",                     "  - ",                   -1},   // 39
-  { OK,  "[^0-9]",                    "  - ",                    0},   // 40
-  { OK,  "0|",                        "0|",                      0},   // 41
-  { NOK, "\\d\\d:\\d\\d:\\d\\d",      "0s:00:00",               -1},   // 42
-  { NOK, "\\d\\d:\\d\\d:\\d\\d",      "000:00",                 -1},   // 43
-  { NOK, "\\d\\d:\\d\\d:\\d\\d",      "00:0000",                -1},   // 44
-  { NOK, "\\d\\d:\\d\\d:\\d\\d",      "100:0:00",               -1},   // 45
-  { NOK, "\\d\\d:\\d\\d:\\d\\d",      "00:100:00",              -1},   // 46
-  { NOK, "\\d\\d:\\d\\d:\\d\\d",      "0:00:100",               -1},   // 47
-  { OK,  "\\d\\d?:\\d\\d?:\\d\\d?",   "0:0:0",                   0},   // 48
-  { OK,  "\\d\\d?:\\d\\d?:\\d\\d?",   "0:00:0",                  0},   // 49
-  { OK,  "\\d\\d?:\\d\\d?:\\d\\d?",   "0:0:00",                  0},   // 50
-  { OK,  "\\d\\d?:\\d\\d?:\\d\\d?",   "00:0:0",                  0},   // 51
-  { OK,  "\\d\\d?:\\d\\d?:\\d\\d?",   "00:00:0",                 0},   // 52
-  { OK,  "\\d\\d?:\\d\\d?:\\d\\d?",   "00:0:00",                 0},   // 53
-  { OK,  "\\d\\d?:\\d\\d?:\\d\\d?",   "0:00:00",                 0},   // 54
-  { OK,  "\\d\\d?:\\d\\d?:\\d\\d?",   "00:00:00",                0},   // 55
-  { OK,  "[Hh]ello [Ww]orld\\s*[!]?", "Hello world !",           0},   // 56
-  { OK,  "[Hh]ello [Ww]orld\\s*[!]?", "hello world !",           0},   // 57
-  { OK,  "[Hh]ello [Ww]orld\\s*[!]?", "Hello World !",           0},   // 58
-  { OK,  "[Hh]ello [Ww]orld\\s*[!]?", "Hello world!   ",         0},   // 59
-  { OK,  "[Hh]ello [Ww]orld\\s*[!]?", "Hello world  !",          0},   // 60
-  { OK,  "[Hh]ello [Ww]orld\\s*[!]?", "hello World    !",        0},   // 61
+  { true,  "\\d",                       "5",                         0,  1},    //   0
+  { true,  "\\w+",                      "hej",                       0,  3},    //   1
+  { true,  "\\s",                       "\t \n",                     0,  1},    //   2
+  { false, "\\S",                       "\t \n",                     0,  0},    //   3
+  { true,  "[\\s]",                     "\t \n",                     0,  1},    //   4
+  { false, "[\\S]",                     "\t \n",                     0,  0},    //   5
+  { false, "\\D",                       "5",                         0,  0},    //   6
+  { false, "\\W+",                      "hej",                       0,  0},    //   7
+  { true,  "[0-9]+",                    "12345",                     0,  5},    //   8
+  { true,  "\\D",                       "hej",                       0,  1},    //   9
+  { false, "\\d",                       "hej",                       0,  0},    //  10
+  { true,  "[^\\w]",                    "\\",                        0,  1},    //  11
+  { true,  "[\\W]",                     "\\",                        0,  1},    //  12
+  { false, "[\\w]",                     "\\",                        0,  0},    //  13
+  { true,  "[^\\d]",                    "d",                         0,  1},    //  14
+  { false, "[\\d]",                     "d",                         0,  0},    //  15
+  { false, "[^\\D]",                    "d",                         0,  0},    //  16
+  { true,  "[\\D]",                     "d",                         0,  1},    //  17
+  { true,  "^.*\\\\.*$",                "c:\\Tools",                 0,  8},    //  18
+  { true,  "^[\\+-]*[\\d]+$",           "+27",                       0,  3},    //  19
+  { true,  "[abc]",                     "1c2",                       1,  1},    //  20
+  { false, "[abc]",                     "1C2",                       0,  0},    //  21
+  { true,  "[1-5]+",                    "0123456789",                1,  5},    //  22
+  { true,  "[.2]",                      "1C2",                       2,  1},    //  23
+  { true,  "a*$",                       "Xaa",                       1,  2},    //  24
+  { true,  "a*$",                       "Xaa",                       1,  2},    //  25
+  { true,  "[a-h]+",                    "abcdefghxxx",               0,  8},    //  26
+  { false, "[a-h]+",                    "ABCDEFGH",                  0,  0},    //  27
+  { true,  "[A-H]+",                    "ABCDEFGH",                  0,  8},    //  28
+  { false, "[A-H]+",                    "abcdefgh",                  0,  0},    //  29
+  { true,  "[^\\s]+",                   "abc def",                   0,  3},    //  30
+  { true,  "[^fc]+",                    "abc def",                   0,  2},    //  31
+  { true,  "[^d\\sf]+",                 "abc def",                   0,  3},    //  32
+  { true,  "\n",                        "abc\ndef",                  3,  1},    //  33
+  { true,  "b.\\s*\n",                  "aa\r\nbb\r\ncc\r\n\r\n",    4,  4},    //  34
+  { true,  ".*c",                       "abcabc",                    0,  6},    //  35
+  { true,  ".+c",                       "abcabc",                    0,  6},    //  36
+  { true,  "[b-z].*",                   "ab",                        1,  1},    //  37
+  { true,  "b[k-z]*",                   "ab",                        1,  1},    //  38
+  { false, "[0-9]",                     "  - ",                      0,  0},    //  39
+  { true,  "[^0-9]",                    "  - ",                      0,  1},    //  40
+  { true,  "0|",                        "0|",                        0,  2},    //  41
+  { false, "\\d\\d:\\d\\d:\\d\\d",      "0s:00:00",                  0,  0},    //  42
+  { false, "\\d\\d:\\d\\d:\\d\\d",      "000:00",                    0,  0},    //  43
+  { false, "\\d\\d:\\d\\d:\\d\\d",      "00:0000",                   0,  0},    //  44
+  { false, "\\d\\d:\\d\\d:\\d\\d",      "100:0:00",                  0,  0},    //  45
+  { false, "\\d\\d:\\d\\d:\\d\\d",      "00:100:00",                 0,  0},    //  46
+  { false, "\\d\\d:\\d\\d:\\d\\d",      "0:00:100",                  0,  0},    //  47
+  { true,  "\\d\\d?:\\d\\d?:\\d\\d?",   "0:0:0",                     0,  5},    //  48
+  { true,  "\\d\\d?:\\d\\d?:\\d\\d?",   "0:00:0",                    0,  6},    //  49
+  { true,  "\\d\\d?:\\d\\d?:\\d\\d?",   "0:0:00",                    0,  6},    //  50
+  { true,  "\\d\\d?:\\d\\d?:\\d\\d?",   "00:0:0",                    0,  6},    //  51
+  { true,  "\\d\\d?:\\d\\d?:\\d\\d?",   "00:00:0",                   0,  7},    //  52
+  { true,  "\\d\\d?:\\d\\d?:\\d\\d?",   "00:0:00",                   0,  7},    //  53
+  { true,  "\\d\\d?:\\d\\d?:\\d\\d?",   "0:00:00",                   0,  7},    //  54
+  { true,  "\\d\\d?:\\d\\d?:\\d\\d?",   "00:00:00",                  0,  8},    //  55
+  { true,  "[Hh]ello [Ww]orld\\s*[!]?", "Hello world !",             0,  13},    //  56
+  { true,  "[Hh]ello [Ww]orld\\s*[!]?", "hello world !",             0,  13},    //  57
+  { true,  "[Hh]ello [Ww]orld\\s*[!]?", "Hello World !",             0,  13},    //  58
+  { true,  "[Hh]ello [Ww]orld\\s*[!]?", "Hello world!   ",           0,  12},    //  59
+  { true,  "[Hh]ello [Ww]orld\\s*[!]?", "Hello world  !",            0,  14},    //  60
+  { true,  "[Hh]ello [Ww]orld\\s*[!]?", "hello World    !",          0,  16},    //  61
   /* Failing test case reported in
       https://github.com/kokke/tiny-regex-c/issues/12
    */
-  { NOK, "\\d\\d?:\\d\\d?:\\d\\d?",   "a:0",                    -1},   // 62
+  { false, "\\d\\d?:\\d\\d?:\\d\\d?",   "a:0",                       0,  0},    //  62
 /*
   { OK,  "[^\\w][^-1-4]",     ")T"          },
   { OK,  "[^\\w][^-1-4]",     ")^"          },
@@ -113,8 +111,117 @@ struct {
   { OK,  "[^\\w][^-1-4]",     " x"          },
   { OK,  "[^\\w][^-1-4]",     "$b"          },
 */
-  { OK,  ".?bar",                      "real_bar",               4},   // 63
-  { NOK, ".?bar",                      "real_foo",              -1},   // 64
+  { true,  ".?bar",                      "real_bar",                 4,  4},    //  63
+  { false, ".?bar",                      "real_foo",                 0,  0},    //  64
+  { false , "a"                        , "",                       0,  0},    //  65
+  { true  , "a*"                       , "",                       0,  0},    //  66
+  { false , "[^s][^b]"                 , "a",                      0,  0},    //  67
+  { false , "[^\\d]+\\s"               , "e",                      0,  0},    //  68
+  { true  , "\\d"                      , "5",                      0,  1},    //  69
+  { false , "\\d+"                     , "y",                      0,  0},    //  70
+  { true  , "\\w+"                     , "hej",                    0,  3},    //  71
+  { true  , "\\s"                      , "\t \n",                  0,  1},    //  72
+  { false , "\\S"                      , "\t \n",                  0,  0},    //  73
+  { true  , "[\\s]"                    , "\t \n",                  0,  1},    //  74
+  { false , "[\\S]"                    , "\t \n",                  0,  0},    //  75
+  { false , "\\D"                      , "5",                      0,  0},    //  76
+  { false , "\\W+"                     , "hej",                    0,  0},    //  77
+  { true  , "[0-9]+"                   , "12345",                  0,  5},    //  78
+    { true  , "\\D"                      , "hej",                    0,  1},    //  79
+    { false , "\\d"                      , "hej",                    0,  0},    //  80
+    { true  , "[^\\w]"                   , "\\",                     0,  1},    //  81
+    { true  , "[\\W]"                    , "\\",                     0,  1},    //  82
+    { false , "[\\w]"                    , "\\",                     0,  0},    //  83
+    { true  , "[^\\d]"                   , "d",                      0,  1},    //  84
+    { false , "[\\d]"                    , "d",                      0,  0},    //  85
+    { false , "[^\\D]"                   , "d",                      0,  0},    //  86
+    { true  , "[\\D]"                    , "d",                      0,  1},    //  87
+    { true  , "a+a"                      , "aaa",                    0,  3},    //  88
+    { true  , "^.*\\\\.*$"               , "c:\\Tools",              0,  8},    //  89
+    { true  , "^[\\+-]*[\\d]+$"          , "+27",                    0,  3},    //  90
+    { true  , "[abc]"                    , "1c2",                    1,  1},    //  91
+    { false , "[abc]"                    , "1C2",                    0,  0},    //  92
+    { true  , "[1-5]+"                   , "0123456789",             1,  5},    //  93
+    { true  , "[.2]"                     , "1C2",                    2,  1},    //  94
+    { true  , "a*$"                      , "Xaa",                    1,  2},    //  95
+    { true  , "[a-h]+"                   , "abcdefghxxx",            0,  8},    //  96
+    { false , "[a-h]+"                   , "ABCDEFGH",               0,  0},    //  97
+    { true  , "[A-H]+"                   , "ABCDEFGH",               0,  8},    //  98
+    { false , "[A-H]+"                   , "abcdefgh",               0,  0},    //  99
+    { true  , "[^\\s]+"                  , "abc def",                0,  3},    // 100
+    { true  , "[^fc]+"                   , "abc def",                0,  2},    // 101
+    { true  , "[^d\\sf]+"                , "abc def",                0,  3},    // 102
+    { true  , "\n"                       , "abc\ndef",               3,  1},    // 103
+    { true  , "b.\\s*\n"                 , "aa\r\nbb\r\ncc\r\n\r\n", 4,  4},    // 104
+    { true  , ".*c"                      , "abcabc",                 0,  6},    // 105
+    { true  , ".+c"                      , "abcabc",                 0,  6},    // 106
+    { true  , "[b-z].*"                  , "ab",                     1,  1},    // 107
+    { true  , "b[k-z]*"                  , "ab",                     1,  1},    // 108
+    { false , "[0-9]"                    , "  - ",                   0,  0},    // 109
+    { true  , "[^0-9]"                   , "  - ",                   0,  1},    // 110
+    { true  , "0|"                       , "0|",                     0,  2},    // 111
+    { false , "\\d\\d:\\d\\d:\\d\\d"     , "0s:00:00",               0,  0},    // 112
+    { false , "\\d\\d:\\d\\d:\\d\\d"     , "000:00",                 0,  0},    // 113
+    { false , "\\d\\d:\\d\\d:\\d\\d"     , "00:0000",                0,  0},    // 114
+    { false , "\\d\\d:\\d\\d:\\d\\d"     , "100:0:00",               0,  0},    // 115
+    { false , "\\d\\d:\\d\\d:\\d\\d"     , "00:100:00",              0,  0},    // 116
+    { false , "\\d\\d:\\d\\d:\\d\\d"     , "0:00:100",               0,  0},    // 117
+    { true  , "\\d\\d?:\\d\\d?:\\d\\d?"  , "0:0:0",                  0,  5},    // 118
+    { true  , "\\d\\d?:\\d\\d?:\\d\\d?"  , "0:00:0",                 0,  6},    // 119
+    { true  , "\\d\\d?:\\d\\d?:\\d\\d?"  , "0:0:00",                 0,  6},    // 120
+    { true  , "\\d\\d?:\\d\\d?:\\d\\d?"  , "00:0:0",                 0,  6},    // 121
+    { true  , "\\d\\d?:\\d\\d?:\\d\\d?"  , "00:00:0",                0,  7},    // 122
+    { true  , "\\d\\d?:\\d\\d?:\\d\\d?"  , "00:0:00",                0,  7},    // 123
+    { true  , "\\d\\d?:\\d\\d?:\\d\\d?"  , "0:00:00",                0,  7},    // 124
+    { true  , "\\d\\d?:\\d\\d?:\\d\\d?"  , "00:00:00",               0,  8},    // 125
+    { true  , "[Hh]ello [Ww]orld\\s*[!]?", "Hello world !",          0,  13},    // 126
+    { true  , "[Hh]ello [Ww]orld\\s*[!]?", "hello world !",          0,  13},    // 127
+    { true  , "[Hh]ello [Ww]orld\\s*[!]?", "Hello World !",          0,  13},    // 128
+    { true  , "[Hh]ello [Ww]orld\\s*[!]?", "Hello world!   ",        0,  12},    // 129
+    { true  , "[Hh]ello [Ww]orld\\s*[!]?", "Hello world    !",       0,  16},    // 130
+    { true  , "[Hh]ello [Ww]orld\\s*[!]?", "hello World      !",     0,  18},    // 131
+    { false , "\\d\\d?:\\d\\d?:\\d\\d?"  , "a:0",                    0,  0},    // 132
+    { true  , "[^\\w][^-1-4]"            , ")T",                     0,  2},    // 133
+    { true  , "[^\\w][^-1-4]"            , ")^",                     0,  2},    // 134
+    { true  , "[^\\w][^-1-4]"            , "*)",                     0,  2},    // 135
+    { true  , "[^\\w][^-1-4]"            , "!.",                     0,  2},    // 136
+    { true  , "[^\\w][^-1-4]"            , " x",                     0,  2},    // 137
+    { true  , "[^\\w][^-1-4]"            , "$b",                     0,  2},    // 138
+    { true  , ".?bar"                    , "real_bar",               4,  4},    // 139
+    { false , ".?bar"                    , "real_foo",               0,  0},    // 140
+    { false , "X?Y"                      , "Z",                      0,  0},    // 141
+    { true  , "\\d+\\w?12"               , "959312",                 0,  6},    // 142
+    { true  , "\\d+5"                    , "12345",                  0,  5},    // 143
+    { false , "\\d++5"                   , "12345",                  0,  0},    // 144
+    { false , "abcd"                     , "aBcD",                   0,  0},    // 145
+    { true  , "(?i:abcd)"                , "aBcD",                   0,  4},    // 146 ??
+    { false , "..."                      , "\n \n",                  0,  0},    // 147
+    { true  , "(?s:...)"                 , "\n \n",                  0,  3},    // 148 ??
+    { false , "(?s:(?-s:.))"             , "\n",                     0,  0},    // 149
+    { true  , "(?is:A.)"                 , "a\n",                    0,  2},    // 150 ??
+    { false , "(?is:(?-is:.g.))"         , "\nG\n",                  0,  0},    // 151
+    { true  , "(?is:(?-is:.g.))"         , "\ng\n",                  0,  3},    // 152 ??
+    { false , "abc\\bdef"                , "abcdef",                 0,  0},    // 153
+    { true  , "abc\\Bdef"                , "abcdef",                 0,  6},    // 154
+    { true  , "\\Bing\\b"                , "joining.",               4,  3},    // 155
+    { false , "\\Bing\\b"                , " ing ",                  0,  0},    // 156
+    { false,  "\\Bing\\b"                , "ing",                    0,  0},    // 157
+    { false , "\\Bing\\b"                , "bingg",                  0,  0},    // 158
+    { true  , "abc\\Rdef"                , "abc\r\ndef",             0,  8},    // 159
+    { true  , "abc\\Rdef"                , "abc\ndef",               0,  7},    // 160
+    { false , "abc\n\\Rdef"              , "abc\ndef",               0,  0},    // 161
+    { true  , "abc\r\\Rdef"              , "abc\r\ndef",             0,  8},    // 162
+    { true  , "^(a+)a$"                  , "aaa",                    0,  3},    // 163
+    { true  , "^a(a*)a$"                 , "aa",                     0,  2},    // 164
+    { true  , "^(a)+a$"                  , "aaa",                    0,  3},    // 165 ??
+    { true  , "^(Hello){3}(World){1,2}$" , "HelloHelloHelloWorld",   0,  20},   // 166 ??
+    { true  , "^(is:[ab])+?bc$"          , "aAaAaaAAaaAAAAbAaaAbc",  0,  21},   // 167 ??
+    { true  , "(?=.*ghi)abc"             , "abcdefghi",              0,  3},    // 168 ??
+    { true  , "(?s=.*END)BEGIN"          , "BEGIN..content..\nEND",  0,  5},    // 169 ??
+    { false , "(?s=.*END)BEGIN"          , "BEGIN..content..\n",     0,  0},    // 170
+    { false , "(?s!.*END)BEGIN"          , "BEGIN..content..\nEND",  0,  0},    // 171
+    { true  , "(?s!.*END)BEGIN"          , "BEGIN..content..\n",     0,  5},    // 172 ??
+    { false , "(b*){1}+b"                , "bbbbb",                  0,  0},    // 173
 };
 
 
@@ -168,6 +275,78 @@ int             tearDown(
 
 
 
+void            printResult(
+    TREGEX_DATA     *this,
+    int             lineNo,
+    const
+    char            *pPattern,
+    const
+    char            *pText,
+    int             mCheck,
+    int             mLength,
+    int             m,
+    int             length
+)
+{
+    //ASTR_DATA       *pStr = OBJ_NIL;
+    ASTR_DATA       *pPat = OBJ_NIL;
+    ASTR_DATA       *pTxt = OBJ_NIL;
+    ASTR_DATA       *pPat2 = OBJ_NIL;
+    ASTR_DATA       *pTxt2 = OBJ_NIL;
+
+    pPat = AStr_NewA(pPattern);
+    if (pPat) {
+        pPat2 = AStr_ToChrCon(pPat);
+    }
+    obj_Release(pPat);
+    pPat = OBJ_NIL;
+    if (OBJ_NIL == pPat2) {
+        DEBUG_BREAK();
+        return;
+    }
+    pTxt = AStr_NewA(pText);
+    if (pTxt) {
+        pTxt2 = AStr_ToChrCon(pTxt);
+    }
+    obj_Release(pTxt);
+    pTxt = OBJ_NIL;
+    if (OBJ_NIL == pTxt2) {
+        DEBUG_BREAK();
+        obj_Release(pPat2);
+        pPat2 = OBJ_NIL;
+        return;
+    }
+    
+    fprintf(
+            stderr,
+            "\t%d - (%d,%d) = \"%s\".\"%s\"\n",
+            lineNo,
+            m,
+            length,
+            AStr_getData(pPat2),
+            AStr_getData(pTxt2)
+    );
+#ifdef XYZZY
+    pStr = TRegex_ToStringPattern(this);
+    if (pStr) {
+        fprintf(
+                stderr,
+                "\t\tpattern %s ->\n%s\n",
+                AStr_getData(pPat2),
+                AStr_getData(pStr)
+        );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
+#endif
+    obj_Release(pPat2);
+    pPat2 = OBJ_NIL;
+    obj_Release(pTxt2);
+    pTxt2 = OBJ_NIL;
+
+}
+
+
 
 
 
@@ -212,16 +391,18 @@ int             test_TRegex_Test01(
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
     TREGEX_DATA     *pObj = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
     bool            fRc;
     char*           text;
     char*           pattern;
-    int             should_fail;
-    size_t          nfailed = 0;
-    size_t          i;
+    bool            fShouldSucceed;
+    int             nfailed = 0;
+    int             i;
     int             m;
     int             mCheck;
+    int             mLength;
     bool            fDump = true;
+    int             length = 0;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -238,49 +419,39 @@ int             test_TRegex_Test01(
         for (i = 0; i < ntests; ++i) {
             pattern = test_vector[i].pPattern;
             text = test_vector[i].pData;
-            should_fail = (test_vector[i].fOk == NOK);
+            fShouldSucceed = test_vector[i].fOk;
             mCheck = test_vector[i].index;
+            mLength = test_vector[i].length;
+            length = 0;
 
-            m = TRegex_Match(pObj, pattern, text);
+            m = TRegex_Match(pObj, pattern, text, &length);
             if (fDump) {
-                fprintf(stderr, "%d - %d\n", (int)i, m);
-                pStr = TRegex_ToStringPattern(pObj);
-                if (pStr) {
-                    fprintf( stderr, "pattern %s ->\n%s\n", pattern, AStr_getData(pStr));
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
+                printResult(pObj, i, pattern, text, mCheck, mLength, m, length);
             }
 
-            if (should_fail) {
-                if (m != (-1)) {
+            if (fShouldSucceed) {
+                if (!((m == mCheck) && (length == mLength))) {
+                    if (!fDump) {
+                        printResult(pObj, i, pattern, text, mCheck, mLength, m, length);
+                    }
                     fprintf(
                             stderr,
-                            "[%lu/%lu]: pattern '%s' matched '%s' unexpectedly. \n",
-                            (i+1), ntests, pattern, text
+                            "Error: %d  check:(%d,%d)  found: (%d,%d)\n",
+                            i, mCheck, mLength, m, length
                     );
-                    pStr = TRegex_ToStringPattern(pObj);
-                    if (pStr) {
-                        fprintf( stderr, "pattern %s ->\n%s\n", pattern, AStr_getData(pStr));
-                        obj_Release(pStr);
-                        pStr = OBJ_NIL;
-                    }
                     nfailed += 1;
                 }
             }
             else {
-                if ((m == (-1)) || !(m == mCheck)) {
+                if (m || mLength) {
+                    if (!fDump) {
+                        printResult(pObj, i, pattern, text, mCheck, mLength, m, length);
+                    }
                     fprintf(
                             stderr,
-                            "[%lu/%lu]: pattern '%s' didn't match '%s' as expected. \n",
-                            (i+1), ntests, pattern, text
+                            "Error: %d  check:(%d,%d)  found: (%d,%d)\n",
+                            i, mCheck, mLength, m, length
                     );
-                    pStr = TRegex_ToStringPattern(pObj);
-                    if (pStr) {
-                        fprintf( stderr, "pattern %s ->\n%s\n", pattern, AStr_getData(pStr));
-                        obj_Release(pStr);
-                        pStr = OBJ_NIL;
-                    }
                     nfailed += 1;
                 }
             }
@@ -297,8 +468,67 @@ int             test_TRegex_Test01(
 
 
 
+int             test_TRegex_Test02(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    TREGEX_DATA     *pObj = OBJ_NIL;
+    //bool            fRc;
+    char            *pPat1 = ".?bar";
+    char            *pTxt1 = "real_bar";
+    char            *pTxt2 = "bar_real";
+    char            *pTxt3 = "real_real_bar";
+    char            *pTxt4 = "real_bar_real";
+    int             m;
+    int             length;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = TRegex_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = TRegex_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = TRegex_Compile(pObj, pPat1);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        m = TRegex_MatchP(pObj, pTxt1, &length);
+        fprintf(stderr, "\t                 01234567890123456789\n");
+        fprintf(stderr, "\t(%d,%d) = \"%s\".\"%s\"\n", m, length, pPat1, pTxt1);
+        TINYTEST_TRUE( (4 == m) );
+        TINYTEST_TRUE( (4 == length) );
+
+        m = TRegex_MatchP(pObj, pTxt2, &length);
+        fprintf(stderr, "\t(%d,%d) = \"%s\".\"%s\"\n", m, length, pPat1, pTxt2);
+        TINYTEST_TRUE( (0 == m) );
+        TINYTEST_TRUE( (3 == length) );
+
+        m = TRegex_MatchP(pObj, pTxt3, &length);
+        fprintf(stderr, "\t(%d,%d) = \"%s\".\"%s\"\n", m, length, pPat1, pTxt3);
+        TINYTEST_TRUE( (9 == m) );
+        TINYTEST_TRUE( (4 == length) );
+
+        m = TRegex_Match(pObj, pPat1, pTxt4, &length);
+        fprintf(stderr, "\t(%d,%d) = \"%s\".\"%s\"\n", m, length, pPat1, pTxt4);
+        TINYTEST_TRUE( (4 == m) );
+        TINYTEST_TRUE( (4 == length) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_TRegex);
+    TINYTEST_ADD_TEST(test_TRegex_Test02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TRegex_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TRegex_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

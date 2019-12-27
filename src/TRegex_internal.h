@@ -42,6 +42,7 @@
 #include        <TRegex.h>
 #include        <jsonIn.h>
 #include        <array.h>
+#include        <ptrArray.h>
 
 
 #ifndef TREGEX_INTERNAL_H
@@ -58,61 +59,83 @@ extern "C" {
 #endif
 
 
-/*
- *
- * Mini regex-module inspired by Rob Pike's regex code described in:
- *
- * http://www.cs.princeton.edu/courses/archive/spr09/cos333/beautiful.html
- *
- *
- *
- * Supports:
- * ---------
- *   '.'        Dot, matches any character
- *   '^'        Start anchor, matches beginning of string
- *   '$'        End anchor, matches end of string
- *   '*'        Asterisk, match zero or more (greedy)
- *   '+'        Plus, match one or more (greedy)
- *   '?'        Question, match zero or one (non-greedy)
- *   '[abc]'    Character class, match if one of {'a', 'b', 'c'}
- *   '[^abc]'   Inverted class, match if NOT one of {'a', 'b', 'c'} -- NOTE: feature is currently broken!
- *   '[a-zA-Z]' Character ranges, the character set of the ranges { a-z | A-Z }
- *   '\s'       Whitespace, \t \f \r \n \v and spaces
- *   '\S'       Non-whitespace
- *   '\w'       Alphanumeric, [a-zA-Z0-9_]
- *   '\W'       Non-alphanumeric
- *   '\d'       Digits, [0-9]
- *   '\D'       Non-digits
- *
- *
- */
 
+    /* Definitions: */
 
+    /* max length of character-class buffer */
+    #define CCLBUFLEN 20
+    /* max number of nested groups */
+    #define MAXGROUPS 5
 
-/* Definitions: */
+     typedef uint_fast8_t    Modifiers;
+     typedef uint_fast8_t    Quantifier;
+#define QUANTIFIER_MAX UINT_FAST8_MAX
 
-#define MAX_CHAR_CLASS_LEN      64    // Max length of character-class buffer in.
+     /* enum for all the types a char in a char class can be */
+    typedef enum ClassCharType_e {
+         CCL_END,       /* terminator of CHARCLASS sequence */
+         CCL_METABSL,   /* metabackslash; note that metachars don't work in char classes */
+         CCL_CHARRANGE  /* literal character range: single characters count as a range */
+     } ClassCharType;
 
+     /* a char that can go inside a CHARCLASS (represented by [])*/
+     typedef struct ClassChar_s {
+         ClassCharType type;
+         union {
+             int            meta; /* METABSL/INVMETABSL: index in Metabsls */
+             struct { /* CHARRANGE */
+                 char           first; /* first char in range */
+                 char           last; /* last char in range */
+             };
+         };
+     } ClassChar;
 
-    typedef enum regex_types_e {
-        UNUSED=0,
-        DOT, BEGIN, END, QUESTIONMARK, STAR, PLUS,
-        CHAR, CHAR_CLASS, INV_CHAR_CLASS,
-        DIGIT, NOT_DIGIT,
-        ALPHA, NOT_ALPHA,
-        WHITESPACE, NOT_WHITESPACE,
-        BRANCH
-    } REGEX_TYPES;
+     /* the different types that each regex token can be */
+     typedef enum TokenType_e {
+         TOKEN_END, /* the end of the regex or lookaround */
+         TOKEN_GROUP, /* group */
+         TOKEN_CGROUP, /* capturing group */
+         TOKEN_LOOKAROUND, /* lookaround */
+         TOKEN_INVLOOKAROUND, /* inverted lookaround */
+         TOKEN_METABSL, /* metabackslash: meta character sequences that begin with backslash */
+         TOKEN_METACHAR, /* a metachar, such as $ */
+         TOKEN_CHARCLASS, /* a character class that is surrounded by [...] */
+         TOKEN_INVCHARCLASS, /* a character class that is inverted by placing a ^ at the start [^...] */
+         TOKEN_CHAR /* a literal character */
+     } TokenType;
 
-    typedef struct regex_t {
-        uint8_t       type;         // REGEX_TYPES: CHAR, STAR, etc.
+    /* struct for each regex token */
+    typedef struct re_Token_s {
+        int         index;      // Index in pTolens for this token.
+        TokenType type;
         union {
-            unsigned char   ch;     // the character itself
-            uint8_t         *ccl;   //  OR  a pointer to characters in class
-            uint32_t        index;  //  OR  an index into characters in class
+            int         grouplen;   /* END/GROUP/CGROUP/LOOKAROUND/INVLOOKAROUND:
+                                    length of the group */
+            int         meta;       /* METABSL/INVMETABSL/METACHAR:
+                                    index in metabsls/metachars */
+            ClassChar* ccl;        /* CHARCLASS/INVCHARCLASS:
+                                    a pointer to characters in class (pointer to
+                                    somewhere in cclbuf) */
+            char       ch;         /* CHAR: the character itself */
         };
-    } regex_t;
+        Modifiers      modifiers;
+        Quantifier     quantifierMin;
+        Quantifier     quantifierMax;
+        bool           greedy;     /* whether the token is greedy (takes up as
+                                    many characters as possible) or lazy (takes
+                                    up as few characters as possible) */
+        bool           atomic;     /* whether the token is atomic (cannot change
+                                    if the rest of the regex fails) or not;
+                                    sometimes known as possessive */
+    } re_Token;
 
+
+    // MatchData is stack entry for compiling patterns with
+    // GROUP/CGROUP/LOOKAROUND/INVLOOKAROUND tokens
+    typedef struct MatchData_s {
+        int             position;
+        Quantifier      count;
+    } MatchData;
 
 
 
@@ -134,11 +157,14 @@ struct TRegex_data_s	{
         MAX_CHAR_CLASS_LEN determines the size of buffer for chars in all
         char-classes in the expression.
      */
-    unsigned char   ccl_buf[MAX_CHAR_CLASS_LEN];
-    uint32_t        maxCompiled;
-    uint32_t        sizeCompiled;
-    regex_t         *pCompiled;
-
+    ClassChar       cclbuf[CCLBUFLEN];  /* buffer in which character class strings
+                                            are stored */
+    int             ccli;               /* index into buffer */
+    uint32_t        maxTokens;
+    uint32_t        sizeTokens;
+    re_Token        *pTokens;         // array of tokens in regex
+    PTRARRAY_DATA   *pTokenStack;
+    
 };
 #pragma pack(pop)
 
@@ -178,6 +204,17 @@ struct TRegex_data_s	{
 
     void            TRegex_Dealloc (
         OBJ_ID          objId
+    );
+
+
+    ERESULT         TRegex_DeleteTokens(
+        TREGEX_DATA     *this
+    );
+
+
+    ERESULT         TRegex_ExpandTokens(
+        TREGEX_DATA     *this,
+        int             num
     );
 
 

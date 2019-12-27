@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'blkdrcds16'
-//	Generated 01/05/2018 21:06:26
+//	Class Object Metods and Tables for 'BlkdRcds16'
+//	Generated 12/22/2019 10:06:17
 
 
 /*
@@ -33,10 +33,12 @@
 
 
 
-//#define   BLKDRCDS16_IS_SINGLETON     1
 
 #define			BLKDRCDS16_OBJECT_C	    1
-#include        <blkdrcds16_internal.h>
+#include        <BlkdRcds16_internal.h>
+#ifdef  BLKDRCDS16_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
@@ -44,15 +46,18 @@
 //                  Class Object Definition
 //===========================================================
 
-struct blkdrcds16_class_data_s	{
+struct BlkdRcds16_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  BLKDRCDS16_SINGLETON
+    volatile
+    BLKDRCDS16_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct blkdrcds16_class_data_s BLKDRCDS16_CLASS_DATA;
 
 
 
@@ -64,7 +69,7 @@ typedef struct blkdrcds16_class_data_s BLKDRCDS16_CLASS_DATA;
 
 
 static
-void *          blkdrcds16Class_QueryInfo(
+void *          BlkdRcds16Class_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,28 +78,38 @@ void *          blkdrcds16Class_QueryInfo(
 
 static
 const
-OBJ_INFO        blkdrcds16_Info;            // Forward Reference
+OBJ_INFO        BlkdRcds16_Info;            // Forward Reference
 
 
 
 
 static
-bool            blkdrcds16Class_IsKindOf(
+bool            BlkdRcds16Class_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_BLKDRCDS16_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(BlkdRcds16_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		blkdrcds16Class_WhoAmI(
+uint16_t		BlkdRcds16Class_WhoAmI (
     void
 )
 {
@@ -102,17 +117,26 @@ uint16_t		blkdrcds16Class_WhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
-	&blkdrcds16_Info,
-    blkdrcds16Class_IsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    blkdrcds16_Class,
-    blkdrcds16Class_WhoAmI,
-    (P_OBJ_QUERYINFO)blkdrcds16Class_QueryInfo
+BLKDRCDS16_CLASS_VTBL    class_Vtbl = {
+    {
+        &BlkdRcds16_Info,
+        BlkdRcds16Class_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        BlkdRcds16_Class,
+        BlkdRcds16Class_WhoAmI,
+        (P_OBJ_QUERYINFO)BlkdRcds16Class_QueryInfo,
+        NULL                        // BlkdRcds16Class_ToDebugString
+    },
 };
 
 
@@ -121,17 +145,100 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
-BLKDRCDS16_CLASS_DATA  blkdrcds16_ClassObj = {
+BLKDRCDS16_CLASS_DATA  BlkdRcds16_ClassObj = {
     {
-        &obj_Vtbl,                          // pVtbl
-        sizeof(BLKDRCDS16_CLASS_DATA),      // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(BLKDRCDS16_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
     },
 	//0
 };
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  BLKDRCDS16_SINGLETON
+BLKDRCDS16_DATA *     BlkdRcds16_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(BlkdRcds16_ClassObj.pSingleton);
+}
+
+
+bool            BlkdRcds16_setSingleton (
+    BLKDRCDS16_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (BlkdRcds16_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(BlkdRcds16_ClassObj.pSingleton));
+    }
+    BlkdRcds16_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+BLKDRCDS16_DATA *     BlkdRcds16_Shared (
+    void
+)
+{
+    BLKDRCDS16_DATA       *this = (OBJ_ID)(BlkdRcds16_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = BlkdRcds16_New( );
+        BlkdRcds16_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // BlkdRcds16_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            BlkdRcds16_SharedReset (
+    void
+)
+{
+    BLKDRCDS16_DATA       *this = (OBJ_ID)(BlkdRcds16_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        BlkdRcds16_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
 
 
 
@@ -140,15 +247,15 @@ BLKDRCDS16_CLASS_DATA  blkdrcds16_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          blkdrcds16Class_QueryInfo(
+void *          BlkdRcds16Class_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
     BLKDRCDS16_CLASS_DATA *this = objId;
-    //const
-    //char            *pStr = pData;
+    const
+    char            *pStr = pData;
     
     if (OBJ_NIL == this) {
         return NULL;
@@ -156,20 +263,23 @@ void *          blkdrcds16Class_QueryInfo(
     
     switch (type) {
       
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(BLKDRCDS16_DATA);
+            break;
+            
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
             return this;
             break;
             
-#ifdef XYZZY  
         // Query for an address to specific data within the object.  
         // This should be used very sparingly since it breaks the 
         // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
-                case 'O':
-                    if (str_Compare("ObjectCatalog", (char *)pStr) == 0) {
-                        return &this->pObjCatalog;
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&BlkdRcds16_Info;
                     }
                     break;
                     
@@ -177,19 +287,29 @@ void *          blkdrcds16Class_QueryInfo(
                     break;
             }
             break;
-#endif
             
         case OBJ_QUERYINFO_TYPE_INFO:
             return (void *)obj_getInfo(this);
             break;
             
-#ifdef XYZZY
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
-                case 'W':
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return BlkdRcds16_New;
+                    }
+                    break;
+                    
+                case 'P':
+                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
+                        //return BlkdRcds16_ParseJsonObject;
+                    }
+                    break;
+ 
+                 case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return blkdrcds16Class_WhoAmI;
+                        return BlkdRcds16Class_WhoAmI;
                     }
                     break;
                     
@@ -197,7 +317,6 @@ void *          blkdrcds16Class_QueryInfo(
                     break;
             }
             break;
-#endif
             
         default:
             break;
@@ -209,43 +328,51 @@ void *          blkdrcds16Class_QueryInfo(
 
 
 
-
-//===========================================================
-//                  Object Vtbl Definition
-//===========================================================
-
 static
-bool            blkdrcds16_IsKindOf(
+bool            BlkdRcds16_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_BLKDRCDS16 == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(BlkdRcds16_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            blkdrcds16_Dealloc(
+void            BlkdRcds16_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          blkdrcds16_Class(
+OBJ_ID          BlkdRcds16_Class (
     void
 )
 {
-    return (OBJ_ID)&blkdrcds16_ClassObj;
+    return (OBJ_ID)&BlkdRcds16_ClassObj;
 }
 
 
 static
-uint16_t		blkdrcds16_WhoAmI(
+uint16_t		BlkdRcds16_WhoAmI (
     void
 )
 {
@@ -253,11 +380,18 @@ uint16_t		blkdrcds16_WhoAmI(
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
-BLKDRCDS16_VTBL     blkdrcds16_Vtbl = {
+BLKDRCDS16_VTBL     BlkdRcds16_Vtbl = {
     {
-        &blkdrcds16_Info,
-        blkdrcds16_IsKindOf,
+        &BlkdRcds16_Info,
+        BlkdRcds16_IsKindOf,
 #ifdef  BLKDRCDS16_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
@@ -265,22 +399,23 @@ BLKDRCDS16_VTBL     blkdrcds16_Vtbl = {
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        blkdrcds16_Dealloc,
-        blkdrcds16_Class,
-        blkdrcds16_WhoAmI,
-        (P_OBJ_QUERYINFO)blkdrcds16_QueryInfo,
-        (P_OBJ_TOSTRING)blkdrcds16_ToDebugString,
-        NULL,			// blkdrcds16_Enable,
-        NULL,			// blkdrcds16_Disable,
-        NULL,			// (P_OBJ_ASSIGN)blkdrcds16_Assign,
-        NULL,			// (P_OBJ_COMPARE)blkdrcds16_Compare,
-        NULL, 			// (P_OBJ_PTR)blkdrcds16_Copy,
-        NULL 			// (P_OBJ_HASH)blkdrcds16_Hash,
+        BlkdRcds16_Dealloc,
+        BlkdRcds16_Class,
+        BlkdRcds16_WhoAmI,
+        (P_OBJ_QUERYINFO)BlkdRcds16_QueryInfo,
+        (P_OBJ_TOSTRING)BlkdRcds16_ToDebugString,
+        NULL,			// BlkdRcds16_Enable,
+        NULL,			// BlkdRcds16_Disable,
+        NULL,			// (P_OBJ_ASSIGN)BlkdRcds16_Assign,
+        NULL,			// (P_OBJ_COMPARE)BlkdRcds16_Compare,
+        NULL, 			// (P_OBJ_PTR)BlkdRcds16_Copy,
+        NULL, 			// (P_OBJ_PTR)BlkdRcds16_DeepCopy,
+        NULL 			// (P_OBJ_HASH)BlkdRcds16_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //blkdrcds16_IsEnabled,
+    //BlkdRcds16_IsEnabled,
  
 };
 
@@ -288,12 +423,13 @@ BLKDRCDS16_VTBL     blkdrcds16_Vtbl = {
 
 static
 const
-OBJ_INFO        blkdrcds16_Info = {
-    "blkdrcds16",
+OBJ_INFO        BlkdRcds16_Info = {
+    "BlkdRcds16",
     "Block of Variable Length Records w/16 bit offsets",
-    (OBJ_DATA *)&blkdrcds16_ClassObj,
+    (OBJ_DATA *)&BlkdRcds16_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&blkdrcds16_Vtbl
+    (OBJ_IUNKNOWN *)&BlkdRcds16_Vtbl,
+    sizeof(BLKDRCDS16_DATA)
 };
 
 

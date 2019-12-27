@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/21/2019 21:35:58.000)
+# (12/27/2019  0:04:57.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -119,6 +119,16 @@ $(OBJDIR)/BitSet.o: $(SRCDIR)/BitSet.c $(SRCDIR)/BitSet.h $(SRCDIR)/BitSet_inter
 OBJS += $(OBJDIR)/BitSet_object.o
 
 $(OBJDIR)/BitSet_object.o: $(SRCDIR)/BitSet_object.c $(SRCDIR)/BitSet.h $(SRCDIR)/BitSet_internal.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BlkdRcds16.o
+
+$(OBJDIR)/BlkdRcds16.o: $(SRCDIR)/BlkdRcds16.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BlkdRcds16_object.o
+
+$(OBJDIR)/BlkdRcds16_object.o: $(SRCDIR)/BlkdRcds16_object.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/FileRef.o
@@ -299,16 +309,6 @@ $(OBJDIR)/audioWAV.o: $(SRCDIR)/audioWAV.c $(SRCDIR)/AStr.h $(SRCDIR)/audioWAV.h
 OBJS += $(OBJDIR)/audioWAV_object.o
 
 $(OBJDIR)/audioWAV_object.o: $(SRCDIR)/audioWAV_object.c $(SRCDIR)/AStr.h $(SRCDIR)/audioWAV.h $(SRCDIR)/audioWAV_internal.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/blkdrcds16.o
-
-$(OBJDIR)/blkdrcds16.o: $(SRCDIR)/blkdrcds16.c $(SRCDIR)/blkdrcds16.h $(SRCDIR)/blkdrcds16_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/blkdrcds16_object.o
-
-$(OBJDIR)/blkdrcds16_object.o: $(SRCDIR)/blkdrcds16_object.c $(SRCDIR)/blkdrcds16.h $(SRCDIR)/blkdrcds16_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/blks.o
@@ -1621,16 +1621,6 @@ OBJS += $(OBJDIR)/visitor_object.o
 $(OBJDIR)/visitor_object.o: $(SRCDIR)/visitor_object.c $(SRCDIR)/visitor.h $(SRCDIR)/visitor_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/wav.o
-
-$(OBJDIR)/wav.o: $(SRCDIR)/wav.c $(SRCDIR)/wav.h $(SRCDIR)/wav_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/wav_object.o
-
-$(OBJDIR)/wav_object.o: $(SRCDIR)/wav_object.c $(SRCDIR)/wav.h $(SRCDIR)/wav_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/wisp.o
 
 $(OBJDIR)/wisp.o: $(SRCDIR)/wisp.c $(SRCDIR)/wisp.h $(SRCDIR)/wisp_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1690,6 +1680,12 @@ BitMatrix_test: $(TEST_SRC)/BitMatrix_test.c $(SRCDIR)/BitMatrix.h $(SRCDIR)/Bit
 TESTS += BitSet_test
 
 BitSet_test: $(TEST_SRC)/BitSet_test.c $(SRCDIR)/BitSet.h $(SRCDIR)/BitSet_internal.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += BlkdRcds16_test
+
+BlkdRcds16_test: $(TEST_SRC)/BlkdRcds16_test.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -1792,12 +1788,6 @@ audioCW_test: $(TEST_SRC)/audioCW_test.c $(SRCDIR)/audioCW.h $(SRCDIR)/audioCW_i
 TESTS += audioWAV_test
 
 audioWAV_test: $(TEST_SRC)/audioWAV_test.c $(SRCDIR)/audioWAV.h $(SRCDIR)/audioWAV_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += blkdrcds16_test
-
-blkdrcds16_test: $(TEST_SRC)/blkdrcds16_test.c $(SRCDIR)/blkdrcds16.h $(SRCDIR)/blkdrcds16_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2512,12 +2502,6 @@ value_test: $(TEST_SRC)/value_test.c $(SRCDIR)/value.h $(SRCDIR)/value_internal.
 TESTS += visitor_test
 
 visitor_test: $(TEST_SRC)/visitor_test.c $(SRCDIR)/visitor.h $(SRCDIR)/visitor_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += wav_test
-
-wav_test: $(TEST_SRC)/wav_test.c $(SRCDIR)/wav.h $(SRCDIR)/wav_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

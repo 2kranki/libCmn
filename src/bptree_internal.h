@@ -42,7 +42,6 @@
 
 #include    <bptree.h>
 #include    <rrds_internal.h>
-#include    "blkdrcds16_internal.h"
 
 
 #ifndef BPTREE_INTERNAL_H

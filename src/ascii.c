@@ -827,19 +827,15 @@ extern "C" {
         W32CHR_T            asciiChar
     )
     {
-        bool                fRc = false;
         
-        if ( asciiChar > 127 ) {
-            fRc = false;
+        if (ascii_isAlphaW32(asciiChar)) {
+            return true;
         }
-        else if ( CharTypeTable[(asciiChar & 0x7F)] & CharType_Alpha ) {
-            fRc = true;
-        }
-        else if ('_' == asciiChar) {
-            fRc = true;
-        }
+        if (('_' == asciiChar) || (0xFF3F == asciiChar)) {
+             return true;
+       }
         
-        return( fRc );
+        return false;
     }
     
     
@@ -915,7 +911,10 @@ extern "C" {
         
         if ((asciiChar >= 'A') && (asciiChar <= 'Z')) {
             chr = (asciiChar - 'A') + 'a';
+        } else if ((asciiChar >= 0xFF21) && (asciiChar <= 0xFF3A)) {
+            chr = (asciiChar - 0xFF21) + 0xFF41;
         }
+
 
         return chr;
     }
@@ -949,7 +948,10 @@ extern "C" {
         
         if ((asciiChar >= 'a') && (asciiChar <= 'z')) {
             chr = (asciiChar - 'a') + 'A';
+        } else if ((asciiChar >= 0xFF41) && (asciiChar <= 0xFF5A)) {
+            chr = (asciiChar - 0xFF41) + 0xFF21;
         }
+
         
         return chr;
     }
