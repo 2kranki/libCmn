@@ -764,7 +764,7 @@ CMDUTL_OPTION       pPgmOpts[] = {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&objTest_Vtbl);
         
         objTest_setLastError(this, ERESULT_GENERAL_FAILURE);
-        this->pArray = objArray_New();
+        this->pArray = ObjArray_New();
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -952,7 +952,7 @@ CMDUTL_OPTION       pPgmOpts[] = {
 #endif
         
         psxLock_Lock(this->pLock);
-        eRc = objArray_AppendObj(this->pArray, pData, NULL);
+        eRc = ObjArray_AppendObj(this->pArray, pData, NULL);
         BREAK_FAILED(eRc);
         psxLock_Unlock(this->pLock);
 

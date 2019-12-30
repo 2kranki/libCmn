@@ -57,7 +57,7 @@
 #include        <cmn_defs.h>
 #include        <AStrArray.h>
 #include        <number.h>
-#include        <objArray.h>
+#include        <ObjArray.h>
 #include        <path.h>
 #include        <AStr.h>
 

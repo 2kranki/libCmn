@@ -44,7 +44,7 @@
 #include        <bpt32lf_internal.h>
 #include        <jsonIn.h>
 #include        <lru_internal.h>
-#include        <objArray.h>
+#include        <ObjArray.h>
 #include        <rrds.h>
 
 

@@ -43,7 +43,7 @@
 
 
 #include    <xml.h>
-#include    <objArray.h>
+#include    <ObjArray.h>
 
 #ifdef	__cplusplus
 extern "C" {

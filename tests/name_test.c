@@ -26,7 +26,7 @@
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <name_internal.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 
 
 
@@ -52,7 +52,7 @@ int         tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     szTbl_SharedReset( );
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
@@ -203,7 +203,7 @@ int         test_name_Int(
 
 
 
-int         test_name_JSON01_UTF8(
+int         test_name_Json01_UTF8(
     const
     char        *pTestName
 )
@@ -230,13 +230,13 @@ int         test_name_JSON01_UTF8(
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
 
-        pJSON = name_ToJSON(pName1);
+        pJSON = name_ToJson(pName1);
         XCTAssertFalse( (OBJ_NIL == pJSON) );
         fprintf(stderr, "\tjSON=\"%s\"\n", AStr_getData(pJSON));
         eRc = AStr_CompareA(pJSON, pJSON01);
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
 
-        pName2 = name_NewFromJSONString(pJSON);
+        pName2 = name_NewFromJsonString(pJSON);
         eRc = name_CompareA(pName2, "abc");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
 
@@ -256,7 +256,7 @@ int         test_name_JSON01_UTF8(
 
 
 
-int         test_name_JSON01_UTF8Con(
+int         test_name_Json01_UTF8Con(
     const
     char        *pTestName
 )
@@ -282,13 +282,13 @@ int         test_name_JSON01_UTF8Con(
     XCTAssertFalse( (OBJ_NIL == pName1) );
     if (pName1) {
         
-        pJSON = name_ToJSON(pName1);
+        pJSON = name_ToJson(pName1);
         XCTAssertFalse( (OBJ_NIL == pJSON) );
         fprintf(stderr, "\tjSON=\"%s\"\n", AStr_getData(pJSON));
         eRc = AStr_CompareA(pJSON, pJSON01);
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
-        pName2 = name_NewFromJSONString(pJSON);
+        pName2 = name_NewFromJsonString(pJSON);
         eRc = name_CompareA(pName2, "abc");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
@@ -308,7 +308,7 @@ int         test_name_JSON01_UTF8Con(
 
 
 
-int         test_name_JSON01_Int(
+int         test_name_Json01_Int(
     const
     char        *pTestName
 )
@@ -344,13 +344,13 @@ int         test_name_JSON01_Int(
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
         
-        pJSON = name_ToJSON(pName1);
+        pJSON = name_ToJson(pName1);
         XCTAssertFalse( (OBJ_NIL == pJSON) );
         fprintf(stderr, "\tjSON=\"%s\"\n", AStr_getData(pJSON));
         eRc = AStr_CompareA(pJSON, pJSON01);
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
-        pName2 = name_NewFromJSONString(pJSON);
+        pName2 = name_NewFromJsonString(pJSON);
         eRc = name_CompareA(pName2, "123456");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
@@ -372,9 +372,9 @@ int         test_name_JSON01_Int(
 
 
 TINYTEST_START_SUITE(test_name);
-  TINYTEST_ADD_TEST(test_name_JSON01_Int,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_name_JSON01_UTF8Con,setUp,tearDown);
-  TINYTEST_ADD_TEST(test_name_JSON01_UTF8,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_name_Json01_Int,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_name_Json01_UTF8Con,setUp,tearDown);
+  TINYTEST_ADD_TEST(test_name_Json01_UTF8,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_Int,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_UTF8Con,setUp,tearDown);
   TINYTEST_ADD_TEST(test_name_UTF8,setUp,tearDown);

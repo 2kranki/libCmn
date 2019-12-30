@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   srcError_internal.h
- *	Generated 12/17/2017 07:12:31
+ * File:   SrcError_internal.h
+ *	Generated 12/28/2019 09:57:21
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,17 @@
 
 
 
-#include    <srcError.h>
-#include    <SrcLoc_internal.h>
+#include        <SrcError.h>
+#include        <jsonIn.h>
+#include        <SrcLoc_internal.h>
 
 
 #ifndef SRCERROR_INTERNAL_H
 #define	SRCERROR_INTERNAL_H
+
+
+
+#define     PROPERTY_ERRORSTR_OWNED 1
 
 
 
@@ -59,12 +64,12 @@ extern "C" {
     //                  Object Data Description
     //---------------------------------------------------------------
 
- #pragma pack(push, 1)
-struct srcError_data_s	{
+#pragma pack(push, 1)
+struct SrcError_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     uint16_t        severity;
@@ -76,12 +81,27 @@ struct srcError_data_s	{
 #pragma pack(pop)
 
     extern
-    const
-    struct srcError_class_data_s  srcError_ClassObj;
+    struct SrcError_class_data_s  SrcError_ClassObj;
 
     extern
     const
-    SRCERROR_VTBL         srcError_Vtbl;
+    SRCERROR_VTBL         SrcError_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  SRCERROR_SINGLETON
+    SRCERROR_DATA * SrcError_getSingleton (
+        void
+    );
+
+    bool            SrcError_setSingleton (
+     SRCERROR_DATA       *pValue
+);
+#endif
 
 
 
@@ -89,52 +109,61 @@ struct srcError_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            srcError_setErrorStr(
+    bool            SrcError_setErrorStr (
         SRCERROR_DATA   *this,
         ASTR_DATA       *pValue
     );
-    
-    
-    bool            srcError_setLocation(
+
+
+    bool            SrcError_setLocation (
         SRCERROR_DATA   *this,
         const
         SRCLOC          *pValue
     );
-    
-    
-    bool            srcError_setSeverity(
+
+
+    bool            SrcError_setSeverity (
         SRCERROR_DATA   *this,
         uint16_t        value
     );
-    
-    
-    OBJ_IUNKNOWN *  srcError_getSuperVtbl(
-        SRCERROR_DATA     *this
+
+
+    OBJ_IUNKNOWN *  SrcError_getSuperVtbl (
+        SRCERROR_DATA   *this
     );
 
 
-    void            srcError_Dealloc(
+    void            SrcError_Dealloc (
         OBJ_ID          objId
     );
 
 
-    void *          srcError_QueryInfo(
+#ifdef  SRCERROR_JSON_SUPPORT
+    SRCERROR_DATA *       SrcError_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          SrcError_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     srcError_ToJSON(
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     SrcError_ToJson (
         SRCERROR_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			srcError_Validate(
+    bool			SrcError_Validate (
         SRCERROR_DATA       *this
     );
 #endif

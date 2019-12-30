@@ -44,7 +44,7 @@
 #include        "compiler_internal.h"
 #include        <nodeArray.h>
 #include        <nodeHash.h>
-#include        <srcErrors.h>
+#include        <SrcErrors.h>
 #include        <trace.h>
 #include        <stdarg.h>
 
@@ -923,11 +923,11 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pErrors) {
-            this->pErrors = srcErrors_New( );
+            this->pErrors = SrcErrors_New( );
             if (OBJ_NIL == this->pErrors) {
                 return OBJ_NIL;
             }
-            srcErrors_setFatalExit(this->pErrors, NULL, NULL);
+            SrcErrors_setFatalExit(this->pErrors, NULL, NULL);
         }
         
         // Return to caller.
@@ -1223,15 +1223,15 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&compiler_Vtbl);
         
-        this->pErrors = srcErrors_New();
+        this->pErrors = SrcErrors_New();
         BREAK_NULL(this->pErrors);
         this->pQueue0 = nodeArray_New();
         BREAK_NULL(this->pQueue0);
         this->pQueue1 = nodeArray_New();
         BREAK_NULL(this->pQueue1);
-        this->pQueue2 = objArray_New();
+        this->pQueue2 = ObjArray_New();
         BREAK_NULL(this->pQueue2);
-        this->pQueue3 = objArray_New();
+        this->pQueue3 = ObjArray_New();
         BREAK_NULL(this->pQueue3);
         
         pStr = getenv("TMP");

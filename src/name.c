@@ -1019,7 +1019,7 @@ extern "C" {
                             return name_ToDebugString;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return name_ToJSON;
+                            return name_ToJson;
                         }
                         break;
                         

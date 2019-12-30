@@ -59,7 +59,7 @@
 #include        <i32Array.h>
 #include        <node.h>
 #include        <NodeEnum.h>
-#include        <objArray.h>
+#include        <ObjArray.h>
 #include        <W32Str.h>
 
 

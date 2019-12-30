@@ -233,7 +233,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            i = objArray_getSize(this->pArray);
+            i = ObjArray_getSize(this->pArray);
         }
         return i;
     }
@@ -273,13 +273,13 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pArray) {
-            this->pArray = objArray_New();
+            this->pArray = ObjArray_New();
             if (OBJ_NIL == this->pArray) {
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        eRc = objArray_AppendObj(this->pArray, pObject, pIndex);
+        eRc = ObjArray_AppendObj(this->pArray, pObject, pIndex);
         
         // Return to caller.
         return eRc;
@@ -460,7 +460,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_DeleteFirst(this->pArray);
+            pNode = ObjArray_DeleteFirst(this->pArray);
         }
         
         // Return to caller.
@@ -487,7 +487,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_DeleteLast(this->pArray);
+            pNode = ObjArray_DeleteLast(this->pArray);
         }
         
         // Return to caller.
@@ -517,7 +517,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_Get(this->pArray,index);
+            pNode = ObjArray_Get(this->pArray,index);
         }
         
         // Return to caller.
@@ -544,7 +544,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_GetFirst(this->pArray);
+            pNode = ObjArray_GetFirst(this->pArray);
         }
         
         // Return to caller.
@@ -571,7 +571,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_GetLast(this->pArray);
+            pNode = ObjArray_GetLast(this->pArray);
         }
         
         // Return to caller.
@@ -641,13 +641,13 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pArray) {
-            this->pArray = objArray_New();
+            this->pArray = ObjArray_New();
             if (OBJ_NIL == this->pArray) {
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        eRc = objArray_InsertObj(this->pArray, index, pObject);
+        eRc = ObjArray_InsertObj(this->pArray, index, pObject);
         
         // Return to caller.
         return eRc;
@@ -761,7 +761,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            eRc = objArray_SortAscending(this->pArray, (OBJ_COMPARE)&AStr_Compare);
+            eRc = ObjArray_SortAscending(this->pArray, (OBJ_COMPARE)&AStr_Compare);
         }
         
         // Return to caller.
@@ -815,7 +815,7 @@ extern "C" {
                 );
         
         if (this->pArray) {
-            pWrkStr = objArray_ToDebugString(this->pArray, indent+4);
+            pWrkStr = ObjArray_ToDebugString(this->pArray, indent+4);
             if (pWrkStr) {
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);

@@ -228,7 +228,7 @@ extern "C" {
         }
     #endif
 
-        eRc = objArray_AppendObj(this->pObjects, pObject, &objIndex);
+        eRc = ObjArray_AppendObj(this->pObjects, pObject, &objIndex);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             eRc = ptrArray_AppendData(this->pMethods, pMethod, &mthIndex);
         }
@@ -313,10 +313,10 @@ extern "C" {
         }
     #endif
         
-        iMax = objArray_getSize(cbp->pObjects);
+        iMax = ObjArray_getSize(cbp->pObjects);
         for (i=1; i<=iMax; ++i) {
             pMethod = ptrArray_GetData(cbp->pMethods, i);
-            pObject = objArray_Get(cbp->pObjects, i);
+            pObject = ObjArray_Get(cbp->pObjects, i);
             pPtr = pMethod(pObject);
         }
 
@@ -353,7 +353,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&execArray_Vtbl);
         
         //this->stackSize = obj_getMisc1(cbp);
-        //this->pArray = objArray_New( );
+        //this->pArray = ObjArray_New( );
 
     #ifdef NDEBUG
     #else

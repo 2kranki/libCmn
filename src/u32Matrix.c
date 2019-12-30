@@ -1194,7 +1194,7 @@ extern "C" {
         this->cElems = cElems;
 
         //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        //this->pArray = ObjArray_New( );
 
     #ifdef NDEBUG
     #else

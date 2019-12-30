@@ -38,7 +38,7 @@
 
 
 #include    <nodeArray.h>
-#include    <objArray.h>
+#include    <ObjArray.h>
 #include    <jsonIn.h>
 
 
@@ -85,7 +85,7 @@ struct nodeArray_data_s	{
     );
 
 
-    NODEARRAY_DATA * nodeArray_ParseObject(
+    NODEARRAY_DATA * nodeArray_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
     

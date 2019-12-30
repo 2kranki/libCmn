@@ -52,10 +52,10 @@
 #include        <cmn_defs.h>
 #include        <lex.h>
 #include        <node.h>
-#include        <objArray.h>
+#include        <ObjArray.h>
 #include        <path.h>
 #include        <prt.h>
-#include        <srcErrors.h>
+#include        <SrcErrors.h>
 #include        <srcFiles.h>
 #include        <szTbl.h>
 #include        <AStr.h>

@@ -43,7 +43,7 @@
 
 
 #include    <compiler.h>
-#include    <objArray.h>
+#include    <ObjArray.h>
 #include    <node.h>
 
 #ifdef	__cplusplus

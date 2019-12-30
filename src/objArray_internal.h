@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   objArray_internal.h
- *	Generated 03/22/2016 17:01:56
+ * File:   ObjArray_internal.h
+ *	Generated 12/29/2019 20:07:08
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,8 +38,10 @@
 
 
 
-#include    <objArray.h>
-#include    <array_internal.h>
+
+#include        <ObjArray.h>
+#include        <array_internal.h>
+#include        <jsonIn.h>
 
 
 #ifndef OBJARRAY_INTERNAL_H
@@ -46,56 +49,106 @@
 
 
 
+#define     PROPERTY_OTHER_OWNED 1
+
+
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
-    
-    typedef struct arrayEntry_s {
+
+
+    typedef struct ArrayEntry_s {
         OBJ_ID          pObj;
     } ARRAY_ENTRY;
 
 
 
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct objArray_data_s	{
+struct ObjArray_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
+    ARRAY_DATA      super;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
-    ARRAY_DATA      *pArray;
     OBJ_ID          pOther;
 
 };
 #pragma pack(pop)
 
     extern
-    struct objArray_class_data_s
-                    objArray_ClassObj;
+    struct ObjArray_class_data_s  ObjArray_ClassObj;
 
     extern
-    OBJARRAY_VTBL   objArray_Vtbl;
+    const
+    OBJARRAY_VTBL         ObjArray_Vtbl;
 
 
-    // Internal Functions
-    void            objArray_Dealloc(
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  OBJARRAY_SINGLETON
+    OBJARRAY_DATA *     ObjArray_getSingleton (
+        void
+    );
+
+    bool            ObjArray_setSingleton (
+     OBJARRAY_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  ObjArray_getSuperVtbl (
+        OBJARRAY_DATA     *this
+    );
+
+
+    void            ObjArray_Dealloc (
         OBJ_ID          objId
     );
 
-    void *          objArray_QueryInfo(
+
+#ifdef  OBJARRAY_JSON_SUPPORT
+    OBJARRAY_DATA *       ObjArray_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          ObjArray_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
+
+
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     ObjArray_ToJson (
+        OBJARRAY_DATA      *this
+    );
+#endif
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			objArray_Validate(
-        OBJARRAY_DATA       *cbp
+    bool			ObjArray_Validate (
+        OBJARRAY_DATA       *this
     );
 #endif
 

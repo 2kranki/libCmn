@@ -25,7 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <dbCsv_internal.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <szTbl.h>
 
 
@@ -71,7 +71,7 @@ int         tearDown(
     // test method in the class.
 
     
-    srcErrors_SharedReset();
+    SrcErrors_SharedReset();
     szTbl_SharedReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
@@ -152,18 +152,18 @@ int         test_dbCsv_Input01(
         pRecords = dbCsv_ParseFile(pObj);
         XCTAssertFalse( (OBJ_NIL == pRecords) );
         if (pRecords) {
-            pField = objArray_ToDebugString(pRecords, 0);
+            pField = ObjArray_ToDebugString(pRecords, 0);
             fprintf(stderr, "%s\n\n\n", AStr_getData(pField));
             obj_Release(pField);
             pField = OBJ_NIL;
-            iMax = objArray_getSize(pRecords);
+            iMax = ObjArray_getSize(pRecords);
             for (i=1; i<=iMax; ++i) {
-                pRecord = objArray_Get(pRecords,i);
+                pRecord = ObjArray_Get(pRecords,i);
                 XCTAssertFalse( (OBJ_NIL == pRecord) );
                 if (pRecord) {
-                    jMax = objArray_getSize(pRecord);
+                    jMax = ObjArray_getSize(pRecord);
                     for (j=1; j<=jMax; ++j) {
-                        pField = objArray_Get(pRecord,j);
+                        pField = ObjArray_Get(pRecord,j);
                         XCTAssertFalse( (OBJ_NIL == pField) );
                         if (pField) {
                             fprintf(
@@ -251,14 +251,14 @@ int         test_dbCsv_Input02(
         pRecords = dbCsv_ParseFile(pObj);
         XCTAssertFalse( (OBJ_NIL == pRecords) );
         if (pRecords) {
-            iMax = objArray_getSize(pRecords);
+            iMax = ObjArray_getSize(pRecords);
             for (i=1; i<=iMax; ++i) {
-                pRecord = objArray_Get(pRecords,i);
+                pRecord = ObjArray_Get(pRecords,i);
                 XCTAssertFalse( (OBJ_NIL == pRecord) );
                 if (pRecord) {
-                    jMax = objArray_getSize(pRecord);
+                    jMax = ObjArray_getSize(pRecord);
                     for (j=1; j<=jMax; ++j) {
-                        pField = objArray_Get(pRecord,j);
+                        pField = ObjArray_Get(pRecord,j);
                         XCTAssertFalse( (OBJ_NIL == pField) );
                         if (pField) {
                             fprintf(
@@ -401,14 +401,14 @@ int         test_dbCsv_Input03(
         pRecords = dbCsv_ParseFile(pObj);
         XCTAssertFalse( (OBJ_NIL == pRecords) );
         if (pRecords) {
-            iMax = objArray_getSize(pRecords);
+            iMax = ObjArray_getSize(pRecords);
             for (i=1; i<=iMax; ++i) {
-                pRecord = objArray_Get(pRecords,i);
+                pRecord = ObjArray_Get(pRecords,i);
                 XCTAssertFalse( (OBJ_NIL == pRecord) );
                 if (pRecord) {
-                    jMax = objArray_getSize(pRecord);
+                    jMax = ObjArray_getSize(pRecord);
                     for (j=1; j<=jMax; ++j) {
-                        pField = objArray_Get(pRecord,j);
+                        pField = ObjArray_Get(pRecord,j);
                         XCTAssertFalse( (OBJ_NIL == pField) );
                         if (pField) {
                             fprintf(
@@ -474,18 +474,18 @@ int         test_dbCsv_Input04(
         pRecords = dbCsv_ParseFile(pObj);
         XCTAssertFalse( (OBJ_NIL == pRecords) );
         if (pRecords) {
-            pField = objArray_ToDebugString(pRecords, 0);
+            pField = ObjArray_ToDebugString(pRecords, 0);
             fprintf(stderr, "%s\n\n\n", AStr_getData(pField));
             obj_Release(pField);
             pField = OBJ_NIL;
-            iMax = objArray_getSize(pRecords);
+            iMax = ObjArray_getSize(pRecords);
             for (i=1; i<=iMax; ++i) {
-                pRecord = objArray_Get(pRecords,i);
+                pRecord = ObjArray_Get(pRecords,i);
                 XCTAssertFalse( (OBJ_NIL == pRecord) );
                 if (pRecord) {
-                    jMax = objArray_getSize(pRecord);
+                    jMax = ObjArray_getSize(pRecord);
                     for (j=1; j<=jMax; ++j) {
-                        pField = objArray_Get(pRecord,j);
+                        pField = ObjArray_Get(pRecord,j);
                         XCTAssertFalse( (OBJ_NIL == pField) );
                         if (pField) {
                             fprintf(

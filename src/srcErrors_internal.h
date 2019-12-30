@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   srcErrors_internal.h
- *	Generated 12/17/2017 07:12:35
+ * File:   SrcErrors_internal.h
+ *	Generated 12/28/2019 09:57:24
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,17 @@
 
 
 
-#include    <srcErrors.h>
-#include    <objArray.h>
+#include        <SrcErrors.h>
+#include        <jsonIn.h>
+#include        <ObjArray_internal.h>
 
 
 #ifndef SRCERRORS_INTERNAL_H
 #define	SRCERRORS_INTERNAL_H
+
+
+
+#define     PROPERTY_ERRORS_OWNED 1
 
 
 
@@ -59,15 +64,14 @@ extern "C" {
     //                  Object Data Description
     //---------------------------------------------------------------
 
- #pragma pack(push, 1)
-struct srcErrors_data_s	{
+#pragma pack(push, 1)
+struct SrcErrors_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJARRAY_DATA   super;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    OBJARRAY_DATA   *pErrors;
     bool            fFatal;         // One or more fatal errors occurred
     bool            fExitOnFatal;
     uint16_t        rsvd16;
@@ -79,12 +83,27 @@ struct srcErrors_data_s	{
 #pragma pack(pop)
 
     extern
-    const
-    struct srcErrors_class_data_s  srcErrors_ClassObj;
+    struct SrcErrors_class_data_s  SrcErrors_ClassObj;
 
     extern
     const
-    SRCERRORS_VTBL         srcErrors_Vtbl;
+    SRCERRORS_VTBL         SrcErrors_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  SRCERRORS_SINGLETON
+    SRCERRORS_DATA *     SrcErrors_getSingleton (
+        void
+    );
+
+    bool            SrcErrors_setSingleton (
+     SRCERRORS_DATA       *pValue
+);
+#endif
 
 
 
@@ -92,39 +111,42 @@ struct srcErrors_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool        srcErrors_setErrors(
-        SRCERRORS_DATA  *this,
-        OBJARRAY_DATA   *pValue
-    );
-    
-    
-    OBJ_IUNKNOWN *  srcErrors_getSuperVtbl(
+    OBJ_IUNKNOWN *  SrcErrors_getSuperVtbl (
         SRCERRORS_DATA     *this
     );
 
 
-    void            srcErrors_Dealloc(
+    void            SrcErrors_Dealloc (
         OBJ_ID          objId
     );
 
 
-    void *          srcErrors_QueryInfo(
+#ifdef  SRCERRORS_JSON_SUPPORT
+    SRCERRORS_DATA *       SrcErrors_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          SrcErrors_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     srcErrors_ToJSON(
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     SrcErrors_ToJson (
         SRCERRORS_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			srcErrors_Validate(
+    bool			SrcErrors_Validate (
         SRCERRORS_DATA       *this
     );
 #endif

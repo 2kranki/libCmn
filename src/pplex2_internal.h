@@ -48,7 +48,7 @@
 
 
 #include        <pplex2.h>
-#include        <objArray.h>
+#include        <ObjArray.h>
 #include        <ascii.h>
 #include        <srcFiles.h>
 #include        <lex_internal.h>

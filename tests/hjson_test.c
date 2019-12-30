@@ -28,7 +28,7 @@
 #include    <hjson_internal.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 
 
 
@@ -76,7 +76,7 @@ int         tearDown(
 
     
     szTbl_SharedReset( );
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -633,8 +633,8 @@ int         test_hjson_Simple01(
         eRc = nodeHash_FindIntegerNodeInHashA(pHash, "one", &num);
         XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (123 == num) );
-        XCTAssertFalse( (srcErrors_getFatal(OBJ_NIL)) );
-        XCTAssertTrue( (0 == srcErrors_getNumErrors(OBJ_NIL)) );
+        XCTAssertFalse( (SrcErrors_getFatal(OBJ_NIL)) );
+        XCTAssertTrue( (0 == SrcErrors_getNumErrors(OBJ_NIL)) );
 
         obj_Release(pFileNode);
         pFileNode = OBJ_NIL;
@@ -654,14 +654,14 @@ int         test_hjson_Simple02(
     char        *pTestName
 )
 {
-    ERESULT         eRc;
+    //ERESULT         eRc;
     HJSON_DATA      *pObj = OBJ_NIL;
     NODE_DATA       *pFileNode;
-    ASTR_DATA       *pStr = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
     const
     char            *pStringToParseA = "{\"one\" : +123'}";
-    NODEHASH_DATA   *pHash;
-    int64_t         num = 0;
+    //NODEHASH_DATA   *pHash;
+    //int64_t         num = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -672,9 +672,9 @@ int         test_hjson_Simple02(
         obj_TraceSet(pObj, true);
         pFileNode = hjson_ParseFileHash(pObj);
         XCTAssertTrue( (OBJ_NIL == pFileNode) );
-        XCTAssertTrue( (srcErrors_getFatal(OBJ_NIL)) );
-        XCTAssertTrue( (1 == srcErrors_getNumErrors(OBJ_NIL)) );
-        srcErrors_Print(OBJ_NIL);
+        XCTAssertTrue( (SrcErrors_getFatal(OBJ_NIL)) );
+        XCTAssertTrue( (1 == SrcErrors_getNumErrors(OBJ_NIL)) );
+        SrcErrors_Print(OBJ_NIL, stderr);
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -714,7 +714,7 @@ int             test_hjson_Object01(
         obj_TraceSet(pObj, true);
         pFileNode = hjson_ParseFileHash(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pFileNode) );
-        TINYTEST_FALSE( (srcErrors_getFatal(OBJ_NIL)) );
+        TINYTEST_FALSE( (SrcErrors_getFatal(OBJ_NIL)) );
 
         if (pFileNode) {
             ASTR_DATA       *pWrk = OBJ_NIL;

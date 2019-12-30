@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include <dbCsv_internal.h>
 #include <ascii.h>
-#include <srcErrors.h>
+#include <SrcErrors.h>
 #include <str.h>
 #include <W32Str.h>
 #include <stdio.h>
@@ -203,7 +203,7 @@ extern "C" {
             return pStr;
         }
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        srcErrors_AddFatalFromTokenA(
+        SrcErrors_AddFatalFromTokenA(
             OBJ_NIL,
             pToken,
             "Missing Field data"
@@ -244,11 +244,11 @@ extern "C" {
         }
         ++fieldNo;
         
-        pRecord = objArray_New();
+        pRecord = ObjArray_New();
         if (pRecord == OBJ_NIL) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            srcErrors_AddFatalFromTokenA(
+            SrcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Out of Memory"
@@ -256,11 +256,11 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        eRc = objArray_AppendObj(pRecord, pStr, NULL);
+        eRc = ObjArray_AppendObj(pRecord, pStr, NULL);
         if (ERESULT_HAS_FAILED(eRc)) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            srcErrors_AddFatalFromTokenA(
+            SrcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Could not save field to record"
@@ -277,7 +277,7 @@ extern "C" {
             if (pStr == OBJ_NIL) {
                 TOKEN_DATA      *pToken;
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                srcErrors_AddFatalFromTokenA(
+                SrcErrors_AddFatalFromTokenA(
                     OBJ_NIL,
                     pToken,
                     "Malformed Record at field %d",
@@ -286,11 +286,11 @@ extern "C" {
                 return OBJ_NIL;
             }
             ++fieldNo;
-            eRc = objArray_AppendObj(pRecord, pStr, NULL);
+            eRc = ObjArray_AppendObj(pRecord, pStr, NULL);
             if (ERESULT_HAS_FAILED(eRc)) {
                 TOKEN_DATA      *pToken;
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                srcErrors_AddFatalFromTokenA(
+                SrcErrors_AddFatalFromTokenA(
                     OBJ_NIL,
                     pToken,
                     "Could not save field to record"
@@ -303,7 +303,7 @@ extern "C" {
         if (!dbCsv_ParseCRLF(this)) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            srcErrors_AddFatalFromTokenA(
+            SrcErrors_AddFatalFromTokenA(
                                 OBJ_NIL,
                                 pToken,
                                 "Expected line end, but found %lc",
@@ -334,11 +334,11 @@ extern "C" {
         }
 #endif
         
-        pRecords = objArray_New();
+        pRecords = ObjArray_New();
         if (pRecords == OBJ_NIL) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            srcErrors_AddFatalFromTokenA(
+            SrcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Out of Memory"
@@ -357,11 +357,11 @@ extern "C" {
             fRc = this->pRecordProcess(this->pRecordData, pRecord);
         }
         if (fRc) {
-            eRc = objArray_AppendObj(pRecords, pRecord, NULL);
+            eRc = ObjArray_AppendObj(pRecords, pRecord, NULL);
             if (ERESULT_HAS_FAILED(eRc)) {
                 TOKEN_DATA      *pToken;
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                srcErrors_AddFatalFromTokenA(
+                SrcErrors_AddFatalFromTokenA(
                     OBJ_NIL,
                     pToken,
                     "Could not save record"
@@ -389,11 +389,11 @@ extern "C" {
                 fRc = this->pRecordProcess(this->pRecordData, pRecord);
             }
             if (fRc) {
-                eRc = objArray_AppendObj(pRecords, pRecord, NULL);
+                eRc = ObjArray_AppendObj(pRecords, pRecord, NULL);
                 if (ERESULT_HAS_FAILED(eRc)) {
                     TOKEN_DATA      *pToken;
                     pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                    srcErrors_AddFatalFromTokenA(
+                    SrcErrors_AddFatalFromTokenA(
                                         OBJ_NIL,
                                         pToken,
                                         "Could not save record"
@@ -410,7 +410,7 @@ extern "C" {
         if (!dbCsv_ParseEOF(this)) {
             TOKEN_DATA      *pToken;
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            srcErrors_AddFatalFromTokenA(
+            SrcErrors_AddFatalFromTokenA(
                                 OBJ_NIL,
                                 pToken,
                                 "Malformed file, missing EOF at record %d",
@@ -517,7 +517,7 @@ extern "C" {
                 }
             }
             else {
-                srcErrors_AddFatalFromTokenA(
+                SrcErrors_AddFatalFromTokenA(
                             OBJ_NIL,
                             pToken,
                             "Invalid characters in escaped text"
@@ -999,8 +999,8 @@ extern "C" {
         }
 #endif
         
-        //pExit = srcErrors_getExit(OBJ_NIL);
-        srcErrors_setFatalExit(OBJ_NIL, errorExit, OBJ_NIL);
+        //pExit = SrcErrors_getExit(OBJ_NIL);
+        SrcErrors_setFatalExit(OBJ_NIL, errorExit, OBJ_NIL);
         
         pRecords = dbCsv_ParseRecords(this);
         if (pRecords == OBJ_NIL) {
@@ -1008,7 +1008,7 @@ extern "C" {
             return pRecords;
         }
         
-        srcErrors_setFatalExit(OBJ_NIL, errorExit, pExit);
+        SrcErrors_setFatalExit(OBJ_NIL, errorExit, pExit);
 
         // Return to caller.
         return pRecords;

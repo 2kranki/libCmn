@@ -258,7 +258,7 @@ extern "C" {
         );
         pSrc = SrcLoc_NewSrcLoc(&this->data.src);
         if (pSrc) {
-            pWrkStr = SrcLoc_ToJSON(pSrc);
+            pWrkStr = SrcLoc_ToJson(pSrc);
             if (pWrkStr) {
                 AStr_AppendPrint(pStr, "\"loc\":%s, ", AStr_getData(pWrkStr));
                 obj_Release(pWrkStr);

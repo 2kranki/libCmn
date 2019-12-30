@@ -108,7 +108,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    ASTR_DATA *     AStr_ParseObject(
+    ASTR_DATA *     AStr_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -177,7 +177,7 @@ extern "C" {
     //===============================================================
     
 
-    ASTR_DATA *     AStr_NewFromJSONString(
+    ASTR_DATA *     AStr_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
@@ -191,7 +191,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = AStr_ParseObject(pParser);
+        pObject = AStr_ParseJsonObject(pParser);
 
         // Return to caller.
     exit00:
@@ -204,7 +204,7 @@ extern "C" {
     
     
 
-    ASTR_DATA *     AStr_NewFromJSONStringA(
+    ASTR_DATA *     AStr_NewFromJsonStringA(
         const
         char            *pString
     )
@@ -214,7 +214,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pObject = AStr_NewFromJSONString(pStr);
+            pObject = AStr_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -225,7 +225,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     AStr_ToJSON(
+    ASTR_DATA *     AStr_ToJson(
         ASTR_DATA       *this
     )
     {

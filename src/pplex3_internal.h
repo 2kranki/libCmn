@@ -43,7 +43,7 @@
 
 
 #include    <pplex3.h>
-#include    <objArray.h>
+#include    <ObjArray.h>
 #include    <lex_internal.h>
 #include    <token_internal.h>
 

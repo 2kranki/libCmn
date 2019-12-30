@@ -45,7 +45,7 @@
 #include        <pplex2_internal.h>
 #include        <pplex3.h>
 #include        <ascii.h>
-#include        <srcErrors.h>
+#include        <SrcErrors.h>
 #include        <trace.h>
 
 
@@ -118,7 +118,7 @@ extern "C" {
         
         pBuffer = W32Str_New( );
         if (OBJ_NIL == pBuffer) {
-            srcErrors_AddFatalA(
+            SrcErrors_AddFatalA(
                             OBJ_NIL,
                             NULL,
                             "ll1aux_SaveCopyText: failed to create SBUF!"
@@ -133,7 +133,7 @@ extern "C" {
             pNxtChr = lex_InputLookAhead((LEX_DATA *)this, 1);
             curchr = token_getChrW32(pNxtChr);
             if ( curchr == -1 ) {
-                srcErrors_AddFatalA(
+                SrcErrors_AddFatalA(
                                    OBJ_NIL,
                                    NULL,
                                    "ll1aux_SaveCopyText: premature EOF!"
@@ -614,7 +614,7 @@ extern "C" {
                         break;
                     }
                     else {
-                        srcErrors_AddFatalFromTokenA(
+                        SrcErrors_AddFatalFromTokenA(
                                 OBJ_NIL,
                                 pInput,
                                 "Malformed String constant"
@@ -843,7 +843,7 @@ extern "C" {
                         break;
                     }
                     else {
-                        srcErrors_AddFatalFromTokenA(
+                        SrcErrors_AddFatalFromTokenA(
                                                      OBJ_NIL,
                                                      pInput,
                                                      "Malformed Character Constant"

@@ -41,7 +41,7 @@
 #include    <nodeTree.h>
 #include    <node.h>
 #include    <nodeHash.h>
-#include    <objArray.h>
+#include    <ObjArray.h>
 #include    <szTbl.h>
 
 

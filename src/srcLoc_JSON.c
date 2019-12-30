@@ -154,23 +154,23 @@ extern "C" {
     
     
 
-    SRCLOC_DATA *   SrcLoc_NewFromJSONStringA(
+    SRCLOC_DATA *   SrcLoc_NewFromJsonStringA(
         const
         char            *pString
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        SRCLOC_DATA     *pSrcLoc = OBJ_NIL;
+        SRCLOC_DATA     *pObject = OBJ_NIL;
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pSrcLoc = SrcLoc_NewFromJSONString(pStr);
+            pObject = SrcLoc_NewFromJSONString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
         
         // Return to caller.
-        return pSrcLoc;
+        return pObject;
     }
     
     
@@ -180,7 +180,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SrcLoc_ToJSON(this);
+     ASTR_DATA      *pDesc = SrcLoc_ToJson(this);
      @endcode
      @param     this    SRCLOC object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -188,7 +188,7 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SrcLoc_ToJSON(
+    ASTR_DATA *     SrcLoc_ToJson(
         SRCLOC_DATA     *this
     )
     {

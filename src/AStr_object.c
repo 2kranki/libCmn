@@ -194,8 +194,8 @@ void *          AStrClass_QueryInfo (
                     break;
                     
                 case 'P':
-                    if (str_Compare("ParseObject", (char *)pStr) == 0) {
-                        return AStr_ParseObject;
+                    if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                        return AStr_ParseJsonObject;
                     }
                     break;
                     

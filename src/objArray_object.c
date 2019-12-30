@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'objArray'
-//	Generated 03/22/2016 17:01:56
+//	Class Object Metods and Tables for 'ObjArray'
+//	Generated 12/29/2019 20:07:08
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,17 +32,26 @@
  */
 
 
+
+
 #define			OBJARRAY_OBJECT_C	    1
-#include        "objArray_internal.h"
+#include        <ObjArray_internal.h>
+#ifdef  OBJARRAY_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
-struct objArray_class_data_s    {
+//===========================================================
+//                  Class Object Definition
+//===========================================================
+
+struct ObjArray_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  SYMENTRY_SINGLETON
+#ifdef  OBJARRAY_SINGLETON
     volatile
     OBJARRAY_DATA       *pSingleton;
 #endif
@@ -59,34 +69,47 @@ struct objArray_class_data_s    {
 
 
 static
-const
-OBJ_INFO        objArray_Info;            // Forward Reference
-
-
-
-OBJ_ID          objArray_Class(
-    void
+void *          ObjArrayClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
 );
+
+
+static
+const
+OBJ_INFO        ObjArray_Info;            // Forward Reference
+
 
 
 
 static
-bool            objArray_ClassIsKindOf(
+bool            ObjArrayClass_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_OBJARRAY_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(ObjArray_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		ObjArrayClass_WhoAmI (
     void
 )
 {
@@ -94,24 +117,179 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
+static
+const
+OBJARRAY_CLASS_VTBL    class_Vtbl = {
+    {
+        &ObjArray_Info,
+        ObjArrayClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        ObjArray_Class,
+        ObjArrayClass_WhoAmI,
+        (P_OBJ_QUERYINFO)ObjArrayClass_QueryInfo,
+        NULL                        // ObjArrayClass_ToDebugString
+    },
+};
+
+
+
+//-----------------------------------------------------------
+//						Class Object
+//-----------------------------------------------------------
+
+OBJARRAY_CLASS_DATA  ObjArray_ClassObj = {
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(OBJARRAY_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
+    },
+	//0
+};
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  OBJARRAY_SINGLETON
+OBJARRAY_DATA *     ObjArray_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(ObjArray_ClassObj.pSingleton);
+}
+
+
+bool            ObjArray_setSingleton (
+    OBJARRAY_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (ObjArray_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(ObjArray_ClassObj.pSingleton));
+    }
+    ObjArray_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+OBJARRAY_DATA *     ObjArray_Shared (
+    void
+)
+{
+    OBJARRAY_DATA       *this = (OBJ_ID)(ObjArray_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = ObjArray_New( );
+        ObjArray_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // ObjArray_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            ObjArray_SharedReset (
+    void
+)
+{
+    OBJARRAY_DATA       *this = (OBJ_ID)(ObjArray_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        ObjArray_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
+
+
+
 //---------------------------------------------------------------
 //                     Q u e r y  I n f o
 //---------------------------------------------------------------
 
 static
-void *          obj_ClassQueryInfo(
+void *          ObjArrayClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
+    OBJARRAY_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
     switch (type) {
+      
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(OBJARRAY_DATA);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&ObjArray_Info;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
             
         case OBJ_QUERYINFO_TYPE_INFO:
-            return (void *)&objArray_Info;
+            return (void *)obj_getInfo(this);
             break;
             
         case OBJ_QUERYINFO_TYPE_METHOD:
@@ -119,7 +297,19 @@ void *          obj_ClassQueryInfo(
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return objArray_New;
+                        return ObjArray_New;
+                    }
+                    break;
+                    
+                case 'P':
+                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
+                        //return ObjArray_ParseJsonObject;
+                    }
+                    break;
+ 
+                 case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return ObjArrayClass_WhoAmI;
                     }
                     break;
                     
@@ -137,70 +327,52 @@ void *          obj_ClassQueryInfo(
 
 
 
-static
-const
-OBJ_IUNKNOWN    class_Vtbl = {
-	&objArray_Info,
-    objArray_ClassIsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    objArray_Class,
-    obj_ClassWhoAmI,
-    obj_ClassQueryInfo
-};
-
-
-
-//-----------------------------------------------------------
-//						Class Object
-//-----------------------------------------------------------
-
-OBJARRAY_CLASS_DATA  objArray_ClassObj = {
-    {
-        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
-        sizeof(OBJARRAY_CLASS_DATA),        // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
-    },
-	//0
-};
-
-
 
 static
-bool            objArray_IsKindOf(
+bool            ObjArray_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_OBJARRAY == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(ObjArray_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            objArray_Dealloc(
+void            ObjArray_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          objArray_Class(
+OBJ_ID          ObjArray_Class (
     void
 )
 {
-    return (OBJ_ID)&objArray_ClassObj;
+    return (OBJ_ID)&ObjArray_ClassObj;
 }
 
 
 static
-uint16_t		objArray_WhoAmI(
+uint16_t		ObjArray_WhoAmI (
     void
 )
 {
@@ -208,28 +380,42 @@ uint16_t		objArray_WhoAmI(
 }
 
 
-OBJARRAY_VTBL     objArray_Vtbl = {
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
+const
+OBJARRAY_VTBL     ObjArray_Vtbl = {
     {
-        &objArray_Info,
-        objArray_IsKindOf,
+        &ObjArray_Info,
+        ObjArray_IsKindOf,
+#ifdef  OBJARRAY_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
-        objArray_Dealloc,
-        objArray_Class,
-        objArray_WhoAmI,
-        (P_OBJ_QUERYINFO)objArray_QueryInfo,
-        (P_OBJ_TOSTRING)objArray_ToDebugString,
-        NULL,			// objArray_Enable,
-        NULL,			// objArray_Disable,
-        NULL,			// (P_OBJ_ASSIGN)objArray_Assign,
-        NULL,			// (P_OBJ_COMPARE)objArray_Compare,
-        (P_OBJ_COPY)objArray_Copy,
-        (P_OBJ_DEEPCOPY)objArray_DeepCopy,
-        NULL 			// (P_OBJ_HASH)objArray_Hash
+#endif
+        ObjArray_Dealloc,
+        ObjArray_Class,
+        ObjArray_WhoAmI,
+        (P_OBJ_QUERYINFO)ObjArray_QueryInfo,
+        (P_OBJ_TOSTRING)ObjArray_ToDebugString,
+        NULL,			// ObjArray_Enable,
+        NULL,			// ObjArray_Disable,
+        (P_OBJ_ASSIGN)ObjArray_Assign,
+        NULL,			// (P_OBJ_COMPARE)ObjArray_Compare,
+        (P_OBJ_PTR)ObjArray_Copy,
+        (P_OBJ_PTR)ObjArray_DeepCopy,
+        NULL 			// (P_OBJ_HASH)ObjArray_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
+    //ObjArray_IsEnabled,
  
 };
 
@@ -237,12 +423,12 @@ OBJARRAY_VTBL     objArray_Vtbl = {
 
 static
 const
-OBJ_INFO        objArray_Info = {
-    "objArray",
+OBJ_INFO        ObjArray_Info = {
+    "ObjArray",
     "Array of Objects",
-    (OBJ_DATA *)&objArray_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&objArray_Vtbl,
+    (OBJ_DATA *)&ObjArray_ClassObj,
+    (OBJ_DATA *)&array_ClassObj,
+    (OBJ_IUNKNOWN *)&ObjArray_Vtbl,
     sizeof(OBJARRAY_DATA)
 };
 

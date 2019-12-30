@@ -302,7 +302,7 @@ extern "C" {
 #endif
 
         if (this->pArray) {
-            i = objArray_getSize(this->pArray);
+            i = ObjArray_getSize(this->pArray);
         }
         
         return i;
@@ -375,7 +375,7 @@ extern "C" {
 #endif
             
             if (OBJ_NIL == this->pArray) {
-                this->pArray = objArray_New();
+                this->pArray = ObjArray_New();
                 if (OBJ_NIL == this->pArray) {
                     return ERESULT_OUT_OF_MEMORY;
                 }
@@ -384,7 +384,7 @@ extern "C" {
             pStrC = AStrC_NewFromAStr(pObject);
             if (OBJ_NIL == pStrC)
                 return ERESULT_OUT_OF_MEMORY;
-            eRc = objArray_AppendObj(this->pArray, pStrC, pIndex);
+            eRc = ObjArray_AppendObj(this->pArray, pStrC, pIndex);
             obj_Release(pStrC);
             pStrC = OBJ_NIL;
             
@@ -414,13 +414,13 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pArray) {
-            this->pArray = objArray_New();
+            this->pArray = ObjArray_New();
             if (OBJ_NIL == this->pArray) {
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        eRc = objArray_AppendObj(this->pArray, pObject, pIndex);
+        eRc = ObjArray_AppendObj(this->pArray, pObject, pIndex);
         
         // Return to caller.
         return eRc;
@@ -454,7 +454,7 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pArray) {
-            this->pArray = objArray_New();
+            this->pArray = ObjArray_New();
             if (OBJ_NIL == this->pArray) {
                 return ERESULT_OUT_OF_MEMORY;
             }
@@ -463,7 +463,7 @@ extern "C" {
         pStrC = AStrC_NewA(pStrA);
         if (OBJ_NIL == pStrC)
             return ERESULT_OUT_OF_MEMORY;
-        eRc = objArray_AppendObj(this->pArray, pStrC, pIndex);
+        eRc = ObjArray_AppendObj(this->pArray, pStrC, pIndex);
         obj_Release(pStrC);
         pStrC = OBJ_NIL;
         
@@ -515,7 +515,7 @@ extern "C" {
 
         // Release objects and areas in other object.
         if (pOther->pArray) {
-            objArray_DeleteAll(pOther->pArray);
+            ObjArray_DeleteAll(pOther->pArray);
             pOther->pArray = OBJ_NIL;
         }
         
@@ -721,7 +721,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_DeleteFirst(this->pArray);
+            pNode = ObjArray_DeleteFirst(this->pArray);
         }
         
         // Return to caller.
@@ -748,7 +748,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_DeleteLast(this->pArray);
+            pNode = ObjArray_DeleteLast(this->pArray);
         }
         
         // Return to caller.
@@ -853,9 +853,9 @@ extern "C" {
         if (OBJ_NIL == this->pArray)
             return 0;
         
-        iMax = objArray_getSize(this->pArray);
+        iMax = ObjArray_getSize(this->pArray);
         for (i=0; i<iMax; i++) {
-            pWrk = objArray_Get(this->pArray, i+1);
+            pWrk = ObjArray_Get(this->pArray, i+1);
             if (ERESULT_SUCCESS_EQUAL == AStrC_Compare(pStrC, pWrk)) {
                 return i+1;
             }
@@ -889,9 +889,9 @@ extern "C" {
         if (OBJ_NIL == this->pArray)
             return 0;
         
-        iMax = objArray_getSize(this->pArray);
+        iMax = ObjArray_getSize(this->pArray);
         for (i=0; i<iMax; i++) {
-            pWrk = objArray_Get(this->pArray, i+1);
+            pWrk = ObjArray_Get(this->pArray, i+1);
             if (ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pWrk, pStrA)) {
                 return i+1;
             }
@@ -924,7 +924,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_Get(this->pArray, index);
+            pNode = ObjArray_Get(this->pArray, index);
         }
         
         // Return to caller.
@@ -951,7 +951,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_GetFirst(this->pArray);
+            pNode = ObjArray_GetFirst(this->pArray);
         }
         
         // Return to caller.
@@ -978,7 +978,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_GetLast(this->pArray);
+            pNode = ObjArray_GetLast(this->pArray);
         }
         
         // Return to caller.
@@ -1024,7 +1024,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&AStrCArray_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        //this->pArray = ObjArray_New( );
 
     #ifdef NDEBUG
     #else
@@ -1069,13 +1069,13 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pArray) {
-            this->pArray = objArray_New();
+            this->pArray = ObjArray_New();
             if (OBJ_NIL == this->pArray) {
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        eRc = objArray_InsertObj(this->pArray, index, pObject);
+        eRc = ObjArray_InsertObj(this->pArray, index, pObject);
         
         // Return to caller.
         return eRc;
@@ -1133,7 +1133,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            eRc = objArray_Put(this->pArray, index, pObject);
+            eRc = ObjArray_Put(this->pArray, index, pObject);
         }
         
         // Return to caller.
@@ -1289,7 +1289,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            eRc = objArray_SortAscending(this->pArray, (OBJ_COMPARE)&AStrC_Compare);
+            eRc = ObjArray_SortAscending(this->pArray, (OBJ_COMPARE)&AStrC_Compare);
         }
         
         // Return to caller.
@@ -1379,12 +1379,12 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        iMax = objArray_getSize(this->pArray);
+        iMax = ObjArray_getSize(this->pArray);
         if (0 == iMax) {
             return pStr;
         }
         if (1 == iMax) {
-            pWrk = objArray_Get(this->pArray, 1);
+            pWrk = ObjArray_Get(this->pArray, 1);
             if (pWrk) {
                 if (pPrefix) {
                     AStr_AppendA(pStr, pPrefix);
@@ -1398,7 +1398,7 @@ extern "C" {
         }
 
         for (i=0; i<iMax-1; i++) {
-            pWrk = objArray_Get(this->pArray, i+1);
+            pWrk = ObjArray_Get(this->pArray, i+1);
             if (pWrk) {
                 if (pPrefix) {
                     AStr_AppendA(pStr, pPrefix);
@@ -1410,7 +1410,7 @@ extern "C" {
                 AStr_AppendA(pStr, pSep);
             }
         }
-        pWrk = objArray_Get(this->pArray, i+1);
+        pWrk = ObjArray_Get(this->pArray, i+1);
         if (pWrk) {
             if (pPrefix) {
                 AStr_AppendA(pStr, pPrefix);
@@ -1479,7 +1479,7 @@ extern "C" {
             );
 
         if (this->pArray) {
-            pWrkStr = objArray_ToDebugString(this->pArray, indent+4);
+            pWrkStr = ObjArray_ToDebugString(this->pArray, indent+4);
             if (pWrkStr) {
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);

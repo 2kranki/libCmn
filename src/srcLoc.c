@@ -446,7 +446,7 @@ extern "C" {
         obj_setVtbl(this, &SrcLoc_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        //this->pArray = ObjArray_New( );
 
     #ifdef NDEBUG
     #else
@@ -534,11 +534,9 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return SrcLoc_ToDebugString;
                         }
-#ifdef XYZZY
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return SrcLoc_ToJSON;
+                            return SrcLoc_ToJson;
                         }
-#endif
                         break;
                         
                     default:

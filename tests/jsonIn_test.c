@@ -27,7 +27,7 @@
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <jsonIn_internal.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <utf8_internal.h>
 
 
@@ -55,7 +55,7 @@ int         tearDown(
     // test method in the class.
 
     
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     szTbl_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {

@@ -1,22 +1,20 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          OBJARRAY Console Transmit Task (objArray) Header
+//          Array of Objects (ObjArray) Header
 //****************************************************************
 /*
  * Program
- *			Separate objArray (objArray)
+ *			Array of Objects (ObjArray)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate objArray to run things without complications
- *          of interfering with the main objArray. A objArray may be 
- *          called a objArray on other O/S's.
+ *			This object provides an resizeable array of objects.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	03/22/2016 Generated
+ *  03/22/2016 Generated
+ *	12/29/2019 Regenerated
  */
 
 
@@ -52,12 +50,19 @@
 
 
 #include        <cmn_defs.h>
+#include        <array.h>
 #include        <AStr.h>
 #include        <ObjEnum.h>
 
 
 #ifndef         OBJARRAY_H
 #define         OBJARRAY_H
+
+
+//#define   OBJARRAY_JSON_SUPPORT 1
+//#define   OBJARRAY_SINGLETON    1
+
+
 
 
 
@@ -71,26 +76,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct objArray_data_s	OBJARRAY_DATA;              // Inherits from OBJ.
-    typedef struct objArray_class_data_s OBJARRAY_CLASS_DATA;   // Inherits from OBJ
+    typedef struct ObjArray_data_s	OBJARRAY_DATA;            // Inherits from OBJ
+    typedef struct ObjArray_class_data_s OBJARRAY_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct objArray_vtbl_s	{
+    typedef struct ObjArray_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in objArray_object.c.
+        // method names to the vtbl definition in ObjArray_object.c.
         // Properties:
         // Methods:
+        //bool        (*pIsEnabled)(OBJARRAY_DATA *);
     } OBJARRAY_VTBL;
 
-    typedef struct objArray_class_vtbl_s    {
+    typedef struct ObjArray_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in symEntry_object.c.
+        // method names to the vtbl definition in ObjArray_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SYMENTRY_DATA *);
+        //bool        (*pIsEnabled)(OBJARRAY_DATA *);
     } OBJARRAY_CLASS_VTBL;
-    
+
 
     typedef ERESULT         (*OBJ_COMPARE)(OBJ_ID p0, OBJ_ID p1);
 
@@ -104,17 +110,34 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * objArray_Alloc(
+#ifdef  OBJARRAY_SINGLETON
+    OBJARRAY_DATA * ObjArray_Shared (
+        void
+    );
+
+    void            ObjArray_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to ObjArray object if successful, otherwise OBJ_NIL.
+     */
+    OBJARRAY_DATA * ObjArray_Alloc (
         void
     );
     
     
-    OBJ_ID          objArray_Class (
+    OBJ_ID          ObjArray_Class (
         void
     );
     
     
-    OBJARRAY_DATA * objArray_New(
+    OBJARRAY_DATA * ObjArray_New (
         void
     );
     
@@ -124,30 +147,31 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT         objArray_getLastError(
+    ARRAY_DATA *    ObjArray_getArray (
         OBJARRAY_DATA   *this
     );
-    
-    
+
+
     /*!
         Other is a property to hold any object that the user of this
         object may want to put in it.
      */
-    OBJ_ID          objArray_getOther(
+    OBJ_ID          ObjArray_getOther (
         OBJARRAY_DATA   *this
     );
-    
-    bool            objArray_setOther(
+
+    bool            ObjArray_setOther (
         OBJARRAY_DATA   *this,
         OBJ_ID          pValue
     );
-    
 
-    uint32_t        objArray_getSize(
+
+    uint32_t        ObjArray_getSize (
         OBJARRAY_DATA   *this
     );
-    
-    
+
+
+
 
     
     //---------------------------------------------------------------
@@ -155,27 +179,27 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Add the given element to the end of the array.
-     @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
-                error.
-     */
-    ERESULT         objArray_AppendObj(
-        OBJARRAY_DATA   *this,
-        OBJ_ID          pObject,
-        uint32_t        *pIndex
-    );
-    
-    
-    /*!
      Add the elements from the other array to the end of the array.
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
-    ERESULT         objArray_Append(
+    ERESULT         ObjArray_Append (
         OBJARRAY_DATA   *this,
         OBJARRAY_DATA   *pOther
+    );
+    
+    
+    /*!
+     Add the given element to the end of the array.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         ObjArray_AppendObj (
+        OBJARRAY_DATA   *this,
+        OBJ_ID          pObject,
+        uint32_t        *pIndex
     );
     
     
@@ -187,9 +211,9 @@ extern "C" {
      @return    If successful, return ERESULT_SUCCESS
                 otherwise an eResult error code.
      */
-    ERESULT         objArray_Assign(
-        OBJARRAY_DATA	*this,
-        OBJARRAY_DATA	*pOther
+    ERESULT         ObjArray_Assign (
+        OBJARRAY_DATA    *this,
+        OBJARRAY_DATA    *pOther
     );
     
     
@@ -200,8 +224,8 @@ extern "C" {
      @return    If successful, return a new array that must be released
                 otherwise return OBJ_NIL.
      */
-    OBJARRAY_DATA * objArray_Copy(
-        OBJARRAY_DATA	*this
+    OBJARRAY_DATA * ObjArray_Copy (
+        OBJARRAY_DATA    *this
     );
     
     
@@ -213,8 +237,8 @@ extern "C" {
      @return    If successful, return a new array that must be released
      otherwise return OBJ_NIL.
      */
-    OBJARRAY_DATA * objArray_DeepCopy(
-        OBJARRAY_DATA    *this
+    OBJARRAY_DATA * ObjArray_DeepCopy (
+        OBJARRAY_DATA   *this
     );
     
     
@@ -224,8 +248,8 @@ extern "C" {
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    OBJ_ID          objArray_Delete(
-        OBJARRAY_DATA	*this,
+    OBJ_ID          ObjArray_Delete (
+        OBJARRAY_DATA   *this,
         uint32_t        index
     );
     
@@ -236,8 +260,8 @@ extern "C" {
      @return    If successful, return ERESULT_SUCCESS
                 otherwise an eResult error code.
      */
-    ERESULT         objArray_DeleteAll(
-        OBJARRAY_DATA    *this
+    ERESULT         ObjArray_DeleteAll (
+        OBJARRAY_DATA   *this
     );
     
     
@@ -247,8 +271,8 @@ extern "C" {
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    OBJ_ID          objArray_DeleteFirst(
-        OBJARRAY_DATA	*this
+    OBJ_ID          ObjArray_DeleteFirst (
+        OBJARRAY_DATA   *this
     );
     
     
@@ -258,8 +282,8 @@ extern "C" {
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    OBJ_ID          objArray_DeleteLast(
-        OBJARRAY_DATA	*this
+    OBJ_ID          ObjArray_DeleteLast (
+        OBJARRAY_DATA   *this
     );
     
     
@@ -271,7 +295,7 @@ extern "C" {
      released, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    OBJENUM_DATA *  objArray_Enum(
+    OBJENUM_DATA *  ObjArray_Enum (
         OBJARRAY_DATA   *this
     );
     
@@ -290,7 +314,7 @@ extern "C" {
      @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
      error.
      */
-    ERESULT         objArray_ForEach(
+    ERESULT         ObjArray_ForEach (
         OBJARRAY_DATA   *this,
         P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
@@ -303,8 +327,8 @@ extern "C" {
      @param     this    objArray object pointer
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      */
-    OBJ_ID          objArray_Get(
-        OBJARRAY_DATA	*this,
+    OBJ_ID          ObjArray_Get (
+        OBJARRAY_DATA   *this,
         uint32_t        index       // Relative to 1
     );
 
@@ -314,8 +338,8 @@ extern "C" {
      @param     this    objArray object pointer
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      */
-    OBJ_ID          objArray_GetFirst(
-        OBJARRAY_DATA	*this
+    OBJ_ID          ObjArray_GetFirst (
+        OBJARRAY_DATA   *this
     );
     
     /*!
@@ -323,16 +347,16 @@ extern "C" {
      @param     this    objArray object pointer
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      */
-    OBJ_ID          objArray_GetLast(
-        OBJARRAY_DATA	*this
-    );
-    
-    
-    OBJARRAY_DATA * objArray_Init(
+    OBJ_ID          ObjArray_GetLast (
         OBJARRAY_DATA   *this
     );
     
     
+    OBJARRAY_DATA * ObjArray_Init (
+        OBJARRAY_DATA   *this
+    );
+
+
     /*!
      Add the given element after the index'th element of the array.
      @param     this    object pointer
@@ -341,7 +365,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
-    ERESULT         objArray_InsertObj(
+    ERESULT         ObjArray_InsertObj (
         OBJARRAY_DATA   *this,
         uint32_t        index,
         OBJ_ID          pObject
@@ -353,7 +377,7 @@ extern "C" {
      @param     this    object pointer
      @return    If successful, last object of the array, otherwise OBJ_NIL.
      */
-    OBJ_ID          objArray_Pop(
+    OBJ_ID          ObjArray_Pop (
         OBJARRAY_DATA   *this
     );
     
@@ -365,7 +389,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
-    ERESULT         objArray_Push(
+    ERESULT         ObjArray_Push (
         OBJARRAY_DATA   *this,
         OBJ_ID          pObject
     );
@@ -380,15 +404,15 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
-    ERESULT         objArray_Put(
-        OBJARRAY_DATA	*this,
+    ERESULT         ObjArray_Put (
+        OBJARRAY_DATA    *this,
         uint32_t        index,          // Relative to 1
         OBJ_ID          pObj
     );
     
     
     /*!
-     Sort the array in ascending sequence. This only works if 
+     Sort the array in ascending sequence. This only works if
      the objects have a comparison routine that returns the
      ERESULT values of ERESULT_SUCCESS_EQUAL, ERESULT_SUCCESS_LESS_THAN
      or ERESULT_SUCCESS_GREATER_THAN.
@@ -399,8 +423,8 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
-    ERESULT         objArray_SortAscending(
-        OBJARRAY_DATA	*this,
+    ERESULT         ObjArray_SortAscending (
+        OBJARRAY_DATA    *this,
         OBJ_COMPARE     pCompare
     );
     
@@ -410,20 +434,25 @@ extern "C" {
      @param     this    object pointer
      @return    If successful, last object of the array, otherwise OBJ_NIL.
      */
-    OBJ_ID          objArray_Top(
+    OBJ_ID          ObjArray_Top (
         OBJARRAY_DATA   *this
     );
     
     
     /*!
-     Create a string that describes this object and the
-     objects within it.
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = ObjArray_ToDebugString(this,4);
+     @endcode 
      @param     this    object pointer
-     @return    If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    objArray_ToDebugString(
-        OBJARRAY_DATA   *this,
+    ASTR_DATA *    ObjArray_ToDebugString (
+        OBJARRAY_DATA     *this,
         int             indent
     );
     
@@ -434,13 +463,13 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
-    ERESULT         objArray_Xchg(
+    ERESULT         ObjArray_Xchg (
         OBJARRAY_DATA   *this,
-        uint16_t        index1,         // Relative to 1
-        uint16_t        index2          // Relative to 1
+        uint32_t        index1,         // Relative to 1
+        uint32_t        index2          // Relative to 1
     );
-    
-    
+
+
 
     
 #ifdef	__cplusplus

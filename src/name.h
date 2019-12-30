@@ -101,40 +101,40 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    NAME_DATA *     name_Alloc(
+    NAME_DATA *     name_Alloc (
         void
     );
     
     
-    OBJ_ID          name_Class(
+    OBJ_ID          name_Class (
         void
     );
     
     
-    NAME_DATA *     name_New(
+    NAME_DATA *     name_New (
         void
     );
 
-      NAME_DATA *   name_NewFromJSONString(
+      NAME_DATA *   name_NewFromJsonString (
         ASTR_DATA       *pString
     );
     
-    NAME_DATA *     name_NewFromJSONStringA(
+    NAME_DATA *     name_NewFromJsonStringA (
         const
         char            *pString
     );
     
     
-    uint32_t        name_NewUnique(
+    uint32_t        name_NewUnique (
         OBJ_ID          objId
     );
     
     
-    NAME_DATA *     name_NewInt(
+    NAME_DATA *     name_NewInt (
         int64_t         value
     );
     
-    NAME_DATA *     name_NewAStr(
+    NAME_DATA *     name_NewAStr (
         ASTR_DATA       *pValue
     );
     
@@ -147,7 +147,7 @@ extern "C" {
      @warning   Remember to release the returned object when you are done
                 with it.
      */
-    NAME_DATA *     name_NewUTF8(
+    NAME_DATA *     name_NewUTF8 (
         const
         char            *pValue
     );
@@ -161,7 +161,7 @@ extern "C" {
      @warning   Remember to release the returned object when you are done
                 with it.
      */
-    NAME_DATA *     name_NewUTF8Con(
+    NAME_DATA *     name_NewUTF8Con (
         const
         char            *pValue
     );
@@ -172,7 +172,7 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        name_getHash(
+    uint32_t        name_getHash (
         NAME_DATA       *this
     );
     
@@ -182,7 +182,7 @@ extern "C" {
      @return    If successful, the integer value an AStr object which must be released,
      otherwise OBJ_NIL.
      */
-    int64_t         name_getInt(
+    int64_t         name_getInt (
         NAME_DATA       *this
     );
     
@@ -192,7 +192,7 @@ extern "C" {
      @return    If successful, an AStr object which must be released,
                  otherwise OBJ_NIL.
      */
-    ASTR_DATA *     name_getStr(
+    ASTR_DATA *     name_getStr (
         NAME_DATA       *this
     );
     
@@ -202,7 +202,7 @@ extern "C" {
      @return    If successful, a UTF-8 string which must be freed
                 using mem_Free(), otherwise NULL.
      */
-    char *          name_getUTF8(
+    char *          name_getUTF8 (
         NAME_DATA       *this
     );
     
@@ -213,7 +213,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         name_Assign(
+    ERESULT         name_Assign (
         NAME_DATA       *this,
         NAME_DATA       *pOther
     );
@@ -225,7 +225,7 @@ extern "C" {
      ERESULT_SUCCESS_LESS_THAN if name < other
      ERESULT_SUCCESS_GREATER_THAN if name > other
      */
-    ERESULT         name_Compare(
+    ERESULT         name_Compare (
         NAME_DATA       *this,
         NAME_DATA       *pOther
     );
@@ -236,19 +236,19 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if name < other
                 ERESULT_SUCCESS_GREATER_THAN if name > other
      */
-    ERESULT         name_CompareA(
+    ERESULT         name_CompareA (
         NAME_DATA       *this,
         const
         char            *pOther
     );
     
     
-    NAME_DATA *     name_Copy(
+    NAME_DATA *     name_Copy (
         NAME_DATA       *this
     );
     
     
-    NAME_DATA *     name_DeepCopy(
+    NAME_DATA *     name_DeepCopy (
         NAME_DATA       *this
     );
     
@@ -258,37 +258,37 @@ extern "C" {
      converted to a UTF-8 string and then that is hashed.
      @return    Hash Code
      */
-    uint32_t        name_Hash(
+    uint32_t        name_Hash (
         NAME_DATA       *this
     );
     
     
-    NAME_DATA *     name_InitInt(
+    NAME_DATA *     name_InitInt (
         NAME_DATA       *this,
         int64_t         value
     );
 
 
-    NAME_DATA *   name_InitAStr(
+    NAME_DATA *   name_InitAStr (
         NAME_DATA       *this,
         ASTR_DATA       *pValue
     );
     
     
-    NAME_DATA *   name_InitW32Str(
+    NAME_DATA *   name_InitW32Str (
         NAME_DATA       *this,
         W32STR_DATA     *pValue
     );
     
     
-    NAME_DATA *   name_InitUTF8(
+    NAME_DATA *   name_InitUTF8 (
         NAME_DATA       *this,
         const
         char            *pValue
     );
     
     
-    NAME_DATA *   name_InitUTF8Con(
+    NAME_DATA *   name_InitUTF8Con (
         NAME_DATA       *this,
         const
         char            *pValue
@@ -308,7 +308,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object when you are done
                 with it.
      */
-    ASTR_DATA *     name_ToDebugString(
+    ASTR_DATA *     name_ToDebugString (
         NAME_DATA       *this,
         int             indent
     );
@@ -320,7 +320,7 @@ extern "C" {
      @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *     name_ToJSON(
+    ASTR_DATA *     name_ToJson (
         NAME_DATA       *this
     );
     
@@ -332,7 +332,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object when you are done
                  with it.
      */
-    ASTR_DATA *     name_ToString(
+    ASTR_DATA *     name_ToString (
         NAME_DATA       *this
     );
     
@@ -344,7 +344,7 @@ extern "C" {
      @warning   Remember to free the returned string when you are done
                  with it.
      */
-    char *          name_ToUTF8(
+    char *          name_ToUTF8 (
         NAME_DATA       *this
     );
     

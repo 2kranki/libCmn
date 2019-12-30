@@ -25,7 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <SrcLoc_internal.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <szTbl.h>
 
 
@@ -54,7 +54,7 @@ int         tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     szTbl_SharedReset( );
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
@@ -109,14 +109,14 @@ int         test_SrcLoc_OpenClose(
         TINYTEST_TRUE( (3 == SrcLoc_getLineNo(pObj)) );
         TINYTEST_TRUE( (4 == SrcLoc_getColNo(pObj)) );
 
-        pAStr = SrcLoc_ToJSON(pObj);
+        pAStr = SrcLoc_ToJson(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pAStr) );
         fprintf(stderr, "JSON='%s'\n", AStr_getData(pAStr));
         TINYTEST_TRUE( (0 == strcmp(pJsonA, AStr_getData(pAStr))) );
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
 
-        pObj2 = SrcLoc_NewFromJSONStringA(pJsonA);
+        pObj2 = SrcLoc_NewFromJsonStringA(pJsonA);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
         TINYTEST_TRUE( (1 == SrcLoc_getFileIndex(pObj2)) );

@@ -41,7 +41,7 @@
 
 #include        <AStrCArray.h>
 #include        <jsonIn.h>
-#include        <objArray.h>
+#include        <ObjArray.h>
 
 
 #ifndef ASTRCARRAY_INTERNAL_H

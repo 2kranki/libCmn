@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   srcError.c
- *	Generated 12/17/2017 07:12:30
+ * File:   SrcError.c
+ *	Generated 12/28/2019 09:57:21
  *
  */
 
@@ -41,7 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <srcError_internal.h>
+#include        <SrcError_internal.h>
+#include        <trace.h>
+
+
+
 
 
 
@@ -60,7 +64,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            srcError_task_body(
+    void            SrcError_task_body (
         void            *pData
     )
     {
@@ -80,15 +84,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SRCERROR_DATA *     srcError_Alloc(
+    SRCERROR_DATA *     SrcError_Alloc (
+        void
     )
     {
-        SRCERROR_DATA   *this;
+        SRCERROR_DATA       *this;
         uint32_t        cbSize = sizeof(SRCERROR_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc(cbSize);
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -96,22 +101,20 @@ extern "C" {
 
 
 
-    SRCERROR_DATA * srcError_New(
+    SRCERROR_DATA * SrcError_New (
         void
     )
     {
         SRCERROR_DATA   *this;
         
-        this = srcError_Alloc( );
+        this = SrcError_Alloc( );
         if (this) {
-            this = srcError_Init(this);
-        }
+            this = SrcError_Init(this);
+        } 
         return this;
     }
-    
-    
-    
-    SRCERROR_DATA * srcError_NewFromData(
+
+    SRCERROR_DATA * SrcError_NewFromData (
         uint16_t        severity,
         const
         SRCLOC          *pLoc,
@@ -121,73 +124,13 @@ extern "C" {
     {
         SRCERROR_DATA   *this;
 
-        this = srcError_Alloc( );
+        this = SrcError_New();
         if (this) {
-            this = srcError_Init(this);
-            if (this) {
-                srcError_setSeverity(this, severity);
-                if (pLoc) {
-                    srcError_setLocation(this, pLoc);
-                }
-                if (pErrorString) {
-                    this->pErrorStr = AStr_NewA(pErrorString);
-                    if (OBJ_NIL == this->pErrorStr) {
-                        obj_Release(this);
-                        return OBJ_NIL;
-                    }
-                }
+            SrcError_setSeverity(this, severity);
+            if (pLoc) {
+                SrcError_setLocation(this, pLoc);
             }
-        } 
-        return this;
-    }
-
-
-
-    SRCERROR_DATA * srcError_NewFatalFromToken(
-        TOKEN_DATA      *pToken,
-        ASTR_DATA       *pErrorString
-    )
-    {
-        SRCERROR_DATA   *this;
-        
-        this = srcError_Alloc( );
-        if (this) {
-            this = srcError_Init(this);
-            if (this) {
-                srcError_setSeverity(this, SRCERROR_SEVERITY_FATAL);
-                if (pToken) {
-                    srcError_setLocation(this, token_getLoc(pToken));
-                }
-                if (pErrorString) {
-                    this->pErrorStr = AStr_Copy(pErrorString);
-                    if (OBJ_NIL == this->pErrorStr) {
-                        obj_Release(this);
-                        return OBJ_NIL;
-                    }
-                }
-            }
-        }
-        return this;
-    }
-    
-    
-    
-    SRCERROR_DATA * srcError_NewFatalFromTokenA(
-        TOKEN_DATA      *pToken,
-        const
-        char            *pErrorString
-    )
-    {
-        SRCERROR_DATA   *this;
-        
-        this = srcError_Alloc( );
-        if (this) {
-            this = srcError_Init(this);
-            if (this) {
-                srcError_setSeverity(this, SRCERROR_SEVERITY_FATAL);
-                if (pToken) {
-                    srcError_setLocation(this, token_getLoc(pToken));
-                }
+            if (pErrorString) {
                 this->pErrorStr = AStr_NewA(pErrorString);
                 if (OBJ_NIL == this->pErrorStr) {
                     obj_Release(this);
@@ -195,31 +138,85 @@ extern "C" {
                 }
             }
         }
+
+        return this;
+    }
+
+
+
+    SRCERROR_DATA * SrcError_NewFatalFromToken (
+        TOKEN_DATA      *pToken,
+        ASTR_DATA       *pErrorString
+    )
+    {
+        SRCERROR_DATA   *this;
+        
+        this = SrcError_New( );
+        if (this) {
+            SrcError_setSeverity(this, SRCERROR_SEVERITY_FATAL);
+            if (pToken) {
+                SrcError_setLocation(this, token_getLoc(pToken));
+            }
+            if (pErrorString) {
+                this->pErrorStr = AStr_Copy(pErrorString);
+                if (OBJ_NIL == this->pErrorStr) {
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+            }
+        }
+
+        return this;
+    }
+    
+    
+    
+    SRCERROR_DATA * SrcError_NewFatalFromTokenA (
+        TOKEN_DATA      *pToken,
+        const
+        char            *pErrorString
+    )
+    {
+        SRCERROR_DATA   *this;
+        
+        this = SrcError_New( );
+        if (this) {
+            SrcError_setSeverity(this, SRCERROR_SEVERITY_FATAL);
+            if (pToken) {
+                SrcError_setLocation(this, token_getLoc(pToken));
+            }
+            this->pErrorStr = AStr_NewA(pErrorString);
+            if (OBJ_NIL == this->pErrorStr) {
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+        }
+
         return this;
     }
 
     
 
 
-    
-    
+
+
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                     E r r o r  S t r
+    //                    E r r o r  S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA *     srcError_getErrorStr(
-        SRCERROR_DATA   *this
+    ASTR_DATA * SrcError_getErrorStr (
+        SRCERROR_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -229,62 +226,53 @@ extern "C" {
     }
     
     
-    bool            srcError_setErrorStr(
-        SRCERROR_DATA   *this,
-        ASTR_DATA       *pValue
+    bool        SrcError_setErrorStr (
+        SRCERROR_DATA *this,
+        ASTR_DATA   *pValue
     )
     {
-        ASTR_DATA       *pStr;
-        
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-       
-        if (pValue) {
-            pStr = AStr_Copy(pValue);
-            if (OBJ_NIL == pStr) {
-                return false;
-            }
-        }
-        //obj_Retain(pValue);
-        
+
+#ifdef  PROPERTY_ERRORSTR_OWNED
+        obj_Retain(pValue);
         if (this->pErrorStr) {
             obj_Release(this->pErrorStr);
         }
+#endif
         this->pErrorStr = pValue;
         
         return true;
     }
     
-    
-    
+        
+        
     //---------------------------------------------------------------
-    //                     L o c a t i o n
+    //                    L o c a t i o n
     //---------------------------------------------------------------
     
-    SRCLOC *        srcError_getLocation(
+    SRCLOC *        SrcError_getLocation (
         SRCERROR_DATA   *this
     )
     {
-        
-        // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return 0;
         }
 #endif
-        
+
         return &this->loc;
     }
-    
-    
-    bool            srcError_setLocation(
+
+
+    bool            SrcError_setLocation (
         SRCERROR_DATA   *this,
         const
         SRCLOC          *pValue
@@ -292,7 +280,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !SrcError_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -307,22 +295,22 @@ extern "C" {
         
         return true;
     }
-    
-    
-    
+
+     
+
     //---------------------------------------------------------------
-    //                          S e v e r i t y
+    //                        S e v e r i t y
     //---------------------------------------------------------------
     
-    uint16_t        srcError_getSeverity(
-        SRCERROR_DATA   *this
+    uint16_t        SrcError_getSeverity (
+        SRCERROR_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -332,14 +320,14 @@ extern "C" {
     }
 
 
-    bool            srcError_setSeverity(
-        SRCERROR_DATA   *this,
+    bool            SrcError_setSeverity (
+        SRCERROR_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -356,13 +344,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        srcError_getSize(
+    uint32_t        SrcError_getSize (
         SRCERROR_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -377,7 +365,7 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  srcError_getSuperVtbl(
+    OBJ_IUNKNOWN *  SrcError_getSuperVtbl (
         SRCERROR_DATA     *this
     )
     {
@@ -385,7 +373,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -414,83 +402,89 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = srcError__Assign(this,pOther);
+        ERESULT eRc = SrcError_Assign(this,pOther);
      @endcode 
-     @param     this    SRCERROR object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another SRCERROR object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         srcError_Assign(
-        SRCERROR_DATA		*this,
-        SRCERROR_DATA      *pOther
+    ERESULT         SrcError_Assign (
+        SRCERROR_DATA   *this,
+        SRCERROR_DATA   *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !srcError_Validate(pOther) ) {
+        if (!SrcError_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
         // Release objects and areas in other object.
-        srcError_setErrorStr(pOther, OBJ_NIL);
+        SrcError_setErrorStr(this, OBJ_NIL);
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-        
         if (this->pErrorStr) {
-            if (obj_getVtbl(this->pErrorStr)->pCopy) {
-                pOther->pErrorStr = obj_getVtbl(this->pErrorStr)->pCopy(this->pErrorStr);
-            }
-            else {
-                obj_Retain(this->pErrorStr);
-                pOther->pErrorStr = this->pErrorStr;
-            }
+            pOther->pErrorStr = AStr_Copy(this->pErrorStr);
         }
 
         // Copy other data from this object to other.
+        SrcError_setLocation(pOther, &this->loc);
         pOther->severity = this->severity;
-        srcError_setLocation(pOther, &this->loc);
         
         //goto eom;
 
         // Return to caller.
+        eRc = ERESULT_SUCCESS;
     eom:
+        //FIXME: Implement the assignment.        
         return eRc;
     }
     
     
     
     //---------------------------------------------------------------
-    //                       C o m p a r e
+    //                      C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         srcError_Compare(
-        SRCERROR_DATA   *this,
-        SRCERROR_DATA   *pOther
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         SrcError_Compare (
+        SRCERROR_DATA     *this,
+        SRCERROR_DATA     *pOther
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
         
-        // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !srcError_Validate(pOther) ) {
+        if (!SrcError_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         if( OBJ_NIL == pOther ) {
@@ -531,11 +525,12 @@ extern "C" {
                 return ERESULT_SUCCESS_GREATER_THAN;
         }
 
-        // Return to caller.
+
         return eRc;
     }
     
-    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -544,30 +539,30 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        srcError      *pCopy = srcError_Copy(this);
+        SrcError      *pCopy = SrcError_Copy(this);
      @endcode 
-     @param     this    SRCERROR object pointer
-     @return    If successful, a SRCERROR object which must be released,
-                otherwise OBJ_NIL.
-     @warning  Remember to release the returned the SRCERROR object.
+     @param     this    object pointer
+     @return    If successful, a SRCERROR object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    SRCERROR_DATA *     srcError_Copy(
-        SRCERROR_DATA       *this
+    SRCERROR_DATA * SrcError_Copy (
+        SRCERROR_DATA   *this
     )
     {
-        SRCERROR_DATA       *pOther = OBJ_NIL;
+        SRCERROR_DATA   *pOther = OBJ_NIL;
         //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther =    srcError_NewFromData(
+        pOther =    SrcError_NewFromData(
                                  this->severity,
                                  &this->loc,
                                  AStr_getData(this->pErrorStr)
@@ -575,7 +570,7 @@ extern "C" {
         if (OBJ_NIL == pOther) {
             return OBJ_NIL;
         }
-        
+
         // Return to caller.
         //obj_Release(pOther);
         return pOther;
@@ -587,7 +582,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            srcError_Dealloc(
+    void            SrcError_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -599,7 +594,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -611,7 +606,7 @@ extern "C" {
         }
 #endif
 
-        srcError_setErrorStr(this, OBJ_NIL);
+        SrcError_setErrorStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -628,15 +623,22 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         srcError_Disable(
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SrcError_Disable (
         SRCERROR_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -656,15 +658,22 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         srcError_Enable(
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SrcError_Enable (
         SRCERROR_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -684,11 +693,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    SRCERROR_DATA *   srcError_Init(
+    SRCERROR_DATA *   SrcError_Init (
         SRCERROR_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(SRCERROR_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -712,23 +722,27 @@ extern "C" {
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SRCERROR);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcError_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SrcError_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        /*
+        this->pArray = ObjArray_New( );
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        */
 
     #ifdef NDEBUG
     #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "srcError::offsetof(eRc) = %lu\n", offsetof(SRCERROR_DATA,eRc));
-        //fprintf(stderr, "srcError::sizeof(SRCERROR_DATA) = %lu\n", sizeof(SRCERROR_DATA));
+        //fprintf(stderr, "SrcError::sizeof(SRCERROR_DATA) = %lu\n", sizeof(SRCERROR_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(SRCERROR_DATA));
     #endif
@@ -742,15 +756,16 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         srcError_IsEnabled(
+    ERESULT         SrcError_IsEnabled (
         SRCERROR_DATA		*this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -777,14 +792,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = srcError_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = SrcError_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "srcError", prefix,
+                        the object name, "SrcError", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -792,7 +807,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          srcError_QueryInfo(
+    void *          SrcError_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -807,7 +822,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -815,7 +830,33 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_INFO:
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(SRCERROR_DATA);
+            break;
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)SrcError_Class();
+                break;
+                
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -824,20 +865,25 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return srcError_Disable;
+                            return SrcError_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return srcError_Enable;
+                            return SrcError_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return srcError_ToDebugString;
+                            return SrcError_ToDebugString;
                         }
+#ifdef  SRCREF_JSON_SUPPORT
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return SrcError_ToJson;
+                        }
+#endif
                         break;
                         
                     default:
@@ -846,8 +892,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == srcError_ToDebugString)
+                if (pData == SrcError_ToDebugString)
                     return "ToDebugString";
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == SrcError_ToJson)
+                    return "ToJson";
+#endif
                 break;
                 
             default:
@@ -867,66 +917,59 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = srcError_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SrcError_ToDebugString(this,4);
      @endcode 
-     @param     this    SRCERROR object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     srcError_ToDebugString(
-        SRCERROR_DATA   *this,
+    ASTR_DATA *     SrcError_ToDebugString (
+        SRCERROR_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = srcError_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) fileNo=%d LineNo=%d ColNo=%d error=%s\n",
+                    "{%p(%s) retain=%d severity=%d "
+                    "fileNo=%d LineNo=%d ColNo=%d error=%s\n",
                     this,
                     pInfo->pClassName,
+                    obj_getRetainCount(this),
+                    this->severity,
                     this->loc.fileIndex,
                     this->loc.lineNo,
                     this->loc.colNo,
-                    AStr_getData(this->pErrorStr)
+                    this->pErrorStr ? AStr_getData(this->pErrorStr) : ""
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-            }
-        }
-#endif
-        
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
@@ -941,7 +984,7 @@ extern "C" {
     }
     
     
-    ASTR_DATA *     srcError_ToString(
+    ASTR_DATA *     SrcError_ToString (
         SRCERROR_DATA   *this
     )
     {
@@ -955,7 +998,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !srcError_Validate(this) ) {
+        if( !SrcError_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -993,25 +1036,25 @@ extern "C" {
         
         return pStr;
     }
-    
-    
+        
+        
 
-    
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
     #ifdef NDEBUG
     #else
-    bool            srcError_Validate(
+    bool            SrcError_Validate (
         SRCERROR_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_SRCERROR) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_SRCERROR))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1027,7 +1070,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(SRCERROR_DATA)) ) {
+        if (!(obj_getSize(this) >= sizeof(SRCERROR_DATA))) {
             return false;
         }
 

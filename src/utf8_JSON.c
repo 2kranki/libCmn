@@ -52,7 +52,7 @@
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <utf8.h>
 
 //#define TRACE_FUNCTIONS 1

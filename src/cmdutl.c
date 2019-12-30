@@ -119,7 +119,7 @@
 #include        <nodeArray.h>
 #include        <nodeHash.h>
 #include        <scanner.h>
-#include        <srcErrors.h>
+#include        <SrcErrors.h>
 #include        <trace.h>
 #include        <utf8.h>
 #include        <W32Str.h>

@@ -26,7 +26,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <BitMatrix_internal.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <szTbl.h>
 
 
@@ -54,7 +54,7 @@ int             tearDown(
     // test method in the class.
 
     
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     szTbl_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {

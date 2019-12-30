@@ -47,7 +47,7 @@
 #include    <jsonIn.h>
 #include    <path.h>
 #include    <str.h>
-#include    <objArray.h>
+#include    <ObjArray.h>
 #include    <array_internal.h>
 #include    <utf8.h>
 
@@ -87,7 +87,7 @@ struct AStr_data_s	{
      @return    a new null object if successful, otherwise, OBJ_NIL
      @warning   Returned null object must be released.
      */
-    ASTR_DATA *     AStr_ParseObject(
+    ASTR_DATA *     AStr_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
     

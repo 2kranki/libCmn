@@ -99,7 +99,7 @@ struct name_data_s	{
     );
     
     
-    NAME_DATA *     name_ParseObject(
+    NAME_DATA *     name_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
     

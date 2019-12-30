@@ -301,7 +301,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            i = objArray_getSize(this->pArray);
+            i = ObjArray_getSize(this->pArray);
         }
         return i;
     }
@@ -381,14 +381,14 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pArray) {
-            this->pArray = objArray_New();
+            this->pArray = ObjArray_New();
             if (OBJ_NIL == this->pArray) {
                 DEBUG_BREAK();
                 return ERESULT_MEMORY_EXCEEDED;
             }
         }
         
-        eRc = objArray_AppendObj(this->pArray, pObject, pIndex);
+        eRc = ObjArray_AppendObj(this->pArray, pObject, pIndex);
         
         // Return to caller.
         return eRc;
@@ -420,7 +420,7 @@ extern "C" {
         }
 #endif
         
-        eRc = objArray_Assign(this->pArray, pOther->pArray);
+        eRc = ObjArray_Assign(this->pArray, pOther->pArray);
         pOther->pCompare = this->pCompare;
         
         // Return to caller.
@@ -453,7 +453,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        pOther->pArray = objArray_Copy(this->pArray);
+        pOther->pArray = ObjArray_Copy(this->pArray);
         if (pOther->pArray) {
             pOther->pCompare = this->pCompare;
             return pOther;
@@ -481,7 +481,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            i = objArray_getSize(this->pArray);
+            i = ObjArray_getSize(this->pArray);
         }
         return i;
     }
@@ -560,7 +560,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        pOther->pArray = objArray_DeepCopy(this->pArray);
+        pOther->pArray = ObjArray_DeepCopy(this->pArray);
         if (pOther->pArray) {
             pOther->pCompare = this->pCompare;
             return pOther;
@@ -594,7 +594,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_Delete(this->pArray, index);
+            pNode = ObjArray_Delete(this->pArray, index);
         }
         
         // Return to caller.
@@ -618,7 +618,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_DeleteFirst(this->pArray);
+            pNode = ObjArray_DeleteFirst(this->pArray);
         }
         
         // Return to caller.
@@ -642,7 +642,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_DeleteLast(this->pArray);
+            pNode = ObjArray_DeleteLast(this->pArray);
         }
         
         // Return to caller.
@@ -676,9 +676,9 @@ extern "C" {
         
         if (this->pArray) {
             pEnum = NodeEnum_New();
-            size = objArray_getSize(this->pArray);
+            size = ObjArray_getSize(this->pArray);
             for (index = 0; index < size; ++index) {
-                pNode = objArray_Get(this->pArray, index+1);
+                pNode = ObjArray_Get(this->pArray, index+1);
                 eRc = NodeEnum_AppendObj(pEnum, pNode);
             }
         }
@@ -720,7 +720,7 @@ extern "C" {
         
         size = nodeArray_getSize(this);
         for (i=0; i<size; ++i) {
-            pWork = (NODE_DATA *)objArray_Get(this->pArray, i+1);
+            pWork = (NODE_DATA *)ObjArray_Get(this->pArray, i+1);
             if (pWork) {
                 eRc = node_Compare(pNode, pWork);
                 if( eRc == ERESULT_SUCCESS_EQUAL ) {
@@ -796,9 +796,9 @@ extern "C" {
 #endif
         
         if (this->pArray && pScan) {
-            size = objArray_getSize(this->pArray);
+            size = ObjArray_getSize(this->pArray);
             for (index = 0; index < size; ++index) {
-                pNode = objArray_Get(this->pArray, (index + 1));
+                pNode = ObjArray_Get(this->pArray, (index + 1));
                 eRc = pScan(pObj, pNode, pArg3);
                 if (ERESULT_FAILED(eRc))
                     break;
@@ -832,7 +832,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_Get(this->pArray, index);
+            pNode = ObjArray_Get(this->pArray, index);
         }
         
         // Return to caller.
@@ -859,7 +859,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_GetFirst(this->pArray);
+            pNode = ObjArray_GetFirst(this->pArray);
         }
         
         // Return to caller.
@@ -886,7 +886,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            pNode = objArray_GetLast(this->pArray);
+            pNode = ObjArray_GetLast(this->pArray);
         }
         
         // Return to caller.
@@ -957,14 +957,14 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pArray) {
-            this->pArray = objArray_New();
+            this->pArray = ObjArray_New();
             if (OBJ_NIL == this->pArray) {
                 DEBUG_BREAK();
                 return ERESULT_MEMORY_EXCEEDED;
             }
         }
         
-        eRc = objArray_InsertObj(this->pArray, index, pObject);
+        eRc = ObjArray_InsertObj(this->pArray, index, pObject);
         
         // Return to caller.
         return eRc;
@@ -996,14 +996,14 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pArray) {
-            this->pArray = objArray_New();
+            this->pArray = ObjArray_New();
             if (OBJ_NIL == this->pArray) {
                 DEBUG_BREAK();
                 return ERESULT_MEMORY_EXCEEDED;
             }
         }
         
-        eRc = objArray_Put(this->pArray, index, pObject);
+        eRc = ObjArray_Put(this->pArray, index, pObject);
         
         // Return to caller.
         return eRc;
@@ -1091,7 +1091,7 @@ extern "C" {
 #endif
         
         if (this->pArray) {
-            eRc = objArray_SortAscending(this->pArray, (OBJ_COMPARE)this->pCompare);
+            eRc = ObjArray_SortAscending(this->pArray, (OBJ_COMPARE)this->pCompare);
         }
         
         // Return to caller.
@@ -1120,8 +1120,8 @@ extern "C" {
         pArray = i32Array_New( );
         
         if (pArray && this->pArray) {
-            for (j=0; j<objArray_getSize(this->pArray); ++j) {
-                pNode = objArray_Get(this->pArray, j+1);
+            for (j=0; j<ObjArray_getSize(this->pArray); ++j) {
+                pNode = ObjArray_Get(this->pArray, j+1);
                 if (pNode) {
                     chr = node_getClass(pNode);
                 }
@@ -1162,13 +1162,13 @@ extern "C" {
                          pStr,
                          "{%p(nodeArray) Size=%d pArray=%p\n\n",
                          this,
-                         (this->pArray ? objArray_getSize(this->pArray) : 0),
+                         (this->pArray ? ObjArray_getSize(this->pArray) : 0),
                          this->pArray
         );
         
         if (this->pArray) {
-            for (j=0; j<objArray_getSize(this->pArray); ++j) {
-                pNode = objArray_Get(this->pArray, j+1);
+            for (j=0; j<ObjArray_getSize(this->pArray); ++j) {
+                pNode = ObjArray_Get(this->pArray, j+1);
                 if ( pNode && ((OBJ_DATA *)(pNode))->pVtbl->pToDebugString) {
                     pWrkStr =   ((OBJ_DATA *)(pNode))->pVtbl->pToDebugString(
                                         pNode,
@@ -1206,8 +1206,8 @@ extern "C" {
         AStr_AppendA(pStr, "Array[\n");
         
         if (this->pArray) {
-            for (j=0; j<objArray_getSize(this->pArray); ++j) {
-                pNode = objArray_Get(this->pArray, j+1);
+            for (j=0; j<ObjArray_getSize(this->pArray); ++j) {
+                pNode = ObjArray_Get(this->pArray, j+1);
                 pWrk = node_ToString(pNode);
                 if (pWrk) {
                     AStr_AppendA(pStr, "  ");
@@ -1283,9 +1283,9 @@ extern "C" {
         BREAK_NULL(this->pArray);
 #endif
         
-        iMax = objArray_getSize(this->pArray);
+        iMax = ObjArray_getSize(this->pArray);
         for (i=0; i<iMax; ++i) {
-            pNode = objArray_Get(this->pArray, (i+1));
+            pNode = ObjArray_Get(this->pArray, (i+1));
             eRc = pVisitor(pObject, pNode);
             if (ERESULT_FAILED(eRc)) {
                 break;

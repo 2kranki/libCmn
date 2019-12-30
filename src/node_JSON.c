@@ -153,7 +153,7 @@ extern "C" {
 
         eRc = jsonIn_SubobjectInHash(pParser, "name");
         if (ERESULT_FAILED(eRc)) {
-            pName = name_ParseObject(pParser);
+            pName = name_ParseJsonObject(pParser);
             jsonIn_SubobjectEnd(pParser);
             if (pName) {
                 node_setProperties(pObject, pObj);
@@ -357,7 +357,7 @@ extern "C" {
         );
 
         if (this->pName) {
-            pWrkStr = name_ToJSON(this->pName);
+            pWrkStr = name_ToJson(this->pName);
             AStr_AppendA(pStr, "\t\"name\": ");
             AStr_Append(pStr, pWrkStr);\
             obj_Release(pWrkStr);

@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 06/05/2017 21:57:10
+ *	Generated 12/29/2019 20:07:08
  */
 
 
@@ -24,13 +25,13 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <objArray_internal.h>
+#include    <ObjArray_internal.h>
 #include    <AStrC.h>
 
 
 
 static
-char	*stringTable[] = {
+char    *stringTable[] = {
     "now",
     "xray",
     "before",
@@ -41,13 +42,14 @@ char	*stringTable[] = {
     NULL
 };
 static
-int             num = 7;
+int            cStringTable = 7;
 
 
 
-int         setUp(
+
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -59,9 +61,9 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -91,12 +93,46 @@ int         tearDown(
 
 
 
-int         test_objArray_OpenClose(
+int             test_ObjArray_OpenClose(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    OBJARRAY_DATA	    *pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = ObjArray_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = ObjArray_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_OBJARRAY);
+        TINYTEST_TRUE( (fRc) );
+        
+        // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_ObjArray_Test01(
     const
     char        *pTestName
 )
 {
-    OBJARRAY_DATA	*pObj = OBJ_NIL;
+    OBJARRAY_DATA   *pObj = OBJ_NIL;
     OBJARRAY_DATA   *pObj2 = OBJ_NIL;
     ERESULT         eRc;
     uint32_t        i;
@@ -111,52 +147,52 @@ int         test_objArray_OpenClose(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
-    pObj = objArray_Alloc( );
+    pObj = ObjArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = objArray_Init( pObj );
+    pObj = ObjArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        for (i=0; i<num; ++i) {
+        for (i=0; i<cStringTable; ++i) {
             pStrC = AStrC_NewA(stringTable[i]);
             XCTAssertFalse( (OBJ_NIL == pStrC) );
             if (pStrC) {
-                eRc = objArray_AppendObj(pObj, pStrC, NULL);
+                eRc = ObjArray_AppendObj(pObj, pStrC, NULL);
                 XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
                 obj_Release(pStrC);
                 pStrC = OBJ_NIL;
-                size = objArray_getSize(pObj);
+                size = ObjArray_getSize(pObj);
             }
         }
-        fprintf(stderr, "\tcount = %d\n", objArray_getSize(pObj));
-        XCTAssertTrue( (num == objArray_getSize(pObj)) );
+        fprintf(stderr, "\tcount = %d\n", ObjArray_getSize(pObj));
+        XCTAssertTrue( (cStringTable == ObjArray_getSize(pObj)) );
 
-        for (i=0; i<num; ++i) {
-            pStrC = objArray_Get(pObj, i+1);
+        for (i=0; i<cStringTable; ++i) {
+            pStrC = ObjArray_Get(pObj, i+1);
             fprintf(stderr, "%d - %s\n", i, AStrC_getData(pStrC));
             XCTAssertFalse( (OBJ_NIL == pStrC) );
             XCTAssertTrue( (0 == strcmp((char *)AStrC_getData(pStrC), stringTable[i])) );
         }
         
-        eRc = objArray_SortAscending(pObj, (OBJ_COMPARE)&AStrC_Compare);
+        eRc = ObjArray_SortAscending(pObj, (OBJ_COMPARE)&AStrC_Compare);
         fprintf(stderr, "\n\tSorted Array:\n");
-        for (i=0; i<num; ++i) {
-            pStrC = objArray_Get(pObj, i+1);
+        for (i=0; i<cStringTable; ++i) {
+            pStrC = ObjArray_Get(pObj, i+1);
             fprintf( stderr, "%d - %s\n", i, AStrC_getData(pStrC) );
         }
         
-        pStr = objArray_ToDebugString(pObj, 0);
+        pStr = ObjArray_ToDebugString(pObj, 0);
         fprintf(stderr, "\n\n\nDebug = %s\n\n\n",AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
         fprintf(stderr, "\n\nNow creating a copy of the array!\n");
-        pObj2 = objArray_Copy(pObj);
+        pObj2 = ObjArray_Copy(pObj);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         XCTAssertTrue( (!(pObj == pObj2)) );
-        XCTAssertTrue( (objArray_getSize(pObj) == objArray_getSize(pObj2)) );
+        XCTAssertTrue( (ObjArray_getSize(pObj) == ObjArray_getSize(pObj2)) );
         
-        pStr = objArray_ToDebugString(pObj2, 0);
+        pStr = ObjArray_ToDebugString(pObj2, 0);
         fprintf(stderr, "Debug = %s\n\n\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
@@ -167,12 +203,14 @@ int         test_objArray_OpenClose(
         pObj2 = OBJ_NIL;
         
         fprintf(stderr, "Now creating a deep copy of the array!\n");
-        pObj2 = objArray_DeepCopy(pObj);
+        pObj2 = ObjArray_DeepCopy(pObj);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         XCTAssertTrue( (!(pObj == pObj2)) );
-        XCTAssertTrue( (objArray_getSize(pObj) == objArray_getSize(pObj2)) );
+        fprintf(stderr, "Size_Original = %d\n", ObjArray_getSize(pObj));
+        fprintf(stderr, "Size_Other = %d\n", ObjArray_getSize(pObj2));
+        XCTAssertTrue( (ObjArray_getSize(pObj) == ObjArray_getSize(pObj2)) );
         
-        pStr = objArray_ToDebugString(pObj2, 0);
+        pStr = ObjArray_ToDebugString(pObj2, 0);
         fprintf(stderr, "Debug = %s\n\n\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
@@ -192,7 +230,7 @@ int         test_objArray_OpenClose(
 
 
 
-int         test_objArray_GetPut01(
+int         test_ObjArray_Test02(
     const
     char        *pTestName
 )
@@ -206,68 +244,68 @@ int         test_objArray_GetPut01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = objArray_Alloc( );
+    pObj = ObjArray_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pObj = objArray_Init( pObj );
+    pObj = ObjArray_Init( pObj );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        for (i=0; i<num; ++i) {
+        for (i=0; i<cStringTable; ++i) {
             pStr = AStr_NewA(stringTable[i]);
             XCTAssertFalse( (OBJ_NIL == pStr) );
             if (pStr) {
-                eRc = objArray_Put(pObj, (i+1), pStr);
+                eRc = ObjArray_Put(pObj, (i+1), pStr);
                 XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
-                size = objArray_getSize(pObj);
+                size = ObjArray_getSize(pObj);
                 XCTAssertTrue( (size == (i + 1)) );
             }
         }
-        fprintf(stderr, "\tcount = %d\n", objArray_getSize(pObj));
-        XCTAssertTrue( (num == objArray_getSize(pObj)) );
+        fprintf(stderr, "\tcount = %d\n", ObjArray_getSize(pObj));
+        XCTAssertTrue( (cStringTable == ObjArray_getSize(pObj)) );
         
-        for (i=0; i<num; ++i) {
-            pStr = objArray_Get(pObj, i+1);
+        for (i=0; i<cStringTable; ++i) {
+            pStr = ObjArray_Get(pObj, i+1);
             fprintf(stderr, "%d - %s\n", i, AStr_getData(pStr));
             XCTAssertFalse( (OBJ_NIL == pStr) );
             XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i])) );
         }
         
-        eRc = objArray_SortAscending(pObj, (OBJ_COMPARE)&AStr_Compare);
+        eRc = ObjArray_SortAscending(pObj, (OBJ_COMPARE)&AStr_Compare);
         fprintf(stderr, "\n\tSorted Array:\n");
-        for (i=0; i<num; ++i) {
-            pStr = objArray_Get(pObj, i+1);
+        for (i=0; i<cStringTable; ++i) {
+            pStr = ObjArray_Get(pObj, i+1);
             fprintf( stderr, "%d - %s\n", i, AStr_getData(pStr) );
         }
         
         fprintf(stderr, "\n\n\nCurrent array:\n");
-        pStr = objArray_ToDebugString(pObj, 0);
+        pStr = ObjArray_ToDebugString(pObj, 0);
         fprintf(stderr, "Debug = %s\n\n\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
-        eRc = objArray_Xchg(pObj, 1, 7);
+        eRc = ObjArray_Xchg(pObj, 1, 7);
         fprintf(stderr, "\n\n\n\tAfter Xchg Array:\n");
-        for (i=0; i<num; ++i) {
-            pStr = objArray_Get(pObj, i+1);
+        for (i=0; i<cStringTable; ++i) {
+            pStr = ObjArray_Get(pObj, i+1);
             fprintf( stderr, "%d - %s\n", i, AStr_getData(pStr) );
         }
         
-        eRc = objArray_Xchg(pObj, 1, 7);
+        eRc = ObjArray_Xchg(pObj, 1, 7);
         fprintf(stderr, "\n\n\nCurrent array:\n");
-        pStr = objArray_ToDebugString(pObj, 0);
+        pStr = ObjArray_ToDebugString(pObj, 0);
         fprintf(stderr, "Debug = %s\n\n\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
         
         fprintf(stderr, "Now creating a copy of the array!\n");
-        pObj2 = objArray_Copy(pObj);
+        pObj2 = ObjArray_Copy(pObj);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         XCTAssertTrue( (!(pObj == pObj2)) );
-        XCTAssertTrue( (objArray_getSize(pObj) == objArray_getSize(pObj2)) );
+        XCTAssertTrue( (ObjArray_getSize(pObj) == ObjArray_getSize(pObj2)) );
         
-        pStr = objArray_ToDebugString(pObj2, 0);
+        pStr = ObjArray_ToDebugString(pObj2, 0);
         fprintf(stderr, "Debug = %s\n\n\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
@@ -278,12 +316,12 @@ int         test_objArray_GetPut01(
         pObj2 = OBJ_NIL;
         
         fprintf(stderr, "Now creating a deep copy of the array!\n");
-        pObj2 = objArray_DeepCopy(pObj);
+        pObj2 = ObjArray_DeepCopy(pObj);
         XCTAssertFalse( (OBJ_NIL == pObj) );
         XCTAssertTrue( (!(pObj == pObj2)) );
-        XCTAssertTrue( (objArray_getSize(pObj) == objArray_getSize(pObj2)) );
+        XCTAssertTrue( (ObjArray_getSize(pObj) == ObjArray_getSize(pObj2)) );
         
-        pStr = objArray_ToDebugString(pObj2, 0);
+        pStr = ObjArray_ToDebugString(pObj2, 0);
         fprintf(stderr, "Debug = %s\n\n\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
@@ -304,12 +342,14 @@ int         test_objArray_GetPut01(
 
 
 
-TINYTEST_START_SUITE(test_objArray);
-    TINYTEST_ADD_TEST(test_objArray_GetPut01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_objArray_OpenClose,setUp,tearDown);
+
+TINYTEST_START_SUITE(test_ObjArray);
+    TINYTEST_ADD_TEST(test_ObjArray_Test02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_ObjArray_Test01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_ObjArray_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_objArray);
+TINYTEST_MAIN_SINGLE_SUITE(test_ObjArray);
 
 
 

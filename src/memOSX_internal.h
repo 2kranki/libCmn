@@ -41,7 +41,7 @@
 #include        <memOSX.h>
 #include        <AStr.h>
 #include        <listdl.h>
-#include        <objArray.h>
+#include        <ObjArray.h>
 
 
 #ifndef MEMOSX_INTERNAL_H

@@ -43,7 +43,7 @@
 
 
 #include    <execArray.h>
-#include    <objArray.h>
+#include    <ObjArray.h>
 #include    <ptrArray.h>
 
 #ifdef	__cplusplus

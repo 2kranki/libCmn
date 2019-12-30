@@ -24,6 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <hjson.h>
+#include    <SrcErrors.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <jsonPP_internal.h>
@@ -53,6 +54,7 @@ int             tearDown(
     // test method in the class.
 
     
+    SrcErrors_SharedReset( );
     szTbl_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {

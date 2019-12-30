@@ -155,11 +155,11 @@ int             test_msgBus_Broadcast01(
         printf("\n\n\n");
 
         // Display the array as mentioned above.
-        iMax = objArray_getSize(pTest->pArray);
+        iMax = ObjArray_getSize(pTest->pArray);
         printf("Output Queue(%d):\n", iMax);
         printf("   i num origin dest len text\n");
         for (i=0; i<iMax; ++i) {
-            pData = objArray_Get(pTest->pArray, i+1);
+            pData = ObjArray_Get(pTest->pArray, i+1);
             if (pData) {
                 printf("  %2d %2d    %2d    %2d   %2d %s\n",
                        i,

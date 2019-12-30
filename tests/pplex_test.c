@@ -25,7 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <pplex_internal.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <szTbl.h>
 
 
@@ -52,7 +52,7 @@ int         tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     szTbl_SharedReset( );
     trace_SharedReset( ); 
     mem_Release( );
@@ -231,10 +231,10 @@ int         test_pplex_Input01(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
-    cls = srcErrors_getNumErrors(srcErrors_Shared());
+    cls = SrcErrors_getNumErrors(SrcErrors_Shared());
     if (cls) {
         fprintf(stderr, "\n\n\n\t%d ERRORS Occurred:\n", cls);
-        pStr = srcErrors_ToDebugString(srcErrors_Shared(), 0);
+        pStr = SrcErrors_ToDebugString(SrcErrors_Shared(), 0);
         if (pStr) {
             fprintf(stderr, "\t%s\n", AStr_getData(pStr));
             obj_Release(pStr);
@@ -1270,10 +1270,10 @@ int         test_pplex_Input02(
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
-    cls = srcErrors_getNumErrors(srcErrors_Shared());
+    cls = SrcErrors_getNumErrors(SrcErrors_Shared());
     if (cls) {
         fprintf(stderr, "\n\n\n\t%d ERRORS Occurred:\n", cls);
-        pStr = srcErrors_ToDebugString(srcErrors_Shared(), 0);
+        pStr = SrcErrors_ToDebugString(SrcErrors_Shared(), 0);
         if (pStr) {
             fprintf(stderr, "\t%s\n", AStr_getData(pStr));
             obj_Release(pStr);

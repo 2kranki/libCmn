@@ -298,7 +298,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&true_Vtbl);
         
         //this->stackSize = obj_getMisc1(cbp);
-        //this->pArray = objArray_New( );
+        //this->pArray = ObjArray_New( );
 
     #ifdef NDEBUG
     #else

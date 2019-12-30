@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <srcErrors_internal.h>
+#include    <SrcErrors_internal.h>
 
 
 
@@ -51,7 +51,7 @@ int         tearDown(
     // test method in the class.
 
     
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -75,7 +75,7 @@ int         tearDown(
 
 
 
-int         test_srcErrors_OpenClose(
+int         test_SrcErrors_OpenClose(
     const
     char        *pTestName
 )
@@ -84,13 +84,14 @@ int         test_srcErrors_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = srcErrors_Alloc( );
+    pObj = SrcErrors_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = srcErrors_Init( pObj );
+    pObj = SrcErrors_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        // Test something.
+        TINYTEST_TRUE(obj_IsKindOf(pObj, OBJ_IDENT_SRCERRORS));
+        TINYTEST_TRUE(obj_IsKindOf(pObj, OBJ_IDENT_OBJARRAY));
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -102,7 +103,7 @@ int         test_srcErrors_OpenClose(
 
 
 
-int         test_srcErrors_Fatal01(
+int         test_SrcErrors_Fatal01(
     const
     char        *pTestName
 )
@@ -113,18 +114,18 @@ int         test_srcErrors_Fatal01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pObj = srcErrors_Alloc( );
+    pObj = SrcErrors_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = srcErrors_Init( pObj );
+    pObj = SrcErrors_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        srcErrors_AddFatalA(
+        SrcErrors_AddFatalA(
                             pObj,
                             &location,
                             "Expecting '}', but found nothing"
         );
-        srcErrors_Print(pObj);
+        SrcErrors_Print(pObj, stderr);
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -138,8 +139,8 @@ int         test_srcErrors_Fatal01(
 
 
 TINYTEST_START_SUITE(test_srcErrors);
-    TINYTEST_ADD_TEST(test_srcErrors_Fatal01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcErrors_OpenClose,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcErrors_Fatal01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcErrors_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
 TINYTEST_MAIN_SINGLE_SUITE(test_srcErrors);

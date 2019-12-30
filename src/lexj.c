@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include <lexj_internal.h>
-#include <srcErrors.h>
+#include <SrcErrors.h>
 #include <trace.h>
 
 
@@ -615,7 +615,7 @@ extern "C" {
         
         lexj_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        //this->pArray = ObjArray_New( );
 
         fRc =   lex_setParserFunction(
                             (LEX_DATA *)this,
@@ -1044,7 +1044,7 @@ extern "C" {
                         break;
                     }
                     else {
-                        srcErrors_AddFatalFromTokenA(
+                        SrcErrors_AddFatalFromTokenA(
                                     OBJ_NIL,
                                     pInput,
                                     "Malformed String Constant"
@@ -1130,7 +1130,7 @@ extern "C" {
                                 }
                             }
                             if (cls == -1) {
-                                srcErrors_AddFatalFromTokenA(
+                                SrcErrors_AddFatalFromTokenA(
                                     OBJ_NIL,
                                     pInput,
                                     "Unexpected EOF within a Comment"

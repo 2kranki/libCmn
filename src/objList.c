@@ -1122,11 +1122,11 @@ int             ObjList_SortCompare (
         }
 #endif
         
-        pArray = objArray_New();
+        pArray = ObjArray_New();
         if (pArray) {
             pEntry = listdl_Head(&this->list);
             while ( pEntry ) {
-                eRc = objArray_Append(pArray, pEntry->pObject);
+                eRc = ObjArray_Append(pArray, pEntry->pObject);
                 if (ERESULT_FAILED(eRc)) {
                     obj_Release(pArray);
                     pArray = OBJ_NIL;

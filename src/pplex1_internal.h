@@ -39,7 +39,7 @@
 
 #include    <pplex1.h>
 #include    <lex_internal.h>
-#include    <objArray.h>
+#include    <ObjArray.h>
 
 
 #ifndef PPLEX1_INTERNAL_H

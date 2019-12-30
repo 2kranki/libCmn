@@ -39,7 +39,7 @@
 
 #include    <lex.h>
 #include    <ascii.h>
-#include    <objArray.h>
+#include    <ObjArray.h>
 #include    <szTbl.h>
 #include    <token_internal.h>
 #include    <tokenList.h>

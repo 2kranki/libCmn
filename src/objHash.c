@@ -695,7 +695,7 @@ extern "C" {
             else {
                 i = 32768;
             }
-            objArray_ExpandArray( pOther, i );
+            ObjArray_ExpandArray( pOther, i );
         }
 #endif
 

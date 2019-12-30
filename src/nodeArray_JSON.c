@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   nodeArray_JSON.c
+ * File:   nodeArray_json.c
  *
  * Created on 11/16/2018 from nodeHash_JSON
  */
@@ -105,7 +105,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned null object must be released.
      */
-    NODEARRAY_DATA * nodeArray_ParseObject(
+    NODEARRAY_DATA * nodeArray_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -186,7 +186,7 @@ extern "C" {
     //===============================================================
     
 
-    ERESULT         nodeArray_NewFromJSONString(
+    ERESULT         nodeArray_NewFromJsonString(
         ASTR_DATA       *pString,
         NODEARRAY_DATA  **ppData
     )
@@ -473,7 +473,7 @@ extern "C" {
     
     
 
-    ERESULT         nodeArray_NewFromJSONStringA(
+    ERESULT         nodeArray_NewFromJsonStringA(
         const
         char            *pString,
         NODEARRAY_DATA  **ppData
@@ -484,7 +484,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            eRc = nodeArray_NewFromJSONString(pStr, ppData);
+            eRc = nodeArray_NewFromJsonString(pStr, ppData);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -495,7 +495,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     nodeArray_ToJSON(
+    ASTR_DATA *     nodeArray_ToJson(
         NODEARRAY_DATA  *this
     )
     {

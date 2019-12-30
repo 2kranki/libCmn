@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SRCERROR Console Transmit Task (srcError) Header
+//          SRCERROR Console Transmit Task (SrcError) Header
 //****************************************************************
 /*
  * Program
- *			Separate srcError (srcError)
+ *			Separate SrcError (SrcError)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate srcError to run things without complications
- *          of interfering with the main srcError. A srcError may be 
- *          called a srcError on other O/S's.
+ *          a separate SrcError to run things without complications
+ *          of interfering with the main SrcError. A SrcError may be 
+ *          called a SrcError on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	12/17/2017 Generated
+ *	12/28/2019 Generated
  */
 
 
@@ -61,6 +61,12 @@
 #define         SRCERROR_H
 
 
+#define   SRCERROR_JSON_SUPPORT 1
+//#define   SRCERROR_SINGLETON    1
+
+
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -72,23 +78,35 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct srcError_data_s	SRCERROR_DATA;    // Inherits from OBJ.
+    typedef struct SrcError_data_s	SRCERROR_DATA;            // Inherits from OBJ
+    typedef struct SrcError_class_data_s SRCERROR_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct srcError_vtbl_s	{
+    typedef struct SrcError_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in srcError_object.c.
+        // method names to the vtbl definition in SrcError_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(SRCERROR_DATA *);
     } SRCERROR_VTBL;
-    
+
+    typedef struct SrcError_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in SrcError_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(SRCERROR_DATA *);
+    } SRCERROR_CLASS_VTBL;
+
+
     typedef enum srcError_Severity {
         SRCERROR_SEVERITY_UNKNOWN = 0,
         SRCERROR_SEVERITY_INFO,
         SRCERROR_SEVERITY_WARNING,
         SRCERROR_SEVERITY_FATAL
     } SRCERROR_SEVERITY;
+
 
 
 
@@ -101,76 +119,91 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  SRCERROR_SINGLETON
+    SRCERROR_DATA * SrcError_Shared (
+        void
+    );
+
+    bool            SrcError_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to srcError object if successful, otherwise OBJ_NIL.
+     @return    pointer to SrcError object if successful, otherwise OBJ_NIL.
      */
-    SRCERROR_DATA * srcError_Alloc(
+    SRCERROR_DATA * SrcError_Alloc (
         void
     );
     
     
-    SRCERROR_DATA * srcError_New(
+    OBJ_ID          SrcError_Class (
         void
     );
     
     
-    SRCERROR_DATA * srcError_NewFromData(
-        uint16_t        severity,
-        const
-        SRCLOC          *pLoc,
-        const
-        char            *pErrorString
+    SRCERROR_DATA * SrcError_New (
+        void
     );
     
     
-    SRCERROR_DATA * srcError_NewFatalFromToken(
-        TOKEN_DATA      *pToken,
-        ASTR_DATA       *pErrorString
-    );
-    
-    
-    SRCERROR_DATA * srcError_NewFatalFromTokenA(
-        TOKEN_DATA      *pToken,
-        const
-        char            *pErrorString
-    );
-    
-    
-    SRCERROR_DATA * srcError_NewFromJSONString(
-        ASTR_DATA       *pString
-    );
-    
-    
-    SRCERROR_DATA * srcError_NewFromJSONStringA(
-        const
-        char            *pString
-    );
-    
-    
-    
+   SRCERROR_DATA * SrcError_NewFromData(
+       uint16_t        severity,
+       const
+       SRCLOC          *pLoc,
+       const
+       char            *pErrorStringA
+   );
+   
+   
+   SRCERROR_DATA * SrcError_NewFatalFromToken (
+       TOKEN_DATA      *pToken,
+       ASTR_DATA       *pErrorString
+   );
+   
+   
+   SRCERROR_DATA * SrcError_NewFatalFromTokenA (
+       TOKEN_DATA      *pToken,
+       const
+       char            *pErrorStringA
+   );
+   
+   
+   SRCERROR_DATA * SrcError_NewFromJsonString (
+       ASTR_DATA       *pString
+   );
+   
+   
+   SRCERROR_DATA * SrcError_NewFromJsonStringA (
+       const
+       char            *pStringA
+   );
+   
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ASTR_DATA *     srcError_getErrorStr(
+    ASTR_DATA *     SrcError_getErrorStr (
         SRCERROR_DATA   *this
     );
-    
-    
-    SRCLOC *        srcError_getLocation(
+
+
+    SRCLOC *        SrcError_getLocation (
         SRCERROR_DATA   *this
     );
-    
-    
-    uint16_t        srcError_getSeverity(
+
+
+    uint16_t        SrcError_getSeverity (
         SRCERROR_DATA   *this
     );
-    
-    
+
+
+
 
     
     //---------------------------------------------------------------
@@ -183,20 +216,20 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code
-     ERESULT eRc = srcError__Assign(this,pOther);
+     ERESULT eRc = SrcError__Assign(this,pOther);
      @endcode
      @param     this    SRCERROR object pointer
      @param     pOther  a pointer to another SRCERROR object
      @return    If successful, ERESULT_SUCCESS otherwise an
      ERESULT_* error
      */
-    ERESULT         srcError_Assign(
+    ERESULT         SrcError_Assign (
         SRCERROR_DATA   *this,
         SRCERROR_DATA   *pOther
     );
     
     
-    ERESULT         srcError_Compare(
+    ERESULT         SrcError_Compare (
         SRCERROR_DATA   *this,
         SRCERROR_DATA   *pOther
     );
@@ -213,12 +246,12 @@ extern "C" {
      otherwise OBJ_NIL.
      @warning  Remember to release the returned the SRCERROR object.
      */
-    SRCERROR_DATA * srcError_Copy(
+    SRCERROR_DATA * SrcError_Copy (
         SRCERROR_DATA   *this
     );
     
     
-    SRCERROR_DATA * srcError_Init(
+    SRCERROR_DATA * SrcError_Init (
         SRCERROR_DATA   *this
     );
 
@@ -228,7 +261,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = srcError_ToJSON(this);
+     ASTR_DATA      *pDesc = SrcError_ToJSON(this);
      @endcode
      @param     this    SRCERROR object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -236,7 +269,7 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     srcError_ToJSON(
+    ASTR_DATA *     SrcError_ToJson (
         SRCERROR_DATA   *this
     );
     
@@ -245,26 +278,24 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = srcError_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SrcError_ToDebugString(this,4);
      @endcode 
-     @param     this    SRCERROR object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
-                description, otherwise OBJ_NIL and LastError set to an appropriate
-                ERESULT_* error code.
+                description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     srcError_ToDebugString(
+    ASTR_DATA *    SrcError_ToDebugString (
         SRCERROR_DATA   *this,
         int             indent
     );
     
     
-    ASTR_DATA *     srcError_ToString(
-        SRCERROR_DATA   *this
-    );
-    
-    
+   ASTR_DATA *     SrcError_ToString (
+       SRCERROR_DATA    *this
+   );
+   
 
     
 #ifdef	__cplusplus

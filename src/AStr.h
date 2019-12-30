@@ -128,11 +128,11 @@ extern "C" {
     );
     
     
-    ASTR_DATA *    AStr_NewFromJSONString(
+    ASTR_DATA *    AStr_NewFromJsonString(
         ASTR_DATA       *pString
     );
     
-    ASTR_DATA *    AStr_NewFromJSONStringA(
+    ASTR_DATA *    AStr_NewFromJsonStringA(
         const
         char            *pString
     );
@@ -776,7 +776,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     AStr_ToJSON(
+    ASTR_DATA *     AStr_ToJson(
         ASTR_DATA       *this
     );
     

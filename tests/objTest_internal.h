@@ -42,7 +42,7 @@
 #include    <objTest.h>
 #include    <appl_internal.h>
 #include    <number.h>
-#include    <objArray.h>
+#include    <ObjArray.h>
 #include    <path.h>
 #include    <psxLock.h>
 

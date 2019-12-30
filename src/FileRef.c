@@ -767,7 +767,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&FileRef_Vtbl);
         
         /*
-        this->pArray = objArray_New( );
+        this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);

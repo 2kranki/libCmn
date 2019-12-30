@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <node_internal.h>
 #include        <AStrArray.h>
-#include        <objArray.h>
+#include        <ObjArray.h>
 #include        <path.h>
 #include        <szData.h>
 #include        <stdarg.h>

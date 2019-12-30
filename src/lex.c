@@ -45,7 +45,7 @@
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <dec.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <W32Str.h>
 #include    <stdarg.h>
 #include    <stdio.h>
@@ -869,7 +869,7 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            srcErrors_AddFatalA(
+                            SrcErrors_AddFatalA(
                                                 OBJ_NIL,
                                                 &pInput->data.src,
                                                 "Malformed Unicode Escape Sequence - \\uHH"
@@ -886,7 +886,7 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            srcErrors_AddFatalA(
+                            SrcErrors_AddFatalA(
                                                 OBJ_NIL,
                                                 &pInput->data.src,
                                                 "Malformed Unicode Escape Sequence - \\uHHHH"
@@ -903,7 +903,7 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            srcErrors_AddFatalA(
+                            SrcErrors_AddFatalA(
                                     OBJ_NIL,
                                     &pInput->data.src,
                                     "Malformed Unicode Escape Sequence - \\xHH"
@@ -995,7 +995,7 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            srcErrors_AddFatalA(
+                            SrcErrors_AddFatalA(
                                                 OBJ_NIL,
                                                 &pInput->data.src,
                                                 "Malformed Unicode Escape Sequence - \\uHH"
@@ -1012,7 +1012,7 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            srcErrors_AddFatalA(
+                            SrcErrors_AddFatalA(
                                                 OBJ_NIL,
                                                 &pInput->data.src,
                                                 "Malformed Unicode Escape Sequence - \\UHHHH"
@@ -1029,7 +1029,7 @@ extern "C" {
                         if (lex_ParseDigitHex(this)) {
                         }
                         else {
-                            srcErrors_AddFatalA(
+                            SrcErrors_AddFatalA(
                                                 OBJ_NIL,
                                                 &pInput->data.src,
                                                 "Malformed Unicode Escape Sequence - \\xHH"

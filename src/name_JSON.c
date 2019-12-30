@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   name_JSON.c
+ * File:   name_json.c
  *	Generated 05/26/2015 13:40:16
  *
  * Created on December 30, 2014
@@ -78,7 +78,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned null object must be released.
      */
-    NAME_DATA *     name_ParseObject(
+    NAME_DATA *     name_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -107,7 +107,7 @@ extern "C" {
 
             case NAME_TYPE_ASTR:
                 eRc = jsonIn_SubobjectInHash(pParser, "data");
-                pWrk = AStr_ParseObject(pParser);
+                pWrk = AStr_ParseJsonObject(pParser);
                 pObject = name_NewAStr(pWrk);
                 obj_Release(pWrk);
                 jsonIn_SubobjectEnd(pParser);
@@ -166,7 +166,7 @@ extern "C" {
     //===============================================================
     
 
-    NAME_DATA *     name_NewFromJSONString(
+    NAME_DATA *     name_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
@@ -180,7 +180,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = name_ParseObject(pParser);
+        pObject = name_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -193,7 +193,7 @@ extern "C" {
     
     
 
-    NAME_DATA *     name_NewFromJSONStringA(
+    NAME_DATA *     name_NewFromJsonStringA(
         const
         char            *pString
     )
@@ -203,7 +203,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pName = name_NewFromJSONString(pStr);
+            pName = name_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -214,7 +214,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     name_ToJSON(
+    ASTR_DATA *     name_ToJson(
         NAME_DATA       *this
     )
     {
@@ -274,7 +274,7 @@ extern "C" {
                              NAME_TYPE_ASTR
                  );
                 AStr_AppendA(pStr, str);
-                pWrkStr = AStr_ToJSON(this->pObj);
+                pWrkStr = AStr_ToJson(this->pObj);
                 if (pWrkStr) {
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);

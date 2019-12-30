@@ -184,7 +184,7 @@ extern "C" {
         }
 #endif
 
-        return objArray_getSize(this->pArray);
+        return ObjArray_getSize(this->pArray);
     }
 
 
@@ -245,14 +245,14 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pArray) {
-            this->pArray = objArray_New( );
+            this->pArray = ObjArray_New( );
             if (OBJ_NIL == this->pArray) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
        }
         
-        eRc = objArray_AppendObj(this->pArray, pObject, NULL);
+        eRc = ObjArray_AppendObj(this->pArray, pObject, NULL);
         
         return eRc;
     }
@@ -653,17 +653,17 @@ extern "C" {
         if (obj_Flag(this, OBJENUM_SORTED))
             ;
         else {
-            eRc = objArray_SortAscending(this->pArray, NULL);
+            eRc = ObjArray_SortAscending(this->pArray, NULL);
             obj_FlagOn(this, OBJENUM_SORTED);
         }
         
-        if ((this->current + offset) < objArray_getSize(this->pArray)) {
+        if ((this->current + offset) < ObjArray_getSize(this->pArray)) {
         }
         else {
             return ERESULT_OUT_OF_RANGE;
         }
         
-        *ppObject = objArray_Get(this->pArray, (this->current + offset + 1));
+        *ppObject = ObjArray_Get(this->pArray, (this->current + offset + 1));
         
         return ERESULT_SUCCESS;
     }
@@ -703,11 +703,11 @@ extern "C" {
         if (obj_Flag(this, OBJENUM_SORTED))
             ;
         else {
-            eRc = objArray_SortAscending(this->pArray, NULL);
+            eRc = ObjArray_SortAscending(this->pArray, NULL);
             obj_FlagOn(this, OBJENUM_SORTED);
         }
         
-        if (this->current < objArray_getSize(this->pArray)) {
+        if (this->current < ObjArray_getSize(this->pArray)) {
         }
         else {
             if (pReturnAmt) {
@@ -721,11 +721,11 @@ extern "C" {
                 ;
             else
                 break;
-            if( this->current < objArray_getSize(this->pArray) )
+            if( this->current < ObjArray_getSize(this->pArray) )
                 ;
             else
                 break;
-            pObj = objArray_Get(this->pArray, (this->current + 1));
+            pObj = ObjArray_Get(this->pArray, (this->current + 1));
             if( OBJ_NIL == pObj )
                 ;
             else {
@@ -891,7 +891,7 @@ extern "C" {
         if (OBJ_NIL == this->pArray)
             return 0;
 
-        count = objArray_getSize(this->pArray) - this->current;
+        count = ObjArray_getSize(this->pArray) - this->current;
         
         // Return to caller.
         return count;
@@ -974,7 +974,7 @@ extern "C" {
             return ERESULT_SUCCESS;
         }
 
-        eRc = objArray_SortAscending(this->pArray, NULL);
+        eRc = ObjArray_SortAscending(this->pArray, NULL);
         obj_FlagOn(this, OBJENUM_SORTED);
         
         return eRc;

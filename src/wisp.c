@@ -773,7 +773,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&wisp_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        //this->pArray = ObjArray_New( );
         
         this->pMem = u32Array_New( );
         if (OBJ_NIL == this->pMem) {

@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include    <SRecords_internal.h>
 #include    <ascii.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 
 
 
@@ -569,7 +569,7 @@ extern "C" {
         
         SRecords_setLastError(this, ERESULT_GENERAL_FAILURE);
         //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        //this->pArray = ObjArray_New( );
 
     #ifdef NDEBUG
     #else

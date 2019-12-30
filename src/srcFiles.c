@@ -273,7 +273,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&srcFiles_Vtbl);
         
-        this->pStack = objArray_New( );
+        this->pStack = ObjArray_New( );
 
     #ifdef NDEBUG
     #else
@@ -465,7 +465,7 @@ extern "C" {
         }
 #endif
         
-        pItem = objArray_Get(cbp->pStack, index);
+        pItem = ObjArray_Get(cbp->pStack, index);
         
         // Return to caller.
         return pItem;
@@ -494,11 +494,11 @@ extern "C" {
         
         /* Pop 1 element from the top of the parse stack.
          */
-        if( objArray_getSize(this->pStack) ) {
-            pItem = objArray_DeleteLast(this->pStack);
+        if( ObjArray_getSize(this->pStack) ) {
+            pItem = ObjArray_DeleteLast(this->pStack);
             obj_Release(pItem);
             pItem = OBJ_NIL;
-            this->pTop = objArray_GetLast(this->pStack);
+            this->pTop = ObjArray_GetLast(this->pStack);
         }
         else {
             return ERESULT_DATA_NOT_FOUND;
@@ -535,14 +535,14 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pStack) {
-            this->pStack = objArray_New( );
+            this->pStack = ObjArray_New( );
             if (OBJ_NIL == this->pStack) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
         
-        eRc = objArray_AppendObj(this->pStack, pItem, NULL);
+        eRc = ObjArray_AppendObj(this->pStack, pItem, NULL);
         if (ERESULT_HAS_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;

@@ -46,7 +46,7 @@
 #include <jsonIn.h>
 #include <nodeArray.h>
 #include <nodeHash.h>
-#include <srcErrors.h>
+#include <SrcErrors.h>
 
 
 
@@ -103,7 +103,7 @@ extern "C" {
         
         pArray = nodeArray_New( );
         if (pArray == OBJ_NIL) {
-            srcErrors_AddFatalFromTokenA(OBJ_NIL, pToken, "Out of Memory");
+            SrcErrors_AddFatalFromTokenA(OBJ_NIL, pToken, "Out of Memory");
             obj_Release(pLoc);
             return pNode;
         }
@@ -153,7 +153,7 @@ extern "C" {
             else {
                 ASTR_DATA           *pStr;
                 pStr = token_ToDataString(pToken);
-                srcErrors_AddFatalFromTokenA(
+                SrcErrors_AddFatalFromTokenA(
                                              OBJ_NIL,
                                              pToken,
                                              "Expecting ']', but found %s",
@@ -168,7 +168,7 @@ extern "C" {
         pNode = jsonIn_NodeFromArray(pArray);
         obj_Release(pArray);
         if (pNode == OBJ_NIL) {
-            srcErrors_AddFatalA(OBJ_NIL, NULL, "Out of Memory");
+            SrcErrors_AddFatalA(OBJ_NIL, NULL, "Out of Memory");
             obj_Release(pLoc);
             return OBJ_NIL;
         }
@@ -277,7 +277,7 @@ extern "C" {
         else {
             ASTR_DATA           *pStr;
             pStr = token_ToDataString(pToken);
-            srcErrors_AddFatalFromTokenA(
+            SrcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Expecting '}', but found %s",
@@ -599,7 +599,7 @@ extern "C" {
             TRC_OBJ(this, "\tfound :\n");
         }
         else {
-            srcErrors_AddFatalFromTokenA(
+            SrcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Expecting ':' or '='"
@@ -611,7 +611,7 @@ extern "C" {
         
         pData = hjson_ParseValue(this);
         if (pData == OBJ_NIL) {
-            srcErrors_AddFatalFromTokenA(
+            SrcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
                 "Expecting \"value\""
@@ -1256,7 +1256,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&hjson_Vtbl);
         
         //this->stackSize = obj_getMisc1(this);
-        //this->pArray = objArray_New( );
+        //this->pArray = ObjArray_New( );
 
     #ifdef NDEBUG
     #else
@@ -1433,7 +1433,7 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
         
         pNode = hjson_ParseHash(this);
-        if (srcErrors_getNumErrors(OBJ_NIL)) {
+        if (SrcErrors_getNumErrors(OBJ_NIL)) {
             obj_Release(pNode);
             pNode = OBJ_NIL;
         }
@@ -1466,7 +1466,7 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
         
         pNode = hjson_ParseValue(this);
-        if (srcErrors_getNumErrors(OBJ_NIL)) {
+        if (SrcErrors_getNumErrors(OBJ_NIL)) {
             obj_Release(pNode);
             pNode = OBJ_NIL;
         }

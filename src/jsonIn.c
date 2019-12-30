@@ -1519,7 +1519,7 @@ extern "C" {
         pInfo = obj_getInfo(AStr_Class());
         eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)AStr_ParseObject(this);
+            pObj = (OBJ_ID)AStr_ParseJsonObject(this);
             return pObj;
         }
         
@@ -1533,7 +1533,7 @@ extern "C" {
         pInfo = obj_getInfo(name_Class());
         eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)name_ParseObject(this);
+            pObj = (OBJ_ID)name_ParseJsonObject(this);
             return pObj;
         }
         
@@ -1547,7 +1547,7 @@ extern "C" {
         pInfo = obj_getInfo(nodeArray_Class());
         eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)nodeArray_ParseObject(this);
+            pObj = (OBJ_ID)nodeArray_ParseJsonObject(this);
             return pObj;
         }
         

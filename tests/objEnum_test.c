@@ -145,7 +145,7 @@ int         test_ObjEnum_Append01(
                 eRc = ObjEnum_AppendObj(pObj, pStr);
                 TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
                 fprintf(stderr, "\t%2d - %s\n",
-                        objArray_getSize(pObj->pArray),
+                        ObjArray_getSize(pObj->pArray),
                         AStr_getData(pStr)
                 );
                 obj_Release(pStr);

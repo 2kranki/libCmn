@@ -86,14 +86,14 @@ extern "C" {
         
         if (ppObj)
             *ppObj = OBJ_NIL;
-        iMax = objArray_getSize(this->pSrchStk);
+        iMax = ObjArray_getSize(this->pSrchStk);
         for (i=iMax; i>0; --i) {
-            pObj = objArray_Get(this->pSrchStk, i);
+            pObj = ObjArray_Get(this->pSrchStk, i);
             pVtbl = (BPT32_BLK_VTBL *)obj_getVtbl(pObj);
             index = pVtbl->pGetIndex(pObj);
             if (lsn == index) {
                 if (i > 1) {
-                    pObj = objArray_Get(this->pSrchStk, (i - 1));
+                    pObj = ObjArray_Get(this->pSrchStk, (i - 1));
                     if (ppObj)
                         *ppObj = pObj;
 #ifdef NDEBUG
@@ -510,7 +510,7 @@ extern "C" {
             }
             
             if (pObject) {
-                objArray_Push(this->pSrchStk, pObject);
+                ObjArray_Push(this->pSrchStk, pObject);
             }
             else {
                 return ERESULT_GENERAL_FAILURE;
@@ -1183,7 +1183,7 @@ extern "C" {
         }
 #endif
         TRC_OBJ(this, "bpt32_Add  key=%d\n", key);
-        eRc = objArray_DeleteAll(this->pSrchStk);
+        eRc = ObjArray_DeleteAll(this->pSrchStk);
         eRc = bpt32_BlockSearchKey(this, 0, key, pData);
         if (!ERESULT_FAILED(eRc)) {
             return ERESULT_DATA_ALREADY_EXISTS;
@@ -1191,7 +1191,7 @@ extern "C" {
         // Top of Search Stack should contain a Leaf block
         // that the key should be inserted into.
         
-        pObject = objArray_Top(this->pSrchStk);
+        pObject = ObjArray_Top(this->pSrchStk);
         if (OBJ_IDENT_BPT32LF == obj_getType(pObject)){
             eRc = bpt32lf_Insert(pObject, key, pData);
         }
@@ -1658,7 +1658,7 @@ extern "C" {
 #endif
         
         // Search for the key.
-        objArray_DeleteAll(this->pSrchStk);
+        ObjArray_DeleteAll(this->pSrchStk);
         eRc = bpt32_BlockSearchKey(this, this->pHdr->root, key, pData);
 
         // Return to caller.
@@ -1763,7 +1763,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pSrchStk = objArray_New();
+        this->pSrchStk = ObjArray_New();
         if (OBJ_NIL == this->pSrchStk) {
             DEBUG_BREAK();
             obj_Release(this);

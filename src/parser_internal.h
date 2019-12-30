@@ -41,8 +41,8 @@
 
 #include        <Parser.h>
 #include        <jsonIn.h>
-#include        <objArray.h>
-#include        <srcErrors.h>
+#include        <ObjArray.h>
+#include        <SrcErrors.h>
 
 
 #ifndef PARSER_INTERNAL_H

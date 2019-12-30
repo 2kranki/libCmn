@@ -25,6 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <str.h>
+#include    <SrcErrors.h>
 #include    <szTbl_internal.h>
 #include    <utf8.h>
 #include    <W32Str.h>
@@ -94,6 +95,7 @@ int         tearDown(
     // test method in the class.
 
     
+    SrcErrors_SharedReset( ); 
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

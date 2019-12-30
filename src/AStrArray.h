@@ -51,7 +51,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <objArray.h>
+#include        <ObjArray.h>
 
 
 #ifndef         ASTRARRAY_H

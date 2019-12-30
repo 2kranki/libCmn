@@ -27,7 +27,7 @@
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <AStr_internal.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <utf8.h>
 
 
@@ -100,7 +100,7 @@ int         tearDown(
     // test method in the class.
 
     
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     szTbl_SharedReset( ); 
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
@@ -1070,7 +1070,7 @@ int         test_AStr_JSON01(
     XCTAssertTrue( (0 == strcmp("abc", AStr_getData(pObj))) );
     if (pObj) {
         
-        pJsonStr = AStr_ToJSON(pObj);
+        pJsonStr = AStr_ToJson(pObj);
         fprintf(
                 stderr,
                 "\tJSON(\"abc\") = (%p) \"%s\"\n",
@@ -1080,7 +1080,7 @@ int         test_AStr_JSON01(
         iRc = str_CompareSpcl(AStr_getData(pJsonStr), pJsonStrA, &index);
         fprintf(stderr, "\tCompareSpcl: %d, index=%d\n", iRc, index);
         XCTAssertTrue( (0 == iRc) );
-        pJsonStrOut = AStr_NewFromJSONString(pJsonStr);
+        pJsonStrOut = AStr_NewFromJsonString(pJsonStr);
         XCTAssertFalse( (OBJ_NIL == pJsonStrOut) );
         fprintf(
                 stderr,
@@ -1127,9 +1127,9 @@ int         test_AStr_JSON01(
     XCTAssertTrue( (0 == strcmp("", AStr_getData(pObj))) );
     if (pObj) {
         
-        pJsonStr = AStr_ToJSON(pObj);
+        pJsonStr = AStr_ToJson(pObj);
         fprintf(stderr, "\tJSON(\"\") = %s\n", AStr_getData(pJsonStr));
-        pJsonStrOut = AStr_NewFromJSONString(pJsonStr);
+        pJsonStrOut = AStr_NewFromJsonString(pJsonStr);
         XCTAssertFalse( (OBJ_NIL == pJsonStrOut) );
         XCTAssertTrue( (0 == AStr_getLength(pJsonStrOut)) );
         XCTAssertTrue( (0 == strcmp("", AStr_getData(pJsonStrOut))) );
