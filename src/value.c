@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   value.c
- *	Generated 08/26/2017 09:50:28
+ * File:   Value.c
+ *	Generated 12/31/2019 15:27:11
  *
  */
 
@@ -41,9 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <value_internal.h>
-#include    <hex.h>
-#include    <utf8.h>
+#include        <Value_internal.h>
+#include        <trace.h>
+
+
+
 
 
 
@@ -52,24 +54,28 @@ extern "C" {
 #endif
     
 
-    const
-    char            *pTypeStr[] = {
-        "VALUE_TYPE_UNKNOWN",
-        "VALUE_TYPE_FLOAT",         
-        "VALUE_TYPE_DOUBLE",
-        "VALUE_TYPE_INT16",
-        "VALUE_TYPE_INT32",
-        "VALUE_TYPE_INT64",
-        //VALUE_TYPE_INT128,
-        "VALUE_TYPE_UINT16",
-        "VALUE_TYPE_UINT32",
-        "VALUE_TYPE_UINT64",
-        //VALUE_TYPE_UINT128,
-        "VALUE_TYPE_OBJECT",
-        "VALUE_TYPE_DATA",
-        "VALUE_TYPE_DATA_FREE",
-        NULL
-    };
+    
+
+   const
+   char            *pTypeStr[] = {
+       "VALUE_TYPE_UNKNOWN",
+       "VALUE_TYPE_FLOAT",
+       "VALUE_TYPE_DOUBLE",
+       "VALUE_TYPE_INT16",
+       "VALUE_TYPE_INT32",
+       "VALUE_TYPE_INT64",
+       //VALUE_TYPE_INT128,
+       "VALUE_TYPE_UINT16",
+       "VALUE_TYPE_UINT32",
+       "VALUE_TYPE_UINT64",
+       //VALUE_TYPE_UINT128,
+       "VALUE_TYPE_OBJECT",
+       "VALUE_TYPE_DATA",
+       "VALUE_TYPE_DATA_FREE",
+       NULL
+   };
+
+
 
 
  
@@ -78,43 +84,43 @@ extern "C" {
     ****************************************************************/
 
     static
-    void            value_FreeData (
+    void            Value_FreeData (
         VALUE_DATA      *this
     )
     {
-        
+
         switch (this->type) {
-                
+
             case VALUE_TYPE_INT16:
                 break;
-                
+
             case VALUE_TYPE_INT32:
                 break;
-                
+
             case VALUE_TYPE_INT64:
                 break;
-                
+
             case VALUE_TYPE_UINT16:
                 break;
-                
+
             case VALUE_TYPE_UINT32:
                 break;
-                
+
             case VALUE_TYPE_UINT64:
                 break;
-                
+
             case VALUE_TYPE_OBJECT:
                 if (this->value.pObject) {
                     obj_Release(this->value.pObject);
                     this->value.pObject = OBJ_NIL;
                 }
                 break;
-                
+
             case VALUE_TYPE_DATA:
                 this->value.data.pData = NULL;
                 this->value.data.length = 0;
                 break;
-                
+
             case VALUE_TYPE_DATA_FREE:
                 if (this->value.data.pData) {
                     mem_Free(this->value.data.pData);
@@ -122,32 +128,34 @@ extern "C" {
                 }
                 this->value.data.length = 0;
                 break;
-                
+
         }
         this->type = VALUE_TYPE_UNKNOWN;
-        
+
     }
 
 
-    
+
     const
-    char *     value_TypeToString (
+    char *     Value_TypeToString (
         VALUE_DATA      *this,
         uint16_t        type
     )
     {
-        
+
         // Do initialization.
         if (type >= VALUE_TYPE_HIGHEST) {
             return "";
         }
-        
+
         // Return to caller.
         return pTypeStr[type];
     }
-    
-    
-    
+
+
+
+
+
 
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -158,15 +166,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    VALUE_DATA *     value_Alloc (
+    VALUE_DATA *     Value_Alloc (
+        void
     )
     {
-        VALUE_DATA      *this;
+        VALUE_DATA       *this;
         uint32_t        cbSize = sizeof(VALUE_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -174,20 +183,22 @@ extern "C" {
 
 
 
-    VALUE_DATA *    value_New (
+    VALUE_DATA *     Value_New (
+        void
     )
     {
-        VALUE_DATA      *this;
+        VALUE_DATA       *this;
         
-        this = value_Alloc();
+        this = Value_Alloc( );
         if (this) {
-            this = value_Init(this);
+            this = Value_Init(this);
         } 
         return this;
     }
 
 
-    VALUE_DATA *    value_NewData (
+
+    VALUE_DATA *    Value_NewData (
         int32_t         length,
         uint8_t         *pData
     )
@@ -195,9 +206,9 @@ extern "C" {
         VALUE_DATA      *this;
         bool            fRc;
 
-        this = value_New();
+        this = Value_New();
         if (this) {
-            fRc = value_setData(this, length, pData);
+            fRc = Value_setData(this, length, pData);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -205,9 +216,9 @@ extern "C" {
         }
         return this;
     }
-    
-    
-    VALUE_DATA *    value_NewDataFree (
+
+
+    VALUE_DATA *    Value_NewDataFree (
         int32_t         length,
         uint8_t         *pData
     )
@@ -215,9 +226,9 @@ extern "C" {
         VALUE_DATA      *this;
         bool            fRc;
 
-        this = value_New();
+        this = Value_New();
         if (this) {
-            fRc = value_setDataFree(this, length, pData);
+            fRc = Value_setDataFree(this, length, pData);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -225,18 +236,18 @@ extern "C" {
         }
         return this;
     }
-    
-    
-    VALUE_DATA *    value_NewI16 (
+
+
+    VALUE_DATA *    Value_NewI16 (
         int16_t         value
     )
     {
         VALUE_DATA      *this;
         bool            fRc;
 
-        this = value_New();
+        this = Value_New();
         if (this) {
-            fRc = value_setI16(this, value);
+            fRc = Value_setI16(this, value);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -244,18 +255,18 @@ extern "C" {
         }
         return this;
     }
-    
-    
-    VALUE_DATA *    value_NewI32 (
+
+
+    VALUE_DATA *    Value_NewI32 (
         int32_t         value
     )
     {
         VALUE_DATA      *this;
         bool            fRc;
 
-        this = value_New();
+        this = Value_New();
         if (this) {
-            fRc = value_setI32(this, value);
+            fRc = Value_setI32(this, value);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -263,18 +274,18 @@ extern "C" {
         }
         return this;
     }
-    
-    
-    VALUE_DATA *    value_NewI64 (
+
+
+    VALUE_DATA *    Value_NewI64 (
         int64_t         value
     )
     {
         VALUE_DATA      *this;
         bool            fRc;
 
-        this = value_New();
+        this = Value_New();
         if (this) {
-            fRc = value_setI64(this, value);
+            fRc = Value_setI64(this, value);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -282,18 +293,18 @@ extern "C" {
         }
         return this;
     }
-    
-    
-    VALUE_DATA *    value_NewObject (
+
+
+    VALUE_DATA *    Value_NewObject (
         OBJ_DATA        *pValue
     )
     {
         VALUE_DATA      *this;
         bool            fRc;
 
-        this = value_New();
+        this = Value_New();
         if (this) {
-            fRc = value_setObject(this, pValue);
+            fRc = Value_setObject(this, pValue);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -301,18 +312,18 @@ extern "C" {
         }
         return this;
     }
-    
-    
-    VALUE_DATA *    value_NewU16 (
+
+
+    VALUE_DATA *    Value_NewU16 (
         uint16_t        value
     )
     {
         VALUE_DATA      *this;
         bool            fRc;
 
-        this = value_New();
+        this = Value_New();
         if (this) {
-            fRc = value_setI16(this, value);
+            fRc = Value_setI16(this, value);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -320,18 +331,18 @@ extern "C" {
         }
         return this;
     }
-    
-    
-    VALUE_DATA *    value_NewU32 (
+
+
+    VALUE_DATA *    Value_NewU32 (
         uint32_t        value
     )
     {
         VALUE_DATA      *this;
         bool            fRc;
 
-        this = value_New();
+        this = Value_New();
         if (this) {
-            fRc = value_setU32(this, value);
+            fRc = Value_setU32(this, value);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -339,18 +350,18 @@ extern "C" {
         }
         return this;
     }
-    
-    
-    VALUE_DATA *    value_NewU64 (
+
+
+    VALUE_DATA *    Value_NewU64 (
         uint64_t        value
     )
     {
         VALUE_DATA      *this;
         bool            fRc;
-        
-        this = value_New();
+
+        this = Value_New();
         if (this) {
-            fRc = value_setU64(this, value);
+            fRc = Value_setU64(this, value);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -358,10 +369,10 @@ extern "C" {
         }
         return this;
     }
-    
-    
 
-    
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
@@ -370,44 +381,44 @@ extern "C" {
     //---------------------------------------------------------------
     //                          D a t a
     //---------------------------------------------------------------
-    
-    uint8_t *       value_getData (
+
+    uint8_t *       Value_getData (
         VALUE_DATA      *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
-        if ((this->type == VALUE_TYPE_DATA) || (this->type == VALUE_TYPE_DATA_FREE)){
+
+        if ((this->type == VALUE_TYPE_DATA) || (this->type == VALUE_TYPE_DATA_FREE)) {
             return this->value.data.pData;
         }
         else {
             return NULL;
         }
     }
-    
 
-    uint32_t        value_getDataLen (
+
+    uint32_t        Value_getDataLen (
         VALUE_DATA      *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
         if ((this->type == VALUE_TYPE_DATA) || (this->type == VALUE_TYPE_DATA_FREE)){
             return this->value.data.length;
         }
@@ -415,9 +426,9 @@ extern "C" {
             return 0;
         }
     }
-    
-    
-    bool            value_setData (
+
+
+    bool            Value_setData (
         VALUE_DATA      *this,
         uint32_t        length,
         void            *pValue
@@ -425,22 +436,22 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
-        value_FreeData(this);
+
+        Value_FreeData(this);
         this->value.data.pData = pValue;
         this->value.data.length  = length;
         this->type = VALUE_TYPE_DATA;
-        
+
         return true;
     }
-    
-    
-    bool            value_setDataFree (
+
+
+    bool            Value_setDataFree (
         VALUE_DATA      *this,
         uint32_t        length,
         void            *pValue
@@ -448,13 +459,13 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
-        value_FreeData(this);
+
+        Value_FreeData(this);
         this->value.data.pData = mem_Malloc(length);
         if (NULL == this->value.data.pData) {
             return false;
@@ -462,30 +473,79 @@ extern "C" {
         memmove(this->value.data.pData, pValue, length);
         this->value.data.length  = length;
         this->type = VALUE_TYPE_DATA_FREE;
-        
+
         return true;
     }
-    
-    
+
+
 
     //---------------------------------------------------------------
-    //                          I n t 1 6
+    //                          I n t 8
     //---------------------------------------------------------------
-    
-    int16_t         value_getI16 (
+
+    int8_t          Value_getI8 (
         VALUE_DATA      *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
+        if (this->type == VALUE_TYPE_INT8) {
+            return this->value.i8;
+        }
+        else {
+            return 0;
+        }
+    }
+
+
+    bool            Value_setI8 (
+        VALUE_DATA      *this,
+        int8_t          value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Value_FreeData(this);
+        this->value.i8 = value;
+        this->type = VALUE_TYPE_INT8;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          I n t 1 6
+    //---------------------------------------------------------------
+
+    int16_t         Value_getI16 (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
         if (this->type == VALUE_TYPE_INT16) {
             return this->value.i16;
         }
@@ -493,48 +553,48 @@ extern "C" {
             return 0;
         }
     }
-    
-    
-    bool            value_setI16 (
+
+
+    bool            Value_setI16 (
         VALUE_DATA      *this,
         int16_t         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
-        value_FreeData(this);
+
+        Value_FreeData(this);
         this->value.i16 = value;
         this->type = VALUE_TYPE_INT16;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          I n t 3 2
     //---------------------------------------------------------------
-    
-    int32_t         value_getI32 (
+
+    int32_t         Value_getI32 (
         VALUE_DATA      *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
         if (this->type == VALUE_TYPE_INT32) {
             return this->value.i32;
         }
@@ -542,48 +602,48 @@ extern "C" {
             return 0;
         }
     }
-    
-    
-    bool            value_setI32 (
+
+
+    bool            Value_setI32 (
         VALUE_DATA      *this,
         int32_t         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
-        value_FreeData(this);
+
+        Value_FreeData(this);
         this->value.i32 = value;
         this->type = VALUE_TYPE_INT32;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          I n t 6 4
     //---------------------------------------------------------------
-    
-    int64_t         value_getI64 (
+
+    int64_t         Value_getI64 (
         VALUE_DATA      *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
         if (this->type == VALUE_TYPE_INT64) {
             return this->value.i64;
         }
@@ -591,48 +651,48 @@ extern "C" {
             return 0;
         }
     }
-    
-    
-    bool            value_setI64 (
+
+
+    bool            Value_setI64 (
         VALUE_DATA      *this,
         int64_t         value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
-        value_FreeData(this);
+
+        Value_FreeData(this);
         this->value.i64 = value;
         this->type = VALUE_TYPE_INT64;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          O b j e c t
     //---------------------------------------------------------------
-    
-    OBJ_DATA *      value_getObject (
+
+    OBJ_DATA *      Value_getObject (
         VALUE_DATA      *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-        
+
         if (this->type == VALUE_TYPE_OBJECT) {
             return this->value.pObject;
         }
@@ -640,91 +700,185 @@ extern "C" {
             return OBJ_NIL;
         }
     }
-    
-    
-    bool            value_setObject (
+
+
+    bool            Value_setObject (
         VALUE_DATA      *this,
         OBJ_DATA        *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
         obj_Retain(pValue);
-        value_FreeData(this);
+        Value_FreeData(this);
         this->value.pObject = pValue;
         this->type = VALUE_TYPE_OBJECT;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
-    //                          T y p e
+    //                              S i z e
     //---------------------------------------------------------------
     
-    uint16_t        value_getType (
-        VALUE_DATA      *this
+    uint32_t        Value_getSize (
+        VALUE_DATA       *this
     )
     {
-        
-        // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if (!Value_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
+
+        return 0;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
+    
+    OBJ_IUNKNOWN *  Value_getSuperVtbl (
+        VALUE_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Value_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
         
-        return this->type;
+        return this->pSuperVtbl;
     }
     
-    
-    bool            value_setType (
+  
+
+    //---------------------------------------------------------------
+    //                          T y p e
+    //---------------------------------------------------------------
+
+    uint16_t        Value_getType (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->type;
+    }
+
+
+    bool            Value_setType (
         VALUE_DATA      *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         this->type = value;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
-    //                          U i n t 1 6
+    //                          U i n t 8
     //---------------------------------------------------------------
-    
-    uint16_t        value_getU16 (
+
+    uint8_t         Value_getU8 (
         VALUE_DATA      *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
+        if (this->type == VALUE_TYPE_UINT8) {
+            return this->value.u8;
+        }
+        else {
+            return 0;
+        }
+    }
+
+
+    bool            Value_setU8 (
+        VALUE_DATA      *this,
+        uint8_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Value_FreeData(this);
+        this->value.u8 = value;
+        this->type = VALUE_TYPE_UINT8;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          U i n t 1 6
+    //---------------------------------------------------------------
+
+    uint16_t        Value_getU16 (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
         if (this->type == VALUE_TYPE_UINT16) {
             return this->value.u16;
         }
@@ -732,48 +886,48 @@ extern "C" {
             return 0;
         }
     }
-    
-    
-    bool            value_setU16 (
+
+
+    bool            Value_setU16 (
         VALUE_DATA      *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
-        value_FreeData(this);
+
+        Value_FreeData(this);
         this->value.u16 = value;
         this->type = VALUE_TYPE_UINT16;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          U i n t 3 2
     //---------------------------------------------------------------
-    
-    uint32_t        value_getU32 (
+
+    uint32_t        Value_getU32 (
         VALUE_DATA      *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
         if (this->type == VALUE_TYPE_UINT32) {
             return this->value.u16;
         }
@@ -781,48 +935,48 @@ extern "C" {
             return 0;
         }
     }
-    
-    
-    bool            value_setU32 (
+
+
+    bool            Value_setU32 (
         VALUE_DATA      *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
-        value_FreeData(this);
+
+        Value_FreeData(this);
         this->value.u32 = value;
         this->type = VALUE_TYPE_UINT32;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          U i n t 6 4
     //---------------------------------------------------------------
-    
-    uint64_t        value_getU64 (
+
+    uint64_t        Value_getU64 (
         VALUE_DATA      *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
         if (this->type == VALUE_TYPE_UINT64) {
             return this->value.u64;
         }
@@ -830,74 +984,73 @@ extern "C" {
             return 0;
         }
     }
-    
-    
-    bool            value_setU64 (
+
+
+    bool            Value_setU64 (
         VALUE_DATA      *this,
         uint64_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
-        value_FreeData(this);
+
+        Value_FreeData(this);
         this->value.u64 = value;
         this->type = VALUE_TYPE_UINT64;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          U s e r
     //---------------------------------------------------------------
-    
-    uint32_t        value_getUser (
+
+    uint32_t        Value_getUser (
         VALUE_DATA      *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
         return this->user;
     }
-    
-    
-    bool            value_setUser (
+
+
+    bool            Value_setUser (
         VALUE_DATA      *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if( !Value_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         this->user = value;
-        
+
         return true;
     }
-    
-    
-    
 
-    
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -913,36 +1066,36 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code
-        ERESULT eRc = value__Assign(this,pOther);
-     @endcode
+     @code 
+        ERESULT eRc = Value_Assign(this,pOther);
+     @endcode 
      @param     this    object pointer
      @param     pOther  a pointer to another VALUE object
-     @return    If successful, ERESULT_SUCCESS otherwise an
+     @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         value_Assign(
+    ERESULT         Value_Assign (
         VALUE_DATA		*this,
-        VALUE_DATA      *pOther
+        VALUE_DATA     *pOther
     )
     {
-        ERESULT         eRc;
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if (!Value_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !value_Validate(pOther) ) {
+        if (!Value_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
         // Release objects and areas in other object.
-        value_FreeData(pOther);
+        Value_FreeData(pOther);
 
         // Create a copy of objects and areas in this object placing
         // them in other.
@@ -1025,16 +1178,78 @@ extern "C" {
         pOther->type = this->type;
         pOther->user = this->user;
 
+        // Copy other data from this object to other.
+        
+        //goto eom;
+
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
     
     
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         Value_Compare (
+        VALUE_DATA     *this,
+        VALUE_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!Value_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!Value_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
+    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -1042,15 +1257,15 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code
-        value      *pCopy = value_Copy(this);
-     @endcode
-     @param     this    VALUE object pointer
-     @return    If successful, a VALUE object which must be released,
-                otherwise OBJ_NIL.
-     @warning   Remember to release the returned the VALUE object.
+     @code 
+        Value      *pCopy = Value_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a VALUE object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    VALUE_DATA *     value_Copy(
+    VALUE_DATA *     Value_Copy (
         VALUE_DATA       *this
     )
     {
@@ -1060,15 +1275,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if (!Value_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = value_New( );
+        pOther = Value_New( );
         if (pOther) {
-            eRc = value_Assign(this, pOther);
+            eRc = Value_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -1086,7 +1301,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            value_Dealloc(
+    void            Value_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -1098,7 +1313,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if (!Value_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -1110,7 +1325,7 @@ extern "C" {
         }
 #endif
 
-        value_FreeData(this);
+        Value_FreeData(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1127,18 +1342,22 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         value_Disable(
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Value_Disable (
         VALUE_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
-        if (NULL == this) {
-            return ERESULT_INVALID_OBJECT;
-        }
     #ifdef NDEBUG
     #else
-        if( !value_Validate(this) ) {
+        if (!Value_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1158,15 +1377,22 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         value_Enable(
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Value_Enable (
         VALUE_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !value_Validate(this) ) {
+        if (!Value_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1186,11 +1412,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    VALUE_DATA *   value_Init(
+    VALUE_DATA *   Value_Init (
         VALUE_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(VALUE_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1214,46 +1441,50 @@ extern "C" {
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_VALUE);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&value_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Value_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = ObjArray_New( );
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        */
 
     #ifdef NDEBUG
     #else
-        if( !value_Validate(this) ) {
+        if (!Value_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "offsetof(eRc) = %lu\n", offsetof(VALUE_DATA,user));
-        //fprintf(stderr, "sizeof(VALUE_DATA) = %lu\n", sizeof(VALUE_DATA));
+        //fprintf(stderr, "Value::sizeof(VALUE_DATA) = %lu\n", sizeof(VALUE_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->user);
         BREAK_NOT_BOUNDARY4(sizeof(VALUE_DATA));
     #endif
 
         return this;
     }
 
-    
      
+
     //---------------------------------------------------------------
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         value_IsEnabled(
+    ERESULT         Value_IsEnabled (
         VALUE_DATA		*this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if (!Value_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1273,22 +1504,44 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    void *          value_QueryInfo(
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+        // Return a method pointer for a string or NULL if not found. 
+        void        *pMethod = Value_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode 
+     @param     objId   object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
+                        character string which represents the method name without
+                        the object name, "Value", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          Value_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        VALUE_DATA      *this = objId;
+        VALUE_DATA     *this = objId;
         const
         char            *pStr = pData;
-
+        
         if (OBJ_NIL == this) {
             return NULL;
         }
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if (!Value_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1296,7 +1549,33 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_INFO:
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(VALUE_DATA);
+            break;
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)Value_Class();
+                break;
+                
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -1305,23 +1584,23 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return value_Disable;
+                            return Value_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return value_Enable;
+                            return Value_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return value_ToDebugString;
+                            return Value_ToDebugString;
                         }
-#ifdef XYZZY
+#ifdef  SRCREF_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return value_ToJson;
+                            return Value_ToJson;
                         }
 #endif
                         break;
@@ -1329,6 +1608,15 @@ extern "C" {
                     default:
                         break;
                 }
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == Value_ToDebugString)
+                    return "ToDebugString";
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == Value_ToJson)
+                    return "ToJson";
+#endif
                 break;
                 
             default:
@@ -1347,49 +1635,54 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = value_ToDebugString(this,4);
-     @endcode
-     @param     this    VALUE object pointer
+     @code 
+        ASTR_DATA      *pDesc = Value_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     value_ToDebugString(
+    ASTR_DATA *     Value_ToDebugString (
         VALUE_DATA      *this,
         int             indent
     )
     {
-        char            str[256];
-        int             j;
+        ERESULT         eRc;
+        //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
+        const
+        OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !value_Validate(this) ) {
+        if (!Value_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(value) type=%s\n",
-                     this,
-                     value_TypeToString(this, this->type)
+        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "{%p(%s) size=%d retain=%d\n",
+                    this,
+                    pInfo->pClassName,
+                    Value_getSize(this),
+                    obj_getRetainCount(this)
             );
-        AStr_AppendA(pStr, str);
 
 #ifdef  XYZZY        
         if (this->pData) {
@@ -1405,10 +1698,14 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        j = snprintf(str, sizeof(str), " %p(value)}\n", this);
-        AStr_AppendA(pStr, str);
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    " %p(%s)}\n", 
+                    this, 
+                    pInfo->pClassName
+                );
         
         return pStr;
     }
@@ -1421,15 +1718,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            value_Validate(
+    bool            Value_Validate (
         VALUE_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_VALUE) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_VALUE))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1445,7 +1742,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(VALUE_DATA)) ) {
+        if (!(obj_getSize(this) >= sizeof(VALUE_DATA))) {
             return false;
         }
 

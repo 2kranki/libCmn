@@ -41,7 +41,7 @@
 
 #include        <MsgData.h>
 #include        <JsonIn.h>
-#include        <value_internal.h>
+#include        <Value_internal.h>
 
 
 #ifndef MSGDATA_INTERNAL_H

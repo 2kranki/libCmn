@@ -128,7 +128,7 @@ extern "C" {
         if (this) {
             this->origin = origin;
             this->dest = dest;
-            value_setDataFree((VALUE_DATA *)this, size, pData);
+            Value_setDataFree((VALUE_DATA *)this, size, pData);
         }
         return this;
     }
@@ -160,7 +160,7 @@ extern "C" {
         }
 #endif
 
-        return value_getData((VALUE_DATA *)this);
+        return Value_getData((VALUE_DATA *)this);
     }
 
 
@@ -306,7 +306,7 @@ extern "C" {
         }
 #endif
 
-        return value_getDataLen((VALUE_DATA *)this);
+        return Value_getDataLen((VALUE_DATA *)this);
     }
 
 
@@ -431,7 +431,7 @@ extern "C" {
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-        eRc = value_Assign((VALUE_DATA *)this, (VALUE_DATA *)pOther);
+        eRc = Value_Assign((VALUE_DATA *)this, (VALUE_DATA *)pOther);
         if (ERESULT_FAILED(eRc)) {
             goto eom;
         }
@@ -694,7 +694,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)value_Init((VALUE_DATA *)this);          // Needed for Inheritance
+        this = (OBJ_ID)Value_Init((VALUE_DATA *)this);          // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MSGDATA);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();

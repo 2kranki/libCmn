@@ -452,7 +452,7 @@ extern "C" {
             eRc = ERESULT_PARSE_ERROR;
         }
         else {
-            pValue = value_NewDataFree((cLen / 2), pData);
+            pValue = Value_NewDataFree((cLen / 2), pData);
             if (OBJ_NIL == pValue) {
                 eRc = ERESULT_OUT_OF_MEMORY;
             }

@@ -534,10 +534,6 @@ extern "C" {
         OBJ_IDENT_W32STRC_CLASS,
         OBJ_IDENT_W32_READER,           // UTF-32 Reader
         OBJ_IDENT_W32_READER_CLASS,
-        OBJ_IDENT_WISP,                 // A Lisp-like machine
-        OBJ_IDENT_WISP_CLASS,
-        OBJ_IDENT_XML,
-        OBJ_IDENT_XML_CLASS,
         OBJ_IDENT_OTHER_LIBS=8192,
         OBJ_IDENT_CAN_ENTRIES=OBJ_IDENT_OTHER_LIBS,                 // 128 Objects
         OBJ_IDENT_COMPILER_ENTRIES=OBJ_IDENT_CAN_ENTRIES+256,       // 128 Objects

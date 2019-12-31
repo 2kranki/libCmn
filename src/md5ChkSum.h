@@ -53,7 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <value.h>
+#include        <Value.h>
 
 
 #ifndef         MD5CHKSUM_H

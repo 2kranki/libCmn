@@ -386,8 +386,8 @@ int         test_md5ChkSum_Parse01(
         obj_Release(pPath);
         pPath = OBJ_NIL;
         
-        TINYTEST_TRUE( (16 == value_getDataLen(pValue)) );
-        iRc = memcmp(value_getData(pValue), answer, 16);
+        TINYTEST_TRUE( (16 == Value_getDataLen(pValue)) );
+        iRc = memcmp(Value_getData(pValue), answer, 16);
         fprintf(stderr, "\tiRc = %d\n", iRc);
         TINYTEST_TRUE( (0 == iRc) );
         obj_Release(pValue);

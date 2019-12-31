@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/31/2019 20:16:44.000)
+# (12/31/2019 21:21:20.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -329,6 +329,21 @@ $(OBJDIR)/TextOut.o: $(SRCDIR)/TextOut.c $(SRCDIR)/TextOut.h $(SRCDIR)/TextOut_i
 OBJS += $(OBJDIR)/TextOut_object.o
 
 $(OBJDIR)/TextOut_object.o: $(SRCDIR)/TextOut_object.c $(SRCDIR)/TextOut.h $(SRCDIR)/TextOut_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Value.o
+
+$(OBJDIR)/Value.o: $(SRCDIR)/Value.c $(SRCDIR)/Value.h $(SRCDIR)/Value_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Value_json.o
+
+$(OBJDIR)/Value_json.o: $(SRCDIR)/Value_json.c $(SRCDIR)/Value.h $(SRCDIR)/Value_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Value_object.o
+
+$(OBJDIR)/Value_object.o: $(SRCDIR)/Value_object.c $(SRCDIR)/Value.h $(SRCDIR)/Value_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/W32Str.o
@@ -1611,21 +1626,6 @@ OBJS += $(OBJDIR)/utf8_object.o
 $(OBJDIR)/utf8_object.o: $(SRCDIR)/utf8_object.c $(SRCDIR)/utf8.h $(SRCDIR)/utf8_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/value.o
-
-$(OBJDIR)/value.o: $(SRCDIR)/value.c $(SRCDIR)/value.h $(SRCDIR)/value_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/value_json.o
-
-$(OBJDIR)/value_json.o: $(SRCDIR)/value_json.c $(SRCDIR)/value.h $(SRCDIR)/value_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/value_object.o
-
-$(OBJDIR)/value_object.o: $(SRCDIR)/value_object.c $(SRCDIR)/value.h $(SRCDIR)/value_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/visitor.o
 
 $(OBJDIR)/visitor.o: $(SRCDIR)/visitor.c $(SRCDIR)/visitor.h $(SRCDIR)/visitor_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1783,6 +1783,12 @@ TRegex_test: $(TEST_SRC)/TRegex_test.c $(SRCDIR)/TRegex.h $(SRCDIR)/TRegex_inter
 TESTS += TextOut_test
 
 TextOut_test: $(TEST_SRC)/TextOut_test.c $(SRCDIR)/TextOut.h $(SRCDIR)/TextOut_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Value_test
+
+Value_test: $(TEST_SRC)/Value_test.c $(SRCDIR)/Value.h $(SRCDIR)/Value_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2479,12 +2485,6 @@ uint128_test: $(TEST_SRC)/uint128_test.c $(SRCDIR)/uint128.h $(SRCDIR)/uint128_i
 TESTS += utf8_test
 
 utf8_test: $(TEST_SRC)/utf8_test.c $(SRCDIR)/utf8.h $(SRCDIR)/utf8_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += value_test
-
-value_test: $(TEST_SRC)/value_test.c $(SRCDIR)/value.h $(SRCDIR)/value_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

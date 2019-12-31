@@ -57,7 +57,7 @@
 #include        <nodeArray.h>
 #include        <nodeHash.h>
 #include        <ObjList.h>
-#include        <value.h>
+#include        <Value.h>
 #include        <stdarg.h>
 #include        <stdio.h>
 

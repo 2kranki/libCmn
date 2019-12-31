@@ -65,7 +65,7 @@
 #include        <token_internal.h>
 #include        <trace.h>
 #include        <utf8_internal.h>
-#include        <value.h>
+#include        <Value.h>
 #include        <W32Str.h>
 
 

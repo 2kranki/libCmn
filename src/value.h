@@ -1,19 +1,19 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                      Value (value) Header
+//          VALUE Console Transmit Task (Value) Header
 //****************************************************************
 /*
  * Program
- *			Value (value)
+ *			Separate Value (Value)
  * Purpose
- *			This object provides a way to create an object from
+ *          This object provides a way to create an object from
  *          most primitive data including just raw memory.
  *          Since this is primitive data, it can be converted
- *          to/from JSON and ported across systems.
+ *          to/from Json and ported across systems.
  *
  * Remarks
- *	1.      If you are storing raw memory and that object is to be
+ *    1.    If you are storing raw memory and that object is to be
  *          saved to JSON. It should not contain any pointers since
  *          those will probably be meaningless when the data is
  *          restored.  Also, you may be faced with little-endian
@@ -21,7 +21,8 @@
  *          do.
  *
  * History
- *	08/26/2017 Generated
+ *  08/26/2017 Generated
+ *	12/31/2019 Regenerated
  */
 
 
@@ -64,6 +65,12 @@
 #define         VALUE_H
 
 
+#define   VALUE_JSON_SUPPORT 1
+//#define   VALUE_SINGLETON    1
+
+
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -75,19 +82,29 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct value_data_s	VALUE_DATA;    // Inherits from OBJ.
+    typedef struct Value_data_s	VALUE_DATA;            // Inherits from OBJ
+    typedef struct Value_class_data_s VALUE_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct value_vtbl_s	{
+    typedef struct Value_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in value_object.c.
+        // method names to the vtbl definition in Value_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(VALUE_DATA *);
     } VALUE_VTBL;
 
+    typedef struct Value_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in Value_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(VALUE_DATA *);
+    } VALUE_CLASS_VTBL;
 
-    typedef enum value_type_e {
+
+    typedef enum Value_type_e {
         VALUE_TYPE_UNKNOWN=0,
         VALUE_TYPE_FLOAT,           // 32-bit Float
         VALUE_TYPE_DOUBLE,          // 64-bit Float
@@ -107,8 +124,9 @@ extern "C" {
         //                          // and length must be valid for life of object)
         VALUE_TYPE_HIGHEST
     } VALUE_TYPE;
-    
-    
+
+
+
 
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
@@ -119,199 +137,215 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  VALUE_SINGLETON
+    VALUE_DATA *     Value_Shared (
+        void
+    );
+
+    void            Value_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to value object if successful, otherwise OBJ_NIL.
+     @return    pointer to Value object if successful, otherwise OBJ_NIL.
      */
-    VALUE_DATA *     value_Alloc (
+    VALUE_DATA *    Value_Alloc (
         void
     );
     
     
-    OBJ_ID          value_Class (
+    OBJ_ID          Value_Class (
         void
     );
     
     
-    VALUE_DATA *     value_New (
+    VALUE_DATA *    Value_New (
         void
     );
     
-    VALUE_DATA *    value_NewData (
+    
+    /*!
+     Create a value object where the data will not be
+     controlled by this object.
+     */
+    VALUE_DATA *    Value_NewData (
         int32_t         length,
         uint8_t         *pData
     );
-    
+
     /*!
      Create a value object where the data will be freed upon
      release of the object.
      */
-    VALUE_DATA *    value_NewDataFree (
+    VALUE_DATA *    Value_NewDataFree (
         int32_t         length,
         uint8_t         *pData
     );
-    
-    VALUE_DATA *    value_NewI8 (
+
+    VALUE_DATA *    Value_NewI8 (
         int8_t          value
     );
-    
-    VALUE_DATA *    value_NewI16 (
+
+    VALUE_DATA *    Value_NewI16 (
         int16_t         value
     );
-    
-    VALUE_DATA *    value_NewI32 (
+
+    VALUE_DATA *    Value_NewI32 (
         int32_t         value
     );
-    
-    VALUE_DATA *    value_NewI64 (
+
+    VALUE_DATA *    Value_NewI64 (
         int64_t         value
     );
-    
-    VALUE_DATA *    value_NewObject (
+
+    VALUE_DATA *    Value_NewObject (
         OBJ_DATA        *pValue
     );
-    
-    VALUE_DATA *    value_NewU8 (
+
+    VALUE_DATA *    Value_NewU8 (
         uint8_t         value
     );
-    
-    VALUE_DATA *    value_NewU16 (
+
+    VALUE_DATA *    Value_NewU16 (
         uint16_t        value
     );
-    
-    VALUE_DATA *    value_NewU32 (
+
+    VALUE_DATA *    Value_NewU32 (
         uint32_t        value
     );
-    
-    VALUE_DATA *    value_NewU64 (
+
+    VALUE_DATA *    Value_NewU64 (
         uint64_t        value
     );
-    
-    
-    VALUE_DATA *    value_NewFromJsonString (
+
+
+    VALUE_DATA *    Value_NewFromJsonString (
         ASTR_DATA       *pString
     );
-    
-    VALUE_DATA *    value_NewFromJsonStringA (
+
+    VALUE_DATA *    Value_NewFromJsonStringA (
         const
         char            *pString
     );
-    
-    
 
-    
+
+
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint8_t *       value_getData (
+    uint8_t *       Value_getData (
         VALUE_DATA      *this
     );
-    
-    uint32_t        value_getDataLen (
+
+    uint32_t        Value_getDataLen (
         VALUE_DATA      *this
     );
-    
-    bool            value_setData (
+
+    bool            Value_setData (
         VALUE_DATA      *this,
         uint32_t        length,
         void            *pValue
     );
-    
-    bool            value_setDataFree (
+
+    bool            Value_setDataFree (
         VALUE_DATA      *this,
         uint32_t        length,
         void            *pValue
     );
 
 
-    int16_t         value_getI16 (
+    int16_t         Value_getI16 (
         VALUE_DATA      *this
     );
-    
-    bool            value_setI16 (
+
+    bool            Value_setI16 (
         VALUE_DATA      *this,
         int16_t         value
     );
-    
-    
-    int32_t         value_getI32 (
+
+
+    int32_t         Value_getI32 (
         VALUE_DATA      *this
     );
-    
-    bool            value_setI32 (
+
+    bool            Value_setI32 (
         VALUE_DATA      *this,
         int32_t         value
     );
-    
-    
-    int64_t         value_getI64 (
+
+
+    int64_t         Value_getI64 (
         VALUE_DATA      *this
     );
-    
-    bool            value_setI64 (
+
+    bool            Value_setI64 (
         VALUE_DATA      *this,
         int64_t         value
     );
-    
-    
-    OBJ_DATA *      value_getObject (
+
+
+    OBJ_DATA *      Value_getObject (
         VALUE_DATA      *this
     );
-    
-    bool            value_setObject (
+
+    bool            Value_setObject (
         VALUE_DATA      *this,
         OBJ_DATA        *pValue
     );
-    
-    
-    uint16_t        value_getType (
+
+
+    uint16_t        Value_getType (
         VALUE_DATA      *this
     );
-    
-    
-    uint16_t        value_getU16 (
+
+
+    uint16_t        Value_getU16 (
         VALUE_DATA      *this
     );
-    
-    bool            value_setU16 (
+
+    bool            Value_setU16 (
         VALUE_DATA      *this,
         uint16_t        value
     );
-    
-    
-    uint32_t        value_getU32 (
+
+
+    uint32_t        Value_getU32 (
         VALUE_DATA      *this
     );
-    
-    bool            value_setU32 (
+
+    bool            Value_setU32 (
         VALUE_DATA      *this,
         uint32_t        value
     );
-    
-    
-    uint64_t        value_getU64 (
+
+
+    uint64_t        Value_getU64 (
         VALUE_DATA      *this
     );
-    
-    bool            value_setU64 (
+
+    bool            Value_setU64 (
         VALUE_DATA      *this,
         uint64_t        value
     );
-    
-    
-    uint32_t        value_getUser (
+
+
+    uint32_t        Value_getUser (
         VALUE_DATA      *this
     );
-    
-    bool            value_setUser (
+
+    bool            Value_setUser (
         VALUE_DATA      *this,
         uint32_t        value
     );
-    
-    
+
+
+
 
     
     //---------------------------------------------------------------
@@ -324,14 +358,14 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code
-        ERESULT eRc = value__Assign(this,pOther);
+        ERESULT eRc = Value_Assign(this,pOther);
      @endcode
      @param     this    object pointer
      @param     pOther  a pointer to another VALUE object
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error
      */
-    ERESULT         value_Assign(
+    ERESULT         Value_Assign (
         VALUE_DATA      *this,
         VALUE_DATA      *pOther
     );
@@ -341,36 +375,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code
-        value      *pCopy = value_Copy(this);
+        Value      *pCopy = Value_Copy(this);
      @endcode
      @param     this    object pointer
-     @return    If successful, a VALUE object which must be released,
-                otherwise OBJ_NIL.
-     @warning   Remember to release the returned the VALUE object.
+     @return    If successful, a VALUE object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    VALUE_DATA *    value_Copy(
-        VALUE_DATA      *this
+    VALUE_DATA *     Value_Copy (
+        VALUE_DATA       *this
     );
 
-
-    VALUE_DATA *    value_Init (
-        VALUE_DATA      *this
+   
+    VALUE_DATA *   Value_Init (
+        VALUE_DATA     *this
     );
 
 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = value_ToDebugString(this,4);
-     @endcode
-     @param     this    VALUE object pointer
+     @code 
+        ASTR_DATA      *pDesc = Value_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    value_ToDebugString (
+    ASTR_DATA *    Value_ToDebugString (
         VALUE_DATA     *this,
         int             indent
     );

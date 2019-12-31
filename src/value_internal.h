@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   value_internal.h
- *	Generated 08/26/2017 09:50:28
+ * File:   Value_internal.h
+ *	Generated 12/31/2019 15:27:11
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,16 @@
 
 
 
-#include    <value.h>
-#include    <JsonIn.h>
+#include        <Value.h>
+#include        <JsonIn.h>
 
 
 #ifndef VALUE_INTERNAL_H
 #define	VALUE_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -59,8 +63,8 @@ extern "C" {
     //                  Object Data Description
     //---------------------------------------------------------------
 
- #pragma pack(push, 1)
-struct value_data_s	{
+#pragma pack(push, 1)
+struct Value_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -68,19 +72,20 @@ struct value_data_s	{
 
     // Common Data
     uint16_t        type;           // Value Type (see VALUE_TYPE)
-    uint16_t        reserved;
+    uint16_t        rsvd16;
     uint32_t        user;           // User Specified
+    ASTR_DATA       *pStr;
     union {
         int8_t          i8;
         int16_t         i16;
         int32_t         i32;
-        int64_t			i64;
-        //        int128_t		i128;
+        int64_t            i64;
+        //        int128_t        i128;
         uint8_t         u8;
         uint16_t        u16;
         uint32_t        u32;
-        uint64_t		u64;
-        //        uint128_t		u128;
+        uint64_t        u64;
+        //        uint128_t        u128;
         double          flt;
         OBJ_ID          pObject;
         struct {
@@ -93,12 +98,27 @@ struct value_data_s	{
 #pragma pack(pop)
 
     extern
-    const
-    struct value_class_data_s  value_ClassObj;
+    struct Value_class_data_s  Value_ClassObj;
 
     extern
     const
-    VALUE_VTBL         value_Vtbl;
+    VALUE_VTBL         Value_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  VALUE_SINGLETON
+    VALUE_DATA *     Value_getSingleton (
+        void
+    );
+
+    bool            Value_setSingleton (
+     VALUE_DATA       *pValue
+);
+#endif
 
 
 
@@ -106,39 +126,42 @@ struct value_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    void            value_Dealloc(
+    OBJ_IUNKNOWN *  Value_getSuperVtbl (
+        VALUE_DATA     *this
+    );
+
+
+    void            Value_Dealloc (
         OBJ_ID          objId
     );
 
 
-    /*!
-     Parse the new object from an established parser.
-     @param pParser an established jsonIn Parser Object
-     @return    a new object if successful, otherwise, OBJ_NIL
-     @warning   Returned object must be released.
-     */
-    VALUE_DATA *    value_ParseJsonObject(
+#ifdef  VALUE_JSON_SUPPORT
+    VALUE_DATA *       Value_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
-    
-    
-    void *          value_QueryInfo(
+#endif
+
+
+    void *          Value_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     value_ToJson(
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     Value_ToJson (
         VALUE_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			value_Validate(
+    bool			Value_Validate (
         VALUE_DATA       *this
     );
 #endif

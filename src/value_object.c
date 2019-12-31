@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'value'
-//	Generated 08/26/2017 09:50:28
+//	Class Object Metods and Tables for 'Value'
+//	Generated 12/31/2019 15:27:11
 
 
 /*
@@ -33,8 +33,12 @@
 
 
 
+
 #define			VALUE_OBJECT_C	    1
-#include        <value_internal.h>
+#include        <Value_internal.h>
+#ifdef  VALUE_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
@@ -42,14 +46,18 @@
 //                  Class Object Definition
 //===========================================================
 
-struct value_class_data_s	{
+struct Value_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-    OBJ_ID          pObjCatalog;
+#ifdef  VALUE_SINGLETON
+    volatile
+    VALUE_DATA       *pSingleton;
+#endif
+    //uint32_t        misc;
+    //OBJ_ID          pObjCatalog;
 };
-typedef struct value_class_data_s VALUE_CLASS_DATA;
 
 
 
@@ -61,7 +69,7 @@ typedef struct value_class_data_s VALUE_CLASS_DATA;
 
 
 static
-void *          valueClass_QueryInfo(
+void *          ValueClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -70,28 +78,38 @@ void *          valueClass_QueryInfo(
 
 static
 const
-OBJ_INFO        value_Info;            // Forward Reference
+OBJ_INFO        Value_Info;            // Forward Reference
 
 
 
 
 static
-bool            valueClass_ClassIsKindOf(
+bool            ValueClass_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_VALUE_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(Value_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		valueClass_ClassWhoAmI(
+uint16_t		ValueClass_WhoAmI (
     void
 )
 {
@@ -99,17 +117,26 @@ uint16_t		valueClass_ClassWhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
 static
 const
-OBJ_IUNKNOWN    class_Vtbl = {
-	&value_Info,
-    valueClass_ClassIsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,               // Dealloc
-    value_Class,
-    valueClass_ClassWhoAmI,
-    (P_OBJ_QUERYINFO)valueClass_QueryInfo
+VALUE_CLASS_VTBL    class_Vtbl = {
+    {
+        &Value_Info,
+        ValueClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        Value_Class,
+        ValueClass_WhoAmI,
+        (P_OBJ_QUERYINFO)ValueClass_QueryInfo,
+        NULL                        // ValueClass_ToDebugString
+    },
 };
 
 
@@ -118,17 +145,100 @@ OBJ_IUNKNOWN    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
-VALUE_CLASS_DATA  value_ClassObj = {
+VALUE_CLASS_DATA  Value_ClassObj = {
     {
-        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
-        sizeof(VALUE_CLASS_DATA),           // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(VALUE_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
     },
 	//0
 };
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  VALUE_SINGLETON
+VALUE_DATA *     Value_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(Value_ClassObj.pSingleton);
+}
+
+
+bool            Value_setSingleton (
+    VALUE_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (Value_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Value_ClassObj.pSingleton));
+    }
+    Value_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+VALUE_DATA *     Value_Shared (
+    void
+)
+{
+    VALUE_DATA       *this = (OBJ_ID)(Value_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = Value_New( );
+        Value_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // Value_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            Value_SharedReset (
+    void
+)
+{
+    VALUE_DATA       *this = (OBJ_ID)(Value_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        Value_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
 
 
 
@@ -137,7 +247,7 @@ VALUE_CLASS_DATA  value_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          valueClass_QueryInfo(
+void *          ValueClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -153,16 +263,23 @@ void *          valueClass_QueryInfo(
     
     switch (type) {
       
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(VALUE_DATA);
+            break;
+            
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
             return this;
             break;
             
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
-                    
-                case 'O':
-                    if (str_Compare("ObjectCatalog", (char *)pStr) == 0) {
-                        return &this->pObjCatalog;
+ 
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&Value_Info;
                     }
                     break;
                     
@@ -178,15 +295,22 @@ void *          valueClass_QueryInfo(
         case OBJ_QUERYINFO_TYPE_METHOD:
             switch (*pStr) {
                     
-                case 'T':
-                    if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                        return value_ToDebugString;
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return Value_New;
                     }
-#ifdef XYZZY
-                    if (str_Compare("ToJson", (char *)pStr) == 0) {
-                        return value_ToJSON;
+                    break;
+                    
+                case 'P':
+                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
+                        //return Value_ParseJsonObject;
                     }
-#endif
+                    break;
+ 
+                 case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return ValueClass_WhoAmI;
+                    }
                     break;
                     
                 default:
@@ -203,42 +327,52 @@ void *          valueClass_QueryInfo(
 
 
 
-//===========================================================
-//                  Object Vtbl Definition
-//===========================================================
 
 static
-bool            value_IsKindOf(
+bool            Value_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_VALUE == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(Value_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            value_Dealloc(
+void            Value_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          value_Class(
+OBJ_ID          Value_Class (
     void
 )
 {
-    return (OBJ_ID)&value_ClassObj;
+    return (OBJ_ID)&Value_ClassObj;
 }
 
 
 static
-uint16_t		value_WhoAmI(
+uint16_t		Value_WhoAmI (
     void
 )
 {
@@ -246,30 +380,42 @@ uint16_t		value_WhoAmI(
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
-VALUE_VTBL     value_Vtbl = {
+VALUE_VTBL     Value_Vtbl = {
     {
-        &value_Info,
-        value_IsKindOf,
+        &Value_Info,
+        Value_IsKindOf,
+#ifdef  VALUE_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
-        value_Dealloc,
-        value_Class,
-        value_WhoAmI,
-        (P_OBJ_QUERYINFO)value_QueryInfo,
-        (P_OBJ_TOSTRING)value_ToDebugString,
-        NULL,			// value_Enable,
-        NULL,			// value_Disable,
-        NULL,			// (P_OBJ_ASSIGN)value_Assign,
-        NULL,			// (P_OBJ_COMPARE)value_Compare,
-        NULL, 			// (P_OBJ_PTR)value_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
-        NULL 			// (P_OBJ_HASH)value_Hash,
+#endif
+        Value_Dealloc,
+        Value_Class,
+        Value_WhoAmI,
+        (P_OBJ_QUERYINFO)Value_QueryInfo,
+        (P_OBJ_TOSTRING)Value_ToDebugString,
+        NULL,			// Value_Enable,
+        NULL,			// Value_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Value_Assign,
+        NULL,			// (P_OBJ_COMPARE)Value_Compare,
+        NULL, 			// (P_OBJ_PTR)Value_Copy,
+        NULL, 			// (P_OBJ_PTR)Value_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Value_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //value_IsEnabled,
+    //Value_IsEnabled,
  
 };
 
@@ -277,12 +423,12 @@ VALUE_VTBL     value_Vtbl = {
 
 static
 const
-OBJ_INFO        value_Info = {
-    "value",
+OBJ_INFO        Value_Info = {
+    "Value",
     "Primitive Value",
-    (OBJ_DATA *)&value_ClassObj,
+    (OBJ_DATA *)&Value_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&value_Vtbl,
+    (OBJ_IUNKNOWN *)&Value_Vtbl,
     sizeof(VALUE_DATA)
 };
 

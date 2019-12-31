@@ -427,7 +427,7 @@ OBJ_INFO        MsgData_Info = {
     "MsgData",
     "Message Data",
     (OBJ_DATA *)&MsgData_ClassObj,
-    (OBJ_DATA *)&value_ClassObj,
+    (OBJ_DATA *)&Value_ClassObj,
     (OBJ_IUNKNOWN *)&MsgData_Vtbl,
     sizeof(MSGDATA_DATA)
 };
