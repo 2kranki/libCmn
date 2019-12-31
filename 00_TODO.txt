@@ -8,6 +8,8 @@ will depend upon time and resources.
 
 -- Finish SrcErrors_ParseJsonObject() and add to JsonIn_ParseObject().
 
+-- Fix value_ToJson and value_ParseJsonObject to support float/double.
+
 -- Finish program, genMake. See its todo.
 
 -- Add "man 3 backtrace" to any routines segmenting.

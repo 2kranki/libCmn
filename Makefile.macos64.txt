@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/31/2019 19:54:33.000)
+# (12/31/2019 20:16:44.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -1636,26 +1636,6 @@ OBJS += $(OBJDIR)/visitor_object.o
 $(OBJDIR)/visitor_object.o: $(SRCDIR)/visitor_object.c $(SRCDIR)/visitor.h $(SRCDIR)/visitor_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/wisp.o
-
-$(OBJDIR)/wisp.o: $(SRCDIR)/wisp.c $(SRCDIR)/wisp.h $(SRCDIR)/wisp_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/wisp_object.o
-
-$(OBJDIR)/wisp_object.o: $(SRCDIR)/wisp_object.c $(SRCDIR)/wisp.h $(SRCDIR)/wisp_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/xml.o
-
-$(OBJDIR)/xml.o: $(SRCDIR)/xml.c $(SRCDIR)/xml.h $(SRCDIR)/xml_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/xml_object.o
-
-$(OBJDIR)/xml_object.o: $(SRCDIR)/xml_object.c $(SRCDIR)/xml.h $(SRCDIR)/xml_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 TESTS += AStrArray_test
 
 AStrArray_test: $(TEST_SRC)/AStrArray_test.c $(SRCDIR)/AStrArray.h $(SRCDIR)/AStrArray_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
@@ -2511,18 +2491,6 @@ value_test: $(TEST_SRC)/value_test.c $(SRCDIR)/value.h $(SRCDIR)/value_internal.
 TESTS += visitor_test
 
 visitor_test: $(TEST_SRC)/visitor_test.c $(SRCDIR)/visitor.h $(SRCDIR)/visitor_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += wisp_test
-
-wisp_test: $(TEST_SRC)/wisp_test.c $(SRCDIR)/wisp.h $(SRCDIR)/wisp_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += xml_test
-
-xml_test: $(TEST_SRC)/xml_test.c $(SRCDIR)/xml.h $(SRCDIR)/xml_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

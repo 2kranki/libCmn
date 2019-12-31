@@ -162,8 +162,6 @@
         {name:"visitor"},
         {name:"W32Str", json:true},
         {name:"W32StrC"},
-        {name:"wisp", json:false},
-        {name:"xml"}
     ],
 
     routines: [
