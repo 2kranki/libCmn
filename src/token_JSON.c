@@ -47,7 +47,7 @@
 #include    <stdlib.h>
 #include    <string.h>
 #include    <dec_internal.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <SrcLoc_internal.h>
@@ -95,42 +95,42 @@ extern "C" {
         
         pInfo = obj_getInfo(token_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
 
-        eRc = jsonIn_SubobjectInHash(pParser, "loc");
+        eRc = JsonIn_SubObjectInHash(pParser, "loc");
         pSrc = SrcLoc_ParseJsonObject(pParser);
-        jsonIn_SubobjectEnd(pParser);
+        JsonIn_SubObjectEnd(pParser);
         if (OBJ_NIL == pSrc) {
             goto exit00;
         }
 
-        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
+        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
         cls = (uint32_t)intIn;
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
         misc = (uint16_t)intIn;
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
         type = (uint32_t)intIn;
 
         switch (type) {
                 
             case TOKEN_TYPE_INTEGER:
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject = token_NewInteger(SrcLoc_getSrc(pSrc), cls, integer);
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
                 break;
                 
             case TOKEN_TYPE_STRTOKEN:
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 pUtf8 = utf8_ParseObject(pParser, NULL);
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (pUtf8) {
                     pObject = token_NewStrA(SrcLoc_getSrc(pSrc), cls, (char *)pUtf8);
                     mem_Free(pUtf8);
@@ -139,10 +139,10 @@ extern "C" {
                 break;
                 
             case TOKEN_TYPE_W32CHAR:
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject = token_NewCharW32(SrcLoc_getSrc(pSrc), cls, (W32CHR_T)integer);
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
@@ -188,8 +188,8 @@ extern "C" {
         ERESULT         eRc;
         TOKEN_DATA      *pToken = OBJ_NIL;
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }

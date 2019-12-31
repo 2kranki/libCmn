@@ -47,7 +47,7 @@
 #include    <string.h>
 #include    <dec_internal.h>
 #include    <hex.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -88,13 +88,13 @@ extern "C" {
 
         pInfo = obj_getInfo(number_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
         type = (uint16_t)intIn;
 
         pObject = number_New();
@@ -117,60 +117,60 @@ extern "C" {
 #endif
  
             case NUMBER_TYPE_INT16:          // int16_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->i16 = (int16_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
                 break;
 
             case NUMBER_TYPE_INT32:          // int32_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->i32 = (int32_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
                 break;
                 
             case NUMBER_TYPE_INT64:          // int64_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->i64 = (int64_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
                 break;
                 
             case NUMBER_TYPE_UINT16:         // uint16_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->u16 = (uint16_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
                 break;
                 
             case NUMBER_TYPE_UINT32:         // uint32_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->u32 = (uint32_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
                 break;
                 
             case NUMBER_TYPE_UINT64:         // uint64_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->u64 = (uint64_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
@@ -217,8 +217,8 @@ extern "C" {
         pInfo = obj_getInfo(number_Class());
         
 
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }

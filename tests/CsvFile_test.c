@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 06/05/2017 21:57:10
+ *	Generated 12/30/2019 11:06:40
  */
 
 
@@ -24,10 +25,9 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <dbCsv_internal.h>
+#include    <CsvFile_internal.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
-
 
 
 static
@@ -46,11 +46,9 @@ char        *pTestInput02 =
 
 
 
-
-
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -62,9 +60,9 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -96,38 +94,46 @@ int         tearDown(
 
 
 
-int         test_dbCsv_OpenClose(
+int             test_CsvFile_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    DBCSV_DATA	*pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    CSVFILE_DATA	    *pObj = OBJ_NIL;
+    bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = dbCsv_Alloc( );
+
+    pObj = CsvFile_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = dbCsv_Init( pObj );
+    pObj = CsvFile_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_CSVFILE);
+        TINYTEST_TRUE( (fRc) );
+        
         // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_dbCsv_Input01(
+int         test_CsvFile_Input01(
     const
     char        *pTestName
 )
 {
-    DBCSV_DATA      *pObj = OBJ_NIL;
+    CSVFILE_DATA    *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     uint32_t        i;
@@ -138,18 +144,18 @@ int         test_dbCsv_Input01(
     OBJARRAY_DATA   *pRecords;
     ASTR_DATA       *pField;
 
-    
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pStr = AStr_NewA("  a,   10,   \"def\"  \n");
     XCTAssertFalse( (OBJ_NIL == pStr) );
     pPath = path_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pPath) );
-    
-    pObj = dbCsv_NewFromAStr( pStr, pPath, 4 );
+
+    pObj = CsvFile_NewFromAStr( pStr, pPath, 4 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
-        
-        pRecords = dbCsv_ParseFile(pObj);
+
+        pRecords = CsvFile_ParseFile(pObj);
         XCTAssertFalse( (OBJ_NIL == pRecords) );
         if (pRecords) {
             pField = ObjArray_ToDebugString(pRecords, 0);
@@ -180,36 +186,36 @@ int         test_dbCsv_Input01(
                                     case 1:
                                         XCTAssertTrue( (0 == strcmp("a",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 2:
                                         XCTAssertTrue( (0 == strcmp("10",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 3:
                                         XCTAssertTrue( (0 == strcmp("def",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     default:
                                         break;
                                 }
                                 break;
-                                
+
                             default:
                                 break;
                         }
                     }
-                    
+
                 }
             }
-            
+
         }
-        
+
         obj_Release(pRecords);
         pRecords = OBJ_NIL;
     }
     obj_Release(pObj);
     pObj = OBJ_NIL;
-    
+
     obj_Release(pPath);
     pPath = OBJ_NIL;
     obj_Release(pStr);
@@ -221,12 +227,12 @@ int         test_dbCsv_Input01(
 
 
 
-int         test_dbCsv_Input02(
+int         test_CsvFile_Input02(
     const
     char        *pTestName
 )
 {
-    DBCSV_DATA      *pObj = OBJ_NIL;
+    CSVFILE_DATA    *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     uint32_t        i;
@@ -236,19 +242,19 @@ int         test_dbCsv_Input02(
     OBJARRAY_DATA   *pRecord;
     OBJARRAY_DATA   *pRecords;
     ASTR_DATA       *pField;
-    
-    
+
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pStr = AStr_NewA(pTestInput02);
     XCTAssertFalse( (OBJ_NIL == pStr) );
     pPath = path_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pPath) );
-    
-    pObj = dbCsv_NewFromAStr( pStr, pPath, 4 );
+
+    pObj = CsvFile_NewFromAStr( pStr, pPath, 4 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
-        
-        pRecords = dbCsv_ParseFile(pObj);
+
+        pRecords = CsvFile_ParseFile(pObj);
         XCTAssertFalse( (OBJ_NIL == pRecords) );
         if (pRecords) {
             iMax = ObjArray_getSize(pRecords);
@@ -275,86 +281,86 @@ int         test_dbCsv_Input02(
                                     case 1:
                                         XCTAssertTrue( (0 == strcmp("a",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 2:
                                         XCTAssertTrue( (0 == strcmp("b",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 3:
                                         XCTAssertTrue( (0 == strcmp("c",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 4:
                                         XCTAssertTrue( (0 == strcmp("def",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     default:
                                         break;
                                 }
                                 break;
-                                
+
                             case 2:
                                 switch (j) {
                                     case 1:
                                         XCTAssertTrue( (0 == strcmp("d",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 2:
                                         XCTAssertTrue( (0 == strcmp("e",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 3:
                                         XCTAssertTrue( (0 == strcmp("f",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 4:
                                         XCTAssertTrue( (0 == strcmp("55",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     default:
                                         break;
                                 }
                                 break;
-                                
+
                             case 3:
                                 switch (j) {
                                     case 1:
                                         XCTAssertTrue( (0 == strcmp("h",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 2:
                                         XCTAssertTrue( (0 == strcmp("i",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 3:
                                         XCTAssertTrue( (0 == strcmp("j",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 4:
                                         XCTAssertTrue( (0 == strcmp("77",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     default:
                                         break;
                                 }
                                 break;
-                                
+
                             default:
                                 break;
                         }
                     }
-                    
+
                 }
             }
-            
+
         }
-        
+
         obj_Release(pRecords);
         pRecords = OBJ_NIL;
     }
     obj_Release(pObj);
     pObj = OBJ_NIL;
-    
+
     obj_Release(pPath);
     pPath = OBJ_NIL;
     obj_Release(pStr);
@@ -367,12 +373,12 @@ int         test_dbCsv_Input02(
 
 
 
-int         test_dbCsv_Input03(
+int         test_CsvFile_Input03(
     const
     char        *pTestName
 )
 {
-    DBCSV_DATA      *pObj = OBJ_NIL;
+    CSVFILE_DATA    *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     uint32_t        i;
@@ -383,8 +389,8 @@ int         test_dbCsv_Input03(
     OBJARRAY_DATA   *pRecords;
     ASTR_DATA       *pField;
     ERESULT         eRc;
-    
-    
+
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pPath = path_NewA("/Users/bob/Support/testFiles/csv_e360_opcodes.txt");
     XCTAssertFalse( (OBJ_NIL == pPath) );
@@ -393,12 +399,12 @@ int         test_dbCsv_Input03(
         fprintf(stderr, "Warning: %s missing, test skipped.\n", path_getData(pPath));
         return 1;
     }
-    
-    pObj = dbCsv_NewFromPath(pPath, 4);
+
+    pObj = CsvFile_NewFromPath(pPath, 4);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
-        
-        pRecords = dbCsv_ParseFile(pObj);
+
+        pRecords = CsvFile_ParseFile(pObj);
         XCTAssertFalse( (OBJ_NIL == pRecords) );
         if (pRecords) {
             iMax = ObjArray_getSize(pRecords);
@@ -420,36 +426,36 @@ int         test_dbCsv_Input03(
                                     );
                         }
                     }
-                    
+
                 }
             }
-            
+
         }
-        
+
         obj_Release(pRecords);
         pRecords = OBJ_NIL;
     }
     obj_Release(pObj);
     pObj = OBJ_NIL;
-    
+
     obj_Release(pPath);
     pPath = OBJ_NIL;
     obj_Release(pStr);
     pStr = OBJ_NIL;
     szTbl_SharedReset();
-    
+
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
 
 
 
-int         test_dbCsv_Input04(
+int         test_CsvFile_Input04(
     const
     char        *pTestName
 )
 {
-    DBCSV_DATA      *pObj = OBJ_NIL;
+    CSVFILE_DATA    *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     uint32_t        i;
@@ -459,19 +465,19 @@ int         test_dbCsv_Input04(
     OBJARRAY_DATA   *pRecord;
     OBJARRAY_DATA   *pRecords;
     ASTR_DATA       *pField;
-    
-    
+
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pStr = AStr_NewA("a, \"d,e,f\"\n");
     XCTAssertFalse( (OBJ_NIL == pStr) );
     pPath = path_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pPath) );
-    
-    pObj = dbCsv_NewFromAStr( pStr, pPath, 4 );
+
+    pObj = CsvFile_NewFromAStr( pStr, pPath, 4 );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
-        
-        pRecords = dbCsv_ParseFile(pObj);
+
+        pRecords = CsvFile_ParseFile(pObj);
         XCTAssertFalse( (OBJ_NIL == pRecords) );
         if (pRecords) {
             pField = ObjArray_ToDebugString(pRecords, 0);
@@ -502,37 +508,37 @@ int         test_dbCsv_Input04(
                                     case 1:
                                         XCTAssertTrue( (0 == strcmp("a",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     case 2:
                                         XCTAssertTrue( (0 == strcmp("d,e,f",AStr_getData(pField))) );
                                         break;
-                                        
+
                                     default:
                                         break;
                                 }
                                 break;
-                                
+
                             default:
                                 break;
                         }
                     }
-                    
+
                 }
             }
-            
+
         }
-        
+
         obj_Release(pRecords);
         pRecords = OBJ_NIL;
     }
     obj_Release(pObj);
     pObj = OBJ_NIL;
-    
+
     obj_Release(pPath);
     pPath = OBJ_NIL;
     obj_Release(pStr);
     pStr = OBJ_NIL;
-    
+
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
@@ -541,16 +547,15 @@ int         test_dbCsv_Input04(
 
 
 
-
-TINYTEST_START_SUITE(test_dbCsv);
-    TINYTEST_ADD_TEST(test_dbCsv_Input04,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_dbCsv_Input03,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_dbCsv_Input02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_dbCsv_Input01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_dbCsv_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_CsvFile);
+    TINYTEST_ADD_TEST(test_CsvFile_Input04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_CsvFile_Input03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_CsvFile_Input02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_CsvFile_Input01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_CsvFile_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_dbCsv);
+TINYTEST_MAIN_SINGLE_SUITE(test_CsvFile);
 
 
 

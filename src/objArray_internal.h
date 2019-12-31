@@ -41,7 +41,7 @@
 
 #include        <ObjArray.h>
 #include        <array_internal.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef OBJARRAY_INTERNAL_H

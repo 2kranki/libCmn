@@ -40,7 +40,7 @@
 
 
 #include    <nodeLink.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node_internal.h>
 
 

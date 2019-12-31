@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   msgData.c
- *	Generated 11/04/2017 09:37:49
+ * File:   MsgData.c
+ *	Generated 12/31/2019 10:05:08
  *
  */
 
@@ -41,7 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <msgData_internal.h>
+#include        <MsgData_internal.h>
+#include        <trace.h>
+
+
+
 
 
 
@@ -60,7 +64,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            msgData_task_body(
+    void            MsgData_task_body (
         void            *pData
     )
     {
@@ -80,24 +84,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    MSGDATA_DATA *  msgData_Alloc(
-        uint16_t        size
+    MSGDATA_DATA *     MsgData_Alloc (
+        void
     )
     {
-        MSGDATA_DATA    *this;
+        MSGDATA_DATA       *this;
         uint32_t        cbSize = sizeof(MSGDATA_DATA);
         
         // Do initialization.
         
-        if (0 == size) {
-            size = 256;
-        }
-        if (size > (65536 - sizeof(MSGDATA_DATA)) ) {
-            return OBJ_NIL;
-        }
-        cbSize += size;
-        this = obj_Alloc( cbSize );
-        obj_setMisc1(this, size);
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -105,21 +101,38 @@ extern "C" {
 
 
 
-    MSGDATA_DATA *  msgData_New(
-        uint32_t        origin,
-        uint32_t        dest,
-        uint16_t        size,
-        void            *pData
+    MSGDATA_DATA *     MsgData_New (
+        void
     )
     {
         MSGDATA_DATA       *this;
         
-        this = msgData_Alloc(size);
+        this = MsgData_Alloc( );
         if (this) {
-            this = msgData_Init(this, origin, dest, size, pData);
+            this = MsgData_Init(this);
         } 
         return this;
     }
+
+
+    MSGDATA_DATA *  MsgData_NewWithData (
+        uint32_t        origin,
+        uint32_t        dest,
+        uint32_t        size,
+        void            *pData
+    )
+    {
+        MSGDATA_DATA       *this;
+
+        this = MsgData_New();
+        if (this) {
+            this->origin = origin;
+            this->dest = dest;
+            value_setDataFree((VALUE_DATA *)this, size, pData);
+        }
+        return this;
+    }
+
 
 
 
@@ -130,223 +143,245 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                         D a t a
+    //                   D a t a
     //---------------------------------------------------------------
-    
-    void *          msgData_getData(
+
+    void *          MsgData_getData (
         MSGDATA_DATA    *this
     )
     {
-#ifdef NDEBUG
-#else
-        if( !msgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-        
-        msgData_setLastError(this, ERESULT_SUCCESS);
-        return this->data;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                   D e s t i n a t i o n
-    //---------------------------------------------------------------
-    
-    uint32_t        msgData_getDestination(
-        MSGDATA_DATA    *this
-    )
-    {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if( !MsgData_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
-        msgData_setLastError(this, ERESULT_SUCCESS);
+
+        return value_getData((VALUE_DATA *)this);
+    }
+
+
+    //---------------------------------------------------------------
+    //                   D e s t i n a t i o n
+    //---------------------------------------------------------------
+
+    uint32_t        MsgData_getDestination (
+        MSGDATA_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !MsgData_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
         return this->dest;
     }
-    
-    
-    bool            msgData_setDestination(
+
+
+    bool            MsgData_setDestination (
         MSGDATA_DATA    *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if( !MsgData_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         this->dest = value;
-        
-        msgData_setLastError(this, ERESULT_SUCCESS);
+
         return true;
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         msgData_getLastError(
-        MSGDATA_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !msgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
 
 
-    bool            msgData_setLastError(
-        MSGDATA_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !msgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
 
     //---------------------------------------------------------------
     //                        N u m 3 2
     //---------------------------------------------------------------
-    
-    uint32_t        msgData_getNum32(
+
+    uint32_t        MsgData_getNum32 (
         MSGDATA_DATA    *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if( !MsgData_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
-        msgData_setLastError(this, ERESULT_SUCCESS);
+
         return this->num32;
     }
-    
-    
-    bool            msgData_setNum32(
+
+
+    bool            MsgData_setNum32 (
         MSGDATA_DATA    *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if( !MsgData_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         this->num32 = value;
-        
-        msgData_setLastError(this, ERESULT_SUCCESS);
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                        O r i g i n
     //---------------------------------------------------------------
-    
-    uint32_t        msgData_getOrigin(
+
+    uint32_t        MsgData_getOrigin (
         MSGDATA_DATA    *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if( !MsgData_Validate(this) ) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
-        msgData_setLastError(this, ERESULT_SUCCESS);
+
         return this->origin;
     }
-    
-    
-    bool            msgData_setOrigin(
+
+
+    bool            MsgData_setOrigin (
         MSGDATA_DATA    *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if( !MsgData_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         this->origin = value;
-        
-        msgData_setLastError(this, ERESULT_SUCCESS);
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint16_t        msgData_getSize(
-        MSGDATA_DATA    *this
+    uint32_t        MsgData_getSize (
+        MSGDATA_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if (!MsgData_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        msgData_setLastError(this, ERESULT_SUCCESS);
-        return this->size;
+        return value_getDataLen((VALUE_DATA *)this);
     }
 
 
+
+    //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA * MsgData_getStr (
+        MSGDATA_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!MsgData_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool        MsgData_setStr (
+        MSGDATA_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!MsgData_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_STR_OWNED
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+#endif
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
+    
+    OBJ_IUNKNOWN *  MsgData_getSuperVtbl (
+        MSGDATA_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!MsgData_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return this->pSuperVtbl;
+    }
+    
+  
 
     
 
@@ -365,68 +400,117 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = msgData__Assign(this,pOther);
+        ERESULT eRc = MsgData_Assign(this,pOther);
      @endcode 
-     @param     this    MSGDATA object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another MSGDATA object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         msgData_Assign(
-        MSGDATA_DATA		*this,
-        MSGDATA_DATA      *pOther
+    ERESULT         MsgData_Assign (
+        MSGDATA_DATA    *this,
+        MSGDATA_DATA    *pOther
     )
     {
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if (!MsgData_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !msgData_Validate(pOther) ) {
+        if (!MsgData_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
-        }
-#endif
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
-            }
-            else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
-            }
+        eRc = value_Assign((VALUE_DATA *)this, (VALUE_DATA *)pOther);
+        if (ERESULT_FAILED(eRc)) {
+            goto eom;
         }
-#endif
 
         // Copy other data from this object to other.
-        
+        pOther->dest   = this->dest;
+        pOther->num32  = this->num32;
+        pOther->origin = this->origin;
+
         //goto eom;
 
         // Return to caller.
-        msgData_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        msgData_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return msgData_getLastError(this);
+        return eRc;
     }
     
     
     
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         MsgData_Compare (
+        MSGDATA_DATA     *this,
+        MSGDATA_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!MsgData_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!MsgData_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
+    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -435,38 +519,40 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        msgData      *pCopy = msgData_Copy(this);
+        MsgData      *pCopy = MsgData_Copy(this);
      @endcode 
-     @param     this    MSGDATA object pointer
-     @return    If successful, a MSGDATA object which must be released,
-                otherwise OBJ_NIL.
-     @warning  Remember to release the returned the MSGDATA object.
+     @param     this    object pointer
+     @return    If successful, a MSGDATA object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    MSGDATA_DATA *  msgData_Copy(
-        MSGDATA_DATA    *this
+    MSGDATA_DATA *     MsgData_Copy (
+        MSGDATA_DATA       *this
     )
     {
-        MSGDATA_DATA    *pOther = OBJ_NIL;
-        //ERESULT         eRc;
+        MSGDATA_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if (!MsgData_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = msgData_New(this->origin, this->dest, this->size, this->data);
-        if (OBJ_NIL == pOther) {
-            msgData_setLastError(this, ERESULT_OUT_OF_MEMORY);
-            return OBJ_NIL;
+        pOther = MsgData_New( );
+        if (pOther) {
+            eRc = MsgData_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
         }
-        pOther->num32 = this->num32;
         
         // Return to caller.
-        msgData_setLastError(this, ERESULT_SUCCESS);
+        //obj_Release(pOther);
         return pOther;
     }
     
@@ -476,11 +562,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            msgData_Dealloc(
+    void            MsgData_Dealloc (
         OBJ_ID          objId
     )
     {
-        MSGDATA_DATA    *this = objId;
+        MSGDATA_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -488,7 +574,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if (!MsgData_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -500,11 +586,11 @@ extern "C" {
         }
 #endif
 
-        //msgData_setStr(this, OBJ_NIL);
+        MsgData_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
-        // pSuperVtbl is saved immediately after the super object which we
-        // inherit from is initialized.
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
         this->pSuperVtbl->pDealloc(this);
         this = OBJ_NIL;
 
@@ -517,15 +603,22 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         msgData_Disable(
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         MsgData_Disable (
         MSGDATA_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !msgData_Validate(this) ) {
+        if (!MsgData_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -536,7 +629,6 @@ extern "C" {
         obj_Disable(this);
         
         // Return to caller.
-        msgData_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -546,15 +638,22 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         msgData_Enable(
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         MsgData_Enable (
         MSGDATA_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !msgData_Validate(this) ) {
+        if (!MsgData_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -565,7 +664,6 @@ extern "C" {
         // Put code here...
         
         // Return to caller.
-        msgData_setLastError(this, ERESULT_SUCCESS);
         return ERESULT_SUCCESS;
     }
 
@@ -575,17 +673,13 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    MSGDATA_DATA *  msgData_Init(
-        MSGDATA_DATA    *this,
-        uint32_t        origin,
-        uint32_t        dest,
-        uint16_t        size,
-        void            *pData
+    MSGDATA_DATA *   MsgData_Init (
+        MSGDATA_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(MSGDATA_DATA);
-        uint32_t        dataSize = 0;
-
+        //ERESULT         eRc;
+        
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -593,50 +687,43 @@ extern "C" {
         /* cbSize can be zero if Alloc() was not called and we are
          * are passed the address of a zero'd area.
          */
-        cbSize = obj_getSize(this);       // cbSize must be set in Alloc().
+        //cbSize = obj_getSize(this);       // cbSize must be set in Alloc().
         if (cbSize == 0) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 
-        dataSize = obj_getMisc1(this);
-        if ((dataSize == 0) || !(dataSize == size)) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MSGDATA);
+        this = (OBJ_ID)value_Init((VALUE_DATA *)this);          // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MSGDATA);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_MSGDATA);         // Needed for Inheritance
+        obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&msgData_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&MsgData_Vtbl);
         
-        msgData_setLastError(this, ERESULT_GENERAL_FAILURE);
-        this->origin = origin;
-        this->dest = dest;
-        this->size = size;
-        memmove(this->data, pData, this->size);
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        */
 
     #ifdef NDEBUG
     #else
-        if( !msgData_Validate(this) ) {
+        if (!MsgData_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "msgData::offsetof(eRc) = %lu\n", offsetof(MSGDATA_DATA,eRc));
-        //fprintf(stderr, "msgData::sizeof(MSGDATA_DATA) = %lu\n", sizeof(MSGDATA_DATA));
+        //fprintf(stderr, "MsgData::sizeof(MSGDATA_DATA) = %lu\n", sizeof(MSGDATA_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(MSGDATA_DATA));
     #endif
 
@@ -649,27 +736,26 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         msgData_IsEnabled(
+    ERESULT         MsgData_IsEnabled (
         MSGDATA_DATA		*this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if (!MsgData_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            msgData_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        msgData_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -686,14 +772,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = msgData_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = MsgData_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
-     @param     objId   OBJTEST object pointer
+     @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "msgData", prefix,
+                        the object name, "MsgData", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -701,13 +787,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          msgData_QueryInfo(
+    void *          MsgData_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        MSGDATA_DATA   *this = objId;
+        MSGDATA_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -716,7 +802,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if (!MsgData_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -724,7 +810,33 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_INFO:
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(MSGDATA_DATA);
+            break;
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)MsgData_Class();
+                break;
+                
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -733,23 +845,25 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return msgData_Disable;
+                            return MsgData_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return msgData_Enable;
+                            return MsgData_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return msgData_ToDebugString;
+                            return MsgData_ToDebugString;
                         }
+#ifdef  SRCREF_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return msgData_ToJSON;
+                            return MsgData_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -758,10 +872,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == msgData_ToDebugString)
+                if (pData == MsgData_ToDebugString)
                     return "ToDebugString";
-                if (pData == msgData_ToJSON)
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == MsgData_ToJson)
                     return "ToJson";
+#endif
                 break;
                 
             default:
@@ -781,15 +897,15 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = msgData_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = MsgData_ToDebugString(this,4);
      @endcode 
-     @param     this    MSGDATA object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     msgData_ToDebugString(
+    ASTR_DATA *     MsgData_ToDebugString (
         MSGDATA_DATA      *this,
         int             indent
     )
@@ -797,32 +913,36 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !msgData_Validate(this) ) {
+        if (!MsgData_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = msgData_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
         if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    msgData_getSize(this)
+                    MsgData_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -839,7 +959,7 @@ extern "C" {
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
         eRc =   AStr_AppendPrint(
                     pStr,
@@ -848,41 +968,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        msgData_setLastError(this, ERESULT_SUCCESS);
-        return pStr;
-    }
-    
-    
-    
-    ASTR_DATA *     msgData_ToJSON(
-        MSGDATA_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !msgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        msgData_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -894,15 +979,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            msgData_Validate(
+    bool            MsgData_Validate (
         MSGDATA_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_MSGDATA) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_MSGDATA))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -918,13 +1003,11 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(MSGDATA_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+        if (!(obj_getSize(this) >= sizeof(MSGDATA_DATA))) {
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif

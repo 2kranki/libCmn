@@ -40,7 +40,7 @@
 
 
 #include        <ObjMethod.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef OBJMETHOD_INTERNAL_H
@@ -77,7 +77,7 @@ struct ObjMethod_data_s	{
     ASTR_DATA       *pMethodName;   // Method Name which must be available
     //                              // the object's QueryInfo method
     ASTR_DATA       *pDesc;         // Optional Description
-    uint32_t        user32;         // Optional 32-bit User Data
+    OBJ_ID          *pOther;        // Optional User Object Pointer
 
 };
 #pragma pack(pop)
@@ -96,7 +96,7 @@ struct ObjMethod_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  OBJMETHOD_SINGLETON
-    OBJMETHOD_DATA *     ObjMethod_getSingleton (
+    OBJMETHOD_DATA * ObjMethod_getSingleton (
         void
     );
 

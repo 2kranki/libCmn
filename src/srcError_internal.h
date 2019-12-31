@@ -40,7 +40,7 @@
 
 
 #include        <SrcError.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 #include        <SrcLoc_internal.h>
 
 

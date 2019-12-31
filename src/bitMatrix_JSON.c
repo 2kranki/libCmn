@@ -60,7 +60,7 @@
 #include    <crc.h>
 #include    <dec.h>
 #include    <hex.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
@@ -139,22 +139,22 @@ extern "C" {
 
         pInfo = obj_getInfo(BitMatrix_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "xSize", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "xSize", &intIn);
         xSize = (uint32_t)intIn;
         fprintf(stderr, "\txSize = %u\n", xSize);
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "xWords", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "xWords", &intIn);
         xWords = (uint32_t)intIn;
         fprintf(stderr, "\txWords = %u\n", xWords);
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "ySize", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "ySize", &intIn);
         ySize = (uint32_t)intIn;
         fprintf(stderr, "\tySize = %u\n", ySize);
-        cElems = jsonIn_FindIntegerNodeInHashA(pParser, "cElems", &intIn);
+        cElems = JsonIn_FindIntegerNodeInHashA(pParser, "cElems", &intIn);
         cElems = (uint32_t)intIn;
         fprintf(stderr, "\tcElems = %u\n", cElems);
 
@@ -164,7 +164,7 @@ extern "C" {
         }
         
         if (cElems) {
-            eRc = jsonIn_FindArrayNodeInHashA(pParser, "Elems", &pArray);
+            eRc = JsonIn_FindArrayNodeInHashA(pParser, "Elems", &pArray);
             if (OBJ_NIL == pArray) {
                 obj_Release(pObject);
                 pObject = OBJ_NIL;
@@ -228,13 +228,13 @@ extern "C" {
         ASTR_DATA       *pStrDebug = OBJ_NIL;
 #endif
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
 #ifdef DEBUG_JSONIN
-        pStrDebug = nodeHash_ToDebugString(jsonIn_getHash(pParser), 0);
+        pStrDebug = nodeHash_ToDebugString(JsonIn_getHash(pParser), 0);
         if (pStrDebug) {
             fprintf(stderr, "%s\n\n", AStr_getData(pStrDebug));
             obj_Release(pStrDebug);

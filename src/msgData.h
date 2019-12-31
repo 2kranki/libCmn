@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          MSGDATA Console Transmit Task (msgData) Header
+//          MSGDATA Console Transmit Task (MsgData) Header
 //****************************************************************
 /*
  * Program
- *			Separate msgData (msgData)
+ *			Separate MsgData (MsgData)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate msgData to run things without complications
- *          of interfering with the main msgData. A msgData may be 
- *          called a msgData on other O/S's.
+ *          a separate MsgData to run things without complications
+ *          of interfering with the main MsgData. A MsgData may be 
+ *          called a MsgData on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	11/04/2017 Generated
+ *	12/31/2019 Generated
  */
 
 
@@ -53,10 +53,17 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <value.h>
 
 
 #ifndef         MSGDATA_H
 #define         MSGDATA_H
+
+
+#define   MSGDATA_JSON_SUPPORT 1
+//#define   MSGDATA_SINGLETON    1
+
+
 
 
 
@@ -70,16 +77,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct msgData_data_s	MSGDATA_DATA;    // Inherits from OBJ.
+    typedef struct MsgData_data_s	MSGDATA_DATA;            // Inherits from OBJ
+    typedef struct MsgData_class_data_s MSGDATA_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct msgData_vtbl_s	{
+    typedef struct MsgData_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in msgData_object.c.
+        // method names to the vtbl definition in MsgData_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(MSGDATA_DATA *);
     } MSGDATA_VTBL;
+
+    typedef struct MsgData_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in MsgData_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(MSGDATA_DATA *);
+    } MSGDATA_CLASS_VTBL;
+
 
 
 
@@ -92,65 +110,82 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  MSGDATA_SINGLETON
+    MSGDATA_DATA *  MsgData_Shared (
+        void
+    );
+
+    void            MsgData_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to msgData object if successful, otherwise OBJ_NIL.
+     @return    pointer to MsgData object if successful, otherwise OBJ_NIL.
      */
-    MSGDATA_DATA *  msgData_Alloc(
-        uint16_t        dataSize        // Size of Data
+    MSGDATA_DATA *  MsgData_Alloc (
+        void
     );
     
     
-    MSGDATA_DATA *  msgData_New(
+    OBJ_ID          MsgData_Class (
+        void
+    );
+    
+    
+    MSGDATA_DATA *  MsgData_New (
+        void
+    );
+    
+    
+    MSGDATA_DATA *  MsgData_NewWithData (
         uint32_t        origin,
         uint32_t        dest,
-        uint16_t        size,
+        uint32_t        size,
         void            *pData
     );
-    
-    
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    void *          msgData_getData(
+    void *          MsgData_getData (
         MSGDATA_DATA    *this
-    );
-    
-    
-    uint32_t        msgData_getDestination(
-        MSGDATA_DATA    *this
-    );
-    
-    
-    ERESULT         msgData_getLastError(
-        MSGDATA_DATA	*this
     );
 
 
-    uint32_t        msgData_getNum32(
+    uint32_t        MsgData_getDestination (
         MSGDATA_DATA    *this
     );
-    
-    bool            msgData_setNum32(
+
+
+    uint32_t        MsgData_getNum32 (
+        MSGDATA_DATA    *this
+    );
+
+    bool            MsgData_setNum32 (
         MSGDATA_DATA    *this,
         uint32_t        value
     );
-    
 
-    uint32_t        msgData_getOrigin(
+
+    uint32_t        MsgData_getOrigin (
         MSGDATA_DATA     *this
     );
-    
-    
-    uint16_t        msgData_getSize(
+
+
+    uint32_t        MsgData_getSize (
         MSGDATA_DATA    *this
     );
-    
-    
+
+
+
 
     
     //---------------------------------------------------------------
@@ -158,44 +193,64 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Copy the current object creating a new object.
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
      Example:
      @code
-     msgData      *pCopy = msgData_Copy(this);
+        ERESULT eRc = MsgData_Assign(this,pOther);
      @endcode
-     @param     this    MSGDATA object pointer
-     @return    If successful, a MSGDATA object which must be released,
-                otherwise OBJ_NIL.
-     @warning  Remember to release the returned the MSGDATA object.
+     @param     this    object pointer
+     @param     pOther  a pointer to another MSGDATA object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
      */
-    MSGDATA_DATA *  msgData_Copy(
-        MSGDATA_DATA    *this
-    );
-    
-    
-    MSGDATA_DATA *  msgData_Init(
+    ERESULT         MsgData_Assign (
         MSGDATA_DATA    *this,
-        uint32_t        origin,
-        uint32_t        dest,
-        uint16_t        size,
-        void            *pData
+        MSGDATA_DATA    *pOther
     );
 
 
     /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        MsgData      *pCopy = MsgData_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a MSGDATA object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    MSGDATA_DATA *  MsgData_Copy (
+        MSGDATA_DATA    *this
+    );
+
+   
+    MSGDATA_DATA *  MsgData_Init (
+        MSGDATA_DATA    *this
+    );
+
+
+    ERESULT         MsgData_IsEnabled (
+        MSGDATA_DATA	*this
+    );
+    
+ 
+    /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = msgData_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = MsgData_ToDebugString(this,4);
      @endcode 
-     @param     this    MSGDATA object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    msgData_ToDebugString(
-        MSGDATA_DATA     *this,
+    ASTR_DATA *     MsgData_ToDebugString (
+        MSGDATA_DATA    *this,
         int             indent
     );
     

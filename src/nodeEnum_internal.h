@@ -40,7 +40,7 @@
 
 
 #include        <NodeEnum.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 #include        <ObjEnum_internal.h>
 
 

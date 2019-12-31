@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/30/2019 14:56:46.000)
+# (12/31/2019 19:54:33.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -131,6 +131,16 @@ OBJS += $(OBJDIR)/BlkdRcds16_object.o
 $(OBJDIR)/BlkdRcds16_object.o: $(SRCDIR)/BlkdRcds16_object.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/CsvFile.o
+
+$(OBJDIR)/CsvFile.o: $(SRCDIR)/CsvFile.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/CsvFile_object.o
+
+$(OBJDIR)/CsvFile_object.o: $(SRCDIR)/CsvFile_object.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/FileRef.o
 
 $(OBJDIR)/FileRef.o: $(SRCDIR)/FileRef.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
@@ -139,6 +149,21 @@ $(OBJDIR)/FileRef.o: $(SRCDIR)/FileRef.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $
 OBJS += $(OBJDIR)/FileRef_object.o
 
 $(OBJDIR)/FileRef_object.o: $(SRCDIR)/FileRef_object.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/MsgData.o
+
+$(OBJDIR)/MsgData.o: $(SRCDIR)/MsgData.c $(SRCDIR)/MsgData.h $(SRCDIR)/MsgData_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/MsgData_json.o
+
+$(OBJDIR)/MsgData_json.o: $(SRCDIR)/MsgData_json.c $(SRCDIR)/MsgData.h $(SRCDIR)/MsgData_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/MsgData_object.o
+
+$(OBJDIR)/MsgData_object.o: $(SRCDIR)/MsgData_object.c $(SRCDIR)/MsgData.h $(SRCDIR)/MsgData_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeEnum.o
@@ -196,6 +221,21 @@ OBJS += $(OBJDIR)/ObjList_object.o
 $(OBJDIR)/ObjList_object.o: $(SRCDIR)/ObjList_object.c $(SRCDIR)/ObjList.h $(SRCDIR)/ObjList_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/ObjMethod.o
+
+$(OBJDIR)/ObjMethod.o: $(SRCDIR)/ObjMethod.c $(SRCDIR)/ObjMethod.h $(SRCDIR)/ObjMethod_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ObjMethod_json.o
+
+$(OBJDIR)/ObjMethod_json.o: $(SRCDIR)/ObjMethod_json.c $(SRCDIR)/ObjMethod.h $(SRCDIR)/ObjMethod_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ObjMethod_object.o
+
+$(OBJDIR)/ObjMethod_object.o: $(SRCDIR)/ObjMethod_object.c $(SRCDIR)/ObjMethod.h $(SRCDIR)/ObjMethod_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/Parser.o
 
 $(OBJDIR)/Parser.o: $(SRCDIR)/Parser.c $(SRCDIR)/Parser.h $(SRCDIR)/Parser_internal.h $(SRCDIR)/cmn_defs.h 
@@ -233,17 +273,17 @@ $(OBJDIR)/SrcError_object.o: $(SRCDIR)/SrcError_object.c $(SRCDIR)/AStr.h $(SRCD
 
 OBJS += $(OBJDIR)/SrcErrors.o
 
-$(OBJDIR)/SrcErrors.o: $(SRCDIR)/SrcErrors.c $(SRCDIR)/SrcError.h $(SRCDIR)/SrcErrors.h $(SRCDIR)/SrcErrors_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/SrcErrors.o: $(SRCDIR)/SrcErrors.c $(SRCDIR)/ObjArray.h $(SRCDIR)/SrcError.h $(SRCDIR)/SrcErrors.h $(SRCDIR)/SrcErrors_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SrcErrors_json.o
 
-$(OBJDIR)/SrcErrors_json.o: $(SRCDIR)/SrcErrors_json.c $(SRCDIR)/SrcErrors.h $(SRCDIR)/SrcErrors_internal.h $(SRCDIR)/SrcError.h $(SRCDIR)/objArray.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/SrcErrors_json.o: $(SRCDIR)/SrcErrors_json.c $(SRCDIR)/SrcErrors.h $(SRCDIR)/SrcErrors_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/SrcError.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SrcErrors_object.o
 
-$(OBJDIR)/SrcErrors_object.o: $(SRCDIR)/SrcErrors_object.c $(SRCDIR)/SrcError.h $(SRCDIR)/SrcErrors.h $(SRCDIR)/SrcErrors_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/SrcErrors_object.o: $(SRCDIR)/SrcErrors_object.c $(SRCDIR)/ObjArray.h $(SRCDIR)/SrcError.h $(SRCDIR)/SrcErrors.h $(SRCDIR)/SrcErrors_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SrcLoc.o
@@ -551,16 +591,6 @@ OBJS += $(OBJDIR)/crc_object.o
 $(OBJDIR)/crc_object.o: $(SRCDIR)/crc_object.c $(SRCDIR)/crc.h $(SRCDIR)/crc_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/csv.o
-
-$(OBJDIR)/csv.o: $(SRCDIR)/csv.c $(SRCDIR)/csv.h $(SRCDIR)/csv_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/csv_object.o
-
-$(OBJDIR)/csv_object.o: $(SRCDIR)/csv_object.c $(SRCDIR)/csv.h $(SRCDIR)/csv_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/dateTime.o
 
 $(OBJDIR)/dateTime.o: $(SRCDIR)/dateTime.c $(SRCDIR)/dateTime.h $(SRCDIR)/dateTime_internal.h $(SRCDIR)/cmn_defs.h 
@@ -569,16 +599,6 @@ $(OBJDIR)/dateTime.o: $(SRCDIR)/dateTime.c $(SRCDIR)/dateTime.h $(SRCDIR)/dateTi
 OBJS += $(OBJDIR)/dateTime_object.o
 
 $(OBJDIR)/dateTime_object.o: $(SRCDIR)/dateTime_object.c $(SRCDIR)/dateTime.h $(SRCDIR)/dateTime_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/dbCsv.o
-
-$(OBJDIR)/dbCsv.o: $(SRCDIR)/dbCsv.c $(SRCDIR)/AStr.h $(SRCDIR)/dbCsv.h $(SRCDIR)/dbCsv_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/dbCsv_object.o
-
-$(OBJDIR)/dbCsv_object.o: $(SRCDIR)/dbCsv_object.c $(SRCDIR)/AStr.h $(SRCDIR)/dbCsv.h $(SRCDIR)/dbCsv_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/dbField.o
@@ -698,12 +718,12 @@ $(OBJDIR)/enum_object.o: $(SRCDIR)/enum_object.c $(SRCDIR)/enum.h $(SRCDIR)/enum
 
 OBJS += $(OBJDIR)/execArray.o
 
-$(OBJDIR)/execArray.o: $(SRCDIR)/execArray.c $(SRCDIR)/execArray.h $(SRCDIR)/execArray_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/ptrArray.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/execArray.o: $(SRCDIR)/execArray.c $(SRCDIR)/ObjArray.h $(SRCDIR)/execArray.h $(SRCDIR)/execArray_internal.h $(SRCDIR)/ptrArray.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/execArray_object.o
 
-$(OBJDIR)/execArray_object.o: $(SRCDIR)/execArray_object.c $(SRCDIR)/execArray.h $(SRCDIR)/execArray_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/ptrArray.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/execArray_object.o: $(SRCDIR)/execArray_object.c $(SRCDIR)/ObjArray.h $(SRCDIR)/execArray.h $(SRCDIR)/execArray_internal.h $(SRCDIR)/ptrArray.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/false.o
@@ -951,16 +971,6 @@ OBJS += $(OBJDIR)/msgBus_object.o
 $(OBJDIR)/msgBus_object.o: $(SRCDIR)/msgBus_object.c $(SRCDIR)/msgBus.h $(SRCDIR)/msgBus_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/msgData.o
-
-$(OBJDIR)/msgData.o: $(SRCDIR)/msgData.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/msgData.h $(SRCDIR)/msgData_internal.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/msgData_object.o
-
-$(OBJDIR)/msgData_object.o: $(SRCDIR)/msgData_object.c $(SRCDIR)/cmn_defs.h $(SRCDIR)/msgData.h $(SRCDIR)/msgData_internal.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/name.o
 
 $(OBJDIR)/name.o: $(SRCDIR)/name.c $(SRCDIR)/name.h $(SRCDIR)/name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
@@ -983,17 +993,17 @@ $(OBJDIR)/node.o: $(SRCDIR)/node.c $(SRCDIR)/listdl.h $(SRCDIR)/name.h $(SRCDIR)
 
 OBJS += $(OBJDIR)/nodeArray.o
 
-$(OBJDIR)/nodeArray.o: $(SRCDIR)/nodeArray.c $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeArray_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/nodeArray.o: $(SRCDIR)/nodeArray.c $(SRCDIR)/ObjArray.h $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeArray_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/nodeArray_json.o
 
-$(OBJDIR)/nodeArray_json.o: $(SRCDIR)/nodeArray_json.c $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeArray_internal.h $(SRCDIR)/node.h $(SRCDIR)/objArray.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/nodeArray_json.o: $(SRCDIR)/nodeArray_json.c $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeArray_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/node.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/nodeArray_object.o
 
-$(OBJDIR)/nodeArray_object.o: $(SRCDIR)/nodeArray_object.c $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeArray_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/nodeArray_object.o: $(SRCDIR)/nodeArray_object.c $(SRCDIR)/ObjArray.h $(SRCDIR)/node.h $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeArray_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/nodeBTP.o
@@ -1156,16 +1166,6 @@ OBJS += $(OBJDIR)/objMatrix_object.o
 $(OBJDIR)/objMatrix_object.o: $(SRCDIR)/objMatrix_object.c $(SRCDIR)/objMatrix.h $(SRCDIR)/objMatrix_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/objMethod.o
-
-$(OBJDIR)/objMethod.o: $(SRCDIR)/objMethod.c $(SRCDIR)/objMethod.h $(SRCDIR)/objMethod_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/objMethod_object.o
-
-$(OBJDIR)/objMethod_object.o: $(SRCDIR)/objMethod_object.c $(SRCDIR)/objMethod.h $(SRCDIR)/objMethod_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/path.o
 
 $(OBJDIR)/path.o: $(SRCDIR)/path.c $(SRCDIR)/path.h $(SRCDIR)/path_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1178,12 +1178,12 @@ $(OBJDIR)/path_object.o: $(SRCDIR)/path_object.c $(SRCDIR)/path.h $(SRCDIR)/path
 
 OBJS += $(OBJDIR)/plist.o
 
-$(OBJDIR)/plist.o: $(SRCDIR)/plist.c $(SRCDIR)/objArray.h $(SRCDIR)/plist.h $(SRCDIR)/plist_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/plist.o: $(SRCDIR)/plist.c $(SRCDIR)/ObjArray.h $(SRCDIR)/plist.h $(SRCDIR)/plist_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/plist_object.o
 
-$(OBJDIR)/plist_object.o: $(SRCDIR)/plist_object.c $(SRCDIR)/objArray.h $(SRCDIR)/plist.h $(SRCDIR)/plist_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/plist_object.o: $(SRCDIR)/plist_object.c $(SRCDIR)/ObjArray.h $(SRCDIR)/plist.h $(SRCDIR)/plist_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/pplex.o
@@ -1388,12 +1388,12 @@ $(OBJDIR)/srcFile_object.o: $(SRCDIR)/srcFile_object.c $(SRCDIR)/ascii.h $(SRCDI
 
 OBJS += $(OBJDIR)/srcFiles.o
 
-$(OBJDIR)/srcFiles.o: $(SRCDIR)/srcFiles.c $(SRCDIR)/objArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/srcFiles.h $(SRCDIR)/srcFiles_internal.h $(SRCDIR)/token.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/srcFiles.o: $(SRCDIR)/srcFiles.c $(SRCDIR)/ObjArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/srcFiles.h $(SRCDIR)/srcFiles_internal.h $(SRCDIR)/token.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/srcFiles_object.o
 
-$(OBJDIR)/srcFiles_object.o: $(SRCDIR)/srcFiles_object.c $(SRCDIR)/objArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/srcFiles.h $(SRCDIR)/srcFiles_internal.h $(SRCDIR)/token.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/srcFiles_object.o: $(SRCDIR)/srcFiles_object.c $(SRCDIR)/ObjArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/srcFiles.h $(SRCDIR)/srcFiles_internal.h $(SRCDIR)/token.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/stackTraces.o
@@ -1704,9 +1704,21 @@ BlkdRcds16_test: $(TEST_SRC)/BlkdRcds16_test.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += CsvFile_test
+
+CsvFile_test: $(TEST_SRC)/CsvFile_test.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += FileRef_test
 
 FileRef_test: $(TEST_SRC)/FileRef_test.c $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/AStrC.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += MsgData_test
+
+MsgData_test: $(TEST_SRC)/MsgData_test.c $(SRCDIR)/MsgData.h $(SRCDIR)/MsgData_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -1740,6 +1752,12 @@ ObjList_test: $(TEST_SRC)/ObjList_test.c $(SRCDIR)/ObjList.h $(SRCDIR)/ObjList_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += ObjMethod_test
+
+ObjMethod_test: $(TEST_SRC)/ObjMethod_test.c $(SRCDIR)/ObjMethod.h $(SRCDIR)/ObjMethod_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += Parser_test
 
 Parser_test: $(TEST_SRC)/Parser_test.c $(SRCDIR)/Parser.h $(SRCDIR)/Parser_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1760,7 +1778,7 @@ SrcError_test: $(TEST_SRC)/SrcError_test.c $(SRCDIR)/SrcError.h $(SRCDIR)/SrcErr
 
 TESTS += SrcErrors_test
 
-SrcErrors_test: $(TEST_SRC)/SrcErrors_test.c $(SRCDIR)/SrcErrors.h $(SRCDIR)/SrcErrors_internal.h $(SRCDIR)/SrcError.h $(SRCDIR)/objArray.h $(SRCDIR)/cmn_defs.h 
+SrcErrors_test: $(TEST_SRC)/SrcErrors_test.c $(SRCDIR)/SrcErrors.h $(SRCDIR)/SrcErrors_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/SrcError.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -1932,21 +1950,9 @@ crc_test: $(TEST_SRC)/crc_test.c $(SRCDIR)/crc.h $(SRCDIR)/crc_internal.h $(SRCD
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += csv_test
-
-csv_test: $(TEST_SRC)/csv_test.c $(SRCDIR)/csv.h $(SRCDIR)/csv_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += dateTime_test
 
 dateTime_test: $(TEST_SRC)/dateTime_test.c $(SRCDIR)/dateTime.h $(SRCDIR)/dateTime_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += dbCsv_test
-
-dbCsv_test: $(TEST_SRC)/dbCsv_test.c $(SRCDIR)/dbCsv.h $(SRCDIR)/dbCsv_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/objArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2018,7 +2024,7 @@ enum_test: $(TEST_SRC)/enum_test.c $(SRCDIR)/enum.h $(SRCDIR)/enum_internal.h $(
 
 TESTS += execArray_test
 
-execArray_test: $(TEST_SRC)/execArray_test.c $(SRCDIR)/execArray.h $(SRCDIR)/execArray_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/ptrArray.h $(SRCDIR)/cmn_defs.h 
+execArray_test: $(TEST_SRC)/execArray_test.c $(SRCDIR)/execArray.h $(SRCDIR)/execArray_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/ptrArray.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2160,12 +2166,6 @@ msgBus_test: $(TEST_SRC)/msgBus_test.c $(SRCDIR)/msgBus.h $(SRCDIR)/msgBus_inter
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += msgData_test
-
-msgData_test: $(TEST_SRC)/msgData_test.c $(SRCDIR)/msgData.h $(SRCDIR)/msgData_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += name_test
 
 name_test: $(TEST_SRC)/name_test.c $(SRCDIR)/name.h $(SRCDIR)/name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
@@ -2174,7 +2174,7 @@ name_test: $(TEST_SRC)/name_test.c $(SRCDIR)/name.h $(SRCDIR)/name_internal.h $(
 
 TESTS += nodeArray_test
 
-nodeArray_test: $(TEST_SRC)/nodeArray_test.c $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeArray_internal.h $(SRCDIR)/node.h $(SRCDIR)/objArray.h $(SRCDIR)/cmn_defs.h 
+nodeArray_test: $(TEST_SRC)/nodeArray_test.c $(SRCDIR)/nodeArray.h $(SRCDIR)/nodeArray_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/node.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2250,12 +2250,6 @@ objMatrix_test: $(TEST_SRC)/objMatrix_test.c $(SRCDIR)/objMatrix.h $(SRCDIR)/obj
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += objMethod_test
-
-objMethod_test: $(TEST_SRC)/objMethod_test.c $(SRCDIR)/objMethod.h $(SRCDIR)/objMethod_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += path_test
 
 path_test: $(TEST_SRC)/path_test.c $(SRCDIR)/path.h $(SRCDIR)/path_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2264,7 +2258,7 @@ path_test: $(TEST_SRC)/path_test.c $(SRCDIR)/path.h $(SRCDIR)/path_internal.h $(
 
 TESTS += plist_test
 
-plist_test: $(TEST_SRC)/plist_test.c $(SRCDIR)/plist.h $(SRCDIR)/plist_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/cmn_defs.h 
+plist_test: $(TEST_SRC)/plist_test.c $(SRCDIR)/plist.h $(SRCDIR)/plist_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2390,7 +2384,7 @@ srcFile_test: $(TEST_SRC)/srcFile_test.c $(SRCDIR)/srcFile.h $(SRCDIR)/srcFile_i
 
 TESTS += srcFiles_test
 
-srcFiles_test: $(TEST_SRC)/srcFiles_test.c $(SRCDIR)/srcFiles.h $(SRCDIR)/srcFiles_internal.h $(SRCDIR)/objArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/token.h $(SRCDIR)/cmn_defs.h 
+srcFiles_test: $(TEST_SRC)/srcFiles_test.c $(SRCDIR)/srcFiles.h $(SRCDIR)/srcFiles_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/token.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

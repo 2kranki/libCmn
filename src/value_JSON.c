@@ -48,7 +48,7 @@
 #include    <string.h>
 #include    <dec_internal.h>
 #include    <hex_internal.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8_internal.h>
@@ -90,7 +90,7 @@ extern "C" {
 
         pInfo = obj_getInfo(value_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -101,10 +101,10 @@ extern "C" {
             goto exit00;
         }
 
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "user", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "user", &intIn);
         pObject->user = (uint32_t)intIn;
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
         type = (uint16_t)intIn;
         pObject->type = type;
         
@@ -116,59 +116,59 @@ extern "C" {
                 break;
                 
            case VALUE_TYPE_INT8:            // int8_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.i8 = (int8_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_INT16:           // int16_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.i16 = (int16_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_INT32:           // int32_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.i32 = (int32_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_INT64:           // int64_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.i64 = (int64_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_UINT8:           // int8_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.u8 = (uint8_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_UINT16:          // int16_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.u16 = (uint16_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_UINT32:          // int32_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.u32 = (uint32_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_UINT64:          // int64_t
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject->value.u64 = (uint64_t)integer;
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 break;
                 
             case VALUE_TYPE_OBJECT:
@@ -180,12 +180,12 @@ extern "C" {
             case VALUE_TYPE_DATA:
             case VALUE_TYPE_DATA_FREE:
                 pObject->type = VALUE_TYPE_DATA_FREE;
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 pObject->value.data.pData = hex_ParseObject(
                                                             pParser,
                                                             &pObject->value.data.length
                                             );
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 break;
                 
             default:
@@ -212,7 +212,7 @@ extern "C" {
     //===============================================================
     
 
-    VALUE_DATA *    value_NewFromJSONString(
+    VALUE_DATA *    value_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
@@ -220,8 +220,8 @@ extern "C" {
         ERESULT         eRc;
         VALUE_DATA      *pObject = OBJ_NIL;
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
@@ -239,7 +239,7 @@ extern "C" {
     
     
 
-    VALUE_DATA *    value_NewFromJSONStringA(
+    VALUE_DATA *    value_NewFromJsonStringA(
         const
         char            *pString
     )
@@ -250,7 +250,7 @@ extern "C" {
         if (pString) {
             pStr = AStr_NewA(pString);
             if (pStr) {
-                pValue = value_NewFromJSONString(pStr);
+                pValue = value_NewFromJsonString(pStr);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }

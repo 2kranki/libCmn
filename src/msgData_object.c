@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'msgData'
-//	Generated 11/04/2017 09:37:49
+//	Class Object Metods and Tables for 'MsgData'
+//	Generated 12/31/2019 10:05:08
 
 
 /*
@@ -33,23 +33,31 @@
 
 
 
+
 #define			MSGDATA_OBJECT_C	    1
-#include        <msgData_internal.h>
+#include        <MsgData_internal.h>
+#ifdef  MSGDATA_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
-//-----------------------------------------------------------
+//===========================================================
 //                  Class Object Definition
-//-----------------------------------------------------------
+//===========================================================
 
-struct msgData_class_data_s	{
+struct MsgData_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  MSGDATA_SINGLETON
+    volatile
+    MSGDATA_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
+    //OBJ_ID          pObjCatalog;
 };
-typedef struct msgData_class_data_s MSGDATA_CLASS_DATA;
 
 
 
@@ -61,34 +69,47 @@ typedef struct msgData_class_data_s MSGDATA_CLASS_DATA;
 
 
 static
-const
-OBJ_INFO        msgData_Info;            // Forward Reference
-
-
-
-OBJ_ID          msgData_Class(
-    void
+void *          MsgDataClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
 );
+
+
+static
+const
+OBJ_INFO        MsgData_Info;            // Forward Reference
+
 
 
 
 static
-bool            msgData_ClassIsKindOf(
+bool            MsgDataClass_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_MSGDATA_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(MsgData_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		MsgDataClass_WhoAmI (
     void
 )
 {
@@ -96,18 +117,26 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
-	&msgData_Info,
-    msgData_ClassIsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    msgData_Class,
-    obj_ClassWhoAmI,
-    NULL,                       // class_QueryInfo
-    NULL                        // class_ToDebugString
+MSGDATA_CLASS_VTBL    class_Vtbl = {
+    {
+        &MsgData_Info,
+        MsgDataClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        MsgData_Class,
+        MsgDataClass_WhoAmI,
+        (P_OBJ_QUERYINFO)MsgDataClass_QueryInfo,
+        NULL                        // MsgDataClass_ToDebugString
+    },
 };
 
 
@@ -116,52 +145,234 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
-MSGDATA_CLASS_DATA  msgData_ClassObj = {
+MSGDATA_CLASS_DATA  MsgData_ClassObj = {
     {
-        &obj_Vtbl,                          // pVtbl
-        sizeof(MSGDATA_CLASS_DATA),         // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(MSGDATA_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
     },
 	//0
 };
 
 
 
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  MSGDATA_SINGLETON
+MSGDATA_DATA *     MsgData_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(MsgData_ClassObj.pSingleton);
+}
+
+
+bool            MsgData_setSingleton (
+    MSGDATA_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (MsgData_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(MsgData_ClassObj.pSingleton));
+    }
+    MsgData_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+MSGDATA_DATA *     MsgData_Shared (
+    void
+)
+{
+    MSGDATA_DATA       *this = (OBJ_ID)(MsgData_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = MsgData_New( );
+        MsgData_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // MsgData_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            MsgData_SharedReset (
+    void
+)
+{
+    MSGDATA_DATA       *this = (OBJ_ID)(MsgData_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        MsgData_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
+
+
+
+//---------------------------------------------------------------
+//                     Q u e r y  I n f o
+//---------------------------------------------------------------
+
 static
-bool            msgData_IsKindOf(
+void *          MsgDataClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+)
+{
+    MSGDATA_CLASS_DATA *this = objId;
+    const
+    char            *pStr = pData;
+    
+    if (OBJ_NIL == this) {
+        return NULL;
+    }
+    
+    switch (type) {
+      
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(MSGDATA_DATA);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+            return this;
+            break;
+            
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'C':
+                    if (str_Compare("ClassInfo", (char *)pStr) == 0) {
+                        return (void *)&MsgData_Info;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_INFO:
+            return (void *)obj_getInfo(this);
+            break;
+            
+        case OBJ_QUERYINFO_TYPE_METHOD:
+            switch (*pStr) {
+                    
+                case 'N':
+                    if (str_Compare("New", (char *)pStr) == 0) {
+                        return MsgData_New;
+                    }
+                    break;
+                    
+                case 'P':
+                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
+                        //return MsgData_ParseJsonObject;
+                    }
+                    break;
+ 
+                 case 'W':
+                    if (str_Compare("WhoAmI", (char *)pStr) == 0) {
+                        return MsgDataClass_WhoAmI;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL;
+}
+
+
+
+
+static
+bool            MsgData_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_MSGDATA == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(MsgData_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            msgData_Dealloc(
+void            MsgData_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          msgData_Class(
+OBJ_ID          MsgData_Class (
     void
 )
 {
-    return (OBJ_ID)&msgData_ClassObj;
+    return (OBJ_ID)&MsgData_ClassObj;
 }
 
 
 static
-uint16_t		msgData_WhoAmI(
+uint16_t		MsgData_WhoAmI (
     void
 )
 {
@@ -169,30 +380,42 @@ uint16_t		msgData_WhoAmI(
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
-MSGDATA_VTBL     msgData_Vtbl = {
+MSGDATA_VTBL     MsgData_Vtbl = {
     {
-        &msgData_Info,
-        msgData_IsKindOf,
+        &MsgData_Info,
+        MsgData_IsKindOf,
+#ifdef  MSGDATA_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
-        msgData_Dealloc,
-        msgData_Class,
-        msgData_WhoAmI,
-        (P_OBJ_QUERYINFO)msgData_QueryInfo,
-        (P_OBJ_TOSTRING)msgData_ToDebugString,
-        NULL,			// msgData_Enable,
-        NULL,			// msgData_Disable,
-        NULL,			// (P_OBJ_ASSIGN)msgData_Assign,
-        NULL,			// (P_OBJ_COMPARE)msgData_Compare,
-        NULL, 			// (P_OBJ_PTR)msgData_Copy,
-        NULL,           // (P_OBJ_DEEPCOPY)
-        NULL 			// (P_OBJ_HASH)msgData_Hash,
+#endif
+        MsgData_Dealloc,
+        MsgData_Class,
+        MsgData_WhoAmI,
+        (P_OBJ_QUERYINFO)MsgData_QueryInfo,
+        (P_OBJ_TOSTRING)MsgData_ToDebugString,
+        NULL,			// MsgData_Enable,
+        NULL,			// MsgData_Disable,
+        NULL,			// (P_OBJ_ASSIGN)MsgData_Assign,
+        NULL,			// (P_OBJ_COMPARE)MsgData_Compare,
+        NULL, 			// (P_OBJ_PTR)MsgData_Copy,
+        NULL, 			// (P_OBJ_PTR)MsgData_DeepCopy,
+        NULL 			// (P_OBJ_HASH)MsgData_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //msgData_IsEnabled,
+    //MsgData_IsEnabled,
  
 };
 
@@ -200,12 +423,13 @@ MSGDATA_VTBL     msgData_Vtbl = {
 
 static
 const
-OBJ_INFO        msgData_Info = {
-    "msgData",
+OBJ_INFO        MsgData_Info = {
+    "MsgData",
     "Message Data",
-    (OBJ_DATA *)&msgData_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&msgData_Vtbl
+    (OBJ_DATA *)&MsgData_ClassObj,
+    (OBJ_DATA *)&value_ClassObj,
+    (OBJ_IUNKNOWN *)&MsgData_Vtbl,
+    sizeof(MSGDATA_DATA)
 };
 
 

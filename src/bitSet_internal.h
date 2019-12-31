@@ -40,7 +40,7 @@
 
 
 #include        <BitSet.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 #include        <array_internal.h>
 
 

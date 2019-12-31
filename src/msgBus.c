@@ -88,8 +88,8 @@ extern "C" {
         // WARNING: We had to make this pausible.
         fRc = objCb_Get(this->pBuffer, (void **)&pEntry);
         if (fRc && pEntry) {
-            origin = msgData_getOrigin(pEntry);
-            dest = msgData_getDestination(pEntry);
+            origin = MsgData_getOrigin(pEntry);
+            dest = MsgData_getDestination(pEntry);
             iMax = nodeArray_getSize(this->pRegistry);
             if (dest) {     /*** Specific Node ***/
                 for (i=0; i<iMax; ++i) {
@@ -100,7 +100,7 @@ extern "C" {
                             pMethod = node_getData(pNode);
                             pMsgOutBody = ObjMethod_getMethod(pMethod);
                             pMsgOutData = ObjMethod_getObject(pMethod);
-                            pCopy = msgData_Copy(pEntry);
+                            pCopy = MsgData_Copy(pEntry);
                             pMsgOutBody(pMsgOutData, pCopy);
                             obj_Release(pCopy);
                             pCopy = OBJ_NIL;
@@ -115,14 +115,14 @@ extern "C" {
                     pNode = nodeArray_Get(this->pRegistry, i+1);
                     if (pNode) {
                         nodeID = (uint32_t)node_getNameInt(pNode);
-                        if (nodeID == msgData_getOrigin(pEntry))
+                        if (nodeID == MsgData_getOrigin(pEntry))
                             ;
                         else {
                             pMethod = node_getData(pNode);
                             pMsgOutBody = ObjMethod_getMethod(pMethod);
                             pMsgOutData = ObjMethod_getObject(pMethod);
-                            pCopy = msgData_Copy(pEntry);
-                            msgData_setNum32(pCopy, nodeID);
+                            pCopy = MsgData_Copy(pEntry);
+                            MsgData_setNum32(pCopy, nodeID);
                             pMsgOutBody(pMsgOutData, pCopy);
                             obj_Release(pCopy);
                             pCopy = OBJ_NIL;
@@ -392,7 +392,7 @@ extern "C" {
         }
 #endif
 
-        pEntry = msgData_New(msgOrigin, msgDest, msgLen, pMsgData);
+        pEntry = MsgData_NewWithData(msgOrigin, msgDest, msgLen, pMsgData);
         if (OBJ_NIL == pEntry) {
             return ERESULT_INVALID_DATA;
         }

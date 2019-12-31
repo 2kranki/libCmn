@@ -27,6 +27,8 @@
 #include    <trace.h>
 #include    <ObjArray_internal.h>
 #include    <AStrC.h>
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
@@ -69,8 +71,9 @@ int             tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
-    trace_SharedReset( ); 
+    SrcErrors_SharedReset( );
+    szTbl_SharedReset( );
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -219,7 +222,14 @@ int         test_ObjArray_Test01(
         
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
-        
+
+        pStr = ObjArray_ToJson(pObj);
+        if (pStr) {
+            fprintf(stderr, "json=%s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -331,6 +341,23 @@ int         test_ObjArray_Test02(
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
         
+        pStr = ObjArray_ToJson(pObj);
+        if (pStr) {
+            fprintf(stderr, "Json:\n%s\n", AStr_getData(pStr));
+            pObj2 = ObjArray_NewFromJsonString(pStr);
+            obj_Release(pStr);
+            //pStr = OBJ_NIL;
+            TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+            if (pObj2) {
+                pStr = ObjArray_ToDebugString(pObj2, 0);
+                fprintf(stderr, "Json Object:\n%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+                obj_Release(pObj2);
+                pObj2 = OBJ_NIL;
+            }
+        }
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

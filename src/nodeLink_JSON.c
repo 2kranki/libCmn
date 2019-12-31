@@ -46,7 +46,7 @@
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -84,7 +84,7 @@ extern "C" {
 
         pInfo = obj_getInfo(node_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -135,7 +135,7 @@ extern "C" {
         
         pInfo = obj_getInfo(node_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -148,29 +148,29 @@ extern "C" {
             goto exit00;
         }
 
-        eRc = jsonIn_SubobjectInHash(pParser, "node");
+        eRc = JsonIn_SubObjectInHash(pParser, "node");
         if (ERESULT_FAILED(eRc)) {
             eRc = node_ParseJsonObjectFields(pParser, (NODE_DATA *)pObject);
-            jsonIn_SubobjectEnd(pParser);
+            JsonIn_SubObjectEnd(pParser);
             if (pNode) {
                 obj_Release(pNode);
                 pNode = OBJ_NIL;
             }
         }
         
-        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "index", &intIn);
+        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "index", &intIn);
         uint32  = (uint32_t)intIn;
         nodeLink_setIndex(pObject, uint32);
-        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "leftIndex", &intIn);
+        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "leftIndex", &intIn);
         uint32  = (uint32_t)intIn;
         nodeLink_setLeftLink(pObject, uint32);
-        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "middleIndex", &intIn);
+        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "middleIndex", &intIn);
         uint32  = (uint32_t)intIn;
         nodeLink_setMiddle(pObject, uint32);
-        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "parentIndex", &intIn);
+        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "parentIndex", &intIn);
         uint32  = (uint32_t)intIn;
         nodeLink_setParent(pObject, uint32);
-        eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "rightIndex", &intIn);
+        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "rightIndex", &intIn);
         uint32  = (uint32_t)intIn;
         nodeLink_setRightLink(pObject, uint32);
 
@@ -202,8 +202,8 @@ extern "C" {
         JSONIN_DATA     *pParser;
         NODELINK_DATA   *pNodeOut = OBJ_NIL;
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }

@@ -42,7 +42,7 @@
 #include        <bpt32.h>
 #include        <bpt32idx_internal.h>
 #include        <bpt32lf_internal.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 #include        <lru_internal.h>
 #include        <ObjArray.h>
 #include        <rrds.h>

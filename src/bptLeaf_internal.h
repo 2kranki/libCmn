@@ -41,7 +41,7 @@
 
 #include    <bptLeaf.h>
 #include    <array.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 
 
 #ifndef BPTLEAF_INTERNAL_H

@@ -40,7 +40,7 @@
 
 
 #include        <NodeScan.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef NODESCAN_INTERNAL_H

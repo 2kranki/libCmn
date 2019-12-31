@@ -48,7 +48,7 @@
 #include    <string.h>
 #include    <AStr_internal.h>
 #include    <dec.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -88,7 +88,7 @@ extern "C" {
 
         pInfo = obj_getInfo(SrcErrors_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -100,22 +100,22 @@ extern "C" {
         }
         
 #ifdef XYZZZY 
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
         pObject->loc.fileIndex = (uint32_t)intIn;
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->loc.offset);
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->loc.offset);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
         pObject->loc.lineNo = (uint32_t)intIn;
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
         pObject->loc.colNo = (uint16_t)intIn;
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "severity", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "severity", &intIn);
         pObject->severity = (uint16_t)intIn;
 
-        eRc = jsonIn_SubobjectInHash(pParser, "errorStr");
+        eRc = JsonIn_SubobjectInHash(pParser, "errorStr");
         pWrk = AStr_ParseJsonObject(pParser);
         if (pWrk) {
             pObject->pErrorStr = pWrk;
         }
-        jsonIn_SubobjectEnd(pParser);
+        JsonIn_SubobjectEnd(pParser);
 #endif
 
         // Return to caller.
@@ -146,8 +146,8 @@ extern "C" {
         ERESULT         eRc;
         SRCERRORS_DATA   *pObject = OBJ_NIL;
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
@@ -206,17 +206,7 @@ extern "C" {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-#ifdef XYZZZY 
-        void *          (*pQueryInfo)(
-            OBJ_ID          objId,
-            uint32_t        type,
-            void            *pData
-        );
-        ASTR_DATA *     (*pToJson)(
-            OBJ_ID          objId
-        );
         ASTR_DATA       *pWrkStr;
-#endif
 
 #ifdef NDEBUG
 #else
@@ -237,29 +227,16 @@ extern "C" {
                          "\"fFatal\":%s, ",
                          this->fFatal ? "true" : "false"
         );
-        
-#ifdef XYZZY
-        pWrkStr = ObjArray_ToJson(this);
-        pQueryInfo = obj_getVtbl(this->pErrorStr)->pQueryInfo;
-        if (pQueryInfo) {
-            pToJson =   (*pQueryInfo)(
-                                      this->pErrorStr,
-                                      OBJ_QUERYINFO_TYPE_METHOD,
-                                      "ToJson"
-                                      );
-            if (pToJson) {
-                pWrkStr = (*pToJson)(this->pErrorStr);
-                if (pWrkStr) {
-                    AStr_AppendA(pStr, "\t\"errorStr\": ");
-                    AStr_Append(pStr, pWrkStr);
-                    obj_Release(pWrkStr);
-                    pWrkStr = OBJ_NIL;
-                    AStr_AppendA(pStr, "\n");
-                }
-            }
+
+        pWrkStr = ObjArray_ToJson((OBJARRAY_DATA *)this);
+        if (pWrkStr) {
+            AStr_AppendA(pStr, "\t\"errors\":");
+            AStr_Append(pStr, pWrkStr);
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+            AStr_AppendA(pStr, "\n");
         }
-#endif
-        
+
         AStr_AppendA(pStr, "}\n");
         
         return pStr;

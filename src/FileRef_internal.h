@@ -40,7 +40,7 @@
 
 
 #include        <FileRef.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef FILEREF_INTERNAL_H

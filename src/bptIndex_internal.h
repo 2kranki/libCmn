@@ -41,7 +41,7 @@
 
 #include    <bptIndex.h>
 #include    <array.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 
 
 #ifndef BPTINDEX_INTERNAL_H

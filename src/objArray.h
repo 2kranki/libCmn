@@ -10,7 +10,10 @@
  *			This object provides an resizeable array of objects.
  *
  * Remarks
- *	1.      None
+ *	1.      If you use Json save/restore, the only objects in the
+ *          array that will be saved and restored are those that
+ *          fully support Json and are included in JsonIn_ParseObject()
+ *          processing.
  *
  * History
  *  03/22/2016 Generated
@@ -59,7 +62,7 @@
 #define         OBJARRAY_H
 
 
-//#define   OBJARRAY_JSON_SUPPORT 1
+#define   OBJARRAY_JSON_SUPPORT 1
 //#define   OBJARRAY_SINGLETON    1
 
 
@@ -142,6 +145,17 @@ extern "C" {
     );
     
     
+    OBJARRAY_DATA *   ObjArray_NewFromJsonString(
+        ASTR_DATA       *pString
+    );
+
+
+    OBJARRAY_DATA * ObjArray_NewFromJsonStringA(
+        const
+        char            *pString
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -424,11 +438,29 @@ extern "C" {
                 error.
      */
     ERESULT         ObjArray_SortAscending (
-        OBJARRAY_DATA    *this,
+        OBJARRAY_DATA   *this,
         OBJ_COMPARE     pCompare
     );
     
     
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = ObjArray_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     ObjArray_ToJson(
+        OBJARRAY_DATA   *this
+    );
+
+
     /*!
      Return the top of the stack (last object in the array).
      @param     this    object pointer
@@ -452,7 +484,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    ObjArray_ToDebugString (
-        OBJARRAY_DATA     *this,
+        OBJARRAY_DATA   *this,
         int             indent
     );
     

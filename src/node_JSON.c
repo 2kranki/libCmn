@@ -48,7 +48,7 @@
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -86,7 +86,7 @@ extern "C" {
 
         pInfo = obj_getInfo(node_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -138,7 +138,7 @@ extern "C" {
         
         pInfo = obj_getInfo(node_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -151,10 +151,10 @@ extern "C" {
             goto exit00;
         }
 
-        eRc = jsonIn_SubobjectInHash(pParser, "name");
+        eRc = JsonIn_SubObjectInHash(pParser, "name");
         if (ERESULT_FAILED(eRc)) {
             pName = name_ParseJsonObject(pParser);
-            jsonIn_SubobjectEnd(pParser);
+            JsonIn_SubObjectEnd(pParser);
             if (pName) {
                 node_setProperties(pObject, pObj);
                 obj_Release(pObj);
@@ -167,29 +167,29 @@ extern "C" {
             }
         }
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
         uint32  = (uint32_t)intIn;
         node_setClass(pObject, uint32);
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
         int32   = (int32_t)intIn;
         node_setType(pObject, int32);
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
         uint32   = (uint32_t)intIn;
         node_setMisc(pObject, uint32);
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "misc1", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc1", &intIn);
         uint32   = (uint32_t)intIn;
         node_setMisc1(pObject, uint32);
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "misc2", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc2", &intIn);
         uint32   = (uint32_t)intIn;
         node_setMisc2(pObject, uint32);
 
-        eRc = jsonIn_SubobjectInHash(pParser, "data");
+        eRc = JsonIn_SubObjectInHash(pParser, "data");
         if (ERESULT_FAILED(eRc)) {
             ;
         }
         else {
-            pObj = jsonIn_ParseObject(pParser);
-            jsonIn_SubobjectEnd(pParser);
+            pObj = JsonIn_ParseObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
             if (pObj) {
                 node_setData(pObject, pObj);
                 obj_Release(pObj);
@@ -197,13 +197,13 @@ extern "C" {
             }
         }
         
-        eRc = jsonIn_SubobjectInHash(pParser, "other");
+        eRc = JsonIn_SubObjectInHash(pParser, "other");
         if (ERESULT_FAILED(eRc)) {
             ;
         }
         else {
-            pObj = jsonIn_ParseObject(pParser);
-            jsonIn_SubobjectEnd(pParser);
+            pObj = JsonIn_ParseObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
             if (pObj) {
                 node_setOther(pObject, pObj);
                 obj_Release(pObj);
@@ -211,13 +211,13 @@ extern "C" {
             }
         }
         
-        eRc = jsonIn_SubobjectInHash(pParser, "extra");
+        eRc = JsonIn_SubObjectInHash(pParser, "extra");
         if (ERESULT_FAILED(eRc)) {
             ;
         }
         else {
-            pObj = jsonIn_ParseObject(pParser);
-            jsonIn_SubobjectEnd(pParser);
+            pObj = JsonIn_ParseObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
             if (pObj) {
                 node_setExtra(pObject, pObj);
                 obj_Release(pObj);
@@ -225,13 +225,13 @@ extern "C" {
             }
         }
         
-        eRc = jsonIn_SubobjectInHash(pParser, "properties");
+        eRc = JsonIn_SubObjectInHash(pParser, "properties");
         if (ERESULT_FAILED(eRc)) {
             ;
         }
         else {
-            pObj = jsonIn_ParseObject(pParser);
-            jsonIn_SubobjectEnd(pParser);
+            pObj = JsonIn_ParseObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
             if (pObj) {
                 node_setProperties(pObject, pObj);
                 obj_Release(pObj);
@@ -272,8 +272,8 @@ extern "C" {
         ERESULT         eRc;
         NODE_DATA       *pNodeOut = OBJ_NIL;
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }

@@ -44,7 +44,7 @@
 
 #include        <u8Array.h>
 #include        <array_internal.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifdef	__cplusplus
@@ -78,7 +78,7 @@ struct u8Array_data_s	{
         OBJ_ID          objId
     );
 
-    U8ARRAY_DATA *  u8Array_ParseObject(
+    U8ARRAY_DATA *  u8Array_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
 

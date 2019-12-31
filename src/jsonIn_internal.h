@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   jsonIn_internal.h
- *	Generated 12/21/2017 05:41:06
+ * File:   JsonIn_internal.h
+ *	Generated 12/30/2019 21:36:00
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,18 @@
 
 
 
-#include    <jsonIn.h>
-#include    <hjson.h>
-#include    <ObjList.h>
+#include        <JsonIn.h>
+#include        <ObjList.h>
 
 
 #ifndef JSONIN_INTERNAL_H
 #define	JSONIN_INTERNAL_H
+
+
+
+#define     PROPERTY_HASH_OWNED 1
+#define     PROPERTY_LIST_OWNED 1
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -60,14 +65,15 @@ extern "C" {
     //                  Object Data Description
     //---------------------------------------------------------------
 
- #pragma pack(push, 1)
-struct jsonIn_data_s	{
+#pragma pack(push, 1)
+struct JsonIn_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    ASTR_DATA       *pStr;
     NODEHASH_DATA   *pHash;
     OBJLIST_DATA    *pList;
     uint32_t        index;          // Current index into array.
@@ -76,12 +82,27 @@ struct jsonIn_data_s	{
 #pragma pack(pop)
 
     extern
-    const
-    struct jsonIn_class_data_s  jsonIn_ClassObj;
+    struct JsonIn_class_data_s  JsonIn_ClassObj;
 
     extern
     const
-    JSONIN_VTBL         jsonIn_Vtbl;
+    JSONIN_VTBL         JsonIn_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  JSONIN_SINGLETON
+    JSONIN_DATA *     JsonIn_getSingleton (
+        void
+    );
+
+    bool            JsonIn_setSingleton (
+     JSONIN_DATA       *pValue
+);
+#endif
 
 
 
@@ -89,33 +110,42 @@ struct jsonIn_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  jsonIn_getSuperVtbl(
+    OBJ_IUNKNOWN *  JsonIn_getSuperVtbl (
         JSONIN_DATA     *this
     );
 
 
-    void            jsonIn_Dealloc(
+    void            JsonIn_Dealloc (
         OBJ_ID          objId
     );
 
 
-    void *          jsonIn_QueryInfo(
+#ifdef  JSONIN_JSON_SUPPORT
+    JSONIN_DATA *       JsonIn_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          JsonIn_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     jsonIn_ToJson(
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     JsonIn_ToJson (
         JSONIN_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			jsonIn_Validate(
+    bool			JsonIn_Validate (
         JSONIN_DATA       *this
     );
 #endif

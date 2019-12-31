@@ -48,7 +48,7 @@
 #include    <crc.h>
 #include    <dec.h>
 #include    <hex.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
@@ -121,7 +121,7 @@ extern "C" {
         
         pInfo = obj_getInfo(node_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             return pObject;
@@ -129,10 +129,10 @@ extern "C" {
         }
         
 #ifdef XYZZY
-        pObj = jsonIn_SubobjectInHash(pParser, "name");
+        pObj = JsonIn_SubObjectInHash(pParser, "name");
         if (pObj) {
             pName = name_ParseObject(pParser);
-            jsonIn_SubobjectEnd(pParser);
+            JsonIn_SubObjectEnd(pParser);
             if (pName) {
                 pObject = node_New( );
                 obj_Release(pName);
@@ -143,13 +143,13 @@ extern "C" {
         
 #ifdef XYZZY
         if (pObject) {
-            cls  = (uint32_t)jsonIn_FindIntegerNodeInHash(pParser, "class");
+            cls  = (uint32_t)JsonIn_FindIntegerNodeInHash(pParser, "class");
             node_setClass(pObject, cls);
             
-            pObj = jsonIn_SubobjectInHash(pParser, "data");
+            pObj = JsonIn_SubobjectInHash(pParser, "data");
             if (pObj) {
-                pObj = jsonIn_ParseObject(pParser);
-                jsonIn_SubobjectEnd(pParser);
+                pObj = JsonIn_ParseObject(pParser);
+                JsonIn_SubobjectEnd(pParser);
                 if (pObj) {
                     szData_setData(pObject, pObj);
                     obj_Release(pObj);
@@ -218,13 +218,13 @@ extern "C" {
         W32STR_DATA     *pStrOut = OBJ_NIL;
 #endif
 
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;

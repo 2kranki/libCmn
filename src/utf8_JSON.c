@@ -48,7 +48,7 @@
 #include    <crc.h>
 #include    <dec.h>
 #include    <hex.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
@@ -129,20 +129,20 @@ extern "C" {
 
         pInfo = obj_getInfo(utf8_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
         crc = (uint32_t)intIn;
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
         length = (uint32_t)intIn;
         if (0 == length) {
             goto exit00;
@@ -154,7 +154,7 @@ extern "C" {
             goto exit00;
         }
         
-        eRc = jsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
+        eRc = JsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pWrk)) {
             length = 0;
             goto exit00;
@@ -218,8 +218,8 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         uint8_t         *pData = NULL;
 
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             if (pLength)
                 *pLength = 0;

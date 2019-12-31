@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   memrrds_internal.h
- *	Generated 01/16/2019 16:27:57
+ * File:   CsvFile_internal.h
+ *	Generated 12/30/2019 11:06:40
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,13 @@
 
 
 
-#include        <memrrds.h>
-#include        <blks_internal.h>
+#include        <CsvFile.h>
 #include        <JsonIn.h>
+#include        <srcFile.h>
 
 
-#ifndef MEMRRDS_INTERNAL_H
-#define	MEMRRDS_INTERNAL_H
+#ifndef CSVFILE_INTERNAL_H
+#define	CSVFILE_INTERNAL_H
 
 
 
@@ -65,26 +65,37 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct memrrds_data_s	{
+struct CsvFile_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    BLKS_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    SRCFILE_DATA    *pSrc;
+    W32CHR_T        fieldSeparator;
+    uint8_t         fHasHeader;
+    uint8_t         filler8[3];
+
+    // Field being built
+    uint16_t        sizeFld;            // Size of pFld including NUL
+    uint16_t        lenFld;             // Used Length in pFld excluding NUL
+    W32CHR_T        *pFld;              // Work String
+    
+    bool            (*pRecordProcess)(void *pRecordData, OBJARRAY_DATA *pRecord);
+    //                                  // Returns: true == Add Record to Records
+    //                                  //          false == Don't add Record
+    void            *pRecordData;
 
 };
 #pragma pack(pop)
 
     extern
-    struct memrrds_class_data_s  memrrds_ClassObj;
+    struct CsvFile_class_data_s  CsvFile_ClassObj;
 
     extern
     const
-    MEMRRDS_VTBL         memrrds_Vtbl;
+    CSVFILE_VTBL         CsvFile_Vtbl;
 
 
 
@@ -92,13 +103,13 @@ struct memrrds_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  MEMRRDS_SINGLETON
-    MEMRRDS_DATA *     memrrds_getSingleton (
+#ifdef  CSVFILE_SINGLETON
+    CSVFILE_DATA *  CsvFile_getSingleton (
         void
     );
 
-    bool            memrrds_setSingleton (
-     MEMRRDS_DATA       *pValue
+    bool            CsvFile_setSingleton (
+     CSVFILE_DATA       *pValue
 );
 #endif
 
@@ -108,39 +119,99 @@ struct memrrds_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  memrrds_getSuperVtbl (
-        MEMRRDS_DATA     *this
+    OBJ_IUNKNOWN *  CsvFile_getSuperVtbl (
+        CSVFILE_DATA     *this
     );
 
 
-    void            memrrds_Dealloc (
+    ERESULT         CsvFile_AppendCharW32ToString (
+        CSVFILE_DATA    *this,
+        W32CHR_T        chr
+    );
+ 
+
+    void            CsvFile_Dealloc (
         OBJ_ID          objId
     );
 
 
-    MEMRRDS_DATA *       memrrds_ParseObject (
-        JSONIN_DATA     *pParser
+    bool            CsvFile_ParseCRLF (
+        CSVFILE_DATA    *this
     );
 
 
-    void *          memrrds_QueryInfo (
+    bool            CsvFile_ParseEOF (
+        CSVFILE_DATA    *this
+    );
+
+
+    ASTR_DATA *     CsvFile_ParseField (
+        CSVFILE_DATA    *this
+    );
+
+
+#ifdef  CSVFILE_JSON_SUPPORT
+    CSVFILE_DATA *  CsvFile_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    OBJARRAY_DATA * CsvFile_ParseRecord(
+        CSVFILE_DATA    *this
+    );
+    
+
+    OBJARRAY_DATA * CsvFile_ParseRecords(
+        CSVFILE_DATA    *this
+    );
+    
+
+    bool            CsvFile_ParseSEP(
+        CSVFILE_DATA    *this
+    );
+    
+
+    ASTR_DATA *     CsvFile_ParseStringEscaped(
+        CSVFILE_DATA    *this
+    );
+    
+
+    ASTR_DATA *     CsvFile_ParseStringNonEscaped(
+        CSVFILE_DATA    *this
+    );
+    
+
+    bool            CsvFile_ParseTEXTDATA(
+        CSVFILE_DATA    *this
+    );
+    
+
+    bool            CsvFile_ParseWS(
+        CSVFILE_DATA    *this
+    );
+    
+    
+    void *          CsvFile_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     memrrds_ToJSON (
-        MEMRRDS_DATA      *this
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     CsvFile_ToJson (
+        CSVFILE_DATA    *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			memrrds_Validate (
-        MEMRRDS_DATA       *this
+    bool			CsvFile_Validate (
+        CSVFILE_DATA       *this
     );
 #endif
 
@@ -150,5 +221,5 @@ struct memrrds_data_s	{
 }
 #endif
 
-#endif	/* MEMRRDS_INTERNAL_H */
+#endif	/* CSVFILE_INTERNAL_H */
 

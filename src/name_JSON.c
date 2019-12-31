@@ -51,7 +51,7 @@
 #include    <string.h>
 #include    <dec_internal.h>
 #include    <hex.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -94,42 +94,42 @@ extern "C" {
 
         pInfo = obj_getInfo(name_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
         type = (uint32_t)intIn;
 
         switch (type) {
 
             case NAME_TYPE_ASTR:
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 pWrk = AStr_ParseJsonObject(pParser);
                 pObject = name_NewAStr(pWrk);
                 obj_Release(pWrk);
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
                 break;
                 
             case NAME_TYPE_INTEGER:
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 integer = dec_ParseObject(pParser);
                 pObject = name_NewInt(integer);
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
                 break;
 
             case NAME_TYPE_UTF8:
-                eRc = jsonIn_SubobjectInHash(pParser, "data");
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
                 pUtf8 = utf8_ParseObject(pParser, NULL);
-                jsonIn_SubobjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (pUtf8) {
                     pObject = name_Alloc();
                     pObject = name_Init(pObject);
@@ -174,8 +174,8 @@ extern "C" {
         ERESULT         eRc;
         NAME_DATA       *pObject = OBJ_NIL;
 
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }

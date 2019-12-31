@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   jsonIn.c
- *	Generated 12/21/2017 05:41:06
+ * File:   JsonIn.c
+ *	Generated 12/30/2019 21:36:00
  *
  */
 
@@ -41,11 +41,12 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <jsonIn_internal.h>
+#include        <JsonIn_internal.h>
 #include        <AStr_internal.h>
 #include        <BitMatrix_internal.h>
 #include        <dec.h>
 #include        <hex.h>
+#include        <hjson.h>
 #include        <name_internal.h>
 #include        <node_internal.h>
 #include        <nodeArray_internal.h>
@@ -53,16 +54,22 @@
 #include        <nodeHash_internal.h>
 #include        <null.h>
 #include        <number.h>
+#include        <ObjArray_internal.h>
+#include        <ObjMethod_internal.h>
 #include        <objHash.h>
+#include        <SrcError_internal.h>
+#include        <SrcErrors_internal.h>
 #include        <SrcLoc.h>
-//#include        <symAttr.h>
-//#include        <symEntry.h>
 #include        <szData_internal.h>
 #include        <szTbl.h>
 #include        <token_internal.h>
+#include        <trace.h>
 #include        <utf8_internal.h>
 #include        <value.h>
 #include        <W32Str.h>
+
+
+
 
 
 
@@ -81,7 +88,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            jsonIn_task_body(
+    void            JsonIn_task_body (
         void            *pData
     )
     {
@@ -101,15 +108,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    JSONIN_DATA *     jsonIn_Alloc(
+    JSONIN_DATA *     JsonIn_Alloc (
+        void
     )
     {
-        JSONIN_DATA     *this;
+        JSONIN_DATA       *this;
         uint32_t        cbSize = sizeof(JSONIN_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -117,31 +125,33 @@ extern "C" {
 
 
 
-    JSONIN_DATA *   jsonIn_New(
+    JSONIN_DATA *     JsonIn_New (
+        void
     )
     {
-        JSONIN_DATA     *this;
+        JSONIN_DATA       *this;
         
-        this = jsonIn_Alloc( );
+        this = JsonIn_Alloc( );
         if (this) {
-            this = jsonIn_Init(this);
+            this = JsonIn_Init(this);
         } 
         return this;
     }
 
 
-    JSONIN_DATA *   jsonIn_NewFromAStr(
+
+    JSONIN_DATA *   JsonIn_NewFromAStr(
         ASTR_DATA       *pStr
     )
     {
         JSONIN_DATA     *this;
         ERESULT         eRc;
-        
-        this = jsonIn_Alloc( );
+
+        this = JsonIn_Alloc( );
         if (this) {
-            this = jsonIn_Init(this);
+            this = JsonIn_Init(this);
             if (this) {
-                eRc = jsonIn_ParseAStr(this, pStr);
+                eRc = JsonIn_ParseAStr(this, pStr);
                 if (ERESULT_FAILED(eRc)) {
                     obj_Release(this);
                     this = OBJ_NIL;
@@ -150,40 +160,40 @@ extern "C" {
         }
         return this;
     }
-    
-    
-    JSONIN_DATA *   jsonIn_NewFromHash(
+
+
+    JSONIN_DATA *   JsonIn_NewFromHash(
         NODEHASH_DATA   *pHash
     )
     {
         JSONIN_DATA     *this;
-        
+
         if ((OBJ_NIL == pHash) || !obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
             return OBJ_NIL;
         }
-        this = jsonIn_Alloc( );
+        this = JsonIn_Alloc( );
         if (this) {
-            this = jsonIn_Init(this);
+            this = JsonIn_Init(this);
             if (this) {
-                jsonIn_setHash(this, pHash);
+                JsonIn_setHash(this, pHash);
             }
         }
         return this;
     }
-    
-    
-    JSONIN_DATA *   jsonIn_NewFromPath(
+
+
+    JSONIN_DATA *   JsonIn_NewFromPath (
         PATH_DATA       *pPath
     )
     {
         JSONIN_DATA     *this;
         ERESULT         eRc;
-        
-        this = jsonIn_Alloc( );
+
+        this = JsonIn_Alloc( );
         if (this) {
-            this = jsonIn_Init(this);
+            this = JsonIn_Init(this);
             if (this) {
-                eRc = jsonIn_ParsePath(this, pPath);
+                eRc = JsonIn_ParsePath(this, pPath);
                 if (ERESULT_FAILED(eRc)) {
                     obj_Release(this);
                     this = OBJ_NIL;
@@ -192,21 +202,21 @@ extern "C" {
         }
         return this;
     }
-    
-    
+
+
 
     //---------------------------------------------------------------
     //          C h e c k  F o r  S p e c i f i c  D a t a
     //---------------------------------------------------------------
-    
-    NODEARRAY_DATA * jsonIn_CheckNodeDataForArray(
+
+    NODEARRAY_DATA * JsonIn_CheckNodeDataForArray (
         NODE_DATA       *pNode
     )
     {
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         OBJ_ID          pObj;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -214,7 +224,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pObj = node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
@@ -223,24 +233,24 @@ extern "C" {
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "array"))) {
             return OBJ_NIL;
         }
-        
+
         pArray = node_getData(pObj);
         if ((OBJ_NIL == pArray) || !obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)) {
             return OBJ_NIL;
         }
-        
+
         return pArray;
     }
-    
-    
-    FALSE_DATA *    jsonIn_CheckNodeDataForFalse(
+
+
+    FALSE_DATA *    JsonIn_CheckNodeDataForFalse (
         NODE_DATA       *pNode
     )
     {
         FALSE_DATA      *pFalse = OBJ_NIL;
         OBJ_ID          pObj;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -248,7 +258,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pObj = node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
@@ -257,25 +267,25 @@ extern "C" {
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "false"))) {
             return OBJ_NIL;
         }
-        
+
         pFalse = node_getData(pObj);
         if ((OBJ_NIL == pFalse) || !obj_IsKindOf(pFalse, OBJ_IDENT_FALSE)) {
             return OBJ_NIL;
         }
-        
+
         return pFalse;
     }
-    
-    
-    
-    NODEHASH_DATA * jsonIn_CheckNodeDataForHash(
+
+
+
+    NODEHASH_DATA * JsonIn_CheckNodeDataForHash (
         NODE_DATA       *pNode
     )
     {
         NODEHASH_DATA   *pHash = OBJ_NIL;
         OBJ_ID          pObj;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -283,7 +293,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pObj = node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
@@ -292,24 +302,24 @@ extern "C" {
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))) {
             return OBJ_NIL;
         }
-        
+
         pHash = node_getData(pObj);
         if ((OBJ_NIL == pHash) || !obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
             return OBJ_NIL;
         }
-        
+
         return pHash;
     }
-    
-    
-    ASTR_DATA *     jsonIn_CheckNodeDataForInteger(
+
+
+    ASTR_DATA *     JsonIn_CheckNodeDataForInteger (
         NODE_DATA       *pNode
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
         OBJ_ID          pObj;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -317,7 +327,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pObj = node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
@@ -326,24 +336,24 @@ extern "C" {
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer"))) {
             return OBJ_NIL;
         }
-        
+
         pStr = node_getData(pObj);
         if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
             return OBJ_NIL;
         }
-        
+
         return pStr;
     }
-    
-    
-    NULL_DATA *     jsonIn_CheckNodeDataForNull(
+
+
+    NULL_DATA *     JsonIn_CheckNodeDataForNull (
         NODE_DATA       *pNode
     )
     {
         NULL_DATA       *pNull = OBJ_NIL;
         OBJ_ID          pObj;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -351,7 +361,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pObj = node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
@@ -360,24 +370,24 @@ extern "C" {
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "null"))) {
             return OBJ_NIL;
         }
-        
+
         pNull = node_getData(pObj);
         if ((OBJ_NIL == pNull) || !obj_IsKindOf(pNull, OBJ_IDENT_NULL)) {
             return OBJ_NIL;
         }
-        
+
         return pNull;
     }
-    
-    
-    ASTR_DATA *     jsonIn_CheckNodeDataForString(
+
+
+    ASTR_DATA *     JsonIn_CheckNodeDataForString (
         NODE_DATA       *pNode
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
         OBJ_ID          pObj;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -385,7 +395,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pObj = node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
@@ -394,25 +404,25 @@ extern "C" {
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string"))) {
             return OBJ_NIL;
         }
-        
+
         pStr = node_getData(pObj);
         if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
             return OBJ_NIL;
         }
-        
+
         return pStr;
     }
-    
-    
-    
-    TRUE_DATA *     jsonIn_CheckNodeDataForTrue(
+
+
+
+    TRUE_DATA *     JsonIn_CheckNodeDataForTrue (
         NODE_DATA       *pNode
     )
     {
         TRUE_DATA       *pTrue = OBJ_NIL;
         OBJ_ID          pObj;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -420,7 +430,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pObj = node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
@@ -429,24 +439,24 @@ extern "C" {
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "true"))) {
             return OBJ_NIL;
         }
-        
+
         pTrue = node_getData(pObj);
         if ((OBJ_NIL == pTrue) || !obj_IsKindOf(pTrue, OBJ_IDENT_TRUE)) {
             return OBJ_NIL;
         }
-        
+
         return pTrue;
     }
-    
-    
 
-    NODEARRAY_DATA * jsonIn_CheckNodeForArray(
+
+
+    NODEARRAY_DATA * JsonIn_CheckNodeForArray (
         NODE_DATA       *pNode
     )
     {
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -454,28 +464,28 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pName = node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "array"))) {
             return OBJ_NIL;
         }
-        
+
         pArray = node_getData(pNode);
         if ((OBJ_NIL == pArray) || !obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)) {
             return OBJ_NIL;
         }
-        
+
         return pArray;
     }
-    
-    
-    FALSE_DATA *    jsonIn_CheckNodeForFalse(
+
+
+    FALSE_DATA *    JsonIn_CheckNodeForFalse (
         NODE_DATA       *pNode
     )
     {
         FALSE_DATA      *pFalse = OBJ_NIL;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -483,29 +493,29 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pName = node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "false"))) {
             return OBJ_NIL;
         }
-        
+
         pFalse = node_getData(pNode);
         if ((OBJ_NIL == pFalse) || !obj_IsKindOf(pFalse, OBJ_IDENT_FALSE)) {
             return OBJ_NIL;
         }
-        
+
         return pFalse;
     }
-    
-    
-    
-    NODEHASH_DATA * jsonIn_CheckNodeForHash(
+
+
+
+    NODEHASH_DATA * JsonIn_CheckNodeForHash (
         NODE_DATA       *pNode
     )
     {
         NODEHASH_DATA   *pHash = OBJ_NIL;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -513,7 +523,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pName = node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))) {
             return OBJ_NIL;
@@ -522,19 +532,19 @@ extern "C" {
         if ((OBJ_NIL == pHash) || !obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
             return OBJ_NIL;
         }
-        
+
         return pHash;
     }
-    
 
-    
-    ASTR_DATA *     jsonIn_CheckNodeForInteger(
+
+
+    ASTR_DATA *     JsonIn_CheckNodeForInteger (
         NODE_DATA       *pNode
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -542,28 +552,28 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pName = node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer"))) {
             return OBJ_NIL;
         }
-        
+
         pStr = node_getData(pNode);
         if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
             return OBJ_NIL;
         }
-        
+
         return pStr;
     }
-    
-    
-    NULL_DATA *     jsonIn_CheckNodeForNull(
+
+
+    NULL_DATA *     JsonIn_CheckNodeForNull (
         NODE_DATA       *pNode
     )
     {
         NULL_DATA       *pNull = OBJ_NIL;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -571,28 +581,28 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pName = node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "null"))) {
             return OBJ_NIL;
         }
-        
+
         pNull = node_getData(pNode);
         if ((OBJ_NIL == pNull) || !obj_IsKindOf(pNull, OBJ_IDENT_NULL)) {
             return OBJ_NIL;
         }
-        
+
         return pNull;
     }
-    
-    
-    ASTR_DATA *     jsonIn_CheckNodeForString(
+
+
+    ASTR_DATA *     JsonIn_CheckNodeForString (
         NODE_DATA       *pNode
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -600,29 +610,29 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pName = node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string"))) {
             return OBJ_NIL;
         }
-        
+
         pStr = node_getData(pNode);
         if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
             return OBJ_NIL;
         }
-        
+
         return pStr;
     }
-    
-    
-    
-    TRUE_DATA *     jsonIn_CheckNodeForTrue(
+
+
+
+    TRUE_DATA *     JsonIn_CheckNodeForTrue (
         NODE_DATA       *pNode
     )
     {
         TRUE_DATA       *pTrue = OBJ_NIL;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -630,28 +640,28 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pName = node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "true"))) {
             return OBJ_NIL;
         }
-        
+
         pTrue = node_getData(pNode);
         if ((OBJ_NIL == pTrue) || !obj_IsKindOf(pTrue, OBJ_IDENT_TRUE)) {
             return OBJ_NIL;
         }
-        
+
         return pTrue;
     }
-    
-    
-    
-    NODE_DATA *     jsonIn_NodeFromArray(
+
+
+
+    NODE_DATA *     JsonIn_NodeFromArray (
         NODEARRAY_DATA  *pArray
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -659,20 +669,20 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pNode = node_NewWithUTF8ConAndClass(0, "array", pArray);
-        
+
         return pNode;
     }
-    
-    
-    
-    NODE_DATA *     jsonIn_NodeFromHash(
+
+
+
+    NODE_DATA *     JsonIn_NodeFromHash (
         NODEHASH_DATA   *pHash
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -680,20 +690,20 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pNode = node_NewWithUTF8ConAndClass(0, "hash", pHash);
-        
+
         return pNode;
     }
-    
-    
-    
-    NODE_DATA *     jsonIn_NodeFromString(
+
+
+
+    NODE_DATA *     JsonIn_NodeFromString (
         ASTR_DATA       *pStr
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -701,117 +711,73 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         pNode = node_NewWithUTF8ConAndClass(0, "string", pStr);
-        
+
         return pNode;
     }
-    
-    
-    
 
-    
+
+
+
+
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                         H a s h
+    //                        H a s h
     //---------------------------------------------------------------
-    
-    NODEHASH_DATA * jsonIn_getHash(
+
+    NODEHASH_DATA * JsonIn_getHash (
         JSONIN_DATA     *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-        
+
         return this->pHash;
     }
-    
-    
-    bool            jsonIn_setHash(
+
+
+    bool            JsonIn_setHash (
         JSONIN_DATA     *this,
         NODEHASH_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
+#ifdef  PROPERTY_HASH_OWNED
         obj_Retain(pValue);
         if (this->pHash) {
             obj_Release(this->pHash);
         }
+#endif
         this->pHash = pValue;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
-    //                         L i s t
+    //                        L i s t
     //---------------------------------------------------------------
-    
-    OBJLIST_DATA *  jsonIn_getList(
-        JSONIN_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !jsonIn_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pList;
-    }
-    
-    
-    bool            jsonIn_setList(
-        JSONIN_DATA     *this,
-        OBJLIST_DATA    *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !jsonIn_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pList) {
-            obj_Release(this->pList);
-        }
-        this->pList = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          P r i o r i t y
-    //---------------------------------------------------------------
-    
-    uint16_t        jsonIn_getPriority(
+
+    OBJLIST_DATA *  JsonIn_getList (
         JSONIN_DATA     *this
     )
     {
@@ -819,7 +785,55 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pList;
+    }
+
+
+    bool            JsonIn_setList (
+        JSONIN_DATA     *this,
+        OBJLIST_DATA    *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_LIST_OWNED
+        obj_Retain(pValue);
+        if (this->pList) {
+            obj_Release(this->pList);
+        }
+#endif
+        this->pList = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        JsonIn_getPriority (
+        JSONIN_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -830,14 +844,14 @@ extern "C" {
     }
 
 
-    bool            jsonIn_setPriority(
+    bool            JsonIn_setPriority (
         JSONIN_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -854,13 +868,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        jsonIn_getSize(
+    uint32_t        JsonIn_getSize (
         JSONIN_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -872,10 +886,58 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA * JsonIn_getStr (
+        JSONIN_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool        JsonIn_setStr (
+        JSONIN_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_STR_OWNED
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+#endif
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  jsonIn_getSuperVtbl(
+    OBJ_IUNKNOWN *  JsonIn_getSuperVtbl (
         JSONIN_DATA     *this
     )
     {
@@ -883,7 +945,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -912,28 +974,28 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = jsonIn__Assign(this,pOther);
+        ERESULT eRc = JsonIn_Assign(this,pOther);
      @endcode 
-     @param     this    JSONIN object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another JSONIN object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         jsonIn_Assign(
+    ERESULT         JsonIn_Assign (
         JSONIN_DATA		*this,
         JSONIN_DATA     *pOther
     )
     {
-        ERESULT         eRc;
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !jsonIn_Validate(pOther) ) {
+        if (!JsonIn_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -976,10 +1038,70 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //              C o n f i r m  O b j e c t  T y p e
+    //                      C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         jsonIn_ConfirmObjectType(
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         JsonIn_Compare (
+        JSONIN_DATA     *this,
+        JSONIN_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!JsonIn_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
+    
+   
+ 
+    //---------------------------------------------------------------
+    //              C o n f i r m  O b j e c t  T y p e
+    //---------------------------------------------------------------
+
+    ERESULT         JsonIn_ConfirmObjectType (
         JSONIN_DATA     *this,
         const
         char            *pType
@@ -988,32 +1110,32 @@ extern "C" {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
         int             iRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
-        eRc = jsonIn_FindStringNodeInHashA(this, "objectType", &pStr);
+
+        eRc = JsonIn_FindStringNodeInHashA(this, "objectType", &pStr);
         if (OBJ_NIL == pStr) {
             return ERESULT_DATA_NOT_FOUND;
         }
-        
+
         iRc = strcmp(pType, AStr_getData(pStr));
         if (!(0 == iRc)) {
             return ERESULT_DATA_NOT_FOUND;
         }
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -1022,32 +1144,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        jsonIn      *pCopy = jsonIn_Copy(this);
+        JsonIn      *pCopy = JsonIn_Copy(this);
      @endcode 
-     @param     this    JSONIN object pointer
-     @return    If successful, a JSONIN object which must be released,
-                otherwise OBJ_NIL.
-     @warning  Remember to release the returned the JSONIN object.
+     @param     this    object pointer
+     @return    If successful, a JSONIN object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    JSONIN_DATA *   jsonIn_Copy(
-        JSONIN_DATA     *this
+    JSONIN_DATA *     JsonIn_Copy (
+        JSONIN_DATA       *this
     )
     {
-        JSONIN_DATA     *pOther = OBJ_NIL;
+        JSONIN_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = jsonIn_New( );
+        pOther = JsonIn_New( );
         if (pOther) {
-            eRc = jsonIn_Assign(this, pOther);
+            eRc = JsonIn_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -1065,7 +1187,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            jsonIn_Dealloc(
+    void            JsonIn_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -1077,17 +1199,24 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        while (ObjList_getSize(this->pList)) {
-            jsonIn_SubobjectEnd(this);
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((JSONIN_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
-        jsonIn_setHash(this, OBJ_NIL);
-        jsonIn_setList(this, OBJ_NIL);
+#endif
+
+        while (ObjList_getSize(this->pList)) {
+            JsonIn_SubObjectEnd(this);
+        }
+        JsonIn_setHash(this, OBJ_NIL);
+        JsonIn_setList(this, OBJ_NIL);
+        JsonIn_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1104,15 +1233,22 @@ extern "C" {
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         jsonIn_Disable(
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         JsonIn_Disable (
         JSONIN_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1132,15 +1268,22 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         jsonIn_Enable(
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         JsonIn_Enable (
         JSONIN_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1159,8 +1302,8 @@ extern "C" {
     //---------------------------------------------------------------
     //                          F i n d
     //---------------------------------------------------------------
-    
-    ERESULT         jsonIn_FindArrayAndVisitInHashA(
+
+    ERESULT         JsonIn_FindArrayAndVisitInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
@@ -1174,12 +1317,12 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if(!jsonIn_Validate(this)) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "array", (void **)&pArray);
         if ((ERESULT_FAILED(eRc)) || (OBJ_NIL == pArray)) {
             return ERESULT_DATA_NOT_FOUND;
@@ -1190,15 +1333,15 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_DATA_NOT_FOUND;
         }
-        
+
         eRc = nodeArray_VisitAscending(pArray, pVisit, pObj);
-        
+
         return eRc;
     }
-    
-    
-    
-    ERESULT         jsonIn_FindArrayNodeInHashA(
+
+
+
+    ERESULT         JsonIn_FindArrayNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
@@ -1207,16 +1350,16 @@ extern "C" {
     {
         ERESULT         eRc;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if(!jsonIn_Validate(this)) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "array", (void **)&pArray);
         if ((ERESULT_FAILED(eRc)) || (OBJ_NIL == pArray)) {
             return ERESULT_DATA_NOT_FOUND;
@@ -1232,10 +1375,10 @@ extern "C" {
             *ppArray = pArray;
         return ERESULT_SUCCESS;
     }
-    
-    
-    
-    ERESULT         jsonIn_FindNodeInHashA(
+
+
+
+    ERESULT         JsonIn_FindNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
@@ -1246,16 +1389,16 @@ extern "C" {
     {
         ERESULT         eRc;
         OBJ_ID          pData;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, pTypeA, (void **)&pData);
         if ((ERESULT_FAILED(eRc)) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
@@ -1266,10 +1409,10 @@ extern "C" {
         }
         return ERESULT_SUCCESS;
     }
-    
-    
-    
-    ERESULT         jsonIn_FindIntegerNodeInHashA(
+
+
+
+    ERESULT         JsonIn_FindIntegerNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
@@ -1279,31 +1422,31 @@ extern "C" {
         ERESULT         eRc;
         ASTR_DATA       *pData;
         int64_t         num = 0;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "integer", (void **)&pData);
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
         }
         num = AStr_ToInt64(pData);
-        
+
         if (pInt) {
             *pInt = num;
         }
         return ERESULT_SUCCESS;
     }
-    
-    
-    
-    ERESULT         jsonIn_FindNullNodeInHashA(
+
+
+
+    ERESULT         JsonIn_FindNullNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA
@@ -1311,7 +1454,16 @@ extern "C" {
     {
         ERESULT         eRc;
         NULL_DATA       *pData;
-        
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
         eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "null", (void **)&pData);
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
@@ -1319,10 +1471,10 @@ extern "C" {
 
         return ERESULT_SUCCESS;
     }
-    
-    
-    
-    ERESULT         jsonIn_FindStringNodeInHashA(
+
+
+
+    ERESULT         JsonIn_FindStringNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
@@ -1331,7 +1483,16 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pData = OBJ_NIL;
-        
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
         eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "string", (void **)&pData);
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
@@ -1341,18 +1502,19 @@ extern "C" {
             *ppStr = pData;
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    JSONIN_DATA *   jsonIn_Init(
-        JSONIN_DATA       *this
+    JSONIN_DATA *   JsonIn_Init (
+        JSONIN_DATA     *this
     )
     {
         uint32_t        cbSize = sizeof(JSONIN_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1376,23 +1538,25 @@ extern "C" {
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_JSONIN);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&jsonIn_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&JsonIn_Vtbl);
         
-        //this->stackSize = obj_getMisc1(this);
         this->pList = ObjList_New( );
+        if (OBJ_NIL == this->pList) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
 
     #ifdef NDEBUG
     #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "jsonIn::offsetof(eRc) = %lu\n", offsetof(JSONIN_DATA,eRc));
-        //fprintf(stderr, "jsonIn::sizeof(JSONIN_DATA) = %lu\n", sizeof(JSONIN_DATA));
+        //fprintf(stderr, "JsonIn::sizeof(JSONIN_DATA) = %lu\n", sizeof(JSONIN_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(JSONIN_DATA));
     #endif
@@ -1406,15 +1570,16 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         jsonIn_IsEnabled(
+    ERESULT         JsonIn_IsEnabled (
         JSONIN_DATA		*this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1433,8 +1598,8 @@ extern "C" {
     //---------------------------------------------------------------
     //                       P a r s e
     //---------------------------------------------------------------
-    
-    ERESULT         jsonIn_ParseAStr(
+
+    ERESULT         JsonIn_ParseAStr (
         JSONIN_DATA     *this,
         ASTR_DATA       *pStr
     )
@@ -1447,7 +1612,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if( !JsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1456,10 +1621,10 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
         if (obj_Trace(this)) {
-            fprintf(stderr, "jsonIn_ParseAStr: string=%s\n", AStr_getData(pStr));
+            fprintf(stderr, "JsonIn_ParseAStr: string=%s\n", AStr_getData(pStr));
         }
 #endif
-        
+
         pParser = hjson_NewAStr(pStr, 4);
         if (OBJ_NIL == pParser) {
             return ERESULT_OUT_OF_MEMORY;
@@ -1476,26 +1641,26 @@ extern "C" {
             obj_Release(pParser);
             return ERESULT_PARSE_ERROR;
         }
-        
-        pHash = jsonIn_CheckNodeForHash(pNode);
+
+        pHash = JsonIn_CheckNodeForHash(pNode);
         if (OBJ_NIL == pHash) {
             obj_Release(pNode);
             obj_Release(pParser);
             return ERESULT_DATA_ERROR;
         }
-        jsonIn_setHash(this, pHash);
+        JsonIn_setHash(this, pHash);
 
         obj_Release(pNode);
         pNode = OBJ_NIL;
         obj_Release(pParser);
         pParser = OBJ_NIL;
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    OBJ_ID          jsonIn_ParseObject(
+
+
+    OBJ_ID          JsonIn_ParseObject (
         JSONIN_DATA     *this
     )
     {
@@ -1507,84 +1672,112 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if( !JsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return pObj;
         }
         if (obj_Trace(this)) {
-            fprintf(stderr, "jsonIn_ParseObject:\n");
+            fprintf(stderr, "JsonIn_ParseObject:\n");
         }
 #endif
 
         pInfo = obj_getInfo(AStr_Class());
-        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)AStr_ParseJsonObject(this);
             return pObj;
         }
-        
+
         pInfo = obj_getInfo(BitMatrix_Class());
-        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)BitMatrix_ParseJsonObject(this);
             return pObj;
         }
-        
+
         pInfo = obj_getInfo(name_Class());
-        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)name_ParseJsonObject(this);
             return pObj;
         }
-        
+
         pInfo = obj_getInfo(node_Class());
-        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)node_ParseJsonObject(this);
             return pObj;
         }
-        
+
         pInfo = obj_getInfo(nodeArray_Class());
-        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)nodeArray_ParseJsonObject(this);
             return pObj;
         }
-        
+
         pInfo = obj_getInfo(nodeBTP_Class());
-        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)nodeBTP_ParseJsonObject(this);
             return pObj;
         }
-        
+
         pInfo = obj_getInfo(nodeHash_Class());
-        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)nodeHash_ParseJsonObject(this);
             return pObj;
         }
-        
+
+        pInfo = obj_getInfo(ObjArray_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)ObjArray_ParseJsonObject(this);
+            return pObj;
+        }
+
+        pInfo = obj_getInfo(ObjMethod_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)ObjMethod_ParseJsonObject(this);
+            return pObj;
+        }
+
+        pInfo = obj_getInfo(SrcError_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)SrcError_ParseJsonObject(this);
+            return pObj;
+        }
+
+        pInfo = obj_getInfo(SrcErrors_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)SrcErrors_ParseJsonObject(this);
+            return pObj;
+        }
+
         pInfo = obj_getInfo(szData_Class());
-        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)szData_ParseObject(this);
             return pObj;
         }
-        
+
         pInfo = obj_getInfo(token_Class());
-        eRc = jsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)token_ParseObject(this);
             return pObj;
         }
-        
+
         // Return to caller.
         return pObj;
     }
-    
-    
-    ERESULT         jsonIn_ParsePath(
+
+
+    ERESULT         JsonIn_ParsePath (
         JSONIN_DATA     *this,
         PATH_DATA       *pPath
     )
@@ -1593,11 +1786,11 @@ extern "C" {
         HJSON_DATA      *pParser;
         NODE_DATA       *pNode;
         NODEHASH_DATA   *pHash;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if( !JsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1606,10 +1799,10 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
         if (obj_Trace(this)) {
-            fprintf(stderr, "jsonIn_ParseAStr: string=%s\n", path_getData(pPath));
+            fprintf(stderr, "JsonIn_ParseAStr: string=%s\n", path_getData(pPath));
         }
 #endif
-        
+
         pParser = hjson_NewFromPath(pPath, 4);
         if (OBJ_NIL == pParser) {
             return ERESULT_OUT_OF_MEMORY;
@@ -1620,32 +1813,47 @@ extern "C" {
             obj_TraceSet(pParser, true);
         }
 #endif
-        
+
         pNode = hjson_ParseFileHash(pParser);
         if (OBJ_NIL == pNode) {
             obj_Release(pParser);
             return ERESULT_PARSE_ERROR;
         }
-        
-        pHash = jsonIn_CheckNodeDataForHash(pNode);
+
+        pHash = JsonIn_CheckNodeDataForHash(pNode);
         if (OBJ_NIL == pHash) {
             obj_Release(pNode);
             obj_Release(pParser);
             return ERESULT_DATA_ERROR;
         }
-        jsonIn_setHash(this, pHash);
-        
+        JsonIn_setHash(this, pHash);
+
         obj_Release(pNode);
         pNode = OBJ_NIL;
         obj_Release(pParser);
         pParser = OBJ_NIL;
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
 
+
+
+    //---------------------------------------------------------------
+    //                P a r s e  J s o n  O b j e c t
+    //---------------------------------------------------------------
+    
+#ifdef  JSONIN_JSON_SUPPORT
+     JSONIN_DATA * JsonIn_ParseJsonObject (
+         JSONIN_DATA     *pParser
+    )
+    {
+        return OBJ_NIL;
+    }
+#endif
+        
+        
+        
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -1657,14 +1865,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = jsonIn_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = JsonIn_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "jsonIn", prefix,
+                        the object name, "JsonIn", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1672,7 +1880,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          jsonIn_QueryInfo(
+    void *          JsonIn_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -1687,7 +1895,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1695,11 +1903,33 @@ extern "C" {
         
         switch (type) {
                 
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(JSONIN_DATA);
+            break;
+            
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)jsonIn_Class();
+                return (void *)JsonIn_Class();
                 break;
                 
-            case OBJ_QUERYINFO_TYPE_INFO:
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -1708,23 +1938,25 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return jsonIn_Disable;
+                            return JsonIn_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return jsonIn_Enable;
+                            return JsonIn_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return jsonIn_ToDebugString;
+                            return JsonIn_ToDebugString;
                         }
+#ifdef  SRCREF_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return jsonIn_ToJson;
+                            return JsonIn_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -1733,10 +1965,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == jsonIn_ToDebugString)
+                if (pData == JsonIn_ToDebugString)
                     return "ToDebugString";
-                if (pData == jsonIn_ToJson)
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == JsonIn_ToJson)
                     return "ToJson";
+#endif
                 break;
                 
             default:
@@ -1751,42 +1985,42 @@ extern "C" {
     //---------------------------------------------------------------
     //                     S u b  O b j e c t
     //---------------------------------------------------------------
-    
-    ERESULT         jsonIn_SubobjectEnd(
+
+    ERESULT         JsonIn_SubObjectEnd (
         JSONIN_DATA     *this
     )
     {
         ERESULT         eRc = ERESULT_FAILURE;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if( !JsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         if (ObjList_getSize(this->pList) > 0) {
             this->pHash = ObjList_Tail(this->pList);
             ObjList_DeleteTail(this->pList);
             eRc = ERESULT_SUCCESS;
         }
-        
+
         return eRc;
     }
-    
-    
-    ERESULT         jsonIn_SubobjectFromHash(
+
+
+    ERESULT         JsonIn_SubObjectFromHash (
         JSONIN_DATA     *this,
         NODEHASH_DATA   *pHash
     )
     {
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if( !JsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1801,15 +2035,15 @@ extern "C" {
             return ERESULT_DATA_ERROR;
         }
 #endif
-        
+
         ObjList_Add2Tail(this->pList, this->pHash);
         this->pHash = pHash;
-        
+
         return ERESULT_SUCCESS;
     }
-    
-    
-    ERESULT         jsonIn_SubobjectInHash(
+
+
+    ERESULT         JsonIn_SubObjectInHash (
         JSONIN_DATA     *this,
         const
         char            *pSection
@@ -1817,16 +2051,16 @@ extern "C" {
     {
         NODE_DATA       *pNode;
         NAME_DATA       *pName;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if( !JsonIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         pNode = nodeHash_FindA(this->pHash, 0, pSection);
         if (OBJ_NIL == pNode) {
             return ERESULT_DATA_NOT_FOUND;
@@ -1839,16 +2073,56 @@ extern "C" {
         if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))) {
             return ERESULT_DATA_ERROR;
         }
-        
+
         ObjList_Add2Tail(this->pList, this->pHash);
         this->pHash = node_getData(pNode);
-        
+
         return ERESULT_SUCCESS;
     }
-    
-    
-    
 
+
+
+    //---------------------------------------------------------------
+    //                       T o  J S O N
+    //---------------------------------------------------------------
+    
+#ifdef  JSONIN_JSON_SUPPORT
+     ASTR_DATA *     JsonIn_ToJson (
+        JSONIN_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        //int             j;
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        if (pStr) {
+            eRc =   AStr_AppendPrint(
+                        pStr,
+                        "{\"objectType\":\"%s\"",
+                        pInfo->pClassName
+                    );
+            
+            AStr_AppendA(pStr, "}\n");
+        }
+        
+        return pStr;
+    }
+#endif
+    
+    
+    
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -1857,15 +2131,15 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = jsonIn_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = JsonIn_ToDebugString(this,4);
      @endcode 
-     @param     this    JSONIN object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     jsonIn_ToDebugString(
+    ASTR_DATA *     JsonIn_ToDebugString (
         JSONIN_DATA      *this,
         int             indent
     )
@@ -1873,42 +2147,50 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonIn_Validate(this) ) {
+        if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = jsonIn_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        eRc =   AStr_AppendPrint(
+        eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s)\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
-                    pInfo->pClassName
-                );
+                    pInfo->pClassName,
+                    JsonIn_getSize(this),
+                    obj_getRetainCount(this)
+            );
 
-        if (this->pHash) {
-            if (((OBJ_DATA *)(this->pHash))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pHash))->pVtbl->pToDebugString(
-                                                    this->pHash,
+#ifdef  XYZZY        
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
+                                                    this->pData,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
-                pWrkStr = OBJ_NIL;
             }
         }
+#endif
         
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
@@ -1925,53 +2207,21 @@ extern "C" {
     
     
     
-    ASTR_DATA *     jsonIn_ToJson(
-        JSONIN_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !jsonIn_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        return pStr;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
     #ifdef NDEBUG
     #else
-    bool            jsonIn_Validate(
+    bool            JsonIn_Validate (
         JSONIN_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_JSONIN) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_JSONIN))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1987,7 +2237,7 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(JSONIN_DATA)) ) {
+        if (!(obj_getSize(this) >= sizeof(JSONIN_DATA))) {
             return false;
         }
 

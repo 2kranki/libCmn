@@ -41,7 +41,7 @@
 
 #include        <sidxe.h>
 #include        <array.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef SIDXE_INTERNAL_H

@@ -47,7 +47,7 @@
 #include    <stdlib.h>
 #include    <string.h>
 #include    <dec.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -86,7 +86,7 @@ extern "C" {
 
         pInfo = obj_getInfo(SrcLoc_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -99,12 +99,12 @@ extern "C" {
             goto exit00;
         }
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
         pObject->pData->fileIndex = (uint32_t)intIn;
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->pData->offset);
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->pData->offset);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
         pObject->pData->lineNo = (uint32_t)intIn;
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
         pObject->pData->colNo = (uint16_t)intIn;
 
         // Return to caller.
@@ -135,8 +135,8 @@ extern "C" {
         ERESULT         eRc;
         SRCLOC_DATA     *pObject = OBJ_NIL;
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }

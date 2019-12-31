@@ -44,7 +44,7 @@
 
 #include    <AStr.h>
 #include    <file.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <path.h>
 #include    <str.h>
 #include    <ObjArray.h>

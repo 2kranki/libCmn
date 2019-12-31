@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include        <jsonPP_internal.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 #include        <trace.h>
 
 
@@ -674,7 +674,7 @@ extern "C" {
         }
 #endif
         
-        pHash = jsonIn_CheckNodeForHash(pNodes);
+        pHash = JsonIn_CheckNodeForHash(pNodes);
         if (OBJ_NIL == pHash) {
             return ERESULT_PARSE_ERROR;
         }
@@ -873,32 +873,32 @@ extern "C" {
         pNameA = NULL;
         AStr_AppendA(this->pStr, " : ");
         
-        pFalse = jsonIn_CheckNodeForFalse(pData);
+        pFalse = JsonIn_CheckNodeForFalse(pData);
         if (pFalse) {
             AStr_AppendPrint(this->pStr, "false%s\n", pComma);
             return ERESULT_SUCCESS;
         }
-        pStr = jsonIn_CheckNodeForInteger(pData);
+        pStr = JsonIn_CheckNodeForInteger(pData);
         if (pStr) {
             AStr_AppendPrint(this->pStr, "%s%s\n", AStr_getData(pStr), pComma);
             return ERESULT_SUCCESS;
         }
-        pNull = jsonIn_CheckNodeForNull(pData);
+        pNull = JsonIn_CheckNodeForNull(pData);
         if (pNull) {
             AStr_AppendPrint(this->pStr, "null%s\n", pComma);
             return ERESULT_SUCCESS;
         }
-        pStr = jsonIn_CheckNodeForString(pData);
+        pStr = JsonIn_CheckNodeForString(pData);
         if (pStr) {
             AStr_AppendPrint(this->pStr, "\"%s\"%s\n", AStr_getData(pStr), pComma);
             return ERESULT_SUCCESS;
         }
-        pTrue = jsonIn_CheckNodeForTrue(pData);
+        pTrue = JsonIn_CheckNodeForTrue(pData);
         if (pTrue) {
             AStr_AppendPrint(this->pStr, "true%s\n", pComma);
             return ERESULT_SUCCESS;
         }
-        pArray = jsonIn_CheckNodeForArray(pData);
+        pArray = JsonIn_CheckNodeForArray(pData);
         if (pArray) {
             AStr_AppendA(this->pStr, "[\n");
             iMax = nodeArray_getSize(pArray);
@@ -917,7 +917,7 @@ extern "C" {
             AStr_AppendPrint(this->pStr, "]%s\n", pComma);
             return ERESULT_SUCCESS;
         }
-        pHash = jsonIn_CheckNodeForHash(pData);
+        pHash = JsonIn_CheckNodeForHash(pData);
         if (pHash) {
             pArray = nodeHash_Nodes(pHash);
             if (pArray) {
@@ -993,32 +993,32 @@ extern "C" {
             AStr_AppendCharRepeatA(this->pStr, indent, ' ');
         }
         
-        pFalse = jsonIn_CheckNodeForFalse(pNode);
+        pFalse = JsonIn_CheckNodeForFalse(pNode);
         if (pFalse) {
             AStr_AppendPrint(this->pStr, "false%s\n", pComma);
             return ERESULT_SUCCESS;
         }
-        pStr = jsonIn_CheckNodeForInteger(pNode);
+        pStr = JsonIn_CheckNodeForInteger(pNode);
         if (pStr) {
             AStr_AppendPrint(this->pStr, "%s%s\n", AStr_getData(pStr), pComma);
             return ERESULT_SUCCESS;
         }
-        pNull = jsonIn_CheckNodeForNull(pNode);
+        pNull = JsonIn_CheckNodeForNull(pNode);
         if (pNull) {
             AStr_AppendPrint(this->pStr, "null%s\n", pComma);
             return ERESULT_SUCCESS;
         }
-        pStr = jsonIn_CheckNodeForString(pNode);
+        pStr = JsonIn_CheckNodeForString(pNode);
         if (pStr) {
             AStr_AppendPrint(this->pStr, "\"%s\"%s\n", AStr_getData(pStr), pComma);
             return ERESULT_SUCCESS;
         }
-        pTrue = jsonIn_CheckNodeForTrue(pNode);
+        pTrue = JsonIn_CheckNodeForTrue(pNode);
         if (pTrue) {
             AStr_AppendPrint(this->pStr, "true%s\n", pComma);
             return ERESULT_SUCCESS;
         }
-        pArray = jsonIn_CheckNodeForArray(pNode);
+        pArray = JsonIn_CheckNodeForArray(pNode);
         if (pArray) {
             AStr_AppendA(this->pStr, "[\n");
             iMax = nodeArray_getSize(pArray);
@@ -1037,7 +1037,7 @@ extern "C" {
             AStr_AppendPrint(this->pStr, "]%s\n", pComma);
             return ERESULT_SUCCESS;
         }
-        pHash = jsonIn_CheckNodeForHash(pNode);
+        pHash = JsonIn_CheckNodeForHash(pNode);
         if (pHash) {
             pArray = nodeHash_Nodes(pHash);
             if (pArray) {

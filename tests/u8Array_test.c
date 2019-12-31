@@ -161,14 +161,14 @@ int         test_u8Array_AddGet01(
             XCTAssertTrue( (data == i) );
         }
         
-        pStr = u8Array_ToJSON(pObj);
+        pStr = u8Array_ToJson(pObj);
         XCTAssertFalse( (OBJ_NIL == pStr) );
         fprintf(stderr, "\tJSON=\"%s\"\n", AStr_getData(pStr));
         iRc = str_CompareSpcl(AStr_getData(pStr), pJsonA, &offset);
         fprintf(stderr, "\tCompare offset = %d\n", offset);
         XCTAssertTrue( (0 == iRc) );
         
-        pObjJson = u8Array_NewFromJSONString(pStr);
+        pObjJson = u8Array_NewFromJsonString(pStr);
         XCTAssertFalse( (OBJ_NIL == pObjJson) );
         XCTAssertTrue( (64 == u8Array_getSize(pObjJson)) );
         for (i=0; i<64; ++i) {

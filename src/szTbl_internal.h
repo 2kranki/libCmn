@@ -43,7 +43,7 @@
 
 
 #include    <szTbl.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <szHash_internal.h>
 #include    <ptrArray.h>
 

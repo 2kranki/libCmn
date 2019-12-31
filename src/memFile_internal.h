@@ -41,7 +41,7 @@
 
 #include        <memFile.h>
 #include        <array.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef MEMFILE_INTERNAL_H

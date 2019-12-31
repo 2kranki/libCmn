@@ -112,12 +112,12 @@ extern "C" {
     );
     
     
-    U8ARRAY_DATA *  u8Array_NewFromJSONString(
+    U8ARRAY_DATA *  u8Array_NewFromJsonString(
         ASTR_DATA       *pString
     );
 
     
-    U8ARRAY_DATA *  u8Array_NewFromJSONStringA(
+    U8ARRAY_DATA *  u8Array_NewFromJsonStringA(
         const
         char            *pString
     );
@@ -386,7 +386,7 @@ extern "C" {
     );
 
     
-    ASTR_DATA *     u8Array_ToJSON(
+    ASTR_DATA *     u8Array_ToJson (
         U8ARRAY_DATA    *this
     );
 

@@ -59,7 +59,7 @@
 #include    <crc.h>
 #include    <dec.h>
 #include    <hex.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
@@ -140,13 +140,13 @@ extern "C" {
 
         pInfo = obj_getInfo(szTbl_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "Count", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "Count", &intIn);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - count is invalid!\n");
             goto exit00;
@@ -160,7 +160,7 @@ extern "C" {
         }
         
         if (count && pObject) {
-            eRc = jsonIn_FindArrayNodeInHashA(pParser, "Entries", &pArray);
+            eRc = JsonIn_FindArrayNodeInHashA(pParser, "Entries", &pArray);
             if (pArray) {
                 if (count == nodeArray_getSize(pArray))
                     ;
@@ -221,8 +221,8 @@ extern "C" {
                     );
                     goto exit00;
                 }
-                eRc = jsonIn_SubobjectFromHash(pParser, pHash);
-                eRc = jsonIn_FindIntegerNodeInHashA(pParser, "Hash", &intIn);
+                eRc = JsonIn_SubObjectFromHash(pParser, pHash);
+                eRc = JsonIn_FindIntegerNodeInHashA(pParser, "Hash", &intIn);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -232,7 +232,7 @@ extern "C" {
                 }
                 hash = (uint32_t)intIn;
                 //fprintf(stderr, "\t\tHash(%d) = %u\n", i+1, hash);
-                eRc = jsonIn_FindIntegerNodeInHashA(pParser, "Ident", &intIn);
+                eRc = JsonIn_FindIntegerNodeInHashA(pParser, "Ident", &intIn);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -242,7 +242,7 @@ extern "C" {
                 }
                 ident = (uint32_t)intIn;
                 //fprintf(stderr, "\t\tIdent(%d) = %u\n", i+1, ident);
-                eRc = jsonIn_FindIntegerNodeInHashA(pParser, "Length", &intIn);
+                eRc = JsonIn_FindIntegerNodeInHashA(pParser, "Length", &intIn);
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -252,7 +252,7 @@ extern "C" {
                 }
                 len = (uint32_t)intIn;
                 //fprintf(stderr, "\t\tlen(%d) = %u\n", i+1, len);
-                eRc = jsonIn_SubobjectInHash(pParser, "Data");
+                eRc = JsonIn_SubObjectInHash(pParser, "Data");
                 if (ERESULT_FAILED(eRc)) {
                     fprintf(
                             stderr,
@@ -294,8 +294,8 @@ extern "C" {
                     );
                     goto exit00;
                 }
-                eRc = jsonIn_SubobjectEnd(pParser);
-                eRc = jsonIn_SubobjectEnd(pParser);
+                eRc = JsonIn_SubObjectEnd(pParser);
+                eRc = JsonIn_SubObjectEnd(pParser);
             }
         }
         
@@ -334,13 +334,13 @@ extern "C" {
         ASTR_DATA       *pStrDebug = OBJ_NIL;
 #endif
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
 #ifdef DEBUG_JSONIN
-        pStrDebug = nodeHash_ToDebugString(jsonIn_getHash(pParser), 0);
+        pStrDebug = nodeHash_ToDebugString(JsonIn_getHash(pParser), 0);
         if (pStrDebug) {
             fprintf(stderr, "%s\n\n", AStr_getData(pStrDebug));
             obj_Release(pStrDebug);

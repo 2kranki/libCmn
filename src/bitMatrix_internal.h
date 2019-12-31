@@ -40,7 +40,7 @@
 
 
 #include        <BitMatrix.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef BITMATRIX_INTERNAL_H

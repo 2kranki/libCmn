@@ -40,7 +40,7 @@
 
 
 #include        <wisp.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef WISP_INTERNAL_H

@@ -927,7 +927,7 @@ extern "C" {
             if (OBJ_NIL == this->pErrors) {
                 return OBJ_NIL;
             }
-            SrcErrors_setFatalExit(this->pErrors, NULL, NULL);
+            SrcErrors_setFatalExit(this->pErrors, OBJ_NIL);
         }
         
         // Return to caller.

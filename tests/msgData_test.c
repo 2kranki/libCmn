@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 11/04/2017 09:37:49
+ *	Generated 12/31/2019 10:05:08
  */
 
 
@@ -24,13 +25,13 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <msgData_internal.h>
+#include    <MsgData_internal.h>
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -42,9 +43,9 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -74,32 +75,66 @@ int         tearDown(
 
 
 
-int         test_msgData_OpenClose(
+int             test_MsgData_OpenClose(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    MSGDATA_DATA	    *pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = MsgData_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = MsgData_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_MSGDATA);
+        TINYTEST_TRUE( (fRc) );
+        
+        // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_MsgData_Test01(
     const
     char        *pTestName
 )
 {
-    MSGDATA_DATA	*pObj = OBJ_NIL;
+    MSGDATA_DATA    *pObj = OBJ_NIL;
     const
     char            *pData = "01234567";
-   
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = msgData_New(1, 0, (strlen(pData) + 1), (void *)pData);
+    pObj = MsgData_NewWithData(1, 0, (uint32_t)(strlen(pData) + 1), (void *)pData);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        TINYTEST_TRUE( (1 == msgData_getOrigin(pObj)) );
-        TINYTEST_TRUE( (0 == msgData_getDestination(pObj)) );
-        TINYTEST_TRUE( ((strlen(pData)+1) == msgData_getSize(pObj)) );
-        TINYTEST_TRUE( (0 == strcmp(pData, msgData_getData(pObj))) );
+        TINYTEST_TRUE( (1 == MsgData_getOrigin(pObj)) );
+        TINYTEST_TRUE( (0 == MsgData_getDestination(pObj)) );
+        TINYTEST_TRUE( ((strlen(pData)+1) == MsgData_getSize(pObj)) );
+        TINYTEST_TRUE( (0 == strcmp(pData, MsgData_getData(pObj))) );
         printf("   num origin dest len text\n");
         fprintf(stderr, "   %2d    %2d    %2d   %2d \"%s\"\n",
-               msgData_getNum32(pObj),
-               msgData_getOrigin(pObj),
-               msgData_getDestination(pObj),
-               msgData_getSize(pObj),
-               msgData_getData(pObj)
+               MsgData_getNum32(pObj),
+               MsgData_getOrigin(pObj),
+               MsgData_getDestination(pObj),
+               MsgData_getSize(pObj),
+               MsgData_getData(pObj)
                );
         printf("   len includes trailing NUL.\n");
 
@@ -115,11 +150,12 @@ int         test_msgData_OpenClose(
 
 
 
-TINYTEST_START_SUITE(test_msgData);
-    TINYTEST_ADD_TEST(test_msgData_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_MsgData);
+    TINYTEST_ADD_TEST(test_MsgData_Test01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_MsgData_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_msgData);
+TINYTEST_MAIN_SINGLE_SUITE(test_MsgData);
 
 
 

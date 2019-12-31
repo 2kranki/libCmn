@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 12/21/2017 05:41:06
+ *	Generated 12/30/2019 21:36:00
  */
 
 
@@ -23,18 +24,19 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <trace.h>
 #include    <nodeArray.h>
 #include    <szTbl.h>
 #include    <trace.h>
-#include    <jsonIn_internal.h>
+#include    <JsonIn_internal.h>
 #include    <SrcErrors.h>
 #include    <utf8_internal.h>
 
 
 
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -46,9 +48,9 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
@@ -80,34 +82,41 @@ int         tearDown(
 
 
 
-int         test_jsonIn_OpenClose(
+int             test_JsonIn_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    JSONIN_DATA	*pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    JSONIN_DATA	    *pObj = OBJ_NIL;
+    bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = jsonIn_Alloc( );
+    pObj = JsonIn_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = jsonIn_Init( pObj );
+    pObj = JsonIn_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_JSONIN);
+        TINYTEST_TRUE( (fRc) );
+        
         // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
-int             test_jsonIn_01(
+int             test_JsonIn_01(
     const
     char            *pTestName
 )
@@ -116,7 +125,7 @@ int             test_jsonIn_01(
     JSONIN_DATA     *pObj = OBJ_NIL;
     ASTR_DATA       *pStr;
     const
-    char            *jsonInput = "{\n"
+    char            *JsonInput = "{\n"
         "\"objectType\":\"szTbl\","
         "\"Count\":5, "
         "\"Entries\":["
@@ -156,32 +165,32 @@ int             test_jsonIn_01(
     ASTR_DATA       *pStrWrk;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pObj = jsonIn_Alloc( );
+
+    pObj = JsonIn_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = jsonIn_Init(pObj);
+    pObj = JsonIn_Init(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
-        
-        pStr = AStr_NewA(jsonInput);
+
+        pStr = AStr_NewA(JsonInput);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         obj_TraceSet(pObj, true);
-        eRc = jsonIn_ParseAStr(pObj, pStr);
+        eRc = JsonIn_ParseAStr(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        eRc = jsonIn_ConfirmObjectType(pObj, "szTbl");
+        eRc = JsonIn_ConfirmObjectType(pObj, "szTbl");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        
-        eRc = jsonIn_FindIntegerNodeInHashA(pObj, "Count", &count);
+
+        eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Count", &count);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         fprintf(stderr, "\tCount = %lld\n", count);
         pNode = nodeHash_FindA(pObj->pHash, 0, "Count");
         TINYTEST_FALSE( (NULL == pNode) );
-        pStrWrk = jsonIn_CheckNodeDataForInteger(pNode);
+        pStrWrk = JsonIn_CheckNodeDataForInteger(pNode);
         count = AStr_ToInt64(pStrWrk);
         fprintf(stderr, "\tCount from check = %lld\n", count);
 
-        eRc = jsonIn_FindArrayNodeInHashA(pObj, "Entries", &pArray);
+        eRc = JsonIn_FindArrayNodeInHashA(pObj, "Entries", &pArray);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         TINYTEST_TRUE((count == nodeArray_getSize(pArray)));
@@ -194,17 +203,17 @@ int             test_jsonIn_01(
             pHash = node_getData(pNode);
             TINYTEST_FALSE( (OBJ_NIL == pHash) );
             TINYTEST_TRUE(( obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH) ));
-            eRc = jsonIn_SubobjectFromHash(pObj, pHash);
-            eRc = jsonIn_FindIntegerNodeInHashA(pObj, "Hash", &hash);
+            eRc = JsonIn_SubObjectFromHash(pObj, pHash);
+            eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Hash", &hash);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             fprintf(stderr, "\t\tHash(%d) = %lld\n", i+1, hash);
-            eRc = jsonIn_FindIntegerNodeInHashA(pObj, "Ident", &ident);
+            eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Ident", &ident);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             fprintf(stderr, "\t\tIdent(%d) = %lld\n", i+1, ident);
-            eRc = jsonIn_FindIntegerNodeInHashA(pObj, "Length", &len);
+            eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Length", &len);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             fprintf(stderr, "\t\tlen(%d) = %lld\n", i+1, len);
-            eRc = jsonIn_SubobjectInHash(pObj, "Data");
+            eRc = JsonIn_SubObjectInHash(pObj, "Data");
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             pData = utf8_ParseObject(pObj, &len2);
             TINYTEST_FALSE( (NULL == pData) );
@@ -216,16 +225,16 @@ int             test_jsonIn_01(
             }
             pNode = nodeHash_FindA(pObj->pHash, 0, "data");
             TINYTEST_FALSE( (NULL == pNode) );
-            pStrWrk = jsonIn_CheckNodeDataForString(pNode);
+            pStrWrk = JsonIn_CheckNodeDataForString(pNode);
             if (pStrWrk) {
                 fprintf(stderr, "\t\tdata from check = %s\n", AStr_getData(pStrWrk));
             }
             else {
                 fprintf(stderr, "\t\tdata from check = NULL\n");
             }
-            eRc = jsonIn_SubobjectEnd(pObj);
+            eRc = JsonIn_SubObjectEnd(pObj);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            eRc = jsonIn_SubobjectEnd(pObj);
+            eRc = JsonIn_SubObjectEnd(pObj);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         }
         obj_Release(pStr);
@@ -233,7 +242,7 @@ int             test_jsonIn_01(
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
-    
+
     fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }
@@ -241,12 +250,12 @@ int             test_jsonIn_01(
 
 
 
-TINYTEST_START_SUITE(test_jsonIn);
-    TINYTEST_ADD_TEST(test_jsonIn_01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_jsonIn_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_JsonIn);
+    TINYTEST_ADD_TEST(test_JsonIn_01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_JsonIn_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_jsonIn);
+TINYTEST_MAIN_SINGLE_SUITE(test_JsonIn);
 
 
 

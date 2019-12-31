@@ -1,13 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          JSON Input Parsing Support (jsonIn) Header
+//           Json Input Parsing Support (JsonIn) Header
 //****************************************************************
 /*
  * Program
- *			JSON Input Parsing Support (jsonIn)
+ *			Json Input Parsing Support (JsonIn)
  * Purpose
- *			This object provides a standardized way of parsing an
+ *          This object provides a standardized way of parsing an
  *          HJSON node tree. The support routines help the individual
  *          object's JSON parser to successfully find specific nodes
  *          in HJSON node trees.
@@ -16,14 +16,16 @@
  *          sub-objects within the HSON tree as well as general
  *          parsing of objects that are unknown to begin with.
  *
+ *
  * Remarks
- *	1.      The ParseObject() method requires that all classes
+ *  1.      The ParseObject() method requires that all classes
  *          to be parsed by it must be previously defined.
  *  2.      Warning - Using this object will require memory for
  *          all object methods being called by ParseObject().
  *
  * History
- *	12/21/2017 Generated
+ *  12/21/2017 Generated
+ *	12/30/2019 Regenerated
  */
 
 
@@ -71,6 +73,12 @@
 #define         JSONIN_H
 
 
+//#define   JSONIN_JSON_SUPPORT 1
+//#define   JSONIN_SINGLETON    1
+
+
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -82,16 +90,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct jsonIn_data_s	JSONIN_DATA;    // Inherits from OBJ.
+    typedef struct JsonIn_data_s	JSONIN_DATA;            // Inherits from OBJ
+    typedef struct JsonIn_class_data_s JSONIN_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct jsonIn_vtbl_s	{
+    typedef struct JsonIn_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in jsonIn_object.c.
+        // method names to the vtbl definition in JsonIn_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(JSONIN_DATA *);
     } JSONIN_VTBL;
+
+    typedef struct JsonIn_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in JsonIn_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(JSONIN_DATA *);
+    } JSONIN_CLASS_VTBL;
+
 
 
 
@@ -104,212 +123,226 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  JSONIN_SINGLETON
+    JSONIN_DATA *   JsonIn_Shared (
+        void
+    );
+
+    void            JsonIn_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to jsonIn object if successful, otherwise OBJ_NIL.
+     @return    pointer to JsonIn object if successful, otherwise OBJ_NIL.
      */
-    JSONIN_DATA *   jsonIn_Alloc(
+    JSONIN_DATA *   JsonIn_Alloc (
         void
     );
     
     
-    OBJ_ID          jsonIn_Class(
+    OBJ_ID          JsonIn_Class (
         void
     );
     
     
-    JSONIN_DATA *   jsonIn_New(
+    JSONIN_DATA *   JsonIn_New (
         void
     );
     
-    JSONIN_DATA *   jsonIn_NewFromAStr(
+    
+    JSONIN_DATA *   JsonIn_NewFromAStr(
         ASTR_DATA       *pStr
     );
-    
-    JSONIN_DATA *   jsonIn_NewFromHash(
+
+    JSONIN_DATA *   JsonIn_NewFromHash(
         NODEHASH_DATA   *pHash
     );
-    
-    JSONIN_DATA *   jsonIn_NewFromPath(
+
+    JSONIN_DATA *   JsonIn_NewFromPath(
         PATH_DATA       *pPath
     );
-    
+
 
     /*!
      Check the given node's data for a node array and return it if found.
      @param     pNode   the given node pointer
      @return    If successful, the node array; otherwise OBJ_NIL.
      */
-    NODEARRAY_DATA * jsonIn_CheckNodeDataForArray(
+    NODEARRAY_DATA * JsonIn_CheckNodeDataForArray(
         NODE_DATA       *pNode
     );
-    
 
-    FALSE_DATA *     jsonIn_CheckNodeDataForFalse(
+
+    FALSE_DATA *     JsonIn_CheckNodeDataForFalse(
         NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node's data for a node hash and return it if found.
      @param     pNode   the given node pointer
      @return    If successful, the node hash; otherwise OBJ_NIL.
      */
-    NODEHASH_DATA * jsonIn_CheckNodeDataForHash(
+    NODEHASH_DATA * JsonIn_CheckNodeDataForHash(
          NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node's data for an integer object and return the string
      representation of the integer if found.
      @param     pNode   the given node pointer
      @return    If successful, the string object; otherwise OBJ_NIL.
      */
-    ASTR_DATA *     jsonIn_CheckNodeDataForInteger(
+    ASTR_DATA *     JsonIn_CheckNodeDataForInteger (
         NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node's data for a null object and return it if found.
      @param     pNode   the given node pointer
      @return    If successful, the null object; otherwise OBJ_NIL.
      */
-    NULL_DATA *     jsonIn_CheckNodeDataForNull(
+    NULL_DATA *     JsonIn_CheckNodeDataForNull (
         NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node's data for a string and return it if found.
      @param     pNode   the given node pointer
      @return    If successful, the string; otherwise OBJ_NIL.
      */
-    ASTR_DATA *     jsonIn_CheckNodeDataForString(
+    ASTR_DATA *     JsonIn_CheckNodeDataForString (
         NODE_DATA       *pNode
     );
-    
-    
-    TRUE_DATA *     jsonIn_CheckNodeDataForTrue(
+
+
+    TRUE_DATA *     JsonIn_CheckNodeDataForTrue (
         NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node's data for a node array and return it if found.
      @param     pNode   the given node pointer
      @return    If successful, the node array; otherwise OBJ_NIL.
      */
-    NODEARRAY_DATA * jsonIn_CheckNodeForArray(
+    NODEARRAY_DATA * JsonIn_CheckNodeForArray (
         NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node's data for a false object (ie node's
      data) and return it if found.
      @param     pNode   the given node pointer
      @return    If successful, the false object; otherwise OBJ_NIL.
      */
-    FALSE_DATA *     jsonIn_CheckNodeForFalse(
+    FALSE_DATA *     JsonIn_CheckNodeForFalse (
         NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node for a string (ie data object is an
      ASTR_DATA object) and return it if found.
      @param     pNode   the given node pointer
      @return    If successful, the string; otherwise OBJ_NIL.
      */
-    NODEHASH_DATA * jsonIn_CheckNodeForHash(
+    NODEHASH_DATA * JsonIn_CheckNodeForHash (
         NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node's data for an integer object and
      return the string representation of the integer if found.
      @param     pNode   the given node pointer
      @return    If successful, the string object; otherwise OBJ_NIL.
      */
-    ASTR_DATA *     jsonIn_CheckNodeForInteger(
+    ASTR_DATA *     JsonIn_CheckNodeForInteger (
         NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node's data for a null object and return
      it if found.
      @param     pNode   the given node pointer
      @return    If successful, the null object; otherwise OBJ_NIL.
      */
-    NULL_DATA *     jsonIn_CheckNodeForNull(
+    NULL_DATA *     JsonIn_CheckNodeForNull (
         NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node's data for a string object and
      return it if found.
      @param     pNode   the given node pointer
      @return    If successful, the string; otherwise OBJ_NIL.
      */
-    ASTR_DATA *     jsonIn_CheckNodeForString(
+    ASTR_DATA *     JsonIn_CheckNodeForString (
         NODE_DATA       *pNode
     );
-    
-    
+
+
     /*!
      Check the given node's data for a true object (ie node's
      data) and return it if found.
      @param     pNode   the given node pointer
      @return    If successful, the true object; otherwise OBJ_NIL.
      */
-    TRUE_DATA *     jsonIn_CheckNodeForTrue(
+    TRUE_DATA *     JsonIn_CheckNodeForTrue (
         NODE_DATA       *pNode
     );
-    
-    
-    NODE_DATA *     jsonIn_NodeFromArray(
+
+
+    NODE_DATA *     JsonIn_NodeFromArray (
         NODEARRAY_DATA  *pArray
     );
-    
-    
-    NODE_DATA *     jsonIn_NodeFromHash(
+
+
+    NODE_DATA *     JsonIn_NodeFromHash (
         NODEHASH_DATA   *pHash
     );
-    
-    
-    NODE_DATA *     jsonIn_NodeFromString(
+
+
+    NODE_DATA *     JsonIn_NodeFromString (
         ASTR_DATA       *pStr
     );
-    
-    
+
+
+
 
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    NODE_DATA *     jsonIn_getFileNode(
+    NODE_DATA *     JsonIn_getFileNode (
         JSONIN_DATA     *this
     );
-    
-    
-    NODEHASH_DATA * jsonIn_getHash(
+
+
+    NODEHASH_DATA * JsonIn_getHash (
         JSONIN_DATA     *this
     );
-    
-    bool            jsonIn_setHash(
+
+    bool            JsonIn_setHash (
         JSONIN_DATA     *this,
         NODEHASH_DATA   *pValue
     );
-    
-    
+
+
+
 
     
     //---------------------------------------------------------------
@@ -324,13 +357,13 @@ extern "C" {
      @return    If objectType contains the type name (ERESULT_SUCCESS);
                 otherwise, an ERESULT_* error code.
      */
-    ERESULT         jsonIn_ConfirmObjectType(
+    ERESULT         JsonIn_ConfirmObjectType (
         JSONIN_DATA     *this,
         const
         char            *pTypeA
     );
-    
-    
+
+
     /*!
      Find a named node in the JSON Hash Node tree.
      @param     this    Object Pointer
@@ -342,7 +375,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS and an integer value in *pInt
                 if pInt is non-null, otherwise, ERESULT_* error code.
      */
-    ERESULT         jsonIn_FindNodeInHashA(
+    ERESULT         JsonIn_FindNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
@@ -350,8 +383,8 @@ extern "C" {
         char            *pTypeA,
         OBJ_ID          *ppData
     );
-    
-    
+
+
     /*!
      Find a named node array in the JSON Hash Node tree and apply the given
      method to each array node.
@@ -365,15 +398,15 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS and a node array pointer in *ppArray
                 if ppArray is non-null.  Otherwise, ERESULT_* error code.
      */
-    ERESULT         jsonIn_FindArrayAndVisitInHashA(
+    ERESULT         JsonIn_FindArrayAndVisitInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
         ERESULT         (*pVisitNode)(OBJ_ID, NODE_DATA *),
         OBJ_ID          *pObj
     );
-    
-    
+
+
     /*!
      Find a named node array in the JSON Hash Node tree.
      @param     this    Object Pointer
@@ -383,14 +416,14 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS and a node array pointer in *ppArray
                 if ppArray is non-null.  Otherwise, ERESULT_* error code.
      */
-    ERESULT         jsonIn_FindArrayNodeInHashA(
+    ERESULT         JsonIn_FindArrayNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
         NODEARRAY_DATA  **ppArray
     );
-    
-    
+
+
     /*!
      Find a named integer value in the JSON Hash Node tree.
      @param     this    Object Pointer
@@ -400,21 +433,21 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS and an integer value in *pInt
                 if pInt is non-null, otherwise, ERESULT_* error code.
      */
-    ERESULT         jsonIn_FindIntegerNodeInHashA(
+    ERESULT         JsonIn_FindIntegerNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
         int64_t         *pInt
     );
-    
-    
-    ERESULT         jsonIn_FindNullNodeInHashA(
+
+
+    ERESULT         JsonIn_FindNullNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA
     );
-    
-    
+
+
     /*!
      Find a named string value in the JSON Hash Node tree.
      @param     this    Object Pointer
@@ -425,15 +458,15 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr
                 if ppStr is non-null. Otherwise, an ERESULT_* error code.
      */
-    ERESULT         jsonIn_FindStringNodeInHashA(
+    ERESULT         JsonIn_FindStringNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
         ASTR_DATA       **ppStr
     );
-    
-    
-    JSONIN_DATA *   jsonIn_Init(
+
+
+    JSONIN_DATA *   JsonIn_Init (
         JSONIN_DATA     *this
     );
 
@@ -443,55 +476,55 @@ extern "C" {
      the returned node structure to be analyzed by other methods
      in this object. The parser is called with a default tab space
      of 4.
-     @param     this    JSONIN object pointer
+     @param     this    object pointer
      @param     pStr    pointer to AStr input string (required)
      @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code
      */
-    ERESULT         jsonIn_ParseAStr(
+    ERESULT         JsonIn_ParseAStr (
         JSONIN_DATA     *this,
         ASTR_DATA       *pStr
     );
-    
-    
+
+
     /*!
      Parse an object from the current JSON Node tree using the object's
      class to call the specific JSON Input parsers for that class.
-     @param     this    JSONIN object pointer
+     @param     this    object pointer
      @return    If successful, a new object pointer and the last error is
                 set to ERESULT_SUCCESS, otherwise, OBJ_NIL and the last
                 error is set to an ERESULT_* error code
      */
-    OBJ_ID          jsonIn_ParseObject(
+    OBJ_ID          JsonIn_ParseObject (
         JSONIN_DATA     *this
     );
-    
-    
+
+
     /*!
      Parse the given input file using the HJSON parser and set up
      the returned node structure to be analyzed by other methods
      in this object. The parser is called with a default tab space
      of 4.
-     @param     this    JSONIN object pointer
+     @param     this    object pointer
      @param     pPath   File Path to be parsed (required)
      @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code
      */
-    ERESULT         jsonIn_ParsePath(
+    ERESULT         JsonIn_ParsePath(
         JSONIN_DATA     *this,
         PATH_DATA       *pPath
     );
-    
-    
+
+
     /*!
      Restore the JSON Node Tree that was saved from a prior call to the method,
      SubobjectInHash().
-     @param     this    JSONIN object pointer
+     @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code
      */
-    ERESULT         jsonIn_SubobjectEnd(
+    ERESULT         JsonIn_SubObjectEnd (
         JSONIN_DATA     *this
     );
-    
-    
+
+
     /*!
      Set up the parser to process a JSON Hash Node tree by:
      *  Pushing the current JSON tree on the internal stack.
@@ -502,42 +535,42 @@ extern "C" {
      @warning   The SubobjectEnd() method should be called once the sub-object
                 is parsed.
      */
-    ERESULT         jsonIn_SubobjectFromHash(
+    ERESULT         JsonIn_SubObjectFromHash (
         JSONIN_DATA     *this,
         NODEHASH_DATA   *pHash
     );
-    
-    
+
+
     /*!
      Set up the parser to process a sub-object of the JSON Node tree by:
      *  Pushing the current JSON tree on the internal stack.
      *  Setting up the found section as the parser input.
-     @param     this    JSONIN object pointer
+     @param     this    object pointer
      @param     pSect   Section Name String (required)
      @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code.
      @warning   The SubobjectEnd() method should be called once the sub-object
                 is parsed.
      */
-    ERESULT         jsonIn_SubobjectInHash(
+    ERESULT         JsonIn_SubObjectInHash (
         JSONIN_DATA     *this,
         const
         char            *pSect
     );
-    
-    
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = jsonIn_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = JsonIn_ToDebugString(this,4);
      @endcode 
-     @param     this    JSONIN object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    jsonIn_ToDebugString(
+    ASTR_DATA *    JsonIn_ToDebugString (
         JSONIN_DATA     *this,
         int             indent
     );

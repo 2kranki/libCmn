@@ -40,7 +40,7 @@
 
 
 #include        <nodeList.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 #include        <NodeEnum_internal.h>
 #include        <ObjList_internal.h>
 

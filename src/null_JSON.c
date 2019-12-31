@@ -46,7 +46,7 @@
 #include    <stdlib.h>
 #include    <string.h>
 #include    <dec.h>
-#include    <jsonIn_internal.h>
+#include    <JsonIn_internal.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -84,7 +84,7 @@ extern "C" {
         
         pInfo = obj_getInfo(null_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -131,11 +131,11 @@ extern "C" {
         
         pInfo = obj_getInfo(null_Class());
         
-        pParser = jsonIn_New();
+        pParser = JsonIn_New();
         if (OBJ_NIL == pParser) {
             return OBJ_NIL;
         }
-        jsonIn_setHash(pParser, pHash);
+        JsonIn_setHash(pParser, pHash);
         
         pObject = null_ParseObject(pParser);
         
@@ -161,11 +161,11 @@ extern "C" {
 
         pInfo = obj_getInfo(null_Class());
 
-        pParser = jsonIn_New();
+        pParser = JsonIn_New();
         if (OBJ_NIL == pParser) {
             return OBJ_NIL;
         }
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             return OBJ_NIL;
         }

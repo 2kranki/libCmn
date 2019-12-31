@@ -40,7 +40,7 @@
 
 
 #include        <SrcErrors.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 #include        <ObjArray_internal.h>
 
 
@@ -76,8 +76,7 @@ struct SrcErrors_data_s	{
     bool            fExitOnFatal;
     uint16_t        rsvd16;
     
-    ERESULT         (*pFatalExit)(OBJ_ID, SRCERRORS_DATA *);
-    OBJ_ID          pFatalExitObject;
+    OBJMETHOD_DATA  *pFatalExit;
 
 };
 #pragma pack(pop)
@@ -111,6 +110,12 @@ struct SrcErrors_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            SrcErrors_setFatal (
+        SRCERRORS_DATA  *this,
+        bool            value
+    );
+
+
     OBJ_IUNKNOWN *  SrcErrors_getSuperVtbl (
         SRCERRORS_DATA     *this
     );
@@ -122,7 +127,7 @@ struct SrcErrors_data_s	{
 
 
 #ifdef  SRCERRORS_JSON_SUPPORT
-    SRCERRORS_DATA *       SrcErrors_ParseJsonObject (
+    SRCERRORS_DATA * SrcErrors_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 #endif

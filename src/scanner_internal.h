@@ -40,7 +40,7 @@
 
 
 #include    <scanner.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <scanReader.h>
 
 

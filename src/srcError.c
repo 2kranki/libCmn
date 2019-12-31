@@ -524,6 +524,7 @@ extern "C" {
             else
                 return ERESULT_SUCCESS_GREATER_THAN;
         }
+        eRc = AStr_Compare(this->pErrorStr, pOther->pErrorStr);
 
 
         return eRc;

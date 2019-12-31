@@ -40,7 +40,7 @@
 
 
 #include        <srcFile.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 #include        <textIn_internal.h>
 #include        <token_internal.h>
 

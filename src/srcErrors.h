@@ -54,6 +54,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <ObjEnum.h>
+#include        <ObjMethod.h>
 #include        <SrcError.h>
 
 
@@ -176,8 +177,7 @@ extern "C" {
      */
     bool            SrcErrors_setFatalExit (
         SRCERRORS_DATA  *this,
-        ERESULT         (*pFatalExit)(OBJ_ID, SRCERRORS_DATA *),
-        OBJ_ID          pFatalExitObject
+        OBJMETHOD_DATA  *pFatalExit
     );
 
 

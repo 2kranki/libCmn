@@ -3,6 +3,11 @@
 The following are things that are being throught about. Whether they get done or not
 will depend upon time and resources.
 
+-- Finish MsgData_ParseJsonObject() and add to JsonIn_ParseObject().
+-- Finish MsgData_ToJson().
+
+-- Finish SrcErrors_ParseJsonObject() and add to JsonIn_ParseObject().
+
 -- Finish program, genMake. See its todo.
 
 -- Add "man 3 backtrace" to any routines segmenting.

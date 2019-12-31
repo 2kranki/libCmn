@@ -190,11 +190,11 @@ extern "C" {
     );
     
     
-    VALUE_DATA *    value_NewFromJSONString (
+    VALUE_DATA *    value_NewFromJsonString (
         ASTR_DATA       *pString
     );
     
-    VALUE_DATA *    value_NewFromJSONStringA (
+    VALUE_DATA *    value_NewFromJsonStringA (
         const
         char            *pString
     );
@@ -318,8 +318,43 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    VALUE_DATA *   value_Init (
-        VALUE_DATA     *this
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = value__Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another VALUE object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         value_Assign(
+        VALUE_DATA      *this,
+        VALUE_DATA      *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        value      *pCopy = value_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a VALUE object which must be released,
+                otherwise OBJ_NIL.
+     @warning   Remember to release the returned the VALUE object.
+     */
+    VALUE_DATA *    value_Copy(
+        VALUE_DATA      *this
+    );
+
+
+    VALUE_DATA *    value_Init (
+        VALUE_DATA      *this
     );
 
 

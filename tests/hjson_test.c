@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <hjson_internal.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
@@ -628,7 +628,7 @@ int         test_hjson_Simple01(
             
         }
         
-        pHash = jsonIn_CheckNodeForHash(pFileNode);
+        pHash = JsonIn_CheckNodeForHash(pFileNode);
         XCTAssertFalse( (OBJ_NIL == pHash) );
         eRc = nodeHash_FindIntegerNodeInHashA(pHash, "one", &num);
         XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );

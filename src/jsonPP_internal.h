@@ -40,7 +40,7 @@
 
 
 #include        <jsonPP.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef JSONPP_INTERNAL_H

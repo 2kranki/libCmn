@@ -41,7 +41,7 @@
 
 #include        <hashtbl.h>
 #include        <blocks_internal.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef HASHTBL_INTERNAL_H

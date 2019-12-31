@@ -1,9 +1,9 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   SrcError.c
- *	Generated 05/26/2015 13:40:16
+ * File:   ObjList_json.c
  *
- * Created on December 30, 2014
+ *	Generated 12/30/2019 16:27:17
+ *
  */
 
 
@@ -42,13 +42,13 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <SrcError_internal.h>
+#include    <ObjList_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
 #include    <AStr_internal.h>
 #include    <dec.h>
-#include    <JsonIn.h>
+#include    <jsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
@@ -75,47 +75,48 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SRCERROR_DATA * SrcError_ParseJsonObject(
+    OBJLIST_DATA * ObjList_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        SRCERROR_DATA   *pObject = OBJ_NIL;
+        OBJLIST_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
-        int64_t         intIn;
-        ASTR_DATA       *pWrk;
+        //int64_t         intIn;
+        //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(SrcError_Class());
+        pInfo = obj_getInfo(ObjList_Class());
         
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
-        
 
-        pObject = SrcError_New( );
+        pObject = ObjList_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
+#ifdef XYZZZY 
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
         pObject->loc.fileIndex = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->loc.offset);
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->loc.offset);
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
         pObject->loc.lineNo = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
         pObject->loc.colNo = (uint16_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "severity", &intIn);
+        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "severity", &intIn);
         pObject->severity = (uint16_t)intIn;
 
-        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        eRc = jsonIn_SubobjectInHash(pParser, "errorStr");
         pWrk = AStr_ParseJsonObject(pParser);
         if (pWrk) {
             pObject->pErrorStr = pWrk;
         }
-        JsonIn_SubObjectEnd(pParser);
+        jsonIn_SubobjectEnd(pParser);
+#endif
 
         // Return to caller.
     exit00:
@@ -137,21 +138,21 @@ extern "C" {
     //===============================================================
     
 
-    SRCERROR_DATA *   SrcError_NewFromJsonString(
+    OBJLIST_DATA *   ObjList_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        SRCERROR_DATA   *pObject = OBJ_NIL;
+        OBJLIST_DATA   *pObject = OBJ_NIL;
         
-        pParser = JsonIn_New();
-        eRc = JsonIn_ParseAStr(pParser, pString);
+        pParser = jsonIn_New();
+        eRc = jsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
         
-        pObject = SrcError_ParseJsonObject(pParser);
+        pObject = ObjList_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -164,17 +165,17 @@ extern "C" {
     
     
 
-    SRCERROR_DATA * SrcError_NewFromJsonStringA(
+    OBJLIST_DATA * ObjList_NewFromJsonStringA(
         const
         char            *pString
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        SRCERROR_DATA   *pObject = OBJ_NIL;
+        OBJLIST_DATA   *pObject = OBJ_NIL;
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pObject = SrcError_NewFromJsonString(pStr);
+            pObject = ObjList_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -190,35 +191,36 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SrcLoc_ToJSON(this);
+     ASTR_DATA      *pDesc = ObjList_ToJson(this);
      @endcode
-     @param     this    SRCLOC object pointer
+     @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL and LastError set to an appropriate
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SrcError_ToJson(
-        SRCERROR_DATA   *this
+    ASTR_DATA *     ObjList_ToJson(
+        OBJLIST_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+#ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
             uint32_t        type,
             void            *pData
         );
-        //ASTR_DATA       *pWrkStr;
-        ASTR_DATA *     (*pToJSON)(
+        ASTR_DATA *     (*pToJson)(
             OBJ_ID          objId
         );
+        ASTR_DATA       *pWrkStr;
+#endif
 
 #ifdef NDEBUG
 #else
-        if( !SrcError_Validate(this) ) {
+        if( !ObjList_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -226,44 +228,50 @@ extern "C" {
         pInfo = obj_getInfo(this);
         
         pStr = AStr_New();
-        AStr_AppendPrint(pStr,
-                         "{ \"objectType\":\"%s\", "
-                         "\"fileIndex\":%d, "
-                         "\"offset\":%lld, "
-                         "\"lineNo\":%d, "
-                         "\"colNo\":%d "
-                         "\"severity\":%d ",
-                         pInfo->pClassName,
-                         this->loc.fileIndex,
-                         this->loc.offset,
-                         this->loc.lineNo,
-                         this->loc.colNo,
-                         this->severity
-        );
-        
-        if (this->pErrorStr) {
-            pQueryInfo = obj_getVtbl(this->pErrorStr)->pQueryInfo;
-            if (pQueryInfo) {
-                pToJSON =   (*pQueryInfo)(
-                                          this->pErrorStr,
-                                          OBJ_QUERYINFO_TYPE_METHOD,
-                                          "ToJson"
-                                          );
-                if (pToJSON) {
-                    pWrkStr = (*pToJSON)(this->pErrorStr);
-                    if (pWrkStr) {
-                        AStr_AppendA(pStr, "\t\"errorStr\": ");
-                        AStr_Append(pStr, pWrkStr);
-                        obj_Release(pWrkStr);
-                        pWrkStr = OBJ_NIL;
-                        AStr_AppendA(pStr, "\n");
+        if (pStr) {
+             AStr_AppendPrint(pStr,
+                              "{ \"objectType\":\"%s\", ",
+                              pInfo->pClassName
+             );
+            
+            AStr_AppendA(pStr, "}\n");
+
+#ifdef XYZZZY 
+            AStr_AppendPrint(pStr,
+                             "\"fileIndex\":%d, "
+                             "\"offset\":%lld, "
+                             "\"lineNo\":%d, "
+                             "\"colNo\":%d "
+                             "\"severity\":%d ",
+                             this->loc.fileIndex,
+                             this->loc.offset,
+                             this->loc.lineNo,
+                             this->loc.colNo,
+                             this->severity
+            );
+             if (this->pErrorStr) {
+                pQueryInfo = obj_getVtbl(this->pErrorStr)->pQueryInfo;
+                if (pQueryInfo) {
+                    pToJson =   (*pQueryInfo)(
+                                              this->pErrorStr,
+                                              OBJ_QUERYINFO_TYPE_METHOD,
+                                              "ToJson"
+                                              );
+                    if (pToJson) {
+                        pWrkStr = (*pToJson)(this->pErrorStr);
+                        if (pWrkStr) {
+                            AStr_AppendA(pStr, "\t\"errorStr\": ");
+                            AStr_Append(pStr, pWrkStr);
+                            obj_Release(pWrkStr);
+                            pWrkStr = OBJ_NIL;
+                            AStr_AppendA(pStr, "\n");
+                        }
                     }
                 }
             }
+#endif
         }
-        
-        AStr_AppendA(pStr, "}\n");
-        
+
         return pStr;
     }
     

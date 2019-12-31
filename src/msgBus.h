@@ -60,7 +60,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <msgData.h>
+#include        <MsgData.h>
 #include        <ObjMethod.h>
 
 

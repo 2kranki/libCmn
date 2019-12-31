@@ -40,7 +40,7 @@
 
 
 #include        <TRegex.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 #include        <array.h>
 #include        <ptrArray.h>
 

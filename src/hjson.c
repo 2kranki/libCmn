@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include <hjson_internal.h>
 #include <trace.h>
-#include <jsonIn.h>
+#include <JsonIn.h>
 #include <nodeArray.h>
 #include <nodeHash.h>
 #include <SrcErrors.h>
@@ -165,7 +165,7 @@ extern "C" {
             }
         }
         
-        pNode = jsonIn_NodeFromArray(pArray);
+        pNode = JsonIn_NodeFromArray(pArray);
         obj_Release(pArray);
         if (pNode == OBJ_NIL) {
             SrcErrors_AddFatalA(OBJ_NIL, NULL, "Out of Memory");
@@ -290,7 +290,7 @@ extern "C" {
             return pNode;
         }
         
-        pNode = jsonIn_NodeFromHash(pHash);
+        pNode = JsonIn_NodeFromHash(pHash);
         if (pLoc && pNode) {
             node_setExtra(pNode, pLoc);
         }
@@ -694,7 +694,7 @@ extern "C" {
         TRC_OBJ(this, "\tstring: (%d) \"%s\"\n", AStr_getLength(pStr), AStr_getData(pStr));
 #endif
         if (pStr) {
-            pNode = jsonIn_NodeFromString(pStr);
+            pNode = JsonIn_NodeFromString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
             if (pLoc) {

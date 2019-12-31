@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   msgData_internal.h
- *	Generated 11/04/2017 09:37:49
+ * File:   MsgData_internal.h
+ *	Generated 12/31/2019 10:05:08
  *
  * Notes:
  *  --	N/A
@@ -39,11 +39,17 @@
 
 
 
-#include    <msgData.h>
+#include        <MsgData.h>
+#include        <JsonIn.h>
+#include        <value_internal.h>
 
 
 #ifndef MSGDATA_INTERNAL_H
 #define	MSGDATA_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -58,32 +64,45 @@ extern "C" {
     //                  Object Data Description
     //---------------------------------------------------------------
 
- #pragma pack(push, 1)
-struct msgData_data_s	{
+#pragma pack(push, 1)
+struct MsgData_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    VALUE_DATA      super;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
     uint32_t        origin;         // Origin Number
     uint32_t        dest;           // Destination Number (0 == general broadcast)
-    uint32_t        num32;          // 
-    uint16_t        size;		    // Message Size
-    uint16_t        reserved;
-    uint8_t         data[0];
+    uint32_t        num32;
+    uint32_t        filler32;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    const
-    struct msgData_class_data_s  msgData_ClassObj;
+    struct MsgData_class_data_s  MsgData_ClassObj;
 
     extern
     const
-    MSGDATA_VTBL         msgData_Vtbl;
+    MSGDATA_VTBL         MsgData_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  MSGDATA_SINGLETON
+    MSGDATA_DATA *     MsgData_getSingleton (
+        void
+    );
+
+    bool            MsgData_setSingleton (
+     MSGDATA_DATA       *pValue
+);
+#endif
 
 
 
@@ -91,34 +110,42 @@ struct msgData_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-   bool            msgData_setLastError(
-        MSGDATA_DATA     *this,
-        ERESULT         value
+    OBJ_IUNKNOWN *  MsgData_getSuperVtbl (
+        MSGDATA_DATA     *this
     );
 
 
-    void            msgData_Dealloc(
+    void            MsgData_Dealloc (
         OBJ_ID          objId
     );
 
 
-    void *          msgData_QueryInfo(
+#ifdef  MSGDATA_JSON_SUPPORT
+    MSGDATA_DATA *       MsgData_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          MsgData_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     msgData_ToJSON(
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     MsgData_ToJson (
         MSGDATA_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			msgData_Validate(
+    bool			MsgData_Validate (
         MSGDATA_DATA       *this
     );
 #endif

@@ -216,8 +216,7 @@ extern "C" {
     
     bool            SrcErrors_setFatalExit (
         SRCERRORS_DATA  *this,
-        ERESULT         (*pFatalExit)(OBJ_ID, SRCERRORS_DATA *),
-        OBJ_ID          pFatalExitObject
+        OBJMETHOD_DATA  *pFatalExit
     )
     {
         
@@ -232,9 +231,12 @@ extern "C" {
         }
 #endif
         
+        obj_Retain(pFatalExit);
+        if (this->pFatalExit) {
+            obj_Release(this->pFatalExit);
+        }
         this->pFatalExit = pFatalExit;
-        this->pFatalExitObject = pFatalExitObject;
-        
+
         return true;
     }
     
@@ -918,13 +920,7 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((SRCERRORS_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
-        }
-#endif
-
-        //SrcErrors_setErrors(this, OBJ_NIL);
+        SrcErrors_setFatalExit(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1062,7 +1058,7 @@ extern "C" {
         if (this->fFatal) {
             SrcErrors_Print(this, stderr);
             if (this->pFatalExit) {
-                eRc = this->pFatalExit(this->pFatalExitObject, this);
+                eRc = ObjMethod_Execute(this->pFatalExit);
                 if (ERESULT_FAILED(eRc))
                     return;
             }
@@ -1336,6 +1332,9 @@ extern "C" {
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
                             return SrcErrors_Enable;
+                        }
+                        if (str_Compare("ExitOnFatal", (char *)pStr) == 0) {
+                            return SrcErrors_ExitOnFatal;
                         }
                         break;
 

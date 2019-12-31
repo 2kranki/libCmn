@@ -1,13 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//              Comma Delimited Files (dbCsv) Header
+//          Comma Delimited File (CsvFile) Header
 //****************************************************************
 /*
  * Program
- *			Separate dbCsv (dbCsv)
+ *			Comma Delimited File (CsvFile)
  * Purpose
- *			This object provides support for the comma separated 
+ *            This object provides support for the comma separated
  *          values format (CSV) file.
  *
  *          BNF for csv files:
@@ -19,20 +19,20 @@
  *                     ;
  *              name : field
  *                   ;
- *              field : 
-                            escaped 
+ *              field :
+                            escaped
                         |   non-escaped
  *                    ;
  *              escaped :   '"'
                                 {
-                                    TEXTDATA 
-                                |   SEP 
-                                |   '\t' 
-                                |   '\r' 
-                                |   '\n' 
-                                |   '"' '"' 
+                                    TEXTDATA
+                                |   SEP
+                                |   '\t'
+                                |   '\r'
+                                |   '\n'
+                                |   '"' '"'
                                 |   '\' '"'
-                                } 
+                                }
                             '"'
  *                      ;
  *              non-escaped : {TEXTDATA}
@@ -44,11 +44,13 @@
  *              TEXTDATA :  [(' '..'~') - (SEP, '"')]
  *                       |  unicode_char    // (> 128)
  *                       ;
+ *
  * Remarks
  *	1.      None
-  *
+ *
  * History
- *	09/25/2015 Generated
+ *  09/25/2015 Generated
+ *	12/30/2019 Regenerated
  */
 
 
@@ -89,8 +91,14 @@
 #include        <path.h>
 
 
-#ifndef         DBCSV_H
-#define         DBCSV_H
+#ifndef         CSVFILE_H
+#define         CSVFILE_H
+
+
+//#define   CSVFILE_JSON_SUPPORT 1
+//#define   CSVFILE_SINGLETON    1
+
+
 
 
 
@@ -103,23 +111,33 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
-#ifndef         DBCSV_FIELD_MAX
-#define         DBCSV_FIELD_MAX 512
-#endif
+
+    #ifndef         CSVFILE_FIELD_MAX
+    #define         CSVFILE_FIELD_MAX 512
+    #endif
 
 
-    typedef struct dbCsv_data_s	DBCSV_DATA;
+    typedef struct CsvFile_data_s	CSVFILE_DATA;            // Inherits from OBJ
+    typedef struct CsvFile_class_data_s CSVFILE_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct dbCsv_vtbl_s    {
+    typedef struct CsvFile_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in fatFCB_object.c.
+        // method names to the vtbl definition in CsvFile_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(CB_DATA *);
-    } DBCSV_VTBL;
-    
-    
+        //bool        (*pIsEnabled)(CSVFILE_DATA *);
+    } CSVFILE_VTBL;
+
+    typedef struct CsvFile_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in CsvFile_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(CSVFILE_DATA *);
+    } CSVFILE_CLASS_VTBL;
+
 
 
 
@@ -132,92 +150,119 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /* Alloc() allocates an area large enough for the dbCsv including
-     * the stack.  If 0 is passed for the stack size, then an ap-
-     * propriate default is chosen. The stack size is passed to Init()
-     * via obj_misc1.
+#ifdef  CSVFILE_SINGLETON
+    CSVFILE_DATA *  CsvFile_Shared (
+        void
+    );
+
+    void            CsvFile_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to CsvFile object if successful, otherwise OBJ_NIL.
      */
-    DBCSV_DATA *     dbCsv_Alloc(
+    CSVFILE_DATA *  CsvFile_Alloc (
         void
     );
     
     
-    DBCSV_DATA *     dbCsv_New(
+    OBJ_ID          CsvFile_Class (
         void
     );
     
-    DBCSV_DATA *    dbCsv_NewFromAStr(
+    
+    CSVFILE_DATA *  CsvFile_New (
+        void
+    );
+    
+    
+    CSVFILE_DATA *  CsvFile_NewFromAStr(
         ASTR_DATA       *pAStr,         // Buffer of file data
         PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
+        uint16_t        tabSize         // Tab Spacing if any
     );
-    
-    DBCSV_DATA *    dbCsv_NewFromPath(
+
+    CSVFILE_DATA *  CsvFile_NewFromPath(
         PATH_DATA       *pPath,
-        uint16_t		tabSize         // Tab Spacing if any
+        uint16_t        tabSize         // Tab Spacing if any
     );
-    
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            dbCsv_getHasHeader(
-        DBCSV_DATA      *this
+    bool            CsvFile_getHasHeader (
+        CSVFILE_DATA    *this
     );
 
-    bool            dbCsv_setHasHeader(
-        DBCSV_DATA      *this,
+    bool            CsvFile_setHasHeader (
+        CSVFILE_DATA    *this,
         bool            fValue
     );
-    
-    
-    W32CHR_T        dbCsv_getFieldSeparator(
-        DBCSV_DATA      *this
+
+
+    W32CHR_T        CsvFile_getFieldSeparator (
+        CSVFILE_DATA    *this
     );
-    
-    bool            dbCsv_setFieldSeparator(
-        DBCSV_DATA      *this,
+
+    bool            CsvFile_setFieldSeparator (
+        CSVFILE_DATA    *this,
         W32CHR_T        value
     );
-    
-    
-    bool            dbCsv_setRecordProcess(
-        DBCSV_DATA      *this,
+
+
+    bool            CsvFile_setRecordProcess (
+        CSVFILE_DATA    *this,
         bool            (*pRecordProcess)(void *pRecordData, OBJARRAY_DATA *pRecord),
         void            *pRecordData
     );
-    
-    
-    
+
+
+
+
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    DBCSV_DATA *    dbCsv_Init(
-        DBCSV_DATA      *this
+    CSVFILE_DATA *  CsvFile_Init (
+        CSVFILE_DATA    *this
     );
-    
+
+
     /*!
      Parse the string/file given and return an object array of records where
      each record is an object array of fields. The fields are always strings.
      @return:   If successful, an ObjArray object which must be released,
                 otherwise OBJ_NIL.
      */
-    OBJARRAY_DATA * dbCsv_ParseFile(
-        DBCSV_DATA		*this
+    OBJARRAY_DATA * CsvFile_ParseFile (
+        CSVFILE_DATA	*this
     );
     
-    
+ 
     /*!
-     Create a string that describes this object and the
-     objects within it.
-     @return:   If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = CsvFile_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     dbCsv_ToDebugString(
-        DBCSV_DATA      *this,
+    ASTR_DATA *     CsvFile_ToDebugString (
+        CSVFILE_DATA    *this,
         int             indent
     );
     
@@ -228,5 +273,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* DBCSV_H */
+#endif	/* CSVFILE_H */
 

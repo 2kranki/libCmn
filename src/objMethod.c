@@ -154,26 +154,24 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = ObjMethod_Alloc( );
+        this = ObjMethod_New( );
         if (this) {
-            this = ObjMethod_Init(this);
-            if (this) {
-                ObjMethod_setObject(this, pObject);
-                this->pMethod = pMethod;
-                this->pObjectName = AStr_NewA(pInfo->pClassName);
-                if (OBJ_NIL == this->pObjectName) {
-                    obj_Release(this);
-                    this = OBJ_NIL;
-                    return this;
-                }
-                this->pMethodName = AStr_NewA(pMethodA);
-                if (OBJ_NIL == this->pMethodName) {
-                    obj_Release(this);
-                    this = OBJ_NIL;
-                    return this;
-                }
+            ObjMethod_setObject(this, pObject);
+            this->pMethod = pMethod;
+            this->pObjectName = AStr_NewA(pInfo->pClassName);
+            if (OBJ_NIL == this->pObjectName) {
+                obj_Release(this);
+                this = OBJ_NIL;
+                return this;
+            }
+            this->pMethodName = AStr_NewA(pMethodA);
+            if (OBJ_NIL == this->pMethodName) {
+                obj_Release(this);
+                this = OBJ_NIL;
+                return this;
             }
         }
+        
         return this;
     }
 
@@ -404,6 +402,52 @@ extern "C" {
         
         
     //---------------------------------------------------------------
+    //                          O t h e r
+    //---------------------------------------------------------------
+    
+    OBJ_ID          ObjMethod_getOther(
+        OBJMETHOD_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !ObjMethod_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pOther;
+    }
+    
+    
+    bool        ObjMethod_setOther(
+        OBJMETHOD_DATA  *this,
+        OBJ_ID          pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !ObjMethod_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        
+        obj_Retain(pValue);
+        if (this->pOther) {
+            obj_Release(this->pOther);
+        }
+        this->pOther = pValue;
+        
+        return true;
+    }
+        
+            
+            
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -448,48 +492,6 @@ extern "C" {
     
   
 
-    //---------------------------------------------------------------
-    //                      U s e r  D a t a
-    //---------------------------------------------------------------
-    
-    uint32_t        ObjMethod_getUser32(
-        OBJMETHOD_DATA  *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !ObjMethod_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        return this->user32;
-    }
-    
-    
-    bool            ObjMethod_setUser32(
-        OBJMETHOD_DATA  *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !ObjMethod_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->user32 = value;
-        
-        return true;
-    }
-        
-        
-        
 
 
     //===============================================================
@@ -804,6 +806,46 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      E x e c u t e
+    //---------------------------------------------------------------
+
+    /*!
+     Execute the object's method.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ObjMethod_Execute (
+        OBJMETHOD_DATA  *this
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        void            *pExec;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!ObjMethod_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+
+        pExec = this->pMethod;
+        if (NULL == pExec) {
+            pExec = ObjMethod_getMethod(this);
+        }
+        if (pExec) {
+            eRc = ((P_OBJ_EXEC)this->pMethod)(this->pObject);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -1020,98 +1062,6 @@ extern "C" {
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-#ifdef  OBJMETHOD_JSON_SUPPORT
-     ASTR_DATA *     ObjMethod_ToJson (
-        OBJMETHOD_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!ObjMethod_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            pUnk = obj_getVtbl(this->pDesc);
-            if (pUnk && pUnk->pQueryInfo) {
-                pToJSON =   pUnk->pQueryInfo(
-                                       this->pDesc,
-                                       OBJ_QUERYINFO_TYPE_METHOD,
-                                       "To_Json"
-                           );
-                if (pToJSON) {
-                    pStr2 = pToJSON(this->pDesc);
-                    if (pStr2) {
-                        AStr_AppendPrint(pStr, "\"desc\":$s,\n", AStr_getData(pStr2));
-                        obj_Release(pStr2);
-                        pStr2 = OBJ_NIL;
-                    }
-                }
-            }
-            
-            pUnk = obj_getVtbl(this->pMethodName);
-            if (pUnk && pUnk->pQueryInfo) {
-                pToJSON =   pUnk->pQueryInfo(
-                                             this->pMethodName,
-                                             OBJ_QUERYINFO_TYPE_METHOD,
-                                             "To_Json"
-                                             );
-                if (pToJSON) {
-                    pStr2 = pToJSON(this->pMethodName);
-                    if (pStr2) {
-                        AStr_AppendPrint(pStr, "\"method\": $s,\n", AStr_getData(pStr2));
-                        obj_Release(pStr2);
-                        pStr2 = OBJ_NIL;
-                    }
-                }
-            }
-            
-            pUnk = obj_getVtbl(this->pObjectName);
-            if (pUnk && pUnk->pQueryInfo) {
-                pToJSON =   pUnk->pQueryInfo(
-                                             this->pObjectName,
-                                             OBJ_QUERYINFO_TYPE_METHOD,
-                                             "To_Json"
-                                             );
-                if (pToJSON) {
-                    pStr2 = pToJSON(this->pObjectName);
-                    if (pStr2) {
-                        AStr_AppendPrint(pStr, "\"name\": $s,\n", AStr_getData(pStr2));
-                        obj_Release(pStr2);
-                        pStr2 = OBJ_NIL;
-                    }
-                }
-            }
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-#endif
     
     
     

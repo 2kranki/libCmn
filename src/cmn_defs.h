@@ -224,12 +224,10 @@ extern "C" {
         OBJ_IDENT_CONXMT_CLASS,
         OBJ_IDENT_CRC,                  // CRC Calculations
         OBJ_IDENT_CRC_CLASS,
-        OBJ_IDENT_CSV,
-        OBJ_IDENT_CSV_CLASS,
+        OBJ_IDENT_CSVFILE,              // Comma-Delimited File
+        OBJ_IDENT_CSVFILE_CLASS,
         OBJ_IDENT_DATETIME,             // Date & Time
         OBJ_IDENT_DATETIME_CLASS,
-        OBJ_IDENT_DBCSV,                // Comma-Delimited Database
-        OBJ_IDENT_DBCSV_CLASS,
         OBJ_IDENT_DBF,                  // DBase III/IV
         OBJ_IDENT_DBF_CLASS,
         OBJ_IDENT_DBFIELD,              // DBase III/IV Field

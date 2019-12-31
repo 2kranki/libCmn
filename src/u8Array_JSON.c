@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   u8Array_JSON.c
+ * File:   u8Array_json.c
  *
  * Created on 09/9/2018 from szTbl_JSON
  *
@@ -56,7 +56,7 @@
 #include    <crc.h>
 #include    <dec.h>
 #include    <hex.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
@@ -113,7 +113,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    U8ARRAY_DATA *  u8Array_ParseObject(
+    U8ARRAY_DATA *  u8Array_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -131,13 +131,13 @@ extern "C" {
 
         pInfo = obj_getInfo(u8Array_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "Count", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "Count", &intIn);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - count is invalid!\n");
             goto exit00;
@@ -151,7 +151,7 @@ extern "C" {
         }
         
         if (count && pObject) {
-            eRc = jsonIn_FindArrayNodeInHashA(pParser, "Entries", &pArray);
+            eRc = JsonIn_FindArrayNodeInHashA(pParser, "Entries", &pArray);
             if (pArray) {
                 if (count == nodeArray_getSize(pArray))
                     ;
@@ -236,7 +236,7 @@ extern "C" {
     //===============================================================
     
 
-    U8ARRAY_DATA *  u8Array_NewFromJSONString(
+    U8ARRAY_DATA *  u8Array_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
@@ -247,13 +247,13 @@ extern "C" {
         ASTR_DATA       *pStrDebug = OBJ_NIL;
 #endif
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
 #ifdef DEBUG_JSONIN
-        pStrDebug = nodeHash_ToDebugString(jsonIn_getHash(pParser), 0);
+        pStrDebug = nodeHash_ToDebugString(JsonIn_getHash(pParser), 0);
         if (pStrDebug) {
             fprintf(stderr, "%s\n\n", AStr_getData(pStrDebug));
             obj_Release(pStrDebug);
@@ -261,7 +261,7 @@ extern "C" {
         }
 #endif
 
-        pObject = u8Array_ParseObject(pParser);
+        pObject = u8Array_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -274,7 +274,7 @@ extern "C" {
     
     
 
-    U8ARRAY_DATA *  u8Array_NewFromJSONStringA(
+    U8ARRAY_DATA *  u8Array_NewFromJsonStringA(
         const
         char            *pString
     )
@@ -284,7 +284,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pObject = u8Array_NewFromJSONString(pStr);
+            pObject = u8Array_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -295,7 +295,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     u8Array_ToJSON(
+    ASTR_DATA *     u8Array_ToJson (
         U8ARRAY_DATA    *this
     )
     {

@@ -41,7 +41,7 @@
 
 
 #include    <dec.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 
 
 #ifndef DEC_INTERNAL_H

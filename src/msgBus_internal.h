@@ -41,7 +41,7 @@
 
 
 #include    <msgBus.h>
-#include    <msgData.h>
+#include    <MsgData.h>
 #include    <objCb.h>
 #include    <node.h>
 #include    <nodeArray.h>

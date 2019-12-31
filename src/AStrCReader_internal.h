@@ -41,7 +41,7 @@
 
 #include        <AStrCReader.h>
 #include        <AStrC_internal.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef ASTRCREADER_INTERNAL_H

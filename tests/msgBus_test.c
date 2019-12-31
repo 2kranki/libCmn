@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <test_defs.h>
 #include    <msgBus_internal.h>
-#include    <msgData_internal.h>
+#include    <MsgData_internal.h>
 #include    <objTest_internal.h>
 
 
@@ -163,11 +163,11 @@ int             test_msgBus_Broadcast01(
             if (pData) {
                 printf("  %2d %2d    %2d    %2d   %2d %s\n",
                        i,
-                       msgData_getNum32(pData),
-                       msgData_getOrigin(pData),
-                       msgData_getDestination(pData),
-                       msgData_getSize(pData),
-                       msgData_getData(pData)
+                       MsgData_getNum32(pData),
+                       MsgData_getOrigin(pData),
+                       MsgData_getDestination(pData),
+                       MsgData_getSize(pData),
+                       MsgData_getData(pData)
                 );
             }
         }

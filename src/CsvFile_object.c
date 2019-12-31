@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'JsonIn'
-//	Generated 12/30/2019 21:36:00
+//	Class Object Metods and Tables for 'CsvFile'
+//	Generated 12/30/2019 11:06:40
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			JSONIN_OBJECT_C	    1
-#include        <JsonIn_internal.h>
-#ifdef  JSONIN_SINGLETON
+#define			CSVFILE_OBJECT_C	    1
+#include        <CsvFile_internal.h>
+#ifdef  CSVFILE_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct JsonIn_class_data_s	{
+struct CsvFile_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  JSONIN_SINGLETON
+#ifdef  CSVFILE_SINGLETON
     volatile
-    JSONIN_DATA       *pSingleton;
+    CSVFILE_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct JsonIn_class_data_s	{
 
 
 static
-void *          JsonInClass_QueryInfo (
+void *          CsvFileClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          JsonInClass_QueryInfo (
 
 static
 const
-OBJ_INFO        JsonIn_Info;            // Forward Reference
+OBJ_INFO        CsvFile_Info;            // Forward Reference
 
 
 
 
 static
-bool            JsonInClass_IsKindOf (
+bool            CsvFileClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_JSONIN_CLASS == classID) {
+    if (OBJ_IDENT_CSVFILE_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(JsonIn_Class())->pClassSuperObject;
+    pObj = obj_getInfo(CsvFile_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            JsonInClass_IsKindOf (
 
 
 static
-uint16_t		JsonInClass_WhoAmI (
+uint16_t		CsvFileClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_JSONIN_CLASS;
+    return OBJ_IDENT_CSVFILE_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		JsonInClass_WhoAmI (
 
 static
 const
-JSONIN_CLASS_VTBL    class_Vtbl = {
+CSVFILE_CLASS_VTBL    class_Vtbl = {
     {
-        &JsonIn_Info,
-        JsonInClass_IsKindOf,
+        &CsvFile_Info,
+        CsvFileClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        JsonIn_Class,
-        JsonInClass_WhoAmI,
-        (P_OBJ_QUERYINFO)JsonInClass_QueryInfo,
-        NULL                        // JsonInClass_ToDebugString
+        CsvFile_Class,
+        CsvFileClass_WhoAmI,
+        (P_OBJ_QUERYINFO)CsvFileClass_QueryInfo,
+        NULL                        // CsvFileClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ JSONIN_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-JSONIN_CLASS_DATA  JsonIn_ClassObj = {
+CSVFILE_CLASS_DATA  CsvFile_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(JSONIN_CLASS_DATA),                  // cbSize
+        sizeof(CSVFILE_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,17 @@ JSONIN_CLASS_DATA  JsonIn_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  JSONIN_SINGLETON
-JSONIN_DATA *     JsonIn_getSingleton (
+#ifdef  CSVFILE_SINGLETON
+CSVFILE_DATA *     CsvFile_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(JsonIn_ClassObj.pSingleton);
+    return (OBJ_ID)(CsvFile_ClassObj.pSingleton);
 }
 
 
-bool            JsonIn_setSingleton (
-    JSONIN_DATA       *pValue
+bool            CsvFile_setSingleton (
+    CSVFILE_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +192,10 @@ bool            JsonIn_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (JsonIn_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(JsonIn_ClassObj.pSingleton));
+    if (CsvFile_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(CsvFile_ClassObj.pSingleton));
     }
-    JsonIn_ClassObj.pSingleton = pValue;
+    CsvFile_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +205,17 @@ bool            JsonIn_setSingleton (
 
 
 
-JSONIN_DATA *     JsonIn_Shared (
+CSVFILE_DATA *     CsvFile_Shared (
     void
 )
 {
-    JSONIN_DATA       *this = (OBJ_ID)(JsonIn_ClassObj.pSingleton);
+    CSVFILE_DATA       *this = (OBJ_ID)(CsvFile_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = JsonIn_New( );
-        JsonIn_setSingleton(this);
+        this = CsvFile_New( );
+        CsvFile_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // JsonIn_ClassObj.pSingleton = OBJ_NIL;
+        // CsvFile_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +223,15 @@ JSONIN_DATA *     JsonIn_Shared (
 
 
 
-void            JsonIn_SharedReset (
+void            CsvFile_SharedReset (
     void
 )
 {
-    JSONIN_DATA       *this = (OBJ_ID)(JsonIn_ClassObj.pSingleton);
+    CSVFILE_DATA       *this = (OBJ_ID)(CsvFile_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        JsonIn_ClassObj.pSingleton = OBJ_NIL;
+        CsvFile_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +247,13 @@ void            JsonIn_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          JsonInClass_QueryInfo (
+void *          CsvFileClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    JSONIN_CLASS_DATA *this = objId;
+    CSVFILE_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +264,7 @@ void *          JsonInClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(JSONIN_DATA);
+            return (void *)sizeof(CSVFILE_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,7 +279,7 @@ void *          JsonInClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&JsonIn_Info;
+                        return (void *)&CsvFile_Info;
                     }
                     break;
                     
@@ -297,19 +297,19 @@ void *          JsonInClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return JsonIn_New;
+                        return CsvFile_New;
                     }
                     break;
                     
                 case 'P':
                     if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return JsonIn_ParseJsonObject;
+                        //return CsvFile_ParseJsonObject;
                     }
                     break;
  
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return JsonInClass_WhoAmI;
+                        return CsvFileClass_WhoAmI;
                     }
                     break;
                     
@@ -329,7 +329,7 @@ void *          JsonInClass_QueryInfo (
 
 
 static
-bool            JsonIn_IsKindOf (
+bool            CsvFile_IsKindOf (
     uint16_t		classID
 )
 {
@@ -337,14 +337,14 @@ bool            JsonIn_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_JSONIN == classID) {
+    if (OBJ_IDENT_CSVFILE == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(JsonIn_Class())->pClassSuperObject;
+    pObj = obj_getInfo(CsvFile_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -358,25 +358,25 @@ bool            JsonIn_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            JsonIn_Dealloc (
+void            CsvFile_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          JsonIn_Class (
+OBJ_ID          CsvFile_Class (
     void
 )
 {
-    return (OBJ_ID)&JsonIn_ClassObj;
+    return (OBJ_ID)&CsvFile_ClassObj;
 }
 
 
 static
-uint16_t		JsonIn_WhoAmI (
+uint16_t		CsvFile_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_JSONIN;
+    return OBJ_IDENT_CSVFILE;
 }
 
 
@@ -388,34 +388,34 @@ uint16_t		JsonIn_WhoAmI (
 //===========================================================
 
 const
-JSONIN_VTBL     JsonIn_Vtbl = {
+CSVFILE_VTBL     CsvFile_Vtbl = {
     {
-        &JsonIn_Info,
-        JsonIn_IsKindOf,
-#ifdef  JSONIN_IS_SINGLETON
+        &CsvFile_Info,
+        CsvFile_IsKindOf,
+#ifdef  CSVFILE_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        JsonIn_Dealloc,
-        JsonIn_Class,
-        JsonIn_WhoAmI,
-        (P_OBJ_QUERYINFO)JsonIn_QueryInfo,
-        (P_OBJ_TOSTRING)JsonIn_ToDebugString,
-        NULL,			// JsonIn_Enable,
-        NULL,			// JsonIn_Disable,
-        NULL,			// (P_OBJ_ASSIGN)JsonIn_Assign,
-        NULL,			// (P_OBJ_COMPARE)JsonIn_Compare,
-        NULL, 			// (P_OBJ_PTR)JsonIn_Copy,
-        NULL, 			// (P_OBJ_PTR)JsonIn_DeepCopy,
-        NULL 			// (P_OBJ_HASH)JsonIn_Hash,
+        CsvFile_Dealloc,
+        CsvFile_Class,
+        CsvFile_WhoAmI,
+        (P_OBJ_QUERYINFO)CsvFile_QueryInfo,
+        (P_OBJ_TOSTRING)CsvFile_ToDebugString,
+        NULL,			// CsvFile_Enable,
+        NULL,			// CsvFile_Disable,
+        NULL,			// (P_OBJ_ASSIGN)CsvFile_Assign,
+        NULL,			// (P_OBJ_COMPARE)CsvFile_Compare,
+        NULL, 			// (P_OBJ_PTR)CsvFile_Copy,
+        NULL, 			// (P_OBJ_PTR)CsvFile_DeepCopy,
+        NULL 			// (P_OBJ_HASH)CsvFile_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //JsonIn_IsEnabled,
+    //CsvFile_IsEnabled,
  
 };
 
@@ -423,13 +423,13 @@ JSONIN_VTBL     JsonIn_Vtbl = {
 
 static
 const
-OBJ_INFO        JsonIn_Info = {
-    "JsonIn",
-    "Json Input Parsing Support",
-    (OBJ_DATA *)&JsonIn_ClassObj,
+OBJ_INFO        CsvFile_Info = {
+    "CsvFile",
+    "Comma-delimited (csv) File Processing",
+    (OBJ_DATA *)&CsvFile_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&JsonIn_Vtbl,
-    sizeof(JSONIN_DATA)
+    (OBJ_IUNKNOWN *)&CsvFile_Vtbl,
+    sizeof(CSVFILE_DATA)
 };
 
 

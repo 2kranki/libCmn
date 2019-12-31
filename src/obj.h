@@ -99,6 +99,7 @@ extern	"C" {
 
     typedef ERESULT     (*P_OBJ_ASSIGN)(OBJ_ID, OBJ_ID);
     typedef ERESULT     (*P_OBJ_COMPARE)(OBJ_ID, OBJ_ID);
+    typedef ERESULT     (*P_OBJ_EXEC)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_COPY)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_DEEPCOPY)(OBJ_ID);
     typedef bool        (*P_OBJ_DISABLE)(OBJ_ID);

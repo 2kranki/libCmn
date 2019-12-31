@@ -41,7 +41,7 @@
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeBTP.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <listdl.h>
 #include    <szData.h>
 #include    <szTbl.h>

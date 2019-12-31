@@ -40,7 +40,7 @@
 
 
 #include        <bpt32idx.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef BPT32IDX_INTERNAL_H

@@ -48,7 +48,7 @@
 #include    <crc.h>
 #include    <dec.h>
 #include    <hex.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeArray.h>
 #include    <nodeHash.h>
@@ -124,16 +124,16 @@ extern "C" {
 
         pInfo = obj_getInfo(W32Str_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
         crc = (uint32_t)intIn;
         
-        eRc = jsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
         length = (uint32_t)intIn;
         
 
@@ -143,7 +143,7 @@ extern "C" {
         }
         
         if (length && pObject) {
-            eRc = jsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
+            eRc = JsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
             pSrc = AStr_getData(pWrk);
             for (i=0; i<length; ++i) {
                 ch = utf8_ChrConToW32_Scan(&pSrc);
@@ -187,8 +187,8 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         W32STR_DATA     *pObject = OBJ_NIL;
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }

@@ -40,7 +40,7 @@
 
 
 #include        <hash32.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef HASH32_INTERNAL_H

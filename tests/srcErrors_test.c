@@ -126,7 +126,26 @@ int         test_SrcErrors_Fatal01(
                             "Expecting '}', but found nothing"
         );
         SrcErrors_Print(pObj, stderr);
+        fprintf(stderr, "fatal indicator: %s\n",
+                SrcErrors_getFatal(pObj) ? "true" : "false"
+        );
+        TINYTEST_TRUE( (SrcErrors_getFatal(pObj)) );
         
+        fprintf(stderr, "Resetting fatal indicator\n");
+        SrcErrors_setFatal(pObj, false);
+        TINYTEST_TRUE( (!SrcErrors_getFatal(pObj)) );
+        SrcErrors_AddErrorA(
+                            pObj,
+                            SRCERROR_SEVERITY_WARNING,
+                            &location,
+                            "Just an error, not fatal!"
+        );
+        SrcErrors_Print(pObj, stderr);
+        fprintf(stderr, "fatal indicator: %s\n",
+                SrcErrors_getFatal(pObj) ? "true" : "false"
+        );
+        TINYTEST_TRUE( (!SrcErrors_getFatal(pObj)) );
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

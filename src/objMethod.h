@@ -16,7 +16,13 @@
  *          with objRegistry (to be done).
  *
  * Remarks
- *	1.      None
+ *	1.      To use this object, the supplied method name must be
+ *          defined in the supplied object's QueryInfo and that
+ *          object must also be defined in JsonIn_ParseObject().
+ *  2.      To save/restore the other object in json, it must
+ *          support json via the "ToJson" method which is referenced
+ *          from the QueryInfo() method. Also, it must be defined
+ *          in JsonIn_ParseObject().
  *
  * History
  *  10/28/2017 Generated
@@ -63,7 +69,7 @@
 #define         OBJMETHOD_H
 
 
-//#define   OBJMETHOD_JSON_SUPPORT 1
+#define   OBJMETHOD_JSON_SUPPORT 1
 //#define   OBJMETHOD_SINGLETON    1
 
 
@@ -159,6 +165,17 @@ extern "C" {
     );
 
 
+    OBJMETHOD_DATA *   ObjMethod_NewFromJsonString(
+        ASTR_DATA       *pString
+    );
+
+
+    OBJMETHOD_DATA * ObjMethod_NewFromJsonStringA(
+        const
+        char            *pString
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -194,15 +211,19 @@ extern "C" {
     );
 
 
-    uint32_t        ObjMethod_getUser32(
+    /*! Optional Object to connect with this method and object.
+        If this object is expected to be written to and read
+        from a json string/file, then the other object must
+        support json through its QueryInfo routine.
+     */
+    OBJ_ID          ObjMethod_getOther(
         OBJMETHOD_DATA  *this
     );
 
-    bool            ObjMethod_setUser32(
+    bool            ObjMethod_setOther(
         OBJMETHOD_DATA  *this,
-        uint32_t        value
+        OBJ_ID          pValue
     );
-
 
 
 
@@ -210,6 +231,17 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Execute the object's method.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ObjMethod_Execute (
+        OBJMETHOD_DATA  *this
+    );
+
 
     OBJMETHOD_DATA * ObjMethod_Init (
         OBJMETHOD_DATA  *this

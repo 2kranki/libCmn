@@ -40,7 +40,7 @@
 
 
 #include    <szData.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 
 
 #ifndef SZDATA_INTERNAL_H

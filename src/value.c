@@ -916,7 +916,7 @@ extern "C" {
      @code
         ERESULT eRc = value__Assign(this,pOther);
      @endcode
-     @param     this    VALUE object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another VALUE object
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error 
@@ -942,30 +942,88 @@ extern "C" {
 #endif
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
-        }
-#endif
+        value_FreeData(pOther);
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
-            }
-            else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
-            }
-        }
-#endif
+        switch (this->type) {
 
-        // Copy other data from this object to other.
-        
-        //goto eom;
+            case VALUE_TYPE_FLOAT:
+                pOther->value.flt = this->value.flt;
+                break;
+
+            case VALUE_TYPE_DOUBLE:
+                pOther->value.flt = this->value.flt;
+                break;
+
+            case VALUE_TYPE_INT8:
+                pOther->value.i8 = this->value.i8;
+                break;
+
+            case VALUE_TYPE_INT16:
+                pOther->value.i16 = this->value.i16;
+                break;
+
+            case VALUE_TYPE_INT32:
+                pOther->value.i32 = this->value.i32;
+                break;
+
+            case VALUE_TYPE_INT64:
+                pOther->value.i64 = this->value.i64;
+                break;
+
+            case VALUE_TYPE_UINT8:
+                pOther->value.u8 = this->value.u8;
+                break;
+
+            case VALUE_TYPE_UINT16:
+                pOther->value.u16 = this->value.u16;
+                break;
+
+            case VALUE_TYPE_UINT32:
+                pOther->value.u32 = this->value.u32;
+                break;
+
+            case VALUE_TYPE_UINT64:
+                pOther->value.u64 = this->value.u64;
+                break;
+
+            case VALUE_TYPE_OBJECT:
+                if (this->value.pObject) {
+                    if (obj_getVtbl(this->value.pObject)->pCopy) {
+                        pOther->value.pObject =
+                            obj_getVtbl(this->value.pObject)->pCopy(this->value.pObject);
+                    }
+                    else {
+                        obj_Retain(this->value.pObject);
+                        pOther->value.pObject = this->value.pObject;
+                    }
+                }
+                break;
+
+            case VALUE_TYPE_DATA:
+                pOther->value.data.pData = this->value.data.pData;
+                pOther->value.data.length = this->value.data.length;
+                break;
+
+            case VALUE_TYPE_DATA_FREE:
+                pOther->value.data.pData = mem_Malloc(this->value.data.length);
+                if (NULL == this->value.data.pData) {
+                    return ERESULT_OUT_OF_MEMORY;
+                }
+                memmove(
+                        pOther->value.data.pData,
+                        this->value.data.pData,
+                        this->value.data.length
+                );
+                pOther->value.data.length = this->value.data.length;
+                break;
+
+            default:
+                break;
+        }
+        pOther->type = this->type;
+        pOther->user = this->user;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;

@@ -38,7 +38,7 @@
 
 
 #include    <hex.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 
 
 #ifndef HEX_INTERNAL_H

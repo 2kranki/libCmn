@@ -47,7 +47,7 @@
 #include    <stdlib.h>
 #include    <string.h>
 #include    <dec_internal.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #include    <node.h>
 #include    <nodeHash.h>
 #include    <SrcLoc_internal.h>
@@ -92,19 +92,19 @@ extern "C" {
         
         pInfo = obj_getInfo(szData_Class());
         
-        eRc = jsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
 
         // Create the initial object once the key is established.
-        eRc = jsonIn_SubobjectInHash(pParser, "name");
+        eRc = JsonIn_SubObjectInHash(pParser, "name");
         if (ERESULT_FAILED(eRc))
             ;
         else {
             pUtf8 = utf8_ParseObject(pParser, NULL);
-            jsonIn_SubobjectEnd(pParser);
+            JsonIn_SubObjectEnd(pParser);
             if (pUtf8) {
                 pObject = szData_NewA((char *)pUtf8);
                 mem_Free(pUtf8);
@@ -114,16 +114,16 @@ extern "C" {
         
         // Now add this object's other fields.
         if (pObject) {
-            eRc  = jsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
+            eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
             cls = (uint32_t)intIn;
             szData_setClass(pObject, cls);
             
-            eRc = jsonIn_SubobjectInHash(pParser, "data");
+            eRc = JsonIn_SubObjectInHash(pParser, "data");
             if (ERESULT_FAILED(eRc))
                 ;
             else {
-                pObj = jsonIn_ParseObject(pParser);
-                jsonIn_SubobjectEnd(pParser);
+                pObj = JsonIn_ParseObject(pParser);
+                JsonIn_SubObjectEnd(pParser);
                 if (pObj) {
                     szData_setData(pObject, pObj);
                     obj_Release(pObj);
@@ -163,8 +163,8 @@ extern "C" {
         ERESULT         eRc;
         SZDATA_DATA     *pData = OBJ_NIL;
         
-        pParser = jsonIn_New();
-        eRc = jsonIn_ParseAStr(pParser, pString);
+        pParser = JsonIn_New();
+        eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }

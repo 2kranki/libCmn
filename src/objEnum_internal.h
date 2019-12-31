@@ -40,7 +40,7 @@
 
 
 #include        <ObjEnum.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef OBJENUM_INTERNAL_H

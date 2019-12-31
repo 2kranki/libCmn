@@ -40,7 +40,7 @@
 
 
 #include    <screen.h>
-#include    <jsonIn.h>
+#include    <JsonIn.h>
 #ifdef  SCREEN_USE_CURSES
 #   include    <curses.h>
 #endif
