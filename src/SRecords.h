@@ -224,18 +224,18 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     SRecords_Disable(
-        SRECORDS_DATA		*this
+    ERESULT         SRecords_Disable(
+        SRECORDS_DATA	*this
     );
 
 
-    SRECORDS_DATA *   SRecords_Init(
-        SRECORDS_DATA     *this
+    SRECORDS_DATA * SRecords_Init(
+        SRECORDS_DATA   *this
     );
 
 
-    ERESULT     SRecords_IsEnabled(
-        SRECORDS_DATA		*this
+    ERESULT         SRecords_IsEnabled(
+        SRECORDS_DATA	*this
     );
     
  

@@ -298,8 +298,6 @@
 		C4AA73701FE0F671001FACEC /* token.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA736C1FE0F66E001FACEC /* token.c */; };
 		C4AA73771FE1D9FD001FACEC /* lex.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73741FE1D9FA001FACEC /* lex.c */; };
 		C4AA73781FE1D9FD001FACEC /* lex_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73761FE1D9FC001FACEC /* lex_object.c */; };
-		C4AA737D1FE26AE6001FACEC /* tokenList_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA737A1FE26AE3001FACEC /* tokenList_object.c */; };
-		C4AA737E1FE26AE6001FACEC /* tokenList.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA737B1FE26AE4001FACEC /* tokenList.c */; };
 		C4AA73891FE2734D001FACEC /* srcFiles_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73831FE27348001FACEC /* srcFiles_object.c */; };
 		C4AA738A1FE2734D001FACEC /* srcFile_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73861FE2734A001FACEC /* srcFile_object.c */; };
 		C4AA738B1FE2734D001FACEC /* srcFile.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73871FE2734B001FACEC /* srcFile.c */; };
@@ -916,10 +914,6 @@
 		C4AA73741FE1D9FA001FACEC /* lex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lex.c; sourceTree = "<group>"; };
 		C4AA73751FE1D9FC001FACEC /* lex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lex.h; sourceTree = "<group>"; };
 		C4AA73761FE1D9FC001FACEC /* lex_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lex_object.c; sourceTree = "<group>"; };
-		C4AA73791FE26AE2001FACEC /* tokenList_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tokenList_internal.h; sourceTree = "<group>"; };
-		C4AA737A1FE26AE3001FACEC /* tokenList_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tokenList_object.c; sourceTree = "<group>"; };
-		C4AA737B1FE26AE4001FACEC /* tokenList.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tokenList.c; sourceTree = "<group>"; };
-		C4AA737C1FE26AE5001FACEC /* tokenList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tokenList.h; sourceTree = "<group>"; };
 		C4AA73811FE27346001FACEC /* srcFiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srcFiles.h; sourceTree = "<group>"; };
 		C4AA73821FE27347001FACEC /* srcFiles_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srcFiles_internal.h; sourceTree = "<group>"; };
 		C4AA73831FE27348001FACEC /* srcFiles_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = srcFiles_object.c; sourceTree = "<group>"; };
@@ -1593,10 +1587,6 @@
 				C4AA736B1FE0F66D001FACEC /* token_object.c */,
 				C4AA736C1FE0F66E001FACEC /* token.c */,
 				C4AA736D1FE0F66F001FACEC /* token.h */,
-				C4AA73791FE26AE2001FACEC /* tokenList_internal.h */,
-				C4AA737A1FE26AE3001FACEC /* tokenList_object.c */,
-				C4AA737B1FE26AE4001FACEC /* tokenList.c */,
-				C4AA737C1FE26AE5001FACEC /* tokenList.h */,
 				C4359BB11FC9C48100CA858E /* trace_internal.h */,
 				C4359B771FC9C47B00CA858E /* trace_object.c */,
 				C4359BBA1FC9C48200CA858E /* trace.c */,
@@ -1823,7 +1813,6 @@
 				C4359A541FC9C38800CA858E /* file.c in Sources */,
 				C4359A551FC9C38800CA858E /* dbField.c in Sources */,
 				C4E137D423BB9BAE0095EABE /* MsgData_json.c in Sources */,
-				C4AA737D1FE26AE6001FACEC /* tokenList_object.c in Sources */,
 				C43599C51FC9C36800CA858E /* consumer_object.c in Sources */,
 				C48EA14023A7FFE600CCAF2B /* NodeEnum.c in Sources */,
 				C4359BE41FC9C48400CA858E /* trctbl_object.c in Sources */,
@@ -1847,7 +1836,6 @@
 				C4359BE31FC9C48400CA858E /* uint128.c in Sources */,
 				C49D986223A6CA61003A25FD /* Parser_object.c in Sources */,
 				C43599BB1FC9C36800CA858E /* AStrArray.c in Sources */,
-				C4AA737E1FE26AE6001FACEC /* tokenList.c in Sources */,
 				C4359A471FC9C38800CA858E /* crc.c in Sources */,
 				C4359A441FC9C38800CA858E /* dirEntry.c in Sources */,
 				C43599AB1FC9C36800CA858E /* block32.c in Sources */,
