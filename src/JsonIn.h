@@ -184,6 +184,17 @@ extern "C" {
 
 
     /*!
+     Check the given node's data for a float object and return the string
+     representation of the integer if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the string object; otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     JsonIn_CheckNodeDataForFloat (
+        NODE_DATA       *pNode
+    );
+
+
+    /*!
      Check the given node's data for a node hash and return it if found.
      @param     pNode   the given node pointer
      @return    If successful, the node hash; otherwise OBJ_NIL.
@@ -246,6 +257,17 @@ extern "C" {
      @return    If successful, the false object; otherwise OBJ_NIL.
      */
     FALSE_DATA *     JsonIn_CheckNodeForFalse (
+        NODE_DATA       *pNode
+    );
+
+
+    /*!
+     Check the given node's data for a float object and
+     return the string representation of the integer if found.
+     @param     pNode   the given node pointer
+     @return    If successful, the string object; otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     JsonIn_CheckNodeForFloat (
         NODE_DATA       *pNode
     );
 
@@ -421,6 +443,14 @@ extern "C" {
         const
         char            *pSectionA,
         NODEARRAY_DATA  **ppArray
+    );
+
+
+    ERESULT         JsonIn_FindFloatNodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        double          *pFloat
     );
 
 

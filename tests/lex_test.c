@@ -459,6 +459,75 @@ int         test_lex_Number03(
 
 
 
+int         test_lex_Number04(
+      const
+      char        *pTestName
+)
+{
+    SRCFILE_DATA    *pSrc = OBJ_NIL;
+    ASTR_DATA       *pBuf = OBJ_NIL;
+    LEX_DATA        *pLex = OBJ_NIL;
+    TOKEN_DATA      *pToken;
+    bool            fRc;
+    PATH_DATA       *pPath = path_NewA("abc");
+    uint16_t        newClass;
+    ERESULT         eRc;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pBuf = AStr_NewA("3.141600E+00");
+    XCTAssertFalse( (OBJ_NIL == pBuf) );
+    if (pBuf) {
+
+        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
+        XCTAssertFalse( (OBJ_NIL == pSrc) );
+        if (pSrc) {
+
+            pLex = (LEX_DATA *)lex_New(5);
+            XCTAssertFalse( (OBJ_NIL == pLex) );
+            if (pLex) {
+
+                obj_TraceSet(pLex, true);
+                fRc =   lex_setSourceFunction(
+                                              pLex,
+                                              (void *)srcFile_InputAdvance,
+                                              (void *)srcFile_InputLookAhead,
+                                              pSrc
+                                              );
+                XCTAssertTrue( (fRc) );
+
+                pToken = srcFile_InputLookAhead(pSrc, 1);
+                eRc = lex_ParseTokenSetup(pLex, pToken);
+                newClass = lex_ParseNumber(pLex);
+                if (pLex->pStr) {
+                    ASTR_DATA       *pStr = W32Str_ToChrCon(pLex->pStr);
+                    fprintf(stderr, "Scanned: %s\n", AStr_getData(pStr));
+                    obj_Release(pStr);
+                }
+                XCTAssertTrue( (LEX_CONSTANT_FLOAT == newClass) );
+                eRc = W32Str_CompareA(pLex->pStr, "3.141600E+00");
+                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+
+                obj_Release(pLex);
+                pLex = OBJ_NIL;
+            }
+
+            obj_Release(pSrc);
+            pSrc = OBJ_NIL;
+        }
+
+        obj_Release(pBuf);
+        pBuf = OBJ_NIL;
+    }
+
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_lex_Strings01(
     const
     char        *pTestName
@@ -729,6 +798,7 @@ TINYTEST_START_SUITE(test_cloOpt);
     TINYTEST_ADD_TEST(test_lex_Strings03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lex_Strings02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lex_Strings01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_lex_Number04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lex_Number03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lex_Number02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lex_Number01,setUp,tearDown);

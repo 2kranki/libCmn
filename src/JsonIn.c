@@ -278,6 +278,40 @@ extern "C" {
 
 
 
+    ASTR_DATA *     JsonIn_CheckNodeDataForFloat (
+        NODE_DATA       *pNode
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        OBJ_ID          pObj;
+        NAME_DATA       *pName;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+#endif
+
+        pObj = node_getData(pNode);
+        if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+        pName = node_getName(pObj);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "float"))) {
+            return OBJ_NIL;
+        }
+
+        pStr = node_getData(pObj);
+        if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
+            return OBJ_NIL;
+        }
+
+        return pStr;
+    }
+
+
     NODEHASH_DATA * JsonIn_CheckNodeDataForHash (
         NODE_DATA       *pNode
     )
@@ -507,6 +541,35 @@ extern "C" {
         return pFalse;
     }
 
+
+
+    ASTR_DATA *     JsonIn_CheckNodeForFloat (
+        NODE_DATA       *pNode
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        NAME_DATA       *pName;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            return OBJ_NIL;
+        }
+#endif
+
+        pName = node_getName(pNode);
+        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "float"))) {
+            return OBJ_NIL;
+        }
+
+        pStr = node_getData(pNode);
+        if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
+            return OBJ_NIL;
+        }
+
+        return pStr;
+    }
 
 
     NODEHASH_DATA * JsonIn_CheckNodeForHash (
@@ -1378,6 +1441,41 @@ extern "C" {
 
 
 
+    ERESULT         JsonIn_FindFloatNodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        double          *pFloat
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pData;
+        double          num = 0.0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "float", (void **)&pData);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+
+        sscanf(AStr_getData(pData), "%le", &num);
+
+        if (pFloat) {
+            *pFloat = num;
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
+
     ERESULT         JsonIn_FindNodeInHashA (
         JSONIN_DATA     *this,
         const
@@ -2147,7 +2245,7 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
@@ -2179,19 +2277,17 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
+        if (this->pHash) {
+            if (((OBJ_DATA *)(this->pHash))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pHash))->pVtbl->pToDebugString(
+                                                    this->pHash,
                                                     indent+3
                             );
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
-#endif
-        
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }

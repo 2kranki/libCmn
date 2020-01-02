@@ -249,8 +249,65 @@ int             test_JsonIn_01(
 
 
 
+int             test_JsonIn_Float01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    JSONIN_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr;
+    const
+    char            *JsonInput = "{ "
+        "\"objectType\":\"Value\", "
+        "\"type\":1 /*VALUE_TYPE_FLOAT*/, "
+        "\"data\":3.141600E+00"
+    "}\n";
+    int64_t         type = 0;
+    NODE_DATA       *pNode;
+    ASTR_DATA       *pStrWrk = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = JsonIn_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = JsonIn_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pStr = AStr_NewA(JsonInput);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        obj_TraceSet(pObj, true);
+        eRc = JsonIn_ParseAStr(pObj, pStr);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        eRc = JsonIn_ConfirmObjectType(pObj, "Value");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        eRc = JsonIn_FindIntegerNodeInHashA(pObj, "type", &type);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\tType = %lld\n", type);
+        pNode = nodeHash_FindA(pObj->pHash, 0, "data");
+        TINYTEST_FALSE( (NULL == pNode) );
+        pStrWrk = JsonIn_CheckNodeDataForFloat(pNode);
+        TINYTEST_FALSE( (OBJ_NIL == pStrWrk) );
+        fprintf(stderr, "\tData = %s\n", AStr_getData(pStrWrk));
+        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStrWrk, "3.141600E+00")));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_JsonIn);
+    TINYTEST_ADD_TEST(test_JsonIn_Float01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonIn_01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonIn_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

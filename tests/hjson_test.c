@@ -597,6 +597,94 @@ int             test_hjson_File02(
 
 
 
+int         test_hjson_Float01(
+    const
+    char        *pTestName
+)
+{
+    //ERESULT         eRc;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    NODE_DATA       *pFileNode;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pStringToParseA = "{\"one\": 3.1416}";
+    //NODEHASH_DATA   *pHash;
+    //int64_t         num = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = hjson_NewA(pStringToParseA, 4);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFileHash(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStr = node_ToDebugString(pFileNode, 3);
+            if (pStr) {
+                fprintf(stderr, "%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+            obj_Release(pFileNode);
+            pFileNode = OBJ_NIL;
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_hjson_Float02(
+    const
+    char        *pTestName
+)
+{
+    //ERESULT         eRc;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    NODE_DATA       *pFileNode;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pStringToParseA = "{\"one\": 3.141600E+00}";
+    //NODEHASH_DATA   *pHash;
+    //int64_t         num = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = hjson_NewA(pStringToParseA, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFileHash(pObj);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStr = node_ToDebugString(pFileNode, 3);
+            if (pStr) {
+                fprintf(stderr, "%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+            obj_Release(pFileNode);
+            pFileNode = OBJ_NIL;
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_hjson_Simple01(
     const
     char        *pTestName
@@ -746,6 +834,8 @@ TINYTEST_START_SUITE(test_hjson);
     TINYTEST_ADD_TEST(test_hjson_Object01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Simple02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Simple01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson_Float02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson_Float01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_File02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_File01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson05,setUp,tearDown);

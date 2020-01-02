@@ -1327,6 +1327,33 @@ extern "C" {
                     break;
                 }
             }
+            pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
+            cls = token_getClass(pInput);
+            chr = token_getChrW32(pInput);
+            if ((chr == 'e') || (chr == 'E')) {
+                lex_ParseTokenAppendString(this, pInput);
+                this->pSrcChrAdvance(this->pSrcObj, 1);
+                // Need to parse (+ | -) digit+
+                pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
+                cls = token_getClass(pInput);
+                chr = token_getChrW32(pInput);
+                if ((chr == '+') || (chr == '-')) {
+                    lex_ParseTokenAppendString(this, pInput);
+                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                }
+                for (;;) {
+                    pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
+                    cls = token_getClass(pInput);
+                    chr = token_getChrW32(pInput);
+                    if ((chr >= '0') && (chr <= '9')) {
+                        lex_ParseTokenAppendString(this, pInput);
+                        this->pSrcChrAdvance(this->pSrcObj, 1);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
             clsNew = LEX_CONSTANT_FLOAT;
        }
 

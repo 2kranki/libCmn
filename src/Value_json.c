@@ -88,6 +88,7 @@ extern "C" {
         //ASTR_DATA       *pWrk;
         uint16_t        type;
         int64_t         integer;
+        double          flt;
 
         pInfo = obj_getInfo(Value_Class());
         
@@ -111,9 +112,9 @@ extern "C" {
 
         switch (type) {
 
-            case VALUE_TYPE_FLOAT:           // 32-bit Float
-           case VALUE_TYPE_DOUBLE:          // 64-bit Float
-                goto exit00;
+            case VALUE_TYPE_DOUBLE:          // 64-bit Float
+                eRc = JsonIn_FindFloatNodeInHashA(pParser, "data", &flt);
+                pObject->value.flt = flt;
                 break;
 
            case VALUE_TYPE_INT8:            // int8_t
@@ -326,6 +327,15 @@ extern "C" {
              );
             
            switch (this->type) {
+
+               case VALUE_TYPE_DOUBLE:
+                   AStr_AppendPrint(
+                                    pStr,
+                                    ", \"type\":%d /*VALUE_TYPE_DOUBLE*/, \"data\":",
+                                    VALUE_TYPE_DOUBLE
+                   );
+                   AStr_AppendPrint(pStr, "%le", this->value.flt);
+                   break;
 
                case VALUE_TYPE_INT8:
                    AStr_AppendPrint(

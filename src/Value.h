@@ -10,7 +10,8 @@
  *          This object provides a way to create an object from
  *          most primitive data including just raw memory.
  *          Since this is primitive data, it can be converted
- *          to/from Json and ported across systems.
+ *          to/from Json and ported across systems with certain
+ *          caveats.
  *
  * Remarks
  *    1.    If you are storing raw memory and that object is to be
@@ -106,7 +107,6 @@ extern "C" {
 
     typedef enum Value_type_e {
         VALUE_TYPE_UNKNOWN=0,
-        VALUE_TYPE_FLOAT,           // 32-bit Float
         VALUE_TYPE_DOUBLE,          // 64-bit Float
         VALUE_TYPE_INT8,            // int8_t
         VALUE_TYPE_INT16,           // int16_t
@@ -187,6 +187,10 @@ extern "C" {
         uint8_t         *pData
     );
 
+    VALUE_DATA *    Value_NewDouble (
+        double          value
+    );
+
     VALUE_DATA *    Value_NewI8 (
         int8_t          value
     );
@@ -260,6 +264,26 @@ extern "C" {
     );
 
 
+    double          Value_getDouble (
+        VALUE_DATA      *this
+    );
+
+    bool            Value_setDouble (
+        VALUE_DATA      *this,
+        double          value
+    );
+
+
+    int8_t          Value_getI8 (
+        VALUE_DATA      *this
+    );
+
+    bool            Value_setI8 (
+        VALUE_DATA      *this,
+        int8_t          value
+    );
+
+
     int16_t         Value_getI16 (
         VALUE_DATA      *this
     );
@@ -302,6 +326,16 @@ extern "C" {
 
     uint16_t        Value_getType (
         VALUE_DATA      *this
+    );
+
+
+    uint8_t         Value_getU8 (
+        VALUE_DATA      *this
+    );
+
+    bool            Value_setU8 (
+        VALUE_DATA      *this,
+        uint8_t         value
     );
 
 
@@ -382,13 +416,31 @@ extern "C" {
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    VALUE_DATA *     Value_Copy (
-        VALUE_DATA       *this
+    VALUE_DATA *   Value_Copy (
+        VALUE_DATA      *this
     );
 
    
     VALUE_DATA *   Value_Init (
-        VALUE_DATA     *this
+        VALUE_DATA      *this
+    );
+
+
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Value_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Value_ToJson(
+        VALUE_DATA   *this
     );
 
 

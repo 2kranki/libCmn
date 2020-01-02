@@ -102,7 +102,7 @@ int             test_ObjArray_OpenClose(
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    OBJARRAY_DATA	    *pObj = OBJ_NIL;
+    OBJARRAY_DATA	*pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -139,6 +139,7 @@ int         test_ObjArray_Test01(
     OBJARRAY_DATA   *pObj2 = OBJ_NIL;
     ERESULT         eRc;
     uint32_t        i;
+    uint32_t        iMax;
     uint32_t        size;
     ASTR_DATA       *pStr  = OBJ_NIL;
     ASTRC_DATA      *pStrC = OBJ_NIL;
@@ -194,6 +195,14 @@ int         test_ObjArray_Test01(
         XCTAssertFalse( (OBJ_NIL == pObj) );
         XCTAssertTrue( (!(pObj == pObj2)) );
         XCTAssertTrue( (ObjArray_getSize(pObj) == ObjArray_getSize(pObj2)) );
+        iMax = ObjArray_getSize(pObj);
+        for (i=0; i<iMax; i++) {
+            ASTRC_DATA      *pStr1 = ObjArray_Get(pObj, i+1);
+            ASTRC_DATA      *pStr2 = ObjArray_Get(pObj2, i+1);
+            XCTAssertFalse( (OBJ_NIL == pStr1) );
+            XCTAssertFalse( (OBJ_NIL == pStr2) );
+            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStrC_Compare(pStr1, pStr2)) );
+        }
         
         pStr = ObjArray_ToDebugString(pObj2, 0);
         fprintf(stderr, "Debug = %s\n\n\n", AStr_getData(pStr));
@@ -249,6 +258,7 @@ int         test_ObjArray_Test02(
     OBJARRAY_DATA   *pObj2 = OBJ_NIL;
     ERESULT         eRc;
     uint32_t        i;
+    uint32_t        iMax;
     uint32_t        size;
     ASTR_DATA       *pStr;
     
@@ -314,7 +324,15 @@ int         test_ObjArray_Test02(
         XCTAssertFalse( (OBJ_NIL == pObj) );
         XCTAssertTrue( (!(pObj == pObj2)) );
         XCTAssertTrue( (ObjArray_getSize(pObj) == ObjArray_getSize(pObj2)) );
-        
+        iMax = ObjArray_getSize(pObj);
+        for (i=0; i<iMax; i++) {
+            ASTR_DATA       *pStr1 = ObjArray_Get(pObj, i+1);
+            ASTR_DATA       *pStr2 = ObjArray_Get(pObj2, i+1);
+            XCTAssertFalse( (OBJ_NIL == pStr1) );
+            XCTAssertFalse( (OBJ_NIL == pStr2) );
+            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_Compare(pStr1, pStr2)) );
+        }
+
         pStr = ObjArray_ToDebugString(pObj2, 0);
         fprintf(stderr, "Debug = %s\n\n\n", AStr_getData(pStr));
         obj_Release(pStr);

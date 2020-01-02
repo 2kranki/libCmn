@@ -238,6 +238,44 @@ extern "C" {
     }
 
 
+    VALUE_DATA *    Value_NewDouble (
+        double          value
+    )
+    {
+        VALUE_DATA      *this;
+        bool            fRc;
+
+        this = Value_New();
+        if (this) {
+            fRc = Value_setDouble(this, value);
+            if (!fRc) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return this;
+    }
+
+
+    VALUE_DATA *    Value_NewI8 (
+        int8_t          value
+    )
+    {
+        VALUE_DATA      *this;
+        bool            fRc;
+
+        this = Value_New();
+        if (this) {
+            fRc = Value_setI8(this, value);
+            if (!fRc) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return this;
+    }
+
+
     VALUE_DATA *    Value_NewI16 (
         int16_t         value
     )
@@ -314,6 +352,25 @@ extern "C" {
     }
 
 
+    VALUE_DATA *    Value_NewU8 (
+        uint8_t         value
+    )
+    {
+        VALUE_DATA      *this;
+        bool            fRc;
+
+        this = Value_New();
+        if (this) {
+            fRc = Value_setU8(this, value);
+            if (!fRc) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return this;
+    }
+
+
     VALUE_DATA *    Value_NewU16 (
         uint16_t        value
     )
@@ -323,7 +380,7 @@ extern "C" {
 
         this = Value_New();
         if (this) {
-            fRc = Value_setI16(this, value);
+            fRc = Value_setU16(this, value);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -473,6 +530,55 @@ extern "C" {
         memmove(this->value.data.pData, pValue, length);
         this->value.data.length  = length;
         this->type = VALUE_TYPE_DATA_FREE;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          D o u b l e
+    //---------------------------------------------------------------
+
+    double          Value_getDouble (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        if (this->type == VALUE_TYPE_DOUBLE) {
+            return this->value.flt;
+        }
+        else {
+            return 0;
+        }
+    }
+
+
+    bool            Value_setDouble (
+        VALUE_DATA      *this,
+        double          value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Value_FreeData(this);
+        this->value.flt = value;
+        this->type = VALUE_TYPE_DOUBLE;
 
         return true;
     }
@@ -1100,10 +1206,6 @@ extern "C" {
         // Create a copy of objects and areas in this object placing
         // them in other.
         switch (this->type) {
-
-            case VALUE_TYPE_FLOAT:
-                pOther->value.flt = this->value.flt;
-                break;
 
             case VALUE_TYPE_DOUBLE:
                 pOther->value.flt = this->value.flt;
