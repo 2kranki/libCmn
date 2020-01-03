@@ -155,7 +155,7 @@ extern "C" {
         if (this) {
             SrcError_setSeverity(this, SRCERROR_SEVERITY_FATAL);
             if (pToken) {
-                SrcError_setLocation(this, token_getLoc(pToken));
+                SrcError_setLocation(this, Token_getLoc(pToken));
             }
             if (pErrorString) {
                 this->pErrorStr = AStr_Copy(pErrorString);
@@ -183,7 +183,7 @@ extern "C" {
         if (this) {
             SrcError_setSeverity(this, SRCERROR_SEVERITY_FATAL);
             if (pToken) {
-                SrcError_setLocation(this, token_getLoc(pToken));
+                SrcError_setLocation(this, Token_getLoc(pToken));
             }
             this->pErrorStr = AStr_NewA(pErrorString);
             if (OBJ_NIL == this->pErrorStr) {

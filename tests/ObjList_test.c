@@ -25,6 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <name.h>
+#include    <SrcErrors.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <ObjList_internal.h>
@@ -53,6 +54,7 @@ int             tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
+    SrcErrors_SharedReset();
     szTbl_SharedReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
@@ -102,7 +104,7 @@ int             test_ObjList_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -123,8 +125,7 @@ int         test_ObjList_BasicList01(
     ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     NAME_DATA       *pEntry;
-    char            *pStrA;
-    
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pObj = ObjList_Alloc( );
@@ -268,7 +269,7 @@ int         test_ObjList_BasicList01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -288,8 +289,7 @@ int         test_ObjList_Shift(
     ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     NAME_DATA       *pEntry;
-    char            *pStrA;
-    
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pObj = ObjList_Alloc( );
@@ -377,7 +377,98 @@ int         test_ObjList_Shift(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_ObjList_Json01(
+    const
+    char        *pTestName
+)
+{
+    OBJLIST_DATA    *pObj = OBJ_NIL;
+    OBJLIST_DATA    *pObj2 = OBJ_NIL;
+    NAME_DATA       *pNameA = OBJ_NIL;
+    NAME_DATA       *pNameB = OBJ_NIL;
+    NAME_DATA       *pNameC = OBJ_NIL;
+    NAME_DATA       *pNameD = OBJ_NIL;
+    NAME_DATA       *pNameE = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NAME_DATA       *pEntry;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = ObjList_New( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pNameA = name_NewUTF8("A");
+        XCTAssertFalse( (OBJ_NIL == pNameA) );
+        pNameB = name_NewUTF8("B");
+        XCTAssertFalse( (OBJ_NIL == pNameB) );
+        pNameC = name_NewUTF8("C");
+        XCTAssertFalse( (OBJ_NIL == pNameC) );
+        pNameD = name_NewUTF8("D");
+        XCTAssertFalse( (OBJ_NIL == pNameD) );
+        pNameE = name_NewUTF8("E");
+        XCTAssertFalse( (OBJ_NIL == pNameE) );
+
+        eRc = ObjList_Add2Tail(pObj, pNameA);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = ObjList_Add2Tail(pObj, pNameB);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = ObjList_Add2Tail(pObj, pNameC);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = ObjList_Add2Tail(pObj, pNameD);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = ObjList_Add2Tail(pObj, pNameE);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+
+        pStr = ObjList_ToDebugString(pObj, 0);
+        fprintf(stderr, "Debug1 = %s\n\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        pStr = ObjList_ToJson(pObj);
+        TINYTEST_FALSE( (pStr == OBJ_NIL) );
+        if (pStr) {
+            fprintf(stderr, "Json = %s\n\n\n", AStr_getData(pStr));
+        }
+
+        pObj2 = ObjList_NewFromJsonString(pStr);
+        TINYTEST_FALSE( (pObj2 == OBJ_NIL) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        XCTAssertTrue( (!(pObj == pObj2)) );
+        XCTAssertTrue( (ObjList_getSize(pObj) == ObjList_getSize(pObj2)) );
+
+        pStr = ObjList_ToDebugString(pObj2, 0);
+        fprintf(stderr, "Debug2 = %s\n\n\n",AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        obj_Release(pNameE);
+        pNameE = OBJ_NIL;
+        obj_Release(pNameD);
+        pNameD = OBJ_NIL;
+        obj_Release(pNameC);
+        pNameC = OBJ_NIL;
+        obj_Release(pNameB);
+        pNameB = OBJ_NIL;
+        obj_Release(pNameA);
+        pNameA = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -385,6 +476,7 @@ int         test_ObjList_Shift(
 
 
 TINYTEST_START_SUITE(test_ObjList);
+    TINYTEST_ADD_TEST(test_ObjList_Json01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_ObjList_Shift,setUp,tearDown);
     TINYTEST_ADD_TEST(test_ObjList_BasicList01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_ObjList_OpenClose,setUp,tearDown);

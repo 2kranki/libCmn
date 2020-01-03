@@ -57,7 +57,7 @@
 
 #include        <cmn_defs.h>
 #include        <pplex.h>
-#include        <token.h>
+#include        <Token.h>
 
 #ifndef         PPLEX1_H
 #define         PPLEX1_H

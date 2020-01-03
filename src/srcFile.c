@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <srcFile_internal.h>
+#include        <Token_internal.h>
 #include        <trace.h>
 
 
@@ -126,7 +127,7 @@ extern "C" {
             }
             
             obj_setSize(&this->curchr, sizeof(TOKEN_DATA));
-            pToken = token_Init(&this->curchr);
+            pToken = Token_Init(&this->curchr);
             if (OBJ_NIL == pToken) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -159,7 +160,7 @@ extern "C" {
             }
             
             obj_setSize(&this->curchr, sizeof(TOKEN_DATA));
-            pToken = token_Init(&this->curchr);
+            pToken = Token_Init(&this->curchr);
             if (OBJ_NIL == pToken) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -192,7 +193,7 @@ extern "C" {
             }
             
             obj_setSize(&this->curchr, sizeof(TOKEN_DATA));
-            pToken = token_Init(&this->curchr);
+            pToken = Token_Init(&this->curchr);
             if (OBJ_NIL == pToken) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -930,7 +931,8 @@ extern "C" {
         // Add the next char to the queue.
         pToken = &this->pInputs[this->curInputs];
         this->fInit = 1;
-        token_InitCharW32(
+        Token_Init(pToken);
+        Token_SetupCharW32(
                           pToken,
                           &this->super.curChr.loc,
                           cls,
@@ -1128,7 +1130,7 @@ extern "C" {
         
         for (;;) {
             pToken = &this->pInputs[this->curInputs];
-            chr = token_getChrW32(pToken);
+            chr = Token_getChrW32(pToken);
             if (chr == '\n')
                 break;
             eRc = srcFile_InputNextChar(this);

@@ -145,7 +145,7 @@ extern "C" {
     );
     
     
-    OBJARRAY_DATA *   ObjArray_NewFromJsonString(
+    OBJARRAY_DATA * ObjArray_NewFromJsonString(
         ASTR_DATA       *pString
     );
 

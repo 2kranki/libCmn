@@ -55,6 +55,7 @@
 #include        <null.h>
 #include        <number.h>
 #include        <ObjArray_internal.h>
+#include        <ObjList_internal.h>
 #include        <ObjMethod_internal.h>
 #include        <objHash.h>
 #include        <SrcError_internal.h>
@@ -62,10 +63,11 @@
 #include        <SrcLoc.h>
 #include        <szData_internal.h>
 #include        <szTbl.h>
-#include        <token_internal.h>
+#include        <Token_internal.h>
+#include        <TokenList_internal.h>
 #include        <trace.h>
 #include        <utf8_internal.h>
-#include        <Value.h>
+#include        <Value_internal.h>
 #include        <W32Str.h>
 
 
@@ -1835,6 +1837,13 @@ extern "C" {
             return pObj;
         }
 
+        pInfo = obj_getInfo(ObjList_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)ObjList_ParseJsonObject(this);
+            return pObj;
+        }
+
         pInfo = obj_getInfo(ObjMethod_Class());
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
@@ -1863,10 +1872,17 @@ extern "C" {
             return pObj;
         }
 
-        pInfo = obj_getInfo(token_Class());
+        pInfo = obj_getInfo(Token_Class());
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)token_ParseObject(this);
+            pObj = (OBJ_ID)Token_ParseJsonObject(this);
+            return pObj;
+        }
+
+        pInfo = obj_getInfo(TokenList_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)TokenList_ParseJsonObject(this);
             return pObj;
         }
 

@@ -90,7 +90,7 @@ extern "C" {
 #endif
 
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        chr = token_getChrW32(pToken);
+        chr = Token_getChrW32(pToken);
         if (chr == '#') {
             srcFile_InputAdvance(this->pSrc, 1);
             this->lenFld = 0;
@@ -123,11 +123,11 @@ extern "C" {
 #endif
 
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        chr = token_getChrW32(pToken);
+        chr = Token_getChrW32(pToken);
         if (chr == '\r') {
             srcFile_InputAdvance(this->pSrc, 1);
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            chr = token_getChrW32(pToken);
+            chr = Token_getChrW32(pToken);
             if (chr == '\n') {
                 srcFile_InputAdvance(this->pSrc, 1);
             }
@@ -137,7 +137,7 @@ extern "C" {
         else if (chr == '\n') {
             srcFile_InputAdvance(this->pSrc, 1);
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            chr = token_getChrW32(pToken);
+            chr = Token_getChrW32(pToken);
             if (chr == '\r') {
                 srcFile_InputAdvance(this->pSrc, 1);
             }
@@ -166,7 +166,7 @@ extern "C" {
 #endif
 
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        chr = token_getChrW32(pToken);
+        chr = Token_getChrW32(pToken);
         if (chr == EOF) {
             srcFile_InputAdvance(this->pSrc, 1);
             this->lenFld = 0;
@@ -307,7 +307,7 @@ extern "C" {
                                 OBJ_NIL,
                                 pToken,
                                 "Expected line end, but found %lc",
-                                token_getChrW32(pToken)
+                                Token_getChrW32(pToken)
             );
         }
 
@@ -440,7 +440,7 @@ extern "C" {
 
         CsvFile_ParseWS(this);
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        chr = token_getChrW32(pToken);
+        chr = Token_getChrW32(pToken);
         if (chr == this->fieldSeparator) {
             this->lenFld = 0;
             srcFile_InputAdvance(this->pSrc, 1);
@@ -471,7 +471,7 @@ extern "C" {
         CsvFile_ParseWS(this);
 
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        chr = token_getChrW32(pToken);
+        chr = Token_getChrW32(pToken);
         if (chr == '"') {
             srcFile_InputAdvance(this->pSrc, 1);
         }
@@ -481,13 +481,13 @@ extern "C" {
 
         for (;;) {
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            chr = token_getChrW32(pToken);
+            chr = Token_getChrW32(pToken);
             if (CsvFile_ParseTEXTDATA(this)) {
                 // Do something, maybe!
             }
             else if (chr == '"') {
                 pToken = srcFile_InputLookAhead(this->pSrc, 2);
-                chr = token_getChrW32(pToken);
+                chr = Token_getChrW32(pToken);
                 if (chr == '"') {
                     CsvFile_AppendCharW32ToString(this, '"');
                     srcFile_InputAdvance(this->pSrc, 2);
@@ -506,7 +506,7 @@ extern "C" {
             }
             else if (chr == '\\') {
                 pToken = srcFile_InputLookAhead(this->pSrc, 1);
-                chr = token_getChrW32(pToken);
+                chr = Token_getChrW32(pToken);
                 if (chr == '"') {
                     CsvFile_AppendCharW32ToString(this, '"');
                     srcFile_InputAdvance(this->pSrc, 1);
@@ -526,7 +526,7 @@ extern "C" {
         }
 
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        chr = token_getChrW32(pToken);
+        chr = Token_getChrW32(pToken);
         if (chr == '"') {
             srcFile_InputAdvance(this->pSrc, 1);
             pStr = AStr_NewW32(this->pFld);
@@ -581,7 +581,7 @@ extern "C" {
 #endif
 
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        chr = token_getChrW32(pToken);
+        chr = Token_getChrW32(pToken);
         if( (chr == this->fieldSeparator) || (chr == '"') ) {
             return false;
         }
@@ -622,11 +622,11 @@ extern "C" {
 #endif
 
         pToken = srcFile_InputLookAhead(this->pSrc, 1);
-        chr = token_getChrW32(pToken);
+        chr = Token_getChrW32(pToken);
         while ((chr == ' ') || (chr == '\f') || (chr == '\r') || (chr == '\t')) {
             srcFile_InputAdvance(this->pSrc, 1);
             pToken = srcFile_InputLookAhead(this->pSrc, 1);
-            chr = token_getChrW32(pToken);
+            chr = Token_getChrW32(pToken);
             fRc = true;
         }
 

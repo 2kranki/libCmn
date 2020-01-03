@@ -131,7 +131,7 @@ extern "C" {
          */
         while( fMore ) {
             pNxtChr = lex_InputLookAhead((LEX_DATA *)this, 1);
-            curchr = token_getChrW32(pNxtChr);
+            curchr = Token_getChrW32(pNxtChr);
             if ( curchr == -1 ) {
                 SrcErrors_AddFatalA(
                                    OBJ_NIL,
@@ -144,7 +144,7 @@ extern "C" {
             else if (curchr == terminatorChar1) {
                 /* Look for term char 1 followed by term char 2. */
                 pNxtChr = lex_InputLookAhead((LEX_DATA *)this, 2);
-                curchr = token_getChrW32(pNxtChr);
+                curchr = Token_getChrW32(pNxtChr);
                 if( curchr == terminatorChar2 ) {
                     ((LEX_DATA *)this)->pSrcChrAdvance(((LEX_DATA *)this)->pSrcObj, 1);
                     fMore = false;
@@ -509,11 +509,11 @@ extern "C" {
         while (fMore) {
             pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
             if (pInput) {
-                cls = token_getClass(pInput);
+                cls = Token_getClass(pInput);
             }
             else {
                 pInput = lex_ParseEOF((LEX_DATA *)this);
-                cls = token_getClass(pInput);
+                cls = Token_getClass(pInput);
                 DEBUG_BREAK();
             }
             eRc = lex_ParseTokenSetup((LEX_DATA *)this, pInput);
@@ -527,7 +527,7 @@ extern "C" {
 
                 case ASCII_LEXICAL_WHITESPACE:
                     if (obj_IsFlag(this, PPLEX2_RETURN_WS)) {
-                        chr = token_getChrW32(pInput);
+                        chr = Token_getChrW32(pInput);
                         if (obj_IsFlag(this, PPLEX2_RETURN_NL)) {
                             if ('\n' ==  chr) {
                                 newCls = PPLEX_SEP_NL;
@@ -581,7 +581,7 @@ extern "C" {
                     if (newCls) {
                         uint16_t        type;
                         type = lex_ParseIntegerSuffix((LEX_DATA *)this);
-                        token_setMisc(&this->super.token, type);
+                        Token_setMisc(&this->super.token, type);
                     }
                     fMore = false;
                     break;
@@ -589,7 +589,7 @@ extern "C" {
                 case '!':           /*** '!' ***/
                     newCls = PPLEX_OP_NOT;
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj,2);
-                    if( '=' == token_getClass(pInput)) {
+                    if( '=' == Token_getClass(pInput)) {
                         newCls = PPLEX_OP_NE;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
                         lex_InputAdvance((LEX_DATA *)this, 2);
@@ -605,7 +605,7 @@ extern "C" {
                     while(lex_ParseChrCon((LEX_DATA *)this,'"'))
                         ;
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj,1);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if (cls == '"') {
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
                         ((LEX_DATA *)this)->pSrcChrAdvance(((LEX_DATA *)this)->pSrcObj, 1);
@@ -625,7 +625,7 @@ extern "C" {
                 case '#':           /*** '#' ***/
                     newCls = PPLEX_OP_POUND;
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '#' == cls) {
                         newCls = PPLEX_SPCL_2POUNDS;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -645,7 +645,7 @@ extern "C" {
                     
                 case '%':           /*** '%' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '%' == cls) {
                         newCls = PPLEX_SPCL_SEPARATOR;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -674,7 +674,7 @@ extern "C" {
                                                         szTbl_Shared(),
                                                         W32Str_getData(pStr)
                                             );
-                                token_setStrToken(
+                                Token_setStrToken(
                                                 lex_getToken((LEX_DATA *)this),
                                                 token
                                 );
@@ -699,7 +699,7 @@ extern "C" {
                                                                    szTbl_Shared(),
                                                                    W32Str_getData(pStr)
                                             );
-                                token_setStrToken(
+                                Token_setStrToken(
                                                   lex_getToken((LEX_DATA *)this),
                                                   token
                                 );
@@ -724,7 +724,7 @@ extern "C" {
                                                                    szTbl_Shared(),
                                                                    W32Str_getData(pStr)
                                                                    );
-                                token_setStrToken(
+                                Token_setStrToken(
                                                   lex_getToken((LEX_DATA *)this),
                                                   token
                                                   );
@@ -757,7 +757,7 @@ extern "C" {
                         break;
                     }
                     if (this->kwdSel & PPLEX_LANG_LL1) {
-                        chr = token_getChrW32(pInput);
+                        chr = Token_getChrW32(pInput);
                         if( ('g' == chr) || ('G' == chr) ) {
                             newCls = PPLEX_KWD_GOAL;
                             lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -765,7 +765,7 @@ extern "C" {
                             // Eat up rest of symbol. We only need %g or %G.
                             for (;;) {
                                 pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 1);
-                                cls = token_getClass(pInput);
+                                cls = Token_getClass(pInput);
                                 if( cls == ASCII_LEXICAL_WHITESPACE ) {
                                     break;
                                 }
@@ -781,7 +781,7 @@ extern "C" {
                             // Eat up rest of symbol. We only need %g or %G.
                             for (;;) {
                                 pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj,1);
-                                cls = token_getClass(pInput);
+                                cls = Token_getClass(pInput);
                                 if( cls == ASCII_LEXICAL_WHITESPACE ) {
                                     break;
                                 }
@@ -790,7 +790,7 @@ extern "C" {
                             fMore = false;
                             break;
                         }
-                        chr = token_getChrW32(pInput);
+                        chr = Token_getChrW32(pInput);
                     }
                     newCls = PPLEX_OP_MOD;
                     lex_InputAdvance((LEX_DATA *)this, 1);
@@ -799,7 +799,7 @@ extern "C" {
                     
                 case '&':           /*** '&' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '&' == cls) {
                         newCls = PPLEX_OP_LOG_AND;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -829,7 +829,7 @@ extern "C" {
                         lex_ParseChrCon((LEX_DATA *)this, '\'');
                     }
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 1);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if (cls == '\'') {
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
                         lex_InputAdvance((LEX_DATA *)this, 1);
@@ -865,7 +865,7 @@ extern "C" {
 
                 case '*':           /*** '*' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj,2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '=' == cls) {
                         newCls = PPLEX_OP_ASSIGN_MUL;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -880,7 +880,7 @@ extern "C" {
                     
                 case '+':           /*** '+' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '+' == cls) {
                         newCls = PPLEX_OP_INC;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -908,7 +908,7 @@ extern "C" {
                     
                 case '-':           /*** '-' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '-' == cls) {
                         newCls = PPLEX_OP_DEC;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -937,10 +937,10 @@ extern "C" {
                     
                 case '.':           /*** '.' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '.' == cls) {
                         pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 3);
-                        cls = token_getClass(pInput);
+                        cls = Token_getClass(pInput);
                         if( '.' == cls) {
                             newCls = PPLEX_OP_ELIPSIS;
                             lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -968,7 +968,7 @@ extern "C" {
                     
                 case '/':           /*** '/' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '/' == cls) {
                         // Single Line Comment - PPLEX_COMMENT_SINGLE
                         newCls = PPLEX_COMMENT_SINGLE;
@@ -978,7 +978,7 @@ extern "C" {
                         lex_InputAdvance((LEX_DATA *)this, 2);
                         for (;;) {
                             pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 1);
-                            cls = token_getClass(pInput);
+                            cls = Token_getClass(pInput);
                             lex_InputAdvance((LEX_DATA *)this, 1);
                             if (cls == ASCII_LEXICAL_EOL) {
                                 break;
@@ -1002,10 +1002,10 @@ extern "C" {
                         lex_InputAdvance((LEX_DATA *)this, 2);
                         while (fMore2) {
                             pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 1);
-                            cls = token_getClass(pInput);
+                            cls = Token_getClass(pInput);
                             if (cls == '*') {
                                 pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                                cls = token_getClass(pInput);
+                                cls = Token_getClass(pInput);
                                 if (cls == '/') {
                                     lex_InputAdvance((LEX_DATA *)this, 2);
                                     --depth;
@@ -1017,7 +1017,7 @@ extern "C" {
                             }
                             if (cls == '/') {
                                 pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                                cls = token_getClass(pInput);
+                                cls = Token_getClass(pInput);
                                 if (cls == '*') {
                                     lex_InputAdvance((LEX_DATA *)this, 2);
                                     ++depth;
@@ -1035,7 +1035,7 @@ extern "C" {
                     
                 case ':':           /*** ':' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( ':' == cls) {
                         newCls = PPLEX_SPCL_DBLCOLON;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -1056,10 +1056,10 @@ extern "C" {
                     
                 case '<':           /*** '<' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '<' == cls) {
                         pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 3);
-                        cls = token_getClass(pInput);
+                        cls = Token_getClass(pInput);
                         if( '=' == cls) {
                             newCls = PPLEX_OP_ASSIGN_LEFT;
                             lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -1093,9 +1093,9 @@ extern "C" {
                             pStr = pplex2_SaveText(this,'.','>');
                             if (pStr) {
                                 newCls = PPLEX_CONSTANT_TEXTD;
-                                token_setW32STR(
+                                Token_setStrW32(
                                     lex_getToken((LEX_DATA *)this),
-                                    pStr
+                                    W32Str_getData(pStr)
                                 );
                                 obj_Release(pStr);
                                 fSaveStr = false;
@@ -1114,7 +1114,7 @@ extern "C" {
                     
                 case '=':           /*** '=' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '>' == cls) {
                         newCls = PPLEX_SPCL_RARROW;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -1136,10 +1136,10 @@ extern "C" {
                     
                 case '>':           /*** '>' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '>' == cls) {
                         pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 3);
-                        cls = token_getClass(pInput);
+                        cls = Token_getClass(pInput);
                         if( '=' == cls) {
                             newCls = PPLEX_OP_ASSIGN_RIGHT;
                             lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -1173,7 +1173,7 @@ extern "C" {
                     
                 case '@':           /*** '@' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if ((ASCII_LEXICAL_ALPHA_LOWER == cls)
                         || (ASCII_LEXICAL_ALPHA_UPPER == cls)) {
                         lex_ParseName((LEX_DATA *)this);
@@ -1225,7 +1225,7 @@ extern "C" {
                     
                 case '^':           /*** '^' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '=' == cls) {
                         newCls = PPLEX_OP_ASSIGN_XOR;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -1256,7 +1256,7 @@ extern "C" {
                     
                 case '|':           /*** '|' ***/
                     pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '=' == cls) {
                         newCls = PPLEX_OP_ASSIGN_OR;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
@@ -1325,8 +1325,8 @@ extern "C" {
         
         for (;;) {
             pInput = ((LEX_DATA *)this)->pSrcChrAdvance(((LEX_DATA *)this)->pSrcObj, 1);
-            cls = token_getClass(pInput);
-            chr = token_getChrW32(pInput);
+            cls = Token_getClass(pInput);
+            chr = Token_getChrW32(pInput);
             if ( chr == '\n' ) {
                 break;
             }

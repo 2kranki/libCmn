@@ -186,7 +186,7 @@ OBJ_IUNKNOWN    SrcLoc_Vtbl = {
 static
 const
 OBJ_INFO        SrcLoc_Info = {
-    "srcLoc",
+    "SrcLoc",
     "Source File Location including column and line numbers",
     (OBJ_DATA *)&SrcLoc_ClassObj,
     (OBJ_DATA *)&obj_ClassObj

@@ -83,7 +83,7 @@
 
 #include        <cmn_defs.h>
 #include        <szTbl.h>
-#include        <token.h>
+#include        <Token.h>
 
 
 #ifndef         LEX_H

@@ -106,7 +106,7 @@ struct ObjList_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  OBJLIST_SINGLETON
-    OBJLIST_DATA *     ObjList_getSingleton (
+    OBJLIST_DATA *  ObjList_getSingleton (
         void
     );
 
@@ -143,7 +143,7 @@ struct ObjList_data_s	{
 
 
 #ifdef  OBJLIST_JSON_SUPPORT
-    OBJLIST_DATA *       ObjList_ParseJsonObject (
+    OBJLIST_DATA *   ObjList_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 #endif

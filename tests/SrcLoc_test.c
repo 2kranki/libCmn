@@ -90,7 +90,7 @@ int         test_SrcLoc_OpenClose(
     static
     const
     char            *pJsonA =   "{ "
-                                    "\"objectType\":\"srcLoc\", "
+                                    "\"objectType\":\"SrcLoc\", "
                                     "\"fileIndex\":1, "
                                     "\"offset\":20, "
                                     "\"lineNo\":3, "

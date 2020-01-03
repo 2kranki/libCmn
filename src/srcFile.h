@@ -54,7 +54,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <path.h>
-#include        <token.h>
+#include        <Token.h>
 
 
 #ifndef         SRCFILE_H

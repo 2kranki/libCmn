@@ -44,7 +44,7 @@
 /* Header File Inclusion */
 #include    <name_internal.h>
 #include    <AStr_internal.h>
-#include    <token_internal.h>
+#include    <Token_internal.h>
 #include    <utf8_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>

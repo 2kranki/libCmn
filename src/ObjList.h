@@ -59,7 +59,7 @@
 #define         OBJLIST_H
 
 
-//#define   OBJLIST_JSON_SUPPORT 1
+#define   OBJLIST_JSON_SUPPORT 1
 //#define   OBJLIST_SINGLETON    1
 
 
@@ -126,7 +126,7 @@ extern "C" {
      released.
      @return    pointer to ObjList object if successful, otherwise OBJ_NIL.
      */
-    OBJLIST_DATA *     ObjList_Alloc (
+    OBJLIST_DATA *  ObjList_Alloc (
         void
     );
     
@@ -136,11 +136,22 @@ extern "C" {
     );
     
     
-    OBJLIST_DATA *     ObjList_New (
+    OBJLIST_DATA *  ObjList_New (
         void
     );
     
     
+    OBJLIST_DATA *   ObjList_NewFromJsonString(
+        ASTR_DATA       *pString
+    );
+
+
+    OBJLIST_DATA * ObjList_NewFromJsonStringA(
+        const
+        char            *pString
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -188,6 +199,12 @@ extern "C" {
     );
     
     
+    ERESULT         ObjList_Append (
+        OBJLIST_DATA    *this,
+        OBJLIST_DATA    *pOther
+    );
+
+
     /*!
      Assign the contents of this object to the other object (ie
      this -> other).  Any objects in other will be released before
@@ -239,6 +256,11 @@ extern "C" {
     );
     
     
+    ERESULT         ObjList_DeleteAll (
+        OBJLIST_DATA    *this
+    );
+
+
     ERESULT         ObjList_DeleteHead (
         OBJLIST_DATA    *this
     );
@@ -298,6 +320,12 @@ extern "C" {
     );
     
     
+    ERESULT         ObjList_Prepend(
+        OBJLIST_DATA    *this,
+        OBJLIST_DATA    *other
+    );
+
+
     OBJ_ID          ObjList_Prev (
         OBJLIST_DATA    *this
     );
@@ -331,6 +359,24 @@ extern "C" {
     );
     
     
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = ObjList_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     ObjList_ToJson (
+        OBJLIST_DATA      *this
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

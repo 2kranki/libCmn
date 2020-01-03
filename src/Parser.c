@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include <Parser_internal.h>
 #include <nodeHash.h>
-#include <token_internal.h>
+#include <Token_internal.h>
 #include <trace.h>
 #include <stdarg.h>
 
@@ -631,7 +631,7 @@ extern "C" {
             uint16_t        ui16;
             for (ui16=0; ui16<this->sizeInputs; ++ui16) {
                 if (obj_getType(&this->pInputs[ui16]) == OBJ_IDENT_TOKEN) {
-                    //token_ReleaseDataIfObj(&this->pInputs[ui16]);
+                    //Token_ReleaseDataIfObj(&this->pInputs[ui16]);
                 }
             }
             mem_Free(this->pInputs);
@@ -768,7 +768,7 @@ extern "C" {
         for (i=0; i<this->sizeInputs; ++i) {
             TOKEN_DATA      *pToken;
             pToken = &this->pInputs[i];
-            token_Init(pToken);
+            Token_Init(pToken);
         }
         
         //FIXME: this->pErrors = eResult_Shared();
@@ -855,7 +855,7 @@ extern "C" {
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA       *pStr = token_ToDebugString(pToken, 4);
+            ASTR_DATA       *pStr = Token_ToDebugString(pToken, 4);
             TRC_OBJ( this, "\treturning token = %s\n", AStr_getData(pStr) );
             obj_Release(pStr);
         }
@@ -892,7 +892,7 @@ extern "C" {
         BREAK_NULL(this->pSrcChrAdvance);
         
         // Release top token;
-        //token_ReleaseDataIfObj(&this->pInputs[this->curInputs]);
+        //Token_ReleaseDataIfObj(&this->pInputs[this->curInputs]);
         
         // Add the next char to the queue.
         pToken = &this->pInputs[this->curInputs];
@@ -901,12 +901,12 @@ extern "C" {
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA       *pStr = token_ToDebugString(scp, 4);
+            ASTR_DATA       *pStr = Token_ToDebugString(scp, 4);
             TRC_OBJ( this, "\ttoken(%d) = %s\n", this->curInputs, AStr_getData(pStr) );
             obj_Release(pStr);
         }
 #endif
-        token_Assign(scp, pToken);
+        Token_Assign(scp, pToken);
         this->curInputs = (this->curInputs + 1) % this->sizeInputs;
         this->pSrcChrAdvance(this->pSrcObj,1);
         
@@ -966,7 +966,7 @@ extern "C" {
         }
 #endif
         
-        if(chr == token_getChrW32(&this->pInputs[0]) ) {
+        if(chr == Token_getChrW32(&this->pInputs[0]) ) {
             obj_Retain(&this->pInputs[0]);
             scp = &this->pInputs[0];
             (void)Parser_InputNextChar(this);
@@ -1000,7 +1000,7 @@ extern "C" {
 #endif
         
         scp = &this->pInputs[0];
-        if(cls == token_getClass(scp) ) {
+        if(cls == Token_getClass(scp) ) {
             obj_Retain(scp);
             (void)Parser_InputNextChar(this);
             return scp;
@@ -1035,7 +1035,7 @@ extern "C" {
 #endif
         
         scp = &this->pInputs[0];
-        chr = token_getChrW32(scp);
+        chr = Token_getChrW32(scp);
         if((chr >= chrBeg) && (chr <= chrEnd) ) {
             obj_Retain(scp);
             (void)Parser_InputNextChar(this);
@@ -1074,7 +1074,7 @@ extern "C" {
 #endif
         
         scp = &this->pInputs[0];
-        chr = token_getChrW32(scp);
+        chr = Token_getChrW32(scp);
         while (*pSet) {
             if(chr == *pSet) {
                 obj_Retain(scp);

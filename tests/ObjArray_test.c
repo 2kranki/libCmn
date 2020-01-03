@@ -208,9 +208,7 @@ int         test_ObjArray_Test01(
         fprintf(stderr, "Debug = %s\n\n\n", AStr_getData(pStr));
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        fprintf(stderr, "Check that each of the entries in the new list are the same"
-                        " addresses from first set of objects displayed.\n\n\n");
-        
+
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
         
@@ -386,9 +384,106 @@ int         test_ObjArray_Test02(
 
 
 
+int         test_ObjArray_Json01(
+    const
+    char        *pTestName
+)
+{
+    OBJARRAY_DATA   *pObj = OBJ_NIL;
+    OBJARRAY_DATA   *pObj2 = OBJ_NIL;
+    ERESULT         eRc;
+    uint32_t        i;
+    uint32_t        iMax;
+    uint32_t        size;
+    ASTR_DATA       *pStr  = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pPath = path_NewFromCurrentDirectory();
+    fprintf(stderr, "\tCurrent Directory = %s\n", path_getData(pPath));
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    pObj = ObjArray_New( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        for (i=0; i<cStringTable; ++i) {
+            pStr = AStr_NewA(stringTable[i]);
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            if (pStr) {
+                eRc = ObjArray_AppendObj(pObj, pStr, NULL);
+                XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+                size = ObjArray_getSize(pObj);
+            }
+        }
+        fprintf(stderr, "\tcount = %d\n", ObjArray_getSize(pObj));
+        XCTAssertTrue( (cStringTable == ObjArray_getSize(pObj)) );
+
+        for (i=0; i<cStringTable; ++i) {
+            pStr = ObjArray_Get(pObj, i+1);
+            fprintf(stderr, "%d - %s\n", i, AStr_getData(pStr));
+            XCTAssertFalse( (OBJ_NIL == pStr) );
+            XCTAssertTrue( (0 == strcmp((char *)AStr_getData(pStr), stringTable[i])) );
+        }
+
+        eRc = ObjArray_SortAscending(pObj, (OBJ_COMPARE)&AStr_Compare);
+        fprintf(stderr, "\n\tSorted Array:\n");
+        for (i=0; i<cStringTable; ++i) {
+            pStr = ObjArray_Get(pObj, i+1);
+            fprintf( stderr, "%d - %s\n", i, AStr_getData(pStr) );
+        }
+
+        pStr = ObjArray_ToDebugString(pObj, 0);
+        fprintf(stderr, "\n\n\nDebug1 = %s\n\n\n",AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        fprintf(stderr, "\n\nNow creating a json copy of the array!\n");
+        pStr = ObjArray_ToJson(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        if (pStr) {
+            fprintf(stderr, "Json = %s\n\n\n",AStr_getData(pStr));
+            pObj2 = ObjArray_NewFromJsonString(pStr);
+            TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        pStr = ObjArray_ToDebugString(pObj2, 0);
+        fprintf(stderr, "Debug2 = %s\n\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        fprintf(stderr, "Size1 = %d\n", ObjArray_getSize(pObj));
+        fprintf(stderr, "Size2 = %d\n", ObjArray_getSize(pObj2));
+        TINYTEST_TRUE( (ObjArray_getSize(pObj) == ObjArray_getSize(pObj2)) );
+
+        iMax = ObjArray_getSize(pObj);
+        for (i=0; i<iMax; i++) {
+            ASTR_DATA       *pStr1 = ObjArray_Get(pObj, i+1);
+            ASTR_DATA       *pStr2 = ObjArray_Get(pObj2, i+1);
+            TINYTEST_TRUE( (AStr_Compare(pStr1, pStr2) == ERESULT_SUCCESS_EQUAL) );
+        }
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 
 TINYTEST_START_SUITE(test_ObjArray);
+    TINYTEST_ADD_TEST(test_ObjArray_Json01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_ObjArray_Test02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_ObjArray_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_ObjArray_OpenClose,setUp,tearDown);

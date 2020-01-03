@@ -131,11 +131,11 @@ int         test_srcFiles_TestPath01(
         for (;;) {
             pToken = srcFiles_InputLookAhead(pObj, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
-            cls = token_getClass(pToken);
+            cls = Token_getClass(pToken);
             if (cls == -1)
                 break;
             {
-                pStr = token_ToDebugString(pToken, 0);
+                pStr = Token_ToDebugString(pToken, 0);
                 fprintf(stderr, "\ttoken text=\"%s\"\n",
                         AStr_getData(pStr));
                 obj_Release(pStr);
@@ -192,11 +192,11 @@ int         test_srcFiles_TestAStr01(
         for (;;) {
             pToken = srcFiles_InputLookAhead(pObj, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
-            cls = token_getClass(pToken);
+            cls = Token_getClass(pToken);
             if (cls == -1)
                 break;
             {
-                pStr = token_ToDebugString(pToken, 0);
+                pStr = Token_ToDebugString(pToken, 0);
                 fprintf(
                         stderr,
                         "\ttoken text=\"%s\"\n",

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'TokenList'
-//	Generated 01/02/2020 15:56:31
+//	Class Object Metods and Tables for 'Token'
+//	Generated 01/02/2020 15:58:09
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			TOKENLIST_OBJECT_C	    1
-#include        <TokenList_internal.h>
-#ifdef  TOKENLIST_SINGLETON
+#define			TOKEN_OBJECT_C	    1
+#include        <Token_internal.h>
+#ifdef  TOKEN_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct TokenList_class_data_s	{
+struct Token_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  TOKENLIST_SINGLETON
+#ifdef  TOKEN_SINGLETON
     volatile
-    TOKENLIST_DATA       *pSingleton;
+    TOKEN_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct TokenList_class_data_s	{
 
 
 static
-void *          TokenListClass_QueryInfo (
+void *          TokenClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          TokenListClass_QueryInfo (
 
 static
 const
-OBJ_INFO        TokenList_Info;            // Forward Reference
+OBJ_INFO        Token_Info;            // Forward Reference
 
 
 
 
 static
-bool            TokenListClass_IsKindOf (
+bool            TokenClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_TOKENLIST_CLASS == classID) {
+    if (OBJ_IDENT_TOKEN_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(TokenList_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Token_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            TokenListClass_IsKindOf (
 
 
 static
-uint16_t		TokenListClass_WhoAmI (
+uint16_t		TokenClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_TOKENLIST_CLASS;
+    return OBJ_IDENT_TOKEN_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		TokenListClass_WhoAmI (
 
 static
 const
-TOKENLIST_CLASS_VTBL    class_Vtbl = {
+TOKEN_CLASS_VTBL    class_Vtbl = {
     {
-        &TokenList_Info,
-        TokenListClass_IsKindOf,
+        &Token_Info,
+        TokenClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        TokenList_Class,
-        TokenListClass_WhoAmI,
-        (P_OBJ_QUERYINFO)TokenListClass_QueryInfo,
-        NULL                        // TokenListClass_ToDebugString
+        Token_Class,
+        TokenClass_WhoAmI,
+        (P_OBJ_QUERYINFO)TokenClass_QueryInfo,
+        NULL                        // TokenClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ TOKENLIST_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-TOKENLIST_CLASS_DATA  TokenList_ClassObj = {
+TOKEN_CLASS_DATA  Token_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(TOKENLIST_CLASS_DATA),                  // cbSize
+        sizeof(TOKEN_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,17 @@ TOKENLIST_CLASS_DATA  TokenList_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  TOKENLIST_SINGLETON
-TOKENLIST_DATA *     TokenList_getSingleton (
+#ifdef  TOKEN_SINGLETON
+TOKEN_DATA *     Token_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(TokenList_ClassObj.pSingleton);
+    return (OBJ_ID)(Token_ClassObj.pSingleton);
 }
 
 
-bool            TokenList_setSingleton (
-    TOKENLIST_DATA       *pValue
+bool            Token_setSingleton (
+    TOKEN_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +192,10 @@ bool            TokenList_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (TokenList_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(TokenList_ClassObj.pSingleton));
+    if (Token_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Token_ClassObj.pSingleton));
     }
-    TokenList_ClassObj.pSingleton = pValue;
+    Token_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +205,17 @@ bool            TokenList_setSingleton (
 
 
 
-TOKENLIST_DATA *     TokenList_Shared (
+TOKEN_DATA *     Token_Shared (
     void
 )
 {
-    TOKENLIST_DATA       *this = (OBJ_ID)(TokenList_ClassObj.pSingleton);
+    TOKEN_DATA       *this = (OBJ_ID)(Token_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = TokenList_New( );
-        TokenList_setSingleton(this);
+        this = Token_New( );
+        Token_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // TokenList_ClassObj.pSingleton = OBJ_NIL;
+        // Token_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +223,15 @@ TOKENLIST_DATA *     TokenList_Shared (
 
 
 
-void            TokenList_SharedReset (
+void            Token_SharedReset (
     void
 )
 {
-    TOKENLIST_DATA       *this = (OBJ_ID)(TokenList_ClassObj.pSingleton);
+    TOKEN_DATA       *this = (OBJ_ID)(Token_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        TokenList_ClassObj.pSingleton = OBJ_NIL;
+        Token_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +247,13 @@ void            TokenList_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          TokenListClass_QueryInfo (
+void *          TokenClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    TOKENLIST_CLASS_DATA *this = objId;
+    TOKEN_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +264,7 @@ void *          TokenListClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(TOKENLIST_DATA);
+            return (void *)sizeof(TOKEN_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,7 +279,7 @@ void *          TokenListClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&TokenList_Info;
+                        return (void *)&Token_Info;
                     }
                     break;
                     
@@ -297,19 +297,19 @@ void *          TokenListClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return TokenList_New;
+                        return Token_New;
                     }
                     break;
                     
                 case 'P':
                     if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return TokenList_ParseJsonObject;
+                        //return Token_ParseJsonObject;
                     }
                     break;
  
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return TokenListClass_WhoAmI;
+                        return TokenClass_WhoAmI;
                     }
                     break;
                     
@@ -329,7 +329,7 @@ void *          TokenListClass_QueryInfo (
 
 
 static
-bool            TokenList_IsKindOf (
+bool            Token_IsKindOf (
     uint16_t		classID
 )
 {
@@ -337,14 +337,14 @@ bool            TokenList_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_TOKENLIST == classID) {
+    if (OBJ_IDENT_TOKEN == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(TokenList_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Token_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -358,25 +358,25 @@ bool            TokenList_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            TokenList_Dealloc (
+void            Token_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          TokenList_Class (
+OBJ_ID          Token_Class (
     void
 )
 {
-    return (OBJ_ID)&TokenList_ClassObj;
+    return (OBJ_ID)&Token_ClassObj;
 }
 
 
 static
-uint16_t		TokenList_WhoAmI (
+uint16_t		Token_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_TOKENLIST;
+    return OBJ_IDENT_TOKEN;
 }
 
 
@@ -388,34 +388,34 @@ uint16_t		TokenList_WhoAmI (
 //===========================================================
 
 const
-TOKENLIST_VTBL     TokenList_Vtbl = {
+TOKEN_VTBL     Token_Vtbl = {
     {
-        &TokenList_Info,
-        TokenList_IsKindOf,
-#ifdef  TOKENLIST_IS_SINGLETON
+        &Token_Info,
+        Token_IsKindOf,
+#ifdef  TOKEN_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        TokenList_Dealloc,
-        TokenList_Class,
-        TokenList_WhoAmI,
-        (P_OBJ_QUERYINFO)TokenList_QueryInfo,
-        (P_OBJ_TOSTRING)TokenList_ToDebugString,
-        NULL,			// TokenList_Enable,
-        NULL,			// TokenList_Disable,
-        NULL,			// (P_OBJ_ASSIGN)TokenList_Assign,
-        NULL,			// (P_OBJ_COMPARE)TokenList_Compare,
-        NULL, 			// (P_OBJ_PTR)TokenList_Copy,
-        NULL, 			// (P_OBJ_PTR)TokenList_DeepCopy,
-        NULL 			// (P_OBJ_HASH)TokenList_Hash,
+        Token_Dealloc,
+        Token_Class,
+        Token_WhoAmI,
+        (P_OBJ_QUERYINFO)Token_QueryInfo,
+        (P_OBJ_TOSTRING)Token_ToDebugString,
+        NULL,			// Token_Enable,
+        NULL,			// Token_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Token_Assign,
+        NULL,			// (P_OBJ_COMPARE)Token_Compare,
+        NULL, 			// (P_OBJ_PTR)Token_Copy,
+        NULL, 			// (P_OBJ_PTR)Token_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Token_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //TokenList_IsEnabled,
+    //Token_IsEnabled,
  
 };
 
@@ -423,13 +423,13 @@ TOKENLIST_VTBL     TokenList_Vtbl = {
 
 static
 const
-OBJ_INFO        TokenList_Info = {
-    "TokenList",
-    "List of Source Tokens",
-    (OBJ_DATA *)&TokenList_ClassObj,
-    (OBJ_DATA *)&ObjList_ClassObj,
-    (OBJ_IUNKNOWN *)&TokenList_Vtbl,
-    sizeof(TOKENLIST_DATA)
+OBJ_INFO        Token_Info = {
+    "Token",
+    "Generic Source Token",
+    (OBJ_DATA *)&Token_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&Token_Vtbl,
+    sizeof(TOKEN_DATA)
 };
 
 

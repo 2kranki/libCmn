@@ -55,7 +55,7 @@
 #include        <cmn_defs.h>
 #include        <srcFile.h>
 #include        <path.h>
-#include        <token.h>
+#include        <Token.h>
 
 
 #ifndef         SRCFILES_H

@@ -69,7 +69,7 @@
 #include        <pplex.h>
 #include        <srcFiles.h>
 #include        <szTbl.h>
-#include        <token.h>
+#include        <Token.h>
 
 
 #ifndef         PPLEX2_H

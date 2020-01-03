@@ -1327,7 +1327,6 @@ extern "C" {
         uint32_t        n
     )
     {
-        uint32_t        index = 0;
         BITSET_DATA     *pBitSet = OBJ_NIL;
         U32ARRAY_DATA   *pSet = OBJ_NIL;
         

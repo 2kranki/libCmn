@@ -89,11 +89,11 @@ extern "C" {
 
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
+        tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_LBRACKET ) {
             TRC_OBJ(this,"\t[ - found\n");
             if (OBJ_NIL == pLoc) {
-                pLoc = token_ToSrcLoc(pToken);
+                pLoc = Token_ToSrcLoc(pToken);
             }
             lexj_TokenAdvance(this->pLexJ, 1);
         }
@@ -110,7 +110,7 @@ extern "C" {
         
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
+        tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_RBRACKET )   // Empty Array
             goto chkRBracket;
         
@@ -122,7 +122,7 @@ extern "C" {
                 
                 pToken = lexj_TokenLookAhead(this->pLexJ, 1);
                 BREAK_NULL(pToken);
-                tokenClass = token_getClass(pToken);
+                tokenClass = Token_getClass(pToken);
                 if( tokenClass == LEXJ_SEP_COMMA ) {
                     TRC_OBJ(this,"\t, - found\n");
                     lexj_TokenAdvance(this->pLexJ, 1);
@@ -145,14 +145,14 @@ extern "C" {
         chkRBracket:
             pToken = lexj_TokenLookAhead(this->pLexJ, 1);
             BREAK_NULL(pToken);
-            tokenClass = token_getClass(pToken);
+            tokenClass = Token_getClass(pToken);
             if( tokenClass == LEXJ_SEP_RBRACKET ) {
                 TRC_OBJ(this,"\t] - found\n");
                 lexj_TokenAdvance(this->pLexJ, 1);
             }
             else {
                 ASTR_DATA           *pStr;
-                pStr = token_ToDataString(pToken);
+                pStr = Token_ToDataString(pToken);
                 SrcErrors_AddFatalFromTokenA(
                                              OBJ_NIL,
                                              pToken,
@@ -210,11 +210,11 @@ extern "C" {
         
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
+        tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_LBRACE ) {
             TRC_OBJ(this,"\t{ - found\n");
             if (OBJ_NIL == pLoc) {
-                pLoc = token_ToSrcLoc(pToken);
+                pLoc = Token_ToSrcLoc(pToken);
             }
             lexj_TokenAdvance(this->pLexJ, 1);
         }
@@ -231,7 +231,7 @@ extern "C" {
 
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
+        tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_RBRACE )
             goto chkRBrace;
         
@@ -244,7 +244,7 @@ extern "C" {
             for (;;) {
                 pToken = lexj_TokenLookAhead(this->pLexJ, 1);
                 BREAK_NULL(pToken);
-                tokenClass = token_getClass(pToken);
+                tokenClass = Token_getClass(pToken);
                 if( tokenClass == LEXJ_SEP_COMMA ) {
                     TRC_OBJ(this,"\t, - found\n");
                     lexj_TokenAdvance(this->pLexJ, 1);
@@ -269,14 +269,14 @@ extern "C" {
     chkRBrace:
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
+        tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_RBRACE ) {
             TRC_OBJ(this,"\t} - found\n");
             lexj_TokenAdvance(this->pLexJ, 1);
         }
         else {
             ASTR_DATA           *pStr;
-            pStr = token_ToDataString(pToken);
+            pStr = Token_ToDataString(pToken);
             SrcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
@@ -335,9 +335,9 @@ extern "C" {
         
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
+        tokenClass = Token_getClass(pToken);
         if (OBJ_NIL == pLoc) {
-            pLoc = token_ToSrcLoc(pToken);
+            pLoc = Token_ToSrcLoc(pToken);
         }
 
         switch (tokenClass) {
@@ -417,11 +417,11 @@ extern "C" {
         
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
-        pStr = token_ToDataString(pToken);
+        tokenClass = Token_getClass(pToken);
+        pStr = Token_ToDataString(pToken);
         AStr_Trim(pStr);
         if (OBJ_NIL == pLoc) {
-            pLoc = token_ToSrcLoc(pToken);
+            pLoc = Token_ToSrcLoc(pToken);
         }
         if( tokenClass == LEXJ_CONSTANT_STRING ) {
             lexj_TokenAdvance(this->pLexJ, 1);
@@ -476,22 +476,22 @@ extern "C" {
         
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
+        tokenClass = Token_getClass(pToken);
         TRC_OBJ(this, "\ttoken class = %d\n", tokenClass);
 #ifdef NDEBUG
 #else
-        if (token_getChrW32(pToken)) {
-            TRC_OBJ(this, "\ttoken string = \"%lc\"\n", token_getChrW32(pToken));
+        if (Token_getChrW32(pToken)) {
+            TRC_OBJ(this, "\ttoken string = \"%lc\"\n", Token_getChrW32(pToken));
         }
         //fprintf(stderr, "\tLEX_SEP_MINUS = %d\n", LEXJ_SEP_MINUS);
 #endif
         if( (tokenClass == LEXJ_SEP_MINUS) || (tokenClass == LEXJ_SEP_PLUS) ) {
-            pSign = token_getTextAStr(pToken);
+            pSign = Token_getTextAStr(pToken);
             sign = *AStr_getData(pSign);
             obj_Release(pSign);
             pSign = OBJ_NIL;
             if (OBJ_NIL == pLoc) {
-                pLoc = token_ToSrcLoc(pToken);
+                pLoc = Token_ToSrcLoc(pToken);
             }
             lexj_TokenAdvance(this->pLexJ, 1);
             TRC_OBJ(this, "\tsign = %c\n", sign);
@@ -499,17 +499,17 @@ extern "C" {
 
             pToken = lexj_TokenLookAhead(this->pLexJ, 1);
             BREAK_NULL(pToken);
-            tokenClass = token_getClass(pToken);
+            tokenClass = Token_getClass(pToken);
             TRC_OBJ(this, "\ttoken class = %d\n", tokenClass);
 #ifdef NDEBUG
 #else
-            if (token_getChrW32(pToken)) {
-                TRC_OBJ(this, "\ttoken string = \"%lc\"\n", token_getChrW32(pToken));
+            if (Token_getChrW32(pToken)) {
+                TRC_OBJ(this, "\ttoken string = \"%lc\"\n", Token_getChrW32(pToken));
             }
 #endif
         }
         if( tokenClass == LEXJ_CONSTANT_INTEGER ) {
-            pStr = token_ToDataString(pToken);
+            pStr = Token_ToDataString(pToken);
             if (pStr) {
                 if (sign) {
                     AStr_CharInsertW32(pStr, 1, sign);
@@ -519,13 +519,13 @@ extern "C" {
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
                 if (OBJ_NIL == pLoc) {
-                    pLoc = token_ToSrcLoc(pToken);
+                    pLoc = Token_ToSrcLoc(pToken);
                 }
             }
             lexj_TokenAdvance(this->pLexJ, 1);
         }
         else if( tokenClass == LEXJ_CONSTANT_FLOAT ) {
-            pStr = token_ToDataString(pToken);
+            pStr = Token_ToDataString(pToken);
             if (pStr) {
                 if (sign) {
                     AStr_CharInsertW32(pStr, 1, sign);
@@ -535,7 +535,7 @@ extern "C" {
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
                 if (OBJ_NIL == pLoc) {
-                    pLoc = token_ToSrcLoc(pToken);
+                    pLoc = Token_ToSrcLoc(pToken);
                 }
             }
             lexj_TokenAdvance(this->pLexJ, 1);
@@ -593,7 +593,7 @@ extern "C" {
 
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
+        tokenClass = Token_getClass(pToken);
         if((tokenClass == LEXJ_SEP_COLON) || (tokenClass == LEXJ_SEP_EQUAL)) {
             lexj_TokenAdvance(this->pLexJ, 1);
             TRC_OBJ(this, "\tfound :\n");
@@ -677,11 +677,11 @@ extern "C" {
         
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
+        tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_CONSTANT_STRING ) {
-            pStr = token_ToDataString(pToken);
+            pStr = Token_ToDataString(pToken);
             if (OBJ_NIL == pLoc) {
-                pLoc = token_ToSrcLoc(pToken);
+                pLoc = Token_ToSrcLoc(pToken);
             }
             lexj_TokenAdvance(this->pLexJ, 1);
         }
@@ -731,13 +731,13 @@ extern "C" {
         
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
         BREAK_NULL(pToken);
-        tokenClass = token_getClass(pToken);
+        tokenClass = Token_getClass(pToken);
 
 #ifdef XYZZY
         switch (tokenClass) {
 
             case LEXJ_CONSTANT_STRING:
-                pStr = token_ToDataString(pToken);
+                pStr = Token_ToDataString(pToken);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
                 lexj_TokenAdvance(this->pLexJ, 1);

@@ -586,14 +586,14 @@ extern "C" {
         while (fMore) {
             pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
             if (pInput) {
-                cls = token_getClass(pInput);
+                cls = Token_getClass(pInput);
             }
             else {
                 pInput = lex_ParseEOF((LEX_DATA *)this);
-                cls = token_getClass(pInput);
+                cls = Token_getClass(pInput);
                 DEBUG_BREAK();
             }
-            token_Assign(pInput, lex_getToken((LEX_DATA *)this));
+            Token_Assign(pInput, lex_getToken((LEX_DATA *)this));
             
             switch (cls) {
                     
@@ -614,7 +614,7 @@ extern "C" {
                             break;
                         }
                     }
-                    pStr = token_getTextAStr(pInput);
+                    pStr = Token_getTextAStr(pInput);
                     if (this->pAuxKwds) {
                         pKWD =  kwSearch(
                                         AStr_getData(pStr),
@@ -622,7 +622,7 @@ extern "C" {
                                         this->cAuxKwds
                                 );
                         if (pKWD) {
-                            token_setClass(lex_getToken((LEX_DATA *)this), pKWD->value);
+                            Token_setClass(lex_getToken((LEX_DATA *)this), pKWD->value);
                             lex_InputAdvance((LEX_DATA *)this, 1);
                             fMore = false;
                             obj_Release(pStr);
@@ -636,7 +636,7 @@ extern "C" {
                                     cKwdTbl_ObjC
                                 );
                         if (pKWD) {
-                            token_setClass(lex_getToken((LEX_DATA *)this),pKWD->value);
+                            Token_setClass(lex_getToken((LEX_DATA *)this),pKWD->value);
                             lex_InputAdvance((LEX_DATA *)this, 1);
                             fMore = false;
                             obj_Release(pStr);
@@ -649,7 +649,7 @@ extern "C" {
                                 cKwdTbl_C
                                 );
                     if (pKWD) {
-                        token_setClass(lex_getToken((LEX_DATA *)this),pKWD->value);
+                        Token_setClass(lex_getToken((LEX_DATA *)this),pKWD->value);
                         lex_InputAdvance((LEX_DATA *)this, 1);
                         fMore = false;
                         obj_Release(pStr);
@@ -661,7 +661,7 @@ extern "C" {
                                 cKwdTbl_LL1
                                 );
                     if (pKWD) {
-                        token_setClass(lex_getToken((LEX_DATA *)this), pKWD->value);
+                        Token_setClass(lex_getToken((LEX_DATA *)this), pKWD->value);
                         lex_InputAdvance((LEX_DATA *)this, 1);
                         fMore = false;
                         obj_Release(pStr);

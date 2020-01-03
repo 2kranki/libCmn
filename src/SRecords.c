@@ -764,12 +764,12 @@ extern "C" {
         
         // Skip over leading white space.
         pToken = srcFile_InputAdvance(this->pSrc, 1);
-        chr = token_getChrW32(pToken);
-        cls = token_getClass(pToken);
+        chr = Token_getChrW32(pToken);
+        cls = Token_getClass(pToken);
         while (cls == ASCII_LEXICAL_WHITESPACE) {
             pToken = srcFile_InputAdvance(this->pSrc, 1);
-            chr = token_getChrW32(pToken);
-            cls = token_getClass(pToken);
+            chr = Token_getChrW32(pToken);
+            cls = Token_getClass(pToken);
         }
         
         if (chr == 'S') {

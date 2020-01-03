@@ -41,8 +41,8 @@
 #include    <ascii.h>
 #include    <ObjArray.h>
 #include    <szTbl.h>
-#include    <token_internal.h>
-#include    <tokenList.h>
+#include    <Token_internal.h>
+#include    <TokenList.h>
 
 
 #ifndef LEX_INTERNAL_H

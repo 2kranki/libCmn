@@ -55,9 +55,9 @@ extern "C" {
     
 
     
-
-   const
-   char            *pTypeStr[] = {
+    static
+    const
+    char            *pTypeStr[] = {
        "VALUE_TYPE_UNKNOWN",
        "VALUE_TYPE_FLOAT",
        "VALUE_TYPE_DOUBLE",

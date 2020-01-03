@@ -83,8 +83,12 @@ extern "C" {
         TOKENLIST_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
-        //int64_t         intIn;
-        //ASTR_DATA       *pWrk;
+        int64_t         intIn;
+        uint32_t        i;
+        uint32_t        iMax;
+        NODEARRAY_DATA  *pArray;
+        NODEHASH_DATA   *pHash;
+        NODE_DATA       *pNode;
 
         pInfo = obj_getInfo(TokenList_Class());
         
@@ -99,24 +103,26 @@ extern "C" {
             goto exit00;
         }
         
-#ifdef XYZZZY 
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
-        pObject->loc.fileIndex = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->loc.offset);
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
-        pObject->loc.lineNo = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
-        pObject->loc.colNo = (uint16_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "severity", &intIn);
-        pObject->severity = (uint16_t)intIn;
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "Size", &intIn);
+        iMax = (uint32_t)intIn;
 
-        eRc = JsonIn_SubobjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
+        eRc = JsonIn_FindArrayNodeInHashA(pParser, "Tokens", &pArray);
+        for (i=0; i<iMax; i++) {
+            OBJ_ID          pObj = OBJ_NIL;
+            pNode = nodeArray_Get(pArray, i+1);
+            pHash = JsonIn_CheckNodeForHash(pNode);
+            if (pHash) {
+                eRc = JsonIn_SubObjectFromHash(pParser, pHash);
+                eRc = JsonIn_SubObjectInHash(pParser, "Token");
+                pObj = JsonIn_ParseObject(pParser);
+                if (pObj) {
+                    eRc = TokenList_Add2Tail(pObject, (TOKEN_DATA *)pObj);
+                    obj_Release(pObj);
+                }
+                JsonIn_SubObjectEnd(pParser);
+                JsonIn_SubObjectEnd(pParser);
+            }
         }
-        JsonIn_SubobjectEnd(pParser);
-#endif
 
         // Return to caller.
     exit00:
@@ -206,7 +212,6 @@ extern "C" {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-#ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
             uint32_t        type,
@@ -216,7 +221,9 @@ extern "C" {
             OBJ_ID          objId
         );
         ASTR_DATA       *pWrkStr;
-#endif
+        OBJ_ID          pEntry = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
 
 #ifdef NDEBUG
 #else
@@ -226,7 +233,8 @@ extern "C" {
         }
 #endif
         pInfo = obj_getInfo(this);
-        
+        iMax = ObjList_getSize((OBJLIST_DATA *)this);
+
         pStr = AStr_New();
         if (pStr) {
              AStr_AppendPrint(pStr,
@@ -234,42 +242,61 @@ extern "C" {
                               pInfo->pClassName
              );
             
-            AStr_AppendA(pStr, "}\n");
-
-#ifdef XYZZZY 
             AStr_AppendPrint(pStr,
-                             "\"fileIndex\":%d, "
-                             "\"offset\":%lld, "
-                             "\"lineNo\":%d, "
-                             "\"colNo\":%d "
-                             "\"severity\":%d ",
-                             this->loc.fileIndex,
-                             this->loc.offset,
-                             this->loc.lineNo,
-                             this->loc.colNo,
-                             this->severity
+                             "\"Size\":%d, "
+                             "\"Tokens\":[\n",
+                             iMax
             );
-             if (this->pErrorStr) {
-                pQueryInfo = obj_getVtbl(this->pErrorStr)->pQueryInfo;
-                if (pQueryInfo) {
-                    pToJson =   (*pQueryInfo)(
-                                              this->pErrorStr,
-                                              OBJ_QUERYINFO_TYPE_METHOD,
-                                              "ToJson"
-                                              );
-                    if (pToJson) {
-                        pWrkStr = (*pToJson)(this->pErrorStr);
-                        if (pWrkStr) {
-                            AStr_AppendA(pStr, "\t\"errorStr\": ");
-                            AStr_Append(pStr, pWrkStr);
-                            obj_Release(pWrkStr);
-                            pWrkStr = OBJ_NIL;
-                            AStr_AppendA(pStr, "\n");
+            if (iMax > 0) {
+                pEntry = ObjList_Head((OBJLIST_DATA *)this);
+                for (i=0; i<(iMax-1); i++) {
+                    if (pEntry) {
+                        pQueryInfo = obj_getVtbl(pEntry)->pQueryInfo;
+                        if (pQueryInfo) {
+                            pToJson =   (*pQueryInfo)(
+                                                      pEntry,
+                                                      OBJ_QUERYINFO_TYPE_METHOD,
+                                                      "ToJson"
+                                                      );
+                            if (pToJson) {
+                                pWrkStr = (*pToJson)(pEntry);
+                                if (pWrkStr) {
+                                    AStr_AppendA(pStr, "\t{\"Token\": ");
+                                    AStr_Append(pStr, pWrkStr);
+                                    obj_Release(pWrkStr);
+                                    pWrkStr = OBJ_NIL;
+                                    AStr_AppendA(pStr, "},\n");
+                                }
+                            }
                         }
                     }
+                    else
+                        break;
+                    pEntry = ObjList_Next((OBJLIST_DATA *)this);
                 }
             }
-#endif
+            if (pEntry) {
+                 pQueryInfo = obj_getVtbl(pEntry)->pQueryInfo;
+                 if (pQueryInfo) {
+                     pToJson =   (*pQueryInfo)(
+                                               pEntry,
+                                               OBJ_QUERYINFO_TYPE_METHOD,
+                                               "ToJson"
+                                               );
+                     if (pToJson) {
+                         pWrkStr = (*pToJson)(pEntry);
+                         if (pWrkStr) {
+                             AStr_AppendA(pStr, "\t{\"Token\": ");
+                             AStr_Append(pStr, pWrkStr);
+                             obj_Release(pWrkStr);
+                             pWrkStr = OBJ_NIL;
+                             AStr_AppendA(pStr, "}\n");
+                         }
+                     }
+                 }
+            }
+
+            AStr_AppendA(pStr, "]}\n");
         }
 
         return pStr;

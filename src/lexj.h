@@ -60,7 +60,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <lex.h>
-#include        <token.h>
+#include        <Token.h>
 
 
 #ifndef         LEXJ_H

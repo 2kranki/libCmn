@@ -259,7 +259,32 @@ extern "C" {
                          numEntries
         );
 
-        for (i=0; i<iMax; i++) {
+        if (iMax > 1) {
+            for (i=0; i<iMax-1; i++) {
+                pObj = ObjArray_Get(this, i+1);
+                if (pObj) {
+                    pQueryInfo = obj_getVtbl(pObj)->pQueryInfo;
+                    if (pQueryInfo) {
+                        pToJson =   (*pQueryInfo)(
+                                                  pObj,
+                                                  OBJ_QUERYINFO_TYPE_METHOD,
+                                                  "ToJson"
+                                                  );
+                        if (pToJson) {
+                            pWrkStr = (*pToJson)(pObj);
+                            if (pWrkStr) {
+                                AStr_AppendPrint(pStr, "\t{Index:%d, Object:", i+1);
+                                AStr_Append(pStr, pWrkStr);
+                                obj_Release(pWrkStr);
+                                pWrkStr = OBJ_NIL;
+                                AStr_AppendA(pStr, "},\n");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (iMax) {
             pObj = ObjArray_Get(this, i+1);
             if (pObj) {
                 pQueryInfo = obj_getVtbl(pObj)->pQueryInfo;
@@ -276,13 +301,12 @@ extern "C" {
                             AStr_Append(pStr, pWrkStr);
                             obj_Release(pWrkStr);
                             pWrkStr = OBJ_NIL;
-                            AStr_AppendA(pStr, "},\n");
+                            AStr_AppendA(pStr, "}\n");
                         }
                     }
                 }
             }
         }
-
         AStr_AppendA(pStr, "] }\n");
         
         return pStr;

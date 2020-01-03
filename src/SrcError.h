@@ -54,7 +54,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <SrcLoc.h>
-#include        <token.h>
+#include        <Token.h>
 
 
 #ifndef         SRCERROR_H

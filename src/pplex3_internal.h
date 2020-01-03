@@ -45,7 +45,7 @@
 #include    <pplex3.h>
 #include    <ObjArray.h>
 #include    <lex_internal.h>
-#include    <token_internal.h>
+#include    <Token_internal.h>
 
 #ifdef	__cplusplus
 extern "C" {

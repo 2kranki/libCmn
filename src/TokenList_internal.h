@@ -41,6 +41,7 @@
 
 #include        <TokenList.h>
 #include        <JsonIn.h>
+#include        <ObjList_internal.h>
 
 
 #ifndef TOKENLIST_INTERNAL_H
@@ -67,13 +68,10 @@ extern "C" {
 struct TokenList_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    OBJLIST_DATA    super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)

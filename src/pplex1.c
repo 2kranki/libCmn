@@ -247,11 +247,11 @@ extern "C" {
         while (fMore) {
             pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
             if (pInput) {
-                cls = token_getClass(pInput);
+                cls = Token_getClass(pInput);
             }
             else {
                 pInput = lex_ParseEOF((LEX_DATA *)this);
-                cls = token_getClass(pInput);
+                cls = Token_getClass(pInput);
                 DEBUG_BREAK();
             }
             eRc = lex_ParseTokenSetup((LEX_DATA *)this, pInput);
@@ -263,77 +263,77 @@ extern "C" {
                     
                 case '?':           /*** '?' ***/
                     pInput = lex_InputLookAhead((LEX_DATA *)this, 2);
-                    cls = token_getClass(pInput);
+                    cls = Token_getClass(pInput);
                     if( '?' == cls) {
                         pInput = lex_InputLookAhead((LEX_DATA *)this, 3);
-                        cls = token_getClass(pInput);
+                        cls = Token_getClass(pInput);
                         if( '(' == cls) {
-                            token_setClass(&this->super.token, '[');
-                            token_setChrW32(&this->super.token, '[');
+                            Token_setClass(&this->super.token, '[');
+                            Token_setChrW32(&this->super.token, '[');
                             lex_InputAdvance((LEX_DATA *)this, 3);
                             cls = '[';
                             fMore = false;
                             break;
                         }
                         if( '/' == cls) {
-                            token_setClass(&this->super.token, '\\');
-                            token_setChrW32(&this->super.token, '\\');
+                            Token_setClass(&this->super.token, '\\');
+                            Token_setChrW32(&this->super.token, '\\');
                             lex_InputAdvance((LEX_DATA *)this, 3);
                             cls = '\\';
                             fMore = false;
                             break;
                         }
                         if( ')' == cls) {
-                            token_setClass(&this->super.token, ']');
-                            token_setChrW32(&this->super.token, ']');
+                            Token_setClass(&this->super.token, ']');
+                            Token_setChrW32(&this->super.token, ']');
                             lex_InputAdvance((LEX_DATA *)this, 3);
                             fMore = false;
                             cls = ']';
                             break;
                         }
                         if( '\'' == cls) {
-                            token_setClass(&this->super.token, '^');
-                            token_setChrW32(&this->super.token, '^');
+                            Token_setClass(&this->super.token, '^');
+                            Token_setChrW32(&this->super.token, '^');
                             lex_InputAdvance((LEX_DATA *)this, 3);
                             fMore = false;
                             cls = '^';
                             break;
                         }
                         if( '<' == cls) {
-                            token_setClass(&this->super.token, '{');
-                            token_setChrW32(&this->super.token, '{');
+                            Token_setClass(&this->super.token, '{');
+                            Token_setChrW32(&this->super.token, '{');
                             lex_InputAdvance((LEX_DATA *)this, 3);
                             fMore = false;
                             cls = '{';
                             break;
                         }
                         if( '!' == cls) {
-                            token_setClass(&this->super.token, '|');
-                            token_setChrW32(&this->super.token, '|');
+                            Token_setClass(&this->super.token, '|');
+                            Token_setChrW32(&this->super.token, '|');
                             lex_InputAdvance((LEX_DATA *)this, 3);
                             fMore = false;
                             cls = '|';
                             break;
                         }
                         if( '>' == cls) {
-                            token_setClass(&this->super.token, '}');
-                            token_setChrW32(&this->super.token, '}');
+                            Token_setClass(&this->super.token, '}');
+                            Token_setChrW32(&this->super.token, '}');
                             lex_InputAdvance((LEX_DATA *)this, 3);
                             fMore = false;
                             cls = '}';
                             break;
                         }
                         if( '-' == cls) {
-                            token_setClass(&this->super.token, '~');
-                            token_setChrW32(&this->super.token, '~');
+                            Token_setClass(&this->super.token, '~');
+                            Token_setChrW32(&this->super.token, '~');
                             lex_InputAdvance((LEX_DATA *)this, 3);
                             cls = '~';
                             fMore = false;
                             break;
                         }
                         if( '=' == cls) {
-                            token_setClass(&this->super.token, '#');
-                            token_setChrW32(&this->super.token, '#');
+                            Token_setClass(&this->super.token, '#');
+                            Token_setChrW32(&this->super.token, '#');
                             lex_InputAdvance((LEX_DATA *)this, 3);
                             cls = '#';
                             fMore = false;
@@ -344,7 +344,7 @@ extern "C" {
                     fMore = false;
                     break;
                 default:
-                    token_Assign(pInput, &this->super.token); //???
+                    Token_Assign(pInput, &this->super.token); //???
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
             }

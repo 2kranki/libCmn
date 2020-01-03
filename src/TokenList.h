@@ -1,22 +1,20 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          TOKENLIST Console Transmit Task (TokenList) Header
+//          A List of Tokens (TokenList) Header
 //****************************************************************
 /*
  * Program
- *			Separate TokenList (TokenList)
+ *			A List of Tokens (TokenList)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate TokenList to run things without complications
- *          of interfering with the main TokenList. A TokenList may be 
- *          called a TokenList on other O/S's.
- *
+ *            This object provides a list of tokens.
  * Remarks
- *	1.      None
+ *    1.      Each token in the list must only be referenced for use
+ *          and never copied or released. They can be assigned.
  *
  * History
- *	01/02/2020 Generated
+ *  07/22/2015 Generated
+ *	01/02/2020 Regenerated
  */
 
 
@@ -53,13 +51,16 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <ObjEnum.h>
+#include        <ObjList.h>
+#include        <Token.h>
 
 
 #ifndef         TOKENLIST_H
 #define         TOKENLIST_H
 
 
-//#define   TOKENLIST_JSON_SUPPORT 1
+#define   TOKENLIST_JSON_SUPPORT 1
 //#define   TOKENLIST_SINGLETON    1
 
 
@@ -110,7 +111,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  TOKENLIST_SINGLETON
-    TOKENLIST_DATA *     TokenList_Shared (
+    TOKENLIST_DATA * TokenList_Shared (
         void
     );
 
@@ -126,7 +127,7 @@ extern "C" {
      released.
      @return    pointer to TokenList object if successful, otherwise OBJ_NIL.
      */
-    TOKENLIST_DATA *     TokenList_Alloc (
+    TOKENLIST_DATA * TokenList_Alloc (
         void
     );
     
@@ -136,16 +137,35 @@ extern "C" {
     );
     
     
-    TOKENLIST_DATA *     TokenList_New (
+    TOKENLIST_DATA * TokenList_New (
         void
     );
     
     
+    TOKENLIST_DATA * TokenList_NewFromJsonString(
+        ASTR_DATA       *pString
+    );
+
+
+    TOKENLIST_DATA * TokenList_NewFromJsonStringA(
+        const
+        char            *pString
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    OBJLIST_DATA *  TokenList_getList (
+        TOKENLIST_DATA  *this
+    );
+
+
+    uint32_t        TokenList_getSize (
+        TOKENLIST_DATA  *this
+    );
 
 
     
@@ -153,26 +173,140 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     TokenList_Disable (
-        TOKENLIST_DATA		*this
+    ERESULT         TokenList_Add2Head (
+        TOKENLIST_DATA  *this,
+        TOKEN_DATA      *pNode
     );
 
 
-    ERESULT     TokenList_Enable (
-        TOKENLIST_DATA		*this
-    );
-
-   
-    TOKENLIST_DATA *   TokenList_Init (
-        TOKENLIST_DATA     *this
+    ERESULT         TokenList_Add2Tail (
+        TOKENLIST_DATA  *this,
+        TOKEN_DATA      *pNode
     );
 
 
-    ERESULT     TokenList_IsEnabled (
-        TOKENLIST_DATA		*this
+    /*!
+     This routine appends (adds to the tail) the other list to this list.
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
+     */
+    ERESULT         TokenList_Append (
+        TOKENLIST_DATA  *this,
+        TOKENLIST_DATA  *other
     );
-    
- 
+
+
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = TokenList_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another TOKENLIST object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         TokenList_Assign (
+        TOKENLIST_DATA  *this,
+        TOKENLIST_DATA  *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        TokenList      *pCopy = TokenList_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a TOKENLIST object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    TOKENLIST_DATA * TokenList_Copy (
+        TOKENLIST_DATA  *this
+    );
+
+
+    ERESULT         TokenList_DeleteAll (
+        TOKENLIST_DATA  *this
+    );
+
+
+    ERESULT         TokenList_DeleteHead (
+        TOKENLIST_DATA  *this
+    );
+
+
+    ERESULT         TokenList_DeleteTail (
+        TOKENLIST_DATA  *this
+    );
+
+
+    OBJENUM_DATA *  TokenList_Enum(
+        TOKENLIST_DATA  *this
+    );
+
+
+    TOKEN_DATA *    TokenList_Head (
+        TOKENLIST_DATA  *this
+    );
+
+
+    /*!
+     Index() returns the Ith entry from the Head of the List.
+     @param     index is relative to 1 from the Head of the List
+     @return    Token Ptr if successful, otherwise NULL
+     @warning:  This method must starts at the head and moves toward
+                 the index'th token in the list every time that it is
+                 called.
+     */
+    TOKEN_DATA *    TokenList_Index (
+        TOKENLIST_DATA  *this,
+        int32_t         index                    // (relative to 1)
+    );
+
+
+    TOKENLIST_DATA * TokenList_Init (
+        TOKENLIST_DATA  *this
+    );
+
+
+    /*!
+     This routine prepends (adds to the head) the other list to this list.
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
+     */
+    ERESULT         TokenList_Prepend (
+        TOKENLIST_DATA  *this,
+        TOKENLIST_DATA  *other
+    );
+
+
+    TOKEN_DATA *    TokenList_Tail (
+        TOKENLIST_DATA  *this
+    );
+
+
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = TokenList_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     TokenList_ToJson(
+        TOKENLIST_DATA   *this
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -185,8 +319,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    TokenList_ToDebugString (
-        TOKENLIST_DATA     *this,
+    ASTR_DATA *     TokenList_ToDebugString (
+        TOKENLIST_DATA  *this,
         int             indent
     );
     

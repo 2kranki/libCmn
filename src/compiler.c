@@ -1147,11 +1147,11 @@ extern "C" {
         
         DEBUG_BREAK();
         
-        pFileName = token_getFileName(pToken);
-        linnum = token_getLineNo(pToken);
-        colnum = token_getColNo(pToken);
+        pFileName = Token_getFileName(pToken);
+        linnum = Token_getLineNo(pToken);
+        colnum = Token_getColNo(pToken);
         
-        pAStr = token_ToDataString(pToken);
+        pAStr = Token_ToDataString(pToken);
         fprintf(
                 stderr,
                 "Fatal Error:  file: %s line: %d col: %d - Expecting %s, but found %s",

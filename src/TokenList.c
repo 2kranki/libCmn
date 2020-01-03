@@ -123,6 +123,29 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                          L i s t
+    //---------------------------------------------------------------
+
+    OBJLIST_DATA *  TokenList_getList (
+        TOKENLIST_DATA  *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!TokenList_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (OBJLIST_DATA *)this;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -181,59 +204,11 @@ extern "C" {
         }
 #endif
 
-        return 0;
+        return ObjList_getSize(TokenList_getList(this));
     }
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * TokenList_getStr (
-        TOKENLIST_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!TokenList_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        TokenList_setStr (
-        TOKENLIST_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!TokenList_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -266,6 +241,97 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          A d d
+    //---------------------------------------------------------------
+
+    ERESULT         TokenList_Add2Head (
+        TOKENLIST_DATA  *this,
+        TOKEN_DATA      *pToken
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if( !TokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( (OBJ_NIL == pToken) || !obj_IsKindOf(pToken,OBJ_IDENT_TOKEN) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+    #endif
+
+        eRc = ObjList_Add2Head(TokenList_getList(this), pToken);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         TokenList_Add2Tail (
+        TOKENLIST_DATA  *this,
+        TOKEN_DATA      *pToken
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( (OBJ_NIL == pToken) || !obj_IsKindOf(pToken,OBJ_IDENT_TOKEN) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        eRc = ObjList_Add2Tail(TokenList_getList(this), pToken);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //----------------------------------------------------------
+    //                      A p p e n d
+    //----------------------------------------------------------
+
+    ERESULT         TokenList_Append (
+        TOKENLIST_DATA  *this,
+        TOKENLIST_DATA  *pOther
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !TokenList_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = ObjList_Append(TokenList_getList(this), TokenList_getList(pOther));
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -283,8 +349,8 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         TokenList_Assign (
-        TOKENLIST_DATA		*this,
-        TOKENLIST_DATA     *pOther
+        TOKENLIST_DATA	*this,
+        TOKENLIST_DATA  *pOther
     )
     {
         ERESULT     eRc;
@@ -325,14 +391,13 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
+        eRc = ObjList_Assign(TokenList_getList(this), TokenList_getList(pOther));
+
         //goto eom;
 
         // Return to caller.
-        eRc = ERESULT_SUCCESS;
+        //eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -349,8 +414,8 @@ extern "C" {
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
     ERESULT         TokenList_Compare (
-        TOKENLIST_DATA     *this,
-        TOKENLIST_DATA     *pOther
+        TOKENLIST_DATA  *this,
+        TOKENLIST_DATA  *pOther
     )
     {
         int             i = 0;
@@ -413,11 +478,11 @@ extern "C" {
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    TOKENLIST_DATA *     TokenList_Copy (
-        TOKENLIST_DATA       *this
+    TOKENLIST_DATA * TokenList_Copy (
+        TOKENLIST_DATA  *this
     )
     {
-        TOKENLIST_DATA       *pOther = OBJ_NIL;
+        TOKENLIST_DATA  *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
@@ -467,14 +532,6 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        if (obj_IsEnabled(this)) {
-            ((TOKENLIST_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
-        }
-#endif
-
-        TokenList_setStr(this, OBJ_NIL);
-
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -482,6 +539,77 @@ extern "C" {
         this = OBJ_NIL;
 
         // Return to caller.
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          D e l e t e
+    //---------------------------------------------------------------
+
+    ERESULT         TokenList_DeleteAll(
+        TOKENLIST_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = ObjList_DeleteAll(TokenList_getList(this));
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         TokenList_DeleteHead(
+        TOKENLIST_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = ObjList_DeleteHead(TokenList_getList(this));
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         TokenList_DeleteTail(
+        TOKENLIST_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = ObjList_DeleteTail(TokenList_getList(this));
+
+        // Return to caller.
+        return eRc;
     }
 
 
@@ -556,6 +684,79 @@ extern "C" {
 
 
 
+    //----------------------------------------------------------
+    //                        E n u m
+    //----------------------------------------------------------
+
+    OBJENUM_DATA *  TokenList_Enum(
+        TOKENLIST_DATA  *this
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        // Return to caller.
+        return ObjList_Enum(TokenList_getList(this));
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          H e a d
+    //---------------------------------------------------------------
+
+    TOKEN_DATA *    TokenList_Head(
+        TOKENLIST_DATA  *this
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        // Return to caller.
+        return (TOKEN_DATA *)ObjList_Head(TokenList_getList(this));
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          I n d e x
+    //---------------------------------------------------------------
+
+    TOKEN_DATA *    TokenList_Index(
+        TOKENLIST_DATA  *this,
+        int32_t         index                    // (relative to 1)
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!TokenList_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        // Return to caller.
+        return (TOKEN_DATA *)ObjList_Index(TokenList_getList(this), index);
+    }
+
+
+
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
@@ -581,14 +782,14 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_TOKENLIST);
+        this = (OBJ_ID)ObjList_Init((OBJLIST_DATA *)this);      // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_TOKENLIST);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&TokenList_Vtbl);
         
@@ -609,7 +810,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "TokenList::sizeof(TOKENLIST_DATA) = %lu\n", sizeof(TOKENLIST_DATA));
+        //fprintf(stderr, "TokenList::sizeof(TOKENLIST_DATA) = %lu\n", sizeof(TOKENLIST_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(TOKENLIST_DATA));
     #endif
@@ -648,21 +849,38 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //                P a r s e  J s o n  O b j e c t
-    //---------------------------------------------------------------
-    
-#ifdef  TOKENLIST_JSON_SUPPORT
-     TOKENLIST_DATA * TokenList_ParseJsonObject (
-         JSONIN_DATA     *pParser
+    //----------------------------------------------------------
+    //                  P r e p e n d
+    //----------------------------------------------------------
+
+    ERESULT         TokenList_Prepend(
+        TOKENLIST_DATA  *this,
+        TOKENLIST_DATA  *pOther
     )
     {
-        return OBJ_NIL;
-    }
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TokenList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !TokenList_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
 #endif
-        
-        
-        
+
+        eRc = ObjList_Prepend(TokenList_getList(this), TokenList_getList(pOther));
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -792,46 +1010,29 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       T o  J S O N
+    //                          T a i l
     //---------------------------------------------------------------
-    
-#ifdef  TOKENLIST_JSON_SUPPORT
-     ASTR_DATA *     TokenList_ToJson (
-        TOKENLIST_DATA      *this
+
+    TOKEN_DATA *    TokenList_Tail(
+        TOKENLIST_DATA  *this
     )
     {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
+
+        // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!TokenList_Validate(this)) {
+        if( !TokenList_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
+
+        // Return to caller.
+        return (TOKEN_DATA *)ObjList_Tail(TokenList_getList(this));
     }
-#endif
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -849,14 +1050,14 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     TokenList_ToDebugString (
-        TOKENLIST_DATA      *this,
+        TOKENLIST_DATA  *this,
         int             indent
     )
     {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
@@ -888,19 +1089,12 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-            }
+        pWrkStr = ObjList_ToDebugString(TokenList_getList(this), indent+3);
+        if (pWrkStr) {
+            AStr_Append(pStr, pWrkStr);
+            obj_Release(pWrkStr);
         }
-#endif
-        
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }

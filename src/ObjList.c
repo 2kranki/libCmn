@@ -382,6 +382,42 @@ int             ObjList_SortCompare (
         
         
         
+    //----------------------------------------------------------
+    //                      A p p e n d
+    //----------------------------------------------------------
+
+    ERESULT         ObjList_Append (
+        OBJLIST_DATA    *this,
+        OBJLIST_DATA    *pOther
+    )
+    {
+        OBJLIST_RECORD  *pEntry;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !ObjList_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pEntry = listdl_Head(&pOther->list);
+        while ( pEntry ) {
+            ObjList_Add2Tail(this, pEntry->pObject);
+            pEntry = listdl_Next(&pOther->list, pEntry);
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -664,6 +700,35 @@ int             ObjList_SortCompare (
     //                          D e l e t e
     //---------------------------------------------------------------
     
+    ERESULT         ObjList_DeleteAll (
+        OBJLIST_DATA    *this
+    )
+    {
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        while ( (pEntry = listdl_Head(&this->list)) ) {
+            if (pEntry->pObject) {
+                obj_Release(pEntry->pObject);
+                pEntry->pObject = OBJ_NIL;
+            }
+            listdl_DeleteHead(&this->list);
+        }
+
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
     ERESULT         ObjList_DeleteHead (
         OBJLIST_DATA    *this
     )
@@ -1142,6 +1207,42 @@ int             ObjList_SortCompare (
     
     
     
+    //----------------------------------------------------------
+    //                  P r e p e n d
+    //----------------------------------------------------------
+
+    ERESULT         ObjList_Prepend(
+        OBJLIST_DATA    *this,
+        OBJLIST_DATA    *other
+    )
+    {
+        OBJLIST_RECORD  *pEntry = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !ObjList_Validate(other) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pEntry = listdl_Tail(&other->list);
+        while ( pEntry ) {
+            ObjList_Add2Head(this, pEntry->pObject);
+            pEntry = listdl_Prev(&other->list, pEntry);
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          P r e v
     //---------------------------------------------------------------
@@ -1439,47 +1540,6 @@ int             ObjList_SortCompare (
         
         
         
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-#ifdef  OBJLIST_JSON_SUPPORT
-     ASTR_DATA *     ObjList_ToJson (
-        OBJLIST_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!ObjList_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-#endif
-    
-    
-    
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
