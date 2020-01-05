@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/ 3/2020 19:41:13.000)
+# ( 1/ 5/2020  5:17:30.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -129,6 +129,16 @@ $(OBJDIR)/BlkdRcds16.o: $(SRCDIR)/BlkdRcds16.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/
 OBJS += $(OBJDIR)/BlkdRcds16_object.o
 
 $(OBJDIR)/BlkdRcds16_object.o: $(SRCDIR)/BlkdRcds16_object.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Compiler.o
+
+$(OBJDIR)/Compiler.o: $(SRCDIR)/Compiler.c $(SRCDIR)/Compiler.h $(SRCDIR)/Compiler_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Compiler_object.o
+
+$(OBJDIR)/Compiler_object.o: $(SRCDIR)/Compiler_object.c $(SRCDIR)/Compiler.h $(SRCDIR)/Compiler_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/CsvFile.o
@@ -609,16 +619,6 @@ $(OBJDIR)/cmdutl_object.o: $(SRCDIR)/cmdutl_object.c $(SRCDIR)/AStr.h $(SRCDIR)/
 OBJS += $(OBJDIR)/cmnMac64.o
 
 $(OBJDIR)/cmnMac64.o: $(SRCDIR)/cmnMac64.c $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/compiler.o
-
-$(OBJDIR)/compiler.o: $(SRCDIR)/compiler.c $(SRCDIR)/compiler.h $(SRCDIR)/compiler_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/compiler_object.o
-
-$(OBJDIR)/compiler_object.o: $(SRCDIR)/compiler_object.c $(SRCDIR)/compiler.h $(SRCDIR)/compiler_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/consumer.o
@@ -1694,6 +1694,12 @@ BlkdRcds16_test: $(TEST_SRC)/BlkdRcds16_test.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += Compiler_test
+
+Compiler_test: $(TEST_SRC)/Compiler_test.c $(SRCDIR)/Compiler.h $(SRCDIR)/Compiler_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += CsvFile_test
 
 CsvFile_test: $(TEST_SRC)/CsvFile_test.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
@@ -1937,12 +1943,6 @@ cfa_test: $(TEST_SRC)/cfa_test.c $(SRCDIR)/cfa.h $(SRCDIR)/cfa_internal.h $(SRCD
 TESTS += cmdutl_test
 
 cmdutl_test: $(TEST_SRC)/cmdutl_test.c $(SRCDIR)/cmdutl.h $(SRCDIR)/cmdutl_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += compiler_test
-
-compiler_test: $(TEST_SRC)/compiler_test.c $(SRCDIR)/compiler.h $(SRCDIR)/compiler_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

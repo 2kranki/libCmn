@@ -39,7 +39,7 @@
         {name:"cb32", deps:["psxMutex.h", "psxSem.h"]},
         {name:"cfa"},
         {name:"cmdutl", deps:["AStr.h"]},
-        {name:"compiler"},
+        {name:"Compiler"},
         {name:"consumer", deps:["psxMutex.h","psxSem.h","psxThread.h"]},
         {name:"crc", "test":null},
         {name:"CsvFile", deps:["ObjArray.h","path.h","srcFile.h"]},
