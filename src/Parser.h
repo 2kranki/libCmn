@@ -52,7 +52,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <compiler.h>
+#include        <Compiler.h>
 #include        <node.h>
 #include        <nodeArray.h>
 #include        <SrcLoc.h>

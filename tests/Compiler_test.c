@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 08/21/2017 13:02:53
+ *	Generated 01/04/2020 23:19:02
  */
 
 
@@ -24,15 +25,13 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <compiler_internal.h>
-#include    <szTbl.h>
+#include    <Compiler_internal.h>
 
 
 
-
-int         setUp(
+int             setUp(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -44,16 +43,28 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    szTbl_SharedReset( );
+    
     trace_SharedReset( ); 
+    if (mem_Dump( ) ) {
+        fprintf(
+                stderr,
+                "\x1b[1m"
+                "\x1b[31m"
+                "ERROR: "
+                "\x1b[0m"
+                "Leaked memory areas were found!\n"
+        );
+        exitCode = 4;
+        return 0;
+    }
     mem_Release( );
     
     return 1; 
@@ -64,36 +75,46 @@ int         tearDown(
 
 
 
-int         test_compiler_OpenClose(
+int             test_Compiler_OpenClose(
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    COMPILER_DATA	*pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    COMPILER_DATA	    *pObj = OBJ_NIL;
+    bool            fRc;
    
-    pObj = compiler_Alloc( );
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Compiler_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = compiler_Init( pObj );
+    pObj = Compiler_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_COMPILER);
+        TINYTEST_TRUE( (fRc) );
+        
         // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_compiler);
-  TINYTEST_ADD_TEST(test_compiler_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_Compiler);
+    TINYTEST_ADD_TEST(test_Compiler_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_compiler);
+TINYTEST_MAIN_SINGLE_SUITE(test_Compiler);
 
 
 

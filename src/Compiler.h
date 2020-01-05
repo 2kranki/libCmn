@@ -1,20 +1,21 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Compiler Base Object (compiler) Header
+//          Compiler Base Object (Compiler) Header
 //****************************************************************
 /*
  * Program
- *				Compiler Base Object (compiler)
+ *			Compiler Base Object (Compiler)
  * Purpose
- *				This object provides the fundamental objects or pointers
- *              needed by a compiler.
+ *          This object provides the fundamental objects or pointers
+ *          needed by a compiler.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	06/18/2015 Generated
+ *  06/18/2015 Generated
+ *	01/04/2020 Regenerated
  */
 
 
@@ -64,7 +65,13 @@
 
 
 #ifndef         COMPILER_H
-#define         COMPILER_H  1
+#define         COMPILER_H
+
+
+//#define   COMPILER_JSON_SUPPORT 1
+#define   COMPILER_SINGLETON    1
+
+
 
 
 
@@ -78,15 +85,28 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct compiler_data_s	COMPILER_DATA;
+    typedef struct Compiler_data_s	COMPILER_DATA;            // Inherits from OBJ
+    typedef struct Compiler_class_data_s COMPILER_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct compiler_vtbl_s	{
+    typedef struct Compiler_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in table_object.c.
+        // method names to the vtbl definition in Compiler_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(COMPILER_DATA *);
     } COMPILER_VTBL;
-    
-    
+
+    typedef struct Compiler_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in Compiler_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(COMPILER_DATA *);
+    } COMPILER_CLASS_VTBL;
+
+
 
 
     /****************************************************************
@@ -98,22 +118,34 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    COMPILER_DATA * compiler_Alloc(
+#ifdef  COMPILER_SINGLETON
+    COMPILER_DATA * Compiler_Shared (
+        void
+    );
+
+    void            Compiler_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to Compiler object if successful, otherwise OBJ_NIL.
+     */
+    COMPILER_DATA * Compiler_Alloc (
         void
     );
     
     
-    COMPILER_DATA * compiler_New(
+    OBJ_ID          Compiler_Class (
         void
     );
     
     
-    COMPILER_DATA * compiler_Shared(
-        void
-    );
-    
-    
-    bool            compiler_SharedReset(
+    COMPILER_DATA * Compiler_New (
         void
     );
     
@@ -123,183 +155,179 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    SRCERRORS_DATA * compiler_getErrors(
+    SRCERRORS_DATA * Compiler_getErrors (
         COMPILER_DATA   *this
     );
-    
-    bool            compiler_setErrors(
+
+    bool            Compiler_setErrors (
         COMPILER_DATA   *this,
         SRCERRORS_DATA  *pValue
     );
-    
-    
+
+
     // Primary Input Source Path
-    PATH_DATA *     compiler_getInputPath(
+    PATH_DATA *     Compiler_getInputPath (
         COMPILER_DATA   *this
     );
-    
-    bool            compiler_setInputPath(
+
+    bool            Compiler_setInputPath (
         COMPILER_DATA   *this,
         PATH_DATA       *pValue
     );
 
-    
-    ERESULT         compiler_getLastError(
+
+    OBJ_ID          Compiler_getLexer (
         COMPILER_DATA   *this
     );
-    
-    
-    OBJ_ID          compiler_getLexer(
-        COMPILER_DATA   *this
-    );
-    
-    bool            compiler_setLexer(
+
+    bool            Compiler_setLexer (
         COMPILER_DATA   *this,
         OBJ_ID          pValue
     );
-    
-    
-    OBJ_ID          compiler_getListing(
+
+
+    OBJ_ID          Compiler_getListing (
         COMPILER_DATA   *this
     );
-    
-    bool            compiler_setListing(
+
+    bool            Compiler_setListing (
         COMPILER_DATA   *this,
         OBJ_ID          pValue
     );
-    
+
 
     // Output Directory Path
-    PATH_DATA *     compiler_getOutputDir(
+    PATH_DATA *     Compiler_getOutputDir (
         COMPILER_DATA   *this
     );
-    
-    bool            compiler_setOutputDir(
+
+    bool            Compiler_setOutputDir (
         COMPILER_DATA   *this,
         PATH_DATA       *pValue
     );
-    
-    
-    OBJ_ID          compiler_getParseTree(
+
+
+    OBJ_ID          Compiler_getParseTree (
         COMPILER_DATA   *this
     );
-    
-    bool            compiler_setParseTree(
+
+    bool            Compiler_setParseTree (
         COMPILER_DATA   *this,
         OBJ_ID          pValue
     );
-    
-    
+
+
     // Program Name used in reports and various
     // file names possibly
-    ASTR_DATA *     compiler_getProgramName(
+    ASTR_DATA *     Compiler_getProgramName (
         COMPILER_DATA   *this
     );
-    
-    bool            compiler_setProgramName(
+
+    bool            Compiler_setProgramName (
         COMPILER_DATA   *this,
         ASTR_DATA       *pValue
     );
-    
-    
-    NODEARRAY_DATA * compiler_getQueue0(
-        COMPILER_DATA   *this
-    );
-    
-    bool            compiler_setQueue0(
-        COMPILER_DATA   *this,
-        NODEARRAY_DATA  *pValue
-    );
-    
-    
-    NODEARRAY_DATA * compiler_getQueue1(
-        COMPILER_DATA   *this
-    );
-    
-    bool            compiler_setQueue1(
-        COMPILER_DATA   *this,
-        NODEARRAY_DATA  *pValue
-    );
-    
-    
-    OBJARRAY_DATA * compiler_getQueue2(
-        COMPILER_DATA   *this
-    );
-    
-    bool            compiler_setQueue2(
-        COMPILER_DATA   *this,
-        OBJARRAY_DATA   *pValue
-    );
-    
-    
-    OBJARRAY_DATA * compiler_getQueue3(
-        COMPILER_DATA   *this
-    );
-    
-    bool            compiler_setQueue3(
-        COMPILER_DATA   *this,
-        OBJARRAY_DATA   *pValue
-    );
-    
-    
-    SRCFILES_DATA * compiler_getSourceFiles(
-        COMPILER_DATA   *this
-    );
-    
-    bool            compiler_setSourceFiles(
-        COMPILER_DATA   *this,
-        SRCFILES_DATA   *pValue
-    );
-    
-    
-    OBJ_ID          compiler_getSymbolTable(
-        COMPILER_DATA   *this
-    );
-    
-    bool            compiler_setSymbolTable(
-        COMPILER_DATA   *this,
-        OBJ_ID          pValue
-    );
-    
-    
-    SZTBL_DATA *    compiler_getStringTable(
+
+
+    NODEARRAY_DATA * Compiler_getQueue0 (
         COMPILER_DATA   *this
     );
 
-    
-    // Temporary File Directory Path
-    PATH_DATA *     compiler_getTempDir(
+    bool            Compiler_setQueue0 (
+        COMPILER_DATA   *this,
+        NODEARRAY_DATA  *pValue
+    );
+
+
+    NODEARRAY_DATA * Compiler_getQueue1 (
         COMPILER_DATA   *this
     );
-    
-    bool            compiler_setTempDir(
+
+    bool            Compiler_setQueue1 (
+        COMPILER_DATA   *this,
+        NODEARRAY_DATA  *pValue
+    );
+
+
+    OBJARRAY_DATA * Compiler_getQueue2 (
+        COMPILER_DATA   *this
+    );
+
+    bool            Compiler_setQueue2 (
+        COMPILER_DATA   *this,
+        OBJARRAY_DATA   *pValue
+    );
+
+
+    OBJARRAY_DATA * Compiler_getQueue3 (
+        COMPILER_DATA   *this
+    );
+
+    bool            Compiler_setQueue3 (
+        COMPILER_DATA   *this,
+        OBJARRAY_DATA   *pValue
+    );
+
+
+    SRCFILES_DATA * Compiler_getSourceFiles (
+        COMPILER_DATA   *this
+    );
+
+    bool            Compiler_setSourceFiles (
+        COMPILER_DATA   *this,
+        SRCFILES_DATA   *pValue
+    );
+
+
+    OBJ_ID          Compiler_getSymbolTable (
+        COMPILER_DATA   *this
+    );
+
+    bool            Compiler_setSymbolTable (
+        COMPILER_DATA   *this,
+        OBJ_ID          pValue
+    );
+
+
+    SZTBL_DATA *    Compiler_getStringTable (
+        COMPILER_DATA   *this
+    );
+
+
+    // Temporary File Directory Path
+    PATH_DATA *     Compiler_getTempDir (
+        COMPILER_DATA   *this
+    );
+
+    bool            Compiler_setTempDir (
         COMPILER_DATA   *this,
         PATH_DATA       *pValue
     );
-    
-    
+
+
+
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         compiler_AddProperty(
+    ERESULT         Compiler_AddProperty (
         COMPILER_DATA   *this,
         NODE_DATA       *pData
     );
-    
-    
+
+
     /*!
      Create and set up the srcErrors object if it doesn't already exist.
      @param     this    object pointer
      @return    If successful, a srcErrors object; otherwise,
                 OBJ_NIL.
      */
-    SRCERRORS_DATA * compiler_Errors (
+    SRCERRORS_DATA * Compiler_Errors (
         COMPILER_DATA   *this
     );
-    
-    
+
+
     /*!
      Create a File Index to be used in tokens, error messages and
      other objects that need to reference back to a specific source
@@ -309,71 +337,86 @@ extern "C" {
      @return    If successful, an integer greater than zero; otherwise,
                 zero.
      */
-    uint32_t        compiler_FilePathToIndex(
+    uint32_t        Compiler_FilePathToIndex (
         COMPILER_DATA   *this,
         const
         char            *pszPath
     );
-    
-    
+
+
     const
-    char *          compiler_IndexToFilePath(
+    char *          Compiler_IndexToFilePath (
         COMPILER_DATA   *this,
         uint32_t        num
     );
-    
-    
-    /* Init() sets up the default TaskBody() outlined above
-     * and initializes other fields needed. Init() assumes 
-     * that the size of the stack is passed to in obj_misc1.
-     */
-    COMPILER_DATA * compiler_Init(
+
+
+    COMPILER_DATA * Compiler_Init (
         COMPILER_DATA   *this
     );
 
 
-    uint16_t        compiler_NumberOfProperties(
-        COMPILER_DATA   *this
-    );
-    
-    
-    const
-    char *          compiler_NumberToString(
-        COMPILER_DATA	*this,
-        uint32_t        num
-    );
-    
-    
-    NODE_DATA *     compiler_Property(
-        COMPILER_DATA   *this,
-        const
-        char            *pName
-    );
-    
-    
-    NODEARRAY_DATA * compiler_Properties(
-        COMPILER_DATA   *this
-    );
-    
-    
-    uint32_t        compiler_StringToNumber(
-        COMPILER_DATA	*this,
-        const
-        char            *pszString
-    );
-    
-   
-    /* StringToString() adds the given string to the static
-     * string table and returns a pointer to it there.
+     uint16_t        Compiler_NumberOfProperties (
+         COMPILER_DATA   *this
+     );
+
+
+     const
+     char *          Compiler_NumberToString (
+         COMPILER_DATA    *this,
+         uint32_t        num
+     );
+
+
+     NODE_DATA *     Compiler_Property (
+         COMPILER_DATA   *this,
+         const
+         char            *pName
+     );
+
+
+     NODEARRAY_DATA * Compiler_Properties (
+         COMPILER_DATA   *this
+     );
+
+
+     uint32_t        Compiler_StringToNumber (
+         COMPILER_DATA    *this,
+         const
+         char            *pszString
+     );
+
+
+     /* StringToString() adds the given string to the static
+      * string table and returns a pointer to it there.
+      */
+     const
+     char *          Compiler_StringToString (
+         COMPILER_DATA    *this,
+         const
+         char            *pszString
+     );
+
+
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = Compiler_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    const
-    char *          compiler_StringToString(
-        COMPILER_DATA	*this,
-        const
-        char            *pszString
+    ASTR_DATA *    Compiler_ToDebugString (
+        COMPILER_DATA   *this,
+        int             indent
     );
     
     
+
     
 #ifdef	__cplusplus
 }
