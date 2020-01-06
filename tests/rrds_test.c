@@ -100,7 +100,7 @@ int             test_rrds_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
@@ -200,105 +200,7 @@ int         test_rrds_Read01(
     obj_Release(pTime);
     pTime = OBJ_NIL;
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
-}
-
-
-
-int         test_rrds_3Buffers(
-    const
-    char        *pTestName
-)
-{
-    RRDS_DATA     *pObj = OBJ_NIL;
-    uint32_t        i;
-    //bool            fRc;
-    char            *pPathA    = "/tmp/test.rrds.";
-    char            block[12]  = "            ";
-    char            block2[12] = "            ";
-    uint32_t        numRcds = 512;
-    uint32_t        cBlock;
-    char            *pBlock;
-    ERESULT         eRc;
-    PATH_DATA       *pPath = OBJ_NIL;
-    DATETIME_DATA   *pTime = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pTime = dateTime_NewCurrent();
-    TINYTEST_FALSE( (OBJ_NIL == pTime) );
-    
-    pPath = path_NewA(pPathA);
-    TINYTEST_FALSE( (OBJ_NIL == pPath) );
-    pStr = dateTime_ToFileString(pTime);
-    TINYTEST_FALSE( (OBJ_NIL == pTime) );
-    path_AppendAStr(pPath, pStr);
-    obj_Release(pStr);
-    pStr = OBJ_NIL;
-    path_AppendA(pPath, ".txt");
-    fprintf(stderr, "\tPath = \"%s\"\n", path_getData(pPath));
-    
-    pObj = rrds_New();
-    XCTAssertFalse( (NULL == pObj));
-    
-    eRc = rrds_SetupSizes(pObj, 80, RRDS_RCD_TRM_NL, 3, 11);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-    
-    eRc = rrds_Create(pObj, pPath);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-    XCTAssertTrue( (12 == rrds_getRecordSize(pObj)));
-    
-    if (!ERESULT_FAILED(eRc)) {
-        for (i=0; i<numRcds; ++i) {
-            cBlock = 12;
-            pBlock = block;
-            dec_putInt32A( i, &cBlock, &pBlock );
-            eRc = rrds_RecordWrite(pObj, i+1, (uint8_t *)block);
-            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-            eRc = rrds_RecordRead(pObj, i+1, (uint8_t *)block2);
-            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-            XCTAssertTrue( (0 == memcmp(block, block2, 12)) );
-        }
-        
-        eRc = rrds_Close(pObj, false);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        
-    }
-    
-    eRc = rrds_SetupSizes(pObj, 80, RRDS_RCD_TRM_NL, 3, 11);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-
-    eRc = rrds_Open(pObj, pPath);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-    XCTAssertTrue( (12 == rrds_getRecordSize(pObj)) );
-    //XCTAssertTrue( ('\0' == rrds_getFillChar(pObj)) );
-    
-    for (i=0; i<numRcds; ++i) {
-        cBlock = 12;
-        pBlock = block;
-        dec_putInt32A( i, &cBlock, &pBlock );
-        //eRc = rrds_RecordWrite(pObj, i+1, (uint8_t *)block);
-        //XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        eRc = rrds_RecordRead(pObj, i+1, (uint8_t *)block2);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (0 == memcmp(block, block2, 12)) );
-    }
-    
-    eRc = rrds_Close(pObj, true);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-    
-    obj_Release(pObj);
-    pObj = OBJ_NIL;
-    
-    obj_Release(pPath);
-    pPath = OBJ_NIL;
-    
-    obj_Release(pTime);
-    pTime = OBJ_NIL;
-    
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 

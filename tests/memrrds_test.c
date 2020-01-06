@@ -149,8 +149,60 @@ int             test_memrrds_Insert01(
 
 
 
+int             test_memrrds_IO_Insert01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    MEMRRDS_DATA    *pObj = OBJ_NIL;
+    IORRDS_INTERFACE *pIO = OBJ_NIL;
+    //uint32_t        i;
+    //uint32_t        index;
+    uint8_t         data[8];
+    uint8_t         *pData = data;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = memrrds_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = memrrds_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pIO = memrrds_getIO(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pIO) );
+
+        //obj_TraceSet(pObj, true);
+        eRc = memrrds_SetupSizes(pObj, 8);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        str_Copy((char *)data, sizeof(data), "2222222");
+        eRc = pIO->pVtbl->pWrite(pIO, 2, pData);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        str_Copy((char *)data, sizeof(data), "0000000");
+        pData = data;
+        eRc = pIO->pVtbl->pRead(pIO, 2, pData);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE((0 == strcmp((char *)pData, "2222222")));
+
+        obj_Release(pIO);
+        pIO = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_memrrds);
+    TINYTEST_ADD_TEST(test_memrrds_IO_Insert01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_memrrds_Insert01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_memrrds_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

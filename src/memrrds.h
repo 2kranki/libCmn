@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <ioRrdsInterface.h>
 
 
 #ifndef         MEMRRDS_H
@@ -173,7 +174,12 @@ extern "C" {
     );
     
     
-    uint32_t        memrrds_getSize (
+    IORRDS_INTERFACE * memrrds_getIO (
+        MEMRRDS_DATA    *this
+    );
+
+
+uint32_t            memrrds_getSize (
         MEMRRDS_DATA    *this
     );
     

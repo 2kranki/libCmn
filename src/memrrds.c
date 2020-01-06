@@ -176,6 +176,31 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          I O
+    //---------------------------------------------------------------
+
+    IORRDS_INTERFACE * memrrds_getIO (
+        MEMRRDS_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!memrrds_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        this->IO.pVtbl = memrrds_IO_getVtbl();
+        obj_Retain(this);
+        return &this->IO;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     

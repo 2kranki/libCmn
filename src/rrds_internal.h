@@ -72,6 +72,7 @@ struct rrds_data_s	{
      */
     LRU_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    IORRDS_INTERFACE IO;
     // OBJ_FLAG_USER1 is used in LRU
 
     // Common Data
@@ -107,10 +108,15 @@ struct rrds_data_s	{
         void
     );
 
-    bool            rrds_setSingleton (
+    bool          rrds_setSingleton (
      RRDS_DATA       *pValue
 );
 #endif
+
+
+    IORRDS_VTBL * rrds_IO_getVtbl (
+        void
+    );
 
 
 
@@ -118,7 +124,7 @@ struct rrds_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            rrds_setIO (
+    bool            rrds_setFileIO (
         RRDS_DATA       *this,
         OBJ_ID          pValue
     );

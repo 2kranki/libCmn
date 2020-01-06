@@ -157,6 +157,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          fileio_Class(
+        void
+    );
+
+
     FILEIO_DATA *   fileio_New (
         void
     );
@@ -204,6 +209,11 @@ extern "C" {
         bool            fValue
     );
     
+
+    IO_INTERFACE *  fileio_getIO (
+        FILEIO_DATA     *this
+    );
+
 
     ERESULT         fileio_getLastError (
         FILEIO_DATA     *this

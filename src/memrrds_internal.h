@@ -70,6 +70,7 @@ struct memrrds_data_s	{
      */
     BLKS_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    IORRDS_INTERFACE IO;
 
     // Common Data
     uint16_t        size;		    // maximum number of elements
@@ -93,7 +94,7 @@ struct memrrds_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  MEMRRDS_SINGLETON
-    MEMRRDS_DATA *     memrrds_getSingleton (
+    MEMRRDS_DATA *   memrrds_getSingleton (
         void
     );
 
@@ -101,6 +102,11 @@ struct memrrds_data_s	{
      MEMRRDS_DATA       *pValue
 );
 #endif
+
+
+    IORRDS_VTBL *   memrrds_IO_getVtbl (
+        void
+    );
 
 
 

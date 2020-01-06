@@ -369,6 +369,31 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          I O
+    //---------------------------------------------------------------
+
+    IO_INTERFACE *  fileio_getIO (
+        FILEIO_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!fileio_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        this->IO.pVtbl = fileio_IO_getVtbl();
+        obj_Retain(this);
+        return &this->IO;
+    }
+
+
+
     PATH_DATA *     fileio_getPath (
         FILEIO_DATA     *this
     )

@@ -267,8 +267,98 @@ int         test_fileio_Create01(
 
 
 
+int         test_fileio_IO_Read01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    FILEIO_DATA     *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    IO_INTERFACE    *pIO = OBJ_NIL;
+    const
+    char            *pPathA = "~/git/libCmn/tests/files/test_objects.json.txt";
+    off_t           fileSize = 0;
+    uint8_t         buffer[256];
+    uint8_t         *pBuffer = NULL;
+    off_t           amtRead = 0;
+    off_t           fileOffset;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = path_NewA(pPathA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    path_Clean(pPath);
+    fprintf(stderr, "\tpath=%s\n", path_getData(pPath));
+    TINYTEST_FALSE( (ERESULT_FAILED(path_IsFile(pPath))) );
+
+
+    pObj = fileio_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = fileio_Open(pObj, pPath);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        fileSize = fileio_Size(pObj);
+        TINYTEST_FALSE( (-1 == fileSize) );
+
+        pIO = fileio_getIO(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pIO) );
+
+        if (fileSize) {
+            pBuffer = mem_Malloc(fileSize);
+            TINYTEST_FALSE( (NULL == pBuffer) );
+            amtRead = pIO->pVtbl->pRead(pIO, pBuffer, (int32_t)fileSize);
+            TINYTEST_TRUE( (amtRead == fileSize) );
+            mem_Free(pBuffer);
+            pBuffer = NULL;
+        }
+
+        fileOffset = pIO->pVtbl->pSeek(pIO, 0, IO_SEEK_SET);
+        TINYTEST_TRUE( (0 == fileOffset) );
+
+        eRc = fileio_Gets(pObj, 256, buffer);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\tline = \"%s\"\n", buffer);
+        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "{")) );
+
+        eRc = fileio_Gets(pObj, 256, buffer);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\tline = \"%s\"\n", buffer);
+        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "    \"name\":")) );
+
+        eRc = fileio_Gets(pObj, 256, buffer);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\tline = \"%s\"\n", buffer);
+        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "        \"libXYZZY\",")) );
+
+        eRc = fileio_Gets(pObj, 256, buffer);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\tline = \"%s\"\n", buffer);
+        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "    \"lib_deps\": ")) );
+
+        eRc = pIO->pVtbl->pClose(pIO);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        obj_Release(pIO);
+        pIO = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_fileio);
+    TINYTEST_ADD_TEST(test_fileio_IO_Read01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_fileio_Create01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_fileio_Read01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_fileio_OpenClose,setUp,tearDown);

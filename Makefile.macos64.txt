@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/ 5/2020  5:17:30.000)
+# ( 1/ 6/2020 20:53:54.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -821,6 +821,11 @@ OBJS += $(OBJDIR)/fileio.o
 $(OBJDIR)/fileio.o: $(SRCDIR)/fileio.c $(SRCDIR)/fileio.h $(SRCDIR)/fileio_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/fileio_io.o
+
+$(OBJDIR)/fileio_io.o: $(SRCDIR)/fileio_io.c $(SRCDIR)/fileio.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/fileio_object.o
 
 $(OBJDIR)/fileio_object.o: $(SRCDIR)/fileio_object.c $(SRCDIR)/fileio.h $(SRCDIR)/fileio_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
@@ -994,6 +999,11 @@ $(OBJDIR)/memMac64_object.o: $(SRCDIR)/memMac64_object.c $(SRCDIR)/listdl.h $(SR
 OBJS += $(OBJDIR)/memrrds.o
 
 $(OBJDIR)/memrrds.o: $(SRCDIR)/memrrds.c $(SRCDIR)/memrrds.h $(SRCDIR)/memrrds_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/memrrds_io.o
+
+$(OBJDIR)/memrrds_io.o: $(SRCDIR)/memrrds_io.c $(SRCDIR)/memrrds.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/memrrds_object.o
@@ -1364,6 +1374,11 @@ $(OBJDIR)/rbt_tree.o: $(SRCDIR)/rbt_tree.c $(SRCDIR)/rbt_tree.h $(SRCDIR)/cmn_de
 OBJS += $(OBJDIR)/rrds.o
 
 $(OBJDIR)/rrds.o: $(SRCDIR)/rrds.c $(SRCDIR)/hash32.h $(SRCDIR)/listdl.h $(SRCDIR)/path.h $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/rrds_io.o
+
+$(OBJDIR)/rrds_io.o: $(SRCDIR)/rrds_io.c $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/rrds_object.o

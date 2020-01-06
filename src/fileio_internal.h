@@ -61,6 +61,7 @@ struct fileio_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    IO_INTERFACE    IO;
 #define FILEIO_FILE_OPEN    OBJ_FLAG_USER1
 
     // Common Data
@@ -78,6 +79,11 @@ struct fileio_data_s	{
     extern
     const
     FILEIO_VTBL         fileio_Vtbl;
+
+
+    IO_VTBL * fileio_IO_getVtbl (
+        void
+    );
 
 
     // Internal Functions

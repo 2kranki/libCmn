@@ -69,54 +69,44 @@
 
 
 
-#ifndef         IOINTERFACE_H
-#define         IOINTERFACE_H
+#ifndef         IORRDS_INTERFACE_H
+#define         IORRDS_INTERFACE_H
 
     
-typedef struct io_vtbl_s    {
+typedef struct ioRrds_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Properties:
         // Methods:
         // Close() closes the current file source.
-        ERESULT     (*pClose)(OBJ_ID);
+        ERESULT     (*pClose)(
+            OBJ_ID,
+            bool                            // TRUE == Delete File
+        );
         // Flush() writes any pending buffered data to the file output if
         // write() is active.
         ERESULT     (*pFlush)(OBJ_ID);
-        // Read() attempts to read the amount of data specified from the
-        // data source.  It returns the amount actually read which might
-        // be less than the amount requested. It will return -1 if an
-        // error or EOF is encountered.
-        int32_t     (*pRead)(
+        // Read() attempts to read the record requested.
+        ERESULT     (*pRead)(
                 OBJ_ID, 
-                uint8_t *,                  // Data Buffer Pointer 
-                int32_t                     // Requested Amount to Read
+                uint32_t,                   // Relative Record Number
+                uint8_t *                   // Returned Data Buffer Pointer
         );
-        // Seek() alters the current file_offset within the data source so that
-        // the next read or write will occur at the specified offset.
-        off_t       (*pSeek)(
-                OBJ_ID, 
-                off_t,                      // File Offset in Bytes 
-                uint8_t
-#define                     IO_SEEK_SET  1   // Set to given offset
-#define                     IO_SEEK_CUR  2   // Use file_offset plus given offset
-#define                     IO_SEEK_END  3   // Use eof_offset plus given offset
+        // Write() attempts to write the specified record.
+        ERESULT     (*pWrite)(
+                OBJ_ID,
+                uint32_t,
+                uint8_t *
         );
-        off_t       (*pTell)(OBJ_ID);
-        // Write() attempts to write the amount of data specified from the
-        // data source.  It returns the amount actually written which might
-        // be less than the amount requested. It will return -1 if an
-        // error or EOF is encountered.
-        int32_t     (*pWrite)(OBJ_ID, uint8_t *, int32_t);
-    } IO_VTBL;
+    } IORRDS_VTBL;
     
-    typedef struct io_interface_s    {
-        IO_VTBL     *pVtbl;
-    } IO_INTERFACE;
+    typedef struct ioRrds_interface_s    {
+        IORRDS_VTBL *pVtbl;
+    } IORRDS_INTERFACE;
     
 #define IO_INTERFACE_DATA(data,obj_id,interface) (data *)(((uint8_t *)objId)-offsetof(data,interface))
 
     
-#endif  // IOINTERFACE_H
+#endif  // IORRDS_INTERFACE_H
 
 
 

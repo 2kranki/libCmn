@@ -282,8 +282,10 @@ extern "C" {
         OBJ_IDENT_HJSON_CLASS,
         OBJ_IDENT_I32ARRAY,             // Array of int32_t
         OBJ_IDENT_I32ARRAY_CLASS,
+        OBJ_IDENT_IO,                   // I/O Interface
         OBJ_IDENT_IOBASE,               // I/O Base Logic
         OBJ_IDENT_IOBASE_CLASS,
+        OBJ_IDENT_IORRDS,               // I/O Relative Record Interface
         OBJ_IDENT_JSONIN,               // Standardized JSON Input
         OBJ_IDENT_JSONIN_CLASS,
         OBJ_IDENT_JSONOUT,              // Standardized JSON Output

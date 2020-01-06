@@ -112,7 +112,7 @@ extern "C" {
             }
         }
         
-        eRc = rrds_setIO(this, OBJ_NIL);
+        eRc = rrds_setFileIO(this, OBJ_NIL);
         
         // Return to Caller.
         return ERESULT_SUCCESS;
@@ -321,7 +321,7 @@ extern "C" {
     {
         ERESULT         eRc;
         
-        eRc = rrds_setIO(this, OBJ_NIL);
+        eRc = rrds_setFileIO(this, OBJ_NIL);
         this->pIO = fileio_New( );
         if (OBJ_NIL == this->pIO) {
             DEBUG_BREAK();
@@ -400,9 +400,9 @@ extern "C" {
     //                        F i l e  I / O
     //---------------------------------------------------------------
     
-    OBJ_ID      rrds_getIO (
+    OBJ_ID      rrds_getFileIO (
         RRDS_DATA   *this
-                               )
+    )
     {
         
         // Validate the input parameters.
@@ -418,7 +418,7 @@ extern "C" {
     }
     
     
-    bool        rrds_setIO (
+    bool        rrds_setFileIO (
         RRDS_DATA   *this,
         OBJ_ID      pValue
     )
@@ -486,6 +486,31 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                       I O
+    //---------------------------------------------------------------
+
+    IORRDS_INTERFACE * rrds_getIO (
+        RRDS_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!rrds_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        this->IO.pVtbl = rrds_IO_getVtbl();
+        obj_Retain(this);
+        return &this->IO;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          L R U
     //---------------------------------------------------------------
@@ -1069,7 +1094,6 @@ extern "C" {
         }
 
         this = (OBJ_ID)lru_Init((LRU_DATA *)this);      // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_RRDS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1078,6 +1102,7 @@ extern "C" {
         obj_setSize(this, cbSize);                      // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&rrds_Vtbl);
+
         lru_setLogicalSectorRead(
                                  (LRU_DATA *)this,
                                  (void *)rrds_LSN_Read,

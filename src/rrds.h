@@ -68,6 +68,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <ioRrdsInterface.h>
 #include        <lru.h>
 
 
@@ -200,8 +201,13 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    LRU_DATA *  rrds_getLRU (
-        RRDS_DATA   *this
+    IORRDS_INTERFACE * rrds_getIO (
+        RRDS_DATA       *this
+    );
+
+
+    LRU_DATA *      rrds_getLRU (
+        RRDS_DATA       *this
     );
     
     
