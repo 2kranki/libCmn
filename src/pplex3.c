@@ -313,6 +313,29 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //               L e x i c a l  S c a n n e r
+    //---------------------------------------------------------------
+
+    LEX_DATA *      pplex3_getLex(
+        PPLEX3_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !pplex3_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (LEX_DATA *)this;
+    }
+
+
+
     bool            pplex3_setKwdSelection(
         PPLEX3_DATA     *this,
         uint16_t        value

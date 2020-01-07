@@ -442,6 +442,11 @@ extern "C" {
     );
 
     
+    LEX_DATA *      pplex_getLex(
+        PPLEX_DATA     *this
+    );
+
+
     /*! Add a user exit that takes precedence over the all the keyword
      table searches.  The user exit should set the token class if
      it needs to which is what would have happened had it been found

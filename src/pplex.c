@@ -629,6 +629,28 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //               L e x i c a l  S c a n n e r
+    //---------------------------------------------------------------
+
+    LEX_DATA *      pplex_getLex(
+        PPLEX_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !pplex_Validate( this ) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (LEX_DATA *)this;
+    }
+
+
     LEX_DATA *      pplex_getLex3(
         PPLEX_DATA     *this
     )

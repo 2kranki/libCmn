@@ -41,6 +41,7 @@
 
 #include        <Parser.h>
 #include        <JsonIn.h>
+#include        <lex_internal.h>
 #include        <ObjArray.h>
 #include        <SrcErrors.h>
 
@@ -69,7 +70,7 @@ extern "C" {
 struct Parser_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    LEX_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
     #define PARSER_INIT_DONE    OBJ_FLAG_USER1
 
@@ -81,8 +82,8 @@ struct Parser_data_s	{
     NODEHASH_DATA   *pProperties;
 
     // Input Data/Routines
-    TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID, uint16_t);
-    TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID, uint16_t);
+    TOKEN_DATA *    (*pSrcChrAdvance)(OBJ_ID, uint16_t);
+    TOKEN_DATA *    (*pSrcChrLookAhead)(OBJ_ID, uint16_t);
     OBJ_ID          pSrcObj;
     uint16_t        sizeInputs;
     uint16_t        curInputs;

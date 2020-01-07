@@ -259,6 +259,29 @@ extern "C" {
             
 
     //---------------------------------------------------------------
+    //              L e x i c a l  S c a n n e r
+    //---------------------------------------------------------------
+
+    LEX_DATA *      Parser_getLex (
+        PARSER_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (LEX_DATA *)this;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                  P a r s e  F u n c t i o n
     //---------------------------------------------------------------
 
@@ -747,14 +770,13 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_PARSER);
+        this = (OBJ_ID)lex_Init((LEX_DATA *)this, 8);           // Needed for Inheritance
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Parser_Vtbl);
         

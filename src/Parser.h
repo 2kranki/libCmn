@@ -53,6 +53,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Compiler.h>
+#include        <lex.h>
 #include        <node.h>
 #include        <nodeArray.h>
 #include        <SrcLoc.h>
@@ -183,6 +184,11 @@ extern "C" {
     bool            Parser_setCompiler(
         PARSER_DATA     *this,
         COMPILER_DATA   *pValue
+    );
+
+
+    LEX_DATA *      Parser_getLex (
+        PARSER_DATA     *this
     );
 
 

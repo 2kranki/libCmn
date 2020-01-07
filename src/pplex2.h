@@ -140,6 +140,11 @@ extern "C" {
     );
     
     
+    LEX_DATA *      pplex2_getLex(
+        PPLEX2_DATA    *this
+    );
+
+
     bool            pplex2_setKwdSelection(
         PPLEX2_DATA     *this,
         uint16_t        value
