@@ -70,6 +70,23 @@
 //#define   TOKEN_SINGLETON    1
 
 
+#ifdef NDEBUG
+#   define  TRC_OBJ_TOKEN(cbp,desc,pToken)     /**/
+#else
+#   define  TRC_OBJ_TOKEN(cbp,desc,pToken)                                          \
+    do {                                                                            \
+        if (obj_Trace(cbp) || obj_Trace(((OBJ_DATA *)cbp)->pVtbl->pClassObject())) {\
+            ASTR_DATA       *pStr = Token_ToDataString(pToken);                     \
+            trace_TraceA(trace_Shared(),                                            \
+                    "Token: %s  %d - %s",                                           \
+                    desc,                                                           \
+                    Token_getClass(pToken),                                         \
+                    AStr_getData(pStr)                                              \
+            );                                                                      \
+            obj_Release(pStr);                                                      \
+        }                                                                           \
+    } while(0)
+#endif
 
 
 
@@ -143,7 +160,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  TOKEN_SINGLETON
-    TOKEN_DATA *     Token_Shared (
+    TOKEN_DATA *    Token_Shared (
         void
     );
 
@@ -159,7 +176,7 @@ extern "C" {
      released.
      @return    pointer to Token object if successful, otherwise OBJ_NIL.
      */
-    TOKEN_DATA *     Token_Alloc (
+    TOKEN_DATA *    Token_Alloc (
         void
     );
     

@@ -426,7 +426,55 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                 S y m b o l  T a b l e
+    //---------------------------------------------------------------
+
+    OBJ_ID          Parser_getSymbols (
+        PARSER_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        if (OBJ_NIL == this->pCompiler)
+            return OBJ_NIL;
+        else
+            return Compiler_getSymbolTable(this->pCompiler);
+    }
+
+
+    bool            Parser_setSymbols (
+        PARSER_DATA     *this,
+        OBJ_ID          pValue
+    )
+    {
+        bool            fRc = false;
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (this->pCompiler) {
+            fRc = Compiler_setSymbolTable(this->pCompiler, pValue);
+        }
+
+        return fRc;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -1034,6 +1082,48 @@ extern "C" {
     
     
     
+    //--------------------------------------------------------------
+    //           M a t c h  I n p u t  C l a s s  S e t
+    //--------------------------------------------------------------
+
+    TOKEN_DATA *    Parser_MatchInputClsSet (
+        PARSER_DATA     *this,
+        int32_t         *pSet           // NULL-terminated Set of Classes
+    )
+    {
+        TOKEN_DATA      *scp = OBJ_NIL;
+        int32_t         cls;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Parser_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+        if (NULL == pSet) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+
+        scp = &this->pInputs[0];
+        cls = Token_getClass(scp);
+        while (*pSet) {
+            if(cls == *pSet) {
+                obj_Retain(scp);
+                (void)Parser_InputNextChar(this);
+                return scp;
+            }
+            ++pSet;
+        }
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+
     //--------------------------------------------------------------
     //               M a t c h  I n p u t  R a n g e
     //--------------------------------------------------------------

@@ -1678,8 +1678,6 @@ extern "C" {
         TOKEN_DATA      *this
     )
     {
-        char            str[256];
-        int             j;
         ASTR_DATA       *pStr;
         const
         char            *pString;
@@ -1697,7 +1695,6 @@ extern "C" {
 #endif
 
         pStr = AStr_New();
-        str[0] = '\0';
 
         switch (this->data.type) {
 
@@ -1707,24 +1704,15 @@ extern "C" {
 
            case TOKEN_TYPE_W32CHAR:
                 if (ascii_isPrintableW32(this->data.w32chr[0])) {
-                    str[0] = this->data.w32chr[0];
-                    str[1] = '\0';
+                    AStr_AppendCharW32(pStr, this->data.w32chr[0]);
                 }
                 else {
-                    str[0] = ' ';
-                    str[1] = '\0';
+                    AStr_AppendCharA(pStr, ' ');
                 }
-                AStr_AppendA(pStr, str);
                 break;
 
             case TOKEN_TYPE_INTEGER:
-                j = snprintf(
-                             str,
-                             sizeof(str),
-                             "%lld ",
-                             this->data.integer
-                             );
-                AStr_AppendA(pStr, str);
+                AStr_AppendPrint(pStr, "%lld ", this->data.integer);
                 break;
 
             case TOKEN_TYPE_STRTOKEN:

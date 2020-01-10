@@ -217,6 +217,16 @@ extern "C" {
     );
 
 
+    OBJ_ID          Parser_getSymbols (
+        PARSER_DATA     *this
+    );
+
+    bool            Parser_setSymbols (
+        PARSER_DATA     *this,
+        OBJ_ID          pValue
+    );
+
+
 
 
     
@@ -247,6 +257,73 @@ extern "C" {
     );
     
     
+    /*!
+     Try to match the current input token with the given character.
+     If it matches, advance the input token stream and return
+     the matched token.
+     @return:   If successful, the matched token which must be
+                copied if it needs to be retained, otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    Parser_MatchInputChr (
+        PARSER_DATA     *this,
+        int32_t         chr
+    );
+
+
+    /*!
+     Try to match the current input token with the given class.
+     If it matches, advance the input token stream and return
+     the matched token.
+     @return:   If successful, the matched token which must be
+                copied if it needs to be retained, otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    Parser_MatchInputCls (
+        PARSER_DATA     *this,
+        int32_t         cls
+    );
+
+
+    /*!
+     Try to match the current input token with a set of classes.
+     If it matches, advance the input token stream and return
+     the matched token.
+     @return:   If successful, the matched token which must be
+                copied if it needs to be retained, otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    Parser_MatchInputClsSet (
+        PARSER_DATA     *this,
+        int32_t         *pSet           // NULL-terminated Set of Classes
+    );
+
+
+    /*!
+     Try to match the current input token with a range of
+     characters. The range includes the range characters.
+     If it matches, advance the input token stream and return
+     the matched token.
+     @return:   If successful, the matched token which must be
+                copied if it needs to be retained, otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    Parser_MatchInputRange (
+        PARSER_DATA     *this,
+        int32_t         chrBeg,
+        int32_t         chrEnd
+    );
+
+
+    /*!
+     Try to match the current input token with a set of characters.
+     If it matches, advance the input token stream and return
+     the matched token.
+     @return:   If successful, the matched token which must be
+                copied if it needs to be retained, otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    Parser_MatchInputSet (
+        PARSER_DATA     *this,
+        int32_t         *pSet           // NULL-terminated Set of Characters
+    );
+
+
     ERESULT         Parser_Parse(
         PARSER_DATA     *this,
         NODETREE_DATA   **ppTree
