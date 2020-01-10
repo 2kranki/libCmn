@@ -96,21 +96,18 @@ extern "C" {
 
 
     typedef struct node_data_s              NODE_DATA;
-    //typedef struct NodeArc_data_s           NODEARC_DATA;
-    //typedef struct NodeArc_class_data_s     NODEARC_CLASS_DATA;
-    typedef struct nodeArray_data_s         NODEARRAY_DATA;
-    typedef struct nodeArray_class_data_s   NODEARRAY_CLASS_DATA;
+    typedef struct NodeArray_data_s         NODEARRAY_DATA;
+    typedef struct NodeArray_class_data_s   NODEARRAY_CLASS_DATA;
     typedef struct nodeATree_data_s         NODEATREE_DATA;
     typedef struct nodeBTP_data_s           NODEBTP_DATA;
     typedef struct nodeBTP_class_data_s     NODEBTP_CLASS_DATA;
     typedef struct nodeEntry_data_s         NODEENTRY_DATA;
     typedef struct NodeEnum_data_s          NODEENUM_DATA;
     typedef struct NodeEnum_class_data_s    NODEENUM_CLASS_DATA;
-    //typedef struct NodeGraph_data_s         NODEGRAPH_DATA;
-    //typedef struct NodeGraph_class_data_s   NODEGRAPH_CLASS_DATA;
     typedef struct nodeHash_data_s          NODEHASH_DATA;
     typedef struct nodeLink_data_s          NODELINK_DATA;
-    typedef struct nodeList_data_s          NODELIST_DATA;
+    typedef struct NodeList_data_s          NODELIST_DATA;
+    typedef struct NodeList_class_data_s    NODELIST_CLASS_DATA;
     typedef struct nodeLnkP_data_s          NODELNKP_DATA;
     typedef struct nodeLnkP_class_data_s    NODELNKP_CLASS_DATA;
     typedef struct nodeMatrix_data_s	    NODEMATRIX_DATA;

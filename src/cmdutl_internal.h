@@ -44,7 +44,7 @@
 
 #include    <cmdutl.h>
 #include    <node_internal.h>
-#include    <nodeArray.h>
+#include    <NodeArray.h>
 #include    <nodeHash.h>
 #include    <nodeTree.h>
 #include    <path.h>

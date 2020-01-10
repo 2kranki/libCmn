@@ -50,7 +50,7 @@
 #include    <hex.h>
 #include    <JsonIn.h>
 #include    <node.h>
-#include    <nodeArray.h>
+#include    <NodeArray.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
 

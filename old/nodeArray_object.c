@@ -269,7 +269,7 @@ static
 const
 OBJ_INFO        nodeArray_Info = {
     "nodeArray",
-    "Array of Nodes",				
+    "An Array of Nodes",				
     (OBJ_DATA *)&nodeArray_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&nodeArray_Vtbl,

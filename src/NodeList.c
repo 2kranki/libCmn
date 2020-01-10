@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   jsonPP.c
- *	Generated 08/27/2019 21:35:44
+ * File:   NodeList.c
+ *	Generated 01/10/2020 13:58:08
  *
  */
 
@@ -41,8 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <jsonPP_internal.h>
-#include        <JsonIn.h>
+#include        <NodeList_internal.h>
 #include        <trace.h>
 
 
@@ -63,16 +62,37 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            jsonPP_task_body (
-        void            *pData
+    ERESULT         NodeList_EnumExit(
+        NODELIST_DATA   *this,
+        NODE_DATA       *pNode,
+        NODEENUM_DATA   *pEnum
     )
     {
-        //JSONPP_DATA  *this = pData;
-        
+        ERESULT         eRc;
+
+        eRc = NodeEnum_AppendObj(pEnum, pNode);
+
+        return eRc;
     }
-#endif
+
+
+
+    static
+    ERESULT         NodeList_NodesExit(
+                                       NODELIST_DATA   *this,
+                                       NODE_DATA       *pNode,
+                                       NODEARRAY_DATA  *pArray
+                                       )
+    {
+        ERESULT         eRc;
+
+        eRc = NodeArray_AppendNode(pArray, pNode, NULL);
+
+        return eRc;
+    }
+
+
 
 
 
@@ -85,12 +105,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    JSONPP_DATA *     jsonPP_Alloc (
+    NODELIST_DATA *     NodeList_Alloc (
         void
     )
     {
-        JSONPP_DATA       *this;
-        uint32_t        cbSize = sizeof(JSONPP_DATA);
+        NODELIST_DATA       *this;
+        uint32_t        cbSize = sizeof(NODELIST_DATA);
         
         // Do initialization.
         
@@ -102,15 +122,15 @@ extern "C" {
 
 
 
-    JSONPP_DATA *     jsonPP_New (
+    NODELIST_DATA *     NodeList_New (
         void
     )
     {
-        JSONPP_DATA       *this;
+        NODELIST_DATA       *this;
         
-        this = jsonPP_Alloc( );
+        this = NodeList_Alloc( );
         if (this) {
-            this = jsonPP_Init(this);
+            this = NodeList_Init(this);
         } 
         return this;
     }
@@ -124,41 +144,106 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          I n d e n t
+    //                    O b j L i s t
     //---------------------------------------------------------------
-    
-    uint32_t        jsonPP_getIndent (
-        JSONPP_DATA     *this
+
+    OBJLIST_DATA *  NodeList_getObjList (
+        NODELIST_DATA   *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (OBJLIST_DATA *)this;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       O r d e r e d
+    //---------------------------------------------------------------
+
+    bool            NodeList_getOrdered (
+        NODELIST_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        return ObjList_getOrdered((OBJLIST_DATA *)this);
+    }
+
+
+    bool            NodeList_setOrdered (
+        NODELIST_DATA   *this,
+        bool            fValue
+    )
+    {
+        bool            fRc = false;
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        fRc = ObjList_setOrdered((OBJLIST_DATA *)this, fValue);
+
+        return fRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        NodeList_getPriority (
+        NODELIST_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return this->indent;
+        //return this->priority;
+        return 0;
     }
 
 
-    bool            jsonPP_setIndent (
-        JSONPP_DATA     *this,
-        uint32_t        value
+    bool            NodeList_setPriority (
+        NODELIST_DATA     *this,
+        uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        this->indent = value;
+        //this->priority = value;
 
         return true;
     }
@@ -169,19 +254,19 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        jsonPP_getSize (
-        JSONPP_DATA       *this
+    uint32_t        NodeList_getSize (
+        NODELIST_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return 0;
+        return ObjList_getSize((OBJLIST_DATA *)this);
     }
 
 
@@ -190,15 +275,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * jsonPP_getStr (
-        JSONPP_DATA     *this
+    ASTR_DATA * NodeList_getStr (
+        NODELIST_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -208,14 +293,14 @@ extern "C" {
     }
     
     
-    bool        jsonPP_setStr (
-        JSONPP_DATA     *this,
+    bool        NodeList_setStr (
+        NODELIST_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -238,15 +323,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  jsonPP_getSuperVtbl (
-        JSONPP_DATA     *this
+    OBJ_IUNKNOWN *  NodeList_getSuperVtbl (
+        NODELIST_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -266,6 +351,137 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          A d d
+    //---------------------------------------------------------------
+
+    ERESULT         NodeList_Add2Head (
+        NODELIST_DATA   *this,
+        NODE_DATA       *pNode
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        eRc = ObjList_Add2Head((OBJLIST_DATA *)this, pNode);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         NodeList_Add2HeadA (
+        NODELIST_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    )
+    {
+        ERESULT         eRc = ERESULT_OUT_OF_MEMORY;
+        NODE_DATA       *pNode = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pNode = node_NewWithUTF8AndClass(cls, pName, pData);
+        if (pNode) {
+            eRc = ObjList_Add2Head((OBJLIST_DATA *)this, pNode);
+            if (ERESULT_FAILED(eRc))
+                ;
+            else {
+                obj_Release(pNode);
+                pNode = OBJ_NIL;
+            }
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         NodeList_Add2Tail (
+        NODELIST_DATA   *this,
+        NODE_DATA       *pNode
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if ((OBJ_NIL == pNode) || obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        eRc = ObjList_Add2Tail((OBJLIST_DATA *)this, pNode);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         NodeList_Add2TailA (
+        NODELIST_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pName,
+        OBJ_ID          pData
+    )
+    {
+        ERESULT         eRc = ERESULT_OUT_OF_MEMORY;
+        NODE_DATA       *pNode = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pNode = node_NewWithUTF8AndClass(cls, pName, pData);
+        if (pNode) {
+            eRc = ObjList_Add2Tail((OBJLIST_DATA *)this, pNode);
+            if (ERESULT_FAILED(eRc))
+                ;
+            else {
+                obj_Release(pNode);
+                pNode = OBJ_NIL;
+            }
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -275,16 +491,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = jsonPP_Assign(this,pOther);
+        ERESULT eRc = NodeList_Assign(this,pOther);
      @endcode 
-     @param     this    JSONPP object pointer
-     @param     pOther  a pointer to another JSONPP object
+     @param     this    object pointer
+     @param     pOther  a pointer to another NODELIST object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         jsonPP_Assign (
-        JSONPP_DATA		*this,
-        JSONPP_DATA     *pOther
+    ERESULT         NodeList_Assign (
+        NODELIST_DATA		*this,
+        NODELIST_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -292,11 +508,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!jsonPP_Validate(pOther)) {
+        if (!NodeList_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -348,9 +564,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         jsonPP_Compare (
-        JSONPP_DATA     *this,
-        JSONPP_DATA     *pOther
+    ERESULT         NodeList_Compare (
+        NODELIST_DATA     *this,
+        NODELIST_DATA     *pOther
     )
     {
         int             i = 0;
@@ -364,11 +580,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!jsonPP_Validate(pOther)) {
+        if (!NodeList_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -406,32 +622,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        jsonPP      *pCopy = jsonPP_Copy(this);
+        NodeList      *pCopy = NodeList_Copy(this);
      @endcode 
-     @param     this    JSONPP object pointer
-     @return    If successful, a JSONPP object which must be 
+     @param     this    object pointer
+     @return    If successful, a NODELIST object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    JSONPP_DATA *     jsonPP_Copy (
-        JSONPP_DATA       *this
+    NODELIST_DATA *     NodeList_Copy (
+        NODELIST_DATA       *this
     )
     {
-        JSONPP_DATA       *pOther = OBJ_NIL;
+        NODELIST_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = jsonPP_New( );
+        pOther = NodeList_New( );
         if (pOther) {
-            eRc = jsonPP_Assign(this, pOther);
+            eRc = NodeList_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -449,11 +665,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            jsonPP_Dealloc (
+    void            NodeList_Dealloc (
         OBJ_ID          objId
     )
     {
-        JSONPP_DATA   *this = objId;
+        NODELIST_DATA   *this = objId;
 
         // Do initialization.
         if (NULL == this) {
@@ -461,7 +677,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -469,11 +685,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((JSONPP_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((NODELIST_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        jsonPP_setStr(this, OBJ_NIL);
+        NodeList_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -482,6 +698,95 @@ extern "C" {
         this = OBJ_NIL;
 
         // Return to caller.
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          D e l e t e
+    //---------------------------------------------------------------
+
+    ERESULT         NodeList_DeleteA (
+        NODELIST_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pName
+    )
+    {
+        ERESULT         eRc = ERESULT_NOT_IMPLEMENTED;
+        //OBJLIST_RECORD  *pEntry = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( OBJ_NIL == pName ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef XYZZY
+        pEntry = NodeList_FindNodeA(this, cls, pName);
+        if (NULL == pEntry) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+
+        obj_Release(pEntry->pNode);
+        pEntry->pNode = OBJ_NIL;
+        listdl_Delete(&this->list, pEntry);
+        listdl_Add2Tail(&this->freeList, pEntry);
+#endif
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         NodeList_DeleteHead (
+        NODELIST_DATA   *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = ObjList_DeleteHead((OBJLIST_DATA *)this);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         NodeList_DeleteTail (
+        NODELIST_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = ObjList_DeleteTail((OBJLIST_DATA *)this);
+
+        // Return to caller.
+        return eRc;
     }
 
 
@@ -496,8 +801,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         jsonPP_Disable (
-        JSONPP_DATA		*this
+    ERESULT         NodeList_Disable (
+        NODELIST_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -505,7 +810,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -531,8 +836,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         jsonPP_Enable (
-        JSONPP_DATA		*this
+    ERESULT         NodeList_Enable (
+        NODELIST_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -540,7 +845,7 @@ extern "C" {
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -557,14 +862,163 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        E n u m
+    //---------------------------------------------------------------
+
+    NODEENUM_DATA * NodeList_Enum(
+        NODELIST_DATA   *this
+    )
+    {
+        ERESULT         eRc;
+        NODEENUM_DATA   *pEnum = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        eRc = ObjList_ForEach((OBJLIST_DATA *)this, (void *)NodeList_EnumExit, this, pEnum);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pEnum);
+            pEnum = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return pEnum;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          F i n d
+    //---------------------------------------------------------------
+
+    NODE_DATA *     NodeList_FindA(
+        NODELIST_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pName
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        OBJLIST_RECORD  *pRecord;
+        LISTDL_DATA *   pList;
+        ERESULT         eRc;
+
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if( OBJ_NIL == pName ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+
+        pList = ObjList_getList((OBJLIST_DATA *)this);
+        if (NULL == pList)
+            return OBJ_NIL;
+        if (listdl_Count(pList) < 1) {
+            return OBJ_NIL;
+        }
+
+        pRecord = listdl_Head(pList);
+        while ( pRecord ) {
+            eRc = node_CompareA(pRecord->pObject, cls, pName);
+            if (ERESULT_SUCCESS_EQUAL == eRc) {
+                pNode = pRecord->pObject;
+                break;
+            }
+            pRecord = listdl_Next(pList, pRecord);
+        }
+
+        // Return to caller.
+        return pNode;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        F o r  E a c h
+    //---------------------------------------------------------------
+
+    ERESULT         NodeList_ForEach(
+        NODELIST_DATA   *this,
+        P_ERESULT_EXIT3 pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( NULL == pScan ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        eRc = ObjList_ForEach((OBJLIST_DATA *)this, pScan, pObj, pArg3);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          I n d e x
+    //---------------------------------------------------------------
+
+    NODE_DATA *     NodeList_Index(
+        NODELIST_DATA   *this,
+        uint32_t        index
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pNode = ObjList_Index((OBJLIST_DATA *)this, index);
+
+        // Return to caller.
+        return pNode;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    JSONPP_DATA *   jsonPP_Init (
-        JSONPP_DATA       *this
+    NODELIST_DATA *   NodeList_Init (
+        NODELIST_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(JSONPP_DATA);
+        uint32_t        cbSize = sizeof(NODELIST_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -581,36 +1035,36 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_JSONPP);
+        this = (OBJ_ID)ObjList_Init((OBJLIST_DATA *)this);      // Needed for Inheritance
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&jsonPP_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeList_Vtbl);
         
-        this->indent = 4;
-        this->pStr = AStr_New( );
-        if (OBJ_NIL == this->pStr) {
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
+        */
 
     #ifdef NDEBUG
     #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        //fprintf(stderr, "jsonPP::sizeof(JSONPP_DATA) = %lu\n", sizeof(JSONPP_DATA));
+        //fprintf(stderr, "NodeList::sizeof(NODELIST_DATA) = %lu\n", sizeof(NODELIST_DATA));
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(JSONPP_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(NODELIST_DATA));
     #endif
 
         return this;
@@ -622,8 +1076,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         jsonPP_IsEnabled (
-        JSONPP_DATA		*this
+    ERESULT         NodeList_IsEnabled (
+        NODELIST_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -631,7 +1085,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -648,430 +1102,90 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      P r e t t y  P r i n t
+    //                         N o d e s
     //---------------------------------------------------------------
-    
-    ERESULT         jsonPP_PrettyPrint(
-        JSONPP_DATA     *this,
-        NODE_DATA       *pNodes,
-        uint32_t        indent,
-        ASTR_DATA       **ppStr
+
+    NODEARRAY_DATA * NodeList_Nodes (
+        NODELIST_DATA    *this
     )
     {
+        NODEARRAY_DATA  *pKeys;
         ERESULT         eRc = ERESULT_SUCCESS;
-        NODEHASH_DATA   *pHash;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonPP_Validate(this) ) {
+        if( !NodeList_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pKeys = NodeArray_New();
+        if (pKeys) {
+            eRc =   ObjList_ForEach(
+                                    (OBJLIST_DATA *)this,
+                                    (void *)NodeList_NodesExit,
+                                    this,
+                                    pKeys
+                    );
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pKeys);
+                pKeys = OBJ_NIL;
+            }
+            else {
+                NodeArray_SortAscending(pKeys);
+            }
+        }
+
+        // Return to caller.
+        return pKeys;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         S o r t
+    //---------------------------------------------------------------
+
+    ERESULT         NodeList_SortAscending (
+        NODELIST_DATA   *this
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        bool            fRc;
+        LISTDL_DATA *   pList;
+
+        // Do initialization.
+        if (NULL == this) {
+            return ERESULT_INVALID_OBJECT;
+        }
+#ifdef NDEBUG
+#else
+        if( !NodeList_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pNodes) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_MISSING;
-        }
 #endif
-        
-        pHash = JsonIn_CheckNodeForHash(pNodes);
-        if (OBJ_NIL == pHash) {
-            return ERESULT_PARSE_ERROR;
+
+        pList = ObjList_getList((OBJLIST_DATA *)this);
+        if (NULL == pList)
+            return ERESULT_GENERAL_FAILURE;
+        if (listdl_Count(pList) < 2) {
+            return ERESULT_SUCCESS;
         }
-        eRc = jsonPP_PrintHash(this, pHash, indent, "");
-        
+
+        fRc = listdl_Sort(pList, (void *)node_Compare);
+        if (fRc)
+            eRc = ERESULT_SUCCESS;
+
         // Return to caller.
-        if (ppStr) {
-            obj_Retain(this->pStr);
-            *ppStr = this->pStr;
-        }
         return eRc;
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                     P r i n t  A r r a y
-    //---------------------------------------------------------------
-    
-    /*!
-     Enable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT         jsonPP_PrintArray(
-        JSONPP_DATA     *this,
-        NODEARRAY_DATA  *pArray,
-        uint32_t        indent,
-        const
-        char            *pComma
-    )
-    {
-        //ERESULT         eRc;
-        NODE_DATA       *pNode = OBJ_NIL;
-        uint32_t        i;
-        uint32_t        iMax;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!jsonPP_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        if (indent) {
-            AStr_AppendCharRepeatA(this->pStr, indent, ' ');
-        }
-        AStr_AppendA(this->pStr, "[\n");
-        iMax = NodeArray_getSize(pArray);
-        for (i=0; i<iMax; i++) {
-            pNode = NodeArray_Get(pArray, i+1);
-            jsonPP_PrintValue(
-                              this,
-                              pNode,
-                              (indent + this->indent),
-                              i == iMax - 1 ? "" : ","
-            );
-        }
-        if (indent) {
-            AStr_AppendCharRepeatA(this->pStr, indent, ' ');
-        }
-        AStr_AppendPrint(this->pStr, "]%s\n", pComma);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                     P r i n t  H a s h
-    //---------------------------------------------------------------
-    
-    /*!
-     Enable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT         jsonPP_PrintHash(
-        JSONPP_DATA     *this,
-        NODEHASH_DATA   *pHash,
-        uint32_t        indent,
-        const
-        char            *pComma
-    )
-    {
-        //ERESULT         eRc;
-        NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODE_DATA       *pNode = OBJ_NIL;
-        uint32_t        i;
-        uint32_t        iMax;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!jsonPP_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pArray = nodeHash_Nodes(pHash);
-        if (OBJ_NIL == pArray) {
-            return ERESULT_SUCCESS;
-        }
-        
-        if (indent) {
-            AStr_AppendCharRepeatA(this->pStr, indent, ' ');
-        }
-        AStr_AppendA(this->pStr, "{\n");
-        iMax = NodeArray_getSize(pArray);
-        for (i=0; i<iMax; i++) {
-            pNode = NodeArray_Get(pArray, i+1);
-            jsonPP_PrintPair(
-                             this,
-                             pNode,
-                             (indent + this->indent),
-                             i == iMax - 1 ? "" : ","
-            );
-        }
-        if (indent) {
-            AStr_AppendCharRepeatA(this->pStr, indent, ' ');
-        }
-        AStr_AppendPrint(this->pStr, "}%s\n", pComma);
-        
-        obj_Release(pArray);
-        pArray = OBJ_NIL;
 
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                     P r i n t  P a i r
-    //---------------------------------------------------------------
-    
-    /*!
-     Enable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT         jsonPP_PrintPair(
-        JSONPP_DATA     *this,
-        NODE_DATA       *pNode,
-        uint32_t        indent,
-        const
-        char            *pComma
-    )
-    {
-        //ERESULT         eRc;
-        NODE_DATA       *pData = OBJ_NIL;
-        NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODEHASH_DATA   *pHash = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        FALSE_DATA      *pFalse = OBJ_NIL;
-        NULL_DATA       *pNull = OBJ_NIL;
-        TRUE_DATA       *pTrue = OBJ_NIL;
-        uint32_t        i;
-        uint32_t        iMax;
-        char            *pNameA = NULL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!jsonPP_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        pNameA = node_getNameUTF8(pNode);
-        if (NULL == pNameA) {
-            DEBUG_BREAK();
-            fprintf(stderr, "ERROR - Hash Pair is missing Name!\n\n\n");
-            exit(8);
-        }
-        pData = node_getData(pNode);
-        if (OBJ_NIL == pData) {
-            DEBUG_BREAK();
-            fprintf(stderr, "ERROR - Hash Pair is missing Data object!\n\n\n");
-            exit(8);
-        }
-
-        if (indent) {
-            AStr_AppendCharRepeatA(this->pStr, indent, ' ');
-        }
-        AStr_AppendPrint(this->pStr, "\"%s\"", pNameA);
-        mem_Free(pNameA);
-        pNameA = NULL;
-        AStr_AppendA(this->pStr, " : ");
-        
-        pFalse = JsonIn_CheckNodeForFalse(pData);
-        if (pFalse) {
-            AStr_AppendPrint(this->pStr, "false%s\n", pComma);
-            return ERESULT_SUCCESS;
-        }
-        pStr = JsonIn_CheckNodeForInteger(pData);
-        if (pStr) {
-            AStr_AppendPrint(this->pStr, "%s%s\n", AStr_getData(pStr), pComma);
-            return ERESULT_SUCCESS;
-        }
-        pNull = JsonIn_CheckNodeForNull(pData);
-        if (pNull) {
-            AStr_AppendPrint(this->pStr, "null%s\n", pComma);
-            return ERESULT_SUCCESS;
-        }
-        pStr = JsonIn_CheckNodeForString(pData);
-        if (pStr) {
-            AStr_AppendPrint(this->pStr, "\"%s\"%s\n", AStr_getData(pStr), pComma);
-            return ERESULT_SUCCESS;
-        }
-        pTrue = JsonIn_CheckNodeForTrue(pData);
-        if (pTrue) {
-            AStr_AppendPrint(this->pStr, "true%s\n", pComma);
-            return ERESULT_SUCCESS;
-        }
-        pArray = JsonIn_CheckNodeForArray(pData);
-        if (pArray) {
-            AStr_AppendA(this->pStr, "[\n");
-            iMax = NodeArray_getSize(pArray);
-            for (i=0; i<iMax; i++) {
-                pNode = NodeArray_Get(pArray, i+1);
-                jsonPP_PrintValue(
-                                  this,
-                                  pNode,
-                                  (indent + this->indent),
-                                  i == iMax - 1 ? "" : ","
-                );
-            }
-            if (indent) {
-                AStr_AppendCharRepeatA(this->pStr, indent, ' ');
-            }
-            AStr_AppendPrint(this->pStr, "]%s\n", pComma);
-            return ERESULT_SUCCESS;
-        }
-        pHash = JsonIn_CheckNodeForHash(pData);
-        if (pHash) {
-            pArray = nodeHash_Nodes(pHash);
-            if (pArray) {
-                AStr_AppendA(this->pStr, "{\n");
-                iMax = NodeArray_getSize(pArray);
-                for (i=0; i<iMax; i++) {
-                    pNode = NodeArray_Get(pArray, i+1);
-                    jsonPP_PrintPair(
-                                     this,
-                                     pNode,
-                                     (indent + this->indent),
-                                     i == iMax - 1 ? "" : ","
-                    );
-                }
-                if (indent) {
-                    AStr_AppendCharRepeatA(this->pStr, indent, ' ');
-                }
-                AStr_AppendPrint(this->pStr, "}%s\n", pComma);
-                obj_Release(pArray);
-                pArray = OBJ_NIL;
-                return ERESULT_SUCCESS;
-            }
-        }
-
-        DEBUG_BREAK();
-        fprintf(stderr, "ERROR - Hash Pair has an invalid Data object!\n\n\n");
-        exit(8);
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                     P r i n t  V a l u e
-    //---------------------------------------------------------------
-    
-    /*!
-     Enable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT         jsonPP_PrintValue(
-        JSONPP_DATA     *this,
-        NODE_DATA       *pNode,
-        uint32_t        indent,
-        const
-        char            *pComma
-    )
-    {
-        //ERESULT         eRc;
-        NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODEHASH_DATA   *pHash = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-        FALSE_DATA      *pFalse = OBJ_NIL;
-        NULL_DATA       *pNull = OBJ_NIL;
-        TRUE_DATA       *pTrue = OBJ_NIL;
-        uint32_t        i;
-        uint32_t        iMax;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!jsonPP_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        if (indent) {
-            AStr_AppendCharRepeatA(this->pStr, indent, ' ');
-        }
-        
-        pFalse = JsonIn_CheckNodeForFalse(pNode);
-        if (pFalse) {
-            AStr_AppendPrint(this->pStr, "false%s\n", pComma);
-            return ERESULT_SUCCESS;
-        }
-        pStr = JsonIn_CheckNodeForInteger(pNode);
-        if (pStr) {
-            AStr_AppendPrint(this->pStr, "%s%s\n", AStr_getData(pStr), pComma);
-            return ERESULT_SUCCESS;
-        }
-        pNull = JsonIn_CheckNodeForNull(pNode);
-        if (pNull) {
-            AStr_AppendPrint(this->pStr, "null%s\n", pComma);
-            return ERESULT_SUCCESS;
-        }
-        pStr = JsonIn_CheckNodeForString(pNode);
-        if (pStr) {
-            AStr_AppendPrint(this->pStr, "\"%s\"%s\n", AStr_getData(pStr), pComma);
-            return ERESULT_SUCCESS;
-        }
-        pTrue = JsonIn_CheckNodeForTrue(pNode);
-        if (pTrue) {
-            AStr_AppendPrint(this->pStr, "true%s\n", pComma);
-            return ERESULT_SUCCESS;
-        }
-        pArray = JsonIn_CheckNodeForArray(pNode);
-        if (pArray) {
-            AStr_AppendA(this->pStr, "[\n");
-            iMax = NodeArray_getSize(pArray);
-            for (i=0; i<iMax; i++) {
-                pNode = NodeArray_Get(pArray, i+1);
-                jsonPP_PrintPair(
-                                 this,
-                                 pNode,
-                                 (indent + this->indent),
-                                 i == iMax - 1 ? "" : ","
-                );
-            }
-            if (indent) {
-                AStr_AppendCharRepeatA(this->pStr, indent, ' ');
-            }
-            AStr_AppendPrint(this->pStr, "]%s\n", pComma);
-            return ERESULT_SUCCESS;
-        }
-        pHash = JsonIn_CheckNodeForHash(pNode);
-        if (pHash) {
-            pArray = nodeHash_Nodes(pHash);
-            if (pArray) {
-                AStr_AppendA(this->pStr, "[\n");
-                iMax = NodeArray_getSize(pArray);
-                for (i=0; i<iMax; i++) {
-                    pNode = NodeArray_Get(pArray, i+1);
-                    jsonPP_PrintPair(
-                                     this,
-                                     pNode,
-                                     (indent + this->indent),
-                                     i == iMax - 1 ? "" : ","
-                    );
-                }
-                if (indent) {
-                    AStr_AppendCharRepeatA(this->pStr, indent, ' ');
-                }
-                AStr_AppendPrint(this->pStr, "]%s\n", pComma);
-                obj_Release(pArray);
-                pArray = OBJ_NIL;
-                return ERESULT_SUCCESS;
-            }
-        }
-        
-        DEBUG_BREAK();
-        fprintf(stderr, "ERROR - Hash Pair has an invalid Data object!\n\n\n");
-        exit(8);
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -1083,14 +1197,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = jsonPP_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = NodeList_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "jsonPP", prefix,
+                        the object name, "NodeList", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1098,13 +1212,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          jsonPP_QueryInfo (
+    void *          NodeList_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        JSONPP_DATA     *this = objId;
+        NODELIST_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1113,7 +1227,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1122,11 +1236,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(JSONPP_DATA);
+            return (void *)sizeof(NODELIST_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)jsonPP_Class();
+                return (void *)NodeList_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -1156,23 +1270,25 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return jsonPP_Disable;
+                            return NodeList_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return jsonPP_Enable;
+                            return NodeList_Enable;
                         }
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return jsonPP_ToDebugString;
+                            return NodeList_ToDebugString;
                         }
+#ifdef  SRCREF_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return jsonPP_ToJSON;
+                            return NodeList_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -1181,10 +1297,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == jsonPP_ToDebugString)
+                if (pData == NodeList_ToDebugString)
                     return "ToDebugString";
-                if (pData == jsonPP_ToJSON)
+#ifdef  SRCREF_JSON_SUPPORT
+                if (pData == NodeList_ToJson)
                     return "ToJson";
+#endif
                 break;
                 
             default:
@@ -1197,45 +1315,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-     ASTR_DATA *     jsonPP_ToJSON (
-        JSONPP_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!jsonPP_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1243,32 +1322,30 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = jsonPP_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = NodeList_ToDebugString(this,4);
      @endcode 
-     @param     this    JSONPP object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     jsonPP_ToDebugString (
-        JSONPP_DATA      *this,
+    ASTR_DATA *     NodeList_ToDebugString (
+        NODELIST_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1286,9 +1363,11 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s)\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
-                    pInfo->pClassName
+                    pInfo->pClassName,
+                    NodeList_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -1325,15 +1404,15 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            jsonPP_Validate (
-        JSONPP_DATA      *this
+    bool            NodeList_Validate (
+        NODELIST_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_JSONPP))
+            if (obj_IsKindOf(this, OBJ_IDENT_NODELIST))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1349,7 +1428,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(JSONPP_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(NODELIST_DATA))) {
             return false;
         }
 
@@ -1360,7 +1439,7 @@ extern "C" {
 
 
     
-
+    
     
 #ifdef	__cplusplus
 }

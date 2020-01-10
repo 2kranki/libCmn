@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   nodeArray_JSON.c
+ * File:   NodeArray_JSON.c
  *
  * Created on 11/16/2018 from nodeHash_JSON
  */
@@ -51,7 +51,7 @@
 #include    <JsonIn.h>
 #include    <listdl.h>
 #include    <node.h>
-#include    <nodeArray.h>
+#include    <NodeArray.h>
 #include    <nodeHash.h>
 #include    <utf8.h>
 
@@ -361,7 +361,7 @@ extern "C" {
             pName = node_getName(pNode);
             if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "array")) {
                 pArray = node_getData(pNode);
-                if (!(nodeArray_getSize(pArray) == length)) {
+                if (!(NodeArray_getSize(pArray) == length)) {
                     fprintf(stderr, "ERROR - length does not match array size!\n");
 #ifdef TRACE_FUNCTIONS
                     pStr2 = nodeHash_ToDebugString(pHash, 0);
@@ -376,7 +376,7 @@ extern "C" {
                 // Parse the data array creating the UTF-8 string.
                 //FIXME: pStrOut = W32Str_New();
                 for (i=0; i<length; ++i) {
-                    pNode = nodeArray_Get(pArray, i+1);
+                    pNode = NodeArray_Get(pArray, i+1);
                     pName = node_getName(pNode);
                     pStr = node_getData(pNode);
                     if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer"))) {

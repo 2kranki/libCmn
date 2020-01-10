@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include        <Compiler_internal.h>
-#include        <nodeArray.h>
+#include        <NodeArray.h>
 #include        <nodeHash.h>
 #include        <SrcErrors.h>
 #include        <trace.h>
@@ -1339,9 +1339,9 @@ extern "C" {
         
         this->pErrors = SrcErrors_New();
         BREAK_NULL(this->pErrors);
-        this->pQueue0 = nodeArray_New();
+        this->pQueue0 = NodeArray_New();
         BREAK_NULL(this->pQueue0);
-        this->pQueue1 = nodeArray_New();
+        this->pQueue1 = NodeArray_New();
         BREAK_NULL(this->pQueue1);
         this->pQueue2 = ObjArray_New();
         BREAK_NULL(this->pQueue2);

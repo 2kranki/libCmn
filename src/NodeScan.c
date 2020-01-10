@@ -1092,12 +1092,12 @@ extern "C" {
         
         // Shift inputs.
         this->index += numChrs;
-        if (this->index < nodeArray_getSize(this->pArray))
+        if (this->index < NodeArray_getSize(this->pArray))
             ;
         else {
             return OBJ_NIL;
         }
-        pNode = nodeArray_Get(this->pArray, (this->index + 1));
+        pNode = NodeArray_Get(this->pArray, (this->index + 1));
 
         // Return to caller.
         return pNode;
@@ -1139,12 +1139,12 @@ extern "C" {
 #endif
         
         idx = this->index + (num - 1);
-        if (idx < nodeArray_getSize(this->pArray))
+        if (idx < NodeArray_getSize(this->pArray))
             ;
         else {
             return OBJ_NIL;
         }
-        pNode = nodeArray_Get(this->pArray, (idx + 1));
+        pNode = NodeArray_Get(this->pArray, (idx + 1));
         
         // Return to caller.
         return pNode;
@@ -1223,7 +1223,7 @@ extern "C" {
 #endif
         this->start = this->index;
 
-        if (this->index < nodeArray_getSize(this->pArray))
+        if (this->index < NodeArray_getSize(this->pArray))
             ;
         else {
             return OBJ_NIL;
@@ -1342,7 +1342,7 @@ extern "C" {
         // advances by 1 if the search is unsuccessful until EOF.
         startIndex = this->index - 1;
         for (;;) {
-            if ((startIndex + 1) <= nodeArray_getSize(this->pArray))
+            if ((startIndex + 1) <= NodeArray_getSize(this->pArray))
                 ;
             else {
                 break;
@@ -1394,7 +1394,7 @@ extern "C" {
                 }
                 else
                     stopRegex = curRegex;
-                pNode = nodeArray_Get(this->pArray, 1);
+                pNode = NodeArray_Get(this->pArray, 1);
                 if(pNode) {
                     return pNode;
                 }
@@ -1572,15 +1572,15 @@ extern "C" {
         }
 #endif
         
-        if (this->index < nodeArray_getSize(this->pArray))
+        if (this->index < NodeArray_getSize(this->pArray))
             ;
         else {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
         
-        while (this->index < nodeArray_getSize(this->pArray)) {
-            pNode = nodeArray_Get(this->pArray, (this->index + 1));
+        while (this->index < NodeArray_getSize(this->pArray)) {
+            pNode = NodeArray_Get(this->pArray, (this->index + 1));
             if (OBJ_NIL == pNode) {
                 return 0;
             }
@@ -1622,7 +1622,7 @@ extern "C" {
 #endif
         
         this->index = 0;
-        pNode = nodeArray_Get(this->pArray, (this->index + 1));
+        pNode = NodeArray_Get(this->pArray, (this->index + 1));
         if (OBJ_NIL == pNode) {
             return OBJ_NIL;
         }

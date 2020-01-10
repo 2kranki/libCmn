@@ -1,21 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          A List of Nodes (nodeList) Header
+//           A List of Nodes (NodeList) Header
 //****************************************************************
 /*
  * Program
- *			List of Nodes (nodeList)
+ *			 A List of Nodes (NodeList)
  * Purpose
  *          This object provides a hash table keyed by the
  *          node name with the node as the data.
  *
  * Remarks
- *	1.      None
+ *    1.      None
  *
  * History
- *	11/23/2018 Regenerated and old object merged in. This new
- *          object uses objList for its foundation.
+ *  11/23/2018  Regenerated and old object merged in. This new
+ *              object uses objList for its foundation.
+ *	01/10/2020  Regenerated again
  */
 
 
@@ -52,15 +53,21 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <nodeArray.h>
+#include        <NodeArray.h>
 #include        <NodeEnum.h>
+#include        <ObjList.h>
 
 
 #ifndef         NODELIST_H
 #define         NODELIST_H
 
 
+#define   NODELIST_JSON_SUPPORT 1
 //#define   NODELIST_SINGLETON    1
+
+
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -72,22 +79,22 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct nodeList_data_s	NODELIST_DATA;              // Inherits from OBJLIST
-    typedef struct nodeList_class_data_s NODELIST_CLASS_DATA;   // Inherits from OBJ
+    //typedef struct NodeList_data_s	NODELIST_DATA;          // Inherits from OBJLIST
+    //typedef struct NodeList_class_data_s NODELIST_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct nodeList_vtbl_s	{
+    typedef struct NodeList_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in nodeList_object.c.
+        // method names to the vtbl definition in NodeList_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(NODELIST_DATA *);
     } NODELIST_VTBL;
 
-    typedef struct nodeList_class_vtbl_s	{
+    typedef struct NodeList_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in nodeList_object.c.
+        // method names to the vtbl definition in NodeList_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(NODELIST_DATA *);
@@ -106,11 +113,11 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  NODELIST_SINGLETON
-    NODELIST_DATA *     nodeList_Shared(
+    NODELIST_DATA * NodeList_Shared (
         void
     );
 
-    bool            nodeList_SharedReset(
+    void            NodeList_SharedReset (
         void
     );
 #endif
@@ -120,19 +127,19 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to nodeList object if successful, otherwise OBJ_NIL.
+     @return    pointer to NodeList object if successful, otherwise OBJ_NIL.
      */
-    NODELIST_DATA * nodeList_Alloc(
+    NODELIST_DATA * NodeList_Alloc (
         void
     );
     
     
-    OBJ_ID          nodeList_Class(
+    OBJ_ID          NodeList_Class (
         void
     );
     
     
-    NODELIST_DATA * nodeList_New(
+    NODELIST_DATA * NodeList_New (
         void
     );
     
@@ -147,137 +154,140 @@ extern "C" {
      nodeTree_VisitBreadthFirst uses this field when it is
      executed and will overwrite it..
      */
-    uint32_t        nodeLink_getMisc (
+    uint32_t        NodeLink_getMisc (
         NODELINK_DATA   *this
     );
-    
-    bool            nodeLink_setMisc (
+
+    bool            NodeLink_setMisc (
         NODE_DATA       *this,
         uint32_t        value
     );
 
-    
+
     /*!
      Misc1 and Misc2 may be used as needed.
      */
-    uint16_t        nodeLink_getMisc1(
+    uint16_t        NodeLink_getMisc1 (
         NODELINK_DATA   *this
     );
-    
-    bool            nodeLink_setMisc1(
+
+    bool            NodeLink_setMisc1 (
         NODELINK_DATA   *this,
         uint16_t        value
     );
 
-    
-    uint16_t        nodeLink_getMisc2(
+
+    uint16_t        NodeLink_getMisc2 (
         NODELINK_DATA   *this
     );
-    
-    bool            nodeLink_setMisc2(
+
+    bool            NodeLink_setMisc2 (
         NODELINK_DATA   *this,
         uint16_t        value
     );
-    
+
+
+    OBJLIST_DATA *  NodeList_getObjList (
+        NODELIST_DATA   *this
+    );
+
 
     /*!
      Ordered property when set causes the list to be kept in sorted
      order.
      */
-    bool            nodeList_getOrdered(
+    bool            NodeList_getOrdered (
         NODELIST_DATA   *this
     );
-    
-    bool            nodeList_setOrdered(
+
+    bool            NodeList_setOrdered (
         NODELIST_DATA   *this,
         bool            fValue
     );
 
-    
+
     /*!
      Size property is the numbers of objects on the list.
      */
-    uint32_t        nodeList_getSize(
+    uint32_t        NodeList_getSize (
         NODELIST_DATA   *this
     );
-    
-    
 
 
-    
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         nodeList_Add2Head(
+    ERESULT         NodeList_Add2Head (
         NODELIST_DATA   *this,
         NODE_DATA       *pNode
     );
-    
-    ERESULT         nodeList_Add2HeadA(
-        NODELIST_DATA   *this,
-        int32_t         cls,
-        const
-        char            *pNameA,
-        OBJ_ID          pData
-    );
-    
-    ERESULT         nodeList_Add2Tail(
-        NODELIST_DATA   *this,
-        NODE_DATA       *pNode
-    );
-    
-    ERESULT         nodeList_Add2TailA(
-        NODELIST_DATA   *this,
-        int32_t         cls,
-        const
-        char            *pNameA,
-        OBJ_ID          pData
-    );
-    
 
-    NODELIST_DATA * nodeList_Copy(
+    ERESULT         NodeList_Add2HeadA (
+        NODELIST_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pNameA,
+        OBJ_ID          pData
+    );
+
+    ERESULT         NodeList_Add2Tail (
+        NODELIST_DATA   *this,
+        NODE_DATA       *pNode
+    );
+
+    ERESULT         NodeList_Add2TailA (
+        NODELIST_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pNameA,
+        OBJ_ID          pData
+    );
+
+
+    NODELIST_DATA * NodeList_Copy (
         NODELIST_DATA    *this
     );
-    
-    
+
+
     // Deletes first entry in list that matches the name.
-    ERESULT         nodeList_DeleteA (
+    ERESULT         NodeList_DeleteA (
         NODELIST_DATA   *this,
         int32_t         cls,
         const
         char            *pNameA
     );
-    
-    
-    ERESULT         nodeList_DeleteHead (
+
+
+    ERESULT         NodeList_DeleteHead (
         NODELIST_DATA    *this
     );
-    
-    
-    ERESULT         nodeList_DeleteTail (
+
+
+    ERESULT         NodeList_DeleteTail (
         NODELIST_DATA    *this
     );
-    
-    
+
+
     /*! Create an enumerator for the list.
      @return    If successful, an ENUM object is returned.  Otherwise,
      OBJ_NIL.
      @warning   Remember to release the returned ENUM object.
      */
-    NODEENUM_DATA * nodeList_Enum(
+    NODEENUM_DATA * NodeList_Enum (
         NODELIST_DATA   *this
     );
-    
-    
-    NODE_DATA *     nodeList_FindA (
+
+
+    NODE_DATA *     NodeList_FindA (
         NODELIST_DATA   *this,
         int32_t         cls,
         const
         char            *pNameA
     );
-    
-    
+
+
     /*!
      Scan the list applying the given routine to each member of the
      list.  Second parameter to the Scan routine is the actual node
@@ -290,21 +300,21 @@ extern "C" {
      @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
      error.
      */
-    ERESULT         nodeList_ForEach(
+    ERESULT         NodeList_ForEach (
         NODELIST_DATA   *this,
         P_ERESULT_EXIT3 pScan,
         OBJ_ID          pObj,            // Used as first parameter of scan method
         void            *pArg3
     );
-    
-    
-    NODE_DATA *     nodeList_Index(
+
+
+    NODE_DATA *     NodeList_Index (
         NODELIST_DATA   *this,
         uint32_t        index
     );
-    
-    
-    NODELIST_DATA *   nodeList_Init(
+
+
+    NODELIST_DATA *   NodeList_Init (
         NODELIST_DATA     *this
     );
 
@@ -318,35 +328,36 @@ extern "C" {
      code is set to the specific error.
      @warning   Remember to release the returned object.
      */
-    NODEARRAY_DATA * nodeList_Nodes(
+    NODEARRAY_DATA * NodeList_Nodes (
         NODELIST_DATA   *this
     );
-    
-    
+
+
     /*!
      Sort the list by Name in ascending sequence.
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
      error.
      */
-    ERESULT         nodeList_SortAscending(
+    ERESULT         NodeList_SortAscending(
         NODELIST_DATA   *this
     );
-    
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = nodeList_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = NodeList_ToDebugString(this,4);
      @endcode 
-     @param     this    NODELIST object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     nodeList_ToDebugString(
-        NODELIST_DATA   *this,
+    ASTR_DATA *    NodeList_ToDebugString (
+        NODELIST_DATA     *this,
         int             indent
     );
     

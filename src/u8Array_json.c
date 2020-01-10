@@ -58,7 +58,7 @@
 #include    <hex.h>
 #include    <JsonIn.h>
 #include    <node.h>
-#include    <nodeArray.h>
+#include    <NodeArray.h>
 #include    <nodeHash.h>
 #include    <utf8_internal.h>
 
@@ -153,15 +153,15 @@ extern "C" {
         if (count && pObject) {
             eRc = JsonIn_FindArrayNodeInHashA(pParser, "Entries", &pArray);
             if (pArray) {
-                if (count == nodeArray_getSize(pArray))
+                if (count == NodeArray_getSize(pArray))
                     ;
                 else {
                     fprintf(
                             stderr,
                             "ERROR - JSON Count, %d, does not match array size, %d!\n",
                             count,
-                            nodeArray_getSize(pArray)
-                            );
+                            NodeArray_getSize(pArray)
+                    );
                     goto exit00;
                 }
             }
@@ -176,13 +176,13 @@ extern "C" {
 
             for(i=0; i<count; ++i) {
                 fprintf(stderr, "\t\tLooking for Node(%d)\n", i+1);
-                pNode = nodeArray_Get(pArray, i+1);
+                pNode = NodeArray_Get(pArray, i+1);
                 if (OBJ_NIL == pNode) {
                     fprintf(
                             stderr,
                             "ERROR - JSON Count, %d, does not match array size, %d!\n",
                             count,
-                            nodeArray_getSize(pArray)
+                            NodeArray_getSize(pArray)
                     );
                     goto exit00;
                 }

@@ -111,7 +111,7 @@ extern "C" {
         for (i=0; i<numEntries; i++) {
             uint32_t        index = 0;
             OBJ_ID          pObj = OBJ_NIL;
-            pNode = nodeArray_Get(pArray, i+1);
+            pNode = NodeArray_Get(pArray, i+1);
             pHash = JsonIn_CheckNodeForHash(pNode);
             if (pHash) {
                 eRc = JsonIn_SubObjectFromHash(pParser, pHash);

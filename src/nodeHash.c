@@ -204,7 +204,7 @@ extern "C" {
         NODE_DATA       *pNode = pRecord->node.pKey;
         
         if (pNode && pArray) {
-            eRc = nodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
+            eRc = NodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
         }
         
         return eRc;
@@ -1566,7 +1566,7 @@ extern "C" {
         }
 #endif
         
-        pNodes = nodeArray_New();
+        pNodes = NodeArray_New();
         if (pNodes) {
             eRc =   Blocks_ForEach(
                                    (BLOCKS_DATA *)this,
@@ -1579,7 +1579,7 @@ extern "C" {
                 pNodes = OBJ_NIL;
             }
             else
-                nodeArray_SortAscending(pNodes);
+                NodeArray_SortAscending(pNodes);
         }
         
         // Return to caller.
@@ -1855,8 +1855,8 @@ extern "C" {
         eRc = AStr_AppendPrint(pStr, "Hash{\n");
         pArray = nodeHash_Nodes(this);
         if (pArray) {
-            for (i=0; i < nodeArray_getSize(pArray); i++) {
-                pNode = nodeArray_Get(pArray, i);
+            for (i=0; i < NodeArray_getSize(pArray); i++) {
+                pNode = NodeArray_Get(pArray, i);
                 if (pNode) {
                     pWrk = node_ToString(pNode);
                     if (pWrk) {

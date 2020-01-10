@@ -44,7 +44,7 @@
 #include <hjson_internal.h>
 #include <trace.h>
 #include <JsonIn.h>
-#include <nodeArray.h>
+#include <NodeArray.h>
 #include <nodeHash.h>
 #include <SrcErrors.h>
 
@@ -101,7 +101,7 @@ extern "C" {
             return pNode;
         }
         
-        pArray = nodeArray_New( );
+        pArray = NodeArray_New( );
         if (pArray == OBJ_NIL) {
             SrcErrors_AddFatalFromTokenA(OBJ_NIL, pToken, "Out of Memory");
             obj_Release(pLoc);
@@ -116,7 +116,7 @@ extern "C" {
         
         pChild = hjson_ParseValue(this);
         if (pChild) {
-            nodeArray_AppendNode(pArray, pChild, NULL);
+            NodeArray_AppendNode(pArray, pChild, NULL);
             obj_Release(pChild);
             for (;;) {
                 
@@ -134,7 +134,7 @@ extern "C" {
                 
                 pChild = hjson_ParseValue(this);
                 if (pChild) {
-                    nodeArray_AppendNode(pArray, pChild, NULL);
+                    NodeArray_AppendNode(pArray, pChild, NULL);
                     obj_Release(pChild);
                 }
                 else {

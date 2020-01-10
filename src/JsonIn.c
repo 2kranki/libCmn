@@ -49,7 +49,7 @@
 #include        <hjson.h>
 #include        <name_internal.h>
 #include        <node_internal.h>
-#include        <nodeArray_internal.h>
+#include        <NodeArray_internal.h>
 #include        <nodeBTP_internal.h>
 #include        <nodeHash_internal.h>
 #include        <null.h>
@@ -1399,7 +1399,7 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
 
-        eRc = nodeArray_VisitAscending(pArray, pVisit, pObj);
+        eRc = NodeArray_VisitAscending(pArray, pVisit, pObj);
 
         return eRc;
     }
@@ -1809,10 +1809,10 @@ extern "C" {
             return pObj;
         }
 
-        pInfo = obj_getInfo(nodeArray_Class());
+        pInfo = obj_getInfo(NodeArray_Class());
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)nodeArray_ParseJsonObject(this);
+            pObj = (OBJ_ID)NodeArray_ParseJsonObject(this);
             return pObj;
         }
 

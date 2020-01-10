@@ -116,7 +116,7 @@
 #include        <ascii.h>
 #include        <AStr.h>
 #include        <AStrArray.h>
-#include        <nodeArray.h>
+#include        <NodeArray.h>
 #include        <nodeHash.h>
 #include        <scanner.h>
 #include        <SrcErrors.h>

@@ -1511,7 +1511,7 @@ extern "C" {
         }
 #endif
         if( this->pSemanticStack ) {
-            pItem = nodeArray_Get(this->pSemanticStack,index);
+            pItem = NodeArray_Get(this->pSemanticStack,index);
         }
         
         // Return to caller.
@@ -1558,7 +1558,7 @@ extern "C" {
         /* Pop 1 element from the top of the semantic stack.
          */
         if( this->pSemanticStack ) {
-            pItem = nodeArray_DeleteLast(this->pSemanticStack);
+            pItem = NodeArray_DeleteLast(this->pSemanticStack);
             TRC_OBJ( this,
                      "\tparser_SemPop:  %s\n",
                      node_getName(pItem)
@@ -1596,14 +1596,14 @@ extern "C" {
         }
         
         if (this->pSemanticStack == OBJ_NIL) {
-            this->pSemanticStack = nodeArray_New();
+            this->pSemanticStack = NodeArray_New();
             if (this->pSemanticStack == OBJ_NIL) {
                 DEBUG_BREAK();
                 return false;
             }
         }
         
-        eRc = nodeArray_AppendNode(this->pSemanticStack, pItem, NULL);
+        eRc = NodeArray_AppendNode(this->pSemanticStack, pItem, NULL);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             TRC_OBJ( this,
                      "\tparse_SemPush:  %s\n",
@@ -1641,7 +1641,7 @@ extern "C" {
 #endif
 
         if( this->pSemanticStack ) {
-            pItem = nodeArray_GetLast(this->pSemanticStack);
+            pItem = NodeArray_GetLast(this->pSemanticStack);
             if (pItem) {
                 TRC_OBJ( this,
                          "\tparser_SemTop:  %s\n",

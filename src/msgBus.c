@@ -90,10 +90,10 @@ extern "C" {
         if (fRc && pEntry) {
             origin = MsgData_getOrigin(pEntry);
             dest = MsgData_getDestination(pEntry);
-            iMax = nodeArray_getSize(this->pRegistry);
+            iMax = NodeArray_getSize(this->pRegistry);
             if (dest) {     /*** Specific Node ***/
                 for (i=0; i<iMax; ++i) {
-                    pNode = nodeArray_Get(this->pRegistry, i+1);
+                    pNode = NodeArray_Get(this->pRegistry, i+1);
                     if (pNode) {
                         nodeID = (uint32_t)node_getNameInt(pNode);
                         if (nodeID == dest) {
@@ -112,7 +112,7 @@ extern "C" {
             }
             else {          /*** General Broadcast ***/
                 for (i=0; i<iMax; ++i) {
-                    pNode = nodeArray_Get(this->pRegistry, i+1);
+                    pNode = NodeArray_Get(this->pRegistry, i+1);
                     if (pNode) {
                         nodeID = (uint32_t)node_getNameInt(pNode);
                         if (nodeID == MsgData_getOrigin(pEntry))
@@ -243,7 +243,7 @@ extern "C" {
         }
 #endif
         
-        size = nodeArray_getSize(this->pRegistry);
+        size = NodeArray_getSize(this->pRegistry);
         
         return size;
     }
@@ -609,7 +609,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pRegistry = nodeArray_New();
+        this->pRegistry = NodeArray_New();
         if (OBJ_NIL == this->pRegistry) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -757,7 +757,7 @@ extern "C" {
 #endif
         
         if (this->pRegistry == OBJ_NIL) {
-            this->pRegistry = nodeArray_New();
+            this->pRegistry = NodeArray_New();
             if (this->pRegistry == OBJ_NIL) {
                 return ERESULT_OUT_OF_MEMORY;
             }
@@ -769,7 +769,7 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         
-        nodeArray_AppendNode(this->pRegistry, pNode, NULL);
+        NodeArray_AppendNode(this->pRegistry, pNode, NULL);
         obj_Release(pNode);
         pNode = OBJ_NIL;
         
@@ -797,7 +797,7 @@ extern "C" {
 #endif
         
         if (this->pRegistry == OBJ_NIL) {
-            this->pRegistry = nodeArray_New();
+            this->pRegistry = NodeArray_New();
             if (this->pRegistry == OBJ_NIL) {
                 return ERESULT_OUT_OF_MEMORY;
             }
@@ -810,7 +810,7 @@ extern "C" {
         }
         node_setMisc1(pNode, vtblOffset);
         
-        nodeArray_AppendNode(this->pRegistry, pNode, NULL);
+        NodeArray_AppendNode(this->pRegistry, pNode, NULL);
         obj_Release(pNode);
         pNode = OBJ_NIL;
         
@@ -921,13 +921,13 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
         
-        iMax = nodeArray_getSize(this->pRegistry);
+        iMax = NodeArray_getSize(this->pRegistry);
         for (i=0; i<iMax; ++i) {
-            pNode = nodeArray_Get(this->pRegistry, i+1);
+            pNode = NodeArray_Get(this->pRegistry, i+1);
             if (pNode) {
                 nodeID = (uint32_t)node_getNameInt(pNode);
                 if (token == nodeID) {
-                    pNode = nodeArray_Delete(this->pRegistry, i+1);
+                    pNode = NodeArray_Delete(this->pRegistry, i+1);
                     obj_Release(pNode);
                     pNode = OBJ_NIL;
                     return ERESULT_SUCCESS;

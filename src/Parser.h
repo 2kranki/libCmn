@@ -55,7 +55,7 @@
 #include        <Compiler.h>
 #include        <lex.h>
 #include        <node.h>
-#include        <nodeArray.h>
+#include        <NodeArray.h>
 #include        <SrcLoc.h>
 
 

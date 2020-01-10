@@ -1289,7 +1289,7 @@ extern "C" {
             pArray = nodeHash_Nodes((NODEHASH_DATA *)pData);
         }
         else if (obj_IsKindOf(pData,OBJ_IDENT_NODEARRAY)) {
-            pArray = nodeArray_Copy((NODEARRAY_DATA *)pData);
+            pArray = NodeArray_Copy((NODEARRAY_DATA *)pData);
         }
 
         // Return to caller.

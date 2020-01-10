@@ -62,7 +62,7 @@
 #include    <hex.h>
 #include    <JsonIn.h>
 #include    <node.h>
-#include    <nodeArray.h>
+#include    <NodeArray.h>
 #include    <nodeHash.h>
 #include    <utf8_internal.h>
 
@@ -170,7 +170,7 @@ extern "C" {
                 pObject = OBJ_NIL;
                 goto exit00;
             }
-            if (cElems == nodeArray_getSize(pArray))
+            if (cElems == NodeArray_getSize(pArray))
                 ;
             else {
                 obj_Release(pObject);
@@ -178,7 +178,7 @@ extern "C" {
                 goto exit00;
             }
             for (i=0; i<cElems; ++i) {
-                pNode = nodeArray_Get(pArray, i+1);
+                pNode = NodeArray_Get(pArray, i+1);
                 if (OBJ_NIL == pNode) {
                     obj_Release(pObject);
                     pObject = OBJ_NIL;

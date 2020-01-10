@@ -43,7 +43,7 @@
 #include        <nodeBTP.h>
 #include        <Blocks_internal.h>
 #include        <JsonIn.h>
-#include        <nodeArray.h>
+#include        <NodeArray.h>
 #include        <rbt_tree.h>
 
 

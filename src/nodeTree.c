@@ -54,7 +54,7 @@
 #include        <name_internal.h>
 #include        <node_internal.h>
 #include        <nodeLink_internal.h>
-#include        <nodeArray.h>
+#include        <NodeArray.h>
 #include        <nodeHash.h>
 #include        <ObjList.h>
 #include        <Value.h>
@@ -147,11 +147,11 @@ extern "C" {
         }
 #endif
 
-        pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+        pNode = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
         if (pNode) {
             childIndex = nodeLink_getChild(pNode);
             if (childIndex) {
-                nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
+                NodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
                 eRc = nodeTree_UpDownNodePost(
                                                    this,
                                                    childIndex,
@@ -160,10 +160,10 @@ extern "C" {
                 if (ERESULT_FAILED(eRc)) {
                     return eRc;
                 }
-                nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
+                NodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
             }
             // visit current node.
-            nodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
+            NodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
             // Follow Sibling chain.
             childIndex = nodeLink_getSibling(pNode);
             if (childIndex) {
@@ -214,24 +214,24 @@ extern "C" {
         }
 #endif
         
-        pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+        pEntry = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
         if (pEntry) {
-            nodeArray_AppendNode(pArray, (NODE_DATA *)pEntry, NULL);
+            NodeArray_AppendNode(pArray, (NODE_DATA *)pEntry, NULL);
             childIndex = nodeLink_getChild(pEntry);
             if (childIndex) {
-                nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
-                pChild = (NODELINK_DATA *)nodeArray_Get(this->pArray, childIndex);
+                NodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
+                pChild = (NODELINK_DATA *)NodeArray_Get(this->pArray, childIndex);
                 if (pChild) {
                     eRc = nodeTree_UpDownNodePre(this, childIndex, pArray);
                     if (ERESULT_FAILED(eRc)) {
                         return eRc;
                     }
                 }
-                nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
+                NodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
             }
             childIndex = nodeLink_getSibling(pEntry);
             if (childIndex) {
-                pChild = (NODELINK_DATA *)nodeArray_Get(this->pArray, childIndex);
+                pChild = (NODELINK_DATA *)NodeArray_Get(this->pArray, childIndex);
                 if (pChild) {
                     eRc = nodeTree_UpDownNodePre(this, childIndex, pArray);
                     if (ERESULT_FAILED(eRc)) {
@@ -278,7 +278,7 @@ extern "C" {
         }
 #endif
         
-        pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+        pNode = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
         if (pNode) {
             // Follow Child chain.
             childIndex = nodeLink_getChild(pNode);
@@ -356,7 +356,7 @@ extern "C" {
         }
 #endif
         
-        pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+        pNode = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
         if (pNode) {
             // visit current node.
             pVisitor(pObject, this, pNode, indent);
@@ -713,20 +713,20 @@ extern "C" {
         }
 #endif
         
-        pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, parent);
+        pNode = (NODELINK_DATA *)NodeArray_Get(this->pArray, parent);
         if (pNode) {
             childIndex = nodeLink_getChild(pNode);
-            pChild = (NODELINK_DATA *)nodeArray_Get(this->pArray, childIndex);
+            pChild = (NODELINK_DATA *)NodeArray_Get(this->pArray, childIndex);
             if (pChild) {
                 while (index-- && childIndex) {
                     childIndex = nodeLink_getSibling(pChild);
                     if (childIndex) {
-                        pChild = (NODELINK_DATA *)nodeArray_Get(this->pArray, childIndex);
+                        pChild = (NODELINK_DATA *)NodeArray_Get(this->pArray, childIndex);
                     }
                 }
             }
             if (childIndex) {
-                pNodeReturn = (NODELINK_DATA *)nodeArray_Get(this->pArray, childIndex);
+                pNodeReturn = (NODELINK_DATA *)NodeArray_Get(this->pArray, childIndex);
             }
         }
         
@@ -762,7 +762,7 @@ extern "C" {
             //obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return 0;
         }
-        if( !(parent <= nodeArray_getSize(this->pArray)) ) {
+        if( !(parent <= NodeArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -777,11 +777,11 @@ extern "C" {
 
         // Try adding the root node.
         if (parent == 0) {
-            if( !(nodeArray_getSize(this->pArray) == 0) ) {
+            if( !(NodeArray_getSize(this->pArray) == 0) ) {
                 DEBUG_BREAK();
                 return 0;
             }
-            eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
+            eRc = NodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
             if (!ERESULT_FAILED(eRc)) {
                 nodeLink_setIndex(pNode, index);
             }
@@ -792,11 +792,11 @@ extern "C" {
             goto eom;
         }
         
-        pParent = (NODELINK_DATA *)nodeArray_Get(this->pArray, parent);
+        pParent = (NODELINK_DATA *)NodeArray_Get(this->pArray, parent);
         if (pParent) {
             index = nodeLink_getChild(pParent);
             if (index == 0) {     // No children
-                eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
+                eRc = NodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
                 if (!ERESULT_FAILED(eRc)) {
                     nodeLink_setChild(pParent, index);
                     nodeLink_setIndex(pNode, index);
@@ -806,9 +806,9 @@ extern "C" {
             else {   // Parent has children, so add to end of child's sibling chain.
                 // index points to first child of parent
                 for (;;) {
-                    pChild = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+                    pChild = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
                     if (nodeLink_getSibling(pChild) == 0) {  // End of Sibling Chain
-                        eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
+                        eRc = NodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
                         if (!ERESULT_FAILED(eRc)) {
                             nodeLink_setSibling(pChild, index);
                             nodeLink_setIndex(pNode, index);
@@ -850,7 +850,7 @@ extern "C" {
             //obj_setLastError(this, ERESULT_INVALID_OBJECT);
             return 0;
         }
-        if( !(parent <= nodeArray_getSize(this->pArray)) ) {
+        if( !(parent <= NodeArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -860,7 +860,7 @@ extern "C" {
         }
 #endif
         
-        pParent = (NODELINK_DATA *)nodeArray_Get(this->pArray, parent);
+        pParent = (NODELINK_DATA *)NodeArray_Get(this->pArray, parent);
         if (pParent) {
             index = nodeLink_getChild(pParent);
             if (index == 0) {     // No children
@@ -869,7 +869,7 @@ extern "C" {
                 // index points to first child of parent
                 for (;;) {
                     ++count;
-                    pChild = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+                    pChild = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
                     if (nodeLink_getSibling(pChild) == 0) {  // End of Sibling Chain
                         break;
                     }
@@ -952,11 +952,11 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !((parent > 0) && (parent <= nodeArray_getSize(this->pArray))) ) {
+        if( !((parent > 0) && (parent <= NodeArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if( !((index > 0) && (index <= nodeArray_getSize(this->pArray))) ) {
+        if( !((index > 0) && (index <= NodeArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -1084,8 +1084,8 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeTree_Vtbl);
 
-        this->pNodeArrayClass = nodeArray_Class( );
-        this->pArray = nodeArray_New();
+        this->pNodeArrayClass = NodeArray_Class( );
+        this->pArray = NodeArray_New();
         if (OBJ_NIL == this->pArray) {
             obj_Release(this);
             return OBJ_NIL;
@@ -1123,13 +1123,13 @@ extern "C" {
             DEBUG_BREAK();
             return pNode;
         }
-        if( !((index > 0) && (index <= nodeArray_getSize(this->pArray))) ) {
+        if( !((index > 0) && (index <= NodeArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
             return pNode;
         }
 #endif
         
-        pNode = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+        pNode = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
         return pNode;
     }
     
@@ -1205,7 +1205,7 @@ extern "C" {
         }
         
         // Now release the entry.
-        nodeArray_Put(this->pArray, index, OBJ_NIL);
+        NodeArray_Put(this->pArray, index, OBJ_NIL);
         pEntry = OBJ_NIL;
         // NOTE -- We are releasing the entry, but leaving the array position
         //          for it. If we changed the array, then we would have to
@@ -1245,15 +1245,15 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !(parent <= nodeArray_getSize(this->pArray)) ) {
+        if( !(parent <= NodeArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
-        pParent = (NODELINK_DATA *)nodeArray_Get(this->pArray, parent);
+        pParent = (NODELINK_DATA *)NodeArray_Get(this->pArray, parent);
         if (pParent) {
-            pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+            pEntry = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
             if (pEntry == OBJ_NIL) {
                 return ERESULT_INVALID_PARAMETER;
             }
@@ -1263,10 +1263,10 @@ extern "C" {
                 eRc = ERESULT_SUCCESS;
             }
             else {   // Parent has children, so add to end of child's sibling chain.
-                pChild = (NODELINK_DATA *)nodeArray_Get(this->pArray, nodeLink_getChild(pParent));
+                pChild = (NODELINK_DATA *)NodeArray_Get(this->pArray, nodeLink_getChild(pParent));
                 if (pChild) {
                     while (nodeLink_getSibling(pChild)) {
-                        pChild = (NODELINK_DATA *)nodeArray_Get(this->pArray, nodeLink_getSibling(pChild));
+                        pChild = (NODELINK_DATA *)NodeArray_Get(this->pArray, nodeLink_getSibling(pChild));
                     }
                 }
                 if (pChild) {
@@ -1315,7 +1315,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
+        eRc = NodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
         if (ERESULT_FAILED(eRc)) {
             index = 0;
         }
@@ -1392,7 +1392,7 @@ extern "C" {
         }
 #endif
         
-        pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+        pEntry = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
         if (pEntry) {
             parent = nodeLink_getParent(pEntry);
         }
@@ -1430,11 +1430,11 @@ extern "C" {
         }
 #endif
         
-        pNodes = nodeArray_New();
-        for (i=0; i<nodeArray_getSize(this->pArray); ++i) {
-            pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, i+1);
+        pNodes = NodeArray_New();
+        for (i=0; i<NodeArray_getSize(this->pArray); ++i) {
+            pEntry = (NODELINK_DATA *)NodeArray_Get(this->pArray, i+1);
             if (pEntry) {
-                eRc = nodeArray_AppendNode(pNodes, (NODE_DATA *)pEntry, NULL);
+                eRc = NodeArray_AppendNode(pNodes, (NODE_DATA *)pEntry, NULL);
                 if (ERESULT_FAILED(eRc)) {
                     obj_Release(pNodes);
                     pNodes = OBJ_NIL;
@@ -1442,7 +1442,7 @@ extern "C" {
                 }
             }
         }
-        nodeArray_SortAscending(pNodes);
+        NodeArray_SortAscending(pNodes);
         
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -1509,7 +1509,7 @@ extern "C" {
             //this->eRc = ERESULT_INVALID_OBJECT;
             return 0;
         }
-        if( !(sibling <= nodeArray_getSize(this->pArray)) ) {
+        if( !(sibling <= NodeArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -1524,11 +1524,11 @@ extern "C" {
 
         // Try adding the root node.
         if (sibling == 0) {
-            if( !(nodeArray_getSize(this->pArray) == 0) ) {
+            if( !(NodeArray_getSize(this->pArray) == 0) ) {
                 DEBUG_BREAK();
                 return 0;
             }
-            eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
+            eRc = NodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
             if (!ERESULT_FAILED(eRc)) {
                 nodeLink_setIndex(pNode, index);
             }
@@ -1539,11 +1539,11 @@ extern "C" {
             goto eom;
         }
         
-        pSibling = (NODELINK_DATA *)nodeArray_Get(this->pArray, sibling);
+        pSibling = (NODELINK_DATA *)NodeArray_Get(this->pArray, sibling);
         if (pSibling) {
             index = nodeLink_getSibling(pSibling);
             if (index == 0) {     // No siblings
-                eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
+                eRc = NodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
                 if (!ERESULT_FAILED(eRc)) {
                     nodeLink_setSibling(pSibling, index);
                     nodeLink_setIndex(pNode, index);
@@ -1553,9 +1553,9 @@ extern "C" {
             else {  // Sibling has other siblings, so add to end of sibling chain.
                     // index points to next sibling.
                 for (;;) {
-                    pSibling = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+                    pSibling = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
                     if (nodeLink_getSibling(pSibling) == 0) {  // End of Sibling Chain
-                        eRc = nodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
+                        eRc = NodeArray_AppendNode(this->pArray, (NODE_DATA *)pNode, &index);
                         if (!ERESULT_FAILED(eRc)) {
                             nodeLink_setSibling(pSibling, index);
                             nodeLink_setIndex(pNode, index);
@@ -1595,7 +1595,7 @@ extern "C" {
             //this->eRc = ERESULT_INVALID_OBJECT;
             return 0;
         }
-        if( !(node <= nodeArray_getSize(this->pArray)) ) {
+        if( !(node <= NodeArray_getSize(this->pArray)) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -1605,7 +1605,7 @@ extern "C" {
         }
 #endif
         
-        pSibling = (NODELINK_DATA *)nodeArray_Get(this->pArray, node);
+        pSibling = (NODELINK_DATA *)NodeArray_Get(this->pArray, node);
         if (pSibling) {
             node = nodeLink_getSibling(pSibling);
             if (node == 0) {     // No children
@@ -1614,7 +1614,7 @@ extern "C" {
                     // index points to next sibling
                 for (;;) {
                     ++count;
-                    pSibling = (NODELINK_DATA *)nodeArray_Get(this->pArray, node);
+                    pSibling = (NODELINK_DATA *)NodeArray_Get(this->pArray, node);
                     if (nodeLink_getSibling(pSibling) == 0) {  // End of Sibling Chain
                         break;
                     }
@@ -1651,19 +1651,19 @@ extern "C" {
             //this->eRc = ERESULT_INVALID_OBJECT;
             return 0;
         }
-        if( !(sibling && (sibling <= nodeArray_getSize(this->pArray))) ) {
+        if( !(sibling && (sibling <= NodeArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
             return 0;
         }
     #endif
         
-        pSibling = (NODELINK_DATA *)nodeArray_Get(this->pArray, sibling);
+        pSibling = (NODELINK_DATA *)NodeArray_Get(this->pArray, sibling);
         if (pSibling) {
             childIndex = nodeLink_getChild(pSibling);
             if (childIndex == 0)       // No children
                 ;
             else {
-                pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, childIndex);
+                pEntry = (NODELINK_DATA *)NodeArray_Get(this->pArray, childIndex);
             }
         }
         
@@ -1799,10 +1799,10 @@ extern "C" {
         }
         pArray = pNew();
         if (pArray) {
-            nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
+            NodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
             nodeTree_UpDownNodePost(this, 1, pArray);
-            nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
-            nodeArray_setOther(pArray, this);
+            NodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
+            NodeArray_setOther(pArray, this);
         }
         
         // Return to caller.
@@ -1837,10 +1837,10 @@ extern "C" {
         }
         pArray = pNew();
         if (pArray) {
-            nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
+            NodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getOpenNode(this), NULL);
             nodeTree_UpDownNodePre(this, 1, pArray);
-            nodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
-            nodeArray_setOther(pArray, this);
+            NodeArray_AppendNode(pArray, (NODE_DATA *)nodeTree_getCloseNode(this), NULL);
+            NodeArray_setOther(pArray, this);
         }
         
         // Return to caller.
@@ -1871,7 +1871,7 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
-        if( !(parent && (parent <= nodeArray_getSize(this->pArray))) ) {
+        if( !(parent && (parent <= NodeArray_getSize(this->pArray))) ) {
             DEBUG_BREAK();
             return 0;
         }
@@ -1881,9 +1881,9 @@ extern "C" {
         }
 #endif
         
-        pParent = (NODELINK_DATA *)nodeArray_Get(this->pArray, parent);
+        pParent = (NODELINK_DATA *)NodeArray_Get(this->pArray, parent);
         if (pParent) {
-            pEntry = (NODELINK_DATA *)nodeArray_Get(pTree->pArray, 1);   // Get Root.
+            pEntry = (NODELINK_DATA *)NodeArray_Get(pTree->pArray, 1);   // Get Root.
         }
         
         // Return to caller.
@@ -1954,9 +1954,9 @@ extern "C" {
         }
 #endif
         
-        iMax = nodeArray_getSize(this->pArray);
+        iMax = NodeArray_getSize(this->pArray);
         for (i=0; i<iMax; ++i) {
-            pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, i+1);
+            pEntry = (NODELINK_DATA *)NodeArray_Get(this->pArray, i+1);
             if (pEntry) {
                 if (obj_IsKindOf(pEntry, OBJ_IDENT_NODELINK))
                     ;
@@ -2087,7 +2087,7 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         
-        pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, 1);    // Get the root.
+        pEntry = (NODELINK_DATA *)NodeArray_Get(this->pArray, 1);    // Get the root.
         if (pEntry == OBJ_NIL) {
             return ERESULT_SUCCESS;
         }
@@ -2100,7 +2100,7 @@ extern "C" {
             pVisitor(pObject, this, pEntry, indent);
             index = nodeLink_getChild(pEntry);
             if (index) {
-                pNext = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+                pNext = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
                 if (pNext) {
                     node_setMisc(nodeLink_getNode(pNext), indent+1);
                     ObjList_Add2Tail(pQueue, pNext);
@@ -2108,7 +2108,7 @@ extern "C" {
             }
             index = nodeLink_getSibling(pEntry);
             if (index) {
-                pEntry = (NODELINK_DATA *)nodeArray_Get(this->pArray, index);
+                pEntry = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
                 if (pEntry) {
                     node_setMisc(nodeLink_getNode(pEntry), indent);
                     ObjList_Add2Head(pQueue, pEntry);

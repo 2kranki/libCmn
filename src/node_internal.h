@@ -39,7 +39,7 @@
 
 #include    <name.h>
 #include    <node.h>
-#include    <nodeArray.h>
+#include    <NodeArray.h>
 #include    <nodeBTP.h>
 #include    <JsonIn.h>
 #include    <listdl.h>

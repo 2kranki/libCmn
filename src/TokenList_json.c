@@ -109,7 +109,7 @@ extern "C" {
         eRc = JsonIn_FindArrayNodeInHashA(pParser, "Tokens", &pArray);
         for (i=0; i<iMax; i++) {
             OBJ_ID          pObj = OBJ_NIL;
-            pNode = nodeArray_Get(pArray, i+1);
+            pNode = NodeArray_Get(pArray, i+1);
             pHash = JsonIn_CheckNodeForHash(pNode);
             if (pHash) {
                 eRc = JsonIn_SubObjectFromHash(pParser, pHash);

@@ -1,11 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   msgBus_internal.h
- *	Generated 05/31/2017 20:00:00
+ * File:   NodeArray_internal.h
+ *	Generated 01/10/2020 13:58:02
  *
  * Notes:
- *  --	We use the node data property to hold the receiver object and
- *      the misc field to hold the offset of the method in the vtbl.
+ *  --	N/A
  *
  */
 
@@ -40,20 +39,17 @@
 
 
 
-#include    <msgBus.h>
-#include    <MsgData.h>
-#include    <objCb.h>
-#include    <node.h>
-#include    <NodeArray.h>
-#include    <psxLock.h>
-#include    <psxMutex.h>
-#include    <psxSem.h>
-#include    <psxThread.h>
+#include        <NodeArray.h>
+#include        <JsonIn.h>
+#include        <ObjArray.h>
+
+
+#ifndef NODEARRAY_INTERNAL_H
+#define	NODEARRAY_INTERNAL_H
 
 
 
-#ifndef MSGBUS_INTERNAL_H
-#define	MSGBUS_INTERNAL_H
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -62,58 +58,93 @@ extern "C" {
 #endif
 
 
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct msgBus_data_s	{
+struct NodeArray_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    PSXLOCK_DATA    *pLock;
-    NODEARRAY_DATA  *pRegistry;
-    PSXTHREAD_DATA  *pThread;
-    OBJCB_DATA      *pBuffer;
-    volatile
-    uint32_t        msWait;
-    volatile
-    uint16_t        actualSize;
-    uint16_t        rsvd16;
-    volatile
-    int32_t         unique;
-    uint32_t        rsvd32;
+    OBJARRAY_DATA   *pArray;
+    int             (*pCompare)(NODE_DATA *,NODE_DATA *);
+    OBJ_ID          pOther;
 
 };
 #pragma pack(pop)
 
     extern
-    const
-    struct msgBus_class_data_s  msgBus_ClassObj;
+    struct NodeArray_class_data_s  NodeArray_ClassObj;
 
     extern
     const
-    MSGBUS_VTBL         msgBus_Vtbl;
+    NODEARRAY_VTBL         NodeArray_Vtbl;
 
 
-    // Internal Functions
-    void            msgBus_Dealloc(
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  NODEARRAY_SINGLETON
+    NODEARRAY_DATA *     NodeArray_getSingleton (
+        void
+    );
+
+    bool            NodeArray_setSingleton (
+     NODEARRAY_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  NodeArray_getSuperVtbl (
+        NODEARRAY_DATA     *this
+    );
+
+
+    void            NodeArray_Dealloc (
         OBJ_ID          objId
     );
 
-    void *          msgBus_QueryInfo(
+
+#ifdef  NODEARRAY_JSON_SUPPORT
+    NODEARRAY_DATA *       NodeArray_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+#endif
+
+
+    void *          NodeArray_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     NodeArray_ToJson (
+        NODEARRAY_DATA      *this
+    );
+#endif
+
 
 
 
 #ifdef NDEBUG
 #else
-    bool			msgBus_Validate(
-        MSGBUS_DATA       *this
+    bool			NodeArray_Validate (
+        NODEARRAY_DATA       *this
     );
 #endif
 
@@ -123,5 +154,5 @@ struct msgBus_data_s	{
 }
 #endif
 
-#endif	/* MSGBUS_INTERNAL_H */
+#endif	/* NODEARRAY_INTERNAL_H */
 
