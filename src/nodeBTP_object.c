@@ -404,7 +404,7 @@ OBJ_INFO        nodeBTP_Info = {
     "nodeBTP",
     "Binary Tree of nodes using pointers",
     (OBJ_DATA *)&nodeBTP_ClassObj,
-    (OBJ_DATA *)&blocks_ClassObj,
+    (OBJ_DATA *)&Blocks_ClassObj,
     (OBJ_IUNKNOWN *)&nodeBTP_Vtbl,
     sizeof(NODEBTP_DATA)
 };

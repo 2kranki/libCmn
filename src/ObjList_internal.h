@@ -42,7 +42,7 @@
 #include    <ObjList.h>
 #include    <JsonIn.h>
 #include    <listdl.h>
-#include    <blocks_internal.h>
+#include    <Blocks_internal.h>
 
 
 #ifndef OBJLIST_INTERNAL_H

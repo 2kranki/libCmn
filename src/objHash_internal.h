@@ -44,7 +44,7 @@
 
 #include    <objHash.h>
 #include    <array.h>
-#include    <blocks_internal.h>
+#include    <Blocks_internal.h>
 #include    <listdl.h>
 #include    <rbt_tree.h>
 #include    <u32Array.h>

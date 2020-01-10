@@ -71,7 +71,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <blocks.h>
+#include        <Blocks.h>
 #include        <node.h>
 #include        <nodeArray.h>
 #include        <NodeEnum.h>

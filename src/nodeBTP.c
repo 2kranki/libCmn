@@ -147,7 +147,7 @@ extern "C" {
         BLOCKS_NODE     *pEntry = NULL;
         NODEBTP_RECORD  *pRecord = NULL;
         
-        pList = blocks_getList((BLOCKS_DATA *)this);
+        pList = Blocks_getList((BLOCKS_DATA *)this);
         if (pList) {
             pEntry = listdl_Head(pList);
             while (pEntry) {
@@ -579,7 +579,7 @@ extern "C" {
         }
 #endif
         
-        pRecord = blocks_RecordNew((BLOCKS_DATA *)this, &unique);
+        pRecord = Blocks_RecordNew((BLOCKS_DATA *)this, &unique);
         if (NULL == pRecord) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -671,7 +671,7 @@ extern "C" {
             eRc = nodeBTP_Delete(this, pNode);
         }
         
-        pRecord = blocks_RecordNew((BLOCKS_DATA *)this, &unique);
+        pRecord = Blocks_RecordNew((BLOCKS_DATA *)this, &unique);
         if (NULL == pRecord) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -1097,7 +1097,7 @@ extern "C" {
         
         pEnum = NodeEnum_New();
         if (pEnum) {
-            eRc =   blocks_ForEach(
+            eRc =   Blocks_ForEach(
                                    (BLOCKS_DATA *)this,
                                    (void *)nodeBTP_EnumExit,
                                    this,
@@ -1365,7 +1365,7 @@ extern "C" {
         }
 #endif
         
-        pList = blocks_getList((BLOCKS_DATA *)this);
+        pList = Blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
         while (pEntry) {
             NODEBTP_RECORD      *pRecord = (NODEBTP_RECORD *)pEntry->data;
@@ -1408,7 +1408,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)blocks_Init((BLOCKS_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)Blocks_Init((BLOCKS_DATA *)this);    // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEBTP);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -1419,13 +1419,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeBTP_Vtbl);
         
-        eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(NODEBTP_RECORD));
+        eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(NODEBTP_RECORD));
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        blocks_setDeleteExit(
+        Blocks_setDeleteExit(
                         (BLOCKS_DATA *)this,
                         (void *)nodeBTP_DeleteExit,
                         this,
@@ -1436,12 +1436,12 @@ extern "C" {
                  &this->tree,
                  (void *)nodeBTP_NodeCmp,
                  (sizeof(NODEBTP_RECORD) - sizeof(RBT_NODE)),
-                 (void *)blocks_RecordNew,
-                 (void *)blocks_RecordFree,
+                 (void *)Blocks_RecordNew,
+                 (void *)Blocks_RecordFree,
                  this
         );
-        this->tree.pNodeAlloc = (void *)blocks_RecordNew;
-        this->tree.pNodeFree = (void *)blocks_RecordFree;
+        this->tree.pNodeAlloc = (void *)Blocks_RecordNew;
+        this->tree.pNodeFree = (void *)Blocks_RecordFree;
         this->tree.pObjAllocFree = this;
         this->tree.dataSize = sizeof(NODEBTP_RECORD) - sizeof(RBT_NODE);
 
@@ -1514,7 +1514,7 @@ extern "C" {
         
         pNodes = nodeArray_New();
         if (pNodes) {
-            eRc =   blocks_ForEach(
+            eRc =   Blocks_ForEach(
                                 (BLOCKS_DATA *)this,
                                 (void *)nodeBTP_NodesExit,
                                 this,
@@ -1715,7 +1715,7 @@ extern "C" {
                     nodeBTP_getSize(this)
             );
 
-        pList = blocks_getList((BLOCKS_DATA *)this);
+        pList = Blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
         while (pEntry) {
             NODEBTP_RECORD      *pRecord = (NODEBTP_RECORD *)pEntry->data;

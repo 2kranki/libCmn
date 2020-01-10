@@ -404,7 +404,7 @@ OBJ_INFO        nodeHash_Info = {
     "nodeHash",
     "Hash of Nodes",	
     (OBJ_DATA *)&nodeHash_ClassObj,
-    (OBJ_DATA *)&blocks_ClassObj,
+    (OBJ_DATA *)&Blocks_ClassObj,
     (OBJ_IUNKNOWN *)&nodeHash_Vtbl,
     sizeof(NODEHASH_DATA)
 };

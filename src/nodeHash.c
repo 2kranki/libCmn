@@ -443,7 +443,7 @@ extern "C" {
         
         pTree = nodeHash_TreeFromHash(this, node_getHash(pNode));
         if (pTree) {
-            pRecord = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
+            pRecord = Blocks_RecordNew((BLOCKS_DATA *)this, NULL);
             if (NULL == pRecord) {
                 return ERESULT_OUT_OF_MEMORY;
             }
@@ -1005,7 +1005,7 @@ extern "C" {
         
         pEnum = NodeEnum_New();
         if (pEnum) {
-            eRc =   blocks_ForEach(
+            eRc =   Blocks_ForEach(
                                    (BLOCKS_DATA *)this,
                                    (void *)nodeHash_EnumExit,
                                    this,
@@ -1407,7 +1407,7 @@ extern "C" {
         }
 #endif
         
-        pList = blocks_getList((BLOCKS_DATA *)this);
+        pList = Blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
         while (pEntry) {
             NODEHASH_RECORD     *pRecord = (NODEHASH_RECORD *)pEntry->data;
@@ -1452,7 +1452,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)blocks_Init((BLOCKS_DATA *)this); // Needed for Inheritance
+        this = (OBJ_ID)Blocks_Init((BLOCKS_DATA *)this); // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEHASH);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -1463,13 +1463,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&nodeHash_Vtbl);
         
-        eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(NODEHASH_RECORD));
+        eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(NODEHASH_RECORD));
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        blocks_setDeleteExit(
+        Blocks_setDeleteExit(
              (BLOCKS_DATA *)this,
              (void *)nodeHash_DeleteExit,
              this,
@@ -1490,12 +1490,12 @@ extern "C" {
                      &this->pHash[i],
                      (void *)nodeHash_NodeCompare,
                      (sizeof(NODEHASH_RECORD) - sizeof(RBT_NODE)),
-                     (void *)blocks_RecordNew,
-                     (void *)blocks_RecordFree,
+                     (void *)Blocks_RecordNew,
+                     (void *)Blocks_RecordFree,
                      this
             );
-            this->pHash[i].pNodeAlloc = (void *)blocks_RecordNew;
-            this->pHash[i].pNodeFree = (void *)blocks_RecordFree;
+            this->pHash[i].pNodeAlloc = (void *)Blocks_RecordNew;
+            this->pHash[i].pNodeFree = (void *)Blocks_RecordFree;
             this->pHash[i].pObjAllocFree = this;
             this->pHash[i].dataSize = (sizeof(NODEHASH_RECORD) - sizeof(RBT_NODE));
         }
@@ -1568,7 +1568,7 @@ extern "C" {
         
         pNodes = nodeArray_New();
         if (pNodes) {
-            eRc =   blocks_ForEach(
+            eRc =   Blocks_ForEach(
                                    (BLOCKS_DATA *)this,
                                    (void *)nodeHash_NodesExit,
                                    this,
@@ -1786,7 +1786,7 @@ extern "C" {
         }
 #endif
         
-        pList = blocks_getList((BLOCKS_DATA *)this);
+        pList = Blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
         while (pEntry) {
             NODEHASH_RECORD     *pRecord = (NODEHASH_RECORD *)pEntry->data;

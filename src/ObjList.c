@@ -307,7 +307,7 @@ int             ObjList_SortCompare (
         }
 #endif
         
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
+        pEntry = Blocks_RecordNew((BLOCKS_DATA *)this, NULL);
         if (NULL == pEntry) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -354,7 +354,7 @@ int             ObjList_SortCompare (
         }
 #endif
         
-        pEntry = blocks_RecordNew((BLOCKS_DATA *)this, NULL);
+        pEntry = Blocks_RecordNew((BLOCKS_DATA *)this, NULL);
         if (NULL == pEntry) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -752,7 +752,7 @@ int             ObjList_SortCompare (
         obj_Release(pEntry->pObject);
         pEntry->pObject = OBJ_NIL;
         listdl_Delete(&this->list, pEntry);
-        blocks_RecordFree((BLOCKS_DATA *)this, pEntry);
+        Blocks_RecordFree((BLOCKS_DATA *)this, pEntry);
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -783,7 +783,7 @@ int             ObjList_SortCompare (
         obj_Release(pEntry->pObject);
         pEntry->pObject = OBJ_NIL;
         listdl_Delete(&this->list, pEntry);
-        blocks_RecordFree((BLOCKS_DATA *)this, pEntry);
+        Blocks_RecordFree((BLOCKS_DATA *)this, pEntry);
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -813,7 +813,7 @@ int             ObjList_SortCompare (
         obj_Release(pEntry->pObject);
         pEntry->pObject = OBJ_NIL;
         listdl_Delete(&this->list, pEntry);
-        blocks_RecordFree((BLOCKS_DATA *)this, pEntry);
+        Blocks_RecordFree((BLOCKS_DATA *)this, pEntry);
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1063,7 +1063,7 @@ int             ObjList_SortCompare (
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)blocks_Init((BLOCKS_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)Blocks_Init((BLOCKS_DATA *)this);        // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OBJLIST);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -1074,7 +1074,7 @@ int             ObjList_SortCompare (
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&ObjList_Vtbl);
         
-        eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(OBJLIST_RECORD));
+        eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(OBJLIST_RECORD));
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this);

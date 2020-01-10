@@ -1156,7 +1156,7 @@ extern "C" {
         }
         
         cbSize = obj_getSize(this);
-        this = (OBJ_ID)blocks_Init((BLOCKS_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)Blocks_Init((BLOCKS_DATA *)this);    // Needed for Inheritance
         //this = (OBJHASH_DATA *)obj_Init( this, cbSize, OBJ_IDENT_OBJHASH);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -1167,13 +1167,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&objHash_Vtbl);
         
-        eRc = blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(OBJHASH_NODE));
+        eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(OBJHASH_NODE));
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        blocks_setDeleteExit(
+        Blocks_setDeleteExit(
             (BLOCKS_DATA *)this,
             (void *)objHash_DeleteExit,
             this,

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   hashtbl_internal.h
- *	Generated 01/12/2019 11:49:43
+ * File:   Blocks_internal.h
+ *	Generated 01/10/2020 11:54:27
  *
  * Notes:
  *  --	N/A
@@ -39,17 +39,17 @@
 
 
 
-#include        <hashtbl.h>
-#include        <Blocks_internal.h>
+#include        <Blocks.h>
 #include        <JsonIn.h>
+#include        <listdl.h>
 
 
-#ifndef HASHTBL_INTERNAL_H
-#define	HASHTBL_INTERNAL_H
+#ifndef BLOCKS_INTERNAL_H
+#define	BLOCKS_INTERNAL_H
 
 
 
-//#define     PROPERTY_STR_OWNED 1
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -58,53 +58,73 @@ extern "C" {
 #endif
 
 
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#   define BLKS_BLOCK_SIZE  4096
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+#   define BLKS_BLOCK_SIZE  4096
+#endif
 
+
+    // Node/Record Descriptor
 #pragma pack(push, 1)
-    typedef struct hashTbl_entry_s    {
-        LISTDL_NODE     hashList;
-        uint32_t        hash;               // Logical Sector Number
-        uint16_t        keyLen;
-        uint16_t        dataLen;
-        void            *pKey;
-        void            *pData;
-    } HASHTBL_ENTRY;
+    typedef struct  blocks_node_s {
+        LISTDL_NODE     list;
+        uint32_t        unique;
+        uint32_t        filler;         // Boundary 8
+        uint8_t         data[0];
+    } BLOCKS_NODE;
 #pragma pack(pop)
-    
-    
-    
+#define            Node2Ptr(pNode)   ((void *)(pNode->data)
+#define            Ptr2Node(pData)   ((BLOCKS_NODE *)\
+                                        ((uint8_t *)pData - offsetof(BLOCKS_NODE, data)))
+
+
+    typedef struct blocks_block_s {
+        LISTDL_NODE     list;           // Chain for block list
+        uint8_t         data[0];        // Nodes
+    } BLOCKS_BLOCK;
+
+
+
 
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct hashtbl_data_s	{
+struct Blocks_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    BLOCKS_DATA     super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint32_t        unique;         // Unique number given to entries as they are
-    //                              // added to the hash table
-    uint16_t        cHash;          // number of Hash Chains
-    uint16_t        rsvd16;
-    uint32_t        size;		    // number of records in hash
-    LISTDL_DATA     *pHash;         // Hash Table Chains
+    LISTDL_DATA     blocks;
+    LISTDL_DATA     activeList;
+    LISTDL_DATA     freeList;
+    uint32_t        blockSize;
+    uint32_t        blockAvail;
+    uint32_t        recordSize;
+    uint32_t        dataSize;
+    uint32_t        cRecordsPerBlock;
+    uint32_t        cBlocks;
+    uint32_t        unique;
 
-    // Hash Entry Variables
-    P_COMPARE       *pCompare;
-    P_U32_EXIT1     *pCalcHash;
+    // Record Deletion Exit
+    P_ERESULT_EXIT3 pDelete;
+    OBJ_ID          pObj;           // Used as first parameter of pDelete
+    void            *pArg3;         // Used as third paarameter of pDelete
 
 };
 #pragma pack(pop)
 
     extern
-    struct hashtbl_class_data_s  hashtbl_ClassObj;
+    struct Blocks_class_data_s  Blocks_ClassObj;
 
     extern
     const
-    HASHTBL_VTBL         hashtbl_Vtbl;
+    BLOCKS_VTBL         Blocks_Vtbl;
 
 
 
@@ -112,13 +132,13 @@ struct hashtbl_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  HASHTBL_SINGLETON
-    HASHTBL_DATA *     hashtbl_getSingleton (
+#ifdef  BLOCKS_SINGLETON
+    BLOCKS_DATA *   Blocks_getSingleton (
         void
     );
 
-    bool            hashtbl_setSingleton (
-     HASHTBL_DATA       *pValue
+    bool            Blocks_setSingleton (
+     BLOCKS_DATA       *pValue
 );
 #endif
 
@@ -128,39 +148,43 @@ struct hashtbl_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  hashtbl_getSuperVtbl (
-        HASHTBL_DATA     *this
+    OBJ_IUNKNOWN *  Blocks_getSuperVtbl (
+        BLOCKS_DATA     *this
     );
 
 
-    void            hashtbl_Dealloc (
+    void            Blocks_Dealloc (
         OBJ_ID          objId
     );
 
 
-    HASHTBL_DATA *       hashtbl_ParseObject (
+#ifdef  BLOCKS_JSON_SUPPORT
+    BLOCKS_DATA *   Blocks_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+#endif
 
 
-    void *          hashtbl_QueryInfo (
+    void *          Blocks_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     hashtbl_ToJSON (
-        HASHTBL_DATA      *this
+#ifdef  SRCREF_JSON_SUPPORT
+    ASTR_DATA *     Blocks_ToJson (
+        BLOCKS_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			hashtbl_Validate (
-        HASHTBL_DATA       *this
+    bool			Blocks_Validate (
+        BLOCKS_DATA       *this
     );
 #endif
 
@@ -170,5 +194,5 @@ struct hashtbl_data_s	{
 }
 #endif
 
-#endif	/* HASHTBL_INTERNAL_H */
+#endif	/* BLOCKS_INTERNAL_H */
 

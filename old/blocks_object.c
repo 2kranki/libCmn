@@ -200,7 +200,7 @@ static
 const
 OBJ_INFO        blocks_Info = {
     "blocks",
-    "A List of Blocks/Buffers",
+    "A List of Memory Blocks/Buffers",
     (OBJ_DATA *)&blocks_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&blocks_Vtbl,

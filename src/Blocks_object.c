@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'ObjList'
-//	Generated 12/15/2019 12:58:04
+//	Class Object Metods and Tables for 'Blocks'
+//	Generated 01/10/2020 11:54:27
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			OBJLIST_OBJECT_C	    1
-#include        <ObjList_internal.h>
-#ifdef  OBJLIST_SINGLETON
+#define			BLOCKS_OBJECT_C	    1
+#include        <Blocks_internal.h>
+#ifdef  BLOCKS_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct ObjList_class_data_s	{
+struct Blocks_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  OBJLIST_SINGLETON
+#ifdef  BLOCKS_SINGLETON
     volatile
-    OBJLIST_DATA       *pSingleton;
+    BLOCKS_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct ObjList_class_data_s	{
 
 
 static
-void *          ObjListClass_QueryInfo (
+void *          BlocksClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          ObjListClass_QueryInfo (
 
 static
 const
-OBJ_INFO        ObjList_Info;            // Forward Reference
+OBJ_INFO        Blocks_Info;            // Forward Reference
 
 
 
 
 static
-bool            ObjListClass_IsKindOf (
+bool            BlocksClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_OBJLIST_CLASS == classID) {
+    if (OBJ_IDENT_BLOCKS_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(ObjList_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Blocks_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            ObjListClass_IsKindOf (
 
 
 static
-uint16_t		ObjListClass_WhoAmI (
+uint16_t		BlocksClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_OBJLIST_CLASS;
+    return OBJ_IDENT_BLOCKS_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		ObjListClass_WhoAmI (
 
 static
 const
-OBJLIST_CLASS_VTBL    class_Vtbl = {
+BLOCKS_CLASS_VTBL    class_Vtbl = {
     {
-        &ObjList_Info,
-        ObjListClass_IsKindOf,
+        &Blocks_Info,
+        BlocksClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        ObjList_Class,
-        ObjListClass_WhoAmI,
-        (P_OBJ_QUERYINFO)ObjListClass_QueryInfo,
-        NULL                        // ObjListClass_ToDebugString
+        Blocks_Class,
+        BlocksClass_WhoAmI,
+        (P_OBJ_QUERYINFO)BlocksClass_QueryInfo,
+        NULL                        // BlocksClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ OBJLIST_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-OBJLIST_CLASS_DATA  ObjList_ClassObj = {
+BLOCKS_CLASS_DATA  Blocks_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(OBJLIST_CLASS_DATA),                  // cbSize
+        sizeof(BLOCKS_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,17 @@ OBJLIST_CLASS_DATA  ObjList_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  OBJLIST_SINGLETON
-OBJLIST_DATA *     ObjList_getSingleton (
+#ifdef  BLOCKS_SINGLETON
+BLOCKS_DATA *     Blocks_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(ObjList_ClassObj.pSingleton);
+    return (OBJ_ID)(Blocks_ClassObj.pSingleton);
 }
 
 
-bool            ObjList_setSingleton (
-    OBJLIST_DATA       *pValue
+bool            Blocks_setSingleton (
+    BLOCKS_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +192,10 @@ bool            ObjList_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (ObjList_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(ObjList_ClassObj.pSingleton));
+    if (Blocks_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Blocks_ClassObj.pSingleton));
     }
-    ObjList_ClassObj.pSingleton = pValue;
+    Blocks_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +205,17 @@ bool            ObjList_setSingleton (
 
 
 
-OBJLIST_DATA *     ObjList_Shared (
+BLOCKS_DATA *     Blocks_Shared (
     void
 )
 {
-    OBJLIST_DATA       *this = (OBJ_ID)(ObjList_ClassObj.pSingleton);
+    BLOCKS_DATA       *this = (OBJ_ID)(Blocks_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = ObjList_New( );
-        ObjList_setSingleton(this);
+        this = Blocks_New( );
+        Blocks_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // ObjList_ClassObj.pSingleton = OBJ_NIL;
+        // Blocks_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +223,15 @@ OBJLIST_DATA *     ObjList_Shared (
 
 
 
-void            ObjList_SharedReset (
+void            Blocks_SharedReset (
     void
 )
 {
-    OBJLIST_DATA       *this = (OBJ_ID)(ObjList_ClassObj.pSingleton);
+    BLOCKS_DATA       *this = (OBJ_ID)(Blocks_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        ObjList_ClassObj.pSingleton = OBJ_NIL;
+        Blocks_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +247,13 @@ void            ObjList_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          ObjListClass_QueryInfo (
+void *          BlocksClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    OBJLIST_CLASS_DATA *this = objId;
+    BLOCKS_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +264,7 @@ void *          ObjListClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(OBJLIST_DATA);
+            return (void *)sizeof(BLOCKS_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,7 +279,7 @@ void *          ObjListClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&ObjList_Info;
+                        return (void *)&Blocks_Info;
                     }
                     break;
                     
@@ -297,19 +297,19 @@ void *          ObjListClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return ObjList_New;
+                        return Blocks_New;
                     }
                     break;
                     
                 case 'P':
                     if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return ObjList_ParseJsonObject;
+                        //return Blocks_ParseJsonObject;
                     }
                     break;
  
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return ObjListClass_WhoAmI;
+                        return BlocksClass_WhoAmI;
                     }
                     break;
                     
@@ -329,7 +329,7 @@ void *          ObjListClass_QueryInfo (
 
 
 static
-bool            ObjList_IsKindOf (
+bool            Blocks_IsKindOf (
     uint16_t		classID
 )
 {
@@ -337,14 +337,14 @@ bool            ObjList_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_OBJLIST == classID) {
+    if (OBJ_IDENT_BLOCKS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(ObjList_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Blocks_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -358,25 +358,25 @@ bool            ObjList_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            ObjList_Dealloc (
+void            Blocks_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          ObjList_Class (
+OBJ_ID          Blocks_Class (
     void
 )
 {
-    return (OBJ_ID)&ObjList_ClassObj;
+    return (OBJ_ID)&Blocks_ClassObj;
 }
 
 
 static
-uint16_t		ObjList_WhoAmI (
+uint16_t		Blocks_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_OBJLIST;
+    return OBJ_IDENT_BLOCKS;
 }
 
 
@@ -388,34 +388,34 @@ uint16_t		ObjList_WhoAmI (
 //===========================================================
 
 const
-OBJLIST_VTBL     ObjList_Vtbl = {
+BLOCKS_VTBL     Blocks_Vtbl = {
     {
-        &ObjList_Info,
-        ObjList_IsKindOf,
-#ifdef  OBJLIST_IS_SINGLETON
+        &Blocks_Info,
+        Blocks_IsKindOf,
+#ifdef  BLOCKS_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        ObjList_Dealloc,
-        ObjList_Class,
-        ObjList_WhoAmI,
-        (P_OBJ_QUERYINFO)ObjList_QueryInfo,
-        (P_OBJ_TOSTRING)ObjList_ToDebugString,
-        NULL,			// ObjList_Enable,
-        NULL,			// ObjList_Disable,
-        (P_OBJ_ASSIGN)ObjList_Assign,
-        NULL,			// (P_OBJ_COMPARE)ObjList_Compare,
-        (P_OBJ_PTR)ObjList_Copy,
-        (P_OBJ_PTR)ObjList_DeepCopy,
-        NULL 			// (P_OBJ_HASH)ObjList_Hash,
+        Blocks_Dealloc,
+        Blocks_Class,
+        Blocks_WhoAmI,
+        (P_OBJ_QUERYINFO)Blocks_QueryInfo,
+        (P_OBJ_TOSTRING)Blocks_ToDebugString,
+        NULL,			// Blocks_Enable,
+        NULL,			// Blocks_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Blocks_Assign,
+        NULL,			// (P_OBJ_COMPARE)Blocks_Compare,
+        NULL, 			// (P_OBJ_PTR)Blocks_Copy,
+        NULL, 			// (P_OBJ_PTR)Blocks_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Blocks_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //ObjList_IsEnabled,
+    //Blocks_IsEnabled,
  
 };
 
@@ -423,13 +423,13 @@ OBJLIST_VTBL     ObjList_Vtbl = {
 
 static
 const
-OBJ_INFO        ObjList_Info = {
-    "ObjList",
-    "List of Objects",
-    (OBJ_DATA *)&ObjList_ClassObj,
+OBJ_INFO        Blocks_Info = {
+    "Blocks",
+    "A List of Memory Blocks/Buffers",
     (OBJ_DATA *)&Blocks_ClassObj,
-    (OBJ_IUNKNOWN *)&ObjList_Vtbl,
-    sizeof(OBJLIST_DATA)
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&Blocks_Vtbl,
+    sizeof(BLOCKS_DATA)
 };
 
 

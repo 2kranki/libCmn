@@ -528,7 +528,7 @@ extern "C" {
         // Scan the Tree insuring that all entries are Nodes
         // which have the "ToJson" method.
         fRc = true;
-        pList = blocks_getList((BLOCKS_DATA *)this);
+        pList = Blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
         while (pEntry) {
             NODEBTP_RECORD      *pRecord = (NODEBTP_RECORD *)pEntry->data;
@@ -581,7 +581,7 @@ extern "C" {
         // Scan the Hash Table creating entries for each of the objects
         // in the table and appending them to the array.
         j = this->size;
-        pList = blocks_getList((BLOCKS_DATA *)this);
+        pList = Blocks_getList((BLOCKS_DATA *)this);
         pEntry = listdl_Head(pList);
         while (pEntry) {
             NODEBTP_RECORD      *pRecord = (NODEBTP_RECORD *)pEntry->data;
