@@ -204,8 +204,8 @@ int         test_rbt_Tree_AddFind01(
     RBT_TREE        tree = {0};
     RBT_TREE        *pTree = &tree;
     RBT_ITER        iter = {0};
-    NODE_RECORD     record = {0};
-    NODE_RECORD     *pRecord = &record;
+    //NODE_RECORD     record = {0};
+    //NODE_RECORD     *pRecord = &record;
     char            *pFound = NULL;
     ERESULT         eRc;
     bool            fRc;
