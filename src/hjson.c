@@ -45,7 +45,7 @@
 #include <trace.h>
 #include <JsonIn.h>
 #include <NodeArray.h>
-#include <nodeHash.h>
+#include <NodeHash.h>
 #include <SrcErrors.h>
 
 
@@ -222,7 +222,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        pHash = nodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
+        pHash = NodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
         if (pHash == OBJ_NIL) {
             DEBUG_BREAK();
             obj_Release(pLoc);
@@ -237,7 +237,7 @@ extern "C" {
         
         pChild = hjson_ParsePair(this);
         if (pChild) {
-            eRc = nodeHash_Add(pHash, pChild);
+            eRc = NodeHash_Add(pHash, pChild);
             obj_Release(pChild);
             pChild = OBJ_NIL;
 
@@ -256,7 +256,7 @@ extern "C" {
                 
                 pChild = hjson_ParsePair(this);
                 if (pChild) {
-                    eRc = nodeHash_Add(pHash, pChild);
+                    eRc = NodeHash_Add(pHash, pChild);
                     obj_Release(pChild);
                     pChild = OBJ_NIL;
                 }

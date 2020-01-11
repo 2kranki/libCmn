@@ -25,7 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <nodeArray.h>
+#include    <NodeArray.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <JsonIn_internal.h>
@@ -184,7 +184,7 @@ int             test_JsonIn_01(
         eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Count", &count);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         fprintf(stderr, "\tCount = %lld\n", count);
-        pNode = nodeHash_FindA(pObj->pHash, 0, "Count");
+        pNode = NodeHash_FindA(pObj->pHash, 0, "Count");
         TINYTEST_FALSE( (NULL == pNode) );
         pStrWrk = JsonIn_CheckNodeDataForInteger(pNode);
         count = AStr_ToInt64(pStrWrk);
@@ -193,10 +193,10 @@ int             test_JsonIn_01(
         eRc = JsonIn_FindArrayNodeInHashA(pObj, "Entries", &pArray);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        TINYTEST_TRUE((count == nodeArray_getSize(pArray)));
+        TINYTEST_TRUE((count == NodeArray_getSize(pArray)));
 
         for(i=0; i<count; ++i) {
-            pNode = nodeArray_Get(pArray, i+1);
+            pNode = NodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pNode) );
             pName = node_getName(pNode);
             TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash")));
@@ -223,7 +223,7 @@ int             test_JsonIn_01(
                 mem_Free(pData);
                 pData = NULL;
             }
-            pNode = nodeHash_FindA(pObj->pHash, 0, "data");
+            pNode = NodeHash_FindA(pObj->pHash, 0, "data");
             TINYTEST_FALSE( (NULL == pNode) );
             pStrWrk = JsonIn_CheckNodeDataForString(pNode);
             if (pStrWrk) {
@@ -287,7 +287,7 @@ int             test_JsonIn_Float01(
         eRc = JsonIn_FindIntegerNodeInHashA(pObj, "type", &type);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         fprintf(stderr, "\tType = %lld\n", type);
-        pNode = nodeHash_FindA(pObj->pHash, 0, "data");
+        pNode = NodeHash_FindA(pObj->pHash, 0, "data");
         TINYTEST_FALSE( (NULL == pNode) );
         pStrWrk = JsonIn_CheckNodeDataForFloat(pNode);
         TINYTEST_FALSE( (OBJ_NIL == pStrWrk) );

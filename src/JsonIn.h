@@ -64,7 +64,7 @@
 #include        <AStr.h>
 #include        <false.h>
 #include        <node.h>
-#include        <nodeHash.h>
+#include        <NodeHash.h>
 #include        <null.h>
 #include        <true.h>
 

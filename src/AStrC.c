@@ -45,8 +45,9 @@
 #include <AStr_internal.h>
 #include <ascii.h>
 #include <crc.h>
-#include <utf8.h>
 #include <stdio.h>
+#include <utf8.h>
+#include <W32Str.h>
 
 
 

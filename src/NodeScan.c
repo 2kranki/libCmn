@@ -302,8 +302,8 @@ extern "C" {
         this = NodeScan_New( );
         if (this) {
             NodeScan_setTree(this, pTree);
-            NodeScan_setCloseNode(this, nodeTree_getCloseNode(pTree));
-            NodeScan_setOpenNode(this, nodeTree_getOpenNode(pTree));
+            NodeScan_setCloseNode(this, NodeTree_getCloseNode(pTree));
+            NodeScan_setOpenNode(this, NodeTree_getOpenNode(pTree));
             NodeScan_setArray(this, pArray);
         }
         return this;
@@ -324,9 +324,9 @@ extern "C" {
         this = NodeScan_New( );
         if (this) {
             NodeScan_setTree(this, pTree);
-            NodeScan_setCloseNode(this, nodeTree_getCloseNode(pTree));
-            NodeScan_setOpenNode(this, nodeTree_getOpenNode(pTree));
-            pArray = nodeTree_ToLinearizationPost(pTree);
+            NodeScan_setCloseNode(this, NodeTree_getCloseNode(pTree));
+            NodeScan_setOpenNode(this, NodeTree_getOpenNode(pTree));
+            pArray = NodeTree_ToLinearizationPost(pTree);
             NodeScan_setArray(this, pArray);
             if (OBJ_NIL == pArray) {
                 DEBUG_BREAK();
@@ -353,9 +353,9 @@ extern "C" {
         this = NodeScan_New( );
         if (this) {
             NodeScan_setTree(this, pTree);
-            NodeScan_setCloseNode(this, nodeTree_getCloseNode(pTree));
-            NodeScan_setOpenNode(this, nodeTree_getOpenNode(pTree));
-            pArray = nodeTree_ToLinearizationPre(pTree);
+            NodeScan_setCloseNode(this, NodeTree_getCloseNode(pTree));
+            NodeScan_setOpenNode(this, NodeTree_getOpenNode(pTree));
+            pArray = NodeTree_ToLinearizationPre(pTree);
             if (OBJ_NIL == pArray) {
                 DEBUG_BREAK();
                 obj_Release(this);

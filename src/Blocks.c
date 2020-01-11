@@ -677,6 +677,49 @@ extern "C" {
 
 
 
+    //----------------------------------------------------------
+    //           D e l e t e  A l l  R e c o r d s
+    //----------------------------------------------------------
+
+    ERESULT         Blocks_DeleteAllRecords(
+        BLOCKS_DATA     *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        BLOCKS_BLOCK    *pBlock;
+        BLOCKS_NODE     *pNode;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Delete all the active records.
+        for (;;) {
+            pNode = listdl_Tail(&this->activeList);
+            if (pNode) {
+                eRc = Blocks_RecordFree(this, pNode->data);
+            }
+            else
+                break;
+        }
+
+        // Delete all the blocks.
+        while (listdl_Count(&this->blocks)) {
+            pBlock = listdl_DeleteTail(&this->blocks);
+            mem_Free(pBlock);
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -887,7 +930,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "Blocks::sizeof(BLOCKS_DATA) = %lu\n", sizeof(BLOCKS_DATA));
+        //fprintf(stderr, "Blocks::sizeof(BLOCKS_DATA) = %lu\n", sizeof(BLOCKS_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(BLOCKS_DATA));
     #endif
@@ -1199,6 +1242,7 @@ extern "C" {
         uint32_t        recordSize
     )
     {
+        ERESULT         eRc;
 
         // Do initialization.
         if (blockSize == 0)
@@ -1209,10 +1253,12 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+#ifdef XYZZY
         if (this->cBlocks) {
             DEBUG_BREAK();
             return ERESULT_DATA_ALREADY_EXISTS;
         }
+#endif
         if (recordSize > 0)
             ;
         else {
@@ -1224,6 +1270,8 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+
+        eRc = Blocks_DeleteAllRecords(this);
 
         this->blockSize = blockSize;
         this->blockAvail = blockSize - sizeof(BLOCKS_BLOCK);

@@ -280,7 +280,7 @@ OBJ_PROP        node_pProps[] = {
     { "data","pData","","associated data object","OBJ_ID","","public","NODE_DATA",offsetof(NODE_DATA,pData),(sizeof(OBJ_ID) << 3),0    },
     { "extra","pExtra","","an optional extra associated object","OBJ_ID","","public","NODE_DATA",offsetof(NODE_DATA,pExtra),(sizeof(OBJ_ID) << 3),0    },
     { "other","pOther","","an optional extra associated object","OBJ_ID","","public","NODE_DATA",offsetof(NODE_DATA,pOther),(sizeof(OBJ_ID) << 3),0    },
-    { "properties","pProperties","","Associated Properties","NODEBTP_DATA","","public","NODE_DATA",offsetof(NODE_DATA,pProperties),(sizeof(NODEBTP_DATA *) << 3),0    },
+    { "properties","pProperties","","Associated Properties","NODEBTP_DATA","","public","NODE_DATA",offsetof(NODE_DATA,pProperties),(sizeof(NODEBT_DATA *) << 3),0    },
     
     {NULL}
 };

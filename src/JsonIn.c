@@ -50,8 +50,8 @@
 #include        <name_internal.h>
 #include        <node_internal.h>
 #include        <NodeArray_internal.h>
-#include        <nodeBTP_internal.h>
-#include        <nodeHash_internal.h>
+#include        <NodeBT_internal.h>
+#include        <NodeHash_internal.h>
 #include        <null.h>
 #include        <number.h>
 #include        <ObjArray_internal.h>
@@ -1388,7 +1388,7 @@ extern "C" {
         }
 #endif
 
-        eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "array", (void **)&pArray);
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "array", (void **)&pArray);
         if ((ERESULT_FAILED(eRc)) || (OBJ_NIL == pArray)) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1425,7 +1425,7 @@ extern "C" {
         }
 #endif
 
-        eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "array", (void **)&pArray);
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "array", (void **)&pArray);
         if ((ERESULT_FAILED(eRc)) || (OBJ_NIL == pArray)) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1463,7 +1463,7 @@ extern "C" {
         }
 #endif
 
-        eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "float", (void **)&pData);
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "float", (void **)&pData);
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1499,7 +1499,7 @@ extern "C" {
         }
 #endif
 
-        eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, pTypeA, (void **)&pData);
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, pTypeA, (void **)&pData);
         if ((ERESULT_FAILED(eRc)) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1532,7 +1532,7 @@ extern "C" {
         }
 #endif
 
-        eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "integer", (void **)&pData);
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "integer", (void **)&pData);
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1564,7 +1564,7 @@ extern "C" {
         }
 #endif
 
-        eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "null", (void **)&pData);
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "null", (void **)&pData);
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1593,7 +1593,7 @@ extern "C" {
         }
 #endif
 
-        eRc = nodeHash_FindNodeInHashA(this->pHash, pSectionA, "string", (void **)&pData);
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "string", (void **)&pData);
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1816,17 +1816,17 @@ extern "C" {
             return pObj;
         }
 
-        pInfo = obj_getInfo(nodeBTP_Class());
+        pInfo = obj_getInfo(NodeBT_Class());
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)nodeBTP_ParseJsonObject(this);
+            pObj = (OBJ_ID)NodeBT_ParseJsonObject(this);
             return pObj;
         }
 
-        pInfo = obj_getInfo(nodeHash_Class());
+        pInfo = obj_getInfo(NodeHash_Class());
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)nodeHash_ParseJsonObject(this);
+            pObj = (OBJ_ID)NodeHash_ParseJsonObject(this);
             return pObj;
         }
 
@@ -2175,7 +2175,7 @@ extern "C" {
         }
 #endif
 
-        pNode = nodeHash_FindA(this->pHash, 0, pSection);
+        pNode = NodeHash_FindA(this->pHash, 0, pSection);
         if (OBJ_NIL == pNode) {
             return ERESULT_DATA_NOT_FOUND;
         }

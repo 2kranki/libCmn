@@ -756,7 +756,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //---------------------------------------------------------------
     
-    NODEBTP_DATA *  node_getProperties(
+    NODEBT_DATA *  node_getProperties(
         NODE_DATA       *this
     )
     {
@@ -776,7 +776,7 @@ extern "C" {
     
     bool            node_setProperties(
         NODE_DATA       *this,
-        NODEBTP_DATA    *pValue
+        NODEBT_DATA     *pValue
     )
     {
 #ifdef NDEBUG
@@ -1286,7 +1286,7 @@ extern "C" {
         }
         
         if (obj_IsKindOf(pData, OBJ_IDENT_NODEHASH)) {
-            pArray = nodeHash_Nodes((NODEHASH_DATA *)pData);
+            pArray = NodeHash_Nodes((NODEHASH_DATA *)pData);
         }
         else if (obj_IsKindOf(pData,OBJ_IDENT_NODEARRAY)) {
             pArray = NodeArray_Copy((NODEARRAY_DATA *)pData);
@@ -1428,7 +1428,7 @@ extern "C" {
 #endif
         
         if (this->pProperties) {
-            pFound = nodeBTP_FindA(this->pProperties, 0, pNameA);
+            pFound = NodeBT_FindA(this->pProperties, 0, pNameA);
             if (pFound) {
                 pProperty = node_getData(pFound);
             }
@@ -1464,7 +1464,7 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pProperties) {
-            this->pProperties = nodeBTP_New( );
+            this->pProperties = NodeBT_New( );
             if (OBJ_NIL == this->pProperties) {
                 eRc = ERESULT_OUT_OF_MEMORY;
                 goto eom;
@@ -1476,7 +1476,7 @@ extern "C" {
             eRc = ERESULT_OUT_OF_MEMORY;
             goto eom;
         }
-        eRc = nodeBTP_Add(this->pProperties, pNode, true);
+        eRc = NodeBT_Add(this->pProperties, pNode, true);
         obj_Release(pNode);
         pNode = OBJ_NIL;
         if (ERESULT_FAILED(eRc)) {
@@ -1510,7 +1510,7 @@ extern "C" {
         }
 #endif
         if (this->pProperties) {
-            num = nodeBTP_getSize(this->pProperties);
+            num = NodeBT_getSize(this->pProperties);
         }
         
         // Return to caller.
@@ -1539,7 +1539,7 @@ extern "C" {
 #endif
         
         if (this->pProperties) {
-            pArray = nodeBTP_Nodes(this->pProperties);
+            pArray = NodeBT_Nodes(this->pProperties);
         }
         
         // Return to caller.

@@ -54,7 +54,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <node.h>
-#include        <nodeTree.h>
+#include        <NodeTree.h>
 
 
 #ifndef         NODESCAN_H

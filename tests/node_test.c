@@ -180,15 +180,15 @@ int         test_node_Property01(
 
         pKeys = node_Properties(pObj);
         XCTAssertFalse( (OBJ_NIL == pKeys) );
-        i = nodeArray_getSize(pKeys);
+        i = NodeArray_getSize(pKeys);
         XCTAssertTrue( (3 == i) );
-        pNode = nodeArray_Get(pKeys, 1);
+        pNode = NodeArray_Get(pKeys, 1);
         XCTAssertFalse( (OBJ_NIL == pNode) );
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(node_getData(pNode), "a")) );
-        pNode = nodeArray_Get(pKeys, 2);
+        pNode = NodeArray_Get(pKeys, 2);
         XCTAssertFalse( (OBJ_NIL == pNode) );
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(node_getData(pNode), "b")) );
-        pNode = nodeArray_Get(pKeys, 3);
+        pNode = NodeArray_Get(pKeys, 3);
         XCTAssertFalse( (OBJ_NIL == pNode) );
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(node_getData(pNode), "c")) );
         obj_Release(pKeys);

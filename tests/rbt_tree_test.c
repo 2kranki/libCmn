@@ -23,7 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <blocks.h>
+#include    <Blocks.h>
 #include    <trace.h>
 #include    <rbt_tree.h>
 
@@ -163,23 +163,23 @@ int         test_rbt_Tree_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pBlocks = blocks_New( );
+    pBlocks = Blocks_New( );
     TINYTEST_FALSE( (OBJ_NIL == pBlocks) );
     if (pBlocks) {
 
-        eRc = blocks_SetupSizes(pBlocks, 0, sizeof(NODE_RECORD));
+        eRc = Blocks_SetupSizes(pBlocks, 0, sizeof(NODE_RECORD));
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pTree = rbt_Init(
                     pTree,
                     (void *)node_Cmp,
                     (sizeof(NODE_RECORD) - sizeof(RBT_NODE)),
-                    (void *)blocks_RecordNew,
-                    (void *)blocks_RecordFree,
+                    (void *)Blocks_RecordNew,
+                    (void *)Blocks_RecordFree,
                     pBlocks
                 );
         TINYTEST_TRUE( (&tree == pTree) );
-        tree.pNodeFree = (void *)blocks_RecordFree;
-        tree.pNodeAlloc = (void *)blocks_RecordNew;
+        tree.pNodeFree = (void *)Blocks_RecordFree;
+        tree.pNodeAlloc = (void *)Blocks_RecordNew;
         tree.pObjAllocFree = pBlocks;
         tree.dataSize = sizeof(NODE_RECORD) - sizeof(RBT_NODE);
         
@@ -216,18 +216,18 @@ int         test_rbt_Tree_AddFind01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pBlocks = blocks_New( );
+    pBlocks = Blocks_New( );
     TINYTEST_FALSE( (OBJ_NIL == pBlocks) );
     if (pBlocks) {
         
-        eRc = blocks_SetupSizes(pBlocks, 0, sizeof(NODE_RECORD));
+        eRc = Blocks_SetupSizes(pBlocks, 0, sizeof(NODE_RECORD));
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pTree = rbt_Init(
                          pTree,
                          (void *)strcmp,
                          (sizeof(NODE_RECORD) - sizeof(RBT_NODE)),
-                         (void *)blocks_RecordNew,
-                         (void *)blocks_RecordFree,
+                         (void *)Blocks_RecordNew,
+                         (void *)Blocks_RecordFree,
                          pBlocks
                 );
         TINYTEST_TRUE( (&tree == pTree) );
@@ -236,7 +236,7 @@ int         test_rbt_Tree_AddFind01(
         while (*ppStrA) {
             //NODE_RECORD     newRcd = {0};
             fprintf(stderr, "\tInserting %s\n", *ppStrA);
-            //pRecord = blocks_RecordNew(pBlocks);
+            //pRecord = Blocks_RecordNew(pBlocks);
             fRc = rbt_Insert(pTree, *ppStrA, *ppStrA);
             TINYTEST_TRUE( (fRc) );
             fRc = rbt_VerifyTree(pTree, pTree->pRoot);

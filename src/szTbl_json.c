@@ -62,7 +62,7 @@
 #include    <JsonIn.h>
 #include    <node.h>
 #include    <NodeArray.h>
-#include    <nodeHash.h>
+#include    <NodeHash.h>
 #include    <utf8_internal.h>
 
 #define DEBUG_JSONIN 1
@@ -340,7 +340,7 @@ extern "C" {
             goto exit00;
         }
 #ifdef DEBUG_JSONIN
-        pStrDebug = nodeHash_ToDebugString(JsonIn_getHash(pParser), 0);
+        pStrDebug = NodeHash_ToDebugString(JsonIn_getHash(pParser), 0);
         if (pStrDebug) {
             fprintf(stderr, "%s\n\n", AStr_getData(pStrDebug));
             obj_Release(pStrDebug);

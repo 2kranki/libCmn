@@ -99,12 +99,13 @@ extern "C" {
     typedef struct NodeArray_data_s         NODEARRAY_DATA;
     typedef struct NodeArray_class_data_s   NODEARRAY_CLASS_DATA;
     typedef struct nodeATree_data_s         NODEATREE_DATA;
-    typedef struct nodeBTP_data_s           NODEBTP_DATA;
-    typedef struct nodeBTP_class_data_s     NODEBTP_CLASS_DATA;
+    typedef struct NodeBT_data_s            NODEBT_DATA;
+    typedef struct NodeBT_class_data_s      NODEBT_CLASS_DATA;
     typedef struct nodeEntry_data_s         NODEENTRY_DATA;
     typedef struct NodeEnum_data_s          NODEENUM_DATA;
     typedef struct NodeEnum_class_data_s    NODEENUM_CLASS_DATA;
-    typedef struct nodeHash_data_s          NODEHASH_DATA;
+    typedef struct NodeHash_data_s          NODEHASH_DATA;
+    typedef struct NodeHash_class_data_s    NODEHASH_CLASS_DATA;
     typedef struct nodeLink_data_s          NODELINK_DATA;
     typedef struct NodeList_data_s          NODELIST_DATA;
     typedef struct NodeList_class_data_s    NODELIST_CLASS_DATA;
@@ -113,7 +114,8 @@ extern "C" {
     typedef struct nodeMatrix_data_s	    NODEMATRIX_DATA;
     typedef struct NodeScan_data_s          NODESCAN_DATA;
     typedef struct NodeScan_class_data_s    NODESCAN_CLASS_DATA;
-    typedef struct nodeTree_data_s          NODETREE_DATA;
+    typedef struct NodeTree_data_s          NODETREE_DATA;
+    typedef struct NodeTree_class_data_s    NODETREE_CLASS_DATA;
 
     
     // Some predefined Node Classes
@@ -359,7 +361,7 @@ extern "C" {
     );
     
     
-    NODEBTP_DATA *  node_getProperties(
+    NODEBT_DATA *   node_getProperties(
         NODE_DATA       *this
     );
     

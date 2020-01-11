@@ -28,7 +28,7 @@
 #include    <nodeLink.h>
 #include    <trace.h>
 #include    <NodeScan_internal.h>
-#include    <nodeTree.h>
+#include    <NodeTree.h>
 
 
 typedef enum our_node_classes_e {
@@ -66,11 +66,11 @@ NODETREE_DATA * createTestTree01(
     uint32_t        i;
     ERESULT         eRc;
     
-    pTree = nodeTree_Alloc( );
+    pTree = NodeTree_Alloc( );
     if  (OBJ_NIL == pTree) {
         return pTree;
     }
-    pTree = nodeTree_Init( pTree );
+    pTree = NodeTree_Init( pTree );
     if  (OBJ_NIL == pTree) {
         return pTree;
     }
@@ -155,7 +155,7 @@ NODETREE_DATA * createTestTree01(
     fprintf(stderr, "Postorder Traversal: ((B, (K)C)A, ((H)E, (J)F, G)D),\n");
     fprintf(stderr, "\n\n\n");
 
-    i = nodeTree_ChildAdd(pTree, 0, pNodeA);
+    i = NodeTree_ChildAdd(pTree, 0, pNodeA);
     if  (i == 1)
         ;
     else {
@@ -163,7 +163,7 @@ NODETREE_DATA * createTestTree01(
         pTree = OBJ_NIL;
         return pTree;
     }
-    i = nodeTree_SiblingAdd(pTree, nodeLink_getIndex(pNodeA), pNodeD);
+    i = NodeTree_SiblingAdd(pTree, nodeLink_getIndex(pNodeA), pNodeD);
     if  (i == 2)
         ;
     else {
@@ -173,35 +173,35 @@ NODETREE_DATA * createTestTree01(
     }
 
     //                                                         3      4
-    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeA), pNodeB, pNodeC, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeA), pNodeB, pNodeC, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                        5
-    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeC), pNodeK, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeC), pNodeK, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                         6      7       8
-    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeD), pNodeE, pNodeF, pNodeG, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeD), pNodeE, pNodeF, pNodeG, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                         9
-    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeE), pNodeH, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeE), pNodeH, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                        10
-    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeF), pNodeJ, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeF), pNodeJ, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
@@ -258,11 +258,11 @@ NODETREE_DATA * createTestTree02(
     uint32_t        i;
     ERESULT         eRc;
     
-    pTree = nodeTree_Alloc( );
+    pTree = NodeTree_Alloc( );
     if  (OBJ_NIL == pTree) {
         return pTree;
     }
-    pTree = nodeTree_Init( pTree );
+    pTree = NodeTree_Init( pTree );
     if  (OBJ_NIL == pTree) {
         return pTree;
     }
@@ -356,7 +356,7 @@ NODETREE_DATA * createTestTree02(
     fprintf(stderr, "\n\n\n");
     
     //                                 1
-    i = nodeTree_ChildAdd(pTree, 0, pNodeG);
+    i = NodeTree_ChildAdd(pTree, 0, pNodeG);
     if  (i == 1)
         ;
     else {
@@ -365,35 +365,35 @@ NODETREE_DATA * createTestTree02(
         return pTree;
     }
     //                                                         2       3
-    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeG), pNodeH, pNodeJ, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeG), pNodeH, pNodeJ, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                         4       5
-    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeH), pNodeA, pNodeI, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeH), pNodeA, pNodeI, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                         6       7
-    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeI), pNodeB, pNodeC, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeI), pNodeB, pNodeC, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                         8       9
-    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeJ), pNodeD, pNodeK, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeJ), pNodeD, pNodeK, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                        10      11
-    eRc = nodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeK), pNodeE, pNodeF, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeK), pNodeE, pNodeF, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
@@ -534,13 +534,13 @@ int         test_NodeScan_ScanPost01(
         pArray = NodeScan_getArray(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         if (pArray && fDump) {
-            iMax = nodeArray_getSize(pArray);
+            iMax = NodeArray_getSize(pArray);
             fprintf(stderr, "\nLinearization Postorder(%d):\n",iMax);
             XCTAssertTrue( (23 == iMax) );
             fprintf(stderr, "\tShould be: (((a(bc)/)+(d(ef)*2)-)*1)\n");
             fprintf(stderr, "\tFound:     ");
             for (i=1; i<=iMax; ++i) {
-                pStrA = node_getNameUTF8(nodeArray_Get(pArray, i));
+                pStrA = node_getNameUTF8(NodeArray_Get(pArray, i));
                 fprintf(stderr, "%s", pStrA);
                 mem_Free((void *)pStrA);
             }
@@ -587,13 +587,13 @@ int         test_NodeScan_ScanPre01(
         pArray = NodeScan_getArray(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         if (pArray && fDump) {
-            iMax = nodeArray_getSize(pArray);
+            iMax = NodeArray_getSize(pArray);
             fprintf(stderr, "\nLinearization Preorder(%d):\n",iMax);
             XCTAssertTrue( (23 == iMax) );
             fprintf(stderr, "\tShould be: ( *1 ( + ( a / ( b c ) ) - ( d *2 ( e f ) ) ) )\n");
             fprintf(stderr, "\tFound:     ");
             for (i=1; i<=iMax; ++i) {
-                pStrA = node_getNameUTF8(nodeArray_Get(pArray, i));
+                pStrA = node_getNameUTF8(NodeArray_Get(pArray, i));
                 fprintf(stderr, "%s ", pStrA);
                 mem_Free((void *)pStrA);
             }

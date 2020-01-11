@@ -40,6 +40,7 @@
 
 
 #include        <ObjEnum.h>
+#include        <ObjArray.h>
 #include        <JsonIn.h>
 
 

@@ -51,7 +51,7 @@
 #include    <JsonIn.h>
 #include    <node.h>
 #include    <NodeArray.h>
-#include    <nodeHash.h>
+#include    <NodeHash.h>
 #include    <utf8.h>
 
 

@@ -117,7 +117,7 @@
 #include        <AStr.h>
 #include        <AStrArray.h>
 #include        <NodeArray.h>
-#include        <nodeHash.h>
+#include        <NodeHash.h>
 #include        <scanner.h>
 #include        <SrcErrors.h>
 #include        <trace.h>

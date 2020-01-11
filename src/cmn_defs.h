@@ -328,8 +328,8 @@ extern "C" {
         OBJ_IDENT_NODEARRAY_CLASS,
         OBJ_IDENT_NODEBTREE,            // A Binary Tree of Nodes
         OBJ_IDENT_NODEBTREE_CLASS,
-        OBJ_IDENT_NODEBTP,              // A Binary Tree of Nodes using pointer linkage
-        OBJ_IDENT_NODEBTP_CLASS,        //      between nodes
+        OBJ_IDENT_NODEBT,               // A Binary Tree of Nodes using pointer linkage
+        OBJ_IDENT_NODEBT_CLASS,         //      between nodes
         OBJ_IDENT_NODEDIGRAPH,          // Directed Graph of Nodes
         OBJ_IDENT_NODEDIGRAPH_CLASS,
         OBJ_IDENT_NODEENTRY,            // A Node to be used in other containers

@@ -48,7 +48,7 @@
 #include    <dec.h>
 #include    <JsonIn_internal.h>
 #include    <node.h>
-#include    <nodeHash.h>
+#include    <NodeHash.h>
 #include    <utf8.h>
 
 

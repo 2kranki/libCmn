@@ -45,8 +45,8 @@
 #include    <cmdutl.h>
 #include    <node_internal.h>
 #include    <NodeArray.h>
-#include    <nodeHash.h>
-#include    <nodeTree.h>
+#include    <NodeHash.h>
+#include    <NodeTree.h>
 #include    <path.h>
 #include    <srcFile.h>
 #include    <stdio.h>

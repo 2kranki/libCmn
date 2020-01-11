@@ -49,7 +49,7 @@
 #include    <dec_internal.h>
 #include    <JsonIn.h>
 #include    <node.h>
-#include    <nodeHash.h>
+#include    <NodeHash.h>
 #include    <SrcLoc_internal.h>
 #include    <szTbl.h>
 #include    <utf8_internal.h>

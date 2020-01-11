@@ -40,7 +40,7 @@
 #include    <name.h>
 #include    <node.h>
 #include    <NodeArray.h>
-#include    <nodeBTP.h>
+#include    <NodeBT.h>
 #include    <JsonIn.h>
 #include    <listdl.h>
 #include    <szData.h>
@@ -99,7 +99,7 @@ struct node_data_s	{
     OBJ_ID          pData;
     OBJ_ID          pExtra;
     OBJ_ID          pOther;
-    NODEBTP_DATA    *pProperties;
+    NODEBT_DATA     *pProperties;
 };
 #pragma pack(pop)
 
@@ -130,7 +130,7 @@ struct node_data_s	{
     
     bool            node_setProperties(
         NODE_DATA       *this,
-        NODEBTP_DATA    *pValue
+        NODEBT_DATA     *pValue
     );
     
     

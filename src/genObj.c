@@ -105,7 +105,7 @@ extern "C" {
                 eRc = ERESULT_OUT_OF_MEMORY;
                 goto eor;
             }
-            eRc = nodeBTP_AddA(this->pDict, 0, GENOBJ_CLASSNAME, pStr1);
+            eRc = NodeBT_AddA(this->pDict, 0, GENOBJ_CLASSNAME, pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
@@ -114,7 +114,7 @@ extern "C" {
                 eRc = ERESULT_OUT_OF_MEMORY;
                 goto eor;
             }
-            eRc = nodeBTP_AddA(this->pDict, 0, GENOBJ_CLASSNAME_UC, pStr2);
+            eRc = NodeBT_AddA(this->pDict, 0, GENOBJ_CLASSNAME_UC, pStr2);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
@@ -157,47 +157,47 @@ extern "C" {
             if (OBJ_NIL == pStr1) {
                 return ERESULT_OUT_OF_MEMORY;
             }
-            eRc = nodeBTP_AddA(this->pDict, 0, GENOBJ_DATETIME, pStr1);
+            eRc = NodeBT_AddA(this->pDict, 0, GENOBJ_DATETIME, pStr1);
             pStrUtf8 = AStr_CStringA(pStr1,NULL);
             obj_Release(pStr1);
             pStrUtf8[2] = '\0';         // Month
             pStr1 = AStr_NewA(&pStrUtf8[0]);
-            eRc = nodeBTP_AddA(this->pDict, 0, "M", pStr1);
+            eRc = NodeBT_AddA(this->pDict, 0, "M", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
             obj_Release(pStr1);
             pStrUtf8[5] = '\0';         // Day
             pStr1 = AStr_NewA(&pStrUtf8[3]);
-            eRc = nodeBTP_AddA(this->pDict, 0, "D", pStr1);
+            eRc = NodeBT_AddA(this->pDict, 0, "D", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
             obj_Release(pStr1);
             pStrUtf8[10] = '\0';         // Year
             pStr1 = AStr_NewA(&pStrUtf8[6]);
-            eRc = nodeBTP_AddA(this->pDict, 0, "Y", pStr1);
+            eRc = NodeBT_AddA(this->pDict, 0, "Y", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
             obj_Release(pStr1);
             pStrUtf8[13] = '\0';         // Hours
             pStr1 = AStr_NewA(&pStrUtf8[11]);
-            eRc = nodeBTP_AddA(this->pDict, 0, "H", pStr1);
+            eRc = NodeBT_AddA(this->pDict, 0, "H", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
             obj_Release(pStr1);
             pStrUtf8[16] = '\0';         // Mins
             pStr1 = AStr_NewA(&pStrUtf8[14]);
-            eRc = nodeBTP_AddA(this->pDict, 0, "N", pStr1);
+            eRc = NodeBT_AddA(this->pDict, 0, "N", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
             obj_Release(pStr1);
             pStrUtf8[19] = '\0';        // Secs
             pStr1 = AStr_NewA(&pStrUtf8[17]);
-            eRc = nodeBTP_AddA(this->pDict, 0, "S", pStr1);
+            eRc = NodeBT_AddA(this->pDict, 0, "S", pStr1);
             if (ERESULT_FAILED(eRc)) {
                 goto eor;
             }
@@ -305,7 +305,7 @@ extern "C" {
     //                        D i c t i o n a r y
     //---------------------------------------------------------------
     
-    NODEBTP_DATA *  genObj_getDict(
+    NODEBT_DATA *   genObj_getDict(
         GENOBJ_DATA     *this
     )
     {
@@ -324,7 +324,7 @@ extern "C" {
     
     bool            genObj_setDict(
         GENOBJ_DATA     *this,
-        NODEBTP_DATA    *pValue
+        NODEBT_DATA     *pValue
     )
     {
 #ifdef NDEBUG
@@ -719,7 +719,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeBTP_AddA(this->pDict, 0, pName, pValue);
+        eRc = NodeBT_AddA(this->pDict, 0, pName, pValue);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -731,7 +731,7 @@ extern "C" {
                     eRc = ERESULT_OUT_OF_MEMORY;
                     return eRc;
                 }
-                eRc = nodeBTP_AddA(this->pDict, 0, GENOBJ_CLASSNAME_UC, pValueUC);
+                eRc = NodeBT_AddA(this->pDict, 0, GENOBJ_CLASSNAME_UC, pValueUC);
                 obj_Release(pValueUC);
                 pValueUC = OBJ_NIL;
                 if (ERESULT_FAILED(eRc)) {
@@ -745,7 +745,7 @@ extern "C" {
                 if (OBJ_NIL == pValueUC) {
                     return ERESULT_OUT_OF_MEMORY;
                 }
-                eRc = nodeBTP_AddA(this->pDict, 0, GENOBJ_SUPER_CLASSNAME_UC, pValueUC);
+                eRc = NodeBT_AddA(this->pDict, 0, GENOBJ_SUPER_CLASSNAME_UC, pValueUC);
                 obj_Release(pValueUC);
                 pValueUC = OBJ_NIL;
                 if (ERESULT_FAILED(eRc)) {
@@ -828,7 +828,7 @@ extern "C" {
         }
 #endif
         
-        pNode = nodeBTP_FindA(this->pDict, 0, pName);
+        pNode = NodeBT_FindA(this->pDict, 0, pName);
         if (pNode) {
             pValue = node_getData(pNode);
             BREAK_FALSE( (obj_IsKindOf(pValue, OBJ_IDENT_ASTR)) );
@@ -857,7 +857,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeBTP_DeleteA(this->pDict, 0, pName);
+        eRc = NodeBT_DeleteA(this->pDict, 0, pName);
         eRc = genObj_DictAdd(this, pName, pValue);
         
         // Return to caller.
@@ -884,7 +884,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeBTP_DeleteA(this->pDict, 0, pName);
+        eRc = NodeBT_DeleteA(this->pDict, 0, pName);
         eRc = genObj_DictAddA(this, pName, pValueA);
         
         // Return to caller.
@@ -2152,7 +2152,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&genObj_Vtbl);
         
-        this->pDict = nodeBTP_New( );
+        this->pDict = NodeBT_New( );
         if (OBJ_NIL == this->pDict) {
             obj_Release(this);
             return OBJ_NIL;

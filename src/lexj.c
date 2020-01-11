@@ -44,6 +44,7 @@
 #include <lexj_internal.h>
 #include <SrcErrors.h>
 #include <trace.h>
+#include <W32Str.h>
 
 
 

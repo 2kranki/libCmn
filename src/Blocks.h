@@ -243,6 +243,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    ERESULT         Blocks_DeleteAllRecords(
+        BLOCKS_DATA     *this
+    );
+
+
     /*!
      Create an Enumerator that will enumerate through all the blocks.
      @return    If successful, valid enumerator. Otherwise, OBJ_NIL.

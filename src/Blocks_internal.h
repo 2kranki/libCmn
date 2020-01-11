@@ -114,7 +114,8 @@ struct Blocks_data_s	{
     // Record Deletion Exit
     P_ERESULT_EXIT3 pDelete;
     OBJ_ID          pObj;           // Used as first parameter of pDelete
-    void            *pArg3;         // Used as third paarameter of pDelete
+    //                              // second parameter is record data pointer
+    void            *pArg3;         // Used as third parameter of pDelete
 
 };
 #pragma pack(pop)

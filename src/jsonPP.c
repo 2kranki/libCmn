@@ -780,7 +780,7 @@ extern "C" {
         }
 #endif
         
-        pArray = nodeHash_Nodes(pHash);
+        pArray = NodeHash_Nodes(pHash);
         if (OBJ_NIL == pArray) {
             return ERESULT_SUCCESS;
         }
@@ -919,7 +919,7 @@ extern "C" {
         }
         pHash = JsonIn_CheckNodeForHash(pData);
         if (pHash) {
-            pArray = nodeHash_Nodes(pHash);
+            pArray = NodeHash_Nodes(pHash);
             if (pArray) {
                 AStr_AppendA(this->pStr, "{\n");
                 iMax = NodeArray_getSize(pArray);
@@ -1039,7 +1039,7 @@ extern "C" {
         }
         pHash = JsonIn_CheckNodeForHash(pNode);
         if (pHash) {
-            pArray = nodeHash_Nodes(pHash);
+            pArray = NodeHash_Nodes(pHash);
             if (pArray) {
                 AStr_AppendA(this->pStr, "[\n");
                 iMax = NodeArray_getSize(pArray);

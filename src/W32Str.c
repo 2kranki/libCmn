@@ -57,7 +57,7 @@
 #include        <dec.h>
 #include        <hex.h>
 #include        <node.h>
-#include        <nodeHash.h>
+#include        <NodeHash.h>
 #include        <utf8.h>
 #include        <stdio.h>
 #include        <time.h>
@@ -1584,7 +1584,7 @@ extern "C" {
                         return ERESULT_OUT_OF_MEMORY;
                     }
                     if (pHash) {
-                        pNode = nodeHash_FindA(pHash, 0, AStr_getData(pName));
+                        pNode = NodeHash_FindA(pHash, 0, AStr_getData(pName));
                         if (pNode) {
                             pData = node_getData(pNode);
                             if (obj_IsKindOf(this, OBJ_IDENT_ASTR)

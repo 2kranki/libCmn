@@ -41,7 +41,7 @@
 
 #include    <appl.h>
 #include    <AStrCArray.h>
-#include    <nodeHash.h>
+#include    <NodeHash.h>
 
 
 #ifndef APPL_INTERNAL_H

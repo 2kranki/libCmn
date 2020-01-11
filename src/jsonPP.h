@@ -55,7 +55,7 @@
 #include        <AStr.h>
 #include        <node.h>
 #include        <NodeArray.h>
-#include        <nodeHash.h>
+#include        <NodeHash.h>
 
 
 #ifndef         JSONPP_H

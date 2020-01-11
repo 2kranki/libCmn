@@ -1614,7 +1614,7 @@ extern "C" {
         }
 #endif
         if (this->pProperties) {
-            num = nodeHash_getSize(this->pProperties);
+            num = NodeHash_getSize(this->pProperties);
         }
         
         // Return to caller.
@@ -1673,13 +1673,13 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pProperties) {
-            this->pProperties = nodeHash_New( );
+            this->pProperties = NodeHash_New( );
             if (OBJ_NIL == this->pProperties) {
                 return ERESULT_INSUFFICIENT_MEMORY;
             }
         }
         
-        eRc = nodeHash_Add(this->pProperties, pData);
+        eRc = NodeHash_Add(this->pProperties, pData);
         
         // Return to caller.
         return eRc;
@@ -1710,7 +1710,7 @@ extern "C" {
 #endif
         
         if (this->pProperties) {
-            pProperty = nodeHash_FindA(this->pProperties, 0, pName);
+            pProperty = NodeHash_FindA(this->pProperties, 0, pName);
         }
         
         // Return to caller.

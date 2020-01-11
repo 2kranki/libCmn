@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <Compiler_internal.h>
 #include        <NodeArray.h>
-#include        <nodeHash.h>
+#include        <NodeHash.h>
 #include        <SrcErrors.h>
 #include        <trace.h>
 #include        <stdarg.h>
@@ -873,13 +873,13 @@ extern "C" {
 #endif
 
         if (OBJ_NIL == this->pProperties) {
-            this->pProperties = nodeHash_New( );
+            this->pProperties = NodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
             if (OBJ_NIL == this->pProperties) {
                 return ERESULT_INSUFFICIENT_MEMORY;
             }
         }
 
-        eRc = nodeHash_Add(this->pProperties, pData);
+        eRc = NodeHash_Add(this->pProperties, pData);
 
         // Return to caller.
         return eRc;
@@ -1433,7 +1433,7 @@ extern "C" {
         }
 #endif
         if (this->pProperties) {
-            num = nodeHash_getSize(this->pProperties);
+            num = NodeHash_getSize(this->pProperties);
         }
 
         // Return to caller.
@@ -1493,7 +1493,7 @@ extern "C" {
 #endif
 
         if (this->pProperties) {
-            pProperty = nodeHash_FindA(this->pProperties, 0, pName);
+            pProperty = NodeHash_FindA(this->pProperties, 0, pName);
         }
 
         // Return to caller.
@@ -1523,7 +1523,7 @@ extern "C" {
 #endif
 
         if (this->pProperties) {
-            pProperties = nodeHash_Nodes(this->pProperties);
+            pProperties = NodeHash_Nodes(this->pProperties);
         }
 
         // Return to caller.

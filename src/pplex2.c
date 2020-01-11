@@ -47,6 +47,7 @@
 #include        <ascii.h>
 #include        <SrcErrors.h>
 #include        <trace.h>
+#include        <W32Str.h>
 
 
 #ifdef	__cplusplus
