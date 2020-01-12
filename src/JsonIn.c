@@ -52,6 +52,7 @@
 #include        <NodeArray_internal.h>
 #include        <NodeBT_internal.h>
 #include        <NodeHash_internal.h>
+#include        <NodeLink_internal.h>
 #include        <null.h>
 #include        <number.h>
 #include        <ObjArray_internal.h>
@@ -1827,6 +1828,13 @@ extern "C" {
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)NodeHash_ParseJsonObject(this);
+            return pObj;
+        }
+
+        pInfo = obj_getInfo(NodeLink_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)NodeLink_ParseJsonObject(this);
             return pObj;
         }
 

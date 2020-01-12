@@ -1,23 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          A Node with Integer Links (NodeLink) Header
+//          NODELINK Console Transmit Task (nodeLink) Header
 //****************************************************************
 /*
  * Program
- *			A Node with Integer Links
+ *			Separate nodeLink (nodeLink)
  * Purpose
- *			This object provides a regular node with additional
- *          integer links that allow it to be easily used in lists,
- *          trees, etc.  Integer links allow the data to be written
- *          to disk.
+ *			This object provides a standardized way of handling
+ *          a separate nodeLink to run things without complications
+ *          of interfering with the main nodeLink. A nodeLink may be 
+ *          called a nodeLink on other O/S's.
  *
  * Remarks
- *	1.      This object uses OBJ_FLAG_USER5..OBJ_FLAG_USER7 internally.
+ *	1.      None
  *
  * History
- *  06/30/2018 Generated
- *	01/12/2020 Regenerated
+ *	06/30/2018 Generated
  */
 
 
@@ -53,18 +52,11 @@
 
 
 #include        <cmn_defs.h>
-#include        <AStr.h>
 #include        <node.h>
 
 
 #ifndef         NODELINK_H
 #define         NODELINK_H
-
-
-#define   NODELINK_JSON_SUPPORT 1
-//#define   NODELINK_SINGLETON    1
-
-
 
 
 
@@ -77,28 +69,30 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
+    // Below defined in node.h
+    //typedef struct nodeLink_data_s	NODELINK_DATA;    // Inherits from Node.
 
-    //typedef struct NodeLink_data_s	NODELINK_DATA;            // Inherits from OBJ
-    //typedef struct NodeLink_class_data_s NODELINK_CLASS_DATA;   // Inherits from OBJ
-
-    typedef struct NodeLink_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+    typedef struct nodeLink_vtbl_s	{
+        NODE_VTBL       iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in NodeLink_object.c.
+        // method names to the vtbl definition in nodeLink_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODELINK_DATA *);
+        uint32_t        (*pGetIndex)(NODELINK_DATA *this);
+        bool            (*pSetIndex)(NODELINK_DATA *this, uint32_t value);
+        uint32_t        (*pGetLeftLink)(NODELINK_DATA *this);
+        bool            (*pSetLeftLink)(NODELINK_DATA *this, uint32_t value);
+        uint32_t        (*pGetLeftThread)(NODELINK_DATA *this);
+        bool            (*pSetLeftThread)(NODELINK_DATA *this, uint32_t value);
+        uint32_t        (*pGetMiddle)(NODELINK_DATA *this);
+        bool            (*pSetMiddle)(NODELINK_DATA *this, uint32_t value);
+        uint32_t        (*pGetParent)(NODELINK_DATA *this);
+        bool            (*pSetParent)(NODELINK_DATA *this, uint32_t value);
+        uint32_t        (*pGetRightLink)(NODELINK_DATA *this);
+        bool            (*pSetRightLink)(NODELINK_DATA *this, uint32_t value);
+        uint32_t        (*pGetRightThread)(NODELINK_DATA *this);
+        bool            (*pSetRightThread)(NODELINK_DATA *this, uint32_t value);
     } NODELINK_VTBL;
-
-    typedef struct NodeLink_class_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in NodeLink_object.c.
-        // Properties:
-        // Methods:
-        //bool        (*pIsEnabled)(NODELINK_DATA *);
-    } NODELINK_CLASS_VTBL;
-
 
 
 
@@ -111,264 +105,248 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  NODELINK_SINGLETON
-    NODELINK_DATA * NodeLink_Shared (
-        void
-    );
-
-    void            NodeLink_SharedReset (
-        void
-    );
-#endif
-
-
-   /*!
+    /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to NodeLink object if successful, otherwise OBJ_NIL.
+     @return    pointer to nodeLink object if successful, otherwise OBJ_NIL.
      */
-    NODELINK_DATA * NodeLink_Alloc (
+    NODELINK_DATA * nodeLink_Alloc(
         void
     );
     
     
-    OBJ_ID          NodeLink_Class (
+    OBJ_ID          nodeLink_Class(
         void
     );
     
     
-    NODELINK_DATA * NodeLink_New (
+    NODELINK_DATA * nodeLink_New(
         void
     );
     
-    
-    NODELINK_DATA * NodeLink_NewWithUTF8AndClass(
+    NODELINK_DATA * nodeLink_NewWithUTF8AndClass(
         int32_t         cls,
         const
         char            *pName,
         OBJ_ID          pData
     );
+    
 
-
-    NODELINK_DATA * NodeLink_NewWithUTF8ConAndClass(
+    NODELINK_DATA * nodeLink_NewWithUTF8ConAndClass(
         int32_t         cls,
         const
         char            *pNameA,
         OBJ_ID          pData
     );
+    
+    
 
-
-    NODELINK_DATA *   NodeLink_NewFromJsonString(
-        ASTR_DATA       *pString
-    );
-
-
-
+    
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    int16_t         NodeLink_getBalance(
+    int16_t         nodeLink_getBalance(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setBalance(
+    
+    bool            nodeLink_setBalance(
         NODELINK_DATA   *this,
         int16_t         value
     );
 
-
+    
     /*!
      Child index property is used to point to the next child node
      if needed.  Note that this uses the Left index internally.
      */
-    uint32_t        NodeLink_getChild(
+    uint32_t        nodeLink_getChild(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setChild(
+    
+    bool            nodeLink_setChild(
         NODELINK_DATA   *this,
         uint32_t        value
     );
-
-
-    int32_t         NodeLink_getClass(
+    
+    
+    int32_t         nodeLink_getClass(
         NODELINK_DATA   *this
     );
-
-
-    OBJ_ID          NodeLink_getData(
+    
+    
+    OBJ_ID          nodeLink_getData(
         NODELINK_DATA   *this
     );
-
-
-    OBJ_ID          NodeLink_getExtra(
+    
+    
+    OBJ_ID          nodeLink_getExtra(
         NODELINK_DATA   *this
     );
-
-
+    
+    
     /*!
      From index property is used to point to the "From" node
      if needed.  Note that this uses the Left index internally.
      */
-    uint32_t        NodeLink_getFrom(
+    uint32_t        nodeLink_getFrom(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setFrom(
+    
+    bool            nodeLink_setFrom(
         NODELINK_DATA   *this,
         uint32_t        value
     );
-
-
-    uint32_t        NodeLink_getHash(
+    
+    
+    uint32_t        nodeLink_getHash(
         NODELINK_DATA   *this
     );
-
-
-    uint32_t        NodeLink_getIndex(
+    
+    
+    uint32_t        nodeLink_getIndex(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setIndex(
+    
+    bool            nodeLink_setIndex(
         NODELINK_DATA   *this,
         uint32_t        value
     );
+    
 
-
-    uint32_t        NodeLink_getLeftLink(
+    uint32_t        nodeLink_getLeftLink(
         NODELINK_DATA   *this
     );
 
-    bool            NodeLink_setLeftLink(
+    bool            nodeLink_setLeftLink(
         NODELINK_DATA   *this,
         uint32_t        value
     );
-
-
-    uint32_t        NodeLink_getLeftThread(
+    
+    
+    uint32_t        nodeLink_getLeftThread(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setLeftThread(
+    
+    bool            nodeLink_setLeftThread(
         NODELINK_DATA   *this,
         uint32_t        value
     );
-
-
-    uint32_t        NodeLink_getMiddle(
+    
+    
+    uint32_t        nodeLink_getMiddle(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setMiddle(
+    
+    bool            nodeLink_setMiddle(
         NODELINK_DATA   *this,
         uint32_t        value
     );
-
-
-    uint16_t        NodeLink_getMisc1(
+    
+    
+    uint16_t        nodeLink_getMisc1(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setMisc1(
+    
+    bool            nodeLink_setMisc1(
         NODELINK_DATA   *this,
         uint16_t        value
     );
+    
 
-
-    NAME_DATA *     NodeLink_getName(
+    NAME_DATA *     nodeLink_getName(
         NODELINK_DATA   *this
     );
 
-
+    
     /*!
      @return    If successful, a UTF-8 string which must be freed
                 with mem_Free(), otherwise NULL.
      */
-    char *          NodeLink_getNameUTF8(
+    char *          nodeLink_getNameUTF8(
+        NODELINK_DATA   *this
+    );
+    
+
+    NODE_DATA *     nodeLink_getNode(
         NODELINK_DATA   *this
     );
 
 
-    NODE_DATA *     NodeLink_getNode(
+    OBJ_ID          nodeLink_getOther(
         NODELINK_DATA   *this
     );
-
-
-    OBJ_ID          NodeLink_getOther(
+    
+    
+    uint32_t        nodeLink_getParent(
         NODELINK_DATA   *this
     );
-
-
-    uint32_t        NodeLink_getParent(
-        NODELINK_DATA   *this
-    );
-
-    bool            NodeLink_setParent(
+    
+    bool            nodeLink_setParent(
         NODELINK_DATA   *this,
         uint32_t        value
     );
-
-
-    bool            NodeLink_getRightChild(
+    
+    
+    bool            nodeLink_getRightChild(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setRightChild(
+    
+    bool            nodeLink_setRightChild(
         NODELINK_DATA   *this,
         bool            fValue
     );
 
-
-    uint32_t        NodeLink_getRightLink(
+    
+    uint32_t        nodeLink_getRightLink(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setRightLink(
+    
+    bool            nodeLink_setRightLink(
         NODELINK_DATA   *this,
         uint32_t        value
     );
-
-
-    uint32_t        NodeLink_getRightThread(
+    
+    
+    uint32_t        nodeLink_getRightThread(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setRightThread(
+    
+    bool            nodeLink_setRightThread(
         NODELINK_DATA   *this,
         uint32_t        value
     );
-
-
+    
+    
     /*!
      Sibling index property is used to point to the next Sibling node
      if needed.  Note that this uses the Left index internally.
      */
-    uint32_t        NodeLink_getSibling(
+    uint32_t        nodeLink_getSibling(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setSibling(
+    
+    bool            nodeLink_setSibling(
         NODELINK_DATA   *this,
         uint32_t        value
     );
-
-
+    
+    
     /*!
      To index property is used to point to the "To" node
      if needed.  Note that this uses the Right index internally.
      */
-    uint32_t        NodeLink_getTo(
+    uint32_t        nodeLink_getTo(
         NODELINK_DATA   *this
     );
-
-    bool            NodeLink_setTo(
+    
+    bool            nodeLink_setTo(
         NODELINK_DATA   *this,
         uint32_t        value
     );
-
-
+    
+    
 
     
     //---------------------------------------------------------------
@@ -376,61 +354,36 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Assign the contents of this object to the other object (ie
-     this -> other).  Any objects in other will be released before
-     a copy of the object is performed.
-     Example:
-     @code
-        ERESULT eRc = NodeLink_Assign(this,pOther);
-     @endcode
-     @param     this    object pointer
-     @param     pOther  a pointer to another NODELINK object
-     @return    If successful, ERESULT_SUCCESS otherwise an
-                ERESULT_* error
+     Compare this node's class to the other node's class. If they are equal,
+     then compare the name.  So, this compares the name within class.
+     @result
+     ERESULT_SUCCESS_EQUAL if this == other,
+     ERESULT_SUCCESS_LESS_THAN if this < other
+     or ERESULT_SUCCESS_GREATER_THAN if this > other.
      */
-    ERESULT         NodeLink_Assign (
+    ERESULT         nodeLink_Compare(
         NODELINK_DATA   *this,
         NODELINK_DATA   *pOther
     );
-
-
+    
+    
     /*!
-     Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     Compare this node's name to a character string.
+     @result
+     ERESULT_SUCCESS_EQUAL if this == pName,
+     ERESULT_SUCCESS_LESS_THAN if this < pName
+     or ERESULT_SUCCESS_GREATER_THAN if this > pName.
      */
-    ERESULT         NodeLink_Compare (
-        NODELINK_DATA   *this,
-        NODELINK_DATA   *pOther
-    );
-
-    ERESULT         NodeLink_CompareA(
+    ERESULT         nodeLink_CompareA(
         NODELINK_DATA   *this,
         int32_t         cls,
         const
         char            *pName
     );
-
-
-    /*!
-     Copy the current object creating a new object.
-     Example:
-     @code
-        NodeLink      *pCopy = NodeLink_Copy(this);
-     @endcode
-     @param     this    object pointer
-     @return    If successful, a NODELINK object which must be
-                released, otherwise OBJ_NIL.
-     @warning   Remember to release the returned object.
-     */
-    NODELINK_DATA * NodeLink_Copy (
-        NODELINK_DATA   *this
-    );
-
-
-    NODELINK_DATA * NodeLink_Init (
-        NODELINK_DATA   *this
+    
+    
+    NODELINK_DATA *   nodeLink_Init(
+        NODELINK_DATA     *this
     );
 
 
@@ -438,15 +391,15 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = NodeLink_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = nodeLink_ToDebugString(this,4);
      @endcode 
-     @param     this    object pointer
+     @param     this    NODELINK object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    NodeLink_ToDebugString (
+    ASTR_DATA *    nodeLink_ToDebugString(
         NODELINK_DATA     *this,
         int             indent
     );

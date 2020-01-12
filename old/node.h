@@ -106,7 +106,8 @@ extern "C" {
     typedef struct NodeEnum_class_data_s    NODEENUM_CLASS_DATA;
     typedef struct NodeHash_data_s          NODEHASH_DATA;
     typedef struct NodeHash_class_data_s    NODEHASH_CLASS_DATA;
-    typedef struct nodeLink_data_s          NODELINK_DATA;
+    typedef struct NodeLink_data_s          NODELINK_DATA;
+    typedef struct NodeLink_class_data_s    NODELINK_CLASS_DATA;
     typedef struct NodeList_data_s          NODELIST_DATA;
     typedef struct NodeList_class_data_s    NODELIST_CLASS_DATA;
     typedef struct nodeLnkP_data_s          NODELNKP_DATA;
@@ -402,6 +403,11 @@ extern "C" {
     );
     
     
+    ERESULT         node_Assign(
+        NODE_DATA       *this,
+        NODE_DATA       *pOther
+    );
+
     /*!
      Compare this node's class to the other node's class. If they are equal,
      then compare the name.  So, this compares the name within class.

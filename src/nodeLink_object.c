@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'nodeLink'
-//	Generated 06/30/2018 19:10:48
+//	Class Object Metods and Tables for 'NodeLink'
+//	Generated 01/12/2020 10:31:46
 
 
 /*
@@ -33,10 +33,12 @@
 
 
 
-//#define   NODELINK_IS_SINGLETON     1
 
 #define			NODELINK_OBJECT_C	    1
-#include        <nodeLink_internal.h>
+#include        <NodeLink_internal.h>
+#ifdef  NODELINK_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
@@ -44,15 +46,18 @@
 //                  Class Object Definition
 //===========================================================
 
-struct nodeLink_class_data_s	{
+struct NodeLink_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
+#ifdef  NODELINK_SINGLETON
+    volatile
+    NODELINK_DATA       *pSingleton;
+#endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
-typedef struct nodeLink_class_data_s NODELINK_CLASS_DATA;
 
 
 
@@ -64,7 +69,7 @@ typedef struct nodeLink_class_data_s NODELINK_CLASS_DATA;
 
 
 static
-void *          nodeLinkClass_QueryInfo(
+void *          NodeLinkClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -73,31 +78,38 @@ void *          nodeLinkClass_QueryInfo(
 
 static
 const
-OBJ_INFO        nodeLink_Info;            // Forward Reference
+OBJ_INFO        NodeLink_Info;            // Forward Reference
 
 
 
 
 static
-bool            nodeLinkClass_IsKindOf(
+bool            NodeLinkClass_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_NODELINK_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_NODE_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(NodeLink_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		nodeLinkClass_WhoAmI(
+uint16_t		NodeLinkClass_WhoAmI (
     void
 )
 {
@@ -105,17 +117,26 @@ uint16_t		nodeLinkClass_WhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
 static
 const
-OBJ_IUNKNOWN    obj_Vtbl = {
-	&nodeLink_Info,
-    nodeLinkClass_IsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    nodeLink_Class,
-    nodeLinkClass_WhoAmI,
-    (P_OBJ_QUERYINFO)nodeLinkClass_QueryInfo
+NODELINK_CLASS_VTBL    class_Vtbl = {
+    {
+        &NodeLink_Info,
+        NodeLinkClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        NodeLink_Class,
+        NodeLinkClass_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeLinkClass_QueryInfo,
+        NULL                        // NodeLinkClass_ToDebugString
+    },
 };
 
 
@@ -124,16 +145,100 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NODELINK_CLASS_DATA  nodeLink_ClassObj = {
+NODELINK_CLASS_DATA  NodeLink_ClassObj = {
     {
-        (const OBJ_IUNKNOWN *)&obj_Vtbl,    // pVtbl
-        sizeof(NODELINK_CLASS_DATA),        // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(NODELINK_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
     },
 	//0
 };
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  NODELINK_SINGLETON
+NODELINK_DATA *     NodeLink_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(NodeLink_ClassObj.pSingleton);
+}
+
+
+bool            NodeLink_setSingleton (
+    NODELINK_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (NodeLink_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(NodeLink_ClassObj.pSingleton));
+    }
+    NodeLink_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+NODELINK_DATA *     NodeLink_Shared (
+    void
+)
+{
+    NODELINK_DATA       *this = (OBJ_ID)(NodeLink_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = NodeLink_New( );
+        NodeLink_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // NodeLink_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            NodeLink_SharedReset (
+    void
+)
+{
+    NODELINK_DATA       *this = (OBJ_ID)(NodeLink_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        NodeLink_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
 
 
 
@@ -142,7 +247,7 @@ NODELINK_CLASS_DATA  nodeLink_ClassObj = {
 //---------------------------------------------------------------
 
 static
-void *          nodeLinkClass_QueryInfo(
+void *          NodeLinkClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -158,6 +263,10 @@ void *          nodeLinkClass_QueryInfo(
     
     switch (type) {
       
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(NODELINK_DATA);
+            break;
+            
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
             return this;
             break;
@@ -170,7 +279,7 @@ void *          nodeLinkClass_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&nodeLink_Info;
+                        return (void *)&NodeLink_Info;
                     }
                     break;
                     
@@ -188,13 +297,19 @@ void *          nodeLinkClass_QueryInfo(
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return nodeLink_New;
+                        return NodeLink_New;
                     }
                     break;
-
+                    
+                case 'P':
+                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
+                        //return NodeLink_ParseJsonObject;
+                    }
+                    break;
+ 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return nodeLinkClass_WhoAmI;
+                        return NodeLinkClass_WhoAmI;
                     }
                     break;
                     
@@ -213,46 +328,51 @@ void *          nodeLinkClass_QueryInfo(
 
 
 
-
-//===========================================================
-//                  Object Vtbl Definition
-//===========================================================
-
 static
-bool            nodeLink_IsKindOf(
+bool            NodeLink_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_NODELINK == classID) {
        return true;
-    }
-    if (OBJ_IDENT_NODE == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(NodeLink_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            nodeLink_Dealloc(
+void            NodeLink_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          nodeLink_Class(
+OBJ_ID          NodeLink_Class (
     void
 )
 {
-    return (OBJ_ID)&nodeLink_ClassObj;
+    return (OBJ_ID)&NodeLink_ClassObj;
 }
 
 
 static
-uint16_t		nodeLink_WhoAmI(
+uint16_t		NodeLink_WhoAmI (
     void
 )
 {
@@ -260,76 +380,55 @@ uint16_t		nodeLink_WhoAmI(
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
-NODELINK_VTBL     nodeLink_Vtbl = {
+NODELINK_VTBL     NodeLink_Vtbl = {
     {
-        {
-            &nodeLink_Info,
-            nodeLink_IsKindOf,
-    #ifdef  NODELINK_IS_SINGLETON
-            obj_RetainNull,
-            obj_ReleaseNull,
-    #else
-            obj_RetainStandard,
-            obj_ReleaseStandard,
-    #endif
-            nodeLink_Dealloc,
-            nodeLink_Class,
-            nodeLink_WhoAmI,
-            (P_OBJ_QUERYINFO)nodeLink_QueryInfo,
-            (P_OBJ_TOSTRING)nodeLink_ToDebugString,
-            NULL,			// nodeLink_Enable,
-            NULL,			// nodeLink_Disable,
-            NULL,			// (P_OBJ_ASSIGN)nodeLink_Assign,
-            (P_OBJ_COMPARE)nodeLink_Compare,
-            NULL, 			// (P_OBJ_PTR)nodeLink_Copy,
-            NULL, 			// (P_OBJ_PTR)nodeLink_DeepCopy,
-            (P_OBJ_HASH)nodeLink_getHash,
-        },
-        node_getType,
-        node_setType,
-        node_getClass,
-        node_setClass,
-        node_getData,
-        node_setData,
-        node_getMisc1,
-        node_setMisc1,
-        node_getMisc2,
-        node_setMisc2,
-        node_getName,
-        node_getOther,
-        node_setOther,
-        node_PropertyA,
-        node_PropertyAddA,
-        node_PropertyCount,
-        node_Properties
+        &NodeLink_Info,
+        NodeLink_IsKindOf,
+#ifdef  NODELINK_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+#endif
+        NodeLink_Dealloc,
+        NodeLink_Class,
+        NodeLink_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeLink_QueryInfo,
+        (P_OBJ_TOSTRING)NodeLink_ToDebugString,
+        NULL,			// NodeLink_Enable,
+        NULL,			// NodeLink_Disable,
+        NULL,			// (P_OBJ_ASSIGN)NodeLink_Assign,
+        NULL,			// (P_OBJ_COMPARE)NodeLink_Compare,
+        NULL, 			// (P_OBJ_PTR)NodeLink_Copy,
+        NULL, 			// (P_OBJ_PTR)NodeLink_DeepCopy,
+        NULL 			// (P_OBJ_HASH)NodeLink_Hash,
     },
-    nodeLink_getIndex,
-    nodeLink_setIndex,
-    nodeLink_getLeftLink,
-    nodeLink_setLeftLink,
-    nodeLink_getLeftThread,
-    nodeLink_setLeftThread,
-    nodeLink_getMiddle,
-    nodeLink_setMiddle,
-    nodeLink_getParent,
-    nodeLink_setParent,
-    nodeLink_getRightLink,
-    nodeLink_setRightLink,
-    nodeLink_getRightThread,
-    nodeLink_setRightThread,
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //NodeLink_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        nodeLink_Info = {
-    "nodeLink",
+OBJ_INFO        NodeLink_Info = {
+    "NodeLink",
     "A Node with Integer Links",
-    (OBJ_DATA *)&nodeLink_ClassObj,
+    (OBJ_DATA *)&NodeLink_ClassObj,
     (OBJ_DATA *)&node_ClassObj,
-    (OBJ_IUNKNOWN *)&nodeLink_Vtbl,
+    (OBJ_IUNKNOWN *)&NodeLink_Vtbl,
     sizeof(NODELINK_DATA)
 };
 
