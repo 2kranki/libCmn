@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   nodeLink_internal.h
- *	Generated 06/30/2018 19:10:48
+ * File:   Node_internal.h
+ *	Generated 01/12/2020 16:09:18
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,16 @@
 
 
 
-#include    <nodeLink.h>
-#include    <JsonIn.h>
-#include    <node_internal.h>
+#include        <Node.h>
+#include        <JsonIn.h>
 
 
-#ifndef NODELINK_INTERNAL_H
-#define	NODELINK_INTERNAL_H
+#ifndef NODE_INTERNAL_H
+#define	NODE_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -61,35 +64,42 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct nodeLink_data_s	{
-    /* Warning - NODE_DATA must be first in this object!
+struct Node_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
      */
-    NODE_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-#define NODELINK_LEFT_LINK   OBJ_FLAG_USER5
-#define NODELINK_RIGHT_LINK  OBJ_FLAG_USER6
-#define NODELINK_RIGHT_CHILD OBJ_FLAG_USER7
-    // OBJ_FLAG_USER1 and obj's misc2 are used by node.
-    // obj's cbMisc1 is used for balance.
 
     // Common Data
-
-    // Indices
-    uint32_t        index;
-    uint32_t        leftIndex;
-    uint32_t        middleIndex;
-    uint32_t        parentIndex;
-    uint32_t        rightIndex;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        rsvd16;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct nodeLink_class_data_s  nodeLink_ClassObj;
+    struct Node_class_data_s  Node_ClassObj;
 
     extern
     const
-    NODELINK_VTBL         nodeLink_Vtbl;
+    NODE_VTBL         Node_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  NODE_SINGLETON
+    NODE_DATA *     Node_getSingleton (
+        void
+    );
+
+    bool            Node_setSingleton (
+     NODE_DATA       *pValue
+);
+#endif
 
 
 
@@ -97,45 +107,43 @@ struct nodeLink_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  nodeLink_getSuperVtbl(
-        NODELINK_DATA     *this
+    OBJ_IUNKNOWN *  Node_getSuperVtbl (
+        NODE_DATA     *this
     );
 
 
-    void            nodeLink_Dealloc(
+    void            Node_Dealloc (
         OBJ_ID          objId
     );
 
 
-    NODELINK_DATA * nodeLink_ParseObject(
+#ifdef  NODE_JSON_SUPPORT
+    NODE_DATA *       Node_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+#endif
 
 
-    ERESULT         nodeLink_ParseObjectFields(
-        JSONIN_DATA     *pParser,
-        NODELINK_DATA   *pObject
-    );
-    
-    
-    void *          nodeLink_QueryInfo(
+    void *          Node_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     nodeLink_ToJSON(
-        NODELINK_DATA      *this
+#ifdef  NODE_JSON_SUPPORT
+    ASTR_DATA *     Node_ToJson (
+        NODE_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			nodeLink_Validate(
-        NODELINK_DATA       *this
+    bool			Node_Validate (
+        NODE_DATA       *this
     );
 #endif
 
@@ -145,5 +153,5 @@ struct nodeLink_data_s	{
 }
 #endif
 
-#endif	/* NODELINK_INTERNAL_H */
+#endif	/* NODE_INTERNAL_H */
 
