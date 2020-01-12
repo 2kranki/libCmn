@@ -43,7 +43,7 @@
 
 /* Header File Inclusion */
 #include    <node_internal.h>
-#include    <name_internal.h>
+#include    <Name_internal.h>
 #include    <Token_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
@@ -153,7 +153,7 @@ extern "C" {
 
         eRc = JsonIn_SubObjectInHash(pParser, "name");
         if (ERESULT_FAILED(eRc)) {
-            pName = name_ParseJsonObject(pParser);
+            pName = Name_ParseJsonObject(pParser);
             JsonIn_SubObjectEnd(pParser);
             if (pName) {
                 node_setProperties(pObject, pObj);
@@ -357,7 +357,7 @@ extern "C" {
         );
 
         if (this->pName) {
-            pWrkStr = name_ToJson(this->pName);
+            pWrkStr = Name_ToJson(this->pName);
             AStr_AppendA(pStr, "\t\"name\": ");
             AStr_Append(pStr, pWrkStr);\
             obj_Release(pWrkStr);

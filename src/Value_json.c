@@ -119,56 +119,56 @@ extern "C" {
 
            case VALUE_TYPE_INT8:            // int8_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->value.i8 = (int8_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 break;
 
             case VALUE_TYPE_INT16:           // int16_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->value.i16 = (int16_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 break;
 
             case VALUE_TYPE_INT32:           // int32_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->value.i32 = (int32_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 break;
 
             case VALUE_TYPE_INT64:           // int64_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->value.i64 = (int64_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 break;
 
             case VALUE_TYPE_UINT8:           // int8_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->value.u8 = (uint8_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 break;
 
             case VALUE_TYPE_UINT16:          // int16_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->value.u16 = (uint16_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 break;
 
             case VALUE_TYPE_UINT32:          // int32_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->value.u32 = (uint32_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 break;
 
             case VALUE_TYPE_UINT64:          // int64_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->value.u64 = (uint64_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 break;
@@ -343,7 +343,7 @@ extern "C" {
                                     ", \"type\":%d /*VALUE_TYPE_INT8*/, \"data\":",
                                     VALUE_TYPE_INT8
                    );
-                   pWrk = dec_UInt64ToJSON(this->value.i8);
+                   pWrk = dec_UInt64ToJson(this->value.i8);
                    if (pWrk) {
                        AStr_Append(pStr, pWrk);
                        obj_Release(pWrk);
@@ -357,7 +357,7 @@ extern "C" {
                                     ", \"type\":%d /*VALUE_TYPE_INT16*/, \"data\":",
                                     VALUE_TYPE_INT16
                    );
-                   pWrk = dec_UInt64ToJSON(this->value.i16);
+                   pWrk = dec_UInt64ToJson(this->value.i16);
                    if (pWrk) {
                        AStr_Append(pStr, pWrk);
                        obj_Release(pWrk);
@@ -371,7 +371,7 @@ extern "C" {
                                     ", \"type\":%d /*VALUE_TYPE_INT32*/, \"data\":",
                                     VALUE_TYPE_INT32
                    );
-                   pWrk = dec_UInt64ToJSON(this->value.i32);
+                   pWrk = dec_UInt64ToJson(this->value.i32);
                    if (pWrk) {
                        AStr_Append(pStr, pWrk);
                        obj_Release(pWrk);
@@ -385,7 +385,7 @@ extern "C" {
                                     ", \"type\":%d /*VALUE_TYPE_INT64*/, \"data\":",
                                     VALUE_TYPE_INT64
                    );
-                   pWrk = dec_UInt64ToJSON(this->value.i64);
+                   pWrk = dec_UInt64ToJson(this->value.i64);
                    if (pWrk) {
                        AStr_Append(pStr, pWrk);
                        obj_Release(pWrk);
@@ -399,7 +399,7 @@ extern "C" {
                                     ", \"type\":%d /*VALUE_TYPE_UINT8*/, \"data\":",
                                     VALUE_TYPE_UINT8
                                     );
-                   pWrk = dec_UInt64ToJSON(this->value.u8);
+                   pWrk = dec_UInt64ToJson(this->value.u8);
                    if (pWrk) {
                        AStr_Append(pStr, pWrk);
                        obj_Release(pWrk);
@@ -413,7 +413,7 @@ extern "C" {
                                     ", \"type\":%d /*VALUE_TYPE_UINT16*/, \"data\":",
                                     VALUE_TYPE_UINT16
                    );
-                   pWrk = dec_UInt64ToJSON(this->value.u16);
+                   pWrk = dec_UInt64ToJson(this->value.u16);
                    if (pWrk) {
                        AStr_Append(pStr, pWrk);
                        obj_Release(pWrk);
@@ -427,7 +427,7 @@ extern "C" {
                                     ", \"type\":%d /*VALUE_TYPE_UINT32*/, \"data\":",
                                     VALUE_TYPE_UINT32
                    );
-                   pWrk = dec_UInt64ToJSON(this->value.u32);
+                   pWrk = dec_UInt64ToJson(this->value.u32);
                    if (pWrk) {
                        AStr_Append(pStr, pWrk);
                        obj_Release(pWrk);
@@ -441,7 +441,7 @@ extern "C" {
                                     ", \"type\":%d /*VALUE_TYPE_UINT64*/, \"data\":",
                                     VALUE_TYPE_UINT64
                    );
-                   pWrk = dec_UInt64ToJSON(this->value.u64);
+                   pWrk = dec_UInt64ToJson(this->value.u64);
                    if (pWrk) {
                        AStr_Append(pStr, pWrk);
                        obj_Release(pWrk);

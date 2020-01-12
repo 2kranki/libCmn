@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   name_internal.h
- *	Generated 02/07/2016 15:50:27
+ * File:   Name_internal.h
+ *	Generated 01/11/2020 10:01:40
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -37,14 +38,20 @@
 
 
 
-#include    <name.h>
-#include    <AStr.h>
-#include    <JsonIn.h>
-#include    <W32Str.h>
+
+#include        <Name.h>
+#include        <AStr.h>
+#include        <JsonIn.h>
+#include        <W32Str.h>
 
 
 #ifndef NAME_INTERNAL_H
-#define	NAME_INTERNAL_H 1
+#define	NAME_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
+
 
 
 #ifdef	__cplusplus
@@ -52,12 +59,18 @@ extern "C" {
 #endif
 
 
-//#pragma pack(push, 1)
-struct name_data_s	{
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
+#pragma pack(push, 1)
+struct Name_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 #define NAME_FLAG_HASH  OBJ_FLAG_USER1  /* Hash is initialized. */
 
     // Common Data
@@ -65,60 +78,82 @@ struct name_data_s	{
     uint16_t        rsvd;
     union {
         char            chrs[8];            // UTF-8 Character w/NUL
-        int64_t			integer;			// Integer
+        int64_t         integer;            // Integer
         const
         char            *pChrs;             // UTF-8 Character String
-        OBJ_ID			pObj;               // any object
+        OBJ_ID          pObj;               // any object
     };
     uint32_t            hash;
 
 };
-//#pragma pack(pop)
+#pragma pack(pop)
+
+    extern
+    struct Name_class_data_s  Name_ClassObj;
 
     extern
     const
-    NAME_VTBL       name_Vtbl;
+    NAME_VTBL         Name_Vtbl;
 
 
 
-    // Internal Functions
-    void            name_Dealloc(
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  NAME_SINGLETON
+    NAME_DATA *     Name_getSingleton (
+        void
+    );
+
+    bool            Name_setSingleton (
+     NAME_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  Name_getSuperVtbl (
+        NAME_DATA     *this
+    );
+
+
+    void            Name_Dealloc (
         OBJ_ID          objId
     );
 
-    
-    NAME_DATA *     name_Init(
-        NAME_DATA       *this
-    );
 
-    
-    NAME_DATA *   name_InitPtr(
-        NAME_DATA       *this,
-        const
-        void            *pValue
-    );
-    
-    
-    NAME_DATA *     name_ParseJsonObject(
+#ifdef  NAME_JSON_SUPPORT
+    NAME_DATA *     Name_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
-    
-    
-    void *          name_QueryInfo(
+#endif
+
+
+    void *          Name_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
-    void            name_ReleaseDataIfObj(
-        NAME_DATA       *this
+
+
+#ifdef  NAME_JSON_SUPPORT
+    ASTR_DATA *     Name_ToJson (
+        NAME_DATA      *this
     );
-    
+#endif
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			name_Validate(
-        NAME_DATA       *cbp
+    bool			Name_Validate (
+        NAME_DATA       *this
     );
 #endif
 

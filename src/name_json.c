@@ -1,9 +1,9 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   name_json.c
- *	Generated 05/26/2015 13:40:16
+ * File:   Name_json.c
  *
- * Created on December 30, 2014
+ *	Generated 01/11/2020 10:01:40
+ *
  */
 
 
@@ -42,19 +42,16 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <name_internal.h>
-#include    <AStr_internal.h>
-#include    <Token_internal.h>
-#include    <utf8_internal.h>
+#include    <Name_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
+#include    <AStr_internal.h>
 #include    <dec_internal.h>
-#include    <hex.h>
 #include    <JsonIn.h>
 #include    <node.h>
 #include    <NodeHash.h>
-#include    <utf8.h>
+#include    <utf8_internal.h>
 
 
 
@@ -76,9 +73,9 @@ extern "C" {
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
-     @warning   Returned null object must be released.
+     @warning   Returned object must be released.
      */
-    NAME_DATA *     name_ParseJsonObject(
+    NAME_DATA * Name_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -92,14 +89,14 @@ extern "C" {
         int64_t         integer;
         int64_t         intIn;
 
-        pInfo = obj_getInfo(name_Class());
+        pInfo = obj_getInfo(Name_Class());
         
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
-        
+
         eRc = JsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
         type = (uint32_t)intIn;
 
@@ -108,18 +105,18 @@ extern "C" {
             case NAME_TYPE_ASTR:
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
                 pWrk = AStr_ParseJsonObject(pParser);
-                pObject = name_NewAStr(pWrk);
+                pObject = Name_NewAStr(pWrk);
                 obj_Release(pWrk);
                 JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
                 }
                 break;
-                
+
             case NAME_TYPE_INTEGER:
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
-                pObject = name_NewInt(integer);
+                integer = dec_ParseJsonObject(pParser);
+                pObject = Name_NewInt(integer);
                 JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
                     goto exit00;
@@ -128,24 +125,23 @@ extern "C" {
 
             case NAME_TYPE_UTF8:
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                pUtf8 = utf8_ParseObject(pParser, NULL);
+                pUtf8 = utf8_ParseJsonObject(pParser, NULL);
                 JsonIn_SubObjectEnd(pParser);
                 if (pUtf8) {
-                    pObject = name_Alloc();
-                    pObject = name_Init(pObject);
+                    pObject = Name_New();
                     if (pObject) {
                         pObject->type = NAME_TYPE_UTF8;
                         pObject->pChrs = (void *)pUtf8;
                         pUtf8 = NULL;
                     }
                 }
-                
+
                 break;
 
             default:
                 break;
         }
-        
+
         // Return to caller.
     exit00:
         return pObject;
@@ -166,21 +162,21 @@ extern "C" {
     //===============================================================
     
 
-    NAME_DATA *     name_NewFromJsonString(
+    NAME_DATA *   Name_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        NAME_DATA       *pObject = OBJ_NIL;
-
+        NAME_DATA   *pObject = OBJ_NIL;
+        
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
         
-        pObject = name_ParseJsonObject(pParser);
+        pObject = Name_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -193,40 +189,52 @@ extern "C" {
     
     
 
-    NAME_DATA *     name_NewFromJsonStringA(
+    NAME_DATA * Name_NewFromJsonStringA(
         const
         char            *pString
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        NAME_DATA       *pName = OBJ_NIL;
+        NAME_DATA   *pObject = OBJ_NIL;
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pName = name_NewFromJsonString(pStr);
+            pObject = Name_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
         
         // Return to caller.
-        return pName;
+        return pObject;
     }
     
     
     
-    ASTR_DATA *     name_ToJson(
-        NAME_DATA       *this
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Name_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Name_ToJson(
+        NAME_DATA   *this
     )
     {
-        char            str[1024];
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        
+        ASTR_DATA       *pWrkStr;
+
 #ifdef NDEBUG
 #else
-        if( !name_Validate(this) ) {
+        if( !Name_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -234,81 +242,72 @@ extern "C" {
         pInfo = obj_getInfo(this);
         
         pStr = AStr_New();
-        if (pStr == OBJ_NIL) {
-            //obj_Release(pWrkStr);
-            return OBJ_NIL;
-        }
-        AStr_AppendA(pStr, "{\"objectType\":\"");
-        AStr_AppendA(pStr, pInfo->pClassName);
-        AStr_AppendA(pStr, "\", ");
-        //FIXME: AStr_Append(pStr, pWrkStr);
-        
-        switch (this->type) {
-                
-            case NAME_TYPE_UNKNOWN:
-                AStr_AppendPrint(
-                             pStr,
-                             "\"type\":%u /*NAME_TYPE_UNKNOWN*/ ",
-                             NAME_TYPE_UNKNOWN
-                 );
-                break;
-                
-            case NAME_TYPE_INTEGER:
-                AStr_AppendPrint(
-                             pStr,
-                             "\"type\":%u /*NAME_TYPE_INTEGER*/, \"data\":",
-                             NAME_TYPE_INTEGER
-                 );
-                pWrkStr = dec_UInt64ToJSON(this->integer);
-                if (pWrkStr) {
-                    AStr_Append(pStr, pWrkStr);
-                    obj_Release(pWrkStr);
-                    pWrkStr = OBJ_NIL;
-                }
-                break;
-                
-            case NAME_TYPE_ASTR:
-                AStr_AppendPrint(
-                             pStr,
-                             "\"type\":%u \"NAME_TYPE_ASTR\", \"data\":",
-                             NAME_TYPE_ASTR
-                 );
-                AStr_AppendA(pStr, str);
-                pWrkStr = AStr_ToJson(this->pObj);
-                if (pWrkStr) {
-                    AStr_Append(pStr, pWrkStr);
-                    obj_Release(pWrkStr);
-                    pWrkStr = OBJ_NIL;
-                }
-                break;
-                
-            case NAME_TYPE_UTF8:
-            case NAME_TYPE_UTF8_CON:
-                AStr_AppendPrint(
+        if (pStr) {
+             AStr_AppendPrint(pStr,
+                              "{ \"objectType\":\"%s\", ",
+                              pInfo->pClassName
+             );
+            
+            switch (this->type) {
+
+                case NAME_TYPE_UNKNOWN:
+                    AStr_AppendPrint(
                                  pStr,
-                                 "\"type\":%u /*NAME_TYPE_UTF8*/, \"data\":",
-                                 NAME_TYPE_UTF8
-                                 );
-                pWrkStr = utf8_DataToJSON(this->pChrs);
-                if (pWrkStr) {
-                    AStr_Append(pStr, pWrkStr);
-                    obj_Release(pWrkStr);
-                    pWrkStr = OBJ_NIL;
-                }
-                break;
-                
+                                 "\"type\":%u /*NAME_TYPE_UNKNOWN*/ ",
+                                 NAME_TYPE_UNKNOWN
+                     );
+                    break;
+
+                case NAME_TYPE_INTEGER:
+                    AStr_AppendPrint(
+                                 pStr,
+                                 "\"type\":%u /*NAME_TYPE_INTEGER*/, \"data\":",
+                                 NAME_TYPE_INTEGER
+                     );
+                    pWrkStr = dec_UInt64ToJson(this->integer);
+                    if (pWrkStr) {
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                    }
+                    break;
+
+                case NAME_TYPE_ASTR:
+                    AStr_AppendPrint(
+                                 pStr,
+                                 "\"type\":%u /*NAME_TYPE_ASTR*/, \"data\":",
+                                 NAME_TYPE_ASTR
+                     );
+                    pWrkStr = AStr_ToJson(this->pObj);
+                    if (pWrkStr) {
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                    }
+                    break;
+
+                case NAME_TYPE_UTF8:
+                case NAME_TYPE_UTF8_CON:
+                    AStr_AppendPrint(
+                                     pStr,
+                                     "\"type\":%u /*NAME_TYPE_UTF8*/, \"data\":",
+                                     NAME_TYPE_UTF8
+                                     );
+                    pWrkStr = utf8_DataToJson(this->pChrs);
+                    if (pWrkStr) {
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                    }
+                    break;
+
+            }
+
+            AStr_AppendA(pStr, "}\n");
         }
 
-        if (pStr)
-            AStr_AppendA(pStr, "}\n");
-        //BREAK_TRUE(AStr_getLength(pStr) > 2048);
-        
         return pStr;
     }
-    
-    
-    
-
     
     
     

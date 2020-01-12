@@ -82,7 +82,7 @@
         {name:"misc"},
         {name:"msgBus", test:{"srcs":[objTest.c, objTest_object.c]}},
         {name:"MsgData", json:true},
-        {name:"name", deps:["str.h"], json:true},
+        {name:"Name", deps:["str.h"], json:true},
         {name:"node", deps:["listdl.h","name.h",
                             "NodeArray.h","NodeHash.h","szTbl.h"], json:true},
         {name:"NodeArray", deps:["node.h","ObjArray.h"], json:true},

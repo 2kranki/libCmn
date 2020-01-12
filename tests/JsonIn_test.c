@@ -199,7 +199,7 @@ int             test_JsonIn_01(
             pNode = NodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pNode) );
             pName = node_getName(pNode);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash")));
+            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash")));
             pHash = node_getData(pNode);
             TINYTEST_FALSE( (OBJ_NIL == pHash) );
             TINYTEST_TRUE(( obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH) ));
@@ -215,7 +215,7 @@ int             test_JsonIn_01(
             fprintf(stderr, "\t\tlen(%d) = %lld\n", i+1, len);
             eRc = JsonIn_SubObjectInHash(pObj, "Data");
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            pData = utf8_ParseObject(pObj, &len2);
+            pData = utf8_ParseJsonObject(pObj, &len2);
             TINYTEST_FALSE( (NULL == pData) );
             TINYTEST_TRUE((len == len2));
             fprintf(stderr, "\t\tdata(%d) = %s\n", i+1, pData);

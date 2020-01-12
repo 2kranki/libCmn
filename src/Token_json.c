@@ -119,7 +119,7 @@ extern "C" {
 
             case TOKEN_TYPE_INTEGER:
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject = Token_NewInteger(SrcLoc_getSrc(pSrc), cls, integer);
                 JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
@@ -129,7 +129,7 @@ extern "C" {
 
             case TOKEN_TYPE_STRTOKEN:
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                pUtf8 = utf8_ParseObject(pParser, NULL);
+                pUtf8 = utf8_ParseJsonObject(pParser, NULL);
                 JsonIn_SubObjectEnd(pParser);
                 if (pUtf8) {
                     pObject = Token_NewStrA(SrcLoc_getSrc(pSrc), cls, (char *)pUtf8);
@@ -140,7 +140,7 @@ extern "C" {
 
             case TOKEN_TYPE_W32CHAR:
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject = Token_NewCharW32(SrcLoc_getSrc(pSrc), cls, (W32CHR_T)integer);
                 JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
@@ -295,7 +295,7 @@ extern "C" {
                                      "\"type\":%d /*TOKEN_TYPE_W32CHAR*/, \"data\":",
                                      TOKEN_TYPE_W32CHAR
                     );
-                    pWrkStr = dec_UInt64ToJSON(w32);
+                    pWrkStr = dec_UInt64ToJson(w32);
                     if (pWrkStr) {
                         AStr_Append(pStr, pWrkStr);
                         obj_Release(pWrkStr);
@@ -309,7 +309,7 @@ extern "C" {
                                      "\"type\":%d /*TOKEN_TYPE_INTEGER*/, \"data\":",
                                      TOKEN_TYPE_INTEGER
                     );
-                    pWrkStr = dec_UInt64ToJSON(this->data.integer);
+                    pWrkStr = dec_UInt64ToJson(this->data.integer);
                     if (pWrkStr) {
                         AStr_Append(pStr, pWrkStr);
                         obj_Release(pWrkStr);
@@ -325,7 +325,7 @@ extern "C" {
                                      "\"type\":%d /*TOKEN_TYPE_STRTOKEN*/, \"data\":",
                                      TOKEN_TYPE_STRTOKEN
                         );
-                        pWrkStr = utf8_DataToJSON(pConStr);
+                        pWrkStr = utf8_DataToJson(pConStr);
                         AStr_Append(pStr, pWrkStr);
                         obj_Release(pWrkStr);
                         pWrkStr = OBJ_NIL;

@@ -1284,7 +1284,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return NodeList_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODELIST_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return NodeList_ToJson;
                         }
@@ -1299,7 +1299,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == NodeList_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODELIST_JSON_SUPPORT
                 if (pData == NodeList_ToJson)
                     return "ToJson";
 #endif

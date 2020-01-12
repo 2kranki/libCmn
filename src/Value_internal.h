@@ -150,7 +150,7 @@ struct Value_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  VALUE_JSON_SUPPORT
     ASTR_DATA *     Value_ToJson (
         VALUE_DATA      *this
     );

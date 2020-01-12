@@ -141,7 +141,7 @@ struct BitMatrix_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  BITMATRIX_JSON_SUPPORT
     ASTR_DATA *     BitMatrix_ToJson (
         BITMATRIX_DATA      *this
     );

@@ -1528,7 +1528,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return BitMatrix_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  BITMATRIX_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return BitMatrix_ToJson;
                         }
@@ -1543,7 +1543,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == BitMatrix_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  BITMATRIX_JSON_SUPPORT
                 if (pData == BitMatrix_ToJson)
                     return "ToJson";
 #endif

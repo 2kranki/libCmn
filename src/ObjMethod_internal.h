@@ -159,7 +159,7 @@ struct ObjMethod_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  OBJMETHOD_JSON_SUPPORT
     ASTR_DATA *     ObjMethod_ToJson (
         OBJMETHOD_DATA      *this
     );

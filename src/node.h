@@ -76,7 +76,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <name.h>
+#include        <Name.h>
 #include        <visitor.h>
 
 

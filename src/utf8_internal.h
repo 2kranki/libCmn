@@ -90,7 +90,7 @@ struct utf8_data_s	{
     );
     
     
-    uint8_t *       utf8_ParseObject(
+    uint8_t *       utf8_ParseJsonObject(
         JSONIN_DATA     *pParser,
         uint32_t        *pLength
     );

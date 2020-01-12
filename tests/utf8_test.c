@@ -255,10 +255,10 @@ int         test_utf8_JSON01(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pAStr = utf8_DataToJSON(NULL);
+    pAStr = utf8_DataToJson(NULL);
     TINYTEST_TRUE( (OBJ_NIL == pAStr) );
 
-    pAStr = utf8_DataToJSON("");
+    pAStr = utf8_DataToJson("");
     TINYTEST_FALSE( (OBJ_NIL == pAStr) );
     if (pAStr) {
         fprintf(stderr, "\tdata2 = \"%s\"\n", AStr_getData(pAStr));
@@ -267,7 +267,7 @@ int         test_utf8_JSON01(
         pAStr = OBJ_NIL;
     }
 
-    pAStr = utf8_DataToJSON("abc");
+    pAStr = utf8_DataToJson("abc");
     TINYTEST_FALSE( (OBJ_NIL == pAStr) );
     if (pAStr) {
         fprintf(stderr, "\tdata3 = \"%s\"\n", AStr_getData(pAStr));
@@ -300,14 +300,14 @@ int         test_utf8_JSON02(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pAStr = utf8_DataToJSON("abc");
+    pAStr = utf8_DataToJson("abc");
     TINYTEST_FALSE( (OBJ_NIL == pAStr) );
     if (pAStr) {
         fprintf(stderr, "\tdata3 = \"%s\"\n", AStr_getData(pAStr));
         TINYTEST_TRUE( (0 == strcmp(pJson1, AStr_getData(pAStr))) );
     }
     
-    pBuffer = utf8_DataFromJSONString(pAStr, &len);
+    pBuffer = utf8_DataFromJsonString(pAStr, &len);
     TINYTEST_FALSE( (NULL == pBuffer) );
     TINYTEST_TRUE( (3 == len) );
     TINYTEST_TRUE( (0 == memcmp("abc", pBuffer, len)) );

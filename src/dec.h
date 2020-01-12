@@ -111,11 +111,11 @@ extern "C" {
     );
     
     
-    uint64_t        dec_UInt64FromJSONString(
+    uint64_t        dec_UInt64FromJsonString(
         ASTR_DATA       *pString
     );
     
-    uint64_t        dec_UInt64FromJSONStringA(
+    uint64_t        dec_UInt64FromJsonStringA(
         const
         char            *pString
     );
@@ -321,7 +321,7 @@ extern "C" {
     );
     
     
-    ASTR_DATA *     dec_UInt64ToJSON(
+    ASTR_DATA *     dec_UInt64ToJson(
         uint64_t        data
     );
     

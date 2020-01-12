@@ -23,7 +23,7 @@
 
 #include    <tinytest.h>
 #include    <test_defs.h>
-#include    <name.h>
+#include    <Name.h>
 #include    <trace.h>
 #include    <objCb_internal.h>
 #include    <psxThread.h>
@@ -207,7 +207,7 @@ int         test_objCb_CounterOverflow(
     XCTAssertTrue( (fRc) );
 
     for (i=0; i<8; ++i) {
-        pName =  name_NewUTF8(StrArray[i]);
+        pName =  Name_NewUTF8(StrArray[i]);
         fRc = objCb_Put(cbp,pName);
         obj_Release(pName);
         XCTAssertTrue( (fRc) );
@@ -220,7 +220,7 @@ int         test_objCb_CounterOverflow(
     for (i=0; i<8; ++i) {
         fRc = objCb_Get(cbp, (void *)&pName);
         XCTAssertTrue( (fRc) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == name_CompareA(pName,StrArray[i])) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName,StrArray[i])) );
         obj_Release(pName);
     }
     
@@ -235,7 +235,7 @@ int         test_objCb_CounterOverflow(
     XCTAssertTrue( (fRc) );
     
     for (i=0; i<8; ++i) {
-        pName =  name_NewUTF8(StrArray[i]);
+        pName =  Name_NewUTF8(StrArray[i]);
         fRc = objCb_Put(cbp, pName);
         obj_Release(pName);
         XCTAssertTrue( (fRc) );

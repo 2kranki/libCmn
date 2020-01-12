@@ -200,7 +200,7 @@ struct Token_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  TOKEN_JSON_SUPPORT
     ASTR_DATA *     Token_ToJson (
         TOKEN_DATA      *this
     );

@@ -103,7 +103,7 @@ struct dec_data_s	{
      @param pParser an established jsonIn Parser Object
      @return    the number if successful, otherwise, 0
      */
-    uint64_t        dec_ParseObject(
+    uint64_t        dec_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
 

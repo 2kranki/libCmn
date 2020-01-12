@@ -164,12 +164,12 @@ extern "C" {
                  otherwise NULL and length of 0.
      @warning   Remember to free the returned UTF-8 string using mem_Free().
      */
-    uint8_t *       utf8_DataFromJSONString(
+    uint8_t *       utf8_DataFromJsonString(
         ASTR_DATA       *pInputString,
         uint32_t        *pLengthOut
     );
     
-    uint8_t *       utf8_DataFromJSONStringA(
+    uint8_t *       utf8_DataFromJsonStringA(
         const
         char            *pInputString,
         uint32_t        *pLengthOut
@@ -184,7 +184,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     utf8_DataToJSON(
+    ASTR_DATA *     utf8_DataToJson(
         const
         char            *pData
     );

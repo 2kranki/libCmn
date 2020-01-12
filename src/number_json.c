@@ -118,7 +118,7 @@ extern "C" {
  
             case NUMBER_TYPE_INT16:          // int16_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->i16 = (int16_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
@@ -128,7 +128,7 @@ extern "C" {
 
             case NUMBER_TYPE_INT32:          // int32_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->i32 = (int32_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
@@ -138,7 +138,7 @@ extern "C" {
                 
             case NUMBER_TYPE_INT64:          // int64_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->i64 = (int64_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
@@ -148,7 +148,7 @@ extern "C" {
                 
             case NUMBER_TYPE_UINT16:         // uint16_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->u16 = (uint16_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
@@ -158,7 +158,7 @@ extern "C" {
                 
             case NUMBER_TYPE_UINT32:         // uint32_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->u32 = (uint32_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
@@ -168,7 +168,7 @@ extern "C" {
                 
             case NUMBER_TYPE_UINT64:         // uint64_t
                 eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseObject(pParser);
+                integer = dec_ParseJsonObject(pParser);
                 pObject->u64 = (uint64_t)integer;
                 JsonIn_SubObjectEnd(pParser);
                 if (OBJ_NIL == pObject) {
@@ -285,7 +285,7 @@ extern "C" {
             case NUMBER_TYPE_INT16:
                 AStr_AppendPrint(pStr, ", \"type\":%d /*NUMBER_TYPE_INT16*/, \"data\":",
                                         NUMBER_TYPE_INT16);
-                pWrkStr = dec_UInt64ToJSON(this->i16);
+                pWrkStr = dec_UInt64ToJson(this->i16);
                 if (pWrkStr) {
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
@@ -296,7 +296,7 @@ extern "C" {
             case NUMBER_TYPE_INT32:
                 AStr_AppendPrint(pStr, ", \"type\":%d /*NUMBER_TYPE_INT32*/, \"data\":",
                                         NUMBER_TYPE_INT32);
-                pWrkStr = dec_UInt64ToJSON(this->i32);
+                pWrkStr = dec_UInt64ToJson(this->i32);
                 if (pWrkStr) {
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
@@ -307,7 +307,7 @@ extern "C" {
             case NUMBER_TYPE_INT64:
                 AStr_AppendPrint(pStr, ", \"type\":%d /*NUMBER_TYPE_INT64*/, \"data\":",
                                         NUMBER_TYPE_INT64);
-                pWrkStr = dec_UInt64ToJSON(this->i64);
+                pWrkStr = dec_UInt64ToJson(this->i64);
                 if (pWrkStr) {
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
@@ -318,7 +318,7 @@ extern "C" {
             case NUMBER_TYPE_UINT16:
                 AStr_AppendPrint(pStr, ", \"type\":%d /*NUMBER_TYPE_UINT16*/, \"data\":",
                                         NUMBER_TYPE_UINT16);
-                pWrkStr = dec_UInt64ToJSON(this->u16);
+                pWrkStr = dec_UInt64ToJson(this->u16);
                 if (pWrkStr) {
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
@@ -329,7 +329,7 @@ extern "C" {
             case NUMBER_TYPE_UINT32:
                 AStr_AppendPrint(pStr, ", \"type\":%d /*NUMBER_TYPE_UINT32*/, \"data\":",
                                         NUMBER_TYPE_UINT32);
-                pWrkStr = dec_UInt64ToJSON(this->u32);
+                pWrkStr = dec_UInt64ToJson(this->u32);
                 if (pWrkStr) {
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
@@ -340,7 +340,7 @@ extern "C" {
             case NUMBER_TYPE_UINT64:
                 AStr_AppendPrint(pStr, ", \"type\":%d /*NUMBER_TYPE_UINT64*/, \"data\":",
                                         NUMBER_TYPE_UINT64);
-                pWrkStr = dec_UInt64ToJSON(this->u64);
+                pWrkStr = dec_UInt64ToJson(this->u64);
                 if (pWrkStr) {
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);

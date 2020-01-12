@@ -1530,7 +1530,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == Token_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  TOKEN_JSON_SUPPORT
                 if (pData == Token_ToJson)
                     return "ToJson";
 #endif

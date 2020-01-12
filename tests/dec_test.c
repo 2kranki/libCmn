@@ -518,32 +518,32 @@ int         test_dec_Uint64ToJSON(
     fprintf(stderr, "Performing: %s\n", pTestName);
    
     
-    pStrA = dec_UInt64ToJSON( 0x7FFFFFFFFFFFFFFF );
+    pStrA = dec_UInt64ToJson( 0x7FFFFFFFFFFFFFFF );
     fprintf(stderr, "JSON = \"%s\"\n", AStr_getData(pStrA));
     eRc = AStr_CompareA(pStrA, pCon01);
     XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
     data = 0;
-    data = dec_UInt64FromJSONString(pStrA);
+    data = dec_UInt64FromJsonString(pStrA);
     XCTAssertTrue( (9223372036854775807ull == data) );
     obj_Release(pStrA);
     pStrA = OBJ_NIL;
         
-    pStrA = dec_UInt64ToJSON( 0 );
+    pStrA = dec_UInt64ToJson( 0 );
     fprintf(stderr, "JSON = \"%s\"\n", AStr_getData(pStrA));
     eRc = AStr_CompareA(pStrA, pCon02);
     XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
     data = 0;
-    data = dec_UInt64FromJSONString(pStrA);
+    data = dec_UInt64FromJsonString(pStrA);
     XCTAssertTrue( (0ull == data) );
     obj_Release(pStrA);
     pStrA = OBJ_NIL;
 
-    pStrA = dec_UInt64ToJSON( -1 );
+    pStrA = dec_UInt64ToJson( -1 );
     fprintf(stderr, "JSON = \"%s\"\n", AStr_getData(pStrA));
     eRc = AStr_CompareA(pStrA, pCon03);
     XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
     data = 0;
-    data = dec_UInt64FromJSONString(pStrA);
+    data = dec_UInt64FromJsonString(pStrA);
     XCTAssertTrue( (18446744073709551615ull == data) );
     obj_Release(pStrA);
     pStrA = OBJ_NIL;

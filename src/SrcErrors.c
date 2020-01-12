@@ -1342,7 +1342,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return SrcErrors_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  SRCERRORS_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return SrcErrors_ToJson;
                         }
@@ -1357,7 +1357,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == SrcErrors_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  SRCERRORS_JSON_SUPPORT
                 if (pData == SrcErrors_ToJson)
                     return "ToJson";
 #endif

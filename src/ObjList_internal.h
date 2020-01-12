@@ -156,7 +156,7 @@ struct ObjList_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  OBJLIST_JSON_SUPPORT
     ASTR_DATA *     ObjList_ToJson (
         OBJLIST_DATA      *this
     );

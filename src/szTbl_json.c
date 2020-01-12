@@ -195,7 +195,7 @@ extern "C" {
                     goto exit00;
                 }
                 pName = node_getName(pNode);
-                if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))
+                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))
                     ;
                 else {
                     fprintf(
@@ -260,7 +260,7 @@ extern "C" {
                     );
                     goto exit00;
                 }
-                pData = (char *)utf8_ParseObject(pParser, &len2);
+                pData = (char *)utf8_ParseJsonObject(pParser, &len2);
                 if (OBJ_NIL == pHash) {
                     fprintf(
                             stderr,
@@ -432,7 +432,7 @@ extern "C" {
                                      pNode->ident
                                      );
                     if (pNode->len) {
-                        pStrWrk = utf8_DataToJSON((const char *)pNode->data);
+                        pStrWrk = utf8_DataToJson((const char *)pNode->data);
                         AStr_AppendA(pStr, "\t\t\t\"Data\":");
                         AStr_Append(pStr, pStrWrk);
                         obj_Release(pStrWrk);

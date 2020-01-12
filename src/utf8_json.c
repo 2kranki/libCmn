@@ -106,7 +106,7 @@ extern "C" {
      @return    a new UTF-8 String if successful, otherwise, NULL
      @warning   Returned UTF-8 string must be freed using mem_Free().
      */
-    uint8_t *       utf8_ParseObject(
+    uint8_t *       utf8_ParseJsonObject(
         JSONIN_DATA     *pParser,
         uint32_t        *pLength
     )
@@ -209,7 +209,7 @@ extern "C" {
     //===============================================================
     
 
-    uint8_t *       utf8_DataFromJSONString(
+    uint8_t *       utf8_DataFromJsonString(
         ASTR_DATA       *pString,
         uint32_t        *pLength
     )
@@ -226,7 +226,7 @@ extern "C" {
             goto exit00;
         }
         
-        pData = utf8_ParseObject(pParser, pLength);
+        pData = utf8_ParseJsonObject(pParser, pLength);
         
         // Return to caller.
     exit00:
@@ -239,7 +239,7 @@ extern "C" {
     
     
 
-    uint8_t *       utf8_DataFromJSONStringA(
+    uint8_t *       utf8_DataFromJsonStringA(
         const
         char            *pString,
         uint32_t        *pLength
@@ -250,7 +250,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            pData = utf8_DataFromJSONString(pStr, pLength);
+            pData = utf8_DataFromJsonString(pStr, pLength);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -261,7 +261,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     utf8_DataToJSON(
+    ASTR_DATA *     utf8_DataToJson(
         const
         char            *pData
     )

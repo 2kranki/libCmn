@@ -1365,7 +1365,7 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
         pName = node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, pTypeA))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, pTypeA))) {
             return ERESULT_DATA_NOT_FOUND;
         }
         pData = node_getData(pNode);
@@ -1740,7 +1740,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return NodeHash_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODEHASH_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return NodeHash_ToJson;
                         }
@@ -1755,7 +1755,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == NodeHash_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODEHASH_JSON_SUPPORT
                 if (pData == NodeHash_ToJson)
                     return "ToJson";
 #endif

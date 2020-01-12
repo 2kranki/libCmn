@@ -103,7 +103,7 @@ extern "C" {
         if (ERESULT_FAILED(eRc))
             ;
         else {
-            pUtf8 = utf8_ParseObject(pParser, NULL);
+            pUtf8 = utf8_ParseJsonObject(pParser, NULL);
             JsonIn_SubObjectEnd(pParser);
             if (pUtf8) {
                 pObject = szData_NewA((char *)pUtf8);
@@ -235,7 +235,7 @@ extern "C" {
        
         pConStr = szTbl_TokenToString(OBJ_NIL, this->token);
         if (pConStr) {
-            pWrkStr = utf8_DataToJSON(pConStr);
+            pWrkStr = utf8_DataToJson(pConStr);
             AStr_AppendPrint(pStr, "\"name\":%s, ", AStr_getData(pWrkStr));
             obj_Release(pWrkStr);
             pWrkStr = OBJ_NIL;

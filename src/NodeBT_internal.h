@@ -185,7 +185,7 @@ struct NodeBT_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODEBT_JSON_SUPPORT
     ASTR_DATA *     NodeBT_ToJson (
         NODEBT_DATA      *this
     );

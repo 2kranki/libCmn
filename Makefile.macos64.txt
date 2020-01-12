@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/11/2020 14:25:47.000)
+# ( 1/11/2020 22:03:38.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -174,6 +174,21 @@ $(OBJDIR)/MsgData_json.o: $(SRCDIR)/MsgData_json.c $(SRCDIR)/MsgData.h $(SRCDIR)
 OBJS += $(OBJDIR)/MsgData_object.o
 
 $(OBJDIR)/MsgData_object.o: $(SRCDIR)/MsgData_object.c $(SRCDIR)/MsgData.h $(SRCDIR)/MsgData_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Name.o
+
+$(OBJDIR)/Name.o: $(SRCDIR)/Name.c $(SRCDIR)/Name.h $(SRCDIR)/Name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Name_json.o
+
+$(OBJDIR)/Name_json.o: $(SRCDIR)/Name_json.c $(SRCDIR)/Name.h $(SRCDIR)/Name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Name_object.o
+
+$(OBJDIR)/Name_object.o: $(SRCDIR)/Name_object.c $(SRCDIR)/Name.h $(SRCDIR)/Name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeArray.o
@@ -1106,21 +1121,6 @@ OBJS += $(OBJDIR)/msgBus_object.o
 $(OBJDIR)/msgBus_object.o: $(SRCDIR)/msgBus_object.c $(SRCDIR)/msgBus.h $(SRCDIR)/msgBus_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/name.o
-
-$(OBJDIR)/name.o: $(SRCDIR)/name.c $(SRCDIR)/name.h $(SRCDIR)/name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/name_json.o
-
-$(OBJDIR)/name_json.o: $(SRCDIR)/name_json.c $(SRCDIR)/name.h $(SRCDIR)/name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/name_object.o
-
-$(OBJDIR)/name_object.o: $(SRCDIR)/name_object.c $(SRCDIR)/name.h $(SRCDIR)/name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/node.o
 
 $(OBJDIR)/node.o: $(SRCDIR)/node.c $(SRCDIR)/NodeArray.h $(SRCDIR)/NodeHash.h $(SRCDIR)/listdl.h $(SRCDIR)/name.h $(SRCDIR)/node.h $(SRCDIR)/node_internal.h $(SRCDIR)/szTbl.h $(SRCDIR)/cmn_defs.h 
@@ -1728,6 +1728,12 @@ MsgData_test: $(TEST_SRC)/MsgData_test.c $(SRCDIR)/MsgData.h $(SRCDIR)/MsgData_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += Name_test
+
+Name_test: $(TEST_SRC)/Name_test.c $(SRCDIR)/Name.h $(SRCDIR)/Name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += NodeArray_test
 
 NodeArray_test: $(TEST_SRC)/NodeArray_test.c $(SRCDIR)/NodeArray.h $(SRCDIR)/NodeArray_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/node.h $(SRCDIR)/cmn_defs.h 
@@ -2212,12 +2218,6 @@ TESTS += msgBus_test
 
 msgBus_test: $(TEST_SRC)/msgBus_test.c $(SRCDIR)/msgBus.h $(SRCDIR)/msgBus_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += name_test
-
-name_test: $(TEST_SRC)/name_test.c $(SRCDIR)/name.h $(SRCDIR)/name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += nodeLink_test

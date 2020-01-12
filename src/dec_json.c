@@ -75,7 +75,7 @@ extern "C" {
      @return    a new null object if successful, otherwise, OBJ_NIL
      @warning   Returned null object must be released.
      */
-    uint64_t        dec_ParseObject(
+    uint64_t        dec_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -152,7 +152,7 @@ extern "C" {
     //===============================================================
     
 
-    uint64_t        dec_UInt64FromJSONString(
+    uint64_t        dec_UInt64FromJsonString(
         ASTR_DATA       *pString
     )
     {
@@ -166,7 +166,7 @@ extern "C" {
             goto exit00;
         }
         
-        data = dec_ParseObject(pParser);
+        data = dec_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -179,7 +179,7 @@ extern "C" {
     
     
 
-    uint64_t        dec_UInt64FromJSONStringA(
+    uint64_t        dec_UInt64FromJsonStringA(
         const
         char            *pString
     )
@@ -189,7 +189,7 @@ extern "C" {
         
         if (pString) {
             pStr = AStr_NewA(pString);
-            object = dec_UInt64FromJSONString(pStr);
+            object = dec_UInt64FromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -200,7 +200,7 @@ extern "C" {
     
     
     
-    ASTR_DATA *     dec_UInt64ToJSON(
+    ASTR_DATA *     dec_UInt64ToJson(
         uint64_t        data
     )
     {

@@ -156,7 +156,7 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string")) {
+            if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "string")) {
                 pStr = node_getData(pNode);
                 if (0 == strcmp(pInfo->pClassName, AStr_getData(pStr))) {
                 }
@@ -210,7 +210,7 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
+            if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
                 crc = (uint32_t)dec_getInt64A(AStr_getData(pStr));
             }
@@ -244,7 +244,7 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer")) {
+            if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer")) {
                 pStr = node_getData(pNode);
                 length = (uint32_t)dec_getInt64A(AStr_getData(pStr));
             }
@@ -278,7 +278,7 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pNode = node_getData(pNode);
             pName = node_getName(pNode);
-            if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "array")) {
+            if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "array")) {
                 pArray = node_getData(pNode);
                 if (!(NodeArray_getSize(pArray) == length)) {
                     fprintf(stderr, "ERROR - length does not match array size!\n");
@@ -298,7 +298,7 @@ extern "C" {
                     pNode = NodeArray_Get(pArray, i+1);
                     pName = node_getName(pNode);
                     pStr = node_getData(pNode);
-                    if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer"))) {
+                    if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))) {
                         fprintf(stderr, "ERROR - data contains invalud data!\n");
 #ifdef TRACE_FUNCTIONS
                         pStr2 = nodeHash_ToDebugString(pHash, 0);
@@ -314,7 +314,7 @@ extern "C" {
                     //FIXME: W32Str_AppendCharW32(pStrOut, 1, chrW);
                 }
             }
-            else if (ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "null")) {
+            else if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "null")) {
                 //FIXME: pStrOut = W32Str_New();
             }
             else {

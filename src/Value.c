@@ -1700,7 +1700,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return Value_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  VALUE_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return Value_ToJson;
                         }
@@ -1715,7 +1715,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == Value_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  VALUE_JSON_SUPPORT
                 if (pData == Value_ToJson)
                     return "ToJson";
 #endif

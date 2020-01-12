@@ -152,7 +152,7 @@ struct SrcError_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  SRCERROR_JSON_SUPPORT
     ASTR_DATA *     SrcError_ToJson (
         SRCERROR_DATA      *this
     );

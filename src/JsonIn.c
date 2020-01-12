@@ -47,7 +47,7 @@
 #include        <dec.h>
 #include        <hex.h>
 #include        <hjson.h>
-#include        <name_internal.h>
+#include        <Name_internal.h>
 #include        <node_internal.h>
 #include        <NodeArray_internal.h>
 #include        <NodeBT_internal.h>
@@ -232,7 +232,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "array"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "array"))) {
             return OBJ_NIL;
         }
 
@@ -266,7 +266,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "false"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "false"))) {
             return OBJ_NIL;
         }
 
@@ -301,7 +301,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "float"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "float"))) {
             return OBJ_NIL;
         }
 
@@ -335,7 +335,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))) {
             return OBJ_NIL;
         }
 
@@ -369,7 +369,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))) {
             return OBJ_NIL;
         }
 
@@ -403,7 +403,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "null"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "null"))) {
             return OBJ_NIL;
         }
 
@@ -437,7 +437,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "string"))) {
             return OBJ_NIL;
         }
 
@@ -472,7 +472,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "true"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "true"))) {
             return OBJ_NIL;
         }
 
@@ -502,7 +502,7 @@ extern "C" {
 #endif
 
         pName = node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "array"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "array"))) {
             return OBJ_NIL;
         }
 
@@ -531,7 +531,7 @@ extern "C" {
 #endif
 
         pName = node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "false"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "false"))) {
             return OBJ_NIL;
         }
 
@@ -561,7 +561,7 @@ extern "C" {
 #endif
 
         pName = node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "float"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "float"))) {
             return OBJ_NIL;
         }
 
@@ -590,7 +590,7 @@ extern "C" {
 #endif
 
         pName = node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))) {
             return OBJ_NIL;
         }
         pHash = node_getData(pNode);
@@ -619,7 +619,7 @@ extern "C" {
 #endif
 
         pName = node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "integer"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))) {
             return OBJ_NIL;
         }
 
@@ -648,7 +648,7 @@ extern "C" {
 #endif
 
         pName = node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "null"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "null"))) {
             return OBJ_NIL;
         }
 
@@ -677,7 +677,7 @@ extern "C" {
 #endif
 
         pName = node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "string"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "string"))) {
             return OBJ_NIL;
         }
 
@@ -707,7 +707,7 @@ extern "C" {
 #endif
 
         pName = node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "true"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "true"))) {
             return OBJ_NIL;
         }
 
@@ -1795,10 +1795,10 @@ extern "C" {
             return pObj;
         }
 
-        pInfo = obj_getInfo(name_Class());
+        pInfo = obj_getInfo(Name_Class());
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)name_ParseJsonObject(this);
+            pObj = (OBJ_ID)Name_ParseJsonObject(this);
             return pObj;
         }
 
@@ -2184,7 +2184,7 @@ extern "C" {
             return ERESULT_DATA_ERROR;
         }
         pName = node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == name_CompareA(pName, "hash"))) {
+        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))) {
             return ERESULT_DATA_ERROR;
         }
 

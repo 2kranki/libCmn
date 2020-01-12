@@ -50,7 +50,7 @@
 
 /* Header File Inclusion */
 #include        <NodeTree_internal.h>
-#include        <name_internal.h>
+#include        <Name_internal.h>
 #include        <node_internal.h>
 #include        <nodeLink_internal.h>
 #include        <NodeArray.h>
@@ -1916,7 +1916,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return NodeTree_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODETREE_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return NodeTree_ToJson;
                         }
@@ -1931,7 +1931,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == NodeTree_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODETREE_JSON_SUPPORT
                 if (pData == NodeTree_ToJson)
                     return "ToJson";
 #endif

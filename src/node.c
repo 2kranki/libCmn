@@ -178,7 +178,7 @@ extern "C" {
 
         this = node_New( );
         if (this) {
-            this->pName = name_NewAStr(pName);
+            this->pName = Name_NewAStr(pName);
             if (OBJ_NIL == this->pName) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -201,7 +201,7 @@ extern "C" {
         
         this = node_New( );
         if (this) {
-            this->pName = name_NewInt(ident);
+            this->pName = Name_NewInt(ident);
             if (OBJ_NIL == this->pName) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -262,7 +262,7 @@ extern "C" {
         this = node_New( );
         if (this) {
             if (pNameA) {
-                pName = name_NewUTF8(pNameA);
+                pName = Name_NewUTF8(pNameA);
                 node_setName(this, pName);
                 obj_Release(pName);
                 pName = OBJ_NIL;
@@ -293,7 +293,7 @@ extern "C" {
         this = node_New( );
         if (this) {
             if (pNameA) {
-                pName = name_NewUTF8Con(pNameA);
+                pName = Name_NewUTF8Con(pNameA);
                 node_setName(this, pName);
                 obj_Release(pName);
                 pName = OBJ_NIL;
@@ -467,7 +467,7 @@ extern "C" {
 #endif
         
         if (this->pName) {
-            hash = name_getHash(this->pName);
+            hash = Name_getHash(this->pName);
             eRc = ERESULT_SUCCESS;
         }
         
@@ -625,7 +625,7 @@ extern "C" {
         }
 #endif
         
-        return name_getInt(this->pName);
+        return Name_getInt(this->pName);
     }
     
         
@@ -643,7 +643,7 @@ extern "C" {
             }
     #endif
             
-            return name_getStr(this->pName);
+            return Name_getStr(this->pName);
         }
 
         
@@ -663,7 +663,7 @@ extern "C" {
 #endif
         
         if (this->pName) {
-            pStrA = name_getUTF8(this->pName);
+            pStrA = Name_getUTF8(this->pName);
         }
         
         return pStrA;
@@ -1059,7 +1059,7 @@ extern "C" {
 
         i = node_getClass((NODE_DATA *)this) - node_getClass((NODE_DATA *)pOther);
         if (0 == i) {
-            eRc =   name_Compare(
+            eRc =   Name_Compare(
                             node_getName((NODE_DATA *)this),
                             node_getName((NODE_DATA *)pOther)
                     );
@@ -1101,13 +1101,13 @@ extern "C" {
 #endif
         
         if (0 == cls) {
-            eRc = name_CompareA(this->pName, pName);
+            eRc = Name_CompareA(this->pName, pName);
         }
         else {
             int         iRc;
             iRc = node_getClass(this) - cls;
             if (0 == iRc) {
-                eRc = name_CompareA(this->pName, pName);
+                eRc = Name_CompareA(this->pName, pName);
                 return eRc;
             }
             if (iRc < 0) {
@@ -1766,7 +1766,7 @@ extern "C" {
         }
 #endif
         
-        pStr = name_ToString(node_getName(this));
+        pStr = Name_ToString(node_getName(this));
         
         if (pStr && this->pData) {
             if (obj_IsKindOf(this, OBJ_IDENT_ASTR)) {

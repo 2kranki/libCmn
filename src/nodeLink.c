@@ -125,7 +125,7 @@ extern "C" {
             this = nodeLink_Init(this);
             if (this) {
                 if (pNameA) {
-                    pName = name_NewUTF8(pNameA);
+                    pName = Name_NewUTF8(pNameA);
                     node_setName((NODE_DATA *)this, pName);
                     obj_Release(pName);
                     pName = OBJ_NIL;
@@ -153,7 +153,7 @@ extern "C" {
             this = nodeLink_Init(this);
             if (this) {
                 if (pNameA) {
-                    pName = name_NewUTF8Con(pNameA);
+                    pName = Name_NewUTF8Con(pNameA);
                     node_setName((NODE_DATA *)this, pName);
                     obj_Release(pName);
                     pName = OBJ_NIL;
@@ -390,7 +390,7 @@ extern "C" {
         pName = node_getName((NODE_DATA *)this);
         
         if (pName) {
-            hash = name_getHash(pName);
+            hash = Name_getHash(pName);
         }
         
         return hash;

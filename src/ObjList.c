@@ -1377,7 +1377,7 @@ int             ObjList_SortCompare (
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return ObjList_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  OBJLIST_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return ObjList_ToJson;
                         }
@@ -1392,7 +1392,7 @@ int             ObjList_SortCompare (
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == ObjList_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  OBJLIST_JSON_SUPPORT
                 if (pData == ObjList_ToJson)
                     return "ToJson";
 #endif

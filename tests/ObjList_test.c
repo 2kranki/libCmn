@@ -24,7 +24,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <name.h>
+#include    <Name.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
 #include    <trace.h>
@@ -134,15 +134,15 @@ int         test_ObjList_BasicList01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pNameA = name_NewUTF8("A");
+        pNameA = Name_NewUTF8("A");
         XCTAssertFalse( (OBJ_NIL == pNameA) );
-        pNameB = name_NewUTF8("B");
+        pNameB = Name_NewUTF8("B");
         XCTAssertFalse( (OBJ_NIL == pNameB) );
-        pNameC = name_NewUTF8("C");
+        pNameC = Name_NewUTF8("C");
         XCTAssertFalse( (OBJ_NIL == pNameC) );
-        pNameD = name_NewUTF8("D");
+        pNameD = Name_NewUTF8("D");
         XCTAssertFalse( (OBJ_NIL == pNameD) );
-        pNameE = name_NewUTF8("E");
+        pNameE = Name_NewUTF8("E");
         XCTAssertFalse( (OBJ_NIL == pNameE) );
         
         eRc = ObjList_Add2Head(pObj, pNameA);
@@ -188,27 +188,27 @@ int         test_ObjList_BasicList01(
         pEntry = ObjList_Head(pObj2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameC) );
-        eRc = name_CompareA(pEntry, "C");
+        eRc = Name_CompareA(pEntry, "C");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         pEntry = ObjList_Index(pObj2, 1);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameC) );
-        eRc = name_CompareA(pEntry, "C");
+        eRc = Name_CompareA(pEntry, "C");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         pEntry = ObjList_Index(pObj2, 2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameB) );
-        eRc = name_CompareA(pEntry, "B");
+        eRc = Name_CompareA(pEntry, "B");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         pEntry = ObjList_Index(pObj2, 3);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameA) );
-        eRc = name_CompareA(pEntry, "A");
+        eRc = Name_CompareA(pEntry, "A");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         pEntry = ObjList_Tail(pObj2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( (pEntry == pNameA) );
-        eRc = name_CompareA(pEntry, "A");
+        eRc = Name_CompareA(pEntry, "A");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
@@ -227,27 +227,27 @@ int         test_ObjList_BasicList01(
         pEntry = ObjList_Head(pObj2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( !(pEntry == pNameC) );
-        eRc = name_CompareA(pEntry, "C");
+        eRc = Name_CompareA(pEntry, "C");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         pEntry = ObjList_Index(pObj2, 1);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( !(pEntry == pNameC) );
-        eRc = name_CompareA(pEntry, "C");
+        eRc = Name_CompareA(pEntry, "C");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         pEntry = ObjList_Index(pObj2, 2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( !(pEntry == pNameB) );
-        eRc = name_CompareA(pEntry, "B");
+        eRc = Name_CompareA(pEntry, "B");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         pEntry = ObjList_Index(pObj2, 3);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( !(pEntry == pNameA) );
-        eRc = name_CompareA(pEntry, "A");
+        eRc = Name_CompareA(pEntry, "A");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         pEntry = ObjList_Tail(pObj2);
         XCTAssertFalse( (pEntry == OBJ_NIL) );
         XCTAssertTrue( !(pEntry == pNameA) );
-        eRc = name_CompareA(pEntry, "A");
+        eRc = Name_CompareA(pEntry, "A");
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         
         obj_Release(pObj2);
@@ -298,15 +298,15 @@ int         test_ObjList_Shift(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pNameA = name_NewUTF8("A");
+        pNameA = Name_NewUTF8("A");
         XCTAssertFalse( (OBJ_NIL == pNameA) );
-        pNameB = name_NewUTF8("B");
+        pNameB = Name_NewUTF8("B");
         XCTAssertFalse( (OBJ_NIL == pNameB) );
-        pNameC = name_NewUTF8("C");
+        pNameC = Name_NewUTF8("C");
         XCTAssertFalse( (OBJ_NIL == pNameC) );
-        pNameD = name_NewUTF8("D");
+        pNameD = Name_NewUTF8("D");
         XCTAssertFalse( (OBJ_NIL == pNameD) );
-        pNameE = name_NewUTF8("E");
+        pNameE = Name_NewUTF8("E");
         XCTAssertFalse( (OBJ_NIL == pNameE) );
         
         eRc = ObjList_Add2Head(pObj, pNameA);
@@ -405,15 +405,15 @@ int         test_ObjList_Json01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        pNameA = name_NewUTF8("A");
+        pNameA = Name_NewUTF8("A");
         XCTAssertFalse( (OBJ_NIL == pNameA) );
-        pNameB = name_NewUTF8("B");
+        pNameB = Name_NewUTF8("B");
         XCTAssertFalse( (OBJ_NIL == pNameB) );
-        pNameC = name_NewUTF8("C");
+        pNameC = Name_NewUTF8("C");
         XCTAssertFalse( (OBJ_NIL == pNameC) );
-        pNameD = name_NewUTF8("D");
+        pNameD = Name_NewUTF8("D");
         XCTAssertFalse( (OBJ_NIL == pNameD) );
-        pNameE = name_NewUTF8("E");
+        pNameE = Name_NewUTF8("E");
         XCTAssertFalse( (OBJ_NIL == pNameE) );
 
         eRc = ObjList_Add2Tail(pObj, pNameA);

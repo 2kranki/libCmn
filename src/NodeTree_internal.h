@@ -157,7 +157,7 @@ struct NodeTree_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODETREE_JSON_SUPPORT
     ASTR_DATA *     NodeTree_ToJson (
         NODETREE_DATA      *this
     );

@@ -1,7 +1,8 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'name'
-//	Generated 02/07/2016 15:50:27
+//	Class Object Metods and Tables for 'Name'
+//	Generated 01/11/2020 10:01:40
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -31,24 +32,32 @@
  */
 
 
-#include        "obj.h"
-#include        "name_internal.h"
+
+
+#define			NAME_OBJECT_C	    1
+#include        <Name_internal.h>
+#ifdef  NAME_SINGLETON
+#include        <psxLock.h>
+#endif
 
 
 
-//-----------------------------------------------------------
+//===========================================================
 //                  Class Object Definition
-//-----------------------------------------------------------
+//===========================================================
 
-struct name_class_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
+struct Name_class_data_s	{
+    // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-    uint32_t        unique;
+#ifdef  NAME_SINGLETON
+    volatile
+    NAME_DATA       *pSingleton;
+#endif
+    //uint32_t        misc;
+    //OBJ_ID          pObjCatalog;
 };
-typedef struct name_class_data_s NAME_CLASS_DATA;
 
 
 
@@ -60,29 +69,47 @@ typedef struct name_class_data_s NAME_CLASS_DATA;
 
 
 static
+void *          NameClass_QueryInfo (
+    OBJ_ID          objId,
+    uint32_t        type,
+    void            *pData
+);
+
+
+static
 const
-OBJ_INFO        name_Info;            // Forward Reference
+OBJ_INFO        Name_Info;            // Forward Reference
 
 
 
 
 static
-bool            name_ClassIsKindOf(
+bool            NameClass_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_NAME_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(Name_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		obj_ClassWhoAmI(
+uint16_t		NameClass_WhoAmI (
     void
 )
 {
@@ -90,12 +117,137 @@ uint16_t		obj_ClassWhoAmI(
 }
 
 
+
+
+//===========================================================
+//                 Class Object Vtbl Definition
+//===========================================================
+
+static
+const
+NAME_CLASS_VTBL    class_Vtbl = {
+    {
+        &Name_Info,
+        NameClass_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NULL,
+        Name_Class,
+        NameClass_WhoAmI,
+        (P_OBJ_QUERYINFO)NameClass_QueryInfo,
+        NULL                        // NameClass_ToDebugString
+    },
+};
+
+
+
+//-----------------------------------------------------------
+//						Class Object
+//-----------------------------------------------------------
+
+NAME_CLASS_DATA  Name_ClassObj = {
+    {
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(NAME_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
+    },
+	//0
+};
+
+
+
+//---------------------------------------------------------------
+//          S i n g l e t o n  M e t h o d s
+//---------------------------------------------------------------
+
+#ifdef  NAME_SINGLETON
+NAME_DATA *     Name_getSingleton (
+    void
+)
+{
+    return (OBJ_ID)(Name_ClassObj.pSingleton);
+}
+
+
+bool            Name_setSingleton (
+    NAME_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+    
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+    
+    obj_Retain(pValue);
+    if (Name_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Name_ClassObj.pSingleton));
+    }
+    Name_ClassObj.pSingleton = pValue;
+    
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+NAME_DATA *     Name_Shared (
+    void
+)
+{
+    NAME_DATA       *this = (OBJ_ID)(Name_ClassObj.pSingleton);
+    
+    if (NULL == this) {
+        this = Name_New( );
+        Name_setSingleton(this);
+        obj_Release(this);          // Shared controls object retention now.
+        // Name_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+    return this;
+}
+
+
+
+void            Name_SharedReset (
+    void
+)
+{
+    NAME_DATA       *this = (OBJ_ID)(Name_ClassObj.pSingleton);
+    
+    if (this) {
+        obj_Release(this);
+        Name_ClassObj.pSingleton = OBJ_NIL;
+    }
+    
+}
+
+
+
+#endif
+
+
+
 //---------------------------------------------------------------
 //                     Q u e r y  I n f o
 //---------------------------------------------------------------
 
 static
-void *          class_QueryInfo(
+void *          NameClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -111,6 +263,10 @@ void *          class_QueryInfo(
     
     switch (type) {
       
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(NAME_DATA);
+            break;
+            
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
             return this;
             break;
@@ -123,7 +279,7 @@ void *          class_QueryInfo(
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&name_Info;
+                        return (void *)&Name_Info;
                     }
                     break;
                     
@@ -141,19 +297,19 @@ void *          class_QueryInfo(
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return name_New;
+                        return Name_New;
                     }
                     break;
-
+                    
                 case 'P':
-                    if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return name_ParseJsonObject;
+                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
+                        //return Name_ParseJsonObject;
                     }
                     break;
-
+ 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return obj_ClassWhoAmI;
+                        return NameClass_WhoAmI;
                     }
                     break;
                     
@@ -171,79 +327,52 @@ void *          class_QueryInfo(
 
 
 
-static
-const
-OBJ_IUNKNOWN    obj_Vtbl = {
-	&name_Info,
-    name_ClassIsKindOf,
-    obj_RetainNull,
-    obj_ReleaseNull,
-    NULL,
-    name_Class,
-    obj_ClassWhoAmI,
-    class_QueryInfo,
-    NULL                        // class_ToDebugString
-};
-
-
-
-//-----------------------------------------------------------
-//						Class Object
-//-----------------------------------------------------------
-
-NAME_CLASS_DATA  name_ClassObj = {
-    {
-        &obj_Vtbl,                          // pVtbl
-        sizeof(NAME_CLASS_DATA),            // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
-    },
-	0
-};
-
-
 
 static
-bool            name_IsKindOf(
+bool            Name_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_NAME == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(Name_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            name_Dealloc(
+void            Name_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          name_Class(
+OBJ_ID          Name_Class (
     void
 )
 {
-    return (OBJ_ID)&name_ClassObj;
-}
-
-
-uint32_t        name_NewUnique(
-    OBJ_ID          objId
-)
-{
-    return ++name_ClassObj.unique;
+    return (OBJ_ID)&Name_ClassObj;
 }
 
 
 static
-uint16_t		name_WhoAmI(
+uint16_t		Name_WhoAmI (
     void
 )
 {
@@ -251,37 +380,56 @@ uint16_t		name_WhoAmI(
 }
 
 
+
+
+
+//===========================================================
+//                  Object Vtbl Definition
+//===========================================================
+
 const
-NAME_VTBL       name_Vtbl = {
+NAME_VTBL     Name_Vtbl = {
     {
-        &name_Info,
-        name_IsKindOf,
+        &Name_Info,
+        Name_IsKindOf,
+#ifdef  NAME_IS_SINGLETON
+        obj_RetainNull,
+        obj_ReleaseNull,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
-        name_Dealloc,
-        name_Class,
-        name_WhoAmI,
-        (P_OBJ_QUERYINFO)name_QueryInfo,
-        (P_OBJ_TOSTRING)name_ToDebugString,
-        NULL,			// name_Enable,
-        NULL,			// name_Disable,
-        (P_OBJ_ASSIGN)name_Assign,
-        (P_OBJ_COMPARE)name_Compare,
-        (P_OBJ_PTR)name_Copy,
-        (P_OBJ_DEEPCOPY)name_DeepCopy,
-        (P_OBJ_HASH)name_Hash
+#endif
+        Name_Dealloc,
+        Name_Class,
+        Name_WhoAmI,
+        (P_OBJ_QUERYINFO)Name_QueryInfo,
+        (P_OBJ_TOSTRING)Name_ToDebugString,
+        NULL,			// Name_Enable,
+        NULL,			// Name_Disable,
+        (P_OBJ_ASSIGN)Name_Assign,
+        (P_OBJ_COMPARE)Name_Compare,
+        (P_OBJ_PTR)Name_Copy,
+        (P_OBJ_PTR)Name_DeepCopy,
+        (P_OBJ_HASH)Name_Hash,
     },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //Name_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        name_Info = {
-    "name",
+OBJ_INFO        Name_Info = {
     "Name",
-    (OBJ_DATA *)&name_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj
+    "Name",
+    (OBJ_DATA *)&Name_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&Name_Vtbl,
+    sizeof(NAME_DATA)
 };
 
 
