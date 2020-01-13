@@ -63,7 +63,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <false.h>
-#include        <node.h>
+#include        <Node.h>
 #include        <NodeHash.h>
 #include        <null.h>
 #include        <true.h>

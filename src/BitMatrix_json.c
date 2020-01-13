@@ -61,7 +61,7 @@
 #include    <dec.h>
 #include    <hex.h>
 #include    <JsonIn.h>
-#include    <node.h>
+#include    <Node.h>
 #include    <NodeArray.h>
 #include    <NodeHash.h>
 #include    <utf8_internal.h>
@@ -184,9 +184,9 @@ extern "C" {
                     pObject = OBJ_NIL;
                     goto exit00;
                 }
-                pName = node_getName(pNode);
+                pName = Node_getName(pNode);
                 if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer")) {
-                    pStr = node_getData(pNode);
+                    pStr = Node_getData(pNode);
                     iWrk = AStr_ToUint64(pStr);
                     pObject->pElems[i] = (uint32_t)iWrk;
                 }

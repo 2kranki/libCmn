@@ -72,6 +72,10 @@ OBJLIST_RECORD * ObjList_FindObj (
     ERESULT         eRc;
     P_OBJ_COMPARE   pCompare = obj_getVtbl(pObj)->pCompare;
 
+    if (pCompare == NULL) {
+        return OBJ_NIL;
+    }
+    
     pObjInt = listdl_Head(&this->list);
     while ( pObjInt ) {
         eRc = pCompare(pObj, pObjInt->pObject);

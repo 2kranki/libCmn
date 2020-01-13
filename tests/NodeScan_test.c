@@ -25,7 +25,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <nodeLink.h>
+#include    <NodeLink.h>
 #include    <trace.h>
 #include    <NodeScan_internal.h>
 #include    <NodeTree.h>
@@ -75,61 +75,61 @@ NODETREE_DATA * createTestTree01(
         return pTree;
     }
     
-    pNodeA = nodeLink_NewWithUTF8ConAndClass(0, "A", OBJ_NIL);
+    pNodeA = NodeLink_NewWithUTF8ConAndClass(0, "A", OBJ_NIL);
     if  (OBJ_NIL == pNodeA) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeB = nodeLink_NewWithUTF8ConAndClass(0, "B", OBJ_NIL);
+    pNodeB = NodeLink_NewWithUTF8ConAndClass(0, "B", OBJ_NIL);
     if  (OBJ_NIL == pNodeB) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeC = nodeLink_NewWithUTF8ConAndClass(0, "C", OBJ_NIL);
+    pNodeC = NodeLink_NewWithUTF8ConAndClass(0, "C", OBJ_NIL);
     if  (OBJ_NIL == pNodeC) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeD = nodeLink_NewWithUTF8ConAndClass(0, "D", OBJ_NIL);
+    pNodeD = NodeLink_NewWithUTF8ConAndClass(0, "D", OBJ_NIL);
     if  (OBJ_NIL == pNodeD) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeE = nodeLink_NewWithUTF8ConAndClass(0, "E", OBJ_NIL);
+    pNodeE = NodeLink_NewWithUTF8ConAndClass(0, "E", OBJ_NIL);
     if  (OBJ_NIL == pNodeE) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeF = nodeLink_NewWithUTF8ConAndClass(0, "F", OBJ_NIL);
+    pNodeF = NodeLink_NewWithUTF8ConAndClass(0, "F", OBJ_NIL);
     if  (OBJ_NIL == pNodeF) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeG = nodeLink_NewWithUTF8ConAndClass(0, "G", OBJ_NIL);
+    pNodeG = NodeLink_NewWithUTF8ConAndClass(0, "G", OBJ_NIL);
     if  (OBJ_NIL == pNodeG) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeH = nodeLink_NewWithUTF8ConAndClass(0, "H", OBJ_NIL);
+    pNodeH = NodeLink_NewWithUTF8ConAndClass(0, "H", OBJ_NIL);
     if  (OBJ_NIL == pNodeH) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeJ = nodeLink_NewWithUTF8ConAndClass(0, "J", OBJ_NIL);
+    pNodeJ = NodeLink_NewWithUTF8ConAndClass(0, "J", OBJ_NIL);
     if  (OBJ_NIL == pNodeJ) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeK = nodeLink_NewWithUTF8ConAndClass(0, "K", OBJ_NIL);
+    pNodeK = NodeLink_NewWithUTF8ConAndClass(0, "K", OBJ_NIL);
     if  (OBJ_NIL == pNodeK) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
@@ -163,7 +163,7 @@ NODETREE_DATA * createTestTree01(
         pTree = OBJ_NIL;
         return pTree;
     }
-    i = NodeTree_SiblingAdd(pTree, nodeLink_getIndex(pNodeA), pNodeD);
+    i = NodeTree_SiblingAdd(pTree, NodeLink_getIndex(pNodeA), pNodeD);
     if  (i == 2)
         ;
     else {
@@ -173,35 +173,35 @@ NODETREE_DATA * createTestTree01(
     }
 
     //                                                         3      4
-    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeA), pNodeB, pNodeC, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,NodeLink_getIndex(pNodeA), pNodeB, pNodeC, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                        5
-    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeC), pNodeK, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,NodeLink_getIndex(pNodeC), pNodeK, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                         6      7       8
-    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeD), pNodeE, pNodeF, pNodeG, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,NodeLink_getIndex(pNodeD), pNodeE, pNodeF, pNodeG, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                         9
-    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeE), pNodeH, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,NodeLink_getIndex(pNodeE), pNodeH, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                        10
-    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeF), pNodeJ, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,NodeLink_getIndex(pNodeF), pNodeJ, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
@@ -267,69 +267,69 @@ NODETREE_DATA * createTestTree02(
         return pTree;
     }
     
-    pNodeA = nodeLink_NewWithUTF8ConAndClass(0, "a", OBJ_NIL);
+    pNodeA = NodeLink_NewWithUTF8ConAndClass(0, "a", OBJ_NIL);
     if  (OBJ_NIL == pNodeA) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeB = nodeLink_NewWithUTF8ConAndClass(0, "b", OBJ_NIL);
+    pNodeB = NodeLink_NewWithUTF8ConAndClass(0, "b", OBJ_NIL);
     if  (OBJ_NIL == pNodeB) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeC = nodeLink_NewWithUTF8ConAndClass(0, "c", OBJ_NIL);
+    pNodeC = NodeLink_NewWithUTF8ConAndClass(0, "c", OBJ_NIL);
     if  (OBJ_NIL == pNodeC) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeD = nodeLink_NewWithUTF8ConAndClass(0, "d", OBJ_NIL);
+    pNodeD = NodeLink_NewWithUTF8ConAndClass(0, "d", OBJ_NIL);
     if  (OBJ_NIL == pNodeD) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeE = nodeLink_NewWithUTF8ConAndClass(0, "e", OBJ_NIL);
+    pNodeE = NodeLink_NewWithUTF8ConAndClass(0, "e", OBJ_NIL);
     if  (OBJ_NIL == pNodeE) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeF = nodeLink_NewWithUTF8ConAndClass(0, "f", OBJ_NIL);
+    pNodeF = NodeLink_NewWithUTF8ConAndClass(0, "f", OBJ_NIL);
     if  (OBJ_NIL == pNodeF) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeG = nodeLink_NewWithUTF8ConAndClass(0, "*1", OBJ_NIL);
+    pNodeG = NodeLink_NewWithUTF8ConAndClass(0, "*1", OBJ_NIL);
     if  (OBJ_NIL == pNodeG) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeH = nodeLink_NewWithUTF8ConAndClass(0, "+", OBJ_NIL);
+    pNodeH = NodeLink_NewWithUTF8ConAndClass(0, "+", OBJ_NIL);
     if  (OBJ_NIL == pNodeH) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
-    pNodeI = nodeLink_NewWithUTF8ConAndClass(0, "/", OBJ_NIL);
+    pNodeI = NodeLink_NewWithUTF8ConAndClass(0, "/", OBJ_NIL);
     if  (OBJ_NIL == pNodeI) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     
-    pNodeJ = nodeLink_NewWithUTF8ConAndClass(0, "-", OBJ_NIL);
+    pNodeJ = NodeLink_NewWithUTF8ConAndClass(0, "-", OBJ_NIL);
     if  (OBJ_NIL == pNodeI) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     
-    pNodeK = nodeLink_NewWithUTF8ConAndClass(0, "*2", OBJ_NIL);
+    pNodeK = NodeLink_NewWithUTF8ConAndClass(0, "*2", OBJ_NIL);
     if  (OBJ_NIL == pNodeI) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
@@ -365,35 +365,35 @@ NODETREE_DATA * createTestTree02(
         return pTree;
     }
     //                                                         2       3
-    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeG), pNodeH, pNodeJ, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,NodeLink_getIndex(pNodeG), pNodeH, pNodeJ, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                         4       5
-    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeH), pNodeA, pNodeI, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,NodeLink_getIndex(pNodeH), pNodeA, pNodeI, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                         6       7
-    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeI), pNodeB, pNodeC, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,NodeLink_getIndex(pNodeI), pNodeB, pNodeC, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                         8       9
-    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeJ), pNodeD, pNodeK, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,NodeLink_getIndex(pNodeJ), pNodeD, pNodeK, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
         return pTree;
     }
     //                                                        10      11
-    eRc = NodeTree_ChildrenAdd(pTree,nodeLink_getIndex(pNodeK), pNodeE, pNodeF, OBJ_NIL);
+    eRc = NodeTree_ChildrenAdd(pTree,NodeLink_getIndex(pNodeK), pNodeE, pNodeF, OBJ_NIL);
     if  (ERESULT_FAILED(eRc)) {
         obj_Release(pTree);
         pTree = OBJ_NIL;
@@ -540,7 +540,7 @@ int         test_NodeScan_ScanPost01(
             fprintf(stderr, "\tShould be: (((a(bc)/)+(d(ef)*2)-)*1)\n");
             fprintf(stderr, "\tFound:     ");
             for (i=1; i<=iMax; ++i) {
-                pStrA = node_getNameUTF8(NodeArray_Get(pArray, i));
+                pStrA = Node_getNameUTF8(NodeArray_Get(pArray, i));
                 fprintf(stderr, "%s", pStrA);
                 mem_Free((void *)pStrA);
             }
@@ -593,7 +593,7 @@ int         test_NodeScan_ScanPre01(
             fprintf(stderr, "\tShould be: ( *1 ( + ( a / ( b c ) ) - ( d *2 ( e f ) ) ) )\n");
             fprintf(stderr, "\tFound:     ");
             for (i=1; i<=iMax; ++i) {
-                pStrA = node_getNameUTF8(NodeArray_Get(pArray, i));
+                pStrA = Node_getNameUTF8(NodeArray_Get(pArray, i));
                 fprintf(stderr, "%s ", pStrA);
                 mem_Free((void *)pStrA);
             }

@@ -365,6 +365,16 @@ extern "C" {
         }
 #endif
 
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
+
         // Release objects and areas in other object.
         if (pOther->pData) {
             obj_Release(pOther->pData);

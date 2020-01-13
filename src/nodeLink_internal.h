@@ -41,7 +41,7 @@
 
 #include        <NodeLink.h>
 #include        <JsonIn.h>
-#include        <node_internal.h>
+#include        <Node_internal.h>
 
 
 #ifndef NODELINK_INTERNAL_H

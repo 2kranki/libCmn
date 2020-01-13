@@ -78,7 +78,7 @@
 #include        <AStrCArray.h>
 #include        <cmdutl.h>
 #include        <dateTime.h>
-#include        <node.h>
+#include        <Node.h>
 
 
 #ifndef         APPL_H

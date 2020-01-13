@@ -41,6 +41,12 @@
 
 #include        <Node.h>
 #include        <JsonIn.h>
+#include        <listdl.h>
+#include        <Name.h>
+#include        <NodeArray.h>
+#include        <NodeBT.h>
+#include        <szData.h>
+#include        <szTbl.h>
 
 
 #ifndef NODE_INTERNAL_H
@@ -69,11 +75,18 @@ struct Node_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+#define NODE_DUP_NAME   OBJ_FLAG_USER1  // We allocated Name
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    int32_t         cls;
+    int32_t         type;
+    uint32_t        unique;
+    uint32_t        misc;
+    NAME_DATA       *pName;
+    OBJ_ID          pData;
+    OBJ_ID          pExtra;
+    OBJ_ID          pOther;
+    NODEBT_DATA     *pProperties;
 
 };
 #pragma pack(pop)
@@ -84,6 +97,13 @@ struct Node_data_s	{
     extern
     const
     NODE_VTBL         Node_Vtbl;
+
+    extern
+    const
+    uint32_t        node_cProps;
+    extern
+    const
+    OBJ_PROP        node_pProps[];
 
 
 
@@ -107,6 +127,18 @@ struct Node_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            Node_setName (
+        NODE_DATA       *this,
+        NAME_DATA       *pValue
+    );
+
+
+    bool            Node_setProperties (
+        NODE_DATA       *this,
+        NODEBT_DATA     *pValue
+    );
+
+
     OBJ_IUNKNOWN *  Node_getSuperVtbl (
         NODE_DATA     *this
     );
@@ -118,8 +150,28 @@ struct Node_data_s	{
 
 
 #ifdef  NODE_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
     NODE_DATA *       Node_ParseJsonObject (
         JSONIN_DATA     *pParser
+    );
+
+
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Node_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        NODE_DATA       *pObject
     );
 #endif
 
@@ -133,7 +185,7 @@ struct Node_data_s	{
 
 #ifdef  NODE_JSON_SUPPORT
     ASTR_DATA *     Node_ToJson (
-        NODE_DATA      *this
+        NODE_DATA       *this
     );
 #endif
 

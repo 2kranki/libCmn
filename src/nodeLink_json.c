@@ -49,7 +49,7 @@
 #include    <AStr_internal.h>
 #include    <dec.h>
 #include    <JsonIn.h>
-#include    <node.h>
+#include    <Node.h>
 #include    <NodeHash.h>
 #include    <utf8.h>
 
@@ -93,7 +93,7 @@ extern "C" {
         int64_t         intIn;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
 
-        pInfo = obj_getInfo(node_Class());
+        pInfo = obj_getInfo(Node_Class());
 
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -110,7 +110,7 @@ extern "C" {
 
         eRc = JsonIn_SubObjectInHash(pParser, "node");
         if (ERESULT_FAILED(eRc)) {
-            eRc = node_ParseJsonObjectFields(pParser, (NODE_DATA *)pObject);
+            eRc = Node_ParseJsonFields(pParser, (NODE_DATA *)pObject);
             JsonIn_SubObjectEnd(pParser);
             if (pNode) {
                 obj_Release(pNode);
@@ -328,7 +328,7 @@ extern "C" {
             AStr_AppendA(pStr, "],\n");
 
             if (this) {
-                pWrkStr = node_ToJson((NODE_DATA *)this);
+                pWrkStr = Node_ToJson((NODE_DATA *)this);
                 AStr_AppendA(pStr, "\t\"node\":");
                 AStr_Append(pStr, pWrkStr);\
                 obj_Release(pWrkStr);

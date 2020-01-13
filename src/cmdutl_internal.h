@@ -43,7 +43,7 @@
 
 
 #include    <cmdutl.h>
-#include    <node_internal.h>
+#include    <Node_internal.h>
 #include    <NodeArray.h>
 #include    <NodeHash.h>
 #include    <NodeTree.h>

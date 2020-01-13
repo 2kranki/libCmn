@@ -51,7 +51,7 @@
 /* Header File Inclusion */
 #include        <NodeTree_internal.h>
 #include        <Name_internal.h>
-#include        <node_internal.h>
+#include        <Node_internal.h>
 #include        <NodeLink_internal.h>
 #include        <NodeArray.h>
 #include        <NodeHash.h>
@@ -113,7 +113,7 @@ extern "C" {
             obj_Release(pStr);
         }
 
-        pName = node_getNameUTF8((NODE_DATA *)pNode);
+        pName = Node_getNameUTF8((NODE_DATA *)pNode);
         fprintf(stdout, "%s ", pName);
         mem_Free((void *)pName);
         fprintf(stdout, "\n");
@@ -2480,7 +2480,7 @@ extern "C" {
                     eRc = ERESULT_FAILURE;
                     break;
                 }
-                pName = node_getName((NODE_DATA *)pEntry);
+                pName = Node_getName((NODE_DATA *)pEntry);
                 if ((OBJ_NIL == pName) || (obj_getType(pName) == OBJ_IDENT_NAME))
                     ;
                 else {
@@ -2595,18 +2595,18 @@ extern "C" {
         if (pEntry == OBJ_NIL) {
             return ERESULT_SUCCESS;
         }
-        node_setMisc(NodeLink_getNode(pEntry), indent);
+        Node_setMisc(NodeLink_getNode(pEntry), indent);
         ObjList_Add2Head(pQueue, pEntry);
         while (ObjList_getSize(pQueue)) {
             pEntry = ObjList_Head(pQueue);
-            indent = node_getMisc(NodeLink_getNode(pEntry));
+            indent = Node_getMisc(NodeLink_getNode(pEntry));
             ObjList_DeleteHead(pQueue);
             pVisitor(pObject, this, pEntry, indent);
             index = NodeLink_getChild(pEntry);
             if (index) {
                 pNext = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
                 if (pNext) {
-                    node_setMisc(NodeLink_getNode(pNext), indent+1);
+                    Node_setMisc(NodeLink_getNode(pNext), indent+1);
                     ObjList_Add2Tail(pQueue, pNext);
                 }
             }
@@ -2614,7 +2614,7 @@ extern "C" {
             if (index) {
                 pEntry = (NODELINK_DATA *)NodeArray_Get(this->pArray, index);
                 if (pEntry) {
-                    node_setMisc(NodeLink_getNode(pEntry), indent);
+                    Node_setMisc(NodeLink_getNode(pEntry), indent);
                     ObjList_Add2Head(pQueue, pEntry);
                 }
             }

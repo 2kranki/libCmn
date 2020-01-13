@@ -49,7 +49,7 @@
 #include    <dec.h>
 #include    <hex.h>
 #include    <JsonIn.h>
-#include    <node.h>
+#include    <Node.h>
 #include    <NodeArray.h>
 #include    <NodeHash.h>
 #include    <utf8.h>
@@ -154,10 +154,10 @@ extern "C" {
 #ifdef XYZZY
         eRc = nodeHash_FindA(pHash, "objectType", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
+            pNode = Node_getData(pNode);
+            pName = Node_getName(pNode);
             if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "string")) {
-                pStr = node_getData(pNode);
+                pStr = Node_getData(pNode);
                 if (0 == strcmp(pInfo->pClassName, AStr_getData(pStr))) {
                 }
                 else {
@@ -208,10 +208,10 @@ extern "C" {
         
         eRc = nodeHash_FindA(pHash, "crc", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
+            pNode = Node_getData(pNode);
+            pName = Node_getName(pNode);
             if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
+                pStr = Node_getData(pNode);
                 crc = (uint32_t)dec_getInt64A(AStr_getData(pStr));
             }
             else {
@@ -242,10 +242,10 @@ extern "C" {
         
         eRc = nodeHash_FindA(pHash, "len", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
+            pNode = Node_getData(pNode);
+            pName = Node_getName(pNode);
             if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer")) {
-                pStr = node_getData(pNode);
+                pStr = Node_getData(pNode);
                 length = (uint32_t)dec_getInt64A(AStr_getData(pStr));
             }
             else {
@@ -276,10 +276,10 @@ extern "C" {
         
         eRc = nodeHash_FindA(pHash, "data", &pNode);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pNode = node_getData(pNode);
-            pName = node_getName(pNode);
+            pNode = Node_getData(pNode);
+            pName = Node_getName(pNode);
             if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "array")) {
-                pArray = node_getData(pNode);
+                pArray = Node_getData(pNode);
                 if (!(NodeArray_getSize(pArray) == length)) {
                     fprintf(stderr, "ERROR - length does not match array size!\n");
 #ifdef TRACE_FUNCTIONS
@@ -296,8 +296,8 @@ extern "C" {
                 //FIXME: pStrOut = W32Str_New();
                 for (i=0; i<length; ++i) {
                     pNode = NodeArray_Get(pArray, i+1);
-                    pName = node_getName(pNode);
-                    pStr = node_getData(pNode);
+                    pName = Node_getName(pNode);
+                    pStr = Node_getData(pNode);
                     if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))) {
                         fprintf(stderr, "ERROR - data contains invalud data!\n");
 #ifdef TRACE_FUNCTIONS

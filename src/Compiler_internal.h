@@ -42,7 +42,7 @@
 #include        <Compiler.h>
 #include        <JsonIn.h>
 #include        <ObjArray.h>
-#include        <node.h>
+#include        <Node.h>
 
 
 #ifndef COMPILER_INTERNAL_H

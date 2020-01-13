@@ -155,78 +155,78 @@ int         test_hjson01(
         pFileNode = hjson_ParseFileHash(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStrA = node_getNameUTF8(pFileNode);
+            pStrA = Node_getNameUTF8(pFileNode);
             XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pHash = node_getData(pFileNode);
+            pHash = Node_getData(pFileNode);
             XCTAssertFalse( (OBJ_NIL == pHash) );
             fprintf(stderr, "hash size = %d\n", NodeHash_getSize(pHash));
             XCTAssertTrue( (6 == NodeHash_getSize(pHash)) );
             
             pNode = NodeHash_FindA(pHash, 0, "one");
             XCTAssertTrue( (pNode) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("integer", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("123", AStr_getData(pStr))) );
             
             pNode = NodeHash_FindA(pHash, 0, "two");
             XCTAssertTrue( (pNode) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("string", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("xyz", AStr_getData(pStr))) );
             
             pNode = NodeHash_FindA(pHash, 0, "three");
             XCTAssertTrue( (pNode) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("array", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pArray = node_getData(pNode);
+            pArray = Node_getData(pNode);
             fprintf(stderr, "array size = %d\n", NodeArray_getSize(pArray));
             XCTAssertTrue( (3 == NodeArray_getSize(pArray)) );
             pNode = NodeArray_Get(pArray, 1);
             XCTAssertFalse( (OBJ_NIL == pNode) );
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("a", AStr_getData(pStr))) );
             pNode = NodeArray_Get(pArray, 2);
             XCTAssertFalse( (OBJ_NIL == pNode) );
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("b", AStr_getData(pStr))) );
             pNode = NodeArray_Get(pArray, 3);
             XCTAssertFalse( (OBJ_NIL == pNode) );
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("c", AStr_getData(pStr))) );
             
             pNode = NodeHash_FindA(pHash, 0, "four");
             XCTAssertTrue( (pNode) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("null", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
             
             pNode = NodeHash_FindA(pHash, 0, "five");
             XCTAssertTrue( (pNode) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("true", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
             
             pNode = NodeHash_FindA(pHash, 0, "six");
             XCTAssertTrue( (pNode) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("false", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
@@ -273,23 +273,23 @@ int         test_hjson02(
         pFileNode = hjson_ParseFileHash(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStrA = node_getNameUTF8(pFileNode);
+            pStrA = Node_getNameUTF8(pFileNode);
             XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pHash = node_getData(pFileNode);
+            pHash = Node_getData(pFileNode);
             XCTAssertFalse( (OBJ_NIL == pHash) );
             fprintf(stderr, "hash size = %d\n", NodeHash_getSize(pHash));
             XCTAssertTrue( (1 == NodeHash_getSize(pHash)) );
             
             pNode = NodeHash_FindA(pHash, 0, "one");
             XCTAssertTrue( (pNode) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("integer", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("+123", AStr_getData(pStr))) );
             
         }
@@ -334,23 +334,23 @@ int         test_hjson03(
         pFileNode = hjson_ParseFileHash(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStrA = node_getNameUTF8(pFileNode);
+            pStrA = Node_getNameUTF8(pFileNode);
             XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pHash = node_getData(pFileNode);
+            pHash = Node_getData(pFileNode);
             XCTAssertFalse( (OBJ_NIL == pHash) );
             fprintf(stderr, "hash size = %d\n", NodeHash_getSize(pHash));
             XCTAssertTrue( (1 == NodeHash_getSize(pHash)) );
             
             pNode = NodeHash_FindA(pHash, 0, "one");
             XCTAssertTrue( (pNode) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("integer", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("-123", AStr_getData(pStr))) );
             
         }
@@ -395,23 +395,23 @@ int         test_hjson04(
         pFileNode = hjson_ParseFileHash(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStrA = node_getNameUTF8(pFileNode);
+            pStrA = Node_getNameUTF8(pFileNode);
             XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pHash = node_getData(pFileNode);
+            pHash = Node_getData(pFileNode);
             XCTAssertFalse( (OBJ_NIL == pHash) );
             fprintf(stderr, "hash size = %d\n", NodeHash_getSize(pHash));
             XCTAssertTrue( (1 == NodeHash_getSize(pHash)) );
             
             pNode = NodeHash_FindA(pHash, 0, "one");
             XCTAssertTrue( (pNode) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pHash = node_getData(pNode);
+            pHash = Node_getData(pNode);
             XCTAssertTrue( (0 == NodeHash_getSize(pHash)) );
             
         }
@@ -456,23 +456,23 @@ int         test_hjson05(
         pFileNode = hjson_ParseFileHash(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStrA = node_getNameUTF8(pFileNode);
+            pStrA = Node_getNameUTF8(pFileNode);
             XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pHash = node_getData(pFileNode);
+            pHash = Node_getData(pFileNode);
             XCTAssertFalse( (OBJ_NIL == pHash) );
             fprintf(stderr, "hash size = %d\n", NodeHash_getSize(pHash));
             XCTAssertTrue( (1 == NodeHash_getSize(pHash)) );
             
             pNode = NodeHash_FindA(pHash, 0, "one");
             XCTAssertTrue( (pNode) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("array", pStrA)) );
             mem_Free((void *)pStrA);
             pStrA = NULL;
-            pArray = node_getData(pNode);
+            pArray = Node_getData(pNode);
             XCTAssertTrue( (0 == NodeArray_getSize(pArray)) );
             
         }
@@ -520,7 +520,7 @@ int             test_hjson_File01(
         pFileNode = hjson_ParseFileHash(pObj);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStr = node_ToDebugString(pFileNode, 0);
+            pStr = Node_ToDebugString(pFileNode, 0);
             fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -574,7 +574,7 @@ int             test_hjson_File02(
         pFileNode = hjson_ParseFileHash(pObj);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStr = node_ToDebugString(pFileNode, 0);
+            pStr = Node_ToDebugString(pFileNode, 0);
             fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -621,7 +621,7 @@ int         test_hjson_Float01(
         pFileNode = hjson_ParseFileHash(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStr = node_ToDebugString(pFileNode, 3);
+            pStr = Node_ToDebugString(pFileNode, 3);
             if (pStr) {
                 fprintf(stderr, "%s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -665,7 +665,7 @@ int         test_hjson_Float02(
         pFileNode = hjson_ParseFileHash(pObj);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStr = node_ToDebugString(pFileNode, 3);
+            pStr = Node_ToDebugString(pFileNode, 3);
             if (pStr) {
                 fprintf(stderr, "%s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -709,7 +709,7 @@ int         test_hjson_Simple01(
         pFileNode = hjson_ParseFileHash(pObj);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStr = node_ToDebugString(pFileNode, 0);
+            pStr = Node_ToDebugString(pFileNode, 0);
             fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -806,12 +806,12 @@ int             test_hjson_Object01(
 
         if (pFileNode) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pFileNode, 0);
+            pWrk = Node_ToDebugString(pFileNode, 0);
             fprintf(stderr, "===> GoodJsonObject1:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
             
-            pHash = node_getData(pFileNode);
+            pHash = Node_getData(pFileNode);
             TINYTEST_FALSE( (OBJ_NIL == pHash) );
             TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 

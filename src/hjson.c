@@ -173,7 +173,7 @@ extern "C" {
             return OBJ_NIL;
         }
         if (pLoc && pNode) {
-            node_setExtra(pNode, pLoc);
+            Node_setExtra(pNode, pLoc);
         }
         obj_Release(pLoc);
         pLoc = OBJ_NIL;
@@ -292,7 +292,7 @@ extern "C" {
         
         pNode = JsonIn_NodeFromHash(pHash);
         if (pLoc && pNode) {
-            node_setExtra(pNode, pLoc);
+            Node_setExtra(pNode, pLoc);
         }
         obj_Release(pLoc);
         pLoc = OBJ_NIL;
@@ -344,12 +344,12 @@ extern "C" {
                 
             case LEXJ_KWD_FALSE:
                 pFalse = false_New();
-                pNode = node_NewWithUTF8ConAndClass(0, "false", pFalse);
+                pNode = Node_NewWithUTF8ConAndClass(0, "false", pFalse);
                 obj_Release(pFalse);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\tfalse\n");
                 if (pLoc && pNode) {
-                    node_setExtra(pNode, pLoc);
+                    Node_setExtra(pNode, pLoc);
                     obj_Release(pLoc);
                     pLoc = OBJ_NIL;
                 }
@@ -357,12 +357,12 @@ extern "C" {
                 
             case LEXJ_KWD_NULL:
                 pNull = null_New();
-                pNode = node_NewWithUTF8ConAndClass(0, "null", pNull);
+                pNode = Node_NewWithUTF8ConAndClass(0, "null", pNull);
                 obj_Release(pNull);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\tnull\n");
                 if (pLoc && pNode) {
-                    node_setExtra(pNode, pLoc);
+                    Node_setExtra(pNode, pLoc);
                     obj_Release(pLoc);
                     pLoc = OBJ_NIL;
                 }
@@ -370,12 +370,12 @@ extern "C" {
                 
             case LEXJ_KWD_TRUE:
                 pTrue = true_New();
-                pNode = node_NewWithUTF8ConAndClass(0, "true", pTrue);
+                pNode = Node_NewWithUTF8ConAndClass(0, "true", pTrue);
                 obj_Release(pTrue);
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\ttrue\n");
                 if (pLoc && pNode) {
-                    node_setExtra(pNode, pLoc);
+                    Node_setExtra(pNode, pLoc);
                     obj_Release(pLoc);
                     pLoc = OBJ_NIL;
                 }
@@ -434,11 +434,11 @@ extern "C" {
         
         if (pStr) {
             TRC_OBJ(this, "\tname: \"%s\"\n", AStr_getData(pStr));
-            pNode = node_NewWithUTF8ConAndClass(0, "name", pStr);
+            pNode = Node_NewWithUTF8ConAndClass(0, "name", pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
             if (pLoc && pNode) {
-                node_setExtra(pNode, pLoc);
+                Node_setExtra(pNode, pLoc);
             }
         }
         
@@ -515,7 +515,7 @@ extern "C" {
                     AStr_CharInsertW32(pStr, 1, sign);
                 }
                 TRC_OBJ(this, "\tinteger: \"%s\"\n", AStr_getData(pStr));
-                pNode = node_NewWithUTF8ConAndClass(0, "integer", pStr);
+                pNode = Node_NewWithUTF8ConAndClass(0, "integer", pStr);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
                 if (OBJ_NIL == pLoc) {
@@ -531,7 +531,7 @@ extern "C" {
                     AStr_CharInsertW32(pStr, 1, sign);
                 }
                 TRC_OBJ(this, "\tfloat: \"%s\"\n", AStr_getData(pStr));
-                pNode = node_NewWithUTF8ConAndClass(0, "float", pStr);
+                pNode = Node_NewWithUTF8ConAndClass(0, "float", pStr);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
                 if (OBJ_NIL == pLoc) {
@@ -542,7 +542,7 @@ extern "C" {
         }
         
         if (pLoc && pNode) {
-            node_setExtra(pNode, pLoc);
+            Node_setExtra(pNode, pLoc);
         }
         obj_Release(pLoc);
         pLoc = OBJ_NIL;
@@ -588,7 +588,7 @@ extern "C" {
         if (pName == OBJ_NIL) {
             return OBJ_NIL;
         }
-        pLoc = node_getExtra(pName);
+        pLoc = Node_getExtra(pName);
         obj_Retain(pLoc);
 
         pToken = lexj_TokenLookAhead(this->pLexJ, 1);
@@ -621,20 +621,20 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        pszName = AStr_CStringA(node_getData(pName), NULL);
+        pszName = AStr_CStringA(Node_getData(pName), NULL);
         TRC_OBJ(this, "%s found:\n", __func__);
         TRC_OBJ(this, "\tname: %s\n", pszName);
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
             ASTR_DATA       *pStrA;
-            pStrA = node_ToDebugString(pData, 8);
+            pStrA = Node_ToDebugString(pData, 8);
             TRC_OBJ(this, "\tdata:\n");
             TRC_OBJ(this, "%s\n", AStr_getData(pStrA));
             obj_Release(pStrA);
         }
 #endif
-        pNode = node_NewWithUTF8AndClass(0, pszName, pData);
+        pNode = Node_NewWithUTF8AndClass(0, pszName, pData);
         mem_Free((void *)pszName);
         pszName = NULL;
         obj_Release(pData);
@@ -642,7 +642,7 @@ extern "C" {
         obj_Release(pName);
         pName = OBJ_NIL;
         if (pLoc) {
-            node_setExtra(pNode, pLoc);
+            Node_setExtra(pNode, pLoc);
         }
         obj_Release(pLoc);
         pLoc = OBJ_NIL;
@@ -698,7 +698,7 @@ extern "C" {
             obj_Release(pStr);
             pStr = OBJ_NIL;
             if (pLoc) {
-                node_setExtra(pNode, pLoc);
+                Node_setExtra(pNode, pLoc);
             }
         }
         obj_Release(pLoc);

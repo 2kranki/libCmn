@@ -95,9 +95,9 @@ extern "C" {
                 for (i=0; i<iMax; ++i) {
                     pNode = NodeArray_Get(this->pRegistry, i+1);
                     if (pNode) {
-                        nodeID = (uint32_t)node_getNameInt(pNode);
+                        nodeID = (uint32_t)Node_getNameInt(pNode);
                         if (nodeID == dest) {
-                            pMethod = node_getData(pNode);
+                            pMethod = Node_getData(pNode);
                             pMsgOutBody = ObjMethod_getMethod(pMethod);
                             pMsgOutData = ObjMethod_getObject(pMethod);
                             pCopy = MsgData_Copy(pEntry);
@@ -114,11 +114,11 @@ extern "C" {
                 for (i=0; i<iMax; ++i) {
                     pNode = NodeArray_Get(this->pRegistry, i+1);
                     if (pNode) {
-                        nodeID = (uint32_t)node_getNameInt(pNode);
+                        nodeID = (uint32_t)Node_getNameInt(pNode);
                         if (nodeID == MsgData_getOrigin(pEntry))
                             ;
                         else {
-                            pMethod = node_getData(pNode);
+                            pMethod = Node_getData(pNode);
                             pMsgOutBody = ObjMethod_getMethod(pMethod);
                             pMsgOutData = ObjMethod_getObject(pMethod);
                             pCopy = MsgData_Copy(pEntry);
@@ -764,7 +764,7 @@ extern "C" {
         }
         
         ++this->unique;
-        pNode = node_NewWithInt(this->unique, pRcvObj);
+        pNode = Node_NewWithInt(this->unique, pRcvObj);
         if (pNode == OBJ_NIL) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -804,11 +804,11 @@ extern "C" {
         }
         
         ++this->unique;
-        pNode = node_NewWithInt(this->unique, pRcvObj);
+        pNode = Node_NewWithInt(this->unique, pRcvObj);
         if (pNode == OBJ_NIL) {
             return ERESULT_OUT_OF_MEMORY;
         }
-        node_setMisc1(pNode, vtblOffset);
+        Node_setMisc1(pNode, vtblOffset);
         
         NodeArray_AppendNode(this->pRegistry, pNode, NULL);
         obj_Release(pNode);
@@ -925,7 +925,7 @@ extern "C" {
         for (i=0; i<iMax; ++i) {
             pNode = NodeArray_Get(this->pRegistry, i+1);
             if (pNode) {
-                nodeID = (uint32_t)node_getNameInt(pNode);
+                nodeID = (uint32_t)Node_getNameInt(pNode);
                 if (token == nodeID) {
                     pNode = NodeArray_Delete(this->pRegistry, i+1);
                     obj_Release(pNode);

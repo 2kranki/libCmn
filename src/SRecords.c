@@ -326,10 +326,11 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         SRecords_Assign(
-        SRECORDS_DATA		*this,
-        SRECORDS_DATA      *pOther
+        SRECORDS_DATA   *this,
+        SRECORDS_DATA   *pOther
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -343,6 +344,16 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY

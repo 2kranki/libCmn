@@ -50,7 +50,7 @@
 #include    <dec_internal.h>
 #include    <hex_internal.h>
 #include    <JsonIn.h>
-#include    <node.h>
+#include    <Node.h>
 #include    <NodeHash.h>
 #include    <utf8.h>
 

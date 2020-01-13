@@ -60,7 +60,7 @@
 #include    <dec.h>
 #include    <hex.h>
 #include    <JsonIn.h>
-#include    <node.h>
+#include    <Node.h>
 #include    <NodeArray.h>
 #include    <NodeHash.h>
 #include    <utf8_internal.h>
@@ -194,7 +194,7 @@ extern "C" {
                     );
                     goto exit00;
                 }
-                pName = node_getName(pNode);
+                pName = Node_getName(pNode);
                 if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))
                     ;
                 else {
@@ -204,7 +204,7 @@ extern "C" {
                     );
                     goto exit00;
                 }
-                pHash = node_getData(pNode);
+                pHash = Node_getData(pNode);
                 if (OBJ_NIL == pHash) {
                     fprintf(
                             stderr,

@@ -361,7 +361,7 @@ bool                rbt_InsertNode(
 
 
 // Returns 1 if the value was removed, 0 otherwise. Optional node callback
-// can be provided to dealloc node and/or user data. Use rb_tree_node_dealloc
+// can be provided to dealloc node and/or user data. Use rb_tree_Node_dealloc
 // default callback to deallocate node created by rb_tree_insert(...).
 int         rbt_Delete (
     RBT_TREE    *this,

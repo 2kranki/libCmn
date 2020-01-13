@@ -52,7 +52,7 @@
 
 #include        <cmn_defs.h>
 #include        <lex.h>
-#include        <node.h>
+#include        <Node.h>
 #include        <ObjArray.h>
 #include        <path.h>
 #include        <prt.h>

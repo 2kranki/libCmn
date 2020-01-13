@@ -28,6 +28,7 @@
 //#include    <szTbl.h>
 #include    <trace.h>
 #include    <Node_internal.h>
+#include    <NodeArray.h>
 
 
 
@@ -146,8 +147,175 @@ int             test_Node_Test01 (
 
 
 
+int         test_Node_Utf8(
+    const
+    char            *pTestName
+)
+{
+    NODE_DATA        *pObj = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = Node_NewWithUTF8AndClass(0, "abc", NULL);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        // Test something.
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    szTbl_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Node_Utf8Con(
+    const
+    char            *pTestName
+)
+{
+    NODE_DATA        *pObj = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = Node_NewWithUTF8ConAndClass(0, "abc", OBJ_NIL);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    szTbl_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Node_Property01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    NODE_DATA       *pObj = OBJ_NIL;
+    ASTR_DATA       *pAStr = OBJ_NIL;
+    const
+    char            *pStrA = NULL;
+    ASTR_DATA       *pAWrk = OBJ_NIL;
+    NODEARRAY_DATA  *pKeys = OBJ_NIL;
+    uint32_t        i;
+    NODE_DATA       *pNode = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = Node_NewWithUTF8ConAndClass(0, "abc", OBJ_NIL);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pStrA = "c";
+        pAStr = AStr_NewA(pStrA);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        eRc = Node_PropertyAddA(pObj, pStrA, pAStr);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        pAWrk = Node_PropertyA(pObj, pStrA);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+
+        pStrA = "a";
+        pAStr = AStr_NewA(pStrA);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        eRc = Node_PropertyAddA(pObj, pStrA, pAStr);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        pAWrk = Node_PropertyA(pObj, pStrA);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+
+        pStrA = "b";
+        pAStr = AStr_NewA(pStrA);
+        XCTAssertFalse( (OBJ_NIL == pAStr) );
+        eRc = Node_PropertyAddA(pObj, pStrA, pAStr);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        pAWrk = Node_PropertyA(pObj, pStrA);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
+        obj_Release(pAStr);
+        pAStr = OBJ_NIL;
+
+        pStrA = "a";
+        pAWrk = Node_PropertyA(pObj, pStrA);
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
+
+        pKeys = Node_Properties(pObj);
+        XCTAssertFalse( (OBJ_NIL == pKeys) );
+        i = NodeArray_getSize(pKeys);
+        XCTAssertTrue( (3 == i) );
+        pNode = NodeArray_Get(pKeys, 1);
+        XCTAssertFalse( (OBJ_NIL == pNode) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(Node_getData(pNode), "a")) );
+        pNode = NodeArray_Get(pKeys, 2);
+        XCTAssertFalse( (OBJ_NIL == pNode) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(Node_getData(pNode), "b")) );
+        pNode = NodeArray_Get(pKeys, 3);
+        XCTAssertFalse( (OBJ_NIL == pNode) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(Node_getData(pNode), "c")) );
+        obj_Release(pKeys);
+        pKeys = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    szTbl_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Node_Copy01(
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc;
+    NODE_DATA       *pObj1 = OBJ_NIL;
+    NODE_DATA       *pObj2 = OBJ_NIL;
+    bool            fRc;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj1 = Node_NewWithUTF8ConAndClass(0, "abc", OBJ_NIL);
+    XCTAssertFalse( (OBJ_NIL == pObj1) );
+    if (pObj1) {
+
+        pObj2 = Node_Copy(pObj1);
+        XCTAssertFalse( (OBJ_NIL == pObj2) );
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NODE);
+        TINYTEST_TRUE( (fRc) );
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        obj_Release(pObj1);
+        pObj1 = OBJ_NIL;
+    }
+
+    szTbl_SharedReset();
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_Node);
+    TINYTEST_ADD_TEST(test_Node_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Node_Property01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Node_Utf8Con,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Node_Utf8,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Node_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Node_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

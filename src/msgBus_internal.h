@@ -43,7 +43,7 @@
 #include    <msgBus.h>
 #include    <MsgData.h>
 #include    <objCb.h>
-#include    <node.h>
+#include    <Node.h>
 #include    <NodeArray.h>
 #include    <psxLock.h>
 #include    <psxMutex.h>

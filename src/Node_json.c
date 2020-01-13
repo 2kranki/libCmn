@@ -2,7 +2,7 @@
 /*
  * File:   Node_json.c
  *
- *	Generated 01/12/2020 16:09:18
+ *	Generated 01/12/2020 21:04:57
  *
  */
 
@@ -49,7 +49,8 @@
 #include    <AStr_internal.h>
 #include    <dec.h>
 #include    <JsonIn.h>
-#include    <node.h>
+#include    <Name_internal.h>
+#include    <Node.h>
 #include    <NodeHash.h>
 #include    <utf8.h>
 
@@ -68,6 +69,132 @@ extern "C" {
     /****************************************************************
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
+    
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT     Node_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        NODE_DATA     *pObject
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        const
+        OBJ_INFO        *pInfo;
+        int64_t         intIn;
+        uint32_t        uint32 = 0;
+        int32_t         int32 = 0;
+        ASTR_DATA       *pWrk;
+        NAME_DATA       *pName = OBJ_NIL;
+        OBJ_ID          pObj = OBJ_NIL;
+
+        pInfo = obj_getInfo(Node_Class());
+        
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+
+       eRc = JsonIn_SubObjectInHash(pParser, "name");
+       if (ERESULT_FAILED(eRc)) {
+           pName = Name_ParseJsonObject(pParser);
+           JsonIn_SubObjectEnd(pParser);
+           if (pName) {
+               Node_setProperties(pObject, pObj);
+               obj_Release(pObj);
+               pObj = OBJ_NIL;
+           }
+           else {
+               fprintf(stderr, "ERROR - name is invalid!\n");
+               eRc = ERESULT_DATA_MISSING;
+               goto exit00;
+           }
+       }
+
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
+       uint32  = (uint32_t)intIn;
+       Node_setClass(pObject, uint32);
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+       int32   = (int32_t)intIn;
+       Node_setType(pObject, int32);
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
+       uint32   = (uint32_t)intIn;
+       Node_setMisc(pObject, uint32);
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc1", &intIn);
+       uint32   = (uint32_t)intIn;
+       Node_setMisc1(pObject, uint32);
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc2", &intIn);
+       uint32   = (uint32_t)intIn;
+       Node_setMisc2(pObject, uint32);
+
+       eRc = JsonIn_SubObjectInHash(pParser, "data");
+       if (ERESULT_FAILED(eRc)) {
+           ;
+       }
+       else {
+           pObj = JsonIn_ParseObject(pParser);
+           JsonIn_SubObjectEnd(pParser);
+           if (pObj) {
+               Node_setData(pObject, pObj);
+               obj_Release(pObj);
+               pObj = OBJ_NIL;
+           }
+       }
+
+       eRc = JsonIn_SubObjectInHash(pParser, "other");
+       if (ERESULT_FAILED(eRc)) {
+           ;
+       }
+       else {
+           pObj = JsonIn_ParseObject(pParser);
+           JsonIn_SubObjectEnd(pParser);
+           if (pObj) {
+               Node_setOther(pObject, pObj);
+               obj_Release(pObj);
+               pObj = OBJ_NIL;
+           }
+       }
+
+       eRc = JsonIn_SubObjectInHash(pParser, "extra");
+       if (ERESULT_FAILED(eRc)) {
+           ;
+       }
+       else {
+           pObj = JsonIn_ParseObject(pParser);
+           JsonIn_SubObjectEnd(pParser);
+           if (pObj) {
+               Node_setExtra(pObject, pObj);
+               obj_Release(pObj);
+               pObj = OBJ_NIL;
+           }
+       }
+
+       eRc = JsonIn_SubObjectInHash(pParser, "properties");
+       if (ERESULT_FAILED(eRc)) {
+           ;
+       }
+       else {
+           pObj = JsonIn_ParseObject(pParser);
+           JsonIn_SubObjectEnd(pParser);
+           if (pObj) {
+               Node_setProperties(pObject, pObj);
+               obj_Release(pObj);
+               pObj = OBJ_NIL;
+           }
+       }
+
+        // Return to caller.
+    exit00:
+        return eRc;
+    }
+    
+    
     
     /*!
      Parse the new object from an established parser.
@@ -99,24 +226,7 @@ extern "C" {
             goto exit00;
         }
         
-#ifdef XYZZZY 
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
-        pObject->loc.fileIndex = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->loc.offset);
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
-        pObject->loc.lineNo = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
-        pObject->loc.colNo = (uint16_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "severity", &intIn);
-        pObject->severity = (uint16_t)intIn;
-
-        eRc = JsonIn_SubobjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
-        }
-        JsonIn_SubobjectEnd(pParser);
-#endif
+        eRc =  Node_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -206,7 +316,6 @@ extern "C" {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-#ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
             uint32_t        type,
@@ -216,7 +325,6 @@ extern "C" {
             OBJ_ID          objId
         );
         ASTR_DATA       *pWrkStr;
-#endif
 
 #ifdef NDEBUG
 #else
@@ -234,42 +342,115 @@ extern "C" {
                               pInfo->pClassName
              );
             
-#ifdef XYZZZY 
             AStr_AppendPrint(pStr,
-                             "\"fileIndex\":%d, "
-                             "\"offset\":%lld, "
-                             "\"lineNo\":%d, "
-                             "\"colNo\":%d "
-                             "\"severity\":%d ",
-                             this->loc.fileIndex,
-                             this->loc.offset,
-                             this->loc.lineNo,
-                             this->loc.colNo,
-                             this->severity
+                             "\"class\":%d, "
+                             "\"type\":%d, "
+                             "\"unique\":%d, "
+                             "\"misc\":%d "
+                             "\"misc1\":%d "
+                             "\"misc2\":%d \n",
+                             this->cls,
+                             this->type,
+                             this->unique,
+                             this->misc,
+                             Node_getMisc1(this),
+                             Node_getMisc2(this)
             );
-             if (this->pErrorStr) {
-                pQueryInfo = obj_getVtbl(this->pErrorStr)->pQueryInfo;
-                if (pQueryInfo) {
-                    pToJson =   (*pQueryInfo)(
-                                              this->pErrorStr,
-                                              OBJ_QUERYINFO_TYPE_METHOD,
-                                              "ToJson"
-                                              );
-                    if (pToJson) {
-                        pWrkStr = (*pToJson)(this->pErrorStr);
-                        if (pWrkStr) {
-                            AStr_AppendA(pStr, "\t\"errorStr\": ");
-                            AStr_Append(pStr, pWrkStr);
-                            obj_Release(pWrkStr);
-                            pWrkStr = OBJ_NIL;
-                            AStr_AppendA(pStr, "\n");
-                        }
+
+            AStr_AppendA(pStr, "}\n");
+        }
+
+        if (this->pName) {
+            pWrkStr = Name_ToJson(this->pName);
+            AStr_AppendA(pStr, "\t\"name\": ");
+            AStr_Append(pStr, pWrkStr);\
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+            AStr_AppendA(pStr, "\n");
+        }
+
+        if (this->pData) {
+            pQueryInfo = obj_getVtbl(this->pData)->pQueryInfo;
+            if (pQueryInfo) {
+                pToJson =   (*pQueryInfo)(
+                                          this->pData,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJson"
+                                          );
+                if (pToJson) {
+                    pWrkStr = (*pToJson)(this->pData);
+                    if (pWrkStr) {
+                        AStr_AppendA(pStr, "\t\"data\": ");
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
                     }
                 }
             }
-#endif
+        }
 
-            AStr_AppendA(pStr, "}\n");
+        if (this->pOther) {
+            pQueryInfo = obj_getVtbl(this->pOther)->pQueryInfo;
+            if (pQueryInfo) {
+                pToJson =   (*pQueryInfo)(
+                                          this->pOther,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJson"
+                                          );
+                if (pToJson) {
+                    pWrkStr = (*pToJson)(this->pOther);
+                    if (pWrkStr) {
+                        AStr_AppendA(pStr, "\t\"other\": ");
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+        }
+
+        if (this->pExtra) {
+            pQueryInfo = obj_getVtbl(this->pExtra)->pQueryInfo;
+            if (pQueryInfo) {
+                pToJson =   (*pQueryInfo)(
+                                          this->pExtra,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJson"
+                                          );
+                if (pToJson) {
+                    pWrkStr = (*pToJson)(this->pExtra);
+                    if (pWrkStr) {
+                        AStr_AppendA(pStr, "\t\"extra\": ");
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
+        }
+
+        if (this->pProperties) {
+            pQueryInfo = obj_getVtbl(this->pProperties)->pQueryInfo;
+            if (pQueryInfo) {
+                pToJson =   (*pQueryInfo)(
+                                          this->pProperties,
+                                          OBJ_QUERYINFO_TYPE_METHOD,
+                                          "ToJson"
+                                          );
+                if (pToJson) {
+                    pWrkStr = (*pToJson)(this->pProperties);
+                    if (pWrkStr) {
+                        AStr_AppendA(pStr, "\t\"properties\": ");
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                        AStr_AppendA(pStr, "\n");
+                    }
+                }
+            }
         }
 
         return pStr;

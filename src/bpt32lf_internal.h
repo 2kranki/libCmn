@@ -61,7 +61,7 @@ extern "C" {
     /*      Node Descriptor
      */
 #pragma pack(push, 1)
-    typedef struct  bpt32lf_node_s {
+    typedef struct  bpt32lf_Node_s {
         //uint32_t        prev;           // Previous Leaf Node Index
         //uint32_t        next;           // Next Leaf Node Index
         uint32_t        key;

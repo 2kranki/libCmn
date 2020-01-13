@@ -198,9 +198,9 @@ int             test_JsonIn_01(
         for(i=0; i<count; ++i) {
             pNode = NodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pNode) );
-            pName = node_getName(pNode);
+            pName = Node_getName(pNode);
             TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash")));
-            pHash = node_getData(pNode);
+            pHash = Node_getData(pNode);
             TINYTEST_FALSE( (OBJ_NIL == pHash) );
             TINYTEST_TRUE(( obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH) ));
             eRc = JsonIn_SubObjectFromHash(pObj, pHash);

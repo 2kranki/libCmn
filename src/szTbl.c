@@ -62,7 +62,7 @@ extern "C" {
     ****************************************************************/
 
     static
-    uint16_t		node_SizeNeeded (
+    uint16_t		Node_SizeNeeded (
         uint16_t		cLen
     );
     
@@ -90,7 +90,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    bool            node_Construct (
+    bool            Node_Construct (
         SZTBL_NODE      *pNode,
         uint16_t		cLen,
         uint32_t        hash,
@@ -98,7 +98,7 @@ extern "C" {
         char 			*pszString
     )
     {
-        uint16_t        cbSize = node_SizeNeeded(cLen);
+        uint16_t        cbSize = Node_SizeNeeded(cLen);
         bool            fRc = false;
         
         if (pNode) {
@@ -115,7 +115,7 @@ extern "C" {
     
     
     static
-    uint16_t		node_SizeNeeded (
+    uint16_t		Node_SizeNeeded (
         uint16_t		cLen
     )
     {
@@ -245,7 +245,7 @@ extern "C" {
         }
         
         hash = str_HashA(pStr, &strLen);
-        nodeSize = node_SizeNeeded(strLen);
+        nodeSize = Node_SizeNeeded(strLen);
         
         // Add a Heap block if necessary.
         pHb = this->pHeap;
@@ -437,7 +437,7 @@ extern "C" {
         }
 
         hash = str_HashA(pStr, &strLen);
-        nodeSize = node_SizeNeeded(strLen);
+        nodeSize = Node_SizeNeeded(strLen);
         
         // Add a Heap block if necessary.
         pHb = this->pHeap;
@@ -525,7 +525,7 @@ extern "C" {
         }
         
         hash = str_HashA(pStr, &strLen);
-        nodeSize = node_SizeNeeded(strLen);
+        nodeSize = Node_SizeNeeded(strLen);
         
         // Add a Heap block if necessary.
         pHb = this->pHeap;
@@ -611,7 +611,7 @@ extern "C" {
         
         hash = str_HashW32(pStr, &strLen);
         utf8StrLen = utf8_W32ToUtf8Str( (uint32_t)strLen, pStr, 0, NULL);
-        nodeSize = node_SizeNeeded(utf8StrLen-1);
+        nodeSize = Node_SizeNeeded(utf8StrLen-1);
         
         // Add a Heap block if necessary.
         pHb = this->pHeap;

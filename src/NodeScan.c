@@ -1183,7 +1183,7 @@ extern "C" {
         
         pNode = NodeScan_InputLookAhead(this, 1);
         if (pNode) {
-            pName = node_getNameUTF8(pNode);
+            pName = Node_getNameUTF8(pNode);
             cmp = strcmp(pName, pStr);
             mem_Free((void *)pName);
             if( 0 == cmp ) {
@@ -1230,7 +1230,7 @@ extern "C" {
         }
 
         pNode = NodeScan_InputLookAhead(this, 1);
-        if( pNode && ((cls == node_getClass(pNode)) || (cls == NODE_CLASS_ANY)) ) {
+        if( pNode && ((cls == Node_getClass(pNode)) || (cls == NODE_CLASS_ANY)) ) {
             (void)NodeScan_InputAdvance(this, 1);
             return pNode;
         }
@@ -1587,7 +1587,7 @@ extern "C" {
             if (cls == NODE_CLASS_ANY) {
                 return pNode;
             }
-            curClass = node_getClass(pNode);
+            curClass = Node_getClass(pNode);
             if (cls == curClass) {
                 return pNode;
             }

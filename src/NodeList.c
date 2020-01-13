@@ -401,7 +401,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8AndClass(cls, pName, pData);
+        pNode = Node_NewWithUTF8AndClass(cls, pName, pData);
         if (pNode) {
             eRc = ObjList_Add2Head((OBJLIST_DATA *)this, pNode);
             if (ERESULT_FAILED(eRc))
@@ -464,7 +464,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8AndClass(cls, pName, pData);
+        pNode = Node_NewWithUTF8AndClass(cls, pName, pData);
         if (pNode) {
             eRc = ObjList_Add2Tail((OBJLIST_DATA *)this, pNode);
             if (ERESULT_FAILED(eRc))
@@ -934,7 +934,7 @@ extern "C" {
 
         pRecord = listdl_Head(pList);
         while ( pRecord ) {
-            eRc = node_CompareA(pRecord->pObject, cls, pName);
+            eRc = Node_CompareA(pRecord->pObject, cls, pName);
             if (ERESULT_SUCCESS_EQUAL == eRc) {
                 pNode = pRecord->pObject;
                 break;
@@ -1176,7 +1176,7 @@ extern "C" {
             return ERESULT_SUCCESS;
         }
 
-        fRc = listdl_Sort(pList, (void *)node_Compare);
+        fRc = listdl_Sort(pList, (void *)Node_Compare);
         if (fRc)
             eRc = ERESULT_SUCCESS;
 

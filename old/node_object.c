@@ -271,6 +271,7 @@ NODE_VTBL       node_Vtbl = {
 
 const
 uint32_t        node_cProps = 8;
+
 const
 OBJ_PROP        node_pProps[] = {
     { "cls","","","Class Categorization","int32_t","","public","NODE_DATA",offsetof(NODE_DATA,cls),(sizeof(int32_t) << 3),0    },

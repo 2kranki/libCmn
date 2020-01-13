@@ -406,11 +406,11 @@ NODE_VTBL     Node_Vtbl = {
         (P_OBJ_TOSTRING)Node_ToDebugString,
         NULL,			// Node_Enable,
         NULL,			// Node_Disable,
-        NULL,			// (P_OBJ_ASSIGN)Node_Assign,
-        NULL,			// (P_OBJ_COMPARE)Node_Compare,
-        NULL, 			// (P_OBJ_PTR)Node_Copy,
-        NULL, 			// (P_OBJ_PTR)Node_DeepCopy,
-        NULL 			// (P_OBJ_HASH)Node_Hash,
+        (P_OBJ_ASSIGN)Node_Assign,
+        (P_OBJ_COMPARE)Node_Compare,
+        (P_OBJ_PTR)Node_Copy,
+        NULL,           // (P_OBJ_PTR)Node_DeepCopy,
+        NULL,           // (P_OBJ_HASH)Node_Hash,
     },
     // Put other object method names below this.
     // Properties:
@@ -425,14 +425,42 @@ static
 const
 OBJ_INFO        Node_Info = {
     "Node",
-    "Node",	// <-- Fill in description
+    "A Generic Node with Properties",
     (OBJ_DATA *)&Node_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&Node_Vtbl,
     sizeof(NODE_DATA)
 };
-#warning -- adjust super class object in Info above 
-//			if object inherits from another class
+
+
+
+const
+uint32_t        node_cProps = 8;
+
+const
+OBJ_PROP        node_pProps[] = {
+    { "cls","","","Class Categorization","int32_t","","public","NODE_DATA",
+        offsetof(NODE_DATA,cls),(sizeof(int32_t) << 3), 0},
+    { "type","","","???","int32_t","","public","NODE_DATA",
+        offsetof(NODE_DATA,type),(sizeof(int32_t) << 3), 0},
+    { "unique","","","unique integer identifier","uint32_t","","ro","NODE_DATA",
+        offsetof(NODE_DATA,unique),(sizeof(uint32_t) << 3), 0},
+    { "name","pName","","Name Identifier","NAME_DATA","","ro","NODE_DATA",
+        offsetof(NODE_DATA,pName),(sizeof(NAME_DATA *) << 3), 0},
+    { "data","pData","","associated data object","OBJ_ID","","public","NODE_DATA",
+        offsetof(NODE_DATA,pData),(sizeof(OBJ_ID) << 3), 0},
+    { "extra","pExtra","","an optional extra associated object","OBJ_ID","",
+        "public","NODE_DATA",
+        offsetof(NODE_DATA,pExtra),(sizeof(OBJ_ID) << 3), 0},
+    { "other","pOther","","an optional extra associated object","OBJ_ID","",
+        "public","NODE_DATA",
+        offsetof(NODE_DATA,pOther),(sizeof(OBJ_ID) << 3), 0},
+    { "properties","pProperties","","Associated Properties","NODEBTP_DATA","",
+        "public","NODE_DATA",
+        offsetof(NODE_DATA,pProperties),(sizeof(NODEBT_DATA *) << 3), 0},
+
+    {NULL}
+};
 
 
 

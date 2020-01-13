@@ -955,7 +955,7 @@ extern "C" {
         for (i=0; i<size; ++i) {
             pWork = (NODE_DATA *)ObjArray_Get(this->pArray, i+1);
             if (pWork) {
-                eRc = node_Compare(pNode, pWork);
+                eRc = Node_Compare(pNode, pWork);
                 if( eRc == ERESULT_SUCCESS_EQUAL ) {
                     return pWork;
                 }
@@ -992,7 +992,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
+        pNode = Node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
         pFound = NodeArray_Find(this, pNode);
         obj_Release(pNode);
         pNode = OBJ_NIL;
@@ -1164,7 +1164,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeArray_Vtbl);
         
-        this->pCompare = &node_Compare;
+        this->pCompare = &Node_Compare;
         /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {
@@ -1488,7 +1488,7 @@ extern "C" {
             for (j=0; j<ObjArray_getSize(this->pArray); ++j) {
                 pNode = ObjArray_Get(this->pArray, j+1);
                 if (pNode) {
-                    chr = node_getClass(pNode);
+                    chr = Node_getClass(pNode);
                 }
                 else {
                     chr = 0;
@@ -1605,7 +1605,7 @@ extern "C" {
         if (this->pArray) {
             for (j=0; j<ObjArray_getSize(this->pArray); ++j) {
                 pNode = ObjArray_Get(this->pArray, j+1);
-                pWrk = node_ToString(pNode);
+                pWrk = Node_ToString(pNode);
                 if (pWrk) {
                     AStr_AppendA(pStr, "  ");
                     AStr_Append(pStr, pWrk);

@@ -41,7 +41,7 @@
 
 #include        <NodeTree.h>
 #include        <JsonIn.h>
-#include        <node.h>
+#include        <Node.h>
 #include        <NodeHash.h>
 #include        <ObjArray.h>
 #include        <szTbl.h>

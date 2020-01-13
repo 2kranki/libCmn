@@ -161,7 +161,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <node.h>
+#include        <Node.h>
 #include        <false.h>
 #include        <null.h>
 #include        <path.h>

@@ -207,7 +207,7 @@ int         test_NodeArray_Add01(
     if (pArray) {
 
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
+            pNode = Node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             eRc = NodeArray_AppendNode(pArray, pNode, &idx);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = NodeArray_getSize(pArray);
@@ -263,9 +263,9 @@ int         test_NodeArray_Add02(
     if (pArray) {
 
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
+            pNode = Node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             XCTAssertFalse( (OBJ_NIL == pNode) );
-            node_setClass(pNode, i+1);
+            Node_setClass(pNode, i+1);
             eRc = NodeArray_AppendNode(pArray, pNode, &idx);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = NodeArray_getSize(pArray);

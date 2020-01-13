@@ -852,13 +852,13 @@ extern "C" {
         }
 #endif
         
-        pNameA = node_getNameUTF8(pNode);
+        pNameA = Node_getNameUTF8(pNode);
         if (NULL == pNameA) {
             DEBUG_BREAK();
             fprintf(stderr, "ERROR - Hash Pair is missing Name!\n\n\n");
             exit(8);
         }
-        pData = node_getData(pNode);
+        pData = Node_getData(pNode);
         if (OBJ_NIL == pData) {
             DEBUG_BREAK();
             fprintf(stderr, "ERROR - Hash Pair is missing Data object!\n\n\n");

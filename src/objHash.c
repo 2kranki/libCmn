@@ -676,6 +676,16 @@ extern "C" {
         }
 #endif
         
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
+
         //FIXME: Restore this.
 #ifdef XYZZY
         // Release any objects that the Other Array has.

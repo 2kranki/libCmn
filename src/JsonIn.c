@@ -48,7 +48,7 @@
 #include        <hex.h>
 #include        <hjson.h>
 #include        <Name_internal.h>
-#include        <node_internal.h>
+#include        <Node_internal.h>
 #include        <NodeArray_internal.h>
 #include        <NodeBT_internal.h>
 #include        <NodeHash_internal.h>
@@ -228,16 +228,16 @@ extern "C" {
         }
 #endif
 
-        pObj = node_getData(pNode);
+        pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-        pName = node_getName(pObj);
+        pName = Node_getName(pObj);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "array"))) {
             return OBJ_NIL;
         }
 
-        pArray = node_getData(pObj);
+        pArray = Node_getData(pObj);
         if ((OBJ_NIL == pArray) || !obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)) {
             return OBJ_NIL;
         }
@@ -262,16 +262,16 @@ extern "C" {
         }
 #endif
 
-        pObj = node_getData(pNode);
+        pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-        pName = node_getName(pObj);
+        pName = Node_getName(pObj);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "false"))) {
             return OBJ_NIL;
         }
 
-        pFalse = node_getData(pObj);
+        pFalse = Node_getData(pObj);
         if ((OBJ_NIL == pFalse) || !obj_IsKindOf(pFalse, OBJ_IDENT_FALSE)) {
             return OBJ_NIL;
         }
@@ -297,16 +297,16 @@ extern "C" {
         }
 #endif
 
-        pObj = node_getData(pNode);
+        pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-        pName = node_getName(pObj);
+        pName = Node_getName(pObj);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "float"))) {
             return OBJ_NIL;
         }
 
-        pStr = node_getData(pObj);
+        pStr = Node_getData(pObj);
         if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
             return OBJ_NIL;
         }
@@ -331,16 +331,16 @@ extern "C" {
         }
 #endif
 
-        pObj = node_getData(pNode);
+        pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-        pName = node_getName(pObj);
+        pName = Node_getName(pObj);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))) {
             return OBJ_NIL;
         }
 
-        pHash = node_getData(pObj);
+        pHash = Node_getData(pObj);
         if ((OBJ_NIL == pHash) || !obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
             return OBJ_NIL;
         }
@@ -365,16 +365,16 @@ extern "C" {
         }
 #endif
 
-        pObj = node_getData(pNode);
+        pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-        pName = node_getName(pObj);
+        pName = Node_getName(pObj);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))) {
             return OBJ_NIL;
         }
 
-        pStr = node_getData(pObj);
+        pStr = Node_getData(pObj);
         if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
             return OBJ_NIL;
         }
@@ -399,16 +399,16 @@ extern "C" {
         }
 #endif
 
-        pObj = node_getData(pNode);
+        pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-        pName = node_getName(pObj);
+        pName = Node_getName(pObj);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "null"))) {
             return OBJ_NIL;
         }
 
-        pNull = node_getData(pObj);
+        pNull = Node_getData(pObj);
         if ((OBJ_NIL == pNull) || !obj_IsKindOf(pNull, OBJ_IDENT_NULL)) {
             return OBJ_NIL;
         }
@@ -433,16 +433,16 @@ extern "C" {
         }
 #endif
 
-        pObj = node_getData(pNode);
+        pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-        pName = node_getName(pObj);
+        pName = Node_getName(pObj);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "string"))) {
             return OBJ_NIL;
         }
 
-        pStr = node_getData(pObj);
+        pStr = Node_getData(pObj);
         if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
             return OBJ_NIL;
         }
@@ -468,16 +468,16 @@ extern "C" {
         }
 #endif
 
-        pObj = node_getData(pNode);
+        pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-        pName = node_getName(pObj);
+        pName = Node_getName(pObj);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "true"))) {
             return OBJ_NIL;
         }
 
-        pTrue = node_getData(pObj);
+        pTrue = Node_getData(pObj);
         if ((OBJ_NIL == pTrue) || !obj_IsKindOf(pTrue, OBJ_IDENT_TRUE)) {
             return OBJ_NIL;
         }
@@ -502,12 +502,12 @@ extern "C" {
         }
 #endif
 
-        pName = node_getName(pNode);
+        pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "array"))) {
             return OBJ_NIL;
         }
 
-        pArray = node_getData(pNode);
+        pArray = Node_getData(pNode);
         if ((OBJ_NIL == pArray) || !obj_IsKindOf(pArray, OBJ_IDENT_NODEARRAY)) {
             return OBJ_NIL;
         }
@@ -531,12 +531,12 @@ extern "C" {
         }
 #endif
 
-        pName = node_getName(pNode);
+        pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "false"))) {
             return OBJ_NIL;
         }
 
-        pFalse = node_getData(pNode);
+        pFalse = Node_getData(pNode);
         if ((OBJ_NIL == pFalse) || !obj_IsKindOf(pFalse, OBJ_IDENT_FALSE)) {
             return OBJ_NIL;
         }
@@ -561,12 +561,12 @@ extern "C" {
         }
 #endif
 
-        pName = node_getName(pNode);
+        pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "float"))) {
             return OBJ_NIL;
         }
 
-        pStr = node_getData(pNode);
+        pStr = Node_getData(pNode);
         if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
             return OBJ_NIL;
         }
@@ -590,11 +590,11 @@ extern "C" {
         }
 #endif
 
-        pName = node_getName(pNode);
+        pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))) {
             return OBJ_NIL;
         }
-        pHash = node_getData(pNode);
+        pHash = Node_getData(pNode);
         if ((OBJ_NIL == pHash) || !obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
             return OBJ_NIL;
         }
@@ -619,12 +619,12 @@ extern "C" {
         }
 #endif
 
-        pName = node_getName(pNode);
+        pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))) {
             return OBJ_NIL;
         }
 
-        pStr = node_getData(pNode);
+        pStr = Node_getData(pNode);
         if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
             return OBJ_NIL;
         }
@@ -648,12 +648,12 @@ extern "C" {
         }
 #endif
 
-        pName = node_getName(pNode);
+        pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "null"))) {
             return OBJ_NIL;
         }
 
-        pNull = node_getData(pNode);
+        pNull = Node_getData(pNode);
         if ((OBJ_NIL == pNull) || !obj_IsKindOf(pNull, OBJ_IDENT_NULL)) {
             return OBJ_NIL;
         }
@@ -677,12 +677,12 @@ extern "C" {
         }
 #endif
 
-        pName = node_getName(pNode);
+        pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "string"))) {
             return OBJ_NIL;
         }
 
-        pStr = node_getData(pNode);
+        pStr = Node_getData(pNode);
         if ((OBJ_NIL == pStr) || !obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) {
             return OBJ_NIL;
         }
@@ -707,12 +707,12 @@ extern "C" {
         }
 #endif
 
-        pName = node_getName(pNode);
+        pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "true"))) {
             return OBJ_NIL;
         }
 
-        pTrue = node_getData(pNode);
+        pTrue = Node_getData(pNode);
         if ((OBJ_NIL == pTrue) || !obj_IsKindOf(pTrue, OBJ_IDENT_TRUE)) {
             return OBJ_NIL;
         }
@@ -736,7 +736,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8ConAndClass(0, "array", pArray);
+        pNode = Node_NewWithUTF8ConAndClass(0, "array", pArray);
 
         return pNode;
     }
@@ -757,7 +757,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8ConAndClass(0, "hash", pHash);
+        pNode = Node_NewWithUTF8ConAndClass(0, "hash", pHash);
 
         return pNode;
     }
@@ -778,7 +778,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8ConAndClass(0, "string", pStr);
+        pNode = Node_NewWithUTF8ConAndClass(0, "string", pStr);
 
         return pNode;
     }
@@ -1803,10 +1803,10 @@ extern "C" {
             return pObj;
         }
 
-        pInfo = obj_getInfo(node_Class());
+        pInfo = obj_getInfo(Node_Class());
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)node_ParseJsonObject(this);
+            pObj = (OBJ_ID)Node_ParseJsonObject(this);
             return pObj;
         }
 
@@ -2187,17 +2187,17 @@ extern "C" {
         if (OBJ_NIL == pNode) {
             return ERESULT_DATA_NOT_FOUND;
         }
-        pNode = node_getData(pNode);
+        pNode = Node_getData(pNode);
         if (OBJ_NIL == pNode) {
             return ERESULT_DATA_ERROR;
         }
-        pName = node_getName(pNode);
+        pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))) {
             return ERESULT_DATA_ERROR;
         }
 
         ObjList_Add2Tail(this->pList, this->pHash);
-        this->pHash = node_getData(pNode);
+        this->pHash = Node_getData(pNode);
 
         return ERESULT_SUCCESS;
     }

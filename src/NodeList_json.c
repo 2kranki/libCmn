@@ -49,7 +49,7 @@
 #include    <AStr_internal.h>
 #include    <dec.h>
 #include    <JsonIn.h>
-#include    <node.h>
+#include    <Node.h>
 #include    <NodeArray.h>
 #include    <NodeHash.h>
 #include    <utf8.h>

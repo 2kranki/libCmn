@@ -57,7 +57,7 @@ extern "C" {
 
     //      Node Descriptor
 #pragma pack(push, 1)
-    typedef struct  enum_node_s {
+    typedef struct  enum_Node_s {
         const
         char            *pszKey;
         uint32_t        index;

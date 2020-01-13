@@ -126,7 +126,7 @@ extern "C" {
 
         // Do initialization.
 
-        pTree = NodeHash_TreeFromHash(this, node_getHash(pNode));
+        pTree = NodeHash_TreeFromHash(this, Node_getHash(pNode));
         if (pTree) {
             record.node.pKey = pNode;
             pFound = (NODEHASH_RECORD *)rbt_FindNode(pTree, (RBT_NODE *)&record);
@@ -150,9 +150,9 @@ extern "C" {
         RBT_TREE        *pTree;
 
         // Do initialization.
-        pNode = node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
+        pNode = Node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
         if (pNode) {
-            pTree = NodeHash_TreeFromHash(this, node_getHash(pNode));
+            pTree = NodeHash_TreeFromHash(this, Node_getHash(pNode));
             if (pTree) {
                 record.node.pKey = pNode;
                 pFound = (NODEHASH_RECORD *)rbt_FindNode(pTree, (RBT_NODE *)&record);
@@ -180,7 +180,7 @@ extern "C" {
         NODE_DATA       *pNodeA = pRecordA;
         NODE_DATA       *pNodeB = pRecordB;
 
-        eRc = node_Compare(pNodeA, pNodeB);
+        eRc = Node_Compare(pNodeA, pNodeB);
         if (eRc == ERESULT_SUCCESS_EQUAL) {
             return 0;
         }
@@ -445,7 +445,7 @@ extern "C" {
         }
 #endif
 
-        pTree = NodeHash_TreeFromHash(this, node_getHash(pNode));
+        pTree = NodeHash_TreeFromHash(this, Node_getHash(pNode));
         if (pTree) {
             pRecord = Blocks_RecordNew((BLOCKS_DATA *)this, NULL);
             if (NULL == pRecord) {
@@ -494,7 +494,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8AndClass(cls, pName, pData);
+        pNode = Node_NewWithUTF8AndClass(cls, pName, pData);
         if (OBJ_NIL == pNode) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -560,7 +560,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8AndClass(cls, pName, pData);
+        pNode = Node_NewWithUTF8AndClass(cls, pName, pData);
         if (OBJ_NIL == pNode) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -885,7 +885,7 @@ extern "C" {
         }
 #endif
 
-        pTree = NodeHash_TreeFromHash(this, node_getHash(pNode));
+        pTree = NodeHash_TreeFromHash(this, Node_getHash(pNode));
         if (pTree) {
             iRc = rbt_Delete(pTree, pNode);
             if (iRc) {
@@ -924,7 +924,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8ConAndClass(cls, pNameA, OBJ_NIL);
+        pNode = Node_NewWithUTF8ConAndClass(cls, pNameA, OBJ_NIL);
         if (pNode) {
             eRc = NodeHash_Delete(this, pNode);
             obj_Release(pNode);
@@ -1131,7 +1131,7 @@ extern "C" {
                     }
                     obj_Release(pName);
                     pName = OBJ_NIL;
-                    pData = node_getData(pNode);
+                    pData = Node_getData(pNode);
                     if((OBJ_NIL == pData) || !obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
                         DEBUG_BREAK();
                         return ERESULT_DATA_MISSING;
@@ -1360,15 +1360,15 @@ extern "C" {
         if (OBJ_NIL == pNode) {
             return ERESULT_DATA_NOT_FOUND;
         }
-        pNode = node_getData(pNode);
+        pNode = Node_getData(pNode);
         if (OBJ_NIL == pNode) {
             return ERESULT_DATA_NOT_FOUND;
         }
-        pName = node_getName(pNode);
+        pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, pTypeA))) {
             return ERESULT_DATA_NOT_FOUND;
         }
-        pData = node_getData(pNode);
+        pData = Node_getData(pNode);
         if (OBJ_NIL == pData) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1885,7 +1885,7 @@ extern "C" {
             for (i=0; i < NodeArray_getSize(pArray); i++) {
                 pNode = NodeArray_Get(pArray, i);
                 if (pNode) {
-                    pWrk = node_ToString(pNode);
+                    pWrk = Node_ToString(pNode);
                     if (pWrk) {
                         AStr_Append(pStr, pWrk);
                         obj_Release(pWrk);

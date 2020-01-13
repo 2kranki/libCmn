@@ -143,7 +143,7 @@ int         test_NodeEnum_Test01(
         
         fprintf(stderr, "\tAppending data:\n");
         for(i=0; i<cStringTable; ++i) {
-            pNode = node_NewWithUTF8AndClass(0, pStringTable[i], OBJ_NIL);
+            pNode = Node_NewWithUTF8AndClass(0, pStringTable[i], OBJ_NIL);
             if (pNode) {
                 eRc = NodeEnum_AppendObj(pObj, pNode);
                 TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
@@ -162,7 +162,7 @@ int         test_NodeEnum_Test01(
                 break;
             }
             if (pNode) {
-                pStrA = node_getNameUTF8(pNode);
+                pStrA = Node_getNameUTF8(pNode);
                 fprintf(stderr, "\t%2d - %s\n", i, pStrA);
                 mem_Free(pStrA);
                 pStrA = NULL;

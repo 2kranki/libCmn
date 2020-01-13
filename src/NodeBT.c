@@ -210,7 +210,7 @@ extern "C" {
         NODE_DATA       *pNodeA = pKeyA;
         NODE_DATA       *pNodeB = pKeyB;
 
-        eRc = node_Compare(pNodeA, pNodeB);
+        eRc = Node_Compare(pNodeA, pNodeB);
         if (eRc == ERESULT_SUCCESS_EQUAL) {
             return 0;
         }
@@ -583,7 +583,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8AndClass(cls, pNameA, pData);
+        pNode = Node_NewWithUTF8AndClass(cls, pNameA, pData);
         if (pNode) {
             eRc = NodeBT_Add(this, pNode, false);
         }
@@ -675,7 +675,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8AndClass(cls, pNameA, pData);
+        pNode = Node_NewWithUTF8AndClass(cls, pNameA, pData);
         if (pNode) {
             eRc = NodeBT_AddUpdate(this, pNode, false);
         }
@@ -966,7 +966,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
+        pNode = Node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
         if (pNode) {
             eRc = NodeBT_Delete(this, pNode);
             obj_Release(pNode);
@@ -1172,7 +1172,7 @@ extern "C" {
                     }
                     obj_Release(pName);
                     pName = OBJ_NIL;
-                    pData = node_getData(pNode);
+                    pData = Node_getData(pNode);
                     if((OBJ_NIL == pData) || !obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
                         DEBUG_BREAK();
                         return ERESULT_DATA_MISSING;
@@ -1298,7 +1298,7 @@ extern "C" {
         }
 #endif
 
-        pNode = node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
+        pNode = Node_NewWithUTF8AndClass(cls, pNameA, OBJ_NIL);
         if (pNode) {
             pFound = NodeBT_Find(this, pNode);
             obj_Release(pNode);

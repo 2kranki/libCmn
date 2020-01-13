@@ -132,12 +132,12 @@ extern "C" {
             if (this) {
                 if (pNameA) {
                     pName = Name_NewUTF8(pNameA);
-                    node_setName((NODE_DATA *)this, pName);
+                    Node_setName((NODE_DATA *)this, pName);
                     obj_Release(pName);
                     pName = OBJ_NIL;
                 }
-                node_setClass((NODE_DATA *)this, cls);
-                node_setData((NODE_DATA *)this, pData);
+                Node_setClass((NODE_DATA *)this, cls);
+                Node_setData((NODE_DATA *)this, pData);
             }
         }
         return this;
@@ -160,12 +160,12 @@ extern "C" {
             if (this) {
                 if (pNameA) {
                     pName = Name_NewUTF8Con(pNameA);
-                    node_setName((NODE_DATA *)this, pName);
+                    Node_setName((NODE_DATA *)this, pName);
                     obj_Release(pName);
                     pName = OBJ_NIL;
                 }
-                node_setClass((NODE_DATA *)this, cls);
-                node_setData((NODE_DATA *)this, pData);
+                Node_setClass((NODE_DATA *)this, cls);
+                Node_setData((NODE_DATA *)this, pData);
             }
         }
         return this;
@@ -281,7 +281,7 @@ extern "C" {
         }
 #endif
 
-        return node_getClass((NODE_DATA *)this);
+        return Node_getClass((NODE_DATA *)this);
     }
 
 
@@ -304,7 +304,7 @@ extern "C" {
         }
 #endif
 
-        return node_getData((NODE_DATA *)this);
+        return Node_getData((NODE_DATA *)this);
     }
 
 
@@ -327,7 +327,7 @@ extern "C" {
         }
 #endif
 
-        return node_getExtra((NODE_DATA *)this);
+        return Node_getExtra((NODE_DATA *)this);
     }
 
 
@@ -393,7 +393,7 @@ extern "C" {
             return hash;
         }
 #endif
-        pName = node_getName((NODE_DATA *)this);
+        pName = Node_getName((NODE_DATA *)this);
 
         if (pName) {
             hash = Name_getHash(pName);
@@ -636,7 +636,7 @@ extern "C" {
         }
 #endif
 
-        return node_getMisc(&this->super);
+        return Node_getMisc(&this->super);
     }
 
 
@@ -653,7 +653,7 @@ extern "C" {
         }
 #endif
 
-        node_setMisc1(&this->super, value);
+        Node_setMisc1(&this->super, value);
 
         return true;
     }
@@ -673,7 +673,7 @@ extern "C" {
         }
 #endif
 
-        return node_getMisc1(&this->super);
+        return Node_getMisc1(&this->super);
     }
 
 
@@ -690,7 +690,7 @@ extern "C" {
         }
 #endif
 
-        node_setMisc1(&this->super, value);
+        Node_setMisc1(&this->super, value);
 
         return true;
     }
@@ -710,7 +710,7 @@ extern "C" {
         }
 #endif
 
-        return node_getMisc2(&this->super);
+        return Node_getMisc2(&this->super);
     }
 
 
@@ -727,7 +727,7 @@ extern "C" {
         }
 #endif
 
-        node_setMisc(&this->super, value);
+        Node_setMisc(&this->super, value);
 
         return true;
     }
@@ -752,7 +752,7 @@ extern "C" {
         }
 #endif
 
-        return node_getName((NODE_DATA *)this);
+        return Node_getName((NODE_DATA *)this);
     }
 
 
@@ -770,7 +770,7 @@ extern "C" {
         }
 #endif
 
-        return node_getNameUTF8((NODE_DATA *)this);
+        return Node_getNameUTF8((NODE_DATA *)this);
     }
 
 
@@ -816,7 +816,7 @@ extern "C" {
         }
 #endif
 
-        return node_getOther((NODE_DATA *)this);
+        return Node_getOther((NODE_DATA *)this);
     }
 
 
@@ -1215,9 +1215,15 @@ extern "C" {
         }
 #endif
 
-        // Create a copy of objects and areas in this object placing
-        // them in other.
-        eRc = node_Assign((NODE_DATA *)this, (NODE_DATA *)pOther);
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Copy other data from this object to other.
         if (obj_Flag(this, NODELINK_LEFT_LINK)) {
@@ -1289,7 +1295,7 @@ extern "C" {
         }
 #endif
 
-        eRc = node_Compare((NODE_DATA *)this, (NODE_DATA *)pOther);
+        eRc = Node_Compare((NODE_DATA *)this, (NODE_DATA *)pOther);
 
         return eRc;
     }
@@ -1313,7 +1319,7 @@ extern "C" {
          }
  #endif
 
-         eRc = node_CompareA((NODE_DATA *)this, cls, pNameA);
+         eRc = Node_CompareA((NODE_DATA *)this, cls, pNameA);
 
          return eRc;
      }
@@ -1501,7 +1507,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)node_Init((NODE_DATA *)this);            // Needed for Inheritance
+        this = (OBJ_ID)Node_Init((NODE_DATA *)this);            // Needed for Inheritance
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);

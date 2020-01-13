@@ -427,7 +427,7 @@ OBJ_INFO        NodeLink_Info = {
     "NodeLink",
     "A Node with Integer Links",
     (OBJ_DATA *)&NodeLink_ClassObj,
-    (OBJ_DATA *)&node_ClassObj,
+    (OBJ_DATA *)&Node_ClassObj,
     (OBJ_IUNKNOWN *)&NodeLink_Vtbl,
     sizeof(NODELINK_DATA)
 };

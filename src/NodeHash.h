@@ -73,7 +73,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Blocks.h>
-#include        <node.h>
+#include        <Node.h>
 #include        <NodeArray.h>
 #include        <NodeEnum.h>
 

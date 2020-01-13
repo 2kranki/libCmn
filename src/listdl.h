@@ -86,10 +86,10 @@ extern	"C" {
     // add to the list and you must point to it whenever requesting any
     // node-based services.
     #pragma pack(push, 1)
-    typedef struct listdl_node_s {
-        struct listdl_node_s
+    typedef struct listdl_Node_s {
+        struct listdl_Node_s
                         *pNext;
-        struct listdl_node_s
+        struct listdl_Node_s
                         *pPrev;
     } LISTDL_NODE;
     #pragma pack(pop)

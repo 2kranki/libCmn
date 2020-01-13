@@ -153,12 +153,6 @@ struct NodeBT_data_s	{
     );
 
 
-    ERESULT         NodeBT_DeleteNodes (
-        NODEBT_DATA     *this,
-        NODELNKP_DATA   *pNode
-    );
-
-
     NODEBT_RECORD * NodeBT_FindUnique (
         NODEBT_DATA    *this,
         uint32_t        unique

@@ -518,6 +518,16 @@ extern "C" {
         }
 #endif
 
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
+
         // Release objects and areas in other object.
 #ifdef  XYZZY
         if (pOther->pArray) {
@@ -1521,7 +1531,7 @@ extern "C" {
             TRC_OBJ( this,
                     "\tparser_SemGet(%d):  returning: %s\n",
                     index,
-                    node_getName(pItem)
+                    Node_getName(pItem)
                     );
         }
         else {
@@ -1561,7 +1571,7 @@ extern "C" {
             pItem = NodeArray_DeleteLast(this->pSemanticStack);
             TRC_OBJ( this,
                      "\tparser_SemPop:  %s\n",
-                     node_getName(pItem)
+                     Node_getName(pItem)
             );
         }
         
@@ -1607,7 +1617,7 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             TRC_OBJ( this,
                      "\tparse_SemPush:  %s\n",
-                     node_getName(pItem)
+                     Node_getName(pItem)
             );
         }
         else {
@@ -1645,7 +1655,7 @@ extern "C" {
             if (pItem) {
                 TRC_OBJ( this,
                          "\tparser_SemTop:  %s\n",
-                         node_getName(pItem)
+                         Node_getName(pItem)
                 );
             }
         }

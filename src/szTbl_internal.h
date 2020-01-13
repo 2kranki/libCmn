@@ -65,7 +65,7 @@ extern "C" {
      * the total size to be a multiple of the computer's word length.
      */
 #pragma pack(push, 1)
-    typedef struct szTbl_node_s {
+    typedef struct szTbl_Node_s {
         uint32_t            hash;       // Hash Code
         uint32_t            ident;      // Unique Identifier
         uint16_t            max;        // Data Buffer Size

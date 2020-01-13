@@ -57,7 +57,7 @@
 #include    <dec.h>
 #include    <hex.h>
 #include    <JsonIn.h>
-#include    <node.h>
+#include    <Node.h>
 #include    <NodeArray.h>
 #include    <NodeHash.h>
 #include    <utf8_internal.h>
@@ -186,7 +186,7 @@ extern "C" {
                     );
                     goto exit00;
                 }
-                pName = node_getName(pNode);
+                pName = Node_getName(pNode);
                 if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))
                     ;
                 else {
@@ -196,7 +196,7 @@ extern "C" {
                     );
                     goto exit00;
                 }
-                pStr = node_getData(pNode);
+                pStr = Node_getData(pNode);
                 if (OBJ_NIL == pStr) {
                     fprintf(
                             stderr,

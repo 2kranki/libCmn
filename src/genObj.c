@@ -830,7 +830,7 @@ extern "C" {
         
         pNode = NodeBT_FindA(this->pDict, 0, pName);
         if (pNode) {
-            pValue = node_getData(pNode);
+            pValue = Node_getData(pNode);
             BREAK_FALSE( (obj_IsKindOf(pValue, OBJ_IDENT_ASTR)) );
         }
         

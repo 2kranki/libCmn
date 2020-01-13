@@ -54,7 +54,7 @@
 #include        <AStr.h>
 #include        <Compiler.h>
 #include        <lex.h>
-#include        <node.h>
+#include        <Node.h>
 #include        <NodeArray.h>
 #include        <SrcLoc.h>
 

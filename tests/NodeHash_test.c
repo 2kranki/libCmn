@@ -82,7 +82,7 @@ ERESULT         scanPrintExit(
     NODE_DATA       *pNode2 = pRecord->node.pKey;
     char            *pName;
 
-    pName = node_getNameUTF8(pNode2);
+    pName = Node_getNameUTF8(pNode2);
     fprintf(
         stderr,
         "\t\t%p  L=%p R=%p %s   D=%p U=%d  cls=%4d %s\n",
@@ -92,7 +92,7 @@ ERESULT         scanPrintExit(
         pNode->color ? "red" : "black",
         pNode->pKey,
         pRecord->unique,
-        node_getClass(pNode2),
+        Node_getClass(pNode2),
         pName
     );
     mem_Free(pName);
@@ -231,7 +231,7 @@ int         test_NodeHash_AddFindDelete01(
     if (pHash) {
 
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
+            pNode = Node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             eRc = NodeHash_Add(pHash, pNode);
             XCTAssertFalse( (ERESULT_FAILED(eRc)) );
             cnt = NodeHash_getSize(pHash);
@@ -288,7 +288,7 @@ int         test_NodeHash_AddFindDelete02(
 
         pStrA = strings;
         while (*pStrA) {
-            pNode = node_NewWithUTF8ConAndClass(0, *pStrA, OBJ_NIL);
+            pNode = Node_NewWithUTF8ConAndClass(0, *pStrA, OBJ_NIL);
             eRc = NodeHash_Add(pHash, pNode);
             XCTAssertFalse( (ERESULT_FAILED(eRc)) );
             fprintf(stderr, "\tAdded %p - %s\n", pNode, *pStrA);
@@ -380,7 +380,7 @@ int         test_NodeHash_Json01(
     if (pHash) {
 
         for (i=0; i<2; ++i) {
-            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
+            pNode = Node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             eRc = NodeHash_Add(pHash, pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = NodeHash_getSize(pHash);
@@ -432,7 +432,7 @@ int         test_NodeHash_Merge01(
     XCTAssertFalse( (OBJ_NIL == pHash2) );
 
     for (i=0; i<10; ++i) {
-        pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+        pNode = Node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
         eRc = NodeHash_Add(pHash1, pNode);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         obj_Release(pNode);
@@ -440,14 +440,14 @@ int         test_NodeHash_Merge01(
     }
 
     for (i=10; i<15; ++i) {
-        pNode = node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
+        pNode = Node_NewWithUTF8ConAndClass(strings[i], 0, OBJ_NIL);
         eRc = NodeHash_Add(pHash2, pNode);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         obj_Release(pNode);
         pNode = OBJ_NIL;
     }
     pStr = AStr_NewA("test");
-    pNode = node_NewWithUTF8ConAndClass(strings[1], 0, pStr);
+    pNode = Node_NewWithUTF8ConAndClass(strings[1], 0, pStr);
     eRc = NodeHash_Add(pHash2, pNode);
     XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
     obj_Release(pNode);
@@ -461,7 +461,7 @@ int         test_NodeHash_Merge01(
     XCTAssertTrue( (15 == i) );
     pNodeFnd = NodeHash_FindA(pHash1, 0, strings[1]);
     XCTAssertTrue( (pNodeFnd) );
-    pStr = node_getData(pNodeFnd);
+    pStr = Node_getData(pNodeFnd);
     XCTAssertTrue( (pStr) );
     XCTAssertTrue( (obj_IsKindOf(pStr, OBJ_IDENT_ASTR)) );
     XCTAssertTrue( (0 == strcmp(AStr_getData(pStr), "test")) );

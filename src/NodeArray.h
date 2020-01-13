@@ -59,7 +59,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <i32Array.h>
-#include        <node.h>
+#include        <Node.h>
 #include        <NodeEnum.h>
 #include        <ObjArray.h>
 #include        <W32Str.h>

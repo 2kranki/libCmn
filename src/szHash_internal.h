@@ -55,7 +55,7 @@ extern "C" {
 
     //      Node Descriptor
 #pragma pack(push, 1)
-    typedef struct  szHash_node_s {
+    typedef struct  szHash_Node_s {
         LISTDL_NODE     list;
         uint32_t        hash;
         uint32_t        unique;

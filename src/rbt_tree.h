@@ -46,12 +46,12 @@
 
 
 
-typedef struct rbt_node_s RBT_NODE;
+typedef struct rbt_Node_s RBT_NODE;
 typedef struct rbt_tree_s RBT_TREE;
 typedef struct rbt_iter_s RBT_ITER;
 
-typedef int  (*rbt_node_cmp_f) (RBT_TREE *this, RBT_NODE *a, RBT_NODE *b);
-typedef void (*rbt_node_f)     (RBT_TREE *this, RBT_NODE *node);
+typedef int  (*rbt_Node_cmp_f) (RBT_TREE *this, RBT_NODE *a, RBT_NODE *b);
+typedef void (*rbt_Node_f)     (RBT_TREE *this, RBT_NODE *node);
 
 
 // These colors must remain the values that they are
@@ -59,7 +59,7 @@ typedef void (*rbt_node_f)     (RBT_TREE *this, RBT_NODE *node);
 // and ! (not).  For instance, in C, !RBTREE_BLACK == RBTREE_RED.
 // The same goes for RBT_LEFT and RBT_RIGHT.
 //
-struct rbt_node_s {
+struct rbt_Node_s {
     int             color;        // Color red (1), black (0)
 #define RBT_BLACK   0
 #define RBT_RED     1
@@ -93,8 +93,8 @@ struct rbt_iter_s {
 
 
 
-int             rbt_node_cmp_ptr_cb     (RBT_TREE *this, void *pKeyA, void *pKeyB);
-void            rbt_node_dealloc_cb     (RBT_TREE *this, RBT_NODE *node);
+int             rbt_Node_cmp_ptr_cb     (RBT_TREE *this, void *pKeyA, void *pKeyB);
+void            rbt_Node_dealloc_cb     (RBT_TREE *this, RBT_NODE *node);
 
 
 RBT_NODE *      rbt_NodeNew             (RBT_TREE *this, void *pKey, void *pValue);

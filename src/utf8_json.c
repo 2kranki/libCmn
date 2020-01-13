@@ -49,7 +49,7 @@
 #include    <dec.h>
 #include    <hex.h>
 #include    <JsonIn.h>
-#include    <node.h>
+#include    <Node.h>
 #include    <NodeArray.h>
 #include    <NodeHash.h>
 #include    <SrcErrors.h>

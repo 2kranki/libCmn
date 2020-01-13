@@ -79,7 +79,7 @@ ERESULT     listEntryPrintRtn(
 {
     char            *pNameA;
 
-    pNameA = node_getNameUTF8(pNode);
+    pNameA = Node_getNameUTF8(pNode);
     fprintf(stderr, "\t\t%s\n", pNameA);
     mem_Free(pNameA);
     return ERESULT_SUCCESS;
@@ -221,7 +221,7 @@ int         test_NodeList_AddFindDelete01(
     if (pList) {
 
         for (i=0; i<10; ++i) {
-            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
+            pNode = Node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             eRc = NodeList_Add2Head(pList, pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = NodeList_getSize(pList);
@@ -277,7 +277,7 @@ int         test_NodeList_AddFindDelete02(
 
         for (i=0; i<10; ++i) {
             fprintf(stderr, "\tAdding %s\n", strings[i]);
-            pNode = node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
+            pNode = Node_NewWithUTF8ConAndClass(0, strings[i], OBJ_NIL);
             eRc = NodeList_Add2Head(pList, pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
             cnt = NodeList_getSize(pList);
@@ -293,7 +293,7 @@ int         test_NodeList_AddFindDelete02(
         for (i=0; i<cnt; ++i) {
             char        *pNameA = NULL;
             pNode = NodeList_Index(pList, i+1);
-            pNameA = node_getNameUTF8(pNode);
+            pNameA = Node_getNameUTF8(pNode);
             fprintf(stderr, "\t\t%s\n", pNameA);
             mem_Free(pNameA);
             pNameA = NULL;
@@ -308,7 +308,7 @@ int         test_NodeList_AddFindDelete02(
         for (i=0; i<cnt; ++i) {
             pNode = NodeList_Index(pList, i+1);
             pNode2 = NodeArray_Get(pArray, i+1);
-            eRc = node_Compare(pNode, pNode2);
+            eRc = Node_Compare(pNode, pNode2);
             XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
         }
         obj_Release(pArray);
