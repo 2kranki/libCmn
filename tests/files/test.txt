@@ -1,1 +1,0 @@
-/Users/bob/git/libCmn/tests/files/test.txt
