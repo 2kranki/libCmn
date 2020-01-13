@@ -1,0 +1,7 @@
+# vi:nu:et:sts=4 ts=4 sw=4
+
+abc,"def","abc def\n",123,1.23,1.23e+1
+zyzzy,now is the, to come to
+
+
+

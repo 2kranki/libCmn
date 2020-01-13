@@ -1,0 +1,54 @@
+*       This test program sorts, in ascending sequence, the 16 hexadeciX00001000
+               mal characters                                           00002000
+*       located at 'IN' and stores them at 'OUT'. (The following examplX00003000
+               e is used to                                             00004000
+*       demonstrate instruction mix rather than model coding.)          00005000
+        ictl    25                                                      00006000
+sample  start   0                                                       00007000
+go      balr    13,0                                                    00008000
+        using   *,13                                                    00009000
+        mvc     out(64),in                                              00010000
+        la      6,out                                                   00011000
+        la      7,15                                                    00012000
+set     la      4,56                                                    00013000
+        l       2,0(,6)                                                 00014000
+load    l       3,4(4,6)                                                00015000
+        clr     2,3                                                     00016000
+        bc      12,sub                                                  00017000
+        xr      2,3                                                     00018000
+        xr      3,2                                                     00019000
+        xr      2,3                                                     00020000
+        st      3,4(4,6)                                                00021000
+sub     s       4,con4                                                  00022000
+        bc      10,load                                                 00023000
+        st      2,0(0,6)                                                00024000
+        s       7,con1                                                  00025000
+        bc      7,loop                                                  00026000
+        lpsw    endrun                                                  00027000
+loop    la      6,4(6)                                                  00028000
+        lh      2,set+2                                                 00029000
+        s       2,con4                                                  00030000
+        sth     2,set+2                                                 00031000
+        bc      15,set                                                  00032000
+con1    dc      f'1'                                                    00033000
+con4    dc      f'4'                                                    00034000
+in      dc      x'00000005'                                             00035000
+        dc      x'0000000A'                                             00036000
+        dc      x'00000001'                                             00037000
+        dc      x'00000007'                                             00038000
+        dc      x'00000003'                                             00039000
+        dc      x'0000000C'                                             00040000
+        dc      x'0000000F'                                             00041000
+        dc      x'00000009'                                             00042000
+        dc      x'0000000B'                                             00043000
+        dc      x'00000004'                                             00044000
+        dc      x'00000000'                                             00045000
+        dc      x'0000000E'                                             00046000
+        dc      x'00000006'                                             00047000
+        dc      x'0000000D'                                             00048000
+        dc      x'00000002'                                             00049000
+        dc      x'00000008'                                             00050000
+out     ds      16f                                                     00051000
+        cnop    0,8                                                     00052000
+endrun  dc      x'0002000000000000'         psw                         00053000
+        end     go                                                      00054000
