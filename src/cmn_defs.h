@@ -376,6 +376,8 @@ extern "C" {
         OBJ_IDENT_OBJMETHOD_CLASS,
         OBJ_IDENT_OBJREGISTRY,          // Object Registry
         OBJ_IDENT_OBJREGISTRY_CLASS,
+        OBJ_IDENT_OBJVLINK,             // Object with Variable number of Integer Links
+        OBJ_IDENT_OBJVLINK_CLASS,
         OBJ_IDENT_OSC,
         OBJ_IDENT_OSC_CLASS,
         OBJ_IDENT_PACKET,

@@ -23,9 +23,9 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <node.h>
-#include    <nodeArray.h>
-#include    <nodeHash.h>
+#include    <Node.h>
+#include    <NodeArray.h>
+#include    <NodeHash.h>
 #include    <path.h>
 #include    <szTbl.h>
 #include    <trace.h>
@@ -173,56 +173,56 @@ int         test_plist_Input01(
         //FIXME: pFileNode = plist_ParseFile(pObj);
         //XCTAssertFalse( (OBJ_NIL == pFileNode), @"" );
         if (pFileNode) {
-            pStrA = node_getNameUTF8(pFileNode);
+            pStrA = Node_getNameUTF8(pFileNode);
             XCTAssertTrue( (0 == strcmp("hash", pStrA)), @"" );
             mem_Free((void *)pStrA);
-            pHash = node_getData(pFileNode);
+            pHash = Node_getData(pFileNode);
             XCTAssertFalse( (OBJ_NIL == pHash), @"" );
-            XCTAssertTrue( (4 == nodeHash_getSize(pHash)), @"" );
+            XCTAssertTrue( (4 == NodeHash_getSize(pHash)), @"" );
             
-            eRc = nodeHash_FindA(pHash, "one", &pNode);
+            eRc = NodeHash_FindA(pHash, "one", &pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("number", pStrA)), @"" );
             mem_Free((void *)pStrA);
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("123", AStr_getData(pStr))), @"" );
             
-            eRc = nodeHash_FindA(pHash, "two", &pNode);
+            eRc = NodeHash_FindA(pHash, "two", &pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("string", pStrA)), @"" );
             mem_Free((void *)pStrA);
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("xyz", AStr_getData(pStr))), @"" );
             
-            eRc = nodeHash_FindA(pHash, "three", &pNode);
+            eRc = NodeHash_FindA(pHash, "three", &pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("array", pStrA)), @"" );
             mem_Free((void *)pStrA);
-            pArray = node_getData(pNode);
+            pArray = Node_getData(pNode);
             XCTAssertTrue( (3 == nodeArray_getSize(pArray)), @"" );
-            pNode = nodeArray_Get(pArray, 1);
+            pNode = NodeArray_Get(pArray, 1);
             XCTAssertFalse( (OBJ_NIL == pNode), @"" );
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("a", AStr_getData(pStr))), @"" );
-            pNode = nodeArray_Get(pArray, 2);
+            pNode = NodeArray_Get(pArray, 2);
             XCTAssertFalse( (OBJ_NIL == pNode), @"" );
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("b", AStr_getData(pStr))), @"" );
-            pNode = nodeArray_Get(pArray, 3);
+            pNode = NodeArray_Get(pArray, 3);
             XCTAssertFalse( (OBJ_NIL == pNode), @"" );
-            pStr = node_getData(pNode);
+            pStr = Node_getData(pNode);
             XCTAssertTrue( (0 == strcmp("c", AStr_getData(pStr))), @"" );
             
-            eRc = nodeHash_FindA(pHash, "four", &pNode);
+            eRc = NodeHash_FindA(pHash, "four", &pNode);
             XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
-            pNode = node_getData(pNode);
-            pStrA = node_getNameUTF8(pNode);
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
             XCTAssertTrue( (0 == strcmp("null", pStrA)), @"" );
             mem_Free((void *)pStrA);
             

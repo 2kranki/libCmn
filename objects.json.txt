@@ -106,6 +106,7 @@
         {name:"ObjList", deps:["listdl.h"], json:true},
         {name:"objMatrix"},
         {name:"ObjMethod", json:true},
+        {name:"ObjVLink", deps:["i32Array.h"], json:true},
         {name:"Parser"},
         {name:"path"},
         {name:"plist", deps:["ObjArray.h"]},

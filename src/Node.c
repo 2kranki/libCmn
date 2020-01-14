@@ -1088,7 +1088,10 @@ extern "C" {
         pOther->cls = this->cls;
         pOther->type = this->type;
         obj_FlagSet(pOther, NODE_DUP_NAME, obj_Flag(this, NODE_DUP_NAME));
+        obj_setMisc(pOther, obj_getMisc(this));
+        obj_setMisc1(pOther, obj_getMisc1(this));
         obj_setMisc2(pOther, obj_getMisc2(this));
+        // We skip unique on purpose.
 
         //goto eom;
 
