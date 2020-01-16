@@ -47,6 +47,7 @@
 #include        <dec.h>
 #include        <hex.h>
 #include        <hjson.h>
+#include        <I32Array_internal.h>
 #include        <Name_internal.h>
 #include        <Node_internal.h>
 #include        <NodeArray_internal.h>
@@ -1793,6 +1794,13 @@ extern "C" {
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)BitMatrix_ParseJsonObject(this);
+            return pObj;
+        }
+
+        pInfo = obj_getInfo(I32Array_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)I32Array_ParseJsonObject(this);
             return pObj;
         }
 

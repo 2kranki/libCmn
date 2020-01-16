@@ -193,12 +193,16 @@ void *          AStrClass_QueryInfo (
                     }
                     break;
                     
-                case 'P':
-                    if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return AStr_ParseJsonObject;
-                    }
-                    break;
-                    
+#ifdef  ASTR_JSON_SUPPORT
+                    case 'P':
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return AStr_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return AStr_ParseJsonObject;
+                        }
+                        break;
+#endif
                 case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
                         return obj_ClassWhoAmI;

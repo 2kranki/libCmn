@@ -1,17 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   u8Array_json.c
+ * File:   I32Array_json.c
  *
- * Created on 09/9/2018 from szTbl_JSON
+ *	Generated 01/14/2020 18:29:58
  *
  */
-
-/*
- Notes:
-    1.  None
- */
-
-
 
 
 /*
@@ -49,20 +42,18 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <u8Array_internal.h>
+#include    <I32Array_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    <crc.h>
+#include    <AStr_internal.h>
 #include    <dec.h>
-#include    <hex.h>
 #include    <JsonIn.h>
 #include    <Node.h>
-#include    <NodeArray.h>
 #include    <NodeHash.h>
-#include    <utf8_internal.h>
+#include    <utf8.h>
 
-#define DEBUG_JSONIN 1
+
 
 
 #ifdef	__cplusplus
@@ -78,80 +69,44 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
-    void            u8Array_Int64ToChrClean(
-        int64_t         num,
-        char            *pBuffer
-    )
-    {
-        char            data[32];
-        int             i;
-        
-        dec_Int64ToChr(num, data);
-        
-        // Now output string without leading zeroes.
-        *pBuffer++ = data[0];       // Sign
-        for (i=1; i<21; ++i) {
-            if (data[i] && (data[i] == '0')) {
-            }
-            else {
-                break;
-            }
-        }
-        for (; i<22; ++i) {
-            if (data[i]) {
-                *pBuffer++ = data[i];
-            }
-        }
-        *pBuffer++ = '\0';
-    }
-    
-    
-
     /*!
-     Parse the new object from an established parser.
-     @param pParser an established jsonIn Parser Object
-     @return    a new object if successful, otherwise, OBJ_NIL
-     @warning   Returned object must be released.
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
      */
-    U8ARRAY_DATA *  u8Array_ParseJsonObject(
-        JSONIN_DATA     *pParser
+    ERESULT         I32Array_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        I32ARRAY_DATA   *pObject
     )
     {
-        ERESULT         eRc;
-        U8ARRAY_DATA    *pObject = OBJ_NIL;
+        ERESULT         eRc = ERESULT_SUCCESS;
         const
         OBJ_INFO        *pInfo;
-        uint32_t        count = 0;
+        int64_t         intIn;
+        //ASTR_DATA       *pWrk;
+        uint32_t        count;
+        NODEARRAY_DATA  *pArray;
+        uint32_t        i;
         NODE_DATA       *pNode;
         NAME_DATA       *pName;
-        NODEARRAY_DATA  *pArray;
         ASTR_DATA       *pStr;
-        uint32_t        i;
-        int64_t         intIn = 0;
 
-        pInfo = obj_getInfo(u8Array_Class());
+        pInfo = obj_getInfo(I32Array_Class());
         
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
-        
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "Count", &intIn);
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(stderr, "ERROR - count is invalid!\n");
-            goto exit00;
-        }
-        count = (uint32_t)intIn;
-        fprintf(stderr, "\tNode Count = %d\n", count);
 
-        pObject = u8Array_New();
-        if (OBJ_NIL == pObject) {
-            goto exit00;
-        }
-        
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "size", &intIn);
+       count = (uint32_t)intIn;
+
         if (count && pObject) {
-            eRc = JsonIn_FindArrayNodeInHashA(pParser, "Entries", &pArray);
+            eRc = JsonIn_FindArrayNodeInHashA(pParser, "data", &pArray);
             if (pArray) {
                 if (count == NodeArray_getSize(pArray))
                     ;
@@ -175,9 +130,7 @@ extern "C" {
             }
 
             for(i=0; i<count; ++i) {
-#ifdef XYZZY
-                fprintf(stderr, "\t\tLooking for Node(%d)\n", i+1);
-#endif
+                //fprintf(stderr, "\t\tLooking for Node(%d)\n", i+1);
                 pNode = NodeArray_Get(pArray, i+1);
                 if (OBJ_NIL == pNode) {
                     fprintf(
@@ -212,16 +165,51 @@ extern "C" {
                         AStr_getData(pStr),
                         (uint8_t)AStr_ToInt64(pStr));
 #endif
-                eRc = u8Array_AppendData(pObject, (uint8_t)AStr_ToInt64(pStr));
+                eRc = I32Array_AppendData(pObject, (uint8_t)AStr_ToInt64(pStr));
             }
         }
-        
+
         // Return to caller.
     exit00:
-        if (pParser) {
-            obj_Release(pParser);
-            pParser = OBJ_NIL;
+        return eRc;
+    }
+    
+    
+    
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    I32ARRAY_DATA * I32Array_ParseJsonObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        I32ARRAY_DATA   *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+        //int64_t         intIn;
+        //ASTR_DATA       *pWrk;
+
+        pInfo = obj_getInfo(I32Array_Class());
+        
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
         }
+
+        pObject = I32Array_New( );
+        if (OBJ_NIL == pObject) {
+            goto exit00;
+        }
+        
+        eRc =  I32Array_ParseJsonFields(pParser, pObject);
+
+        // Return to caller.
+    exit00:
         return pObject;
     }
     
@@ -240,32 +228,21 @@ extern "C" {
     //===============================================================
     
 
-    U8ARRAY_DATA *  u8Array_NewFromJsonString(
+    I32ARRAY_DATA *   I32Array_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
-        ERESULT         eRc = ERESULT_SUCCESS;
-        U8ARRAY_DATA    *pObject = OBJ_NIL;
-#ifdef DEBUG_JSONIN
-        ASTR_DATA       *pStrDebug = OBJ_NIL;
-#endif
+        ERESULT         eRc;
+        I32ARRAY_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
-#ifdef DEBUG_JSONIN
-        pStrDebug = NodeHash_ToDebugString(JsonIn_getHash(pParser), 0);
-        if (pStrDebug) {
-            fprintf(stderr, "%s\n\n", AStr_getData(pStrDebug));
-            obj_Release(pStrDebug);
-            pStrDebug = OBJ_NIL;
-        }
-#endif
-
-        pObject = u8Array_ParseJsonObject(pParser);
+        
+        pObject = I32Array_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -278,17 +255,17 @@ extern "C" {
     
     
 
-    U8ARRAY_DATA *  u8Array_NewFromJsonStringA(
+    I32ARRAY_DATA * I32Array_NewFromJsonStringA(
         const
-        char            *pString
+        char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        U8ARRAY_DATA    *pObject = OBJ_NIL;
+        I32ARRAY_DATA   *pObject = OBJ_NIL;
         
-        if (pString) {
-            pStr = AStr_NewA(pString);
-            pObject = u8Array_NewFromJsonString(pStr);
+        if (pStringA) {
+            pStr = AStr_NewA(pStringA);
+            pObject = I32Array_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -299,64 +276,81 @@ extern "C" {
     
     
     
-    ASTR_DATA *     u8Array_ToJson (
-        U8ARRAY_DATA    *this
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = I32Array_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     I32Array_ToJson(
+        I32ARRAY_DATA   *this
     )
     {
-        ERESULT         eRc;
-        uint32_t        i;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        uint32_t        size = u8Array_getSize(this);
-        uint8_t         data;
+#ifdef XYZZZY 
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+        ASTR_DATA       *pWrkStr;
+#endif
+        int             j;
+        int             jMax;
+        int32_t         *pData;
 
 #ifdef NDEBUG
 #else
-        if( !u8Array_Validate(this) ) {
+        if( !I32Array_Validate(this) ) {
             DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
 #endif
         pInfo = obj_getInfo(this);
+        
         pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            return OBJ_NIL;
+        if (pStr) {
+            AStr_AppendPrint(pStr,
+                              "{ \"objectType\":\"%s\", ",
+                              pInfo->pClassName
+            );
+            
+            AStr_AppendPrint(pStr,
+                             "\"size\":%d, \n\t\"data\":[",
+                             I32Array_getSize(this)
+            );
+
+            jMax = array_getSize((ARRAY_DATA *)this);
+            pData = array_Ptr((ARRAY_DATA *)this, 1);
+            if (jMax) {
+                for (j=0; j<(jMax-1); ++j) {
+                    if ((j % 5) == 0) {
+                        AStr_AppendA(pStr, "\n\t\t");
+                    }
+                    AStr_AppendPrint(pStr, "%d,", *pData++);
+                }
+                if ((j % 5) == 0) {
+                    AStr_AppendA(pStr, "\n\t\t");
+                }
+                AStr_AppendPrint(pStr, "%d\n", *pData++);
+            }
+            AStr_AppendA(pStr, "\t]}\n");
         }
 
-        AStr_AppendPrint(pStr, "{\n\t\"objectType\":\"%s\",\n", pInfo->pClassName);
-        AStr_AppendPrint(pStr, "\t\"Count\":%u,\n", size);
-        if (size) {
-            AStr_AppendA(pStr, "\t\"Entries\":[\n");
-            for (i=0; i<(size - 1); ++i) {
-                data = u8Array_Get(this, (i + 1));
-                eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "\t\t%d,\n",
-                                     data
-                        );
-            }
-            data = u8Array_Get(this, (i + 1));
-            eRc =   AStr_AppendPrint(
-                                     pStr,
-                                     "\t\t%d\n",
-                                     data
-                    );
-            AStr_AppendA(pStr, "\t]\n");
-        }
-        else {
-            AStr_AppendA(pStr, "\t\"Entries\":null\n");
-        }
-        
-        AStr_AppendA(pStr, "}\n");
-        
         return pStr;
     }
-    
-    
-    
-
     
     
     

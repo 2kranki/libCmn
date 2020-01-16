@@ -58,7 +58,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <i32Array.h>
+#include        <I32Array.h>
 #include        <Node.h>
 #include        <NodeEnum.h>
 #include        <ObjArray.h>

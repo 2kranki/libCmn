@@ -1,8 +1,9 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   AStr_JSON.c
+ * File:   AStr_json.c
  *
- * Created on 10/9/2017 from utf8Data_JSON
+ *	Generated 01/15/2020 09:50:18
+ *
  */
 
 
@@ -45,16 +46,14 @@
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    <crc.h>
+#include    <AStr_internal.h>
 #include    <dec.h>
-#include    <hex.h>
 #include    <JsonIn.h>
 #include    <Node.h>
-#include    <NodeArray.h>
 #include    <NodeHash.h>
 #include    <utf8.h>
 
-//#define TRACE_FUNCTIONS 1
+
 
 
 #ifdef	__cplusplus
@@ -70,60 +69,30 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
-    void            AStr_Int64ToChrClean(
-        int64_t         num,
-        char            *pBuffer
-    )
-    {
-        char            data[32];
-        int             i;
-        
-        dec_Int64ToChr(num, data);
-        
-        // Now output string without leading zeroes.
-        if (*pBuffer == '-') {
-            *pBuffer = data[0];
-        }
-        ++pBuffer;
-        for (i=1; i<21; ++i) {
-            if (data[i] && (data[i] == '0')) {
-            }
-            else {
-                break;
-            }
-        }
-        for (; i<22; ++i) {
-            if (data[i]) {
-                *pBuffer++ = data[i];
-            }
-        }
-        *pBuffer++ = '\0';
-    }
-
-    
-    
     /*!
-     Parse the new object from an established parser.
-     @param pParser an established jsonIn Parser Object
-     @return    a new object if successful, otherwise, OBJ_NIL
-     @warning   Returned object must be released.
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
      */
-    ASTR_DATA *     AStr_ParseJsonObject(
-        JSONIN_DATA     *pParser
+    ERESULT     AStr_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        ASTR_DATA     *pObject
     )
     {
-        ERESULT         eRc;
-        ASTR_DATA       *pObject = OBJ_NIL;
+        ERESULT         eRc = ERESULT_SUCCESS;
         const
         OBJ_INFO        *pInfo;
+        int64_t         intIn;
+        ASTR_DATA       *pWrk;
         uint32_t        crc = 0;
         uint32_t        length = 0;
         uint32_t        i;
         W32CHR_T        ch;
         const
         char            *pSrc;
-        ASTR_DATA       *pWrk;
-        int64_t         intIn;
 
         pInfo = obj_getInfo(AStr_Class());
         
@@ -132,17 +101,12 @@ extern "C" {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
-        
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
-        crc = (uint32_t)intIn;
 
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
-        length = (uint32_t)intIn;
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
+       crc = (uint32_t)intIn;
 
-        pObject = AStr_New();
-        if (OBJ_NIL == pObject) {
-            goto exit00;
-        }
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
+       length = (uint32_t)intIn;
 
         if (length && pObject) {
             eRc = JsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
@@ -156,7 +120,46 @@ extern "C" {
                 pObject = OBJ_NIL;
             }
         }
+
+        // Return to caller.
+    exit00:
+        return eRc;
+    }
+    
+    
+    
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    ASTR_DATA * AStr_ParseJsonObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA   *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+        //int64_t         intIn;
+        //ASTR_DATA       *pWrk;
+
+        pInfo = obj_getInfo(AStr_Class());
         
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+
+        pObject = AStr_New( );
+        if (OBJ_NIL == pObject) {
+            goto exit00;
+        }
+        
+        eRc =  AStr_ParseJsonFields(pParser, pObject);
+
         // Return to caller.
     exit00:
         return pObject;
@@ -177,13 +180,13 @@ extern "C" {
     //===============================================================
     
 
-    ASTR_DATA *     AStr_NewFromJsonString(
+    ASTR_DATA *   AStr_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
-        ERESULT         eRc;
         JSONIN_DATA     *pParser;
-        ASTR_DATA       *pObject = OBJ_NIL;
+        ERESULT         eRc;
+        ASTR_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -192,7 +195,7 @@ extern "C" {
         }
         
         pObject = AStr_ParseJsonObject(pParser);
-
+        
         // Return to caller.
     exit00:
         if (pParser) {
@@ -204,16 +207,16 @@ extern "C" {
     
     
 
-    ASTR_DATA *     AStr_NewFromJsonStringA(
+    ASTR_DATA * AStr_NewFromJsonStringA(
         const
-        char            *pString
+        char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        ASTR_DATA       *pObject = OBJ_NIL;
+        ASTR_DATA   *pObject = OBJ_NIL;
         
-        if (pString) {
-            pStr = AStr_NewA(pString);
+        if (pStringA) {
+            pStr = AStr_NewA(pStringA);
             pObject = AStr_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -225,72 +228,81 @@ extern "C" {
     
     
     
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = AStr_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
     ASTR_DATA *     AStr_ToJson(
-        ASTR_DATA       *this
+        ASTR_DATA   *this
     )
     {
-        char            str[256];
-        int             j;
-        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
+#ifdef XYZZZY 
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+#endif
+        ASTR_DATA       *pWrkStr;
         uint32_t        crc = 0;
         uint32_t        len;
-        const
-        char            *pData;
-        ASTR_DATA       *pWrk = OBJ_NIL;
 
 #ifdef NDEBUG
 #else
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
 #endif
-        pInfo = AStr_Vtbl.iVtbl.pInfo;
-        pData  = array_Ptr(this->pData, 1);
-
+        pInfo = obj_getInfo(this);
+        
         pStr = AStr_New();
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{ \"objectType\":\"%s\"",
-                     pInfo->pClassName
-                     );
-        AStr_AppendA(pStr, str);
-        
-        len = (uint32_t)utf8_StrLenA(pData);
-        AStr_AppendPrint(pStr, ", \"len\":%u", len);
-        crc = AStr_getCrcIEEE(this);
-        AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
-        
-        if (len) {
-            AStr_AppendA(pStr, ", \"data\":\"");
-            pWrk = AStr_ToChrCon(this);
-            if (pWrk) {
-                AStr_Append(pStr, pWrk);
-                BREAK_FALSE((1 == obj_getRetainCount(pWrk)));
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
-            }
-            AStr_AppendA(pStr, "\"");
-        }
-        else {
-            AStr_AppendA(pStr, ", \"data\":null ");
-        }
-        
-        if (pStr)
-            AStr_AppendA(pStr, "}\n");
+        if (pStr) {
+             AStr_AppendPrint(pStr,
+                              "{ \"objectType\":\"%s\", ",
+                              pInfo->pClassName
+             );
+            
+            len = (uint32_t)utf8_StrLenA(AStr_getData(this));
+            AStr_AppendPrint(pStr, "\"len\":%u, ", len);
+            crc = AStr_getCrcIEEE(this);
+            AStr_AppendPrint(pStr, "\"crc\":%u, ", crc);
 
-        BREAK_FALSE((1 == obj_getRetainCount(pStr)));
+            if (len) {
+                AStr_AppendA(pStr, "\"data\":\"");
+                pWrkStr = AStr_ToChrCon(this);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    BREAK_FALSE((1 == obj_getRetainCount(pWrkStr)));
+                    obj_Release(pWrkStr);
+                    pWrkStr = OBJ_NIL;
+                }
+                AStr_AppendA(pStr, "\"");
+            }
+            else {
+                AStr_AppendA(pStr, ", \"data\":null ");
+            }
+
+            AStr_AppendA(pStr, "}\n");
+        }
+
         return pStr;
     }
-    
-    
-    
-
     
     
     

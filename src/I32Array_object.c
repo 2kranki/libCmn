@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'ObjVLink'
-//	Generated 01/14/2020 16:31:30
+//	Class Object Metods and Tables for 'I32Array'
+//	Generated 01/14/2020 18:29:58
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			OBJVLINK_OBJECT_C	    1
-#include        <ObjVLink_internal.h>
-#ifdef  OBJVLINK_SINGLETON
+#define			I32ARRAY_OBJECT_C	    1
+#include        <I32Array_internal.h>
+#ifdef  I32ARRAY_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct ObjVLink_class_data_s	{
+struct I32Array_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  OBJVLINK_SINGLETON
+#ifdef  I32ARRAY_SINGLETON
     volatile
-    OBJVLINK_DATA       *pSingleton;
+    I32ARRAY_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct ObjVLink_class_data_s	{
 
 
 static
-void *          ObjVLinkClass_QueryInfo (
+void *          I32ArrayClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          ObjVLinkClass_QueryInfo (
 
 static
 const
-OBJ_INFO        ObjVLink_Info;            // Forward Reference
+OBJ_INFO        I32Array_Info;            // Forward Reference
 
 
 
 
 static
-bool            ObjVLinkClass_IsKindOf (
+bool            I32ArrayClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_OBJVLINK_CLASS == classID) {
+    if (OBJ_IDENT_I32ARRAY_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(ObjVLink_Class())->pClassSuperObject;
+    pObj = obj_getInfo(I32Array_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            ObjVLinkClass_IsKindOf (
 
 
 static
-uint16_t		ObjVLinkClass_WhoAmI (
+uint16_t		I32ArrayClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_OBJVLINK_CLASS;
+    return OBJ_IDENT_I32ARRAY_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		ObjVLinkClass_WhoAmI (
 
 static
 const
-OBJVLINK_CLASS_VTBL    class_Vtbl = {
+I32ARRAY_CLASS_VTBL    class_Vtbl = {
     {
-        &ObjVLink_Info,
-        ObjVLinkClass_IsKindOf,
+        &I32Array_Info,
+        I32ArrayClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        ObjVLink_Class,
-        ObjVLinkClass_WhoAmI,
-        (P_OBJ_QUERYINFO)ObjVLinkClass_QueryInfo,
-        NULL                        // ObjVLinkClass_ToDebugString
+        I32Array_Class,
+        I32ArrayClass_WhoAmI,
+        (P_OBJ_QUERYINFO)I32ArrayClass_QueryInfo,
+        NULL                        // I32ArrayClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ OBJVLINK_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-OBJVLINK_CLASS_DATA  ObjVLink_ClassObj = {
+I32ARRAY_CLASS_DATA  I32Array_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(OBJVLINK_CLASS_DATA),                  // cbSize
+        sizeof(I32ARRAY_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,17 @@ OBJVLINK_CLASS_DATA  ObjVLink_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  OBJVLINK_SINGLETON
-OBJVLINK_DATA *     ObjVLink_getSingleton (
+#ifdef  I32ARRAY_SINGLETON
+I32ARRAY_DATA *     I32Array_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(ObjVLink_ClassObj.pSingleton);
+    return (OBJ_ID)(I32Array_ClassObj.pSingleton);
 }
 
 
-bool            ObjVLink_setSingleton (
-    OBJVLINK_DATA       *pValue
+bool            I32Array_setSingleton (
+    I32ARRAY_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +192,10 @@ bool            ObjVLink_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (ObjVLink_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(ObjVLink_ClassObj.pSingleton));
+    if (I32Array_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(I32Array_ClassObj.pSingleton));
     }
-    ObjVLink_ClassObj.pSingleton = pValue;
+    I32Array_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +205,17 @@ bool            ObjVLink_setSingleton (
 
 
 
-OBJVLINK_DATA *     ObjVLink_Shared (
+I32ARRAY_DATA *     I32Array_Shared (
     void
 )
 {
-    OBJVLINK_DATA       *this = (OBJ_ID)(ObjVLink_ClassObj.pSingleton);
+    I32ARRAY_DATA       *this = (OBJ_ID)(I32Array_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = ObjVLink_New( );
-        ObjVLink_setSingleton(this);
+        this = I32Array_New( );
+        I32Array_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // ObjVLink_ClassObj.pSingleton = OBJ_NIL;
+        // I32Array_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +223,15 @@ OBJVLINK_DATA *     ObjVLink_Shared (
 
 
 
-void            ObjVLink_SharedReset (
+void            I32Array_SharedReset (
     void
 )
 {
-    OBJVLINK_DATA       *this = (OBJ_ID)(ObjVLink_ClassObj.pSingleton);
+    I32ARRAY_DATA       *this = (OBJ_ID)(I32Array_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        ObjVLink_ClassObj.pSingleton = OBJ_NIL;
+        I32Array_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +247,13 @@ void            ObjVLink_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          ObjVLinkClass_QueryInfo (
+void *          I32ArrayClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    OBJVLINK_CLASS_DATA *this = objId;
+    I32ARRAY_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +264,7 @@ void *          ObjVLinkClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(OBJVLINK_DATA);
+            return (void *)sizeof(I32ARRAY_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,7 +279,7 @@ void *          ObjVLinkClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&ObjVLink_Info;
+                        return (void *)&I32Array_Info;
                     }
                     break;
                     
@@ -297,23 +297,23 @@ void *          ObjVLinkClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return ObjVLink_New;
+                        return I32Array_New;
                     }
                     break;
                     
-#ifdef  OBJVLINK_JSON_SUPPORT
+#ifdef  I32ARRAY_JSON_SUPPORT
                 case 'P':
                     if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                        return ObjVLink_ParseJsonFields;
+                        return I32Array_ParseJsonFields;
                     }
                     if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return ObjVLink_ParseJsonObject;
+                        return I32Array_ParseJsonObject;
                     }
                     break;
 #endif
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return ObjVLinkClass_WhoAmI;
+                        return I32ArrayClass_WhoAmI;
                     }
                     break;
                     
@@ -333,7 +333,7 @@ void *          ObjVLinkClass_QueryInfo (
 
 
 static
-bool            ObjVLink_IsKindOf (
+bool            I32Array_IsKindOf (
     uint16_t		classID
 )
 {
@@ -341,14 +341,14 @@ bool            ObjVLink_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_OBJVLINK == classID) {
+    if (OBJ_IDENT_I32ARRAY == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(ObjVLink_Class())->pClassSuperObject;
+    pObj = obj_getInfo(I32Array_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -362,25 +362,25 @@ bool            ObjVLink_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            ObjVLink_Dealloc (
+void            I32Array_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          ObjVLink_Class (
+OBJ_ID          I32Array_Class (
     void
 )
 {
-    return (OBJ_ID)&ObjVLink_ClassObj;
+    return (OBJ_ID)&I32Array_ClassObj;
 }
 
 
 static
-uint16_t		ObjVLink_WhoAmI (
+uint16_t		I32Array_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_OBJVLINK;
+    return OBJ_IDENT_I32ARRAY;
 }
 
 
@@ -392,34 +392,34 @@ uint16_t		ObjVLink_WhoAmI (
 //===========================================================
 
 const
-OBJVLINK_VTBL     ObjVLink_Vtbl = {
+I32ARRAY_VTBL     I32Array_Vtbl = {
     {
-        &ObjVLink_Info,
-        ObjVLink_IsKindOf,
-#ifdef  OBJVLINK_IS_SINGLETON
+        &I32Array_Info,
+        I32Array_IsKindOf,
+#ifdef  I32ARRAY_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        ObjVLink_Dealloc,
-        ObjVLink_Class,
-        ObjVLink_WhoAmI,
-        (P_OBJ_QUERYINFO)ObjVLink_QueryInfo,
-        (P_OBJ_TOSTRING)ObjVLink_ToDebugString,
-        NULL,			// ObjVLink_Enable,
-        NULL,			// ObjVLink_Disable,
-        NULL,			// (P_OBJ_ASSIGN)ObjVLink_Assign,
-        NULL,			// (P_OBJ_COMPARE)ObjVLink_Compare,
-        NULL, 			// (P_OBJ_PTR)ObjVLink_Copy,
-        NULL, 			// (P_OBJ_PTR)ObjVLink_DeepCopy,
-        NULL 			// (P_OBJ_HASH)ObjVLink_Hash,
+        I32Array_Dealloc,
+        I32Array_Class,
+        I32Array_WhoAmI,
+        (P_OBJ_QUERYINFO)I32Array_QueryInfo,
+        (P_OBJ_TOSTRING)I32Array_ToDebugString,
+        NULL,			// I32Array_Enable,
+        NULL,			// I32Array_Disable,
+        (P_OBJ_ASSIGN)I32Array_Assign,
+        NULL,			// (P_OBJ_COMPARE)I32Array_Compare,
+        (P_OBJ_PTR)I32Array_Copy,
+        NULL, 			// (P_OBJ_PTR)I32Array_DeepCopy,
+        NULL 			// (P_OBJ_HASH)I32Array_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //ObjVLink_IsEnabled,
+    //I32Array_IsEnabled,
  
 };
 
@@ -427,13 +427,13 @@ OBJVLINK_VTBL     ObjVLink_Vtbl = {
 
 static
 const
-OBJ_INFO        ObjVLink_Info = {
-    "ObjVLink",
-    "an Object with a Variable Number of Integer Links",
-    (OBJ_DATA *)&ObjVLink_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&ObjVLink_Vtbl,
-    sizeof(OBJVLINK_DATA)
+OBJ_INFO        I32Array_Info = {
+    "I32Array",
+    "Variable Array of int32_t",
+    (OBJ_DATA *)&I32Array_ClassObj,
+    (OBJ_DATA *)&array_ClassObj,
+    (OBJ_IUNKNOWN *)&I32Array_Vtbl,
+    sizeof(I32ARRAY_DATA)
 };
 
 

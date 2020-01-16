@@ -2813,6 +2813,16 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
+#ifdef  ASTR_JSON_SUPPORT
+                    case 'P':
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return AStr_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return AStr_ParseJsonObject;
+                        }
+                        break;
+#endif
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return AStr_ToDebugString;

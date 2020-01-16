@@ -490,11 +490,11 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         ObjVLink_Assign (
-        OBJVLINK_DATA		*this,
-        OBJVLINK_DATA     *pOther
+        OBJVLINK_DATA	*this,
+        OBJVLINK_DATA   *pOther
     )
     {
-        ERESULT     eRc;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -520,16 +520,14 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
         if (pOther->pArray) {
             obj_Release(pOther->pArray);
             pOther->pArray = OBJ_NIL;
         }
-#endif
+        ObjVLink_setObj(pOther, OBJ_NIL);
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
         if (this->pArray) {
             if (obj_getVtbl(this->pArray)->pCopy) {
                 pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
@@ -539,17 +537,30 @@ extern "C" {
                 pOther->pArray = this->pArray;
             }
         }
-#endif
+        if (this->pObj) {
+            if (obj_getVtbl(this->pObj)->pCopy) {
+                pOther->pObj = obj_getVtbl(this->pObj)->pCopy(this->pObj);
+            }
+            else {
+                obj_Retain(this->pObj);
+                pOther->pObj = this->pObj;
+            }
+        }
+
 
         // Copy other data from this object to other.
-        
+        pOther->index   = this->index;
+        pOther->left    = this->left;
+        pOther->middle  = this->middle;
+        pOther->misc    = this->misc;
+        pOther->parent  = this->parent;
+        pOther->right   = this->right;
+
         //goto eom;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -824,6 +835,72 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          G e t
+    //---------------------------------------------------------------
+
+    int32_t         ObjVLink_Get (
+        OBJVLINK_DATA   *this,
+        uint32_t        index
+    )
+    {
+        int32_t         amt = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ObjVLink_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+
+        if (0 == index) {
+            return 0;
+        }
+
+        switch (index) {
+            case OBJVLINK_INDEX_INDEX:
+                amt = this->index;
+                break;
+
+            case OBJVLINK_INDEX_LEFT:
+                amt = this->left;
+                break;
+
+            case OBJVLINK_INDEX_MIDDLE:
+                amt = this->middle;
+                break;
+
+            case OBJVLINK_INDEX_MISC:
+                amt = this->misc;
+                break;
+
+            case OBJVLINK_INDEX_PARENT:
+                amt = this->parent;
+                break;
+
+            case OBJVLINK_INDEX_RIGHT:
+                amt = this->right;
+                break;
+
+            default:
+                if (this->pArray) {
+                    amt =   I32Array_Get(
+                                       this->pArray,
+                                       (index - OBJVLINK_INDEX_HIGH + 1)
+                            );
+                }
+                break;
+        }
+
+        // Return to caller.
+        return amt;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -875,8 +952,8 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        fprintf(stderr, "ObjVLink::sizeof(OBJVLINK_DATA) = %lu\n", sizeof(OBJVLINK_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+        //fprintf(stderr, "ObjVLink::sizeof(OBJVLINK_DATA) = %lu\n", sizeof(OBJVLINK_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(OBJVLINK_DATA));
 #endif
@@ -947,7 +1024,7 @@ extern "C" {
 
         
         // Return to caller.
-        return i32Array_getSize(this->pArray);
+        return I32Array_getSize(this->pArray);
     }
 
 
@@ -1046,6 +1123,16 @@ extern "C" {
                         }
                         break;
 
+#ifdef  OBJVLINK_JSON_SUPPORT
+                    case 'P':
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return ObjVLink_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return ObjVLink_ParseJsonObject;
+                        }
+                        break;
+#endif
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return ObjVLink_ToDebugString;
@@ -1080,6 +1167,88 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          S e t
+    //---------------------------------------------------------------
+
+    int32_t         ObjVLink_Set (
+        OBJVLINK_DATA   *this,
+        uint32_t        index,
+        int32_t         amt
+    )
+    {
+        ERESULT         eRc;
+        int32_t         amtRet = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ObjVLink_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+
+        if (0 == index) {
+            return 0;
+        }
+
+        switch (index) {
+            case OBJVLINK_INDEX_INDEX:
+                amtRet = this->index;
+                this->index = amt;
+                break;
+
+            case OBJVLINK_INDEX_LEFT:
+                amtRet = this->left;
+                this->left = amt;
+                break;
+
+            case OBJVLINK_INDEX_MIDDLE:
+                amtRet = this->middle;
+                this->middle = amt;
+                break;
+
+            case OBJVLINK_INDEX_MISC:
+                amtRet = this->misc;
+                this->misc = amt;
+                break;
+
+            case OBJVLINK_INDEX_PARENT:
+                amtRet = this->parent;
+                this->parent = amt;
+                break;
+
+            case OBJVLINK_INDEX_RIGHT:
+                amtRet = this->right;
+                this->right = amt;
+                break;
+
+            default:
+                if (OBJ_NIL == this->pArray) {
+                    this->pArray = I32Array_New();
+                }
+                if (this->pArray) {
+                    amtRet = I32Array_Get(
+                                       this->pArray,
+                                       (index - OBJVLINK_INDEX_HIGH + 1)
+                            );
+                    eRc =   I32Array_SetData(
+                                 this->pArray,
+                                 (index - OBJVLINK_INDEX_HIGH + 1),
+                                 amt
+                            );
+                }
+                break;
+        }
+
+        // Return to caller.
+        return amtRet;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

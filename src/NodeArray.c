@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <NodeArray_internal.h>
 #include        <NodeEnum_internal.h>
-#include        <i32Array.h>
+#include        <I32Array.h>
 #include        <trace.h>
 #include        <utf8.h>
 
@@ -1482,7 +1482,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        pArray = i32Array_New( );
+        pArray = I32Array_New( );
 
         if (pArray && this->pArray) {
             for (j=0; j<ObjArray_getSize(this->pArray); ++j) {
@@ -1493,7 +1493,7 @@ extern "C" {
                 else {
                     chr = 0;
                 }
-                i32Array_AppendData(pArray, chr);
+                I32Array_AppendData(pArray, chr);
             }
         }
 

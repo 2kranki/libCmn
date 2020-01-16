@@ -48,6 +48,7 @@
 #include    <string.h>
 #include    <AStr_internal.h>
 #include    <dec.h>
+#include    <I32Array_internal.h>
 #include    <JsonIn.h>
 #include    <Node.h>
 #include    <NodeHash.h>
@@ -85,8 +86,8 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         const
         OBJ_INFO        *pInfo;
-        //int64_t         intIn;
-        //ASTR_DATA       *pWrk;
+        int64_t         intIn;
+        OBJ_ID          pWrk;
 
         pInfo = obj_getInfo(ObjVLink_Class());
         
@@ -96,25 +97,34 @@ extern "C" {
             goto exit00;
         }
 
-       
-#ifdef XYZZZY 
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
-        pObject->loc.fileIndex = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->loc.offset);
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
-        pObject->loc.lineNo = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
-        pObject->loc.colNo = (uint16_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "severity", &intIn);
-        pObject->severity = (uint16_t)intIn;
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "index", &intIn);
+       pObject->index = (int32_t)intIn;
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "left", &intIn);
+        pObject->left = (int32_t)intIn;
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "middle", &intIn);
+        pObject->middle = (int32_t)intIn;
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
+        pObject->misc = (int32_t)intIn;
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "parent", &intIn);
+        pObject->parent = (int32_t)intIn;
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "right", &intIn);
+        pObject->right = (int32_t)intIn;
 
-        eRc = JsonIn_SubobjectInHash(pParser, "errorStr");
+#ifdef XYZZZY
+        eRc = JsonIn_SubobjectInHash(pParser, "object");
         pWrk = AStr_ParseJsonObject(pParser);
         if (pWrk) {
             pObject->pErrorStr = pWrk;
         }
         JsonIn_SubobjectEnd(pParser);
 #endif
+
+        eRc = JsonIn_SubObjectInHash(pParser, "array");
+        pWrk = I32Array_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pArray = pWrk;
+        }
+        JsonIn_SubObjectEnd(pParser);
 
         // Return to caller.
     exit00:
@@ -294,7 +304,7 @@ extern "C" {
                     if (pToJson) {
                         pWrkStr = (*pToJson)(this->pObj);
                         if (pWrkStr) {
-                            AStr_AppendA(pStr, "\t\"errorStr\": ");
+                            AStr_AppendA(pStr, "\t\"object\": ");
                             AStr_Append(pStr, pWrkStr);
                             obj_Release(pWrkStr);
                             pWrkStr = OBJ_NIL;
@@ -314,7 +324,7 @@ extern "C" {
                     if (pToJson) {
                         pWrkStr = (*pToJson)(this->pArray);
                         if (pWrkStr) {
-                            AStr_AppendA(pStr, "\t\"errorStr\": ");
+                            AStr_AppendA(pStr, "\t\"array\": ");
                             AStr_Append(pStr, pWrkStr);
                             obj_Release(pWrkStr);
                             pWrkStr = OBJ_NIL;

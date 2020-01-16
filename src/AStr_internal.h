@@ -81,6 +81,21 @@ struct AStr_data_s	{
     );
 
     
+#ifdef  ASTR_JSON_SUPPORT
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         AStr_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        ASTR_DATA       *pObject
+    );
+
+
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
@@ -90,6 +105,7 @@ struct AStr_data_s	{
     ASTR_DATA *     AStr_ParseJsonObject(
         JSONIN_DATA     *pParser
     );
+#endif
     
     
     void *          AStr_QueryInfo(

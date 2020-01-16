@@ -280,7 +280,7 @@ int         test_NodeArray_Add02(
         pClasses = NodeArray_ToClassArray(pArray);
         XCTAssertFalse( (OBJ_NIL == pClasses) );
         for (i=0; i<10; ++i) {
-            cls = i32Array_Get(pClasses, i+1);
+            cls = I32Array_Get(pClasses, i+1);
             XCTAssertTrue( (cls == (i+1)) );
         }
         obj_Release(pClasses);

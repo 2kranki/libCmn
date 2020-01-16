@@ -67,7 +67,7 @@
         {name:"hash32"},
         {name:"hex", json:true},
         {name:"hjson"},
-        {name:"i32Array"},
+        {name:"I32Array", deps:["array.h"], json:true},
         {name:"JsonIn"},
         {name:"jsonOut"},
         {name:"jsonPP"},

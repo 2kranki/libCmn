@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/13/2020  4:18:37.000)
+# ( 1/15/2020  1:09:00.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -169,6 +169,21 @@ $(OBJDIR)/FileRef.o: $(SRCDIR)/FileRef.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $
 OBJS += $(OBJDIR)/FileRef_object.o
 
 $(OBJDIR)/FileRef_object.o: $(SRCDIR)/FileRef_object.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I32Array.o
+
+$(OBJDIR)/I32Array.o: $(SRCDIR)/I32Array.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I32Array_json.o
+
+$(OBJDIR)/I32Array_json.o: $(SRCDIR)/I32Array_json.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I32Array_object.o
+
+$(OBJDIR)/I32Array_object.o: $(SRCDIR)/I32Array_object.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/JsonIn.o
@@ -389,6 +404,21 @@ $(OBJDIR)/ObjMethod_json.o: $(SRCDIR)/ObjMethod_json.c $(SRCDIR)/ObjMethod.h $(S
 OBJS += $(OBJDIR)/ObjMethod_object.o
 
 $(OBJDIR)/ObjMethod_object.o: $(SRCDIR)/ObjMethod_object.c $(SRCDIR)/ObjMethod.h $(SRCDIR)/ObjMethod_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ObjVLink.o
+
+$(OBJDIR)/ObjVLink.o: $(SRCDIR)/ObjVLink.c $(SRCDIR)/ObjVLink.h $(SRCDIR)/ObjVLink_internal.h $(SRCDIR)/i32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ObjVLink_json.o
+
+$(OBJDIR)/ObjVLink_json.o: $(SRCDIR)/ObjVLink_json.c $(SRCDIR)/ObjVLink.h $(SRCDIR)/ObjVLink_internal.h $(SRCDIR)/i32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ObjVLink_object.o
+
+$(OBJDIR)/ObjVLink_object.o: $(SRCDIR)/ObjVLink_object.c $(SRCDIR)/ObjVLink.h $(SRCDIR)/ObjVLink_internal.h $(SRCDIR)/i32Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Parser.o
@@ -1014,16 +1044,6 @@ $(OBJDIR)/hjson.o: $(SRCDIR)/hjson.c $(SRCDIR)/hjson.h $(SRCDIR)/hjson_internal.
 OBJS += $(OBJDIR)/hjson_object.o
 
 $(OBJDIR)/hjson_object.o: $(SRCDIR)/hjson_object.c $(SRCDIR)/hjson.h $(SRCDIR)/hjson_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/i32Array.o
-
-$(OBJDIR)/i32Array.o: $(SRCDIR)/i32Array.c $(SRCDIR)/i32Array.h $(SRCDIR)/i32Array_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/i32Array_object.o
-
-$(OBJDIR)/i32Array_object.o: $(SRCDIR)/i32Array_object.c $(SRCDIR)/i32Array.h $(SRCDIR)/i32Array_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/jsonOut.o
@@ -1728,6 +1748,12 @@ FileRef_test: $(TEST_SRC)/FileRef_test.c $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += I32Array_test
+
+I32Array_test: $(TEST_SRC)/I32Array_test.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += JsonIn_test
 
 JsonIn_test: $(TEST_SRC)/JsonIn_test.c $(SRCDIR)/JsonIn.h $(SRCDIR)/JsonIn_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1821,6 +1847,12 @@ ObjList_test: $(TEST_SRC)/ObjList_test.c $(SRCDIR)/ObjList.h $(SRCDIR)/ObjList_i
 TESTS += ObjMethod_test
 
 ObjMethod_test: $(TEST_SRC)/ObjMethod_test.c $(SRCDIR)/ObjMethod.h $(SRCDIR)/ObjMethod_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += ObjVLink_test
+
+ObjVLink_test: $(TEST_SRC)/ObjVLink_test.c $(SRCDIR)/ObjVLink.h $(SRCDIR)/ObjVLink_internal.h $(SRCDIR)/i32Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2157,12 +2189,6 @@ hex_test: $(TEST_SRC)/hex_test.c $(SRCDIR)/hex.h $(SRCDIR)/hex_internal.h $(SRCD
 TESTS += hjson_test
 
 hjson_test: $(TEST_SRC)/hjson_test.c $(SRCDIR)/hjson.h $(SRCDIR)/hjson_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += i32Array_test
-
-i32Array_test: $(TEST_SRC)/i32Array_test.c $(SRCDIR)/i32Array.h $(SRCDIR)/i32Array_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

@@ -13,7 +13,11 @@
  *
  * Remarks
  *	1.      This object uses signed indices so that the sign can be
- *	        used for something such as back pointers.
+ *	        used for something such as back pointers.  It is assumed
+ *          that an index must be non-zero.
+ *  2.      The fixed indices can be accessed directly through their
+ *          property methods or via get/set using OBJVLINK_INDEX
+ *          indices.
  *
  * History
  *	01/14/2020 Generated
@@ -98,6 +102,19 @@ extern "C" {
     } OBJVLINK_CLASS_VTBL;
 
 
+    // Index values used the Get/Set which will access the fixed indices
+    // as well as those in the optional array.
+    typedef enum  ObjVLink_Index_e {
+        OBJVLINK_INDEX_UNKNOWN=0,   // Not Allowed
+        OBJVLINK_INDEX_INDEX,
+        OBJVLINK_INDEX_LEFT,
+        OBJVLINK_INDEX_MIDDLE,
+        OBJVLINK_INDEX_MISC,
+        OBJVLINK_INDEX_PARENT,
+        OBJVLINK_INDEX_RIGHT,
+        OBJVLINK_INDEX_HIGH         // Beginning value to access the array.
+    } OBJVLINK_INDEX;
+
 
 
     /****************************************************************
@@ -141,6 +158,18 @@ extern "C" {
     );
     
     
+#ifdef  OBJVLINK_JSON_SUPPORT
+    OBJVLINK_DATA * ObjVLink_NewFromJsonString(
+        ASTR_DATA       *pString
+    );
+
+    OBJVLINK_DATA * ObjVLink_NewFromJsonStringA(
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -213,16 +242,54 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         ObjVLink_Disable (
-        OBJVLINK_DATA	*this
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = ObjVLink_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another OBJVLINK object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         ObjVLink_Assign (
+        OBJVLINK_DATA   *this,
+        OBJVLINK_DATA   *pOther
     );
 
 
-    ERESULT         ObjVLink_Enable (
-        OBJVLINK_DATA	*this
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        ObjVLink      *pCopy = ObjVLink_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a OBJVLINK object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    OBJVLINK_DATA *     ObjVLink_Copy (
+        OBJVLINK_DATA       *this
     );
 
-   
+
+    /*!
+     Get the index'th entry in the array. If it doesn't exist or there
+     is an error, return zero which is not a legal index.
+     Indices must be non-zero.
+     @param     this    objArray object pointer
+     @return    If successful, an index number, otherwise 0.
+     */
+    int32_t         ObjVLink_Get (
+        OBJVLINK_DATA   *this,
+        uint32_t        index       // Relative to 1
+    );
+
+
     OBJVLINK_DATA * ObjVLink_Init (
         OBJVLINK_DATA   *this
     );
@@ -233,6 +300,40 @@ extern "C" {
     );
     
  
+    /*!
+     Set the index'th entry in the array to the given index.
+     @param     this    objArray object pointer
+     @param     index   unsigned integer > 0
+     @param     amt     signed integer
+     @return    If successful, an old index number, otherwise 0.
+     */
+    int32_t         ObjVLink_Set (
+        OBJVLINK_DATA   *this,
+        uint32_t        index,      // Relative to 1
+        int32_t         amt
+    );
+
+
+#ifdef  OBJVLINK_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = ObjVLink_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     ObjVLink_ToJson(
+        OBJVLINK_DATA   *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

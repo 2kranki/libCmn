@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   i32Array_internal.h
- *	Generated 01/20/2018 22:51:51
+ * File:   I32Array_internal.h
+ *	Generated 01/14/2020 18:29:58
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,18 @@
 
 
 
-#include    <i32Array.h>
-#include    <array_internal.h>
+#include        <I32Array.h>
+#include        <array_internal.h>
+#include        <JsonIn.h>
+#include        <path_internal.h>
 
 
 #ifndef I32ARRAY_INTERNAL_H
 #define	I32ARRAY_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -60,7 +66,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct i32Array_data_s	{
+struct I32Array_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     ARRAY_DATA      super;
@@ -73,12 +79,27 @@ struct i32Array_data_s	{
 #pragma pack(pop)
 
     extern
-    const
-    struct i32Array_class_data_s  i32Array_ClassObj;
+    struct I32Array_class_data_s  I32Array_ClassObj;
 
     extern
     const
-    I32ARRAY_VTBL         i32Array_Vtbl;
+    I32ARRAY_VTBL         I32Array_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  I32ARRAY_SINGLETON
+    I32ARRAY_DATA * I32Array_getSingleton (
+        void
+    );
+
+    bool            I32Array_setSingleton (
+     I32ARRAY_DATA       *pValue
+);
+#endif
 
 
 
@@ -86,39 +107,67 @@ struct i32Array_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-   bool            i32Array_setLastError(
-        I32ARRAY_DATA     *this,
-        ERESULT         value
-    );
-
-
-    OBJ_IUNKNOWN *  i32Array_getSuperVtbl(
+    OBJ_IUNKNOWN *  I32Array_getSuperVtbl (
         I32ARRAY_DATA     *this
     );
 
 
-    void            i32Array_Dealloc(
+    I32ARRAY_DATA *     I32Array_Copy (
+        I32ARRAY_DATA     *this
+    );
+
+
+    void            I32Array_Dealloc (
         OBJ_ID          objId
     );
 
 
-    void *          i32Array_QueryInfo(
+#ifdef  I32ARRAY_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    I32ARRAY_DATA * I32Array_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+
+
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         I32Array_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        I32ARRAY_DATA   *pObject
+    );
+#endif
+
+
+    void *          I32Array_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     i32Array_ToJSON(
+#ifdef  I32ARRAY_JSON_SUPPORT
+    ASTR_DATA *     I32Array_ToJson (
         I32ARRAY_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			i32Array_Validate(
+    bool			I32Array_Validate (
         I32ARRAY_DATA       *this
     );
 #endif

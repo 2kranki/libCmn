@@ -61,7 +61,12 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-    
+
+
+#define   ASTR_JSON_SUPPORT 1
+//#define   ASTR_SINGLETON    1
+
+
 
     //****************************************************************
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
@@ -128,6 +133,7 @@ extern "C" {
     );
     
     
+#ifdef  ASTR_JSON_SUPPORT
     ASTR_DATA *    AStr_NewFromJsonString(
         ASTR_DATA       *pString
     );
@@ -136,6 +142,7 @@ extern "C" {
         const
         char            *pString
     );
+#endif
 
 
     ASTR_DATA *    AStr_NewFromPrint(
