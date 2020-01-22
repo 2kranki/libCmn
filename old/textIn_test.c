@@ -258,7 +258,7 @@ int             test_textIn_GetLine02(
 )
 {
     TEXTIN_DATA     *pObj = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
     ERESULT         eRc;
     char            buffer[128];
     SRCLOC          loc = {0};

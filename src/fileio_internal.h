@@ -53,6 +53,28 @@ extern "C" {
 #endif
 
 
+#define FILEIO_HNDL_STDIN       0           // Standard Input
+#define FILEIO_HNDL_STDOUT      1           // Standard Output
+#define FILEIO_HNDL_STDERR      2           // Standard Error Output
+
+typedef enum fileio_Close_e {
+    FILEIO_CLOSE_NO=0,                      // Do not issue close.
+    FILEIO_CLOSE_REQ,                       // Close is required.
+} FILEIO_CLOSE;
+
+typedef enum fileio_Open_e {
+    FILEIO_OPEN_NO=0,                       // Do not issue open.
+    FILEIO_OPEN_REQ,                        // Open is required.
+} FILEIO_OPEN;
+
+typedef enum fileio_Status_e {
+    FILEIO_STATUS_NOTAVAIL=0,               // No status yet
+    FILEIO_STATUS_CLOSED,                   // File is closed.
+    FILEIO_STATUS_READ,                     // File is open for reading only.
+    FILEIO_STATUS_WRITE,                    // File is open for writing only.
+    FILEIO_STATUS_READWRITE,                // File is open for reading or writing.
+    FILEIO_STATUS_EOF                       // EOF or write error has occurred.
+} FILEIO_STATUS;
 
 
 #pragma pack(push, 1)
@@ -68,6 +90,18 @@ struct fileio_data_s	{
     PATH_DATA       *pPath;
     int             fileHandle;
     LRU_DATA        *pLRU;
+    uint8_t         openFlags;
+    uint8_t         closeFlags;
+    uint8_t         readAccess;
+    uint8_t         writeAccess;
+    uint8_t         status;
+    uint8_t         filler[3];
+#define FILEIO_STATUS_UNKNOWN   0
+#define FILEIO_STATUS_CLOSED    1
+#define FILEIO_STATUS_READ      2
+#define FILEIO_STATUS_WRITE     3
+#define FILEIO_STATUS_READWRITE 4
+#define FILEIO_STATUS_EOF       5
 
 };
 #pragma pack(pop)

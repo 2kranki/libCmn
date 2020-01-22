@@ -1334,8 +1334,7 @@ extern "C" {
             default:
                 break;
         }
-        
-        
+
         if (chr >= 0) {
             this->curChr.cls = ascii_toLexicalClassW32(chr);
         }

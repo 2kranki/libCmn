@@ -89,7 +89,7 @@ extern "C" {
         int64_t         intIn;
         uint32_t        uint32 = 0;
         int32_t         int32 = 0;
-        ASTR_DATA       *pWrk;
+        //ASTR_DATA       *pWrk;
         NAME_DATA       *pName = OBJ_NIL;
         OBJ_ID          pObj = OBJ_NIL;
 

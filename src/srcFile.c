@@ -1073,7 +1073,7 @@ extern "C" {
                             return srcFile_ToDebugString;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return srcFile_ToJSON;
+                            return srcFile_ToJson;
                         }
                         break;
                         
@@ -1085,7 +1085,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == srcFile_ToDebugString)
                     return "ToDebugString";
-                if (pData == srcFile_ToJSON)
+                if (pData == srcFile_ToJson)
                     return "ToJson";
                 break;
                 
@@ -1145,10 +1145,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       T o  J S O N
+    //                       T o  J s o n
     //---------------------------------------------------------------
     
-     ASTR_DATA *     srcFile_ToJSON (
+     ASTR_DATA *     srcFile_ToJson (
         SRCFILE_DATA      *this
     )
     {

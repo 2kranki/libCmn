@@ -304,6 +304,33 @@ extern "C" {
     
     
     
+    FILEIO_DATA *   fileio_NewStdin (
+        void
+    )
+    {
+        FILEIO_DATA     *this = OBJ_NIL;
+
+        this = fileio_New( );
+        if (this) {
+
+            this->openFlags = FILEIO_OPEN_NO;
+            this->closeFlags = FILEIO_CLOSE_REQ;
+            this->readAccess = 1;
+            this->writeAccess = 0;
+            this->status = FILEIO_STATUS_READ;
+            this->fileHandle = fcntl(fileno(stdin), F_DUPFD, 0);
+            if (this->fileHandle < 0) {
+                obj_Release(this);
+                this = OBJ_NIL;
+                return this;
+            }
+        }
+
+        return this;
+    }
+
+
+
 
     
 

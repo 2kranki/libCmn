@@ -142,7 +142,7 @@ struct srcFile_data_s	{
     );
 
 
-    ASTR_DATA *     srcFile_ToJSON (
+    ASTR_DATA *     srcFile_ToJson (
         SRCFILE_DATA    *this
     );
 

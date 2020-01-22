@@ -13,10 +13,7 @@
  *          called a fileio on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal fileio. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	07/30/2016 Generated
@@ -188,6 +185,15 @@ extern "C" {
     );
     
     
+    /*!
+     Open a duplicated stdin.
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    FILEIO_DATA *   fileio_NewStdin (
+        void
+    );
+
+
 
     
     //---------------------------------------------------------------

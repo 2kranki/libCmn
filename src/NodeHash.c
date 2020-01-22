@@ -1459,7 +1459,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(NODEHASH_DATA);
-        ERESULT         eRc;
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;

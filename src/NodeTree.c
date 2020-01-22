@@ -199,9 +199,9 @@ extern "C" {
      error.
      */
     ERESULT         NodeTree_UpDownNodePre(
-        NODETREE_DATA    *this,
+        NODETREE_DATA   *this,
         uint32_t        index,              // Current Node
-        NODEARRAY_DATA    *pArray
+        NODEARRAY_DATA  *pArray
     )
     {
         NODELINK_DATA   *pEntry;

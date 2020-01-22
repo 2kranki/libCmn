@@ -73,6 +73,7 @@ struct JsonIn_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    OBJARRAY_DATA   *pClasses;
     ASTR_DATA       *pStr;
     NODEHASH_DATA   *pHash;
     OBJLIST_DATA    *pList;
@@ -134,7 +135,7 @@ struct JsonIn_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  JSONIN_JSON_SUPPORT
     ASTR_DATA *     JsonIn_ToJson (
         JSONIN_DATA      *this
     );

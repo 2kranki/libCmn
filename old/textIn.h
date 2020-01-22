@@ -213,7 +213,7 @@ extern "C" {
     );
     
     
-    TEXTIN_DATA *  textIn_Init (
+    TEXTIN_DATA *   textIn_Init (
         TEXTIN_DATA     *this
     );
     

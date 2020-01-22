@@ -66,6 +66,7 @@
 #include        <Node.h>
 #include        <NodeHash.h>
 #include        <null.h>
+#include        <ObjMethod.h>
 #include        <true.h>
 
 
@@ -74,7 +75,7 @@
 
 
 //#define   JSONIN_JSON_SUPPORT 1
-//#define   JSONIN_SINGLETON    1
+#define   JSONIN_SINGLETON    1
 
 
 
@@ -541,6 +542,21 @@ extern "C" {
     ERESULT         JsonIn_ParsePath(
         JSONIN_DATA     *this,
         PATH_DATA       *pPath
+    );
+
+
+    /*!
+     Register an Object's Class() method for parsing json objects. This
+     allows a json parser to register class that it will use to parse
+     its particular json text.
+     @param     this    object pointer
+     @param     pCls    Class Method for Object Class (required)
+     @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_*
+                error code
+     */
+    ERESULT         JsonIn_RegisterClass(
+        JSONIN_DATA     *this,
+        OBJMETHOD_DATA  *pCls
     );
 
 

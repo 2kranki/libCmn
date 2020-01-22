@@ -1284,6 +1284,10 @@ extern "C" {
         JsonIn_setHash(this, OBJ_NIL);
         JsonIn_setList(this, OBJ_NIL);
         JsonIn_setStr(this, OBJ_NIL);
+        if (this->pClasses) {
+            obj_Release(this->pClasses);
+            this->pClasses = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1902,6 +1906,8 @@ extern "C" {
             return pObj;
         }
 
+        
+
         // Return to caller.
         return pObj;
     }
@@ -1969,21 +1975,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                P a r s e  J s o n  O b j e c t
-    //---------------------------------------------------------------
-    
-#ifdef  JSONIN_JSON_SUPPORT
-     JSONIN_DATA * JsonIn_ParseJsonObject (
-         JSONIN_DATA     *pParser
-    )
-    {
-        return OBJ_NIL;
-    }
-#endif
-        
-        
-        
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -2082,7 +2073,7 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return JsonIn_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  JSONIN_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return JsonIn_ToJson;
                         }
@@ -2097,7 +2088,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == JsonIn_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  JSONIN_JSON_SUPPORT
                 if (pData == JsonIn_ToJson)
                     return "ToJson";
 #endif
@@ -2112,6 +2103,43 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                  R e g i s t e r  C l a s s
+    //---------------------------------------------------------------
+
+    ERESULT         JsonIn_RegisterClass (
+        JSONIN_DATA     *this,
+        OBJMETHOD_DATA  *pCls
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (OBJ_NIL == this->pClasses) {
+            this->pClasses = ObjArray_New();
+            if (OBJ_NIL == this->pClasses) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+
+        if (obj_IsEnabled(this)) {
+            return ERESULT_SUCCESS_TRUE;
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     S u b  O b j e c t
     //---------------------------------------------------------------
