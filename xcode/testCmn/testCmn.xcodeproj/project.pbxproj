@@ -287,6 +287,9 @@
 		C4AA73AB1FE2B740001FACEC /* hjson.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73971FE2B735001FACEC /* hjson.c */; };
 		C4AA73AE1FE2B740001FACEC /* lexj.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA739A1FE2B737001FACEC /* lexj.c */; };
 		C4AA73B31FE2B740001FACEC /* lexj_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AA73A21FE2B73E001FACEC /* lexj_object.c */; };
+		C4B045AC23D7F36A00162B4F /* TextIn_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B045AB23D7F36A00162B4F /* TextIn_test.c */; };
+		C4B045B123D7F39100162B4F /* TextIn_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B045AD23D7F39000162B4F /* TextIn_object.c */; };
+		C4B045B223D7F39100162B4F /* TextIn.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B045AE23D7F39000162B4F /* TextIn.c */; };
 		C4BB273620C4387B00FE72AC /* SRecords.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BB273220C4387700FE72AC /* SRecords.c */; };
 		C4BB273720C4387B00FE72AC /* SRecords_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BB273420C4387900FE72AC /* SRecords_object.c */; };
 		C4BED99A23009C40006DF1C1 /* scanReader_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BED99623009C3E006DF1C1 /* scanReader_object.c */; };
@@ -902,6 +905,11 @@
 		C4AA73A11FE2B73D001FACEC /* lexj_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lexj_internal.h; sourceTree = "<group>"; };
 		C4AA73A21FE2B73E001FACEC /* lexj_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lexj_object.c; sourceTree = "<group>"; };
 		C4AA73A31FE2B73F001FACEC /* hjson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hjson.h; sourceTree = "<group>"; };
+		C4B045AB23D7F36A00162B4F /* TextIn_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TextIn_test.c; sourceTree = "<group>"; };
+		C4B045AD23D7F39000162B4F /* TextIn_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TextIn_object.c; sourceTree = "<group>"; };
+		C4B045AE23D7F39000162B4F /* TextIn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TextIn.c; sourceTree = "<group>"; };
+		C4B045AF23D7F39100162B4F /* TextIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextIn.h; sourceTree = "<group>"; };
+		C4B045B023D7F39100162B4F /* TextIn_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextIn_internal.h; sourceTree = "<group>"; };
 		C4BB273220C4387700FE72AC /* SRecords.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SRecords.c; sourceTree = "<group>"; };
 		C4BB273320C4387800FE72AC /* SRecords_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRecords_internal.h; sourceTree = "<group>"; };
 		C4BB273420C4387900FE72AC /* SRecords_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SRecords_object.c; sourceTree = "<group>"; };
@@ -1036,6 +1044,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
+				C4B045AB23D7F36A00162B4F /* TextIn_test.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
 			);
@@ -1592,6 +1601,10 @@
 				C4359B751FC9C47B00CA858E /* table_object.c */,
 				C4359B871FC9C47D00CA858E /* table.c */,
 				C4359B621FC9C47900CA858E /* table.h */,
+				C4B045B023D7F39100162B4F /* TextIn_internal.h */,
+				C4B045AD23D7F39000162B4F /* TextIn_object.c */,
+				C4B045AE23D7F39000162B4F /* TextIn.c */,
+				C4B045AF23D7F39100162B4F /* TextIn.h */,
 				C43204BC239170040078124D /* TextOut_internal.h */,
 				C43204BE239170050078124D /* TextOut_object.c */,
 				C43204BD239170050078124D /* TextOut.c */,
@@ -1753,6 +1766,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C440262C202B4252009B7806 /* szData.c in Sources */,
+				C4B045AC23D7F36A00162B4F /* TextIn_test.c in Sources */,
 				C4359BD71FC9C48400CA858E /* sidx.c in Sources */,
 				C4E1383123BE91570095EABE /* TokenList.c in Sources */,
 				C4359B041FC9C3D800CA858E /* misc.c in Sources */,
@@ -1985,6 +1999,7 @@
 				C40DEA642071BB21007CE920 /* md5ChkSum_object.c in Sources */,
 				C42C552823CB73A500AA762C /* NodeLink_object.c in Sources */,
 				C4EBE2F523CA1B22008E9EE8 /* Name_object.c in Sources */,
+				C4B045B123D7F39100162B4F /* TextIn_object.c in Sources */,
 				C4359B481FC9C42700CA858E /* prodcons.c in Sources */,
 				C4AA73AB1FE2B740001FACEC /* hjson.c in Sources */,
 				C479C00523ADB9310057A017 /* number_json.c in Sources */,
@@ -2080,6 +2095,7 @@
 				C4359B471FC9C42700CA858E /* plist.c in Sources */,
 				C4E137AE23B985C40095EABE /* ObjArray_object.c in Sources */,
 				C4359B591FC9C42700CA858E /* psxLock_object.c in Sources */,
+				C4B045B223D7F39100162B4F /* TextIn.c in Sources */,
 				C463898B21EA71EC00DFCE35 /* bpt32_object.c in Sources */,
 				C4E137B023B985C40095EABE /* ObjArray.c in Sources */,
 				C4359A431FC9C38800CA858E /* dir_object.c in Sources */,

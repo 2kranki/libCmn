@@ -41,7 +41,7 @@
 
 #include        <srcFile.h>
 #include        <JsonIn.h>
-#include        <textIn_internal.h>
+#include        <TextIn_internal.h>
 #include        <Token_internal.h>
 
 

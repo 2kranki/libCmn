@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          TEXTIN Console Transmit Task (textIn) Header
+//          Text File Input (TextIn) Header
 //****************************************************************
 /*
  * Program
- *			Separate textIn (textIn)
+ *			Text File Input (TextIn)
  * Purpose
- *			This object provides the means of processing an input
- *          text file from several different types of sources and
- *          tracking the source location as each character or
- *          line is returned.
+ *			This object provides a standardized way of handling
+ *          a separate TextIn to run things without complications
+ *          of interfering with the main TextIn. A TextIn may be 
+ *          called a TextIn on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	11/23/2017 Generated
+ *	01/21/2020 Generated
  */
 
 
@@ -56,8 +56,15 @@
 #include        <SrcLoc.h>
 
 
+
 #ifndef         TEXTIN_H
 #define         TEXTIN_H
+
+
+//#define   TEXTIN_JSON_SUPPORT 1
+//#define   TEXTIN_SINGLETON    1
+
+
 
 
 
@@ -71,25 +78,36 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct textIn_data_s	TEXTIN_DATA;    // Inherits from OBJ.
+    typedef struct TextIn_data_s	TEXTIN_DATA;            // Inherits from OBJ
+    typedef struct TextIn_class_data_s TEXTIN_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct textIn_vtbl_s	{
+    typedef struct TextIn_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in textIn_object.c.
+        // method names to the vtbl definition in TextIn_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(TEXTIN_DATA *);
     } TEXTIN_VTBL;
 
-    
-    typedef struct textIn_chr_s {
+    typedef struct TextIn_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in TextIn_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(TEXTIN_DATA *);
+    } TEXTIN_CLASS_VTBL;
+
+
+    typedef struct textIn_char_s {
         SRCLOC          loc;
         int32_t         cls;        // ASCII Class
         W32CHR_T        chr;
-    } TEXTIN_CHRLOC;
-    
-    
+    } TEXTIN_CHAR;
+
+
+
 
     /****************************************************************
     * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
@@ -100,91 +118,122 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  TEXTIN_SINGLETON
+    TEXTIN_DATA *   TextIn_Shared (
+        void
+    );
+
+    void            TextIn_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to textIn object if successful, otherwise OBJ_NIL.
+     @return    pointer to TextIn object if successful, otherwise OBJ_NIL.
      */
-    TEXTIN_DATA *     textIn_Alloc (
+    TEXTIN_DATA *   TextIn_Alloc (
         void
     );
     
     
-    TEXTIN_DATA *     textIn_New (
+    OBJ_ID          TextIn_Class (
         void
     );
     
-    TEXTIN_DATA *   textIn_NewFromAStr (
+    
+    TEXTIN_DATA *   TextIn_New (
+        void
+    );
+    
+    
+    TEXTIN_DATA *   TextIn_NewFromAStr (
         PATH_DATA       *pFilePath,     // Optoinal Path used for Documentation Only
         ASTR_DATA       *pStr,          // Buffer of file data
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
 
-    TEXTIN_DATA *  textIn_NewFromFile (
+
+    TEXTIN_DATA *  TextIn_NewFromFile (
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         FILE            *pFile,
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
-    TEXTIN_DATA *  textIn_NewFromPath (
+
+
+#ifdef  TEXTIN_JSON_SUPPORT
+    TEXTIN_DATA *   TextIn_NewFromJsonString(
+        ASTR_DATA       *pString
+    );
+
+    TEXTIN_DATA *   TextIn_NewFromJsonStringA(
+        const
+        char            *pStringA
+    );
+#endif
+
+
+    TEXTIN_DATA *  TextIn_NewFromPath (
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
-    
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint16_t        textIn_getFileIndex (
+    uint16_t        TextIn_getFileIndex (
         TEXTIN_DATA     *this
     );
 
-    bool            textIn_setFileIndex (
+    bool            TextIn_setFileIndex (
         TEXTIN_DATA     *this,
         uint16_t        value
     );
-    
 
-    PATH_DATA *     textIn_getPath (
+
+    PATH_DATA *     TextIn_getPath (
         TEXTIN_DATA     *this
     );
-    
-    
+
+
     /*!
      The Remove NL property allows for NLs to be skipped as
      input but still reflected in the statistics.
      */
-    bool            textIn_getRemoveNLs (
+    bool            TextIn_getRemoveNLs (
         TEXTIN_DATA     *this
     );
-    
-    bool            textIn_setRemoveNLs (
+
+    bool            TextIn_setRemoveNLs (
         TEXTIN_DATA     *this,
         bool            fValue
     );
 
-    
+
     /*!
      The Tab Size property if non-zero causes horizontal tabs
      to be expanded to spaces to multiples of the tabl size.
      The default is zero (ie no tab expansion).
      */
-    uint16_t        textIn_getTabSize (
+    uint16_t        TextIn_getTabSize (
         TEXTIN_DATA     *this
     );
-    
-    bool            textIn_setTabSize (
+
+    bool            TextIn_setTabSize (
         TEXTIN_DATA     *this,
         uint16_t        value
     );
-    
-    
+
+
 
 
     
@@ -205,83 +254,103 @@ extern "C" {
                 is reached for first character.  Otherwise, an ERESULT_*
                 error.
      */
-    ERESULT         textIn_GetLine (
+    ERESULT         TextIn_GetLine (
         TEXTIN_DATA     *this,
         char            *pBuffer,
         int             size,
         SRCLOC          *pLoc
     );
-    
-    
-    TEXTIN_DATA *   textIn_Init (
-        TEXTIN_DATA     *this
-    );
-    
-    
-    /*! Get the location for the last character received.
-     */
-    ERESULT         textIn_Location (
-        TEXTIN_DATA     *this,
-        uint16_t        *pFilenameIndex,
-        size_t          *pOffset,
-        uint32_t        *pLineNo,
-        uint16_t        *pColNo
-    );
-    
- 
-    /*!
-     Return the next character in the file.
-     @return    If successful, ERESULT_SUCCESS and *pChar contains the next
-                character from the file, otherwise, an ERESULT_* error and
-                *pChar contains EOF(-1).
-     */
-    W32CHR_T        textIn_NextChar (
-        TEXTIN_DATA     *this
-    );
-    
-    ERESULT         textIn_NextChrLoc(
-        TEXTIN_DATA     *this,
-        TEXTIN_CHRLOC   *pChr               // [out] next char is returned here
-    );
-    
 
-    ERESULT         textIn_SetupAStr(
-        TEXTIN_DATA     *this,
-        PATH_DATA       *pFilePath,     // Optoinal Path used for Documentation Only
-        ASTR_DATA       *pStr,          // Buffer of file data
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+
+    TEXTIN_DATA *   TextIn_Init (
+        TEXTIN_DATA     *this
     );
-    
-    ERESULT         textIn_SetupFile (
-        TEXTIN_DATA     *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        FILE            *pFile,
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+
+
+    /*! Get the location for the last character received.
+    */
+    ERESULT         TextIn_Location (
+       TEXTIN_DATA     *this,
+       uint16_t        *pFilenameIndex,
+       size_t          *pOffset,
+       uint32_t        *pLineNo,
+       uint16_t        *pColNo
     );
-    
-    ERESULT         textIn_SetupPath (
-        TEXTIN_DATA     *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+
+
+    /*!
+    Return the next character in the file.
+    @return    If successful, ERESULT_SUCCESS and *pChar contains the next
+               character from the file, otherwise, an ERESULT_* error and
+               *pChar contains EOF(-1).
+    */
+    W32CHR_T        TextIn_NextChar (
+       TEXTIN_DATA      *this
     );
-    
-    ERESULT         textIn_SetupU8Array (
-        TEXTIN_DATA     *this,
-        U8ARRAY_DATA    *pBuffer,       // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+
+    ERESULT         TextIn_NextChrLoc(
+       TEXTIN_DATA      *this,
+       TEXTIN_CHAR      *pChr               // [out] next char is returned here
     );
-    
+
+
+    ERESULT         TextIn_SetupAStr(
+       TEXTIN_DATA      *this,
+       PATH_DATA        *pFilePath,     // Optoinal Path used for Documentation Only
+       ASTR_DATA        *pStr,          // Buffer of file data
+       uint16_t         fileIndex,      // File Path Index for a separate path table
+       uint16_t         tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
+    ERESULT         TextIn_SetupFile (
+       TEXTIN_DATA     *this,
+       PATH_DATA       *pFilePath,
+       uint16_t        fileIndex,      // File Path Index for a separate path table
+       FILE            *pFile,
+       uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
+    ERESULT         TextIn_SetupPath (
+       TEXTIN_DATA     *this,
+       PATH_DATA       *pFilePath,
+       uint16_t        fileIndex,      // File Path Index for a separate path table
+       uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
+    ERESULT         TextIn_SetupU8Array (
+       TEXTIN_DATA     *this,
+       U8ARRAY_DATA    *pBuffer,       // Buffer of file data
+       PATH_DATA       *pFilePath,
+       uint16_t        fileIndex,      // File Path Index for a separate path table
+       uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
+
+#ifdef  TEXTIN_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = TextIn_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     TextIn_ToJson(
+        TEXTIN_DATA   *this
+    );
+#endif
+
 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = textIn_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = TextIn_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -289,7 +358,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    textIn_ToDebugString (
+    ASTR_DATA *    TextIn_ToDebugString (
         TEXTIN_DATA     *this,
         int             indent
     );

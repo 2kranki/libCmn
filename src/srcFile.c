@@ -119,7 +119,7 @@ extern "C" {
         
         this = srcFile_New( );
         if (this) {
-            eRc = textIn_SetupAStr((TEXTIN_DATA *)this, pFilePath, pStr, fileIndex, tabSize);
+            eRc = TextIn_SetupAStr((TEXTIN_DATA *)this, pFilePath, pStr, fileIndex, tabSize);
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -152,7 +152,7 @@ extern "C" {
 
         this = srcFile_New( );
         if (this) {
-            eRc = textIn_SetupFile((TEXTIN_DATA *)this, OBJ_NIL, fileIndex, pFile, tabSize);
+            eRc = TextIn_SetupFile((TEXTIN_DATA *)this, OBJ_NIL, fileIndex, pFile, tabSize);
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -185,7 +185,7 @@ extern "C" {
 
         this = srcFile_New( );
         if (this) {
-            eRc = textIn_SetupPath((TEXTIN_DATA *)this, pFilePath, fileIndex, tabSize);
+            eRc = TextIn_SetupPath((TEXTIN_DATA *)this, pFilePath, fileIndex, tabSize);
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -232,7 +232,7 @@ extern "C" {
         }
 #endif
         
-        return textIn_getFileIndex((TEXTIN_DATA *)this);
+        return TextIn_getFileIndex((TEXTIN_DATA *)this);
     }
     
     
@@ -251,7 +251,7 @@ extern "C" {
         }
 #endif
         
-        fRc = textIn_setFileIndex((TEXTIN_DATA *)this, value);
+        fRc = TextIn_setFileIndex((TEXTIN_DATA *)this, value);
         
         return fRc;
     }
@@ -276,7 +276,7 @@ extern "C" {
         }
 #endif
         
-        return textIn_getPath((TEXTIN_DATA *)this);
+        return TextIn_getPath((TEXTIN_DATA *)this);
     }
     
     
@@ -295,7 +295,7 @@ extern "C" {
         }
 #endif
         
-        fRc = textIn_setPath((TEXTIN_DATA *)this, pValue);
+        fRc = TextIn_setPath((TEXTIN_DATA *)this, pValue);
         
         return fRc;
     }
@@ -363,7 +363,7 @@ extern "C" {
         }
 #endif
         
-        return textIn_getRemoveNLs((TEXTIN_DATA *)this);
+        return TextIn_getRemoveNLs((TEXTIN_DATA *)this);
     }
     
     
@@ -382,7 +382,7 @@ extern "C" {
         }
 #endif
         
-        fRc = textIn_setRemoveNLs((TEXTIN_DATA *)this, fValue);
+        fRc = TextIn_setRemoveNLs((TEXTIN_DATA *)this, fValue);
         
         return fRc;
     }
@@ -452,7 +452,7 @@ extern "C" {
         }
 #endif
         
-        return textIn_getTabSize((TEXTIN_DATA *)this);
+        return TextIn_getTabSize((TEXTIN_DATA *)this);
     }
     
     
@@ -471,7 +471,7 @@ extern "C" {
         }
 #endif
         
-        fRc = textIn_setTabSize((TEXTIN_DATA *)this, value);
+        fRc = TextIn_setTabSize((TEXTIN_DATA *)this, value);
         
         return fRc;
     }
@@ -790,7 +790,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)textIn_Init((TEXTIN_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)TextIn_Init((TEXTIN_DATA *)this);    // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SRCFILE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -920,7 +920,7 @@ extern "C" {
         }
 #endif
         
-        chr = textIn_NextChar((TEXTIN_DATA *)this);
+        chr = TextIn_NextChar((TEXTIN_DATA *)this);
         if (chr >= 0) {
             cls = ascii_toLexicalClassW32(chr);
         }

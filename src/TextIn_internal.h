@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   textIn_internal.h
- *	Generated 11/23/2017 23:46:18
+ * File:   TextIn_internal.h
+ *	Generated 01/21/2020 22:03:13
  *
  * Notes:
  *  --	N/A
@@ -39,16 +39,21 @@
 
 
 
-#include    <textIn.h>
-#include    <SrcLoc_internal.h>
-#include    <ascii.h>
-#include    <sidxe.h>
-#include    <u8Array.h>
-#include    <W32Str.h>
+#include        <TextIn.h>
+#include        <JsonIn.h>
+#include        <SrcLoc_internal.h>
+#include        <ascii.h>
+#include        <sidxe.h>
+#include        <u8Array.h>
+#include        <W32Str.h>
 
 
 #ifndef TEXTIN_INTERNAL_H
 #define	TEXTIN_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -57,34 +62,35 @@ extern "C" {
 #endif
 
 
-    typedef enum textIn_state_e {
-        TEXTIN_STATE_UNKNOWN=0,
-        TEXTIN_STATE_IN_TAB,
-        TEXTIN_STATE_NORMAL
-    } TEXTIN_STATE;
-    
-    
-    typedef enum textIn_type_e {
-        TEXTIN_TYPE_UNKNOWN=0,
-        TEXTIN_TYPE_ASTR,
-        TEXTIN_TYPE_FILE,
-        TEXTIN_TYPE_U8ARRAY,
-        TEXTIN_TYPE_WSTR
-    } TEXTIN_TYPE;
-    
-    
+
+typedef enum TextIn_state_e {
+    TEXTIN_STATE_UNKNOWN=0,
+    TEXTIN_STATE_IN_TAB,
+    TEXTIN_STATE_NORMAL
+} TEXTIN_STATE;
+
+
+typedef enum TextIn_type_e {
+    TEXTIN_TYPE_UNKNOWN=0,
+    TEXTIN_TYPE_ASTR,
+    TEXTIN_TYPE_FILE,
+    TEXTIN_TYPE_U8ARRAY,
+    TEXTIN_TYPE_WSTR
+} TEXTIN_TYPE;
+
+
 
 
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------
 
- #pragma pack(push, 1)
-struct textIn_data_s	{
+#pragma pack(push, 1)
+struct TextIn_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 #define TEXTIN_FLAG_SAVCHR  OBJ_FLAG_USER1
 
     // Common Data
@@ -121,19 +127,34 @@ struct textIn_data_s	{
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     SIDXE_DATA      *pSidx;
 #endif
-    TEXTIN_CHRLOC   curChr;
-    TEXTIN_CHRLOC   savChr;
+    TEXTIN_CHAR     curChr;
+    TEXTIN_CHAR     savChr;
 
 };
 #pragma pack(pop)
 
     extern
-    const
-    struct textIn_class_data_s  textIn_ClassObj;
+    struct TextIn_class_data_s  TextIn_ClassObj;
 
     extern
     const
-    TEXTIN_VTBL         textIn_Vtbl;
+    TEXTIN_VTBL         TextIn_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  TEXTIN_SINGLETON
+    TEXTIN_DATA *     TextIn_getSingleton (
+        void
+    );
+
+    bool            TextIn_setSingleton (
+     TEXTIN_DATA       *pValue
+);
+#endif
 
 
 
@@ -141,34 +162,67 @@ struct textIn_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            textIn_setPath(
+    bool            TextIn_setPath(
         TEXTIN_DATA     *this,
         PATH_DATA       *pValue
     );
-    
-    
-    bool            textIn_setTabSize(
-        TEXTIN_DATA     *this,
-        uint16_t        value
-    );
-    
-    
-    OBJ_IUNKNOWN *  textIn_getSuperVtbl(
+
+
+    OBJ_IUNKNOWN *  TextIn_getSuperVtbl (
         TEXTIN_DATA     *this
     );
 
 
-    void            textIn_Dealloc(
+    bool            TextIn_setTabSize(
+        TEXTIN_DATA     *this,
+        uint16_t        value
+    );
+
+
+    ERESULT         TextIn_Assign (
+        TEXTIN_DATA    *this,
+        TEXTIN_DATA    *pOther
+    );
+
+
+    TEXTIN_DATA *       TextIn_Copy (
+        TEXTIN_DATA     *this
+    );
+
+
+    void            TextIn_Dealloc (
         OBJ_ID          objId
     );
 
 
-    TEXTIN_DATA *   textIn_Init(
-        TEXTIN_DATA     *this
+#ifdef  TEXTIN_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    TEXTIN_DATA *       TextIn_ParseJsonObject (
+        JSONIN_DATA     *pParser
     );
-    
-    
-    void *          textIn_QueryInfo(
+
+
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         TextIn_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        TEXTIN_DATA     *pObject
+    );
+#endif
+
+
+    void *          TextIn_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -180,18 +234,20 @@ struct textIn_data_s	{
         PATH_DATA       *pPath,
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
-    
-    ASTR_DATA *     textIn_ToJSON(
+
+
+#ifdef  TEXTIN_JSON_SUPPORT
+    ASTR_DATA *     TextIn_ToJson (
         TEXTIN_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			textIn_Validate(
+    bool			TextIn_Validate (
         TEXTIN_DATA       *this
     );
 #endif

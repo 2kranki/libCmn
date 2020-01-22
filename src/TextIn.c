@@ -1,33 +1,9 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   textIn.c
- *	Generated 11/23/2017 23:46:18
+ * File:   TextIn.c
+ *	Generated 01/21/2020 22:03:13
  *
  */
-
-/*
- We eventually want to allow several different types of text files.
- 
- The first is unix-like record which is terminated with a CR, CRLF or LF
- and which is not continued since it can be very large if needed.
- 
- The second is the same as the first except that it can have some form
- of line continuation such as a '\' and everything after that is
- ignored in the line.
- 
- The third is a fixed size line which may or may not be terminated with
- a CR, CRLF or LF.  This line simulates the old IBM 80-col card where
- any char in col-72 denoted continuation on the next card and cols 73-80
- were optionally used for line numbers.  With line continuation, you
- also have a starting column for the continued data on the next ensuing
- cards.
- 
- We could potentially define an interface and have several different
- objects conform to the interface.
- 
- */
-
-
 
  
 /*
@@ -65,10 +41,14 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <textIn_internal.h>
-#include    <ascii.h>
-#include    <szTbl.h>
-#include    <utf8.h>
+#include        <TextIn_internal.h>
+#include        <ascii.h>
+#include        <szTbl.h>
+#include        <utf8.h>
+#include        <trace.h>
+
+
+
 
 
 
@@ -86,36 +66,36 @@ extern "C" {
     ****************************************************************/
 
     static
-    ERESULT         textIn_FileGetc (
+    ERESULT         TextIn_FileGetc (
         TEXTIN_DATA     *this,
         W32CHR_T        *pChar
     )
     {
         W32CHR_T        chr;
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         chr = fgetwc(this->pFile);
         if( chr == ASCII_CPM_EOF ) {
             while ((chr = fgetwc(this->pFile)) != EOF) {
             }
         }
         *pChar = chr;
-        
+
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     static
-    ERESULT         textIn_u8ArrayGetc (
+    ERESULT         TextIn_u8ArrayGetc (
         TEXTIN_DATA     *this,
         W32CHR_T        *pChar
     )
@@ -123,16 +103,16 @@ extern "C" {
         char            chrs[8];
         W32CHR_T        chr = -1;
         uint32_t        len;
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         chrs[0] = 0;
         ++this->curChr.loc.offset;
         chrs[0] = u8Array_Get(this->pU8Array, (uint32_t)this->curChr.loc.offset);
@@ -159,38 +139,38 @@ extern "C" {
             chr = EOF;
         }
         *pChar = chr;
-        
+
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     static
-    W32CHR_T        textIn_UnicodeGetc (
+    W32CHR_T        TextIn_UnicodeGetc (
         TEXTIN_DATA     *this
     )
     {
         ERESULT         eRc;
         W32CHR_T        chr = EOF;
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         switch (this->type) {
-                
+
             case TEXTIN_TYPE_FILE:
-                eRc = textIn_FileGetc(this, &chr);
+                eRc = TextIn_FileGetc(this, &chr);
                 if (ERESULT_HAS_FAILED(eRc) || (chr == EOF) || feof(this->pFile)) {
                     chr = EOF;
                 }
                 break;
-                
+
             case TEXTIN_TYPE_ASTR:
                 chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->curChr.loc.offset++);
                 if ((chr == ASCII_CPM_EOF) || (chr == EOF)){
@@ -198,14 +178,14 @@ extern "C" {
                     chr = EOF;
                 }
                 break;
-                
+
             case TEXTIN_TYPE_U8ARRAY:
-                eRc = textIn_u8ArrayGetc(this, &chr);
+                eRc = TextIn_u8ArrayGetc(this, &chr);
                 if (ERESULT_HAS_FAILED(eRc)) {
                     chr = EOF;
                 }
                 break;
-                
+
             case TEXTIN_TYPE_WSTR:
                 chr = W32Str_CharGetW32(this->pWStr, (uint32_t)this->curChr.loc.offset++ );
                 if( chr == ASCII_CPM_EOF ) {
@@ -213,17 +193,16 @@ extern "C" {
                     chr = EOF;
                 }
                 break;
-                
+
             default:
                 chr = EOF;
                 break;
         }
-        
+
         return chr;
     }
-    
-    
-    
+
+
 
 
 
@@ -236,15 +215,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    TEXTIN_DATA *   textIn_Alloc (
+    TEXTIN_DATA *     TextIn_Alloc (
+        void
     )
     {
-        TEXTIN_DATA     *this;
+        TEXTIN_DATA       *this;
         uint32_t        cbSize = sizeof(TEXTIN_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -252,20 +232,20 @@ extern "C" {
 
 
 
-    TEXTIN_DATA *     textIn_New (
+    TEXTIN_DATA *     TextIn_New (
+        void
     )
     {
         TEXTIN_DATA       *this;
         
-        this = textIn_Alloc( );
+        this = TextIn_Alloc( );
         if (this) {
-            this = textIn_Init(this);
+            this = TextIn_Init(this);
         } 
         return this;
     }
 
-
-    TEXTIN_DATA *   textIn_NewFromAStr (
+    TEXTIN_DATA *   TextIn_NewFromAStr (
         PATH_DATA       *pFilePath,
         ASTR_DATA       *pStr,          // Buffer of file data
         uint16_t        fileIndex,      // File Path Index for a separate path table
@@ -274,17 +254,17 @@ extern "C" {
     {
         TEXTIN_DATA     *this = OBJ_NIL;
         ERESULT         eRc;
-        
-        this = textIn_New( );
+
+        this = TextIn_New( );
         if (this) {
-            eRc = textIn_SetupAStr(this, pFilePath, pStr, fileIndex, tabSize);
+            eRc = TextIn_SetupAStr(this, pFilePath, pStr, fileIndex, tabSize);
         }
-        
+
         return this;
     }
-    
-    
-    TEXTIN_DATA *   textIn_NewFromFile (
+
+
+    TEXTIN_DATA *   TextIn_NewFromFile (
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         FILE            *pFile,
@@ -293,17 +273,17 @@ extern "C" {
     {
         TEXTIN_DATA     *this = OBJ_NIL;
         ERESULT         eRc;
-        
-        this = textIn_New( );
+
+        this = TextIn_New( );
         if (this) {
-            eRc = textIn_SetupFile(this, pFilePath, fileIndex, pFile, tabSize);
+            eRc = TextIn_SetupFile(this, pFilePath, fileIndex, pFile, tabSize);
         }
-        
+
         return this;
     }
-    
-    
-    TEXTIN_DATA *   textIn_NewFromPath (
+
+
+    TEXTIN_DATA *   TextIn_NewFromPath (
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
@@ -311,17 +291,17 @@ extern "C" {
     {
         TEXTIN_DATA     *this = OBJ_NIL;
         ERESULT         eRc;
-        
-        this = textIn_New( );
+
+        this = TextIn_New( );
         if (this) {
-            eRc = textIn_SetupPath(this, pFilePath, fileIndex, tabSize);
+            eRc = TextIn_SetupPath(this, pFilePath, fileIndex, tabSize);
         }
-        
+
         return this;
     }
-    
-    
-    
+
+
+
 
 
     
@@ -333,170 +313,127 @@ extern "C" {
     //---------------------------------------------------------------
     //              8 0  C o l u m n  C a r d s
     //---------------------------------------------------------------
-    
-    bool            textIn_getCols80 (
+
+    bool            TextIn_getCols80 (
         TEXTIN_DATA     *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         return this->fCols80;
     }
-    
-    
-    bool            textIn_setCols80 (
+
+
+    bool            TextIn_setCols80 (
         TEXTIN_DATA     *this,
         bool            fValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         this->fCols80 = fValue ? 1 : 0;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                    F i l e  I n d e x
     //---------------------------------------------------------------
-    
-    uint16_t        textIn_getFileIndex (
+
+    uint16_t        TextIn_getFileIndex (
         TEXTIN_DATA     *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
         return this->curChr.loc.fileIndex;
     }
-    
-    
-    bool            textIn_setFileIndex (
+
+
+    bool            TextIn_setFileIndex (
         TEXTIN_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         this->curChr.loc.fileIndex = value;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                           P a t h
     //---------------------------------------------------------------
-    
-    PATH_DATA *     textIn_getPath (
+
+    PATH_DATA *     TextIn_getPath (
         TEXTIN_DATA     *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-        
+
         return this->pPath;
     }
-    
-    
-    bool            textIn_setPath (
+
+
+    bool            TextIn_setPath (
         TEXTIN_DATA     *this,
         PATH_DATA       *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         obj_Retain(pValue);
         if (this->pPath) {
             obj_Release(this->pPath);
         }
         this->pPath = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          P r i o r i t y
-    //---------------------------------------------------------------
-    
-    uint16_t        textIn_getPriority (
-        TEXTIN_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!textIn_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        //return this->priority;
-        return 0;
-    }
-
-
-    bool            textIn_setPriority (
-        TEXTIN_DATA     *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!textIn_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        //this->priority = value;
 
         return true;
     }
@@ -506,98 +443,98 @@ extern "C" {
     //---------------------------------------------------------------
     //                  R e m o v e  N L s
     //---------------------------------------------------------------
-    
-    bool            textIn_getRemoveNLs (
+
+    bool            TextIn_getRemoveNLs (
         TEXTIN_DATA     *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
         return this->fStripNL;
     }
-    
-    
-    bool            textIn_setRemoveNLs (
+
+
+    bool            TextIn_setRemoveNLs (
         TEXTIN_DATA     *this,
         bool            fValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         this->fStripNL = fValue ? 1 : 0;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //  C h e c k  8 0  C o l u m n  C a r d  S e q u e n c e  N u m
     //---------------------------------------------------------------
-    
-    bool            textIn_getSeq80 (
+
+    bool            TextIn_getSeq80 (
         TEXTIN_DATA     *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         return this->fSeq80;
     }
-    
-    
-    bool            textIn_setSeq80 (
+
+
+    bool            TextIn_setSeq80 (
         TEXTIN_DATA     *this,
         bool            fValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         this->fSeq80 = fValue ? 1 : 0;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        textIn_getSize (
+    uint32_t        TextIn_getSize (
         TEXTIN_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -612,7 +549,7 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA *     textIn_getStr (
+    ASTR_DATA * TextIn_getStr (
         TEXTIN_DATA     *this
     )
     {
@@ -620,7 +557,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -630,23 +567,25 @@ extern "C" {
     }
     
     
-    bool            textIn_setStr (
+    bool        TextIn_setStr (
         TEXTIN_DATA     *this,
-        ASTR_DATA       *pValue
+        ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
+#ifdef  PROPERTY_STR_OWNED
         obj_Retain(pValue);
         if (this->pAStr) {
             obj_Release(this->pAStr);
         }
+#endif
         this->pAStr = pValue;
         
         return true;
@@ -658,7 +597,7 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  textIn_getSuperVtbl (
+    OBJ_IUNKNOWN *  TextIn_getSuperVtbl (
         TEXTIN_DATA     *this
     )
     {
@@ -666,7 +605,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -681,45 +620,45 @@ extern "C" {
     //---------------------------------------------------------------
     //                       T a b  S i z e
     //---------------------------------------------------------------
-    
-    uint16_t        textIn_getTabSize (
+
+    uint16_t        TextIn_getTabSize (
         TEXTIN_DATA     *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
         return this->tabSize;
     }
-    
-    
-    bool            textIn_setTabSize (
+
+
+    bool            TextIn_setTabSize (
         TEXTIN_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         this->tabSize = value;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
 
 
     //===============================================================
@@ -737,32 +676,42 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = textIn__Assign(this,pOther);
+        ERESULT eRc = TextIn_Assign(this,pOther);
      @endcode 
-     @param     this    TEXTIN object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another TEXTIN object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         textIn_Assign (
+    ERESULT         TextIn_Assign (
         TEXTIN_DATA		*this,
         TEXTIN_DATA     *pOther
     )
     {
-        ERESULT         eRc;
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!textIn_Validate(pOther)) {
+        if (!TextIn_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -803,30 +752,30 @@ extern "C" {
     //---------------------------------------------------------------
     //                        C l o s e
     //---------------------------------------------------------------
-    
-    ERESULT         textIn_Close (
+
+    ERESULT         TextIn_Close (
         TEXTIN_DATA   *this
     )
     {
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         switch (this->type) {
-                
+
             case TEXTIN_TYPE_ASTR:
                 if (this->pAStr) {
                     obj_Release(this->pAStr);
                     this->pAStr = OBJ_NIL;
                 }
                 break;
-                
+
             case TEXTIN_TYPE_FILE:
                 if (this->pFile) {
                     if (0 == this->fFile) {
@@ -835,21 +784,21 @@ extern "C" {
                     this->pFile = NULL;
                 }
                 break;
-                
+
             case TEXTIN_TYPE_U8ARRAY:
                 if (this->pU8Array) {
                     obj_Release(this->pU8Array);
                     this->pU8Array = OBJ_NIL;
                 }
                 break;
-                
+
             case TEXTIN_TYPE_WSTR:
                 if (this->pWStr) {
                     obj_Release(this->pWStr);
                     this->pWStr = OBJ_NIL;
                 }
                 break;
-                
+
        }
         this->fFile = 0;
         this->fOpen = 0;
@@ -858,13 +807,73 @@ extern "C" {
         if (this->pSidx) {
             sidxe_Reset(this->pSidx);
         }
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
+
+
+
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
     
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         TextIn_Compare (
+        TEXTIN_DATA     *this,
+        TEXTIN_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!TextIn_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
     
-    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -873,32 +882,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        textIn      *pCopy = textIn_Copy(this);
+        TextIn      *pCopy = TextIn_Copy(this);
      @endcode 
-     @param     this    TEXTIN object pointer
-     @return    If successful, a TEXTIN object which must be released,
-                otherwise OBJ_NIL.
-     @warning  Remember to release the returned the TEXTIN object.
+     @param     this    object pointer
+     @return    If successful, a TEXTIN object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    TEXTIN_DATA *   textIn_Copy (
-        TEXTIN_DATA     *this
+    TEXTIN_DATA *     TextIn_Copy (
+        TEXTIN_DATA       *this
     )
     {
-        TEXTIN_DATA     *pOther = OBJ_NIL;
+        TEXTIN_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = textIn_New( );
+        pOther = TextIn_New( );
         if (pOther) {
-            eRc = textIn_Assign(this, pOther);
+            eRc = TextIn_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -916,7 +925,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            textIn_Dealloc (
+    void            TextIn_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -929,20 +938,26 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        eRc = textIn_Close(this);
-        textIn_setPath(this, OBJ_NIL);
-        
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((TEXTIN_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+        }
+#endif
+
+        eRc = TextIn_Close(this);
+        TextIn_setPath(this, OBJ_NIL);
+
         if (this->pSidx) {
             obj_Release(this->pSidx);
             this->pSidx = OBJ_NIL;
         }
-        
+
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -955,22 +970,75 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        TextIn      *pDeepCopy = TextIn_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a TEXTIN object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    TEXTIN_DATA *     TextIn_DeepyCopy (
+        TEXTIN_DATA       *this
+    )
+    {
+        TEXTIN_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = TextIn_New( );
+        if (pOther) {
+            eRc = TextIn_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         textIn_Disable (
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         TextIn_Disable (
         TEXTIN_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!textIn_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
@@ -986,19 +1054,26 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         textIn_Enable (
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         TextIn_Enable (
         TEXTIN_DATA		*this
     )
     {
+        //ERESULT         eRc;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!textIn_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
@@ -1013,11 +1088,11 @@ extern "C" {
     //---------------------------------------------------------------
     //                          G e t  L i n e
     //---------------------------------------------------------------
-    
+
     //TODO: Think about returning an AStrC or W32StrC instead of the
     // buffer to allow for long lines.
     //TODO: Terminate line with '\0'.
-    ERESULT         textIn_GetLine (
+    ERESULT         TextIn_GetLine (
         TEXTIN_DATA     *this,
         char            *pBuffer,
         int             size,
@@ -1035,7 +1110,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1052,9 +1127,9 @@ extern "C" {
 #endif
         *pBuffer = '\0';
         --size;                         // Allow space for trailing NUL.
-        
+
         while (fMore) {
-            chr = textIn_NextChar(this);
+            chr = TextIn_NextChar(this);
             switch (chr) {
                 case '\n':
                     fMore = false;
@@ -1092,18 +1167,19 @@ extern "C" {
         }
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    TEXTIN_DATA *   textIn_Init (
-        TEXTIN_DATA     *this
+    TEXTIN_DATA *   TextIn_Init (
+        TEXTIN_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(TEXTIN_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1127,63 +1203,62 @@ extern "C" {
             return OBJ_NIL;
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_TEXTIN);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&textIn_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&TextIn_Vtbl);
         
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-        this->pSidx = sidxe_NewWithMax(3072);
-        if (OBJ_NIL == this->pSidx) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        this->pSidx = sidxe_NewWithMax(3072);
-        if (OBJ_NIL == this->pSidx) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-#endif
+        #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+                this->pSidx = sidxe_NewWithMax(3072);
+                if (OBJ_NIL == this->pSidx) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+        #endif
+        #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+                this->pSidx = sidxe_NewWithMax(3072);
+                if (OBJ_NIL == this->pSidx) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+        #endif
 
-    #ifdef NDEBUG
-    #else
-        if( !textIn_Validate(this) ) {
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        //fprintf(stderr, "textIn::offsetof(eRc) = %lu\n", offsetof(TEXTIN_DATA,eRc));
-        //fprintf(stderr, "textIn::sizeof(TEXTIN_DATA) = %lu\n", sizeof(TEXTIN_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+        fprintf(
+                stderr, 
+                "TextIn::sizeof(TEXTIN_DATA) = %lu\n", 
+                sizeof(TEXTIN_DATA)
+        );
 #endif
-        //BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(TEXTIN_DATA));
-    #endif
+#endif
 
         return this;
     }
 
      
-    
-    
-    
 
     //---------------------------------------------------------------
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         textIn_IsEnabled (
+    ERESULT         TextIn_IsEnabled (
         TEXTIN_DATA		*this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1202,8 +1277,8 @@ extern "C" {
     //---------------------------------------------------------------
     //                     L o c a t i o n
     //---------------------------------------------------------------
-    
-    ERESULT         textIn_Location (
+
+    ERESULT         TextIn_Location (
         TEXTIN_DATA     *this,
         uint16_t        *pFilenameIndex,
         size_t          *pOffset,
@@ -1211,16 +1286,16 @@ extern "C" {
         uint16_t        *pColNo
     )
     {
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         if (pFilenameIndex)
             *pFilenameIndex = this->filenameIndex;
         if (pOffset)
@@ -1229,28 +1304,28 @@ extern "C" {
             *pLineNo = this->curChr.loc.lineNo;
         if (pColNo)
             *pColNo = this->curChr.loc.colNo;
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //--------------------------------------------------------------
     //                      N e x t  C h a r
     //--------------------------------------------------------------
-    
-    W32CHR_T            textIn_NextChar (
+
+    W32CHR_T            TextIn_NextChar (
         TEXTIN_DATA         *this
     )
     {
         W32CHR_T            chr = 0;
         ERESULT             eRc = ERESULT_SUCCESS;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate( this ) ) {
+        if( !TextIn_Validate( this ) ) {
             DEBUG_BREAK();
             return -2;
         }
@@ -1265,7 +1340,7 @@ extern "C" {
                     break;
                 }
                 this->state = TEXTIN_STATE_NORMAL;
-                
+
             case TEXTIN_STATE_NORMAL:
                 if (obj_Flag(this, TEXTIN_FLAG_SAVCHR)) {
                     this->curChr = this->savChr;
@@ -1273,20 +1348,20 @@ extern "C" {
                     break;
                 }
                 else {
-                    chr = textIn_UnicodeGetc(this);
+                    chr = TextIn_UnicodeGetc(this);
                 }
                 if (chr > 0) {
                     switch (chr) {
-                            
+
                         case '\b':
                             if (this->curChr.loc.colNo) {
                                 --this->curChr.loc.colNo;
                             }
                             break;
-                            
+
                         case 0x85:              // Unicode NEL
                             chr = '\n';
-                            
+
                         case '\f':
                         case '\n':
                             ++this->curChr.loc.lineNo;
@@ -1300,13 +1375,13 @@ extern "C" {
                             if (this->fStripNL && ('\n' == chr))
                                 goto again;
                             break;
-                            
+
                         case '\r':
                             this->curChr.loc.colNo = 0;
                             if (this->fStripCR)
                                 goto again;
                             break;
-                            
+
                         case '\t':
                             if( this->tabSize ) {
                                 chr = ' ';
@@ -1317,11 +1392,11 @@ extern "C" {
                                 ++this->curChr.loc.colNo;
                             }
                             break;
-                            
+
                         case EOF:
                             eRc = ERESULT_EOF_ERROR;
                             break;
-                            
+
                         default:
                             if (chr) {
                                 ++this->curChr.loc.colNo;
@@ -1330,7 +1405,7 @@ extern "C" {
                     }
                 }
                 break;
-                
+
             default:
                 break;
         }
@@ -1341,37 +1416,37 @@ extern "C" {
         else {
             this->curChr.cls = EOF;
         }
-        
+
         // Return to caller.
         return chr;
     }
-    
-    
-    ERESULT         textIn_NextChrLoc (
+
+
+    ERESULT         TextIn_NextChrLoc (
         TEXTIN_DATA     *this,
-        TEXTIN_CHRLOC   *pChr
+        TEXTIN_CHAR     *pChr
     )
     {
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
-        textIn_NextChar(this);
+
+        TextIn_NextChar(this);
         if (pChr) {
             *pChr = this->curChr;
         }
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
+
+
 
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
@@ -1384,14 +1459,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = textIn_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = TextIn_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "textIn", prefix,
+                        the object name, "TextIn", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1399,7 +1474,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          textIn_QueryInfo (
+    void *          TextIn_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -1414,7 +1489,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!textIn_Validate(this)) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1422,7 +1497,33 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_INFO:
+        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+            return (void *)sizeof(TEXTIN_DATA);
+            break;
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)TextIn_Class();
+                break;
+                
+#ifdef XYZZY  
+        // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
+        case OBJ_QUERYINFO_TYPE_DATA_PTR:
+            switch (*pStr) {
+ 
+                case 'S':
+                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                        return &this->pSuperVtbl;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+#endif
+             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -1431,23 +1532,36 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return textIn_Disable;
+                            return TextIn_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return textIn_Enable;
+                            return TextIn_Enable;
                         }
                         break;
 
+#ifdef  TEXTIN_JSON_SUPPORT
+                    case 'P':
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return TextIn_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return TextIn_ParseJsonObject;
+                        }
+                        break;
+#endif
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return textIn_ToDebugString;
+                            return TextIn_ToDebugString;
                         }
+#ifdef  TEXTIN_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return textIn_ToJSON;
+                            return TextIn_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -1456,10 +1570,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == textIn_ToDebugString)
+                if (pData == TextIn_ToDebugString)
                     return "ToDebugString";
-                if (pData == textIn_ToJSON)
+#ifdef  TEXTIN_JSON_SUPPORT
+                if (pData == TextIn_ToJson)
                     return "ToJson";
+#endif
                 break;
                 
             default:
@@ -1474,29 +1590,29 @@ extern "C" {
     //---------------------------------------------------------------
     //                          S e t u p
     //---------------------------------------------------------------
-    
-    ERESULT         textIn_SetupBase(
+
+    ERESULT         TextIn_SetupBase(
         TEXTIN_DATA     *this,
         PATH_DATA       *pPath,
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
     {
         ERESULT         eRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if( !TextIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
-        eRc = textIn_Close(this);
+
+        eRc = TextIn_Close(this);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
-        textIn_setPath(this, OBJ_NIL);
+        TextIn_setPath(this, OBJ_NIL);
 
         // We must reset all the fields here.
         this->type = TEXTIN_TYPE_UNKNOWN;
@@ -1522,12 +1638,12 @@ extern "C" {
         this->curChr.loc.lineNo  = 1;
         this->curChr.loc.colNo   = 0;
         this->state = TEXTIN_STATE_NORMAL;
-        
+
         return ERESULT_SUCCESS;
     }
 
-    
-    ERESULT         textIn_SetupAStr(
+
+    ERESULT         TextIn_SetupAStr(
         TEXTIN_DATA     *this,
         PATH_DATA       *pFilePath,
         ASTR_DATA       *pStr,        // Buffer of file data
@@ -1540,13 +1656,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if( !TextIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
-        eRc = textIn_SetupBase(this, pFilePath, tabSize);
+
+        eRc = TextIn_SetupBase(this, pFilePath, tabSize);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;
@@ -1560,12 +1676,12 @@ extern "C" {
         this->fOpen = 1;
         this->curChr.loc.fileIndex = fileIndex;
         this->curChr.loc.offset = 1;    // AStr is relative to 1.
-        
+
         return ERESULT_SUCCESS;
     }
-    
-    
-    ERESULT         textIn_SetupFile (
+
+
+    ERESULT         TextIn_SetupFile (
         TEXTIN_DATA     *this,
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
@@ -1574,11 +1690,11 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if( !TextIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1587,25 +1703,25 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
-        eRc = textIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
+
+        eRc = TextIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;
         }
-        
+
         // Open the file.
         this->type = TEXTIN_TYPE_FILE;
         this->pFile = pFile;
         this->fAtEOF = 0;
         this->fOpen = 1;
         this->fFile = 1;
-        
+
         return ERESULT_SUCCESS;
     }
-    
-    
-    ERESULT         textIn_SetupPath (
+
+
+    ERESULT         TextIn_SetupPath (
         TEXTIN_DATA     *this,
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
@@ -1614,11 +1730,11 @@ extern "C" {
     {
         char            *pszFileName;
         ERESULT         eRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if( !TextIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1627,12 +1743,12 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
-        eRc = textIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
+
+        eRc = TextIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
-        
+
         // Open the file.
         this->type = TEXTIN_TYPE_FILE;
         pszFileName = path_CStringA(this->pPath);
@@ -1651,12 +1767,12 @@ extern "C" {
         else {
             eRc = ERESULT_GENERAL_FAILURE;
         }
-        
+
         return eRc;
     }
-    
-    
-    ERESULT  textIn_SetupU8Array (
+
+
+    ERESULT  TextIn_SetupU8Array (
         TEXTIN_DATA     *this,
         U8ARRAY_DATA    *pBuffer,       // Buffer of file data
         PATH_DATA       *pFilePath,
@@ -1665,11 +1781,11 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if( !TextIn_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1678,23 +1794,23 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
-        eRc = textIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
+
+        eRc = TextIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
-        
+
         // Open the file.
         this->type = TEXTIN_TYPE_U8ARRAY;
         obj_Retain(pBuffer);
         this->pU8Array = pBuffer;
         this->fAtEOF = 0;
         this->fOpen = 1;
-        
+
         return ERESULT_SUCCESS;
     }
-    
-    
+
+
 
     //---------------------------------------------------------------
     //                       T o  S t r i n g
@@ -1704,48 +1820,52 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = textIn_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = TextIn_ToDebugString(this,4);
      @endcode 
-     @param     this    TEXTIN object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     textIn_ToDebugString(
-        TEXTIN_DATA     *this,
+    ASTR_DATA *     TextIn_ToDebugString (
+        TEXTIN_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !textIn_Validate(this) ) {
+        if (!TextIn_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = textIn_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    textIn_getSize(this)
+                    TextIn_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -1776,54 +1896,21 @@ extern "C" {
     
     
     
-    ASTR_DATA *     textIn_ToJSON(
-        TEXTIN_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !textIn_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        return pStr;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            textIn_Validate(
+#ifdef NDEBUG
+#else
+    bool            TextIn_Validate (
         TEXTIN_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_TEXTIN) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_TEXTIN))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1839,14 +1926,14 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(TEXTIN_DATA)) ) {
+        if (!(obj_getSize(this) >= sizeof(TEXTIN_DATA))) {
             return false;
         }
 
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     

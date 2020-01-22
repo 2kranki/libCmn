@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/15/2020  1:09:00.000)
+# ( 1/22/2020  3:03:52.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -504,6 +504,16 @@ $(OBJDIR)/TRegex32_object.o: $(SRCDIR)/TRegex32_object.c $(SRCDIR)/TRegex32.h $(
 OBJS += $(OBJDIR)/TRegex_object.o
 
 $(OBJDIR)/TRegex_object.o: $(SRCDIR)/TRegex_object.c $(SRCDIR)/TRegex.h $(SRCDIR)/TRegex_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/TextIn.o
+
+$(OBJDIR)/TextIn.o: $(SRCDIR)/TextIn.c $(SRCDIR)/TextIn.h $(SRCDIR)/TextIn_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/TextIn_object.o
+
+$(OBJDIR)/TextIn_object.o: $(SRCDIR)/TextIn_object.c $(SRCDIR)/TextIn.h $(SRCDIR)/TextIn_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/TextOut.o
@@ -1536,16 +1546,6 @@ OBJS += $(OBJDIR)/table_object.o
 $(OBJDIR)/table_object.o: $(SRCDIR)/table_object.c $(SRCDIR)/listdl.h $(SRCDIR)/table.h $(SRCDIR)/table_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/textIn.o
-
-$(OBJDIR)/textIn.o: $(SRCDIR)/textIn.c $(SRCDIR)/textIn.h $(SRCDIR)/textIn_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/textIn_object.o
-
-$(OBJDIR)/textIn_object.o: $(SRCDIR)/textIn_object.c $(SRCDIR)/textIn.h $(SRCDIR)/textIn_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/timer.o
 
 $(OBJDIR)/timer.o: $(SRCDIR)/timer.c $(SRCDIR)/timer.h $(SRCDIR)/timer_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1895,6 +1895,12 @@ TRegex32_test: $(TEST_SRC)/TRegex32_test.c $(SRCDIR)/TRegex32.h $(SRCDIR)/TRegex
 TESTS += TRegex_test
 
 TRegex_test: $(TEST_SRC)/TRegex_test.c $(SRCDIR)/TRegex.h $(SRCDIR)/TRegex_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += TextIn_test
+
+TextIn_test: $(TEST_SRC)/TextIn_test.c $(SRCDIR)/TextIn.h $(SRCDIR)/TextIn_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2453,12 +2459,6 @@ szTbl_test: $(TEST_SRC)/szTbl_test.c $(SRCDIR)/szTbl.h $(SRCDIR)/szTbl_internal.
 TESTS += table_test
 
 table_test: $(TEST_SRC)/table_test.c $(SRCDIR)/table.h $(SRCDIR)/table_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += textIn_test
-
-textIn_test: $(TEST_SRC)/textIn_test.c $(SRCDIR)/textIn.h $(SRCDIR)/textIn_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

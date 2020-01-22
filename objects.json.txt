@@ -141,7 +141,7 @@
         {name:"szTbl", deps:["ptrArray.h","szHash.h"], 
                         json:true},
         {name:"table", deps:["listdl.h"]},
-        {name:"textIn"},
+        {name:"TextIn"},
         {name:"TextOut"},
         {name:"timer"},
         {name:"Token", deps:["AStrC.h","SrcLoc.h"], json:true},
