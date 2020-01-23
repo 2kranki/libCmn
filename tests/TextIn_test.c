@@ -341,19 +341,19 @@ int             test_TextIn_GetLine01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        eRc = TextIn_GetLine(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "abc")) );
 
-        eRc = TextIn_GetLine(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (buffer[0] == '\0') );
 
-        eRc = TextIn_GetLine(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "def")) );
 
-        eRc = TextIn_GetLine(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
         TINYTEST_FALSE( (eRc == ERESULT_EOF_ERROR) );
 
         obj_Release(pObj);
@@ -394,11 +394,11 @@ int             test_TextIn_GetLine02(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        eRc = TextIn_GetLine(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "{")) );
 
-        eRc = TextIn_GetLine(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "    \"one\": {")) );
 
@@ -415,8 +415,59 @@ int             test_TextIn_GetLine02(
 
 
 
+int             test_TextIn_GetLine03(
+    const
+    char            *pTestName
+)
+{
+    TEXTIN_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ERESULT         eRc;
+    char            buffer[128];
+    SRCLOC          loc = {0};
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pStr = AStr_NewA("abc\n\ndef\n");
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+    pObj = TextIn_NewFromAStr(OBJ_NIL, pStr, 1, 4);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        TextIn_setUpperLimit(pObj, 2);
+
+        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (0 == strcmp(buffer, "ab")) );
+
+        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (buffer[0] == '\0') );
+
+        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (0 == strcmp(buffer, "de")) );
+
+        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        TINYTEST_FALSE( (eRc == ERESULT_EOF_ERROR) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_TextIn);
+    TINYTEST_ADD_TEST(test_TextIn_GetLine03,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_TextIn_GetLine02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TextIn_GetLine01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TextIn_Input02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TextIn_Input01,setUp,tearDown);

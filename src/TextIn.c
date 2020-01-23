@@ -659,6 +659,48 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                   U p p e r  L i m i t
+    //---------------------------------------------------------------
+
+    uint16_t        TextIn_getUpperLimit (
+        TEXTIN_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->upperLimit;
+    }
+
+
+    bool            TextIn_setUpperLimit (
+        TEXTIN_DATA     *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->upperLimit = value;
+
+        return true;
+    }
+
+
+
 
 
     //===============================================================
@@ -1092,7 +1134,7 @@ extern "C" {
     //TODO: Think about returning an AStrC or W32StrC instead of the
     // buffer to allow for long lines.
     //TODO: Terminate line with '\0'.
-    ERESULT         TextIn_GetLine (
+    ERESULT         TextIn_GetLineA (
         TEXTIN_DATA     *this,
         char            *pBuffer,
         int             size,
@@ -1102,6 +1144,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         W32CHR_T        chr;
         int             chrSize;
+        int             len = 0;
         SRCLOC          loc = {0};
         char            chrData[11];
         bool            fMore = true;
@@ -1125,7 +1168,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        *pBuffer = '\0';
+        *pBuffer = '\0';                // Needed for str_Concat.
         --size;                         // Allow space for trailing NUL.
 
         while (fMore) {
@@ -1157,9 +1200,95 @@ extern "C" {
                         this->savChr = this->curChr;
                         obj_FlagOn(this, TEXTIN_FLAG_SAVCHR);
                     }
+                    len++;
+                    if (this->upperLimit && (len >= this->upperLimit)) {
+                        fMore = false;
+                        (void)TextIn_SkipToEOL(this);
+                    }
                     break;
             }
         }
+        *pBuffer = '\0';
+
+        // Return to caller.
+        if (pLoc) {
+            *pLoc = loc;
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         TextIn_GetLineW32 (
+        TEXTIN_DATA     *this,
+        W32CHR_T        *pBuffer,
+        int             size,
+        SRCLOC          *pLoc
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             len = 0;
+        W32CHR_T        chr;
+        SRCLOC          loc = {0};
+        bool            fMore = true;
+        bool            fLoc = false;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pBuffer) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (size > 1)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        --size;                         // Allow space for trailing NUL.
+
+        while (fMore) {
+            chr = TextIn_NextChar(this);
+            switch (chr) {
+                case '\n':
+                    fMore = false;
+                    break;
+                case '\r':
+                    break;
+                case ASCII_CPM_EOF:
+                case EOF:
+                    eRc = ERESULT_EOF_ERROR;
+                    fMore = false;
+                    break;
+                default:
+                    if (!fLoc) {
+                        loc = this->curChr.loc;
+                        fLoc = true;
+                    }
+                    if (size) {
+                        *pBuffer = chr;
+                        pBuffer++;
+                        size--;
+                    }
+                    else {
+                        fMore = false;
+                        this->savChr = this->curChr;
+                        obj_FlagOn(this, TEXTIN_FLAG_SAVCHR);
+                    }
+                    len++;
+                    if (this->upperLimit && (len >= this->upperLimit)) {
+                        fMore = false;
+                        (void)TextIn_SkipToEOL(this);
+                    }
+                    break;
+            }
+        }
+        *pBuffer = '\0';
 
         // Return to caller.
         if (pLoc) {
@@ -1206,22 +1335,22 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&TextIn_Vtbl);
         
-        #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-                this->pSidx = sidxe_NewWithMax(3072);
-                if (OBJ_NIL == this->pSidx) {
-                    DEBUG_BREAK();
-                    obj_Release(this);
-                    return OBJ_NIL;
-                }
-        #endif
-        #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-                this->pSidx = sidxe_NewWithMax(3072);
-                if (OBJ_NIL == this->pSidx) {
-                    DEBUG_BREAK();
-                    obj_Release(this);
-                    return OBJ_NIL;
-                }
-        #endif
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        this->pSidx = sidxe_NewWithMax(3072);
+        if (OBJ_NIL == this->pSidx) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        this->pSidx = sidxe_NewWithMax(3072);
+        if (OBJ_NIL == this->pSidx) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#endif
 
 #ifdef NDEBUG
 #else
@@ -1808,6 +1937,43 @@ extern "C" {
         this->fOpen = 1;
 
         return ERESULT_SUCCESS;
+    }
+
+
+
+    //--------------------------------------------------------------
+    //                     S k i p  T o  E O L
+    //--------------------------------------------------------------
+
+    ERESULT             TextIn_SkipToEOL (
+        TEXTIN_DATA         *this
+    )
+    {
+        W32CHR_T            chr = 0;
+        ERESULT             eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TextIn_Validate( this ) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        for (;;) {
+            chr = TextIn_NextChar(this);
+            if (chr < 0) {
+                eRc = ERESULT_EOF_ERROR;
+                break;
+            }
+            if ((chr == '\n') || (chr == '\r')) {
+                break;
+            }
+        }
+
+        // Return to caller.
+        return eRc;
     }
 
 

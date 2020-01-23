@@ -113,14 +113,14 @@ struct TextIn_data_s	{
     uint8_t         fCols80;            // true == IBM 80 Column Card Input
     //                                  //      (ie cols 1-71 data,
     //                                  //          col 72 continuation indicator,
-    //                                  //          cols 73-80 sequence number)
+    //                                  //          cols 73-80 optional sequence number)
     uint8_t         fSeq80;             // Validate sequence numbers
     PATH_DATA       *pPath;
     const
     char            *pPathA;
     uint8_t         *pBuffer;
     uint16_t        filenameIndex;
-    uint16_t        rsvd16;
+    uint16_t        upperLimit;         // If set upper length limit for line.
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
     SIDXE_DATA      *pSidx;
 #endif

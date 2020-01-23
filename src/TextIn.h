@@ -16,7 +16,7 @@
  *	1.      None
  *
  * History
- *	01/21/2020 Generated
+ *	01/21/2020 Regenerated
  */
 
 
@@ -234,6 +234,21 @@ extern "C" {
     );
 
 
+    /*!
+     The Upper Limit property if non-zero causes GetLine() to
+     stop gathering data for that line when the limit is reached.
+     The remaining data for that line will be skipped.
+     */
+    uint16_t        TextIn_getUpperLimit (
+        TEXTIN_DATA     *this
+    );
+
+    bool            TextIn_setUpperLimit (
+        TEXTIN_DATA     *this,
+        uint16_t        value
+    );
+
+
 
 
     
@@ -254,9 +269,16 @@ extern "C" {
                 is reached for first character.  Otherwise, an ERESULT_*
                 error.
      */
-    ERESULT         TextIn_GetLine (
+    ERESULT         TextIn_GetLineA (
         TEXTIN_DATA     *this,
         char            *pBuffer,
+        int             size,
+        SRCLOC          *pLoc
+    );
+
+    ERESULT         TextIn_GetLineW32 (
+        TEXTIN_DATA     *this,
+        W32CHR_T        *pBuffer,
         int             size,
         SRCLOC          *pLoc
     );
@@ -323,6 +345,11 @@ extern "C" {
        PATH_DATA       *pFilePath,
        uint16_t        fileIndex,      // File Path Index for a separate path table
        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
+
+    ERESULT             TextIn_SkipToEOL (
+        TEXTIN_DATA         *this
     );
 
 
