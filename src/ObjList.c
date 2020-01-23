@@ -1284,6 +1284,65 @@ int             ObjList_SortCompare (
         
         
     //---------------------------------------------------------------
+    //                          P u s h / P o p
+    //---------------------------------------------------------------
+
+    OBJ_ID          ObjList_Pop (
+        OBJLIST_DATA    *this
+    )
+    {
+        OBJ_ID          pObj;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjList_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pObj = ObjList_Head(this);
+        if (pObj) {
+            obj_Retain(pObj);
+            (void)ObjList_DeleteHead(this);
+        }
+
+        // Return to caller.
+        return pObj;
+    }
+
+
+    ERESULT         ObjList_Push (
+        OBJLIST_DATA    *this,
+        OBJ_ID          pObject
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( (OBJ_NIL == pObject) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        eRc = ObjList_Add2Head(this, pObject);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     

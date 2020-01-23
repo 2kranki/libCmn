@@ -1,16 +1,15 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SRCFILE Console Transmit Task (srcFile) Header
+//          Tokenize a Source File (srcFile) Header
 //****************************************************************
 /*
  * Program
- *			Separate srcFile (srcFile)
+ *			Tokenize a Source File (srcFile)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate srcFile to run things without complications
- *          of interfering with the main srcFile. A srcFile may be 
- *          called a srcFile on other O/S's.
+ *			This object provides a standardized way of tokenizing
+ *          a Source File (ie returning the file one character at
+ *          a time with appropriate location information.
  *
  * Remarks
  *	1.      None

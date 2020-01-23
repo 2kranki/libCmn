@@ -320,6 +320,17 @@ extern "C" {
     );
     
     
+    /*! Get the current head of the list, removing it from the list.
+     @param     this    object pointer
+     @return    If successful, the head object is returned which must
+                be released.  Otherwise, OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    OBJ_ID          ObjList_Pop (
+        OBJLIST_DATA    *this
+    );
+
+
     ERESULT         ObjList_Prepend(
         OBJLIST_DATA    *this,
         OBJLIST_DATA    *other
@@ -331,8 +342,20 @@ extern "C" {
     );
     
     
+    /*! Add the object given as the new head of the list.
+     @param     this    object pointer
+     @param     pObject an object pointer
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         ObjList_Push (
+        OBJLIST_DATA    *this,
+        OBJ_ID          pObject
+    );
+
+
     /*! Shift the tail to the head and returns the new head.
-     @return    If successful, the current head bject is returned.
+     @return    If successful, the current head object is returned.
                 Otherwise, OBJ_NIL.
      */
     OBJ_ID          ObjList_ShiftHead (
@@ -341,7 +364,7 @@ extern "C" {
     
     
     /*! Shift the head to the tail and returns the new head.
-     @return    If successful, the current head bject is returned.
+     @return    If successful, the current head object is returned.
                 Otherwise, OBJ_NIL.
      */
     OBJ_ID          ObjList_ShiftTail (

@@ -361,6 +361,20 @@ int         test_ObjList_Shift(
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
+        pEntry = ObjList_Pop(pObj);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameE) );
+        XCTAssertTrue( (2 == obj_getRetainCount(pEntry)) );
+        obj_Release(pEntry);
+        pEntry = OBJ_NIL;
+
+        eRc = ObjList_Push(pObj, pNameE);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        pEntry = ObjList_Head(pObj);
+        XCTAssertFalse( (pEntry == OBJ_NIL) );
+        XCTAssertTrue( (pEntry == pNameE) );
+        XCTAssertTrue( (2 == obj_getRetainCount(pEntry)) );
+
         obj_Release(pNameE);
         pNameE = OBJ_NIL;
         obj_Release(pNameD);
@@ -371,7 +385,7 @@ int         test_ObjList_Shift(
         pNameB = OBJ_NIL;
         obj_Release(pNameA);
         pNameA = OBJ_NIL;
-        
+
         XCTAssertTrue( (obj_IsFlag(pObj, OBJ_FLAG_ALLOC)) );
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -397,7 +411,7 @@ int         test_ObjList_Json01(
     NAME_DATA       *pNameE = OBJ_NIL;
     ERESULT         eRc;
     ASTR_DATA       *pStr = OBJ_NIL;
-    NAME_DATA       *pEntry;
+    //NAME_DATA       *pEntry;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
