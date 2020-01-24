@@ -161,7 +161,7 @@
         {name:"Value", json:true},
         {name:"visitor"},
         {name:"W32Str", json:true},
-        {name:"W32StrC"},
+        {name:"W32StrC", json:true},
     ],
 
     routines: [

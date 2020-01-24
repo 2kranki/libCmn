@@ -794,17 +794,8 @@ typedef struct W32Str_vtbl_s	{
 } W32STR_VTBL;
 
 
-typedef struct W32StrC_data_s       W32STRC_DATA;
-typedef struct W32StrC_vtbl_s	{
-    OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-    // Put other methods below this as pointers and add their
-    // method names to the vtbl definition in WStrC_object.c.
-    // Properties:
-    // Methods:
-    const
-    W32CHR_T *  (*pGetData)(W32STRC_DATA *);
-    uint32_t    (*pGetLength)(W32STRC_DATA *);
-} W32STRC_VTBL;
+typedef struct W32StrC_data_s    W32STRC_DATA;            // Inherits from OBJ
+typedef struct W32StrC_class_data_s W32STRC_CLASS_DATA;   // Inherits from OBJ
 
 
 

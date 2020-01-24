@@ -1,23 +1,25 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Constant NUL-terminated Wide String (W32StrC) Header
+//        Constant NUL-terminated Wide String (W32StrC) Header
 //****************************************************************
 /*
  * Program
  *			Constant NUL-terminated Wide String (W32StrC)
  * Purpose
- *          This object provides a constant wide NUL-terminated
+ *			This object provides a constant wide NUL-terminated
  *          string which can not be changed. It is important that
  *          its data remain constant since other programs rely
  *          on that.
  *
  * Remarks
- *	1.      None
+ *	1.      Using this object allows for testable code, because a
+ *          function, TaskBody() must be supplied which is repeatedly
+ *          called on the internal WStrC. A testing unit simply calls
+ *          the TaskBody() function as many times as needed to test.
  *
  * History
- *  02/19/2016 Generated
- *	01/23/2020 Regenerated
+ *	02/19/2016 Generated
  */
 
 
@@ -53,20 +55,11 @@
 
 
 #include        <cmn_defs.h>
-#include        <AStr.h>
-#include        <W32Str.h>
-#include        <stdio.h>
+#include        <str.h>
 
 
 #ifndef         W32STRC_H
 #define         W32STRC_H
-
-
-#define     W32STRC_IS_CONSTANT     1
-#define     W32STRC_JSON_SUPPORT    1
-//#define   W32STRC_SINGLETON       1
-
-
 
 
 
@@ -80,31 +73,7 @@ extern "C" {
     //****************************************************************
 
 
-#ifdef DEFINED_IN_CMNDEFS
-    typedef struct W32StrC_data_s	W32STRC_DATA;            // Inherits from OBJ
-    typedef struct W32StrC_class_data_s W32STRC_CLASS_DATA;   // Inherits from OBJ
-#endif
-
-    typedef struct W32StrC_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in W32StrC_object.c.
-        // Properties:
-        // Methods:
-        const
-        W32CHR_T *  (*pGetData)(W32STRC_DATA *);
-        uint32_t    (*pGetLength)(W32STRC_DATA *);
-    } W32STRC_VTBL;
-
-    typedef struct W32StrC_class_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in W32StrC_object.c.
-        // Properties:
-        // Methods:
-        //bool        (*pIsEnabled)(W32STRC_DATA *);
-    } W32STRC_CLASS_VTBL;
-
+    // W32STRC_DATA and W32STRC_VTBL are defined in "cmn_defs.h"
 
 
 
@@ -117,119 +86,57 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  W32STRC_SINGLETON
-    W32STRC_DATA *  W32StrC_Shared (
-        void
-    );
-
-    void            W32StrC_SharedReset (
-        void
-    );
-#endif
-
-
-   /*!
-     Allocate a new Object and partially initialize. Also, this sets an
-     indicator that the object was alloc'd which is tested when the object is
-     released.
-     @return    pointer to W32StrC object if successful, otherwise OBJ_NIL.
-     */
-    W32STRC_DATA *  W32StrC_Alloc (
+    W32STRC_DATA *  W32StrC_Alloc(
         void
     );
     
     
-    OBJ_ID          W32StrC_Class (
+    W32STRC_DATA *  W32StrC_New(
         void
     );
-    
-    
-    W32STRC_DATA *  W32StrC_New (
-        void
-    );
-    
     
     W32STRC_DATA *  W32StrC_NewA(
         const
         char            *pStr
     );
-
+    
     W32STRC_DATA *  W32StrC_NewConW32(
         const
         W32CHR_T        *pStr
     );
-
+    
     W32STRC_DATA *  W32StrC_NewFromW32Str(
         W32STR_DATA     *pStr
     );
-
+    
     W32STRC_DATA *  W32StrC_NewW32(
         const
         W32CHR_T        *pStr
     );
-
-
-#ifdef  W32STRC_JSON_SUPPORT
-    W32STRC_DATA *   W32StrC_NewFromJsonString(
-        ASTR_DATA       *pString
-    );
-
-    W32STRC_DATA *   W32StrC_NewFromJsonStringA(
-        const
-        char            *pStringA
-    );
-#endif
-
-
+    
+    
+    
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        W32StrC_getCrcIEEE(
-        W32STRC_DATA    *this
-    );
-
-
     const
     W32CHR_T *      W32StrC_getData(
         W32STRC_DATA   *this
     );
-
-
+    
+    
     uint32_t        W32StrC_getLength(
         W32STRC_DATA   *this
     );
-
-
-    uint32_t        W32StrC_getSize(
-        W32STRC_DATA     *this
-    );
-
+    
+    
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
-
-    /*!
-     Assign the contents of this object to the other object (ie
-     this -> other).  Any objects in other will be released before
-     a copy of the object is performed.
-     Example:
-     @code
-        ERESULT eRc = W32StrC_Assign(this,pOther);
-     @endcode
-     @param     this    object pointer
-     @param     pOther  a pointer to another W32STRC object
-     @return    If successful, ERESULT_SUCCESS otherwise an
-                ERESULT_* error
-     */
-    ERESULT         W32StrC_Assign (
-        W32STRC_DATA    *this,
-        W32STRC_DATA    *pOther
-    );
-
 
     /*!
      @result
@@ -238,11 +145,11 @@ extern "C" {
      or ERESULT_SUCCESS_GREATER_THAN if this > other.
      */
     ERESULT         W32StrC_Compare(
-        W32STRC_DATA    *this,
+        W32STRC_DATA	*this,
         W32STRC_DATA    *pOther
     );
-
-
+    
+    
     /*!
      @param     pString
      Pointer to nul-terminated UTF-8 char string
@@ -252,12 +159,12 @@ extern "C" {
      or ERESULT_SUCCESS_GREATER_THAN if this > string.
      */
     ERESULT         W32StrC_CompareA(
-        W32STRC_DATA    *this,
+        W32STRC_DATA	*this,
         const
         char            *pString
     );
-
-
+    
+    
     /*!
      @param     pString
      Pointer to nul-terminated wide char string
@@ -267,54 +174,56 @@ extern "C" {
      or ERESULT_SUCCESS_GREATER_THAN if this > string.
      */
     ERESULT         W32StrC_CompareW32(
-        W32STRC_DATA    *this,
+        W32STRC_DATA	*this,
         const
         W32CHR_T        *pString
     );
-
-
+    
+    
     W32STRC_DATA *  W32StrC_Copy(
         W32STRC_DATA    *this
     );
-
-
+    
+    
     /*!
      @result        If successful, a NUL-terminated UTF-8 string that
                     needs to be freed with mem_Free(). Otherwise, NULL.
      */
     char *          W32StrC_CStringA(
-        W32STRC_DATA    *this
+        W32STRC_DATA	*this
     );
-
-
+    
+    
     W32CHR_T        W32StrC_GetCharW32(
         W32STRC_DATA    *this,
         uint32_t        offset              // Relative to 1
     );
-
-
+    
+    
     uint32_t        W32StrC_Hash(
         W32STRC_DATA    *this
     );
-
-
-    W32STRC_DATA *  W32StrC_Init (
-        W32STRC_DATA    *this
-    );
-
-
-    /*!
-     Create a new string from the left  portion of the current string
-     with len number of characters.
-     @return    If successful, an WStrC object which must be released,
-                 otherwise OBJ_NIL.
-     */
-    W32STRC_DATA *  W32StrC_Left(
+    
+    
+    W32STRC_DATA *  W32StrC_InitA(
         W32STRC_DATA    *this,
-        uint32_t        len
+        const
+        char            *pStr
     );
-
-
+    
+    W32STRC_DATA *  W32StrC_InitConW32(
+        W32STRC_DATA    *this,
+        const
+        W32CHR_T        *pStr
+    );
+    
+    W32STRC_DATA *  W32StrC_InitW32(
+        W32STRC_DATA    *this,
+        const
+        W32CHR_T        *pStr
+    );
+    
+    
     /*!
      Create a new string from a portion of the current string starting
      at index with len number of characters.
@@ -326,60 +235,15 @@ extern "C" {
         uint32_t        offset,         /* Relative to 1 */
         uint32_t        len
     );
-
-
+    
+    
     /*!
-     Create a new string from a portion of the current string starting
-     at index with len number of characters.
-     @return    If successful, an WStrC object which must be released,
-                 otherwise OBJ_NIL.
+     Create a string that describes this object and the
+     objects within it.
+     @return    If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
      */
-    W32STRC_DATA *  W32StrC_Mid(
-        W32STRC_DATA    *this,
-        uint32_t        offset,         /* Relative to 1 */
-        uint32_t        len
-    );
-
-
-    W32STRC_DATA *  W32StrC_Right(
-        W32STRC_DATA    *this,
-        uint32_t        len
-    );
-
-
-#ifdef  W32STRC_JSON_SUPPORT
-    /*!
-     Create a string that describes this object and the objects within it in
-     HJSON formt. (See hjson object for details.)
-     Example:
-     @code
-     ASTR_DATA      *pDesc = W32StrC_ToJson(this);
-     @endcode
-     @param     this    object pointer
-     @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
-                ERESULT_* error code.
-     @warning   Remember to release the returned AStr object.
-     */
-    ASTR_DATA *     W32StrC_ToJson(
-        W32STRC_DATA   *this
-    );
-#endif
-
-
-    /*!
-     Create a string that describes this object and the objects within it.
-     Example:
-     @code 
-        ASTR_DATA      *pDesc = W32StrC_ToDebugString(this,4);
-     @endcode 
-     @param     this    object pointer
-     @param     indent  number of characters to indent every line of output, can be 0
-     @return    If successful, an AStr object which must be released containing the
-                description, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
-     */
-    ASTR_DATA *    W32StrC_ToDebugString (
+    ASTR_DATA *     W32StrC_ToDebugString(
         W32STRC_DATA    *this,
         int             indent
     );

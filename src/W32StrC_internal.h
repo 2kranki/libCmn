@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   W32StrC_internal.h
- *	Generated 02/19/2016 09:34:06
+ *	Generated 01/23/2020 22:22:04
  *
  * Notes:
  *  --	N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,13 +39,18 @@
 
 
 
-#ifndef WSTRC_INTERNAL_H
-#define	WSTRC_INTERNAL_H
+#include        <W32StrC.h>
+#include        <JsonIn.h>
+#include        <utf8.h>
 
 
-#include    <W32StrC.h>
-#include    <AStr.h>
-#include    <utf8.h>
+#ifndef W32STRC_INTERNAL_H
+#define	W32STRC_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
+
 
 
 #ifdef	__cplusplus
@@ -52,92 +58,135 @@ extern "C" {
 #endif
 
 
-  typedef struct W32StrC_vtbl_internal_s	{
-        W32STRC_VTBL       iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in WStrC_object.c.
-        // Properties:
-        // Methods:
-#ifdef NDEBUG
-#else
-        bool			(*pValidate)(W32STRC_DATA *);
-#endif
-    } W32STRC_VTBL_INTERNAL;
 
 
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
 
 #pragma pack(push, 1)
 struct W32StrC_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define W32STRC_FLAG_MALLOC OBJ_FLAG_USER1
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    #define W32STRC_FLAG_MALLOC OBJ_FLAG_USER1
 
     // Common Data
-    uint32_t        len;		// Number of chars excluding trailing NUL
-    const
+    uint32_t        len;        // Number of chars excluding trailing NUL
     W32CHR_T        *pArray;
 
 };
 #pragma pack(pop)
 
     extern
-    const
-    struct W32StrC_class_data_s	W32StrC_ClassObj;
+    struct W32StrC_class_data_s  W32StrC_ClassObj;
 
     extern
     const
-    W32STRC_VTBL_INTERNAL W32StrC_Vtbl;
+    W32STRC_VTBL         W32StrC_Vtbl;
 
 
 
-    // Internal Functions
-    void            W32StrC_Dealloc(
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  W32STRC_SINGLETON
+    W32STRC_DATA *  W32StrC_getSingleton (
+        void
+    );
+
+    bool            W32StrC_setSingleton (
+     W32STRC_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  W32StrC_getSuperVtbl (
+        W32STRC_DATA     *this
+    );
+
+
+    ERESULT         W32StrC_Assign (
+        W32STRC_DATA    *this,
+        W32STRC_DATA    *pOther
+    );
+
+
+    W32STRC_DATA *  W32StrC_Copy (
+        W32STRC_DATA    *this
+    );
+
+
+    bool            W32StrC_CopyFromA(
+        W32STRC_DATA    *this,
+        const
+        char            *pStrA
+    );
+
+
+    void            W32StrC_Dealloc (
         OBJ_ID          objId
     );
 
 
-    W32STRC_DATA *  W32StrC_Init(
+    bool            W32StrC_FreeLine(
         W32STRC_DATA    *this
     );
-    
-    W32STRC_DATA *  W32StrC_InitA(
-        W32STRC_DATA    *this,
-        const
-        char            *pStr
+
+
+#ifdef  W32STRC_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    W32STRC_DATA *   W32StrC_ParseJsonObject (
+        JSONIN_DATA     *pParser
     );
-    
-    W32STRC_DATA *  W32StrC_InitConW(
-        W32STRC_DATA    *this,
-        const
-        W32CHR_T        *pStr
+
+
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         W32StrC_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        W32STRC_DATA    *pObject
     );
-    
-    W32STRC_DATA *  W32StrC_InitW(
-        W32STRC_DATA    *this,
-        const
-        W32CHR_T        *pStr
-    );
-    
-    
-    void *          W32StrC_QueryInfo(
+#endif
+
+
+    void *          W32StrC_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
-    ERESULT         W32StrC_SetupA(
-        W32STRC_DATA    *this,
-        const
-        char            *pStr
+
+
+#ifdef  W32STRC_JSON_SUPPORT
+    ASTR_DATA *     W32StrC_ToJson (
+        W32STRC_DATA    *this
     );
-    
-    
+#endif
+
+
+
+
 #ifdef NDEBUG
 #else
-    bool			W32StrC_Validate(
+    bool            W32StrC_Validate (
         W32STRC_DATA    *this
     );
 #endif
@@ -148,5 +197,5 @@ struct W32StrC_data_s	{
 }
 #endif
 
-#endif	/* WSTRC_INTERNAL_H */
+#endif	/* W32STRC_INTERNAL_H */
 

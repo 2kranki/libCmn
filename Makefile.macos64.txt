@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/22/2020  3:03:52.000)
+# ( 1/24/2020 20:35:26.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -579,6 +579,11 @@ $(OBJDIR)/W32Str.o: $(SRCDIR)/W32Str.c $(SRCDIR)/W32Str.h $(SRCDIR)/W32Str_inter
 OBJS += $(OBJDIR)/W32StrC.o
 
 $(OBJDIR)/W32StrC.o: $(SRCDIR)/W32StrC.c $(SRCDIR)/W32StrC.h $(SRCDIR)/W32StrC_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/W32StrC_json.o
+
+$(OBJDIR)/W32StrC_json.o: $(SRCDIR)/W32StrC_json.c $(SRCDIR)/W32StrC.h $(SRCDIR)/W32StrC_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/W32StrC_object.o
