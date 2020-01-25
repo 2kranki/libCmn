@@ -51,7 +51,7 @@
         {name:"dirEntry", deps:["path.h"]},
         {name:"disk", deps:["path.h"]},
         {name:"disks", deps:["path.h"]},
-        {name:"ebcdic"},
+        {name:"Ebcdic"},
         {name:"endian"},
         {name:"enum"},
         {name:"eResult"},

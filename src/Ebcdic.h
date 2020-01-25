@@ -1,25 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          EBCDIC Console Transmit Task (ebcdic) Header
+//          EBCDIC Console Transmit Task (Ebcdic) Header
 //****************************************************************
 /*
  * Program
- *			Separate ebcdic (ebcdic)
+ *			Separate Ebcdic (Ebcdic)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate ebcdic to run things without complications
- *          of interfering with the main ebcdic. A ebcdic may be 
- *          called a ebcdic on other O/S's.
+ *          a separate Ebcdic to run things without complications
+ *          of interfering with the main Ebcdic. A Ebcdic may be 
+ *          called a Ebcdic on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal ebcdic. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	02/12/2017 Generated
+ *	01/25/2020 Generated
  */
 
 
@@ -54,13 +51,19 @@
 
 
 
-
 #include        <cmn_defs.h>
 #include        <AStr.h>
 
 
 #ifndef         EBCDIC_H
 #define         EBCDIC_H
+
+
+//#define   EBCDIC_IS_CONSTANT      1
+//#define   EBCDIC_JSON_SUPPORT     1
+//#define   EBCDIC_SINGLETON        1
+
+
 
 
 
@@ -74,16 +77,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct ebcdic_data_s	EBCDIC_DATA;    // Inherits from OBJ.
+    typedef struct Ebcdic_data_s	EBCDIC_DATA;            // Inherits from OBJ
+    typedef struct Ebcdic_class_data_s EBCDIC_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct ebcdic_vtbl_s	{
+    typedef struct Ebcdic_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in ebcdic_object.c.
+        // method names to the vtbl definition in Ebcdic_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(EBCDIC_DATA *);
     } EBCDIC_VTBL;
+
+    typedef struct Ebcdic_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in Ebcdic_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(EBCDIC_DATA *);
+    } EBCDIC_CLASS_VTBL;
+
 
 
 
@@ -96,47 +110,76 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    EBCDIC_DATA *   ebcdic_Alloc(
+#ifdef  EBCDIC_SINGLETON
+    EBCDIC_DATA *     Ebcdic_Shared (
+        void
+    );
+
+    void            Ebcdic_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to Ebcdic object if successful, otherwise OBJ_NIL.
+     */
+    EBCDIC_DATA *   Ebcdic_Alloc (
         void
     );
     
     
-    EBCDIC_DATA *   ebcdic_New(
-        void
-    );
-    
-    
-    uint8_t         asciiToEbcdic(
+    uint8_t         Ebcdic_AsciiToEbcdicA(
         char            asciiChar
     );
+
+
+    OBJ_ID          Ebcdic_Class (
+        void
+    );
     
     
-    char            ebcdicToAscii(
+    char            Ebcdic_EbcdicToAsciiA(
         uint8_t         ebcdicChar
     );
-    
-    
-    void            TranslateAsciiToEbcdic (
-        uint32_t        cBuffer,
-        uint8_t         *pBuffer
+
+
+    EBCDIC_DATA *   Ebcdic_New (
+        void
     );
     
     
-    void            TranslateEbcdicToAscii (
+#ifdef  EBCDIC_JSON_SUPPORT
+    EBCDIC_DATA *   Ebcdic_NewFromJsonString(
+        ASTR_DATA       *pString
+    );
+
+    EBCDIC_DATA *   Ebcdic_NewFromJsonStringA(
+        const
+        char            *pStringA
+    );
+#endif
+
+
+    void            Ebcdic_TranslateAsciiToEbcdicA (
         uint32_t        cBuffer,
         uint8_t         *pBuffer
     );
-    
-    
+
+
+    void            Ebcdic_TranslateEbcdicToAsciiA (
+        uint32_t        cBuffer,
+        uint8_t         *pBuffer
+    );
+
 
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
-
-    ERESULT         ebcdic_getLastError(
-        EBCDIC_DATA		*this
-    );
 
 
 
@@ -145,39 +188,44 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         ebcdic_Disable(
-        EBCDIC_DATA		*this
-    );
-
-
-    ERESULT         ebcdic_Enable(
-        EBCDIC_DATA		*this
-    );
-
-   
-    EBCDIC_DATA *   ebcdic_Init(
+    EBCDIC_DATA *   Ebcdic_Init (
         EBCDIC_DATA     *this
     );
 
 
-    ERESULT         ebcdic_IsEnabled(
-        EBCDIC_DATA		*this
+#ifdef  EBCDIC_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Ebcdic_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Ebcdic_ToJson(
+        EBCDIC_DATA   *this
     );
-    
- 
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = ebcdic_ToDebugString(this,4);
-     @endcode
-     @param     this    EBCDIC object pointer
+     @code 
+        ASTR_DATA      *pDesc = Ebcdic_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ebcdic_ToDebugString(
+    ASTR_DATA *    Ebcdic_ToDebugString (
         EBCDIC_DATA     *this,
         int             indent
     );

@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/24/2020 20:35:26.000)
+# ( 1/25/2020 19:42:04.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -159,6 +159,16 @@ $(OBJDIR)/CsvFile.o: $(SRCDIR)/CsvFile.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_i
 OBJS += $(OBJDIR)/CsvFile_object.o
 
 $(OBJDIR)/CsvFile_object.o: $(SRCDIR)/CsvFile_object.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Ebcdic.o
+
+$(OBJDIR)/Ebcdic.o: $(SRCDIR)/Ebcdic.c $(SRCDIR)/Ebcdic.h $(SRCDIR)/Ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Ebcdic_object.o
+
+$(OBJDIR)/Ebcdic_object.o: $(SRCDIR)/Ebcdic_object.c $(SRCDIR)/Ebcdic.h $(SRCDIR)/Ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/FileRef.o
@@ -909,16 +919,6 @@ $(OBJDIR)/eResult.o: $(SRCDIR)/eResult.c $(SRCDIR)/eResult.h $(SRCDIR)/eResult_i
 OBJS += $(OBJDIR)/eResult_object.o
 
 $(OBJDIR)/eResult_object.o: $(SRCDIR)/eResult_object.c $(SRCDIR)/eResult.h $(SRCDIR)/eResult_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/ebcdic.o
-
-$(OBJDIR)/ebcdic.o: $(SRCDIR)/ebcdic.c $(SRCDIR)/ebcdic.h $(SRCDIR)/ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/ebcdic_object.o
-
-$(OBJDIR)/ebcdic_object.o: $(SRCDIR)/ebcdic_object.c $(SRCDIR)/ebcdic.h $(SRCDIR)/ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/endian.o
@@ -1747,6 +1747,12 @@ CsvFile_test: $(TEST_SRC)/CsvFile_test.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += Ebcdic_test
+
+Ebcdic_test: $(TEST_SRC)/Ebcdic_test.c $(SRCDIR)/Ebcdic.h $(SRCDIR)/Ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += FileRef_test
 
 FileRef_test: $(TEST_SRC)/FileRef_test.c $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/AStrC.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
@@ -2116,12 +2122,6 @@ disks_test: $(TEST_SRC)/disks_test.c $(SRCDIR)/disks.h $(SRCDIR)/disks_internal.
 TESTS += eResult_test
 
 eResult_test: $(TEST_SRC)/eResult_test.c $(SRCDIR)/eResult.h $(SRCDIR)/eResult_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += ebcdic_test
-
-ebcdic_test: $(TEST_SRC)/ebcdic_test.c $(SRCDIR)/ebcdic.h $(SRCDIR)/ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

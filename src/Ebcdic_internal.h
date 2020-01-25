@@ -1,0 +1,188 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+/* 
+ * File:   Ebcdic_internal.h
+ *	Generated 01/25/2020 14:41:25
+ *
+ * Notes:
+ *  --	N/A
+ *
+ */
+
+
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+#include        <Ebcdic.h>
+#include        <JsonIn.h>
+
+
+#ifndef EBCDIC_INTERNAL_H
+#define	EBCDIC_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
+
+
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
+
+
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
+#pragma pack(push, 1)
+struct Ebcdic_data_s	{
+    /* Warning - OBJ_DATA must be first in this object!
+     */
+    OBJ_DATA        super;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+
+    // Common Data
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        rsvd16;
+    ASTR_DATA       *pStr;
+
+};
+#pragma pack(pop)
+
+    extern
+    struct Ebcdic_class_data_s  Ebcdic_ClassObj;
+
+    extern
+    const
+    EBCDIC_VTBL         Ebcdic_Vtbl;
+
+
+
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  EBCDIC_SINGLETON
+    EBCDIC_DATA *     Ebcdic_getSingleton (
+        void
+    );
+
+    bool            Ebcdic_setSingleton (
+     EBCDIC_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  Ebcdic_getSuperVtbl (
+        EBCDIC_DATA     *this
+    );
+
+
+    ERESULT         Ebcdic_Assign (
+        EBCDIC_DATA    *this,
+        EBCDIC_DATA    *pOther
+    );
+
+
+    EBCDIC_DATA *       Ebcdic_Copy (
+        EBCDIC_DATA     *this
+    );
+
+
+    void            Ebcdic_Dealloc (
+        OBJ_ID          objId
+    );
+
+
+#ifdef  EBCDIC_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    EBCDIC_DATA *       Ebcdic_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+
+
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Ebcdic_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        EBCDIC_DATA     *pObject
+    );
+#endif
+
+
+    void *          Ebcdic_QueryInfo (
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
+
+#ifdef  EBCDIC_JSON_SUPPORT
+    ASTR_DATA *     Ebcdic_ToJson (
+        EBCDIC_DATA      *this
+    );
+#endif
+
+
+
+
+#ifdef NDEBUG
+#else
+    bool			Ebcdic_Validate (
+        EBCDIC_DATA       *this
+    );
+#endif
+
+
+
+#ifdef	__cplusplus
+}
+#endif
+
+#endif	/* EBCDIC_INTERNAL_H */
+
