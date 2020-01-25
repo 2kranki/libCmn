@@ -1,22 +1,19 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          ENDIAN Console Transmit Task (endian) Header
+//          Endianess Support (endian) Header
 //****************************************************************
 /*
  * Program
- *			Separate endian (endian)
+ *			Endianess Support (endian)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate endian to run things without complications
- *          of interfering with the main endian. A endian may be 
- *          called a endian on other O/S's.
+ *			This object provides methods to transform numbers from
+ *          big endian format to little endian format and vice versa.
+ *          See https://en.wikipedia.org/wiki/Endianness for a good
+ *          description of endianness.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal endian. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *    1.      None
  *
  * History
  *	10/25/2016 Generated

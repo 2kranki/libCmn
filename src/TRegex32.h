@@ -225,6 +225,16 @@ extern "C" {
     );
        
     
+    /*!
+     Search the given text with the previously compiled pattern.
+     @param     this        object pointer
+     @param     pText       Nul-terminated string
+     @param     pLength     Returned length of match (0 == no match)
+     @return    If unsuccessful or the pattern was not found, 0 and
+                 length of zero. Otherwise, an index into where pat-
+                 tern starts to match the text and the length of the
+                 match.
+     */
     int             TRegex_MatchP(
         TREGEX32_DATA   *this,
         const
