@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   jsonPP_internal.h
- *	Generated 08/27/2019 21:35:44
+ * File:   JsonOut_internal.h
+ *	Generated 01/25/2020 21:31:26
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <jsonPP.h>
+#include        <JsonOut.h>
 #include        <JsonIn.h>
 
 
-#ifndef JSONPP_INTERNAL_H
-#define	JSONPP_INTERNAL_H
+#ifndef JSONOUT_INTERNAL_H
+#define	JSONOUT_INTERNAL_H
 
 
 
@@ -64,25 +64,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct jsonPP_data_s	{
+struct JsonOut_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint32_t        indent;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        rsvd16;
     ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct jsonPP_class_data_s  jsonPP_ClassObj;
+    struct JsonOut_class_data_s  JsonOut_ClassObj;
 
     extern
     const
-    JSONPP_VTBL         jsonPP_Vtbl;
+    JSONOUT_VTBL         JsonOut_Vtbl;
 
 
 
@@ -90,13 +91,13 @@ struct jsonPP_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  JSONPP_SINGLETON
-    JSONPP_DATA *     jsonPP_getSingleton (
+#ifdef  JSONOUT_SINGLETON
+    JSONOUT_DATA *     JsonOut_getSingleton (
         void
     );
 
-    bool            jsonPP_setSingleton (
-     JSONPP_DATA       *pValue
+    bool            JsonOut_setSingleton (
+     JSONOUT_DATA       *pValue
 );
 #endif
 
@@ -106,88 +107,82 @@ struct jsonPP_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  jsonPP_getSuperVtbl (
-        JSONPP_DATA     *this
+    OBJ_IUNKNOWN *  JsonOut_getSuperVtbl (
+        JSONOUT_DATA     *this
     );
 
 
-    void            jsonPP_Dealloc (
+    ERESULT         JsonOut_Assign (
+        JSONOUT_DATA    *this,
+        JSONOUT_DATA    *pOther
+    );
+
+
+    JSONOUT_DATA *       JsonOut_Copy (
+        JSONOUT_DATA     *this
+    );
+
+
+    void            JsonOut_Dealloc (
         OBJ_ID          objId
     );
 
 
-    JSONPP_DATA *   jsonPP_ParseObject (
+#ifdef  JSONOUT_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    JSONOUT_DATA *       JsonOut_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
 
-    ERESULT         jsonPP_PrintArray (
-        JSONPP_DATA     *this,
-        NODEARRAY_DATA  *pArray,
-        uint32_t        indent,
-        const
-        char            *pComma
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         JsonOut_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        JSONOUT_DATA     *pObject
     );
-    
-    ERESULT         jsonPP_PrintHash (
-        JSONPP_DATA     *this,
-        NODEHASH_DATA   *pHash,
-        uint32_t        indent,
-        const
-        char            *pComma
-    );
-    
-    ERESULT         jsonPP_PrintPair (
-        JSONPP_DATA     *this,
-        NODE_DATA       *pNode,
-        uint32_t        indent,
-        const
-        char            *pComma
-    );
-    
-    ERESULT         jsonPP_PrintValue (
-        JSONPP_DATA     *this,
-        NODE_DATA       *pNode,
-        uint32_t        indent,
-        const
-        char            *pComma
-    );
-    
-    
-    void *          jsonPP_QueryInfo (
+#endif
+
+
+    void *          JsonOut_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     jsonPP_ToJSON (
-        JSONPP_DATA      *this
+#ifdef  JSONOUT_JSON_SUPPORT
+    ASTR_DATA *     JsonOut_ToJson (
+        JSONOUT_DATA      *this
     );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			jsonPP_Validate (
-        JSONPP_DATA       *this
+    bool			JsonOut_Validate (
+        JSONOUT_DATA       *this
     );
 #endif
 
 
 
-    OBJ_ID          jsonPP_VerifyName(
-        JSONPP_DATA     *this,
-        NODE_DATA       *pNode,
-        const
-        char            *pVerify
-    );
-    
-    
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* JSONPP_INTERNAL_H */
+#endif	/* JSONOUT_INTERNAL_H */
 

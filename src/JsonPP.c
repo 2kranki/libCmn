@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   jsonPP.c
- *	Generated 08/27/2019 21:35:44
+ * File:   JsonPP.c
+ *	Generated 01/25/2020 21:40:07
  *
  */
 
@@ -41,8 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <jsonPP_internal.h>
-#include        <JsonIn.h>
+#include        <JsonPP_internal.h>
 #include        <trace.h>
 
 
@@ -65,7 +64,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            jsonPP_task_body (
+    void            JsonPP_task_body (
         void            *pData
     )
     {
@@ -85,11 +84,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    JSONPP_DATA *     jsonPP_Alloc (
+    JSONPP_DATA *   JsonPP_Alloc (
         void
     )
     {
-        JSONPP_DATA       *this;
+        JSONPP_DATA     *this;
         uint32_t        cbSize = sizeof(JSONPP_DATA);
         
         // Do initialization.
@@ -102,15 +101,15 @@ extern "C" {
 
 
 
-    JSONPP_DATA *     jsonPP_New (
+    JSONPP_DATA *   JsonPP_New (
         void
     )
     {
-        JSONPP_DATA       *this;
+        JSONPP_DATA     *this;
         
-        this = jsonPP_Alloc( );
+        this = JsonPP_Alloc( );
         if (this) {
-            this = jsonPP_Init(this);
+            this = JsonPP_Init(this);
         } 
         return this;
     }
@@ -127,7 +126,7 @@ extern "C" {
     //                          I n d e n t
     //---------------------------------------------------------------
     
-    uint32_t        jsonPP_getIndent (
+    uint32_t        JsonPP_getIndent (
         JSONPP_DATA     *this
     )
     {
@@ -135,7 +134,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -145,14 +144,14 @@ extern "C" {
     }
 
 
-    bool            jsonPP_setIndent (
+    bool            JsonPP_setIndent (
         JSONPP_DATA     *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -169,13 +168,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        jsonPP_getSize (
+    uint32_t        JsonPP_getSize (
         JSONPP_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -190,7 +189,7 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * jsonPP_getStr (
+    ASTR_DATA * JsonPP_getStr (
         JSONPP_DATA     *this
     )
     {
@@ -198,7 +197,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -208,14 +207,14 @@ extern "C" {
     }
     
     
-    bool        jsonPP_setStr (
+    bool        JsonPP_setStr (
         JSONPP_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -238,7 +237,7 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  jsonPP_getSuperVtbl (
+    OBJ_IUNKNOWN *  JsonPP_getSuperVtbl (
         JSONPP_DATA     *this
     )
     {
@@ -246,7 +245,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -275,14 +274,14 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = jsonPP_Assign(this,pOther);
+        ERESULT eRc = JsonPP_Assign(this,pOther);
      @endcode 
-     @param     this    JSONPP object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another JSONPP object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         jsonPP_Assign (
+    ERESULT         JsonPP_Assign (
         JSONPP_DATA		*this,
         JSONPP_DATA     *pOther
     )
@@ -292,15 +291,25 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!jsonPP_Validate(pOther)) {
+        if (!JsonPP_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -348,7 +357,7 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         jsonPP_Compare (
+    ERESULT         JsonPP_Compare (
         JSONPP_DATA     *this,
         JSONPP_DATA     *pOther
     )
@@ -364,11 +373,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!jsonPP_Validate(pOther)) {
+        if (!JsonPP_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -406,14 +415,14 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        jsonPP      *pCopy = jsonPP_Copy(this);
+        JsonPP      *pCopy = JsonPP_Copy(this);
      @endcode 
-     @param     this    JSONPP object pointer
+     @param     this    object pointer
      @return    If successful, a JSONPP object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    JSONPP_DATA *     jsonPP_Copy (
+    JSONPP_DATA *     JsonPP_Copy (
         JSONPP_DATA       *this
     )
     {
@@ -423,23 +432,27 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = jsonPP_New( );
+#ifdef JSONPP_IS_CONSTANT
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = JsonPP_New( );
         if (pOther) {
-            eRc = jsonPP_Assign(this, pOther);
+            eRc = JsonPP_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -449,11 +462,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            jsonPP_Dealloc (
+    void            JsonPP_Dealloc (
         OBJ_ID          objId
     )
     {
         JSONPP_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -461,7 +475,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -473,7 +487,7 @@ extern "C" {
         }
 #endif
 
-        jsonPP_setStr(this, OBJ_NIL);
+        JsonPP_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -487,6 +501,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        JsonPP      *pDeepCopy = JsonPP_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a JSONPP object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    JSONPP_DATA *     JsonPP_DeepyCopy (
+        JSONPP_DATA       *this
+    )
+    {
+        JSONPP_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonPP_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = JsonPP_New( );
+        if (pOther) {
+            eRc = JsonPP_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -496,20 +556,20 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         jsonPP_Disable (
+    ERESULT         JsonPP_Disable (
         JSONPP_DATA		*this
     )
     {
         //ERESULT         eRc;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!jsonPP_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
@@ -531,20 +591,20 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         jsonPP_Enable (
+    ERESULT         JsonPP_Enable (
         JSONPP_DATA		*this
     )
     {
         //ERESULT         eRc;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!jsonPP_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
@@ -560,7 +620,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    JSONPP_DATA *   jsonPP_Init (
+    JSONPP_DATA *   JsonPP_Init (
         JSONPP_DATA       *this
     )
     {
@@ -590,7 +650,7 @@ extern "C" {
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&jsonPP_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&JsonPP_Vtbl);
         
         this->indent = 4;
         this->pStr = AStr_New( );
@@ -600,18 +660,22 @@ extern "C" {
             return OBJ_NIL;
         }
 
-    #ifdef NDEBUG
-    #else
-        if (!jsonPP_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        //fprintf(stderr, "jsonPP::sizeof(JSONPP_DATA) = %lu\n", sizeof(JSONPP_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+        fprintf(
+                stderr, 
+                "JsonPP::sizeof(JSONPP_DATA) = %lu\n", 
+                sizeof(JSONPP_DATA)
+        );
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(JSONPP_DATA));
-    #endif
+#endif
 
         return this;
     }
@@ -622,7 +686,7 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         jsonPP_IsEnabled (
+    ERESULT         JsonPP_IsEnabled (
         JSONPP_DATA		*this
     )
     {
@@ -631,7 +695,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -650,8 +714,8 @@ extern "C" {
     //---------------------------------------------------------------
     //                      P r e t t y  P r i n t
     //---------------------------------------------------------------
-    
-    ERESULT         jsonPP_PrettyPrint(
+
+    ERESULT         JsonPP_PrettyPrint (
         JSONPP_DATA     *this,
         NODE_DATA       *pNodes,
         uint32_t        indent,
@@ -660,11 +724,11 @@ extern "C" {
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         NODEHASH_DATA   *pHash;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !jsonPP_Validate(this) ) {
+        if( !JsonPP_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -673,13 +737,13 @@ extern "C" {
             return ERESULT_DATA_MISSING;
         }
 #endif
-        
+
         pHash = JsonIn_CheckNodeForHash(pNodes);
         if (OBJ_NIL == pHash) {
             return ERESULT_PARSE_ERROR;
         }
-        eRc = jsonPP_PrintHash(this, pHash, indent, "");
-        
+        eRc = JsonPP_PrintHash(this, pHash, indent, "");
+
         // Return to caller.
         if (ppStr) {
             obj_Retain(this->pStr);
@@ -687,20 +751,20 @@ extern "C" {
         }
         return eRc;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                     P r i n t  A r r a y
     //---------------------------------------------------------------
-    
+
     /*!
      Enable operation of this object.
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         jsonPP_PrintArray(
+    ERESULT         JsonPP_PrintArray (
         JSONPP_DATA     *this,
         NODEARRAY_DATA  *pArray,
         uint32_t        indent,
@@ -716,12 +780,12 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         if (indent) {
             AStr_AppendCharRepeatA(this->pStr, indent, ' ');
         }
@@ -729,7 +793,7 @@ extern "C" {
         iMax = NodeArray_getSize(pArray);
         for (i=0; i<iMax; i++) {
             pNode = NodeArray_Get(pArray, i+1);
-            jsonPP_PrintValue(
+            JsonPP_PrintValue(
                               this,
                               pNode,
                               (indent + this->indent),
@@ -740,24 +804,24 @@ extern "C" {
             AStr_AppendCharRepeatA(this->pStr, indent, ' ');
         }
         AStr_AppendPrint(this->pStr, "]%s\n", pComma);
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                     P r i n t  H a s h
     //---------------------------------------------------------------
-    
+
     /*!
      Enable operation of this object.
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         jsonPP_PrintHash(
+    ERESULT         JsonPP_PrintHash (
         JSONPP_DATA     *this,
         NODEHASH_DATA   *pHash,
         uint32_t        indent,
@@ -774,17 +838,17 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         pArray = NodeHash_Nodes(pHash);
         if (OBJ_NIL == pArray) {
             return ERESULT_SUCCESS;
         }
-        
+
         if (indent) {
             AStr_AppendCharRepeatA(this->pStr, indent, ' ');
         }
@@ -792,7 +856,7 @@ extern "C" {
         iMax = NodeArray_getSize(pArray);
         for (i=0; i<iMax; i++) {
             pNode = NodeArray_Get(pArray, i+1);
-            jsonPP_PrintPair(
+            JsonPP_PrintPair(
                              this,
                              pNode,
                              (indent + this->indent),
@@ -803,27 +867,27 @@ extern "C" {
             AStr_AppendCharRepeatA(this->pStr, indent, ' ');
         }
         AStr_AppendPrint(this->pStr, "}%s\n", pComma);
-        
+
         obj_Release(pArray);
         pArray = OBJ_NIL;
 
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                     P r i n t  P a i r
     //---------------------------------------------------------------
-    
+
     /*!
      Enable operation of this object.
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         jsonPP_PrintPair(
+    ERESULT         JsonPP_PrintPair (
         JSONPP_DATA     *this,
         NODE_DATA       *pNode,
         uint32_t        indent,
@@ -846,12 +910,12 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         pNameA = Node_getNameUTF8(pNode);
         if (NULL == pNameA) {
             DEBUG_BREAK();
@@ -872,7 +936,7 @@ extern "C" {
         mem_Free(pNameA);
         pNameA = NULL;
         AStr_AppendA(this->pStr, " : ");
-        
+
         pFalse = JsonIn_CheckNodeForFalse(pData);
         if (pFalse) {
             AStr_AppendPrint(this->pStr, "false%s\n", pComma);
@@ -904,7 +968,7 @@ extern "C" {
             iMax = NodeArray_getSize(pArray);
             for (i=0; i<iMax; i++) {
                 pNode = NodeArray_Get(pArray, i+1);
-                jsonPP_PrintValue(
+                JsonPP_PrintValue(
                                   this,
                                   pNode,
                                   (indent + this->indent),
@@ -925,7 +989,7 @@ extern "C" {
                 iMax = NodeArray_getSize(pArray);
                 for (i=0; i<iMax; i++) {
                     pNode = NodeArray_Get(pArray, i+1);
-                    jsonPP_PrintPair(
+                    JsonPP_PrintPair(
                                      this,
                                      pNode,
                                      (indent + this->indent),
@@ -949,20 +1013,20 @@ extern "C" {
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                     P r i n t  V a l u e
     //---------------------------------------------------------------
-    
+
     /*!
      Enable operation of this object.
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         jsonPP_PrintValue(
+    ERESULT         JsonPP_PrintValue (
         JSONPP_DATA     *this,
         NODE_DATA       *pNode,
         uint32_t        indent,
@@ -983,16 +1047,16 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         if (indent) {
             AStr_AppendCharRepeatA(this->pStr, indent, ' ');
         }
-        
+
         pFalse = JsonIn_CheckNodeForFalse(pNode);
         if (pFalse) {
             AStr_AppendPrint(this->pStr, "false%s\n", pComma);
@@ -1024,7 +1088,7 @@ extern "C" {
             iMax = NodeArray_getSize(pArray);
             for (i=0; i<iMax; i++) {
                 pNode = NodeArray_Get(pArray, i+1);
-                jsonPP_PrintPair(
+                JsonPP_PrintPair(
                                  this,
                                  pNode,
                                  (indent + this->indent),
@@ -1045,7 +1109,7 @@ extern "C" {
                 iMax = NodeArray_getSize(pArray);
                 for (i=0; i<iMax; i++) {
                     pNode = NodeArray_Get(pArray, i+1);
-                    jsonPP_PrintPair(
+                    JsonPP_PrintPair(
                                      this,
                                      pNode,
                                      (indent + this->indent),
@@ -1061,17 +1125,17 @@ extern "C" {
                 return ERESULT_SUCCESS;
             }
         }
-        
+
         DEBUG_BREAK();
         fprintf(stderr, "ERROR - Hash Pair has an invalid Data object!\n\n\n");
         exit(8);
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -1083,14 +1147,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = jsonPP_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = JsonPP_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "jsonPP", prefix,
+                        the object name, "JsonPP", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1098,7 +1162,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          jsonPP_QueryInfo (
+    void *          JsonPP_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -1113,7 +1177,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1126,7 +1190,7 @@ extern "C" {
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)jsonPP_Class();
+                return (void *)JsonPP_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -1156,23 +1220,36 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return jsonPP_Disable;
+                            return JsonPP_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return jsonPP_Enable;
+                            return JsonPP_Enable;
                         }
                         break;
 
+#ifdef  JSONPP_JSON_SUPPORT
+                    case 'P':
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return JsonPP_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return JsonPP_ParseJsonObject;
+                        }
+                        break;
+#endif
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return jsonPP_ToDebugString;
+                            return JsonPP_ToDebugString;
                         }
+#ifdef  JSONPP_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return jsonPP_ToJSON;
+                            return JsonPP_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -1181,10 +1258,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == jsonPP_ToDebugString)
+                if (pData == JsonPP_ToDebugString)
                     return "ToDebugString";
-                if (pData == jsonPP_ToJSON)
+#ifdef  JSONPP_JSON_SUPPORT
+                if (pData == JsonPP_ToJson)
                     return "ToJson";
+#endif
                 break;
                 
             default:
@@ -1197,45 +1276,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-     ASTR_DATA *     jsonPP_ToJSON (
-        JSONPP_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!jsonPP_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1243,15 +1283,15 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = jsonPP_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = JsonPP_ToDebugString(this,4);
      @endcode 
-     @param     this    JSONPP object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     jsonPP_ToDebugString (
+    ASTR_DATA *     JsonPP_ToDebugString (
         JSONPP_DATA      *this,
         int             indent
     )
@@ -1259,16 +1299,14 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!jsonPP_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1286,9 +1324,11 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s)\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
-                    pInfo->pClassName
+                    pInfo->pClassName,
+                    JsonPP_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -1323,9 +1363,9 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            jsonPP_Validate (
+#ifdef NDEBUG
+#else
+    bool            JsonPP_Validate (
         JSONPP_DATA      *this
     )
     {
@@ -1356,11 +1396,11 @@ extern "C" {
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     
-
+    
     
 #ifdef	__cplusplus
 }

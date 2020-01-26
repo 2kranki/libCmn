@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'jsonPP'
-//	Generated 08/27/2019 21:35:44
+//	Class Object Metods and Tables for 'JsonPP'
+//	Generated 01/25/2020 21:40:07
 
 
 /*
@@ -35,7 +35,7 @@
 
 
 #define			JSONPP_OBJECT_C	    1
-#include        <jsonPP_internal.h>
+#include        <JsonPP_internal.h>
 #ifdef  JSONPP_SINGLETON
 #include        <psxLock.h>
 #endif
@@ -46,7 +46,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct jsonPP_class_data_s	{
+struct JsonPP_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -69,7 +69,7 @@ struct jsonPP_class_data_s	{
 
 
 static
-void *          jsonPPClass_QueryInfo (
+void *          JsonPPClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,28 +78,38 @@ void *          jsonPPClass_QueryInfo (
 
 static
 const
-OBJ_INFO        jsonPP_Info;            // Forward Reference
+OBJ_INFO        JsonPP_Info;            // Forward Reference
 
 
 
 
 static
-bool            jsonPPClass_IsKindOf (
+bool            JsonPPClass_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_JSONPP_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(JsonPP_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		jsonPPClass_WhoAmI (
+uint16_t		JsonPPClass_WhoAmI (
     void
 )
 {
@@ -117,15 +127,15 @@ static
 const
 JSONPP_CLASS_VTBL    class_Vtbl = {
     {
-        &jsonPP_Info,
-        jsonPPClass_IsKindOf,
+        &JsonPP_Info,
+        JsonPPClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        jsonPP_Class,
-        jsonPPClass_WhoAmI,
-        (P_OBJ_QUERYINFO)jsonPPClass_QueryInfo,
-        NULL                        // jsonPPClass_ToDebugString
+        JsonPP_Class,
+        JsonPPClass_WhoAmI,
+        (P_OBJ_QUERYINFO)JsonPPClass_QueryInfo,
+        NULL                        // JsonPPClass_ToDebugString
     },
 };
 
@@ -135,7 +145,7 @@ JSONPP_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-JSONPP_CLASS_DATA  jsonPP_ClassObj = {
+JSONPP_CLASS_DATA  JsonPP_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
         sizeof(JSONPP_CLASS_DATA),                  // cbSize
@@ -153,15 +163,15 @@ JSONPP_CLASS_DATA  jsonPP_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  JSONPP_SINGLETON
-JSONPP_DATA *     jsonPP_getSingleton (
+JSONPP_DATA *     JsonPP_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(jsonPP_ClassObj.pSingleton);
+    return (OBJ_ID)(JsonPP_ClassObj.pSingleton);
 }
 
 
-bool            jsonPP_setSingleton (
+bool            JsonPP_setSingleton (
     JSONPP_DATA       *pValue
 )
 {
@@ -182,10 +192,10 @@ bool            jsonPP_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (jsonPP_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(jsonPP_ClassObj.pSingleton));
+    if (JsonPP_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(JsonPP_ClassObj.pSingleton));
     }
-    jsonPP_ClassObj.pSingleton = pValue;
+    JsonPP_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -195,17 +205,17 @@ bool            jsonPP_setSingleton (
 
 
 
-JSONPP_DATA *     jsonPP_Shared (
+JSONPP_DATA *     JsonPP_Shared (
     void
 )
 {
-    JSONPP_DATA       *this = (OBJ_ID)(jsonPP_ClassObj.pSingleton);
+    JSONPP_DATA       *this = (OBJ_ID)(JsonPP_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = jsonPP_New( );
-        jsonPP_setSingleton(this);
+        this = JsonPP_New( );
+        JsonPP_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // jsonPP_ClassObj.pSingleton = OBJ_NIL;
+        // JsonPP_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -213,15 +223,15 @@ JSONPP_DATA *     jsonPP_Shared (
 
 
 
-void            jsonPP_SharedReset (
+void            JsonPP_SharedReset (
     void
 )
 {
-    JSONPP_DATA       *this = (OBJ_ID)(jsonPP_ClassObj.pSingleton);
+    JSONPP_DATA       *this = (OBJ_ID)(JsonPP_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        jsonPP_ClassObj.pSingleton = OBJ_NIL;
+        JsonPP_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -237,7 +247,7 @@ void            jsonPP_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          jsonPPClass_QueryInfo (
+void *          JsonPPClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -269,7 +279,7 @@ void *          jsonPPClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&jsonPP_Info;
+                        return (void *)&JsonPP_Info;
                     }
                     break;
                     
@@ -287,13 +297,24 @@ void *          jsonPPClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return jsonPP_New;
+                        return JsonPP_New;
                     }
                     break;
                     
+#ifdef  JSONPP_JSON_SUPPORT
+				case 'P':
+					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+						return JsonPP_ParseJsonFields;
+					}
+					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+						return JsonPP_ParseJsonObject;
+					}
+					break;
+#endif
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return jsonPPClass_WhoAmI;
+                        return JsonPPClass_WhoAmI;
                     }
                     break;
                     
@@ -313,37 +334,50 @@ void *          jsonPPClass_QueryInfo (
 
 
 static
-bool            jsonPP_IsKindOf (
+bool            JsonPP_IsKindOf (
     uint16_t		classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_JSONPP == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(JsonPP_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            jsonPP_Dealloc (
+void            JsonPP_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          jsonPP_Class (
+OBJ_ID          JsonPP_Class (
     void
 )
 {
-    return (OBJ_ID)&jsonPP_ClassObj;
+    return (OBJ_ID)&JsonPP_ClassObj;
 }
 
 
 static
-uint16_t		jsonPP_WhoAmI (
+uint16_t		JsonPP_WhoAmI (
     void
 )
 {
@@ -359,10 +393,10 @@ uint16_t		jsonPP_WhoAmI (
 //===========================================================
 
 const
-JSONPP_VTBL     jsonPP_Vtbl = {
+JSONPP_VTBL     JsonPP_Vtbl = {
     {
-        &jsonPP_Info,
-        jsonPP_IsKindOf,
+        &JsonPP_Info,
+        JsonPP_IsKindOf,
 #ifdef  JSONPP_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
@@ -370,23 +404,23 @@ JSONPP_VTBL     jsonPP_Vtbl = {
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        jsonPP_Dealloc,
-        jsonPP_Class,
-        jsonPP_WhoAmI,
-        (P_OBJ_QUERYINFO)jsonPP_QueryInfo,
-        (P_OBJ_TOSTRING)jsonPP_ToDebugString,
-        NULL,			// jsonPP_Enable,
-        NULL,			// jsonPP_Disable,
-        NULL,			// (P_OBJ_ASSIGN)jsonPP_Assign,
-        NULL,			// (P_OBJ_COMPARE)jsonPP_Compare,
-        NULL, 			// (P_OBJ_PTR)jsonPP_Copy,
-        NULL, 			// (P_OBJ_PTR)jsonPP_DeepCopy,
-        NULL 			// (P_OBJ_HASH)jsonPP_Hash,
+        JsonPP_Dealloc,
+        JsonPP_Class,
+        JsonPP_WhoAmI,
+        (P_OBJ_QUERYINFO)JsonPP_QueryInfo,
+        (P_OBJ_TOSTRING)JsonPP_ToDebugString,
+        NULL,			// JsonPP_Enable,
+        NULL,			// JsonPP_Disable,
+        NULL,			// (P_OBJ_ASSIGN)JsonPP_Assign,
+        NULL,			// (P_OBJ_COMPARE)JsonPP_Compare,
+        NULL, 			// (P_OBJ_PTR)JsonPP_Copy,
+        NULL, 			// (P_OBJ_PTR)JsonPP_DeepCopy,
+        NULL 			// (P_OBJ_HASH)JsonPP_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //jsonPP_IsEnabled,
+    //JsonPP_IsEnabled,
  
 };
 
@@ -394,12 +428,12 @@ JSONPP_VTBL     jsonPP_Vtbl = {
 
 static
 const
-OBJ_INFO        jsonPP_Info = {
-    "jsonPP",
-    "Pretty print a JSON Structure",
-    (OBJ_DATA *)&jsonPP_ClassObj,
+OBJ_INFO        JsonPP_Info = {
+    "JsonPP",
+    "Pretty Print a JSON Structure",
+    (OBJ_DATA *)&JsonPP_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&jsonPP_Vtbl,
+    (OBJ_IUNKNOWN *)&JsonPP_Vtbl,
     sizeof(JSONPP_DATA)
 };
 

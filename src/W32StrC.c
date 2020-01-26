@@ -669,8 +669,11 @@ extern "C" {
     )
     {
         W32STRC_DATA       *pOther = OBJ_NIL;
+#ifdef W32STRC_IS_CONSTANT
+#else
         ERESULT         eRc;
-        
+#endif
+
         // Do initialization.
 #ifdef NDEBUG
 #else

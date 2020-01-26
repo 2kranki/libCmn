@@ -1,22 +1,21 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          JSON Object Output (jsonOut) Header
+//          JSON Object Output Support (JsonOut) Header
 //****************************************************************
 /*
  * Program
- *			JSON Object Output (jsonOut)
+ *			JSON Object Output Support (JsonOut)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate jsonOut to run things without complications
- *          of interfering with the main jsonOut. A jsonOut may be 
- *          called a jsonOut on other O/S's.
+ *			This object provides a standardized way of generating
+ *			certain field types for JSON.
  *
  * Remarks
  *	1.      None
  *
  * History
  *	08/27/2017 Generated
+ *	01/25/2020 Regenerated
  */
 
 
@@ -59,6 +58,13 @@
 #define         JSONOUT_H
 
 
+//#define   JSONOUT_IS_CONSTANT      1
+//#define   JSONOUT_JSON_SUPPORT     1
+//#define   JSONOUT_SINGLETON        1
+
+
+
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -70,16 +76,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct jsonOut_data_s	JSONOUT_DATA;    // Inherits from OBJ.
+    typedef struct JsonOut_data_s	JSONOUT_DATA;            // Inherits from OBJ
+    typedef struct JsonOut_class_data_s JSONOUT_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct jsonOut_vtbl_s	{
+    typedef struct JsonOut_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in jsonOut_object.c.
+        // method names to the vtbl definition in JsonOut_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(JSONOUT_DATA *);
     } JSONOUT_VTBL;
+
+    typedef struct JsonOut_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in JsonOut_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(JSONOUT_DATA *);
+    } JSONOUT_CLASS_VTBL;
+
 
 
 
@@ -92,22 +109,50 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  JSONOUT_SINGLETON
+    JSONOUT_DATA *     JsonOut_Shared (
+        void
+    );
+
+    void            JsonOut_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to jsonOut object if successful, otherwise OBJ_NIL.
+     @return    pointer to JsonOut object if successful, otherwise OBJ_NIL.
      */
-    JSONOUT_DATA *     jsonOut_Alloc(
+    JSONOUT_DATA *     JsonOut_Alloc (
         void
     );
     
     
-    JSONOUT_DATA *     jsonOut_New(
+    OBJ_ID          JsonOut_Class (
         void
     );
     
     
+    JSONOUT_DATA *     JsonOut_New (
+        void
+    );
+    
+    
+#ifdef  JSONOUT_JSON_SUPPORT
+    JSONOUT_DATA *   JsonOut_NewFromJsonString(
+        ASTR_DATA       *pString
+    );
+
+    JSONOUT_DATA *   JsonOut_NewFromJsonStringA(
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -120,24 +165,59 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    JSONOUT_DATA *   jsonOut_Init(
+    ERESULT     JsonOut_Disable (
+        JSONOUT_DATA		*this
+    );
+
+
+    ERESULT     JsonOut_Enable (
+        JSONOUT_DATA		*this
+    );
+
+   
+    JSONOUT_DATA *   JsonOut_Init (
         JSONOUT_DATA     *this
     );
+
+
+    ERESULT     JsonOut_IsEnabled (
+        JSONOUT_DATA		*this
+    );
+    
+ 
+#ifdef  JSONOUT_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = JsonOut_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     JsonOut_ToJson(
+        JSONOUT_DATA   *this
+    );
+#endif
 
 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = jsonOut_ToDebugString(this,4);
-     @endcode
-     @param     this    JSONOUT object pointer
+     @code 
+        ASTR_DATA      *pDesc = JsonOut_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    jsonOut_ToDebugString(
+    ASTR_DATA *    JsonOut_ToDebugString (
         JSONOUT_DATA     *this,
         int             indent
     );

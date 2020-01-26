@@ -1,22 +1,20 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          JSONPP Console Transmit Task (jsonPP) Header
+//          Pretty Print a JSON Structure (JsonPP) Header
 //****************************************************************
 /*
  * Program
- *			Separate jsonPP (jsonPP)
+ *			Pretty Print a JSON Structure (JsonPP)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate jsonPP to run things without complications
- *          of interfering with the main jsonPP. A jsonPP may be 
- *          called a jsonPP on other O/S's.
+ *			This object pretty prints a JSON structure.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	08/27/2019 Generated
+ *  08/27/2019 Generated
+ *	01/25/2020 Regenerated
  */
 
 
@@ -62,7 +60,9 @@
 #define         JSONPP_H
 
 
-//#define   JSONPP_SINGLETON    1
+//#define   JSONPP_IS_CONSTANT      1
+//#define   JSONPP_JSON_SUPPORT     1
+//#define   JSONPP_SINGLETON        1
 
 
 
@@ -78,22 +78,22 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct jsonPP_data_s	JSONPP_DATA;            // Inherits from OBJ
-    typedef struct jsonPP_class_data_s JSONPP_CLASS_DATA;   // Inherits from OBJ
+    typedef struct JsonPP_data_s	JSONPP_DATA;            // Inherits from OBJ
+    typedef struct JsonPP_class_data_s JSONPP_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct jsonPP_vtbl_s	{
+    typedef struct JsonPP_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in jsonPP_object.c.
+        // method names to the vtbl definition in JsonPP_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(JSONPP_DATA *);
     } JSONPP_VTBL;
 
-    typedef struct jsonPP_class_vtbl_s	{
+    typedef struct JsonPP_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in jsonPP_object.c.
+        // method names to the vtbl definition in JsonPP_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(JSONPP_DATA *);
@@ -112,11 +112,11 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  JSONPP_SINGLETON
-    JSONPP_DATA *     jsonPP_Shared (
+    JSONPP_DATA *   JsonPP_Shared (
         void
     );
 
-    bool            jsonPP_SharedReset (
+    void            JsonPP_SharedReset (
         void
     );
 #endif
@@ -126,56 +126,76 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to jsonPP object if successful, otherwise OBJ_NIL.
+     @return    pointer to JsonPP object if successful, otherwise OBJ_NIL.
      */
-    JSONPP_DATA *   jsonPP_Alloc (
+    JSONPP_DATA *   JsonPP_Alloc (
         void
     );
     
     
-    OBJ_ID          jsonPP_Class (
+    OBJ_ID          JsonPP_Class (
         void
     );
     
     
-    JSONPP_DATA *   jsonPP_New (
+    JSONPP_DATA *   JsonPP_New (
         void
     );
     
     
+#ifdef  JSONPP_JSON_SUPPORT
+    JSONPP_DATA *   JsonPP_NewFromJsonString(
+        ASTR_DATA       *pString
+    );
+
+    JSONPP_DATA *   JsonPP_NewFromJsonStringA(
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        jsonPP_getIndent (
+    uint32_t        JsonPP_getIndent (
         JSONPP_DATA     *this
     );
-    
-    bool            jsonPP_setIndent (
+
+    bool            JsonPP_setIndent (
         JSONPP_DATA     *this,
         uint32_t        value
     );
 
-    
-    ASTR_DATA *     jsonPP_getStr (
+
+    ASTR_DATA *     JsonPP_getStr (
         JSONPP_DATA     *this
     );
-    
-    bool            jsonPP_setStr (
+
+    bool            JsonPP_setStr (
         JSONPP_DATA     *this,
         ASTR_DATA       *pValue
     );
 
-    
 
 
-    
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    JSONPP_DATA *   jsonPP_Init (
+    ERESULT     JsonPP_Disable (
+        JSONPP_DATA		*this
+    );
+
+
+    ERESULT     JsonPP_Enable (
+        JSONPP_DATA		*this
+    );
+
+   
+    JSONPP_DATA *   JsonPP_Init (
         JSONPP_DATA     *this
     );
 
@@ -192,27 +212,47 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error code.
      @warning   Remember to release the returned AStr object if returned.
      */
-    ERESULT         jsonPP_PrettyPrint(
+    ERESULT         JsonPP_PrettyPrint (
         JSONPP_DATA     *this,
         NODE_DATA       *pNodes,
         uint32_t        indent,
         ASTR_DATA       **ppStr
     );
-    
-        
+
+
+#ifdef  JSONPP_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = JsonPP_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     JsonPP_ToJson(
+        JSONPP_DATA   *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = jsonPP_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = JsonPP_ToDebugString(this,4);
      @endcode 
-     @param     this    JSONPP object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    jsonPP_ToDebugString (
+    ASTR_DATA *    JsonPP_ToDebugString (
         JSONPP_DATA     *this,
         int             indent
     );
