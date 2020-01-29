@@ -55,7 +55,7 @@
 
 
 #include        <cmn_defs.h>
-#include        <dirEntry.h>
+#include        <DirEntry.h>
 #include        <ObjEnum.h>
 #include        <path.h>
 #include        <AStr.h>

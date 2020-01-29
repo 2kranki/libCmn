@@ -77,7 +77,7 @@ extern "C" {
         OBJENUM_DATA    *pEnum = (OBJENUM_DATA *)pObj;
         DIRENTRY_DATA   *pEntry;
         
-        pEntry = dirEntry_Copy(pDir);
+        pEntry = DirEntry_Copy(pDir);
         if (pEntry) {
             eRc = ObjEnum_AppendObj(pEnum, pEntry);
             if (ERESULT_FAILED(eRc)) {
@@ -667,7 +667,7 @@ extern "C" {
                 closedir(pDirectory);
                 return ERESULT_OUT_OF_MEMORY;
             }
-            pEntry = dirEntry_New(pDrive, pDir, pFileName, pDirent->d_type);
+            pEntry = DirEntry_NewWithData(pDrive, pDir, pFileName, pDirent->d_type);
             if( OBJ_NIL == pEntry ) {
                 DEBUG_BREAK();
                 closedir(pDirectory);

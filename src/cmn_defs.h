@@ -236,6 +236,8 @@ extern "C" {
         OBJ_IDENT_DEC_CLASS,
         OBJ_IDENT_DIR,
         OBJ_IDENT_DIR_CLASS,
+        OBJ_IDENT_DIRENT,               // Disk Directory Entry
+        OBJ_IDENT_DIRENT_CLASS,
         OBJ_IDENT_DIRENTRY,
         OBJ_IDENT_DIRENTRY_CLASS,
         OBJ_IDENT_DISK,                 // Disk Information/Management

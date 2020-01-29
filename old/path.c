@@ -53,6 +53,7 @@
 
 /* Header File Inclusion */
 #include    <path_internal.h>
+#include    <AStr_internal.h>
 #include    <file.h>
 #include    <utf8.h>
 
@@ -1521,6 +1522,47 @@ extern "C" {
     
     
     
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    PATH_DATA *     path_ParseJsonObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        PATH_DATA       *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+
+        pInfo = obj_getInfo(path_Class());
+
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+
+        pObject = path_New( );
+        if (OBJ_NIL == pObject) {
+            goto exit00;
+        }
+
+        eRc = JsonIn_SubObjectInHash(pParser, "AStr");
+        if (!ERESULT_FAILED(eRc)) {
+            eRc = AStr_ParseJsonFields(pParser, (ASTR_DATA *)pObject);
+        }
+        JsonIn_SubObjectEnd(pParser);
+
+        // Return to caller.
+    exit00:
+        return pObject;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     S p l i t  F i l e
     //---------------------------------------------------------------
@@ -1806,6 +1848,67 @@ extern "C" {
     
     
     
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = TokenList_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     path_ToJson(
+        PATH_DATA       *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        const
+        OBJ_INFO        *pInfo;
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA       *pWrkStr;
+
+#ifdef NDEBUG
+#else
+        if( !path_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+
+        pStr = AStr_New();
+        if (pStr) {
+             AStr_AppendPrint(pStr,
+                              "{ \"objectType\":\"%s\", ",
+                              pInfo->pClassName
+             );
+
+            pWrkStr = AStr_ToJson((ASTR_DATA *)this);
+            if (pWrkStr) {
+                AStr_AppendPrint(pStr,
+                                 "\"AStr\":%s",
+                                 AStr_getData(pWrkStr)
+                );
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+            }
+
+            AStr_AppendA(pStr, "}\n");
+        }
+
+        return pStr;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

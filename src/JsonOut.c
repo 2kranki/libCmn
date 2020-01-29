@@ -101,6 +101,99 @@ extern "C" {
 
 
 
+    void            JsonOut_Append_i32 (
+        const
+        char            *pNameA,
+        int32_t         num,
+        ASTR_DATA       *pStr
+    )
+    {
+        if (pStr && pNameA) {
+            AStr_AppendPrint(pStr, "\t\"%s\": %ld,\n", pNameA, num);
+        }
+    }
+
+
+    void            JsonOut_Append_i64 (
+        const
+        char            *pNameA,
+        int64_t         num,
+        ASTR_DATA       *pStr
+    )
+    {
+        if (pStr && pNameA) {
+            AStr_AppendPrint(pStr, "\t\"%s\": %lld,\n", pNameA, num);
+        }
+    }
+
+
+    void            JsonOut_Append_Object (
+        const
+        char            *pNameA,
+        OBJ_ID          pObj,
+        ASTR_DATA       *pStr
+    )
+    {
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+        ASTR_DATA       *pWrkStr;
+
+        if (pObj && pStr && pNameA) {
+           pQueryInfo = obj_getVtbl(pObj)->pQueryInfo;
+           if (pQueryInfo) {
+               pToJson =   (*pQueryInfo)(
+                                         pObj,
+                                         OBJ_QUERYINFO_TYPE_METHOD,
+                                         "ToJson"
+                                         );
+               if (pToJson) {
+                   pWrkStr = (*pToJson)(pObj);
+                   if (pWrkStr) {
+                       AStr_AppendPrint(pStr, "\t\"%s\": ", pNameA);
+                       AStr_Append(pStr, pWrkStr);
+                       obj_Release(pWrkStr);
+                       pWrkStr = OBJ_NIL;
+                       AStr_AppendA(pStr, "\n");
+                   }
+               }
+           }
+        }
+    }
+
+
+    void            JsonOut_Append_u16 (
+        const
+        char            *pNameA,
+        uint16_t        num,
+        ASTR_DATA       *pStr
+    )
+    {
+        if (pStr && pNameA) {
+            AStr_AppendPrint(pStr, "\t\"%s\": %u,\n", pNameA, num);
+        }
+    }
+
+
+    void            JsonOut_Append_u32 (
+        const
+        char            *pNameA,
+        uint32_t        num,
+        ASTR_DATA       *pStr
+    )
+    {
+        if (pStr && pNameA) {
+            AStr_AppendPrint(pStr, "\t\"%s\": %lu,\n", pNameA, num);
+        }
+    }
+
+
+
     JSONOUT_DATA *     JsonOut_New (
         void
     )
@@ -116,7 +209,7 @@ extern "C" {
 
 
 
-    
+
 
     //===============================================================
     //                      P r o p e r t i e s

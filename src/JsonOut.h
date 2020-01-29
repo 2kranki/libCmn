@@ -154,6 +154,53 @@ extern "C" {
     );
     
     
+    void            JsonOut_Append_i32 (
+        const
+        char            *pNameA,
+        int32_t         num,
+        ASTR_DATA       *pStr
+    );
+
+
+    void            JsonOut_Append_i64 (
+        const
+        char            *pNameA,
+        int64_t         num,
+        ASTR_DATA       *pStr
+    );
+
+
+    /*!
+     Attempt to append a object's json string to an already existing string
+     with a given name if possible.
+     @param     pNameA  Name for the object
+     @param     pObj    non-null object pointer
+     @param     pStr    string to be added on to
+     */
+    void            JsonOut_Append_Object (
+        const
+        char            *pNameA,
+        OBJ_ID          pObj,
+        ASTR_DATA       *pStr
+    );
+
+
+    void            JsonOut_Append_u16 (
+        const
+        char            *pNameA,
+        uint16_t        num,
+        ASTR_DATA       *pStr
+    );
+
+
+    void            JsonOut_Append_u32 (
+        const
+        char            *pNameA,
+        uint32_t        num,
+        ASTR_DATA       *pStr
+    );
+
+
     JSONOUT_DATA *  JsonOut_New (
         void
     );

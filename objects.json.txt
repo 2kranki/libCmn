@@ -48,7 +48,7 @@
         {name:"dbField"},
         {name:"dec", json:true},
         {name:"dir", deps:["dirEntry.h","path.h"]},
-        {name:"dirEntry", deps:["path.h"]},
+        {name:"DirEntry", deps:["dateTime.h","path.h"], json:true},
         {name:"disk", deps:["path.h"]},
         {name:"disks", deps:["path.h"]},
         {name:"Ebcdic"},
