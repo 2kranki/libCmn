@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/25/2020 19:42:04.000)
+# ( 1/26/2020  3:30:43.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -204,6 +204,26 @@ $(OBJDIR)/JsonIn.o: $(SRCDIR)/JsonIn.c $(SRCDIR)/JsonIn.h $(SRCDIR)/JsonIn_inter
 OBJS += $(OBJDIR)/JsonIn_object.o
 
 $(OBJDIR)/JsonIn_object.o: $(SRCDIR)/JsonIn_object.c $(SRCDIR)/JsonIn.h $(SRCDIR)/JsonIn_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/JsonOut.o
+
+$(OBJDIR)/JsonOut.o: $(SRCDIR)/JsonOut.c $(SRCDIR)/JsonOut.h $(SRCDIR)/JsonOut_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/JsonOut_object.o
+
+$(OBJDIR)/JsonOut_object.o: $(SRCDIR)/JsonOut_object.c $(SRCDIR)/JsonOut.h $(SRCDIR)/JsonOut_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/JsonPP.o
+
+$(OBJDIR)/JsonPP.o: $(SRCDIR)/JsonPP.c $(SRCDIR)/JsonPP.h $(SRCDIR)/JsonPP_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/JsonPP_object.o
+
+$(OBJDIR)/JsonPP_object.o: $(SRCDIR)/JsonPP_object.c $(SRCDIR)/JsonPP.h $(SRCDIR)/JsonPP_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/MsgData.o
@@ -1061,26 +1081,6 @@ OBJS += $(OBJDIR)/hjson_object.o
 $(OBJDIR)/hjson_object.o: $(SRCDIR)/hjson_object.c $(SRCDIR)/hjson.h $(SRCDIR)/hjson_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/jsonOut.o
-
-$(OBJDIR)/jsonOut.o: $(SRCDIR)/jsonOut.c $(SRCDIR)/jsonOut.h $(SRCDIR)/jsonOut_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/jsonOut_object.o
-
-$(OBJDIR)/jsonOut_object.o: $(SRCDIR)/jsonOut_object.c $(SRCDIR)/jsonOut.h $(SRCDIR)/jsonOut_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/jsonPP.o
-
-$(OBJDIR)/jsonPP.o: $(SRCDIR)/jsonPP.c $(SRCDIR)/jsonPP.h $(SRCDIR)/jsonPP_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/jsonPP_object.o
-
-$(OBJDIR)/jsonPP_object.o: $(SRCDIR)/jsonPP_object.c $(SRCDIR)/jsonPP.h $(SRCDIR)/jsonPP_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/lex.o
 
 $(OBJDIR)/lex.o: $(SRCDIR)/lex.c $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/lex.h $(SRCDIR)/lex_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1771,6 +1771,18 @@ JsonIn_test: $(TEST_SRC)/JsonIn_test.c $(SRCDIR)/JsonIn.h $(SRCDIR)/JsonIn_inter
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += JsonOut_test
+
+JsonOut_test: $(TEST_SRC)/JsonOut_test.c $(SRCDIR)/JsonOut.h $(SRCDIR)/JsonOut_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += JsonPP_test
+
+JsonPP_test: $(TEST_SRC)/JsonPP_test.c $(SRCDIR)/JsonPP.h $(SRCDIR)/JsonPP_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += MsgData_test
 
 MsgData_test: $(TEST_SRC)/MsgData_test.c $(SRCDIR)/MsgData.h $(SRCDIR)/MsgData_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2200,18 +2212,6 @@ hex_test: $(TEST_SRC)/hex_test.c $(SRCDIR)/hex.h $(SRCDIR)/hex_internal.h $(SRCD
 TESTS += hjson_test
 
 hjson_test: $(TEST_SRC)/hjson_test.c $(SRCDIR)/hjson.h $(SRCDIR)/hjson_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += jsonOut_test
-
-jsonOut_test: $(TEST_SRC)/jsonOut_test.c $(SRCDIR)/jsonOut.h $(SRCDIR)/jsonOut_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += jsonPP_test
-
-jsonPP_test: $(TEST_SRC)/jsonPP_test.c $(SRCDIR)/jsonPP.h $(SRCDIR)/jsonPP_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

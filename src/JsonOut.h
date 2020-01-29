@@ -98,6 +98,24 @@ extern "C" {
     } JSONOUT_CLASS_VTBL;
 
 
+    typedef struct JsonOut_Flag1_s {
+        uint8_t         flag;
+        const
+        char            *pName;
+    } JSONOUT_FLAG1;
+
+    typedef struct JsonOut_Flag2_s {
+        uint16_t        flag;
+        const
+        char            *pName;
+    } JSONOUT_FLAG2;
+
+    typedef struct JsonOut_Flag4_s {
+        uint32_t        flag;
+        const
+        char            *pName;
+    } JSONOUT_FLAG4;
+
 
 
     /****************************************************************
@@ -126,7 +144,7 @@ extern "C" {
      released.
      @return    pointer to JsonOut object if successful, otherwise OBJ_NIL.
      */
-    JSONOUT_DATA *     JsonOut_Alloc (
+    JSONOUT_DATA *  JsonOut_Alloc (
         void
     );
     
@@ -136,7 +154,7 @@ extern "C" {
     );
     
     
-    JSONOUT_DATA *     JsonOut_New (
+    JSONOUT_DATA *  JsonOut_New (
         void
     );
     
@@ -165,23 +183,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     JsonOut_Disable (
-        JSONOUT_DATA		*this
+    ERESULT         JsonOut_Disable (
+        JSONOUT_DATA    *this
     );
 
 
-    ERESULT     JsonOut_Enable (
-        JSONOUT_DATA		*this
+    ERESULT         JsonOut_Enable (
+        JSONOUT_DATA	*this
     );
 
    
-    JSONOUT_DATA *   JsonOut_Init (
-        JSONOUT_DATA     *this
+    JSONOUT_DATA *  JsonOut_Init (
+        JSONOUT_DATA    *this
     );
 
 
-    ERESULT     JsonOut_IsEnabled (
-        JSONOUT_DATA		*this
+    ERESULT         JsonOut_IsEnabled (
+        JSONOUT_DATA	*this
     );
     
  
