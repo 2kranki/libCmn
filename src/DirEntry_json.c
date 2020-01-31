@@ -47,12 +47,13 @@
 #include    <stdlib.h>
 #include    <string.h>
 #include    <AStr_internal.h>
+#include    <DateTime_internal.h>
 #include    <dec.h>
 #include    <JsonIn.h>
 #include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeHash.h>
-#include    <path_internal.h>
+#include    <Path_internal.h>
 #include    <utf8.h>
 
 
@@ -112,8 +113,30 @@ extern "C" {
 #endif
 
         eRc = JsonIn_SubObjectInHash(pParser, "FullPath");
-        pObject->pFullPath = path_ParseJsonObject(pParser);
-        JsonIn_SubObjectEnd(pParser);
+        if (!ERESULT_FAILED(eRc)) {
+            pObject->pFullPath = Path_ParseJsonObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+        }
+        eRc = JsonIn_SubObjectInHash(pParser, "ShortName");
+        if (!ERESULT_FAILED(eRc)) {
+            pObject->pShortName = AStr_ParseJsonObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+        }
+        eRc = JsonIn_SubObjectInHash(pParser, "CreationTime");
+        if (!ERESULT_FAILED(eRc)) {
+            pObject->pCreationTime = DateTime_ParseJsonObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+        }
+        eRc = JsonIn_SubObjectInHash(pParser, "ModifiedTime");
+        if (!ERESULT_FAILED(eRc)) {
+            pObject->pModifiedTime = DateTime_ParseJsonObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+        }
+        eRc = JsonIn_SubObjectInHash(pParser, "StatusChangeTime");
+        if (!ERESULT_FAILED(eRc)) {
+            pObject->pStatusChangeTime = DateTime_ParseJsonObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+        }
 
         // Return to caller.
     exit00:
@@ -280,9 +303,6 @@ extern "C" {
             JsonOut_Append_i64("fileSize", this->fileSize, pStr);
 #endif
             JsonOut_Append_Object("FullPath", this->pFullPath, pStr);
-            JsonOut_Append_Object("Drive", this->pDrive, pStr);
-            JsonOut_Append_Object("Dir", this->pDir, pStr);
-            JsonOut_Append_Object("FileName", this->pFileName, pStr);
             JsonOut_Append_Object("ShortName", this->pShortName, pStr);
             JsonOut_Append_Object("CreationTime", this->pCreationTime, pStr);
             JsonOut_Append_Object("ModifiedTime", this->pModifiedTime, pStr);

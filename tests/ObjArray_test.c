@@ -146,8 +146,8 @@ int         test_ObjArray_Test01(
     PATH_DATA       *pPath = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pPath = path_NewFromCurrentDirectory();
-    fprintf(stderr, "\tCurrent Directory = %s\n", path_getData(pPath));
+    pPath = Path_NewFromCurrentDirectory();
+    fprintf(stderr, "\tCurrent Directory = %s\n", Path_getData(pPath));
     obj_Release(pPath);
     pPath = OBJ_NIL;
     
@@ -399,8 +399,8 @@ int         test_ObjArray_Json01(
     PATH_DATA       *pPath = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pPath = path_NewFromCurrentDirectory();
-    fprintf(stderr, "\tCurrent Directory = %s\n", path_getData(pPath));
+    pPath = Path_NewFromCurrentDirectory();
+    fprintf(stderr, "\tCurrent Directory = %s\n", Path_getData(pPath));
     obj_Release(pPath);
     pPath = OBJ_NIL;
 

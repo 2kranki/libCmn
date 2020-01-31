@@ -53,7 +53,7 @@
 #include        <test_defs.h>
 #include        <AStr.h>
 #include        <number.h>
-#include        <path.h>
+#include        <Path.h>
 
 
 #ifndef         OBJTEST_H

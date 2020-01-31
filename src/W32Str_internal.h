@@ -44,7 +44,7 @@
 
 #include        <W32Str.h>
 #include        <array_internal.h>
-#include        <path.h>
+#include        <Path.h>
 
 #ifdef	__cplusplus
 extern "C" {

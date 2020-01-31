@@ -60,7 +60,7 @@
 
 
 //#define   DATETIME_IS_IMMUTABLE     1
-//#define   DATETIME_JSON_SUPPORT     1
+#define   DATETIME_JSON_SUPPORT     1
 //#define   DATETIME_SINGLETON        1
 
 
@@ -111,7 +111,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  DATETIME_SINGLETON
-    DATETIME_DATA *     DateTime_Shared (
+    DATETIME_DATA * DateTime_Shared (
         void
     );
 
@@ -127,7 +127,7 @@ extern "C" {
      released.
      @return    pointer to DateTime object if successful, otherwise OBJ_NIL.
      */
-    DATETIME_DATA *     DateTime_Alloc (
+    DATETIME_DATA * DateTime_Alloc (
         void
     );
     
@@ -137,17 +137,28 @@ extern "C" {
     );
     
     
-    DATETIME_DATA *     DateTime_New (
+    DATETIME_DATA * DateTime_New (
         void
     );
     
     
+    DATETIME_DATA * DateTime_NewCurrent (
+        void
+    );
+
+
+    DATETIME_DATA * DateTime_NewFromTimeT (
+        const
+        time_t          time
+    );
+
+
 #ifdef  DATETIME_JSON_SUPPORT
-    DATETIME_DATA *   DateTime_NewFromJsonString(
+    DATETIME_DATA * DateTime_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    DATETIME_DATA *   DateTime_NewFromJsonStringA(
+    DATETIME_DATA * DateTime_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -159,6 +170,76 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    int16_t         DateTime_getDay (
+        DATETIME_DATA   *this
+    );
+
+    bool            DateTime_setDay (
+        DATETIME_DATA   *this,
+        int16_t         pValue
+    );
+
+
+    int16_t         DateTime_getMonth (
+        DATETIME_DATA   *this
+    );
+
+    bool            DateTime_setMonth (
+        DATETIME_DATA   *this,
+        int16_t         pValue
+    );
+
+
+    int16_t         DateTime_getYear (
+        DATETIME_DATA   *this
+    );
+
+    bool            DateTime_setYear (
+        DATETIME_DATA   *this,
+        int16_t         pValue
+    );
+
+
+    int16_t         DateTime_getHours (
+        DATETIME_DATA   *this
+    );
+
+    bool            DateTime_setHours (
+        DATETIME_DATA   *this,
+        int16_t         pValue
+    );
+
+
+    int16_t         DateTime_getMins (
+        DATETIME_DATA   *this
+    );
+
+    bool            DateTime_setMins (
+        DATETIME_DATA   *this,
+        int16_t         pValue
+    );
+
+
+    int16_t         DateTime_getSecs (
+        DATETIME_DATA   *this
+    );
+
+    bool            DateTime_setSecs (
+        DATETIME_DATA   *this,
+        int16_t         pValue
+    );
+
+
+    int16_t         DateTime_getMilli (
+        DATETIME_DATA   *this
+    );
+
+    bool            DateTime_setMilli (
+        DATETIME_DATA   *this,
+        int16_t         pValue
+    );
+
+
 
 
     
@@ -166,26 +247,58 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     DateTime_Disable (
-        DATETIME_DATA		*this
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = DateTime_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another DATETIME object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         DateTime_Assign (
+        DATETIME_DATA   *this,
+        DATETIME_DATA   *pOther
     );
 
 
-    ERESULT     DateTime_Enable (
-        DATETIME_DATA		*this
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         DateTime_Compare (
+        DATETIME_DATA   *this,
+        DATETIME_DATA   *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        DateTime      *pCopy = DateTime_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a DATETIME object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    DATETIME_DATA * DateTime_Copy (
+        DATETIME_DATA   *this
     );
 
    
-    DATETIME_DATA *   DateTime_Init (
-        DATETIME_DATA     *this
+    DATETIME_DATA * DateTime_Init (
+        DATETIME_DATA   *this
     );
 
 
-    ERESULT     DateTime_IsEnabled (
-        DATETIME_DATA		*this
-    );
-    
- 
 #ifdef  DATETIME_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
@@ -200,7 +313,7 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     DateTime_ToJson(
+    ASTR_DATA *     DateTime_ToJson (
         DATETIME_DATA   *this
     );
 #endif
@@ -219,11 +332,44 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    DateTime_ToDebugString (
-        DATETIME_DATA     *this,
+        DATETIME_DATA   *this,
         int             indent
     );
     
     
+    /*!
+     Create a string that has the date formatted as MM/DD/YYYY_HH:MM:SS.III which
+     can then be used in a file path.
+     Example:
+     @code
+     ASTR_DATA      *pDesc = DateTime_ToDebugString(pObj,4);
+     @endcode
+     @param     this    DateTime object pointer
+     @return    If successful, an AStr object which must be released containing the
+     string, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *    DateTime_ToFileString (
+        DATETIME_DATA   *this
+    );
+
+
+    /*!
+     Create a string that has the date formatted as MM/DD/YYYY HH:MM:SS.III.
+     Example:
+     @code
+     ASTR_DATA      *pDesc = DateTime_ToDebugString(pObj,4);
+     @endcode
+     @param     this    DateTime object pointer
+     @return    If successful, an AStr object which must be released containing the
+                string, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *    DateTime_ToString (
+        DATETIME_DATA   *this
+    );
+
+
 
     
 #ifdef	__cplusplus

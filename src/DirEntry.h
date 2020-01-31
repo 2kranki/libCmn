@@ -54,8 +54,8 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <dateTime.h>
-#include        <path.h>
+#include        <DateTime.h>
+#include        <Path.h>
 
 
 #ifndef         DIRENTRY_H
@@ -203,32 +203,6 @@ extern "C" {
     );
 
 
-    /*! Property: Directory
-     */
-
-    PATH_DATA *     DirEntry_getDir (
-        DIRENTRY_DATA   *this
-    );
-
-    bool            DirEntry_setDir (
-        DIRENTRY_DATA   *this,
-        PATH_DATA       *pValue
-    );
-
-
-    /*! Property: Disk Drive
-     */
-
-    ASTR_DATA *     DirEntry_getDrive (
-        DIRENTRY_DATA   *this
-    );
-
-    bool            DirEntry_setDrive (
-        DIRENTRY_DATA   *this,
-        ASTR_DATA       *pValue
-    );
-
-
     /*! Property: Extended Attributes Size
      */
 
@@ -239,19 +213,6 @@ extern "C" {
     bool            DirEntry_setEASize (
         DIRENTRY_DATA   *this,
         uint32_t        value
-    );
-
-
-    /*! Property: File Name
-     */
-
-    PATH_DATA *     DirEntry_getFileName (
-        DIRENTRY_DATA   *this
-    );
-
-    bool            DirEntry_setFileName (
-        DIRENTRY_DATA   *this,
-        PATH_DATA       *pValue
     );
 
 

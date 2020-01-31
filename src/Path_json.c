@@ -78,9 +78,9 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     Path_ParseJsonFields(
+    ERESULT         Path_ParseJsonFields(
         JSONIN_DATA     *pParser,
-        PATH_DATA     *pObject
+        PATH_DATA       *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -97,19 +97,9 @@ extern "C" {
             goto exit00;
         }
 
-       
-#ifdef XYZZZY 
-        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
-        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
-
-        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
-        }
+        eRc = JsonIn_SubObjectInHash(pParser, "AStr");
+        eRc = AStr_ParseJsonFields(pParser, (ASTR_DATA *)pObject);
         JsonIn_SubObjectEnd(pParser);
-#endif
 
         // Return to caller.
     exit00:
@@ -232,9 +222,10 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     Path_ToJson(
-        PATH_DATA   *this
+        PATH_DATA       *this
     )
     {
+        ERESULT         eRc;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
@@ -247,8 +238,8 @@ extern "C" {
         ASTR_DATA *     (*pToJson)(
             OBJ_ID          objId
         );
+        #endif
         ASTR_DATA       *pWrkStr;
-#endif
 
 #ifdef NDEBUG
 #else
@@ -262,18 +253,17 @@ extern "C" {
         pStr = AStr_New();
         if (pStr) {
              AStr_AppendPrint(pStr,
-                              "{ \"objectType\":\"%s\", ",
+                              "{ \"objectType\":\"%s\", \n",
                               pInfo->pClassName
              );
-            
-#ifdef XYZZZY 
-            JsonOut_Append_i32("fileIndex", this->fileIndex, pStr);
-            JsonOut_Append_i64("offset", this->offset, pStr);
-            JsonOut_Append_u32("lineNo", this->lineNo, pStr);
-            JsonOut_Append_Object("errorStr", this->pErrorStr, pStr);
-#endif
 
-            AStr_AppendA(pStr, "}\n");
+            AStr_AppendA(pStr, "\"AStr\":{ ");
+            eRc = AStr_ToJsonFields(Path_getAStr(this), pStr);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pStr);
+                return OBJ_NIL;
+            }
+            AStr_AppendA(pStr, "} }\n");
         }
 
         return pStr;

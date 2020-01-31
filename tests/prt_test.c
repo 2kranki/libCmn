@@ -88,7 +88,7 @@ int         test_fbs_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pFilePath = path_NewA(pFilePathStr);
+    pFilePath = Path_NewA(pFilePathStr);
     XCTAssertFalse( (OBJ_NIL == pFilePath) );
     
     pObjO = fbso_Alloc();

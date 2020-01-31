@@ -54,7 +54,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <ioInterface.h>
-#include        <path.h>
+#include        <Path.h>
 
 
 #ifndef         FILEIO_H

@@ -131,7 +131,7 @@ int                 test_srcFile_General01 (
 {
     SRCFILE_DATA    *pObj = OBJ_NIL;
     ASTR_DATA       *pBuf = OBJ_NIL;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -167,7 +167,7 @@ int         test_srcFile_Buffer01(
     TOKEN_DATA      *pToken;
     int32_t         cls = 1;
     char            chr;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     uint16_t        colNo;
     uint32_t        lineNo;
     uint32_t        i;
@@ -237,7 +237,7 @@ int         test_srcFile_File(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPath = path_NewA(pFilePath);
+    pPath = Path_NewA(pFilePath);
     XCTAssertFalse( (OBJ_NIL == pPath) );
     
     pObj = srcFile_NewFromPath(pPath, 1, 4);
@@ -285,7 +285,7 @@ int         test_srcFile_Test02(
     uint16_t        colNo;
     uint32_t        lineNo;
     uint32_t        i;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     uint16_t        fileIndex;
     
     pBuf = AStr_NewA(pTest02);
@@ -474,7 +474,7 @@ int         test_srcFile_Test03(
     uint16_t        colNo;
     uint32_t        lineNo;
     uint32_t        i;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     uint16_t        fileIndex;
     
     pBuf = AStr_NewA("{oNe: +123}\n");

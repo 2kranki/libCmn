@@ -54,7 +54,7 @@
 #include        <lex.h>
 #include        <Node.h>
 #include        <ObjArray.h>
-#include        <path.h>
+#include        <Path.h>
 #include        <prt.h>
 #include        <SrcErrors.h>
 #include        <srcFiles.h>

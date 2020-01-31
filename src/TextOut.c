@@ -1222,7 +1222,7 @@ extern "C" {
             fclose(this->pFile);
         }
         
-        pFile = fopen(path_getData(pPath), "w+");
+        pFile = fopen(Path_getData(pPath), "w+");
         if (NULL == pFile) {
             DEBUG_BREAK();
             return ERESULT_OPEN_ERROR;
@@ -1267,7 +1267,7 @@ extern "C" {
             fclose(this->pFile);
         }
         
-        pFile = fopen(path_getData(pPath), "w");
+        pFile = fopen(Path_getData(pPath), "w");
         if (NULL == pFile) {
             DEBUG_BREAK();
             return ERESULT_OPEN_ERROR;

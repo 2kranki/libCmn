@@ -71,9 +71,9 @@ struct DateTime_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    uint64_t        time;           // UTC Date & Time encoded to binary
+    //                              // See DateTime_FromUInt64() & DateTime_ToUInt64()
+    //                              // for details.
 
 };
 #pragma pack(pop)

@@ -1462,7 +1462,7 @@ extern "C" {
                 return eRc;
         }
         
-        this->pPath = path_Copy(pPath);
+        this->pPath = Path_Copy(pPath);
         if (OBJ_NIL == this->pPath) {
             return ERESULT_OUT_OF_MEMORY;
         }
@@ -1929,7 +1929,7 @@ extern "C" {
                 return eRc;
         }
 
-        this->pPath = path_Copy(pPath);
+        this->pPath = Path_Copy(pPath);
         if (OBJ_NIL == this->pPath) {
             return ERESULT_OUT_OF_MEMORY;
         }

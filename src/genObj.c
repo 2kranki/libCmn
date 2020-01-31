@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <genObj_internal.h>
 #include        <ascii.h>
-#include        <dateTime.h>
+#include        <DateTime.h>
 #include        <str.h>
 #include        <szTbl.h>
 #include        <utf8.h>
@@ -152,8 +152,8 @@ extern "C" {
 #endif
         
         if (this->pDict) {
-            pTime = dateTime_NewCurrent();
-            pStr1 = dateTime_ToString(pTime);
+            pTime = DateTime_NewCurrent();
+            pStr1 = DateTime_ToString(pTime);
             if (OBJ_NIL == pStr1) {
                 return ERESULT_OUT_OF_MEMORY;
             }
@@ -2159,9 +2159,9 @@ extern "C" {
         }
         eRc = genObj_BuildDictTime(this);
         
-        pDateTime = dateTime_NewCurrent();
+        pDateTime = DateTime_NewCurrent();
         if (pDateTime) {
-            this->pDateTime = dateTime_ToString(pDateTime);
+            this->pDateTime = DateTime_ToString(pDateTime);
         }
         obj_Release(pDateTime);
         pDateTime = OBJ_NIL;

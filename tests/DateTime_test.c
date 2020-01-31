@@ -125,13 +125,13 @@ int             test_DateTime_Copy01 (
     DATETIME_DATA	    *pObj1 = OBJ_NIL;
     DATETIME_DATA	    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(DATETIME_JSON_SUPPORT) && defined(XYZZY)
+#if defined(DATETIME_JSON_SUPPORT)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = DateTime_New( );
+    pObj1 = DateTime_NewCurrent( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
@@ -147,8 +147,8 @@ int             test_DateTime_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_DATETIME);
         TINYTEST_TRUE( (fRc) );
-        //eRc = DateTime_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        eRc = DateTime_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -166,7 +166,7 @@ int             test_DateTime_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(DATETIME_JSON_SUPPORT) && defined(XYZZY)
+#if defined(DATETIME_JSON_SUPPORT)
         pStr = DateTime_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
@@ -222,10 +222,95 @@ int             test_DateTime_Test01 (
 
 
 
+int         test_DateTime_Current(
+    const
+    char        *pTestName
+)
+{
+    DATETIME_DATA       *pObj = OBJ_NIL;
+    DATETIME_DATA       *pObj2 = OBJ_NIL;
+    time_t              current;
+    struct tm           *pTime;
+    int16_t             work;
+    ASTR_DATA           *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    current = time(NULL);
+    pTime = gmtime(&current);
+    ++pTime->tm_mon;
+    pTime->tm_year += 1900;
+
+    pObj = DateTime_NewCurrent();
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pStr = DateTime_ToString(pObj);
+        fprintf(stderr, "\t%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        work = DateTime_getMonth(pObj);
+        XCTAssertTrue((work == pTime->tm_mon));
+        work = DateTime_getDay(pObj);
+        XCTAssertTrue((work == pTime->tm_mday));
+        work = DateTime_getYear(pObj);
+        XCTAssertTrue((work == pTime->tm_year));
+        work = DateTime_getHours(pObj);
+        XCTAssertTrue((work == pTime->tm_hour));
+        work = DateTime_getMins(pObj);
+        XCTAssertTrue((work == pTime->tm_min));
+        work = DateTime_getSecs(pObj);
+        XCTAssertTrue((work == pTime->tm_sec));
+        work = DateTime_getMilli(pObj);
+        XCTAssertTrue((work == 0));
+
+        //obj_Release(pObj);
+        //pObj = OBJ_NIL;
+    }
+
+    pObj2 = DateTime_NewFromTimeT(current);
+    XCTAssertFalse( (OBJ_NIL == pObj2) );
+    if (pObj2) {
+
+        pStr = DateTime_ToString(pObj2);
+        fprintf(stderr, "\t%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        work = DateTime_getMonth(pObj);
+        //fprintf(stderr, "\tMonth: %d %d\n", work, DateTime_getMonth(pObj2));
+        XCTAssertTrue((work == DateTime_getMonth(pObj2)));
+        work = DateTime_getDay(pObj);
+        XCTAssertTrue((work == DateTime_getDay(pObj2)));
+        work = DateTime_getYear(pObj);
+        XCTAssertTrue((work == DateTime_getYear(pObj2)));
+        work = DateTime_getHours(pObj);
+        XCTAssertTrue((work == DateTime_getHours(pObj2)));
+        work = DateTime_getMins(pObj);
+        XCTAssertTrue((work == DateTime_getMins(pObj2)));
+        work = DateTime_getSecs(pObj);
+        XCTAssertTrue((work == DateTime_getSecs(pObj2)));
+        work = DateTime_getMilli(pObj2);
+        XCTAssertTrue((work == 0));
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+    }
+
+    obj_Release(pObj);
+    pObj = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_DateTime);
+    TINYTEST_ADD_TEST(test_DateTime_Current,setUp,tearDown);
     TINYTEST_ADD_TEST(test_DateTime_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_DateTime_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_DateTime_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_DateTime_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

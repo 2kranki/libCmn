@@ -753,7 +753,7 @@ extern "C" {
         }
 #endif
         
-        pFile = fopen(path_getData(pPath), "r");
+        pFile = fopen(Path_getData(pPath), "r");
         if (NULL == pFile) {
             return ERESULT_FILE_NOT_FOUND;
         }
@@ -2539,7 +2539,7 @@ extern "C" {
         pBuffer = W32Str_CStringA(this, &size);
         pChr = pBuffer;
 
-        pFile = fopen(path_getData(pPath), "wb");
+        pFile = fopen(Path_getData(pPath), "wb");
         if (NULL == pFile) {
             return ERESULT_FILE_NOT_FOUND;
         }

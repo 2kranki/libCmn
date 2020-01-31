@@ -116,7 +116,7 @@ int         test_pplex1_Input01(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     int32_t         cls;
     
     pBuf = AStr_NewA(pTestInput01);

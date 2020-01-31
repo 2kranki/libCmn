@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/26/2020  3:30:43.000)
+# ( 1/30/2020 14:45:42.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -159,6 +159,36 @@ $(OBJDIR)/CsvFile.o: $(SRCDIR)/CsvFile.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_i
 OBJS += $(OBJDIR)/CsvFile_object.o
 
 $(OBJDIR)/CsvFile_object.o: $(SRCDIR)/CsvFile_object.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/DateTime.o
+
+$(OBJDIR)/DateTime.o: $(SRCDIR)/DateTime.c $(SRCDIR)/DateTime.h $(SRCDIR)/DateTime_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/DateTime_json.o
+
+$(OBJDIR)/DateTime_json.o: $(SRCDIR)/DateTime_json.c $(SRCDIR)/DateTime.h $(SRCDIR)/DateTime_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/DateTime_object.o
+
+$(OBJDIR)/DateTime_object.o: $(SRCDIR)/DateTime_object.c $(SRCDIR)/DateTime.h $(SRCDIR)/DateTime_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/DirEntry.o
+
+$(OBJDIR)/DirEntry.o: $(SRCDIR)/DirEntry.c $(SRCDIR)/DirEntry.h $(SRCDIR)/DirEntry_internal.h $(SRCDIR)/dateTime.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/DirEntry_json.o
+
+$(OBJDIR)/DirEntry_json.o: $(SRCDIR)/DirEntry_json.c $(SRCDIR)/DirEntry.h $(SRCDIR)/DirEntry_internal.h $(SRCDIR)/dateTime.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/DirEntry_object.o
+
+$(OBJDIR)/DirEntry_object.o: $(SRCDIR)/DirEntry_object.c $(SRCDIR)/DirEntry.h $(SRCDIR)/DirEntry_internal.h $(SRCDIR)/dateTime.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Ebcdic.o
@@ -459,6 +489,21 @@ $(OBJDIR)/Parser.o: $(SRCDIR)/Parser.c $(SRCDIR)/Parser.h $(SRCDIR)/Parser_inter
 OBJS += $(OBJDIR)/Parser_object.o
 
 $(OBJDIR)/Parser_object.o: $(SRCDIR)/Parser_object.c $(SRCDIR)/Parser.h $(SRCDIR)/Parser_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Path.o
+
+$(OBJDIR)/Path.o: $(SRCDIR)/Path.c $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Path_json.o
+
+$(OBJDIR)/Path_json.o: $(SRCDIR)/Path_json.c $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Path_object.o
+
+$(OBJDIR)/Path_object.o: $(SRCDIR)/Path_object.c $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SRecords.o
@@ -846,16 +891,6 @@ OBJS += $(OBJDIR)/crc_object.o
 $(OBJDIR)/crc_object.o: $(SRCDIR)/crc_object.c $(SRCDIR)/crc.h $(SRCDIR)/crc_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/dateTime.o
-
-$(OBJDIR)/dateTime.o: $(SRCDIR)/dateTime.c $(SRCDIR)/dateTime.h $(SRCDIR)/dateTime_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/dateTime_object.o
-
-$(OBJDIR)/dateTime_object.o: $(SRCDIR)/dateTime_object.c $(SRCDIR)/dateTime.h $(SRCDIR)/dateTime_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/dbField.o
 
 $(OBJDIR)/dbField.o: $(SRCDIR)/dbField.c $(SRCDIR)/dbField.h $(SRCDIR)/dbField_internal.h $(SRCDIR)/cmn_defs.h 
@@ -894,16 +929,6 @@ $(OBJDIR)/dec_object.o: $(SRCDIR)/dec_object.c $(SRCDIR)/dec.h $(SRCDIR)/dec_int
 OBJS += $(OBJDIR)/dir.o
 
 $(OBJDIR)/dir.o: $(SRCDIR)/dir.c $(SRCDIR)/dir.h $(SRCDIR)/dirEntry.h $(SRCDIR)/dir_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/dirEntry.o
-
-$(OBJDIR)/dirEntry.o: $(SRCDIR)/dirEntry.c $(SRCDIR)/dirEntry.h $(SRCDIR)/dirEntry_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/dirEntry_object.o
-
-$(OBJDIR)/dirEntry_object.o: $(SRCDIR)/dirEntry_object.c $(SRCDIR)/dirEntry.h $(SRCDIR)/dirEntry_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/dir_object.o
@@ -1254,16 +1279,6 @@ $(OBJDIR)/objMatrix.o: $(SRCDIR)/objMatrix.c $(SRCDIR)/objMatrix.h $(SRCDIR)/obj
 OBJS += $(OBJDIR)/objMatrix_object.o
 
 $(OBJDIR)/objMatrix_object.o: $(SRCDIR)/objMatrix_object.c $(SRCDIR)/objMatrix.h $(SRCDIR)/objMatrix_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/path.o
-
-$(OBJDIR)/path.o: $(SRCDIR)/path.c $(SRCDIR)/path.h $(SRCDIR)/path_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/path_object.o
-
-$(OBJDIR)/path_object.o: $(SRCDIR)/path_object.c $(SRCDIR)/path.h $(SRCDIR)/path_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/plist.o
@@ -1747,6 +1762,18 @@ CsvFile_test: $(TEST_SRC)/CsvFile_test.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += DateTime_test
+
+DateTime_test: $(TEST_SRC)/DateTime_test.c $(SRCDIR)/DateTime.h $(SRCDIR)/DateTime_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += DirEntry_test
+
+DirEntry_test: $(TEST_SRC)/DirEntry_test.c $(SRCDIR)/DirEntry.h $(SRCDIR)/DirEntry_internal.h $(SRCDIR)/dateTime.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += Ebcdic_test
 
 Ebcdic_test: $(TEST_SRC)/Ebcdic_test.c $(SRCDIR)/Ebcdic.h $(SRCDIR)/Ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1882,6 +1909,12 @@ ObjVLink_test: $(TEST_SRC)/ObjVLink_test.c $(SRCDIR)/ObjVLink.h $(SRCDIR)/ObjVLi
 TESTS += Parser_test
 
 Parser_test: $(TEST_SRC)/Parser_test.c $(SRCDIR)/Parser.h $(SRCDIR)/Parser_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Path_test
+
+Path_test: $(TEST_SRC)/Path_test.c $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2083,12 +2116,6 @@ crc_test: $(TEST_SRC)/crc_test.c $(SRCDIR)/crc.h $(SRCDIR)/crc_internal.h $(SRCD
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += dateTime_test
-
-dateTime_test: $(TEST_SRC)/dateTime_test.c $(SRCDIR)/dateTime.h $(SRCDIR)/dateTime_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += dbField_test
 
 dbField_test: $(TEST_SRC)/dbField_test.c $(SRCDIR)/dbField.h $(SRCDIR)/dbField_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2104,12 +2131,6 @@ dbf_test: $(TEST_SRC)/dbf_test.c $(SRCDIR)/dbf.h $(SRCDIR)/dbf_internal.h $(SRCD
 TESTS += dec_test
 
 dec_test: $(TEST_SRC)/dec_test.c $(SRCDIR)/dec.h $(SRCDIR)/dec_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += dirEntry_test
-
-dirEntry_test: $(TEST_SRC)/dirEntry_test.c $(SRCDIR)/dirEntry.h $(SRCDIR)/dirEntry_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2296,12 +2317,6 @@ objHash_test: $(TEST_SRC)/objHash_test.c $(SRCDIR)/objHash.h $(SRCDIR)/objHash_i
 TESTS += objMatrix_test
 
 objMatrix_test: $(TEST_SRC)/objMatrix_test.c $(SRCDIR)/objMatrix.h $(SRCDIR)/objMatrix_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += path_test
-
-path_test: $(TEST_SRC)/path_test.c $(SRCDIR)/path.h $(SRCDIR)/path_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

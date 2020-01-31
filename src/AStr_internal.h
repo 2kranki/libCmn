@@ -45,7 +45,7 @@
 #include    <AStr.h>
 #include    <file.h>
 #include    <JsonIn.h>
-#include    <path.h>
+#include    <Path.h>
 #include    <str.h>
 #include    <ObjArray.h>
 #include    <array_internal.h>
@@ -104,6 +104,21 @@ struct AStr_data_s	{
      */
     ASTR_DATA *     AStr_ParseJsonObject(
         JSONIN_DATA     *pParser
+    );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         AStr_ToJsonFields(
+        ASTR_DATA       *this,
+        ASTR_DATA       *pStr
+
     );
 #endif
     

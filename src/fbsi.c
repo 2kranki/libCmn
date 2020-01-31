@@ -431,7 +431,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        pFilePath = path_CStringA(this->pPath);
+        pFilePath = Path_CStringA(this->pPath);
         if (pFilePath == NULL) {
             obj_Release(this);
             return OBJ_NIL;

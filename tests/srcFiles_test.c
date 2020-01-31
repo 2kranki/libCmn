@@ -118,7 +118,7 @@ int         test_srcFiles_TestPath01(
     ASTR_DATA       *pStr = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
 
     pObj = srcFiles_New( );
@@ -175,7 +175,7 @@ int         test_srcFiles_TestAStr01(
     char            *pStrA = "label opcode\n";
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
     
     pObj = srcFiles_New( );

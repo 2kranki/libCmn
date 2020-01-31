@@ -570,7 +570,7 @@ int         test_cmdutl_ParseCommandLine04(
         XCTAssertTrue( (2 == options.fVerbose) );
         XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
         XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
-        XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy")) );
+        XCTAssertTrue( (0 == strcmp(Path_getData(options.pFilePath), "xyzzy")) );
         obj_Release(options.pFilePath);
         options.pFilePath = OBJ_NIL;
 
@@ -591,7 +591,7 @@ int         test_cmdutl_ParseCommandLine04(
         XCTAssertTrue( (2 == options.fVerbose) );
         XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
         XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
-        XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy2")) );
+        XCTAssertTrue( (0 == strcmp(Path_getData(options.pFilePath), "xyzzy2")) );
         obj_Release(options.pFilePath);
         options.pFilePath = OBJ_NIL;
         
@@ -686,7 +686,7 @@ int         test_cmdutl_ParseCommandLine05(
         XCTAssertTrue( (2 == options.fVerbose) );
         XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
         XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
-        XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy")) );
+        XCTAssertTrue( (0 == strcmp(Path_getData(options.pFilePath), "xyzzy")) );
         obj_Release(options.pFilePath);
         options.pFilePath = OBJ_NIL;
         
@@ -712,7 +712,7 @@ int         test_cmdutl_ParseCommandLine05(
         options.pDefine = OBJ_NIL;
         XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
         XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
-        XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy2")) );
+        XCTAssertTrue( (0 == strcmp(Path_getData(options.pFilePath), "xyzzy2")) );
         obj_Release(options.pFilePath);
         options.pFilePath = OBJ_NIL;
         
@@ -807,7 +807,7 @@ int         test_cmdutl_ParseCommandLine06(
         XCTAssertTrue( (2 == options.fVerbose) );
         XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
         XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
-        XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy")) );
+        XCTAssertTrue( (0 == strcmp(Path_getData(options.pFilePath), "xyzzy")) );
         obj_Release(options.pFilePath);
         options.pFilePath = OBJ_NIL;
         
@@ -833,7 +833,7 @@ int         test_cmdutl_ParseCommandLine06(
         options.pDefine = OBJ_NIL;
         XCTAssertFalse( (OBJ_NIL == options.pFilePath) );
         XCTAssertTrue( (obj_IsKindOf(options.pFilePath, OBJ_IDENT_PATH)) );
-        XCTAssertTrue( (0 == strcmp(path_getData(options.pFilePath), "xyzzy2")) );
+        XCTAssertTrue( (0 == strcmp(Path_getData(options.pFilePath), "xyzzy2")) );
         obj_Release(options.pFilePath);
         options.pFilePath = OBJ_NIL;
         
@@ -881,7 +881,7 @@ int         test_cmdutl_Input01(
     
     pStr = AStr_NewA(pTestInput01);
     XCTAssertFalse( (OBJ_NIL == pStr) );
-    pPath = path_NewA("abc");
+    pPath = Path_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pPath) );
     
     //pObj = cmdutl_NewAStr(pStr, pPath, 4);

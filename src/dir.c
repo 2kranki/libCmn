@@ -558,7 +558,7 @@ extern "C" {
         }
 #endif
         
-        eRc = path_IsExisting(pPath);
+        eRc = Path_IsExisting(pPath);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             return ERESULT_PATH_ALREADY_EXISTS;
         }
@@ -626,13 +626,13 @@ extern "C" {
         }
 #endif
 
-        eRc = path_IsDir(pPath);
+        eRc = Path_IsDir(pPath);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return ERESULT_PATH_NOT_FOUND;
         }
         
-        eRc = path_SplitPath(pPath, &pDrive, &pDir, OBJ_NIL);
+        eRc = Path_SplitPath(pPath, &pDrive, &pDir, OBJ_NIL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return ERESULT_PATH_NOT_FOUND;
@@ -661,7 +661,7 @@ extern "C" {
                 continue;
             }
 
-            pFileName = path_NewA(pDirent->d_name);
+            pFileName = Path_NewA(pDirent->d_name);
             if (OBJ_NIL == pFileName) {
                 DEBUG_BREAK();
                 closedir(pDirectory);

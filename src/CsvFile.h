@@ -88,7 +88,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <ObjArray.h>
-#include        <path.h>
+#include        <Path.h>
 
 
 #ifndef         CSVFILE_H

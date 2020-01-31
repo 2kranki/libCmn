@@ -62,16 +62,325 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            DateTime_task_body (
-        void            *pData
+    //****************************************************************
+    //            Convert from Gregorian Date to Julian
+    //****************************************************************
+
+    ERESULT         DateTime_FromGregorian(
+        int16_t         iYear,
+        int16_t         iMonth,
+        int16_t         iDay,
+        int16_t            *piJulianDay
     )
     {
-        //DATETIME_DATA  *this = pData;
-        
+        ERESULT            eRc = ERESULT_SUCCESS;
+        long            T1;
+        int32_t            Work = 0;
+
+        // Do initialization.
+        if( piJulianDay )
+            *piJulianDay = 0;
+        if( (iDay < 1) || (iDay > 31) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+        if( (iMonth < 1) || (iMonth > 12) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+
+        // Do the conversion.
+        T1 = (iMonth - 14L) / 12L;
+        Work = (int32_t)((iDay - 32075L)
+                + ((1461L * (iYear + 4800 + T1)) / 4L)
+                + (367L * (iMonth - 2L - T1 * 12L) / 12L)
+                - (3L * ((iYear + 4900L + T1) / 100L) / 4L));
+
+        // Return to caller.
+        eRc = ERESULT_SUCCESS;
+    Exit00:
+        if( piJulianDay )
+            *piJulianDay = Work;
+        return eRc;
     }
+
+
+
+
+    //****************************************************************
+    //            Convert from HH:MM:SS to Milliseconds
+    //****************************************************************
+
+    ERESULT         DateTime_FromHHMMSS(
+        int16_t         Hour,
+        int16_t         Minute,
+        int16_t         Second,
+        int16_t            Milli,
+        int32_t            *pMilSec
+    )
+    {
+        ERESULT            eRc = ERESULT_SUCCESS;
+        int32_t            Work = 0;
+
+        // Do initialization.
+        if( (Hour < 0) || (Hour > 24) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+        if( (Minute < 0) || (Minute > 59) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+        if( (Second < 0) || (Second > 59) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+        if( (Milli < 0) || (Milli > 999) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+
+        // Do the conversion.
+        Work += 60 * Hour;
+        Work += Minute;
+        Work *= 60;
+        Work += Second;
+        Work *= 1000;
+        Work += Milli;
+
+        // Return to caller.
+        eRc = ERESULT_SUCCESS;
+    Exit00:
+        if( pMilSec )
+            *pMilSec = Work;
+        return eRc;
+    }
+
+
+
+
+    //****************************************************************
+    //            Convert from Julian Date to Gregorian
+    //****************************************************************
+
+    ERESULT         DateTime_ToGregorian(
+        int32_t         JulNum,
+        int16_t         *pDay,
+        int16_t         *pMonth,
+        int16_t         *pYear
+    )
+    {
+        ERESULT            eRc = ERESULT_SUCCESS;
+        long            t1;
+        long            t2;
+        long            mo;
+        long            yr;
+        long            wrk;
+
+        // Do initialization.
+
+        // Do the conversion.
+#ifdef  XXX
+        t1 = JulDay + 68569L;
+        t2 = (4L * t1) / 146097L;
+        t1 = t1 - (((146097L * t2) + 3L) / 4L);
+        yr = (4000L * (t1 + 1L)) / 1461001L;
+        t1 = t1 - ((1461L * yr) / 4L) + 31L;
+        mo = (80L * t1) / 2447L;
+        *pDay = (int16_t)(t1 - ((2447L * mo) / 80L));
+        t1 = mo / 11L;
+        *pMonth = (int16_t)(mo + 2L - (12L * t1));
+        *pYear = (int16_t)((100L * (t2 - 49L)) + yr + t1);
+#else
+        t1 = JulNum + 68569L;
+        t2 = 4L * t1 / 146097L;
+        t1 = t1 - (146097L * t2 + 3L) / 4L;
+        yr = 4000L * (t1 + 1L) / 1461001L;
+        t1 = t1 - 1461L * yr / 4L + 31L;
+        mo = 80L * t1 / 2447L;
+        if( pDay ) {
+            wrk  = t1 - ((2447L * mo) / 80L);
+            *pDay = (int16_t)wrk;
+        }
+        t1 = mo / 11L;
+        if( pMonth ) {
+            wrk    = mo + 2L - 12L * t1;
+            *pMonth = (int16_t)wrk;
+        }
+        if( pYear ) {
+            wrk   = 100L * (t2 - 49L) + yr + t1;
+            *pYear = (int16_t)wrk;
+        }
 #endif
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+
+    //****************************************************************
+    //            Convert from Milliseconds to HH:MM:SS
+    //****************************************************************
+
+    ERESULT         DateTime_ToHHMMSS(
+        int32_t         milSec,
+        int16_t         *Hour,
+        int16_t         *Minute,
+        int16_t         *Second,
+        int16_t            *Milli
+    )
+    {
+        ERESULT            eRc = ERESULT_SUCCESS;
+        int32_t         Work = milSec;
+
+        // Do initialization.
+
+        // Do the conversion.
+        if( Milli )
+            *Milli = (int16_t)(Work % 1000);
+        Work /= 1000;
+        if( Second )
+            *Second = (int16_t)(Work % 60);
+        Work /= 60;
+        if( Minute )
+            *Minute = (int16_t)(Work % 60);
+        Work /= 60;
+        if( Hour )
+            *Hour = (int16_t)(Work % 24);
+
+        // Return to caller.
+        return( eRc );
+    }
+
+
+
+    //****************************************************************
+    //                  Convert to/from uint64
+    //****************************************************************
+
+    ERESULT         DateTime_FromUInt64(
+        uint64_t        time,
+        int16_t         *pYear,
+        int16_t         *pMonth,
+        int16_t         *pDay,
+        int16_t         *pHours,
+        int16_t         *pMins,
+        int16_t         *pSecs,
+        int16_t            *pMilli
+    )
+    {
+        ERESULT            eRc = ERESULT_SUCCESS;
+        uint32_t        work1 = 0;
+        uint32_t        work2 = 0;
+
+        // Do initialization.
+        work1 = (uint32_t)(time / 1000000000ULL);
+        work2 = (uint32_t)(time % 1000000000ULL);
+
+        // Do the conversion.
+        if( pDay ) {
+            *pDay = (int16_t)(work1 % 100);
+        }
+        work1 /= 100;
+        if( pMonth ) {
+            *pMonth = (int16_t)(work1 % 100);
+        }
+        work1 /= 100;
+        if( pYear ) {
+            *pYear = (int16_t)(work1);
+        }
+        if( pMilli ) {
+            *pMilli = (int16_t)(work2 % 1000);
+        }
+        work2 /= 1000;
+        if( pSecs ) {
+            *pSecs = (int16_t)(work2 % 60);
+        }
+        work2 /= 60;
+        if( pMins ) {
+            *pMins = (int16_t)(work2 % 60);
+        }
+        work2 /= 60;
+        if( pHours ) {
+            *pHours = (int16_t)(work2 % 24);
+        }
+
+        // Return to caller.
+        eRc = ERESULT_SUCCESS;
+    //Exit00:
+        return eRc;
+    }
+
+
+
+    ERESULT         DateTime_ToUInt64(
+        int16_t         year,
+        int16_t         month,
+        int16_t         day,
+        int16_t         hours,
+        int16_t         mins,
+        int16_t         secs,
+        int16_t            milli,
+        uint64_t        *pTime
+    )
+    {
+        ERESULT            eRc = ERESULT_SUCCESS;
+        uint32_t        work1 = 0;
+        uint32_t        work2 = 0;
+        uint64_t        work = 0;
+
+        // Do initialization.
+        if( (month < 1) || (month > 12) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+        if( (day < 1) || (day > 31) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+        if( (hours < 0) || (hours > 24) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+        if( (mins < 0) || (mins > 59) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+        if( (secs < 0) || (secs > 59) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+        if( (milli < 0) || (milli > 999) ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+
+        // Do the conversion.
+        work1 += year;
+        work1 *= 100;
+        work1 += month;
+        work1 *= 100;
+        work1 += day;
+        work2 += 60 * hours;
+        work2 += mins;
+        work2 *= 60;
+        work2 += secs;
+        work2 *= 1000;
+        work2 += milli;
+
+        // Return to caller.
+        work = (work1 * 1000000000ULL) + work2;
+        eRc = ERESULT_SUCCESS;
+    Exit00:
+        if( pTime )
+            *pTime = work;
+        return eRc;
+    }
+
+
+
 
 
 
@@ -115,6 +424,73 @@ extern "C" {
     }
 
 
+    DATETIME_DATA *     DateTime_NewCurrent(
+    )
+    {
+        DATETIME_DATA       *this;
+        time_t              current;
+        struct tm           *pTime;
+        ERESULT             eRc;
+
+        this = DateTime_Alloc( );
+        if (this) {
+            this = DateTime_Init(this);
+            if (this) {
+                current = time(NULL);
+                pTime = gmtime(&current);
+                pTime->tm_year += 1900;
+                ++pTime->tm_mon;
+                eRc =   DateTime_ToUInt64(
+                                    pTime->tm_year,
+                                    pTime->tm_mon,
+                                    pTime->tm_mday,
+                                    pTime->tm_hour,
+                                    pTime->tm_min,
+                                    pTime->tm_sec,
+                                    0,
+                                    &this->time
+                        );
+            }
+        }
+        return this;
+    }
+
+
+
+    DATETIME_DATA *     DateTime_NewFromTimeT(
+        const
+        time_t              time
+    )
+    {
+        DATETIME_DATA       *this;
+        struct tm           *pTime;
+        ERESULT             eRc;
+        struct tm           tmWork;
+
+        this = DateTime_Alloc( );
+        if (this) {
+            this = DateTime_Init(this);
+            if (this) {
+                pTime = gmtime_r(&time, &tmWork);
+                pTime->tm_year += 1900;
+                ++pTime->tm_mon;
+                eRc =   DateTime_ToUInt64(
+                                          pTime->tm_year,
+                                          pTime->tm_mon,
+                                          pTime->tm_mday,
+                                          pTime->tm_hour,
+                                          pTime->tm_min,
+                                          pTime->tm_sec,
+                                          0,
+                                          &this->time
+                        );
+            }
+        }
+        return this;
+    }
+
+
+
 
     
 
@@ -122,46 +498,547 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    //---------------------------------------------------------------
-    //                          P r i o r i t y
-    //---------------------------------------------------------------
-    
-    uint16_t        DateTime_getPriority (
-        DATETIME_DATA     *this
-    )
-    {
+        int16_t         DateTime_getDay(
+            DATETIME_DATA   *this
+        )
+        {
+            ERESULT         eRc;
+            int16_t         value = 0;
 
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!DateTime_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return 0;
+            }
+    #endif
+
+            eRc = DateTime_FromUInt64(this->time, NULL, NULL, &value, NULL, NULL, NULL, NULL);
+
+            return value;
         }
-#endif
-
-        //return this->priority;
-        return 0;
-    }
 
 
-    bool            DateTime_setPriority (
-        DATETIME_DATA     *this,
-        uint16_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!DateTime_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
+        bool            DateTime_setDay(
+            DATETIME_DATA   *this,
+            int16_t         value
+        )
+        {
+            ERESULT         eRc;
+            int16_t         year;
+            int16_t         month;
+            int16_t         day;
+            int16_t         hour;
+            int16_t         minute;
+            int16_t         second;
+            int16_t            milli;
+
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return false;
+            }
+            if ((value < 1) || (value > 31)) {
+                DEBUG_BREAK();
+                return false;
+            }
+    #endif
+
+            eRc =   DateTime_FromUInt64(
+                                        this->time,
+                                        &year,
+                                        &month,
+                                        &day,
+                                        &hour,
+                                        &minute,
+                                        &second,
+                                        &milli
+                    );
+            day = value;
+            eRc =   DateTime_ToUInt64(
+                                        year,
+                                        month,
+                                        day,
+                                        hour,
+                                        minute,
+                                        second,
+                                        milli,
+                                        &this->time
+                    );
+
+            return true;
         }
-#endif
 
-        //this->priority = value;
 
-        return true;
-    }
+
+        int16_t         DateTime_getMonth(
+            DATETIME_DATA   *this
+        )
+        {
+            ERESULT         eRc;
+            int16_t         value = 0;
+
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return 0;
+            }
+    #endif
+
+            eRc = DateTime_FromUInt64(this->time, NULL, &value, NULL, NULL, NULL, NULL, NULL);
+
+            return value;
+        }
+
+
+        bool            DateTime_setMonth(
+            DATETIME_DATA   *this,
+            int16_t         value
+        )
+        {
+            ERESULT         eRc;
+            int16_t         year;
+            int16_t         month;
+            int16_t         day;
+            int16_t         hour;
+            int16_t         minute;
+            int16_t         second;
+            int16_t            milli;
+
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return false;
+            }
+            if ((value < 1) || (value > 12)) {
+                DEBUG_BREAK();
+                return false;
+            }
+    #endif
+
+            eRc =   DateTime_FromUInt64(
+                                        this->time,
+                                        &year,
+                                        &month,
+                                        &day,
+                                        &hour,
+                                        &minute,
+                                        &second,
+                                        &milli
+                                        );
+            month = value;
+            eRc =   DateTime_ToUInt64(
+                                      year,
+                                      month,
+                                      day,
+                                      hour,
+                                      minute,
+                                      second,
+                                      milli,
+                                      &this->time
+                                      );
+
+            return true;
+        }
+
+
+
+        int16_t         DateTime_getYear(
+            DATETIME_DATA   *this
+        )
+        {
+            ERESULT         eRc;
+            int16_t         value = 0;
+
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return 0;
+            }
+    #endif
+
+            eRc = DateTime_FromUInt64(this->time, &value, NULL, NULL, NULL, NULL, NULL, NULL);
+
+            return value;
+        }
+
+
+        bool            DateTime_setYear(
+            DATETIME_DATA   *this,
+            int16_t         value
+        )
+        {
+            ERESULT         eRc;
+            int16_t         year;
+            int16_t         month;
+            int16_t         day;
+            int16_t         hour;
+            int16_t         minute;
+            int16_t         second;
+            int16_t            milli;
+
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return false;
+            }
+    #endif
+
+            eRc =   DateTime_FromUInt64(
+                                        this->time,
+                                        &year,
+                                        &month,
+                                        &day,
+                                        &hour,
+                                        &minute,
+                                        &second,
+                                        &milli
+                                        );
+            year = value;
+            eRc =   DateTime_ToUInt64(
+                                      year,
+                                      month,
+                                      day,
+                                      hour,
+                                      minute,
+                                      second,
+                                      milli,
+                                      &this->time
+                                      );
+
+            return true;
+        }
+
+
+
+        int16_t         DateTime_getHours(
+            DATETIME_DATA   *this
+        )
+        {
+            ERESULT         eRc;
+            int16_t         value = 0;
+
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return 0;
+            }
+    #endif
+
+            eRc = DateTime_FromUInt64(this->time, NULL, NULL, NULL, &value, NULL, NULL, NULL);
+
+            return value;
+        }
+
+
+        bool            DateTime_setHours(
+            DATETIME_DATA   *this,
+            int16_t         value
+        )
+        {
+            ERESULT         eRc;
+            int16_t         year;
+            int16_t         month;
+            int16_t         day;
+            int16_t         hour;
+            int16_t         minute;
+            int16_t         second;
+            int16_t            milli;
+
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return false;
+            }
+    #endif
+
+            eRc =   DateTime_FromUInt64(
+                                        this->time,
+                                        &year,
+                                        &month,
+                                        &day,
+                                        &hour,
+                                        &minute,
+                                        &second,
+                                        &milli
+                                        );
+            hour = value;
+            eRc =   DateTime_ToUInt64(
+                                      year,
+                                      month,
+                                      day,
+                                      hour,
+                                      minute,
+                                      second,
+                                      milli,
+                                      &this->time
+                                      );
+
+            return true;
+        }
+
+
+
+        int16_t         DateTime_getMins(
+            DATETIME_DATA   *this
+        )
+        {
+            ERESULT         eRc;
+            int16_t         value = 0;
+
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return 0;
+            }
+    #endif
+
+            eRc = DateTime_FromUInt64(this->time, NULL, NULL, NULL, NULL, &value, NULL, NULL);
+
+            return value;
+        }
+
+
+        bool            DateTime_setMins(
+            DATETIME_DATA   *this,
+            int16_t         value
+        )
+        {
+            ERESULT         eRc;
+            int16_t         year;
+            int16_t         month;
+            int16_t         day;
+            int16_t         hour;
+            int16_t         minute;
+            int16_t         second;
+            int16_t            milli;
+
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return false;
+            }
+    #endif
+
+            eRc =   DateTime_FromUInt64(
+                                        this->time,
+                                        &year,
+                                        &month,
+                                        &day,
+                                        &hour,
+                                        &minute,
+                                        &second,
+                                        &milli
+                                        );
+            minute = value;
+            eRc =   DateTime_ToUInt64(
+                                      year,
+                                      month,
+                                      day,
+                                      hour,
+                                      minute,
+                                      second,
+                                      milli,
+                                      &this->time
+                                      );
+
+            return true;
+        }
+
+
+
+        int16_t         DateTime_getSecs(
+            DATETIME_DATA   *this
+        )
+        {
+            ERESULT         eRc;
+            int16_t         value = 0;
+
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return 0;
+            }
+    #endif
+
+            eRc = DateTime_FromUInt64(this->time, NULL, NULL, NULL, NULL, NULL, &value, NULL);
+
+            return value;
+        }
+
+
+        bool            DateTime_setSecs(
+            DATETIME_DATA   *this,
+            int16_t         value
+        )
+        {
+            ERESULT         eRc;
+            int16_t         year;
+            int16_t         month;
+            int16_t         day;
+            int16_t         hour;
+            int16_t         minute;
+            int16_t         second;
+            int16_t            milli;
+
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return false;
+            }
+    #endif
+
+            eRc =   DateTime_FromUInt64(
+                                        this->time,
+                                        &year,
+                                        &month,
+                                        &day,
+                                        &hour,
+                                        &minute,
+                                        &second,
+                                        &milli
+                                        );
+            day = value;
+            eRc =   DateTime_ToUInt64(
+                                      year,
+                                      month,
+                                      day,
+                                      hour,
+                                      minute,
+                                      second,
+                                      milli,
+                                      &this->time
+                                      );
+
+            return true;
+        }
+
+
+
+        int16_t         DateTime_getMilli(
+            DATETIME_DATA   *this
+        )
+        {
+            ERESULT         eRc;
+            int16_t         value = 0;
+
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return 0;
+            }
+    #endif
+
+            eRc = DateTime_FromUInt64(this->time, NULL, NULL, NULL, NULL, NULL, NULL, &value);
+
+            return value;
+        }
+
+
+        bool            DateTime_setMilli(
+            DATETIME_DATA   *this,
+            int16_t         value
+        )
+        {
+            ERESULT         eRc;
+            int16_t         year;
+            int16_t         month;
+            int16_t         day;
+            int16_t         hour;
+            int16_t         minute;
+            int16_t         second;
+            int16_t            milli;
+
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return false;
+            }
+    #endif
+
+            eRc =   DateTime_FromUInt64(
+                                        this->time,
+                                        &year,
+                                        &month,
+                                        &day,
+                                        &hour,
+                                        &minute,
+                                        &second,
+                                        &milli
+                                        );
+            milli = value;
+            eRc =   DateTime_ToUInt64(
+                                      year,
+                                      month,
+                                      day,
+                                      hour,
+                                      minute,
+                                      second,
+                                      milli,
+                                      &this->time
+                                      );
+
+            return true;
+        }
+
+
+
+        int64_t         DateTime_getTime(
+            DATETIME_DATA   *this
+        )
+        {
+
+            // Validate the input parameters.
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return 0;
+            }
+    #endif
+
+            return this->time;
+        }
+
+
+        bool            DateTime_setTime(
+            DATETIME_DATA   *this,
+            int64_t         value
+        )
+        {
+
+    #ifdef NDEBUG
+    #else
+            if( !DateTime_Validate(this) ) {
+                DEBUG_BREAK();
+                return false;
+            }
+    #endif
+
+            this->time = value;
+
+            return true;
+        }
 
 
 
@@ -186,54 +1063,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * DateTime_getStr (
-        DATETIME_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!DateTime_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        DateTime_setStr (
-        DATETIME_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!DateTime_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -335,14 +1164,11 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
+        pOther->time = this->time;
         
-        //goto eom;
-
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -359,8 +1185,8 @@ extern "C" {
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
     ERESULT         DateTime_Compare (
-        DATETIME_DATA     *this,
-        DATETIME_DATA     *pOther
+        DATETIME_DATA   *this,
+        DATETIME_DATA   *pOther
     )
     {
         int             i = 0;
@@ -384,18 +1210,7 @@ extern "C" {
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
-
-        
+        i = (int)(this->time - pOther->time);
         if (i < 0) {
             eRc = ERESULT_SUCCESS_LESS_THAN;
         }
@@ -487,8 +1302,6 @@ extern "C" {
             ((DATETIME_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        DateTime_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -879,7 +1692,14 @@ extern "C" {
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        
+        int16_t         year;
+        int16_t         month;
+        int16_t         day;
+        int16_t         hours;
+        int16_t         mins;
+        int16_t         secs;
+        int16_t         milli;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -908,19 +1728,31 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
-        if (this->pData) {
-            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
-                                                    this->pData,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-            }
+        eRc =   DateTime_FromUInt64(
+                                    this->time,
+                                    &year,
+                                    &month,
+                                    &day,
+                                    &hours,
+                                    &mins,
+                                    &secs,
+                                    &milli
+                );
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-#endif
-        
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "\t%04d/%2d/%2d %3d:%02d:%02d.%03d\n",
+                    year,
+                    month,
+                    day,
+                    hours,
+                    mins,
+                    secs,
+                    milli
+            );
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
@@ -935,7 +1767,107 @@ extern "C" {
     }
     
     
-    
+    ASTR_DATA *     DateTime_ToFileString(
+        DATETIME_DATA      *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        ERESULT         eRc;
+        int16_t         year;
+        int16_t         month;
+        int16_t         day;
+        int16_t         hours;
+        int16_t         mins;
+        int16_t         secs;
+        int16_t            milli;
+
+#ifdef NDEBUG
+#else
+        if( !DateTime_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        eRc =   DateTime_FromUInt64(
+                                    this->time,
+                                    &year,
+                                    &month,
+                                    &day,
+                                    &hours,
+                                    &mins,
+                                    &secs,
+                                    &milli
+                                    );
+        pStr = AStr_New();
+        AStr_AppendPrint(
+                         pStr,
+                         "%04d.%02d.%02d_%02d.%02d.%02d.%03d",
+                         year,
+                         month,
+                         day,
+                         hours,
+                         mins,
+                         secs,
+                         milli
+                         );
+
+        return pStr;
+    }
+
+
+
+    ASTR_DATA *     DateTime_ToString(
+        DATETIME_DATA      *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        ERESULT         eRc;
+        int16_t         year;
+        int16_t         month;
+        int16_t         day;
+        int16_t         hours;
+        int16_t         mins;
+        int16_t         secs;
+        int16_t            milli;
+
+#ifdef NDEBUG
+#else
+        if( !DateTime_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        eRc =   DateTime_FromUInt64(
+                                    this->time,
+                                    &year,
+                                    &month,
+                                    &day,
+                                    &hours,
+                                    &mins,
+                                    &secs,
+                                    &milli
+                                    );
+        pStr = AStr_New();
+        AStr_AppendPrint(
+                     pStr,
+                     "%2d/%2d/%04d %2d:%02d:%02d.%03d",
+                     month,
+                     day,
+                     year,
+                     hours,
+                     mins,
+                     secs,
+                     milli
+        );
+
+        return pStr;
+    }
+
+
+
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

@@ -120,7 +120,7 @@ int         test_audioWAV_Silence(
         
         eRc = audioWAV_AppendSilence(pObj, 10000);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        pPath = path_NewA("~/audioTest01.wav");
+        pPath = Path_NewA("~/audioTest01.wav");
         eRc = audioWAV_WriteToFile(pObj, pPath);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         obj_Release(pPath);
@@ -155,7 +155,7 @@ int         test_audioWAV_SineWave(
         
         eRc = audioWAV_AppendSineWave(pObj, 740, 1);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        pPath = path_NewA("~/audioTest02.wav");
+        pPath = Path_NewA("~/audioTest02.wav");
         eRc = audioWAV_WriteToFile(pObj, pPath);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         obj_Release(pPath);

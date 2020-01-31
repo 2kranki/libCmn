@@ -42,7 +42,7 @@
 #include        <I32Array.h>
 #include        <array_internal.h>
 #include        <JsonIn.h>
-#include        <path_internal.h>
+#include        <Path_internal.h>
 
 
 #ifndef I32ARRAY_INTERNAL_H

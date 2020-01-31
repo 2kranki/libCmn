@@ -50,7 +50,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <path.h>
+#include        <Path.h>
 
 
 #ifndef         GENOBJ_H

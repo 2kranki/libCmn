@@ -114,7 +114,7 @@ int         test_pplex_Input01(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     ASTR_DATA       *pStr = OBJ_NIL;
     ERESULT         eRc;
     int32_t         cls;
@@ -255,7 +255,7 @@ int         test_pplex_Input02(
 {
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
-    PATH_DATA       *pPath = path_NewA("~/Support/ll1/tests/test_gmr01.txt");
+    PATH_DATA       *pPath = Path_NewA("~/Support/ll1/tests/test_gmr01.txt");
     ASTR_DATA       *pStr = OBJ_NIL;
     ERESULT         eRc;
     int32_t         cls;
@@ -274,7 +274,7 @@ int         test_pplex_Input02(
     eRc = pplex_CreateLexers((PPLEX_DATA *)pLex, false, true);
     XCTAssertFalse( (ERESULT_FAILED(eRc)) );
     
-    path_Clean(pPath);
+    Path_Clean(pPath);
     eRc =   pplex_CreateSourceFromPath(
                                        (PPLEX_DATA *)pLex,
                                        pPath

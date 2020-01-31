@@ -1753,15 +1753,15 @@ extern "C" {
         this->fStripNL = 0;
         this->fAtEOF = 1;
         if (pPath) {
-            this->pPath  = path_Copy(pPath);
+            this->pPath  = Path_Copy(pPath);
             if (OBJ_NIL == this->pPath) {
                 DEBUG_BREAK();
                 return ERESULT_OUT_OF_MEMORY;
             }
-            path_Clean(this->pPath);
+            Path_Clean(this->pPath);
             this->pPathA =  szTbl_StringToString(
                                         szTbl_Shared(),
-                                        path_getData(this->pPath)
+                                        Path_getData(this->pPath)
                             );
         }
         this->curChr.loc.lineNo  = 1;
@@ -1880,7 +1880,7 @@ extern "C" {
 
         // Open the file.
         this->type = TEXTIN_TYPE_FILE;
-        pszFileName = path_CStringA(this->pPath);
+        pszFileName = Path_CStringA(this->pPath);
         if (pszFileName) {
             this->pFile = fopen(pszFileName, "r");
             if (NULL == this->pFile) {

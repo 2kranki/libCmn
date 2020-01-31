@@ -122,34 +122,22 @@ extern "C" {
         uint8_t         type
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         DIRENTRY_DATA   *this;
         PATH_DATA       *pPath  = OBJ_NIL;
-        ASTR_DATA       *pDrive = OBJ_NIL;
-        PATH_DATA       *pDir = OBJ_NIL;
-        PATH_DATA       *pFileName = OBJ_NIL;
 
         this = DirEntry_New();
         if (OBJ_NIL == this) {
             return this;
         }
 
-        pPath = path_NewA(pPathA);
+        pPath = Path_NewA(pPathA);
         if (OBJ_NIL == pPath) {
             obj_Release(this);
             return OBJ_NIL;
         }
 
-        eRc = path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
-        if (ERESULT_FAILED(eRc)) {
-            obj_Release(pPath);
-            obj_Release(this);
-            return OBJ_NIL;
-        }
         this->pFullPath = pPath;
-        this->pDrive = pDrive;
-        this->pDir = pDir;
-        this->pFileName = pFileName;
 
         // Return to caller.
         return this;
@@ -173,20 +161,27 @@ extern "C" {
             return this;
         }
 
-        (void)DirEntry_setDrive(this, pDrive);
-        (void)DirEntry_setDir(this, pDir);
-        (void)DirEntry_setFileName(this, pFileName);
-        (void)DirEntry_setType(this, type);
-
-        pPath = path_New( );
+        pPath = Path_New( );
         if (pPath) {
-            eRc = path_MakePath(pPath, pDrive, pDir, pFileName);
+            eRc = Path_MakePath(pPath, pDrive, pDir, pFileName);
             if (!ERESULT_FAILED(eRc)) {
+                if (type == DIRENTRY_TYPE_DIR) {
+                    if (AStr_CharGetLastW32(Path_getAStr(pPath)) == '/')
+                        ;
+                    else {
+                        eRc = AStr_AppendA(Path_getAStr(pPath), "/");
+                    }
+                }
                 DirEntry_setFullPath(this, pPath);
             }
             obj_Release(pPath);
             pPath = OBJ_NIL;
+        } else {
+            obj_Release(this);
+            return OBJ_NIL;
         }
+
+        (void)DirEntry_setType(this, type);
 
         // Return to caller.
         return this;
@@ -244,92 +239,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                    D i r e c t o r y
-    //---------------------------------------------------------------
-
-    PATH_DATA *     DirEntry_getDir (
-        DIRENTRY_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !DirEntry_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-
-        return this->pDir;
-    }
-
-    bool            DirEntry_setDir (
-        DIRENTRY_DATA   *this,
-        PATH_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !DirEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        obj_Retain(pValue);
-        if (this->pDir) {
-            obj_Release(this->pDir);
-        }
-        this->pDir = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                    D r i v e
-    //---------------------------------------------------------------
-
-    ASTR_DATA *     DirEntry_getDrive (
-        DIRENTRY_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !DirEntry_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-
-        return this->pDrive;
-    }
-
-    bool            DirEntry_setDrive (
-        DIRENTRY_DATA   *this,
-        ASTR_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !DirEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        obj_Retain(pValue);
-        if (this->pDrive) {
-            obj_Release(this->pDrive);
-        }
-        this->pDrive = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //          E x t e n d e d  A t t r i b u t e s  S i z e
     //---------------------------------------------------------------
 
@@ -362,49 +271,6 @@ extern "C" {
         }
 #endif
         this->eaSize = value;
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                       F i l e  N a m e
-    //---------------------------------------------------------------
-
-    PATH_DATA *     DirEntry_getFileName (
-        DIRENTRY_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !DirEntry_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-
-        return this->pFileName;
-    }
-
-    bool            DirEntry_setFileName (
-        DIRENTRY_DATA   *this,
-        PATH_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !DirEntry_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        obj_Retain(pValue);
-        if (this->pFileName) {
-            obj_Release(this->pFileName);
-        }
-        this->pFileName = pValue;
-
         return true;
     }
 
@@ -831,8 +697,6 @@ extern "C" {
 
         // Release objects and areas in other object.
         (void)DirEntry_setFullPath(pOther, OBJ_NIL);
-        (void)DirEntry_setDir(pOther, OBJ_NIL);
-        (void)DirEntry_setFileName(pOther, OBJ_NIL);
         (void)DirEntry_setShortName(pOther, OBJ_NIL);
         (void)DirEntry_setCreationTime(pOther, OBJ_NIL);
         (void)DirEntry_setModifiedTime(pOther, OBJ_NIL);
@@ -847,24 +711,6 @@ extern "C" {
             else {
                 obj_Retain(this->pFullPath);
                 pOther->pFullPath = this->pFullPath;
-            }
-        }
-        if (this->pDir) {
-            if (obj_getVtbl(this->pDir)->pCopy) {
-                pOther->pDir = obj_getVtbl(this->pDir)->pCopy(this->pDir);
-            }
-            else {
-                obj_Retain(this->pDir);
-                pOther->pDir = this->pDir;
-            }
-        }
-        if (this->pFileName) {
-            if (obj_getVtbl(this->pFileName)->pCopy) {
-                pOther->pFileName = obj_getVtbl(this->pFileName)->pCopy(this->pFileName);
-            }
-            else {
-                obj_Retain(this->pFileName);
-                pOther->pFileName = this->pFileName;
             }
         }
         if (this->pShortName) {
@@ -944,7 +790,6 @@ extern "C" {
         DIRENTRY_DATA     *pOther
     )
     {
-        int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
 #ifdef  xyzzy        
         const
@@ -973,20 +818,8 @@ extern "C" {
         }
         // Types are equal.
 
-        if( (this->pFileName) && (OBJ_NIL == pOther->pFileName) ) {
-            DEBUG_BREAK();
-            return ERESULT_SUCCESS_GREATER_THAN;
-        }
-        if( (OBJ_NIL == this->pFileName) && (OBJ_NIL == pOther->pFileName) ) {
-            DEBUG_BREAK();
-            return ERESULT_SUCCESS;
-        }
-        if( (OBJ_NIL == this->pFileName) && (pOther->pFileName) ) {
-            DEBUG_BREAK();
-            return ERESULT_SUCCESS_LESS_THAN;
-        }
 
-        eRc = path_Compare(this->pFileName, pOther->pFileName);
+        eRc = Path_Compare(this->pFullPath, pOther->pFullPath);
 
         return eRc;
     }
@@ -1025,16 +858,16 @@ extern "C" {
         }
 #endif
 
-        pStr = path_getData(DirEntry_getFullPath(this));
+        pStr = Path_getData(DirEntry_getFullPath(this));
         if (pStr) {
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
             iRc = stat(pStr, &statBuffer);
             if (0 == iRc) {
-                pTime = dateTime_NewFromTimeT(statBuffer.st_birthtimespec.tv_sec);
+                pTime = DateTime_NewFromTimeT(statBuffer.st_birthtimespec.tv_sec);
                 DirEntry_setCreationTime(this, pTime);
                 obj_Release(pTime);
                 pTime = OBJ_NIL;
-                pTime = dateTime_NewFromTimeT(statBuffer.st_mtimespec.tv_sec);
+                pTime = DateTime_NewFromTimeT(statBuffer.st_mtimespec.tv_sec);
                 DirEntry_setModifiedTime(this, pTime);
                 obj_Release(pTime);
                 pTime = OBJ_NIL;
@@ -1142,9 +975,6 @@ extern "C" {
 #endif
 
         (void)DirEntry_setFullPath(this, OBJ_NIL);
-        (void)DirEntry_setDir(this, OBJ_NIL);
-        (void)DirEntry_setDrive(this, OBJ_NIL);
-        (void)DirEntry_setFileName(this, OBJ_NIL);
         (void)DirEntry_setShortName(this, OBJ_NIL);
         (void)DirEntry_setCreationTime(this, OBJ_NIL);
         (void)DirEntry_setModifiedTime(this, OBJ_NIL);
@@ -1393,7 +1223,7 @@ extern "C" {
         }
 #endif
 
-        eRc =   AStr_MatchA((ASTR_DATA *)this->pFileName, pPattern);
+        eRc =   AStr_MatchA((ASTR_DATA *)this->pFullPath, pPattern);
 
         return eRc;
     }

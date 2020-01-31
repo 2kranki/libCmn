@@ -385,10 +385,10 @@ int             test_TextIn_GetLine02(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pFilePath = path_NewA(pFilePathA);
+    pFilePath = Path_NewA(pFilePathA);
     TINYTEST_FALSE( (OBJ_NIL == pFilePath) );
-    path_Clean(pFilePath);
-    eRc = path_IsFile(pFilePath);
+    Path_Clean(pFilePath);
+    eRc = Path_IsFile(pFilePath);
     TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
     pObj = TextIn_NewFromPath(pFilePath, 0, 4);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );

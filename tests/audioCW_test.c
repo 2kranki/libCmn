@@ -23,7 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <path.h>
+#include    <Path.h>
 #include    <trace.h>
 #include    <audioCW_internal.h>
 
@@ -98,7 +98,7 @@ int         test_audioCW_OpenClose(
         eRc = audioCW_PutTextW32(pObj, 5, L"PARIS");
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
-        pPath = path_NewA("~/cw_15_15_PARIS.wav");
+        pPath = Path_NewA("~/cw_15_15_PARIS.wav");
         eRc = audioCW_WriteToFile(pObj, pPath);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         obj_Release(pPath);
@@ -137,7 +137,7 @@ int         test_audioCW_Text01(
         eRc = audioCW_PutTextW32(pObj, 5, L"PARIS");
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
-        pPath = path_NewA("~/cw_15_15_PARIS.wav");
+        pPath = Path_NewA("~/cw_15_15_PARIS.wav");
         eRc = audioCW_WriteToFile(pObj, pPath);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         obj_Release(pPath);
@@ -176,7 +176,7 @@ int         test_audioCW_Text02(
         eRc = audioCW_PutTextW32(pObj, 5, L"IRYNA");
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
-        pPath = path_NewA("~/cw_15_15_IRYNA.wav");
+        pPath = Path_NewA("~/cw_15_15_IRYNA.wav");
         eRc = audioCW_WriteToFile(pObj, pPath);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         obj_Release(pPath);
@@ -215,7 +215,7 @@ int         test_audioCW_Text03(
         eRc = audioCW_PutTextW32(pObj, 5, L"DAVIN");
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
-        pPath = path_NewA("~/cw_15_15_DAVIN.wav");
+        pPath = Path_NewA("~/cw_15_15_DAVIN.wav");
         eRc = audioCW_WriteToFile(pObj, pPath);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         obj_Release(pPath);
@@ -254,7 +254,7 @@ int         test_audioCW_Text04(
         eRc = audioCW_PutTextW32(pObj, 5, L"DREW");
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
-        pPath = path_NewA("~/cw_15_15_DREW.wav");
+        pPath = Path_NewA("~/cw_15_15_DREW.wav");
         eRc = audioCW_WriteToFile(pObj, pPath);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         obj_Release(pPath);
@@ -293,7 +293,7 @@ int         test_audioCW_Text05(
         eRc = audioCW_PutTextW32(pObj, 5, L"DOMINIC");
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         
-        pPath = path_NewA("~/cw_15_15_DOMINIC.wav");
+        pPath = Path_NewA("~/cw_15_15_DOMINIC.wav");
         eRc = audioCW_WriteToFile(pObj, pPath);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         obj_Release(pPath);

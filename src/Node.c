@@ -2027,7 +2027,7 @@ extern "C" {
                 pWrk = AStr_Copy((ASTR_DATA *)this->pData);
             }
             else if (obj_IsKindOf(this, OBJ_IDENT_PATH)) {
-                pWrk = AStr_Copy(path_getAStr((PATH_DATA *)this->pData));
+                pWrk = AStr_Copy(Path_getAStr((PATH_DATA *)this->pData));
             }
             else {
                 pQueryInfo = obj_getVtbl(this->pData)->pQueryInfo;
@@ -2086,7 +2086,7 @@ extern "C" {
                 pStr = AStr_Copy((ASTR_DATA *)this->pData);
             }
             else if (obj_IsKindOf(this, OBJ_IDENT_PATH)) {
-                pStr = AStr_Copy(path_getAStr((PATH_DATA *)this->pData));
+                pStr = AStr_Copy(Path_getAStr((PATH_DATA *)this->pData));
             }
             else {
                 pQueryInfo = obj_getVtbl(this->pData)->pQueryInfo;

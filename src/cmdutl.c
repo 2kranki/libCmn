@@ -1236,7 +1236,7 @@ extern "C" {
                         return ERESULT_DATA_MISSING;
                     }
                     else {
-                        pPath = path_NewA(this->pOptArg);
+                        pPath = Path_NewA(this->pOptArg);
                         *((PATH_DATA **)pPtr) = pPath;
                         pPath = OBJ_NIL;
                     }

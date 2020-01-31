@@ -2035,7 +2035,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
         if (obj_Trace(this)) {
-            fprintf(stderr, "JsonIn_ParseAStr: string=%s\n", path_getData(pPath));
+            fprintf(stderr, "JsonIn_ParseAStr: string=%s\n", Path_getData(pPath));
         }
 #endif
 

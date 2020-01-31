@@ -58,7 +58,7 @@
 #include        <AStrArray.h>
 #include        <number.h>
 #include        <ObjArray.h>
-#include        <path.h>
+#include        <Path.h>
 #include        <AStr.h>
 
 

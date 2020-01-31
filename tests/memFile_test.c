@@ -81,7 +81,7 @@ int             test_memFile_OpenClose(
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    MEMFILE_DATA	    *pObj = OBJ_NIL;
+    MEMFILE_DATA	*pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -122,21 +122,21 @@ int             test_memFile_Create01(
     //uint32_t        i;
     uint32_t        index;
     uint8_t         data[256];
-    uint8_t         *pData = data;
+    //uint8_t         *pData = data;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pTime = dateTime_NewCurrent();
+    pTime = DateTime_NewCurrent();
     TINYTEST_FALSE( (OBJ_NIL == pTime) );
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
-    pStr = dateTime_ToFileString(pTime);
+    pStr = DateTime_ToFileString(pTime);
     TINYTEST_FALSE( (OBJ_NIL == pTime) );
-    path_AppendAStr(pPath, pStr);
+    Path_AppendAStr(pPath, pStr);
     obj_Release(pStr);
     pStr = OBJ_NIL;
-    path_AppendA(pPath, ".txt");
-    fprintf(stderr, "\tPath = \"%s\"\n", path_getData(pPath));
+    Path_AppendA(pPath, ".txt");
+    fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
     
     pObj = memFile_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -149,8 +149,8 @@ int             test_memFile_Create01(
         
         eRc =   memFile_Write(
                              pObj,
-                             (uint32_t)(strlen(path_getData(pPath))+1),
-                             path_getData(pPath)
+                             (uint32_t)(strlen(Path_getData(pPath))+1),
+                             Path_getData(pPath)
                 );
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
@@ -158,10 +158,10 @@ int             test_memFile_Create01(
         fprintf(
                 stderr,
                 "\tSize = %ld  fileio_Size=%lld\n",
-                (strlen(path_getData(pPath))+1),
+                (strlen(Path_getData(pPath))+1),
                 fileSize
                 );
-        TINYTEST_TRUE( ((strlen(path_getData(pPath))+1) == fileSize) );
+        TINYTEST_TRUE( ((strlen(Path_getData(pPath))+1) == fileSize) );
         
         eRc = memFile_Close(pObj, false);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
@@ -175,8 +175,8 @@ int             test_memFile_Create01(
         index = 0;
         eRc = memFile_Read(pObj, 256, data, &index);
         TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
-        TINYTEST_TRUE( ((strlen(path_getData(pPath))+1) == index) );
-        TINYTEST_TRUE( (0 == strcmp(path_getData(pPath), (const char *)data)) );
+        TINYTEST_TRUE( ((strlen(Path_getData(pPath))+1) == index) );
+        TINYTEST_TRUE( (0 == strcmp(Path_getData(pPath), (const char *)data)) );
 
         eRc = memFile_Close(pObj, true);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );

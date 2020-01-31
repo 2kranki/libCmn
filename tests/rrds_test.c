@@ -128,12 +128,12 @@ int         test_rrds_Read01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pTime = dateTime_NewCurrent();
+    pTime = DateTime_NewCurrent();
     TINYTEST_FALSE( (OBJ_NIL == pTime) );
     
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
-    fprintf(stderr, "\tPath = \"%s\"\n", path_getData(pPath));
+    fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
     
     pDS80 = rrds_New();
     XCTAssertFalse( (NULL == pDS80));

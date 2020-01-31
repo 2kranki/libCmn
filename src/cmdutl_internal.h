@@ -47,7 +47,7 @@
 #include    <NodeArray.h>
 #include    <NodeHash.h>
 #include    <NodeTree.h>
-#include    <path.h>
+#include    <Path.h>
 #include    <srcFile.h>
 #include    <stdio.h>
 #include    <wchar.h>

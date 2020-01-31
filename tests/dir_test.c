@@ -47,12 +47,12 @@ bool            scanner( void *pData, DIRENTRY_DATA *pEntry)
     struct stat     statbuf;
     
     if (pPattern) {
-        eRc = dirEntry_MatchA(pEntry, pPattern);
+        eRc = DirEntry_MatchA(pEntry, pPattern);
         if (ERESULT_FAILED(eRc)) {
             return true;
         }
     }
-    pPath = dirEntry_getFullPath(pEntry);
+    pPath = DirEntry_getFullPath(pEntry);
     if (pPath) {
         pStr = AStr_CStringA((ASTR_DATA *)pPath, NULL);
         if (pStr) {
@@ -61,7 +61,7 @@ bool            scanner( void *pData, DIRENTRY_DATA *pEntry)
                     "\t%2d name: %s  type: %d\n",
                     count++,
                     pStr,
-                    dirEntry_getType(pEntry)
+                    DirEntry_getType(pEntry)
                     );
             
             if (-1 == stat(pStr,&statbuf))
@@ -174,7 +174,7 @@ int         test_dir_Scan01(
     if (pObj) {
         
         count = 1;
-        pPath = path_NewA(pDir);
+        pPath = Path_NewA(pDir);
         eRc = dir_ScanDir(pObj, pPath, &scanner, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
@@ -209,7 +209,7 @@ int         test_dir_Scan02(
     if (pObj) {
         
         count = 1;
-        pPath = path_NewA(pDir);
+        pPath = Path_NewA(pDir);
         eRc = dir_ScanDir(pObj, pPath, &scanner, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
@@ -244,7 +244,7 @@ int         test_dir_Scan03(
     if (pObj) {
         
         count = 1;
-        pPath = path_NewA(pDir);
+        pPath = Path_NewA(pDir);
         eRc = dir_ScanDir(pObj, pPath, &scanner, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
@@ -288,7 +288,7 @@ int         test_dir_Enum01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pPath = path_NewA(pDir);
+        pPath = Path_NewA(pDir);
         if (pPath) {
             pEnum = dir_EnumDir(pObj, pPath);
             if (pEnum) {
@@ -299,14 +299,14 @@ int         test_dir_Enum01(
                         break;
                     }
                     BREAK_NULL(pEntry);
-                    dirEntry_GetAllData(pEntry);
+                    DirEntry_Complete(pEntry);
                     fprintf(
                             stderr,
                             "%2d name: %-25s  type: %2d  gen: %d\n",
                             i,
-                            path_getData(dirEntry_getFileName(pEntry)),
-                            dirEntry_getType(pEntry),
-                            dirEntry_getGenerationNumber(pEntry)
+                            Path_getData(DirEntry_getFullPath(pEntry)),
+                            DirEntry_getType(pEntry),
+                            DirEntry_getGenerationNumber(pEntry)
                     );
                     obj_Release(pWrkPath);
                     ++i;

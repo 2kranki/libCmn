@@ -54,7 +54,7 @@
 
 #include        <cmn_defs.h>
 #include        <srcFile.h>
-#include        <path.h>
+#include        <Path.h>
 #include        <Token.h>
 
 

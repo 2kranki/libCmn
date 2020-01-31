@@ -148,7 +148,7 @@ int         test_CsvFile_Input01(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pStr = AStr_NewA("  a,   10,   \"def\"  \n");
     XCTAssertFalse( (OBJ_NIL == pStr) );
-    pPath = path_NewA("abc");
+    pPath = Path_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pPath) );
 
     pObj = CsvFile_NewFromAStr( pStr, pPath, 4 );
@@ -247,7 +247,7 @@ int         test_CsvFile_Input02(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pStr = AStr_NewA(pTestInput02);
     XCTAssertFalse( (OBJ_NIL == pStr) );
-    pPath = path_NewA("abc");
+    pPath = Path_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pPath) );
 
     pObj = CsvFile_NewFromAStr( pStr, pPath, 4 );
@@ -392,11 +392,11 @@ int         test_CsvFile_Input03(
 
 
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pPath = path_NewA("/Users/bob/Support/testFiles/csv_e360_opcodes.txt");
+    pPath = Path_NewA("/Users/bob/Support/testFiles/csv_e360_opcodes.txt");
     XCTAssertFalse( (OBJ_NIL == pPath) );
-    eRc = path_IsFile(pPath);
+    eRc = Path_IsFile(pPath);
     if (ERESULT_FAILED(eRc)) {
-        fprintf(stderr, "Warning: %s missing, test skipped.\n", path_getData(pPath));
+        fprintf(stderr, "Warning: %s missing, test skipped.\n", Path_getData(pPath));
         return 1;
     }
 
@@ -470,7 +470,7 @@ int         test_CsvFile_Input04(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pStr = AStr_NewA("a, \"d,e,f\"\n");
     XCTAssertFalse( (OBJ_NIL == pStr) );
-    pPath = path_NewA("abc");
+    pPath = Path_NewA("abc");
     XCTAssertFalse( (OBJ_NIL == pPath) );
 
     pObj = CsvFile_NewFromAStr( pStr, pPath, 4 );

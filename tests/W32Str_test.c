@@ -879,7 +879,7 @@ int         test_w32str_File(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         eRc = W32Str_AppendA(pObj, "/test.txt");
         
-        pPath = path_NewFromW32STR(pObj);
+        pPath = Path_NewFromW32STR(pObj);
         XCTAssertFalse( (OBJ_NIL == pPath) );
         if (pPath) {
             eRc = W32Str_ToUtf8File(pObj, pPath);

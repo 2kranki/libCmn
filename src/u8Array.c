@@ -45,7 +45,7 @@
 #include    <ascii.h>
 #include    <file.h>
 #include    <hex.h>
-#include    <path_internal.h>
+#include    <Path_internal.h>
 #include    <stdio.h>
 
 
@@ -401,7 +401,7 @@ extern "C" {
         }
 #endif
         
-        size = file_SizeA(path_getData(pPath));
+        size = file_SizeA(Path_getData(pPath));
         if (-1 == size) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -409,7 +409,7 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
         
-        pFile = fopen(path_getData(pPath), "rb");
+        pFile = fopen(Path_getData(pPath), "rb");
         if (NULL == pFile) {
             return ERESULT_FILE_NOT_FOUND;
         }
@@ -1369,7 +1369,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !path_Validate(pPath) ) {
+        if( !Path_Validate(pPath) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -1389,7 +1389,7 @@ extern "C" {
         
         pChr = (char *)array_Ptr(this->pData, 1);
         size = array_getSizeInBytes(this->pData);
-        pFile = fopen(path_getData(pPath), "w");
+        pFile = fopen(Path_getData(pPath), "w");
         if (NULL == pFile) {
             return ERESULT_OPEN_ERROR;
         }

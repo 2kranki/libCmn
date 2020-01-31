@@ -44,7 +44,7 @@
 #include <md5ChkSum_internal.h>
 #include <fileio.h>
 #include <hex.h>
-#include <path.h>
+#include <Path.h>
 #include <Value.h>
 
 
@@ -193,7 +193,7 @@ extern "C" {
                 return eRc;
             }
             //fprintf(stderr, "%s\n", AStr_getData(pStr));
-            pPath = path_NewA(AStr_getData(pStr));
+            pPath = Path_NewA(AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
             if (OBJ_NIL == pPath) {
@@ -748,14 +748,14 @@ extern "C" {
         MD5Final(this->digest, &this->ctx);
         
         if (pPath && ppOutput) {
-            eRc = path_SplitPath(pPath, OBJ_NIL, OBJ_NIL, &pMd5File);
+            eRc = Path_SplitPath(pPath, OBJ_NIL, OBJ_NIL, &pMd5File);
             if (OBJ_NIL == pMd5File) {
                 goto eom;
             }
             
             pMD5 = AStr_New();
             if (pMD5) {
-                AStr_AppendPrint(pMD5, "MD5 (%s) = ", path_getData(pMd5File));
+                AStr_AppendPrint(pMD5, "MD5 (%s) = ", Path_getData(pMd5File));
                 for(i=0; i<16; ++i) {
                     AStr_AppendPrint(pMD5, "%02x", this->digest[i]);
                 }

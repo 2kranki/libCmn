@@ -159,7 +159,7 @@ extern "C" {
                        AStr_Append(pStr, pWrkStr);
                        obj_Release(pWrkStr);
                        pWrkStr = OBJ_NIL;
-                       AStr_AppendA(pStr, "\n");
+                       AStr_AppendA(pStr, ",\n");
                    }
                }
            }

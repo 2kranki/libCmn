@@ -1363,7 +1363,7 @@ extern "C" {
             pStrA = getenv("TMPDIR");
         }
         if (pStrA) {
-            pDir = path_NewA(pStrA);
+            pDir = Path_NewA(pStrA);
             if (pDir) {
                 Compiler_setTempDir(this, pDir);
                 obj_Release(pDir);

@@ -72,9 +72,6 @@ struct DirEntry_data_s	{
 
     // Common Data
         PATH_DATA       *pFullPath;
-        ASTR_DATA       *pDrive;
-        PATH_DATA       *pDir;
-        PATH_DATA       *pFileName;
         ASTR_DATA       *pShortName;
         DATETIME_DATA   *pCreationTime;
         DATETIME_DATA   *pModifiedTime;

@@ -135,10 +135,10 @@ int             test_bpt32_Write01(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
-    fprintf(stderr, "\tPath = \"%s\"\n", path_getData(pPath));
-    eRc = path_Delete(pPath);
+    fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
+    eRc = Path_Delete(pPath);
     
     pObj = bpt32_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );

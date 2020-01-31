@@ -89,15 +89,15 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&fbso_Vtbl);
         
         
-        this->pPath = path_Copy(pPath);
-        eRc = path_Clean(this->pPath);
+        this->pPath = Path_Copy(pPath);
+        eRc = Path_Clean(this->pPath);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         
-        pFilePath = path_CStringA(this->pPath);
+        pFilePath = Path_CStringA(this->pPath);
         if (pFilePath == NULL) {
             obj_Release(this);
             return OBJ_NIL;

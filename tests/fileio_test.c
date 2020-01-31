@@ -23,7 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <dateTime.h>
+#include    <DateTime.h>
 #include    <file.h>
 #include    <trace.h>
 #include    <fileio_internal.h>
@@ -121,11 +121,11 @@ int         test_fileio_Read01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
-    path_Clean(pPath);
-    fprintf(stderr, "\tpath=%s\n", path_getData(pPath));
-    TINYTEST_FALSE( (ERESULT_FAILED(path_IsFile(pPath))) );
+    Path_Clean(pPath);
+    fprintf(stderr, "\tpath=%s\n", Path_getData(pPath));
+    TINYTEST_FALSE( (ERESULT_FAILED(Path_IsFile(pPath))) );
 
 
     pObj = fileio_New( );
@@ -204,18 +204,18 @@ int         test_fileio_Create01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pTime = dateTime_NewCurrent();
+    pTime = DateTime_NewCurrent();
     TINYTEST_FALSE( (OBJ_NIL == pTime) );
 
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
-    pStr = dateTime_ToFileString(pTime);
+    pStr = DateTime_ToFileString(pTime);
     TINYTEST_FALSE( (OBJ_NIL == pTime) );
-    path_AppendAStr(pPath, pStr);
+    Path_AppendAStr(pPath, pStr);
     obj_Release(pStr);
     pStr = OBJ_NIL;
-    path_AppendA(pPath, ".txt");
-    fprintf(stderr, "\tPath = \"%s\"\n", path_getData(pPath));
+    Path_AppendA(pPath, ".txt");
+    fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
 
     pObj = fileio_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -231,8 +231,8 @@ int         test_fileio_Create01(
         
         eRc =   fileio_Write(
                            pObj,
-                           (uint32_t)(strlen(path_getData(pPath))+1),
-                           path_getData(pPath)
+                           (uint32_t)(strlen(Path_getData(pPath))+1),
+                           Path_getData(pPath)
                 );
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
@@ -240,15 +240,15 @@ int         test_fileio_Create01(
         fprintf(
                 stderr,
                 "\tSize = %ld  fileio_Size=%lld\n",
-                (strlen(path_getData(pPath))+1),
+                (strlen(Path_getData(pPath))+1),
                 fileSize
         );
-        TINYTEST_TRUE( ((strlen(path_getData(pPath))+1) == fileSize) );
+        TINYTEST_TRUE( ((strlen(Path_getData(pPath))+1) == fileSize) );
         
         eRc = fileio_Close(pObj, true);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        fileSize = file_SizeA(path_getData(pPath));
+        fileSize = file_SizeA(Path_getData(pPath));
         TINYTEST_TRUE( (-1 == fileSize) );
         
         obj_Release(pObj);
@@ -286,11 +286,11 @@ int         test_fileio_IO_Read01(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
-    path_Clean(pPath);
-    fprintf(stderr, "\tpath=%s\n", path_getData(pPath));
-    TINYTEST_FALSE( (ERESULT_FAILED(path_IsFile(pPath))) );
+    Path_Clean(pPath);
+    fprintf(stderr, "\tpath=%s\n", Path_getData(pPath));
+    TINYTEST_FALSE( (ERESULT_FAILED(Path_IsFile(pPath))) );
 
 
     pObj = fileio_New( );

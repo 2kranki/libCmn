@@ -126,7 +126,7 @@ int         test_pplex3_Input01(
     LEX_DATA        *pLex2 = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     ASTR_DATA       *pStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -283,7 +283,7 @@ int         test_pplex3_Input02(
     LEX_DATA        *pLex2 = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     ASTR_DATA       *pStr = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);

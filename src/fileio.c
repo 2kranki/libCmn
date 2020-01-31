@@ -456,7 +456,7 @@ extern "C" {
             obj_Release(this->pPath);
         }
         if (pValue) {
-            this->pPath = path_Copy(pValue);
+            this->pPath = Path_Copy(pValue);
         }
         else {
             this->pPath = OBJ_NIL;
@@ -623,7 +623,7 @@ extern "C" {
         obj_FlagSet(this, FILEIO_FILE_OPEN, false);
         
         if (fDelete) {
-            iRc = unlink(path_getData(this->pPath));
+            iRc = unlink(Path_getData(this->pPath));
         }
         
         fileio_setPath(this, OBJ_NIL);
@@ -696,9 +696,9 @@ extern "C" {
         if (this->pPath) {
             obj_Release(this->pPath);
         }
-        this->pPath = path_Copy(pPath);
+        this->pPath = Path_Copy(pPath);
         if (this->pPath) {
-            path_Clean(this->pPath);
+            Path_Clean(this->pPath);
         }
         else {
             return ERESULT_OUT_OF_MEMORY;
@@ -707,7 +707,7 @@ extern "C" {
         //  Open the File.
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         fileHandle =    open(
-                             path_getData(this->pPath),
+                             Path_getData(this->pPath),
                              (O_CREAT | O_TRUNC | O_RDWR),
                              (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
                         );
@@ -716,7 +716,7 @@ extern "C" {
         DEBUG_BREAK();
         //FIXME: This needs to be updated and tested.
         fileHandle =    open(
-                             path_getData(this->pPath),
+                             Path_getData(this->pPath),
                              (O_APPEND | O_RDWR),
                              (S_IREAD | S_IWRITE)
                              );
@@ -975,9 +975,9 @@ extern "C" {
         if (this->pPath) {
             obj_Release(this->pPath);
         }
-        this->pPath = path_Copy(pPath);
+        this->pPath = Path_Copy(pPath);
         if (this->pPath) {
-            path_Clean(this->pPath);
+            Path_Clean(this->pPath);
         }
         else {
             return ERESULT_OUT_OF_MEMORY;
@@ -986,14 +986,14 @@ extern "C" {
         //  Open the File.
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         fileHandle =    open(
-                             path_getData(this->pPath),
+                             Path_getData(this->pPath),
                              (O_RDWR),
                              (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
                              );
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         fileHandle =    open(
-                             path_getData(this->pPath),
+                             Path_getData(this->pPath),
                              (O_APPEND | O_RDWR),
                              (S_IREAD | S_IWRITE)
                              );

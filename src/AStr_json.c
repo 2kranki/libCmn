@@ -83,8 +83,6 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        const
-        OBJ_INFO        *pInfo;
         int64_t         intIn;
         ASTR_DATA       *pWrk;
         uint32_t        crc = 0;
@@ -93,14 +91,6 @@ extern "C" {
         W32CHR_T        ch;
         const
         char            *pSrc;
-
-        pInfo = obj_getInfo(AStr_Class());
-        
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(stderr, "ERROR - objectType is invalid!\n");
-            goto exit00;
-        }
 
        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
        crc = (uint32_t)intIn;
@@ -139,7 +129,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        ASTR_DATA   *pObject = OBJ_NIL;
+        ASTR_DATA       *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
@@ -228,6 +218,43 @@ extern "C" {
     
     
     
+    ERESULT         AStr_ToJsonFields(
+        ASTR_DATA       *this,
+        ASTR_DATA       *pStr
+
+    )
+    {
+        ASTR_DATA       *pWrkStr;
+        uint32_t        crc = 0;
+        uint32_t        len;
+
+        if (pStr) {
+            len = (uint32_t)utf8_StrLenA(AStr_getData(this));
+            AStr_AppendPrint(pStr, "\"len\":%u, ", len);
+            crc = AStr_getCrcIEEE(this);
+            AStr_AppendPrint(pStr, "\"crc\":%u, ", crc);
+
+            if (len) {
+                AStr_AppendA(pStr, "\"data\":\"");
+                pWrkStr = AStr_ToChrCon(this);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    BREAK_FALSE((1 == obj_getRetainCount(pWrkStr)));
+                    obj_Release(pWrkStr);
+                    pWrkStr = OBJ_NIL;
+                }
+                AStr_AppendA(pStr, "\"");
+            }
+            else {
+                AStr_AppendA(pStr, ", \"data\":null ");
+            }
+
+        }
+
+        return ERESULT_SUCCESS;
+    }
+
+
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
@@ -258,9 +285,7 @@ extern "C" {
             OBJ_ID          objId
         );
 #endif
-        ASTR_DATA       *pWrkStr;
-        uint32_t        crc = 0;
-        uint32_t        len;
+        ERESULT         eRc;
 
 #ifdef NDEBUG
 #else
@@ -277,26 +302,8 @@ extern "C" {
                               "{ \"objectType\":\"%s\", ",
                               pInfo->pClassName
              );
-            
-            len = (uint32_t)utf8_StrLenA(AStr_getData(this));
-            AStr_AppendPrint(pStr, "\"len\":%u, ", len);
-            crc = AStr_getCrcIEEE(this);
-            AStr_AppendPrint(pStr, "\"crc\":%u, ", crc);
 
-            if (len) {
-                AStr_AppendA(pStr, "\"data\":\"");
-                pWrkStr = AStr_ToChrCon(this);
-                if (pWrkStr) {
-                    AStr_Append(pStr, pWrkStr);
-                    BREAK_FALSE((1 == obj_getRetainCount(pWrkStr)));
-                    obj_Release(pWrkStr);
-                    pWrkStr = OBJ_NIL;
-                }
-                AStr_AppendA(pStr, "\"");
-            }
-            else {
-                AStr_AppendA(pStr, ", \"data\":null ");
-            }
+            eRc = AStr_ToJsonFields(this, pStr);
 
             AStr_AppendA(pStr, "}\n");
         }

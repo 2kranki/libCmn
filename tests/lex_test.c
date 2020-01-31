@@ -276,7 +276,7 @@ int         test_lex_Number01(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     uint16_t        newClass;
     ERESULT         eRc;
     
@@ -341,7 +341,7 @@ int         test_lex_Number02(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     uint16_t        newClass;
     ERESULT         eRc;
     
@@ -405,7 +405,7 @@ int         test_lex_Number03(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     uint16_t        newClass;
     ERESULT         eRc;
     
@@ -469,7 +469,7 @@ int         test_lex_Number04(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     uint16_t        newClass;
     ERESULT         eRc;
 
@@ -725,7 +725,7 @@ int         test_lex_Strings04(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     ERESULT         eRc;
     W32CHR_T        ch;
     

@@ -621,12 +621,12 @@ int         test_AStr_File(
     
     pObj = AStr_NewFromEnv("HOME");
     XCTAssertFalse( (OBJ_NIL == pObj) );
-    pPath = path_NewA("~");
+    pPath = Path_NewA("~");
     XCTAssertFalse( (OBJ_NIL == pPath) );
-    eRc = path_Clean(pPath);
+    eRc = Path_Clean(pPath);
     XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
     fprintf(stderr, "\tastr: \"%s\"\n", AStr_getData(pObj));
-    fprintf(stderr, "\tpath: \"%s\"\n", path_getData(pPath));
+    fprintf(stderr, "\tPath: \"%s\"\n", Path_getData(pPath));
     eRc = AStr_Compare(pObj, (ASTR_DATA *)pPath);
     XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
     obj_Release(pPath);
@@ -636,7 +636,7 @@ int         test_AStr_File(
         eRc = AStr_AppendA(pObj, "/git/libCmn/tests/files/test.txt");
         XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
 
-        pPath = path_NewFromAStr(pObj);
+        pPath = Path_NewFromAStr(pObj);
         XCTAssertFalse( (OBJ_NIL == pPath) );
         if (pPath) {
             eRc = AStr_ToUtf8File(pObj, pPath);

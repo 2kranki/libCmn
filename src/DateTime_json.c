@@ -78,9 +78,9 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     DateTime_ParseJsonFields(
+    ERESULT         DateTime_ParseJsonFields(
         JSONIN_DATA     *pParser,
-        DATETIME_DATA     *pObject
+        DATETIME_DATA   *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -96,20 +96,8 @@ extern "C" {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
-
        
-#ifdef XYZZZY 
-        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
-        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
-
-        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
-        }
-        JsonIn_SubObjectEnd(pParser);
-#endif
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "time", (int64_t *)&pObject->time);
 
         // Return to caller.
     exit00:
@@ -266,12 +254,7 @@ extern "C" {
                               pInfo->pClassName
              );
             
-#ifdef XYZZZY 
-            JsonOut_Append_i32("fileIndex", this->fileIndex, pStr);
-            JsonOut_Append_i64("offset", this->offset, pStr);
-            JsonOut_Append_u32("lineNo", this->lineNo, pStr);
-            JsonOut_Append_Object("errorStr", this->pErrorStr, pStr);
-#endif
+            JsonOut_Append_i64("time", this->time, pStr);
 
             AStr_AppendA(pStr, "}\n");
         }

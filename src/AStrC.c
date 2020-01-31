@@ -487,7 +487,7 @@ extern "C" {
         }
 #endif
         
-        pFile = fopen(path_getData(pPath), "r");
+        pFile = fopen(Path_getData(pPath), "r");
         if (NULL == pFile) {
             //FIXME: return ERESULT_FILE_NOT_FOUND;
         }

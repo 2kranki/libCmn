@@ -125,7 +125,7 @@ int         test_md5ChkSum_Read01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
 
     pObj = fileio_Alloc( );
@@ -216,7 +216,7 @@ int         test_md5ChkSum_Read02(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
     
     pObj = fileio_Alloc( );
@@ -298,7 +298,7 @@ int         test_md5ChkSum_Read03(
     char            *pTestName
 )
 {
-    ERESULT         eRc;
+    //ERESULT         eRc;
     MD5CHKSUM_DATA  *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     const
@@ -313,7 +313,7 @@ int         test_md5ChkSum_Read03(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    pPath = path_NewA(pPathA);
+    pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
     
     pObj = md5ChkSum_NewFromUtf8File(pPath);
@@ -379,9 +379,9 @@ int         test_md5ChkSum_Parse01(
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
         TINYTEST_FALSE( (OBJ_NIL == pValue) );
-        fprintf(stderr, "\tpath = \"%s\"\n", path_getData(pPath));
+        fprintf(stderr, "\tpath = \"%s\"\n", Path_getData(pPath));
 
-        eRc = path_CompareA(pPath, pPathA);
+        eRc = Path_CompareA(pPath, pPathA);
         TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         obj_Release(pPath);
         pPath = OBJ_NIL;

@@ -1490,7 +1490,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&appl_Vtbl);
         
-        this->pDateTime = dateTime_NewCurrent( );
+        this->pDateTime = DateTime_NewCurrent( );
         if (OBJ_NIL == this->pDateTime) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1853,7 +1853,7 @@ extern "C" {
             eRc = ERESULT_OUT_OF_MEMORY;
         }
         if ((cArgs > 0) && ppArgV && ppArgV[0]) {
-            pPath = path_NewA(ppArgV[0]);
+            pPath = Path_NewA(ppArgV[0]);
             appl_setProgramPath(this, pPath);
             obj_Release(pPath);
         }
@@ -2119,9 +2119,9 @@ extern "C" {
 
         fprintf(pOutput, "\n\n");
         if (this->pProgramPath) {
-            eRc = path_SplitPath(this->pProgramPath, OBJ_NIL, OBJ_NIL, &pName);
+            eRc = Path_SplitPath(this->pProgramPath, OBJ_NIL, OBJ_NIL, &pName);
             if (pName) {
-                pNameA = path_getData(pName);
+                pNameA = Path_getData(pName);
             }
         }
         if (pMsg) {
@@ -2192,9 +2192,9 @@ extern "C" {
             return;
         }
         if (this->pProgramPath) {
-            eRc = path_SplitPath(this->pProgramPath, OBJ_NIL, OBJ_NIL, &pName);
+            eRc = Path_SplitPath(this->pProgramPath, OBJ_NIL, OBJ_NIL, &pName);
             if (pName) {
-                pNameA = path_getData(pName);
+                pNameA = Path_getData(pName);
             }
         }
         fprintf(pOutput, "\n");

@@ -500,9 +500,9 @@ extern "C" {
 #endif
         
         memFile_setPath(this, OBJ_NIL);
-        this->pPath = path_Copy(pPath);
+        this->pPath = Path_Copy(pPath);
         if (this->pPath) {
-            path_Clean(this->pPath);
+            Path_Clean(this->pPath);
         }
         else {
             return ERESULT_OUT_OF_MEMORY;
@@ -754,9 +754,9 @@ extern "C" {
 #endif
         
         memFile_setPath(this, OBJ_NIL);
-        this->pPath = path_Copy(pPath);
+        this->pPath = Path_Copy(pPath);
         if (this->pPath) {
-            path_Clean(this->pPath);
+            Path_Clean(this->pPath);
         }
         else {
             return ERESULT_OUT_OF_MEMORY;

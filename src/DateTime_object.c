@@ -430,14 +430,12 @@ static
 const
 OBJ_INFO        DateTime_Info = {
     "DateTime",
-    "DateTime",	// <-- Fill in description
+    "UTC Date & Time",
     (OBJ_DATA *)&DateTime_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&DateTime_Vtbl,
     sizeof(DATETIME_DATA)
 };
-#warning -- adjust super class object in Info above 
-//			if object inherits from another class
 
 
 

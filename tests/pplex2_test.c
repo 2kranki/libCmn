@@ -123,7 +123,7 @@ int         test_pplex2_Input01(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     ASTR_DATA       *pWrkA = OBJ_NIL;
     
     pBuf = AStr_NewA(pTestInput01);
@@ -326,7 +326,7 @@ int         test_pplex2_Input02(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     ASTR_DATA       *pWrkA = OBJ_NIL;
     
     pBuf = AStr_NewA(pTestInput02);
@@ -436,7 +436,7 @@ int         test_pplex2_Input03(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     ASTR_DATA       *pWrkA = OBJ_NIL;
     
     pBuf = AStr_NewA("('=' | ':') ;");
@@ -545,7 +545,7 @@ int         test_pplex2_Input04(
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
     bool            fRc;
-    PATH_DATA       *pPath = path_NewA("abc");
+    PATH_DATA       *pPath = Path_NewA("abc");
     ASTR_DATA       *pWrkA = OBJ_NIL;
     
     pBuf = AStr_NewA("a += '+=+';");

@@ -51,7 +51,7 @@
 
 
 #include        <cmn_defs.h>
-#include        <path.h>
+#include        <Path.h>
 #include        <str.h>
 
 

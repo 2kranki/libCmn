@@ -714,6 +714,7 @@ extern "C" {
 // includes. So, we define the objects and their vtbls here.
 
 typedef struct AStr_data_s          ASTR_DATA;
+typedef struct AStr_class_data_s    ASTR_CLASS_DATA;
 typedef struct AStr_vtbl_s	{
     OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
     // Put other methods below this as pointers and add their
@@ -727,6 +728,7 @@ typedef struct AStr_vtbl_s	{
 
 
 typedef struct AStrC_data_s         ASTRC_DATA;
+typedef struct AStrC_class_data_s   ASTRC_CLASS_DATA;
 typedef struct AStrC_vtbl_s	{
     OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
     // Put other methods below this as pointers and add their
@@ -761,8 +763,9 @@ typedef struct file_vtbl_s	{
 } FILE_VTBL;
 
 
-typedef struct path_data_s          PATH_DATA;
-typedef struct path_vtbl_s	{
+typedef struct Path_data_s          PATH_DATA;
+typedef struct Path_class_data_s    PATH_CLASS_DATA;
+typedef struct Path_vtbl_s	{
     OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
     // Put other methods below this as pointers and add their
     // method names to the vtbl definition in WStrArray_object.c.
@@ -772,7 +775,7 @@ typedef struct path_vtbl_s	{
 } PATH_VTBL;
 
 
-typedef struct u8Array_data_s	U8ARRAY_DATA;
+typedef struct u8Array_data_s	    U8ARRAY_DATA;
 typedef struct u8Array_vtbl_s	{
     OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
     // Put other methods below this as pointers and add their

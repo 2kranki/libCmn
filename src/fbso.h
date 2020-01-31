@@ -56,7 +56,7 @@
 
 
 #include        <cmn_defs.h>
-#include        <path.h>
+#include        <Path.h>
 
 
 #ifndef         FBSO_H
