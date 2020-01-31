@@ -200,7 +200,7 @@ static
 const
 OBJ_INFO        cmdutl_Info = {
     "cmdutl",
-    "command line utilities",
+    "Command Line Utilities",
     (OBJ_DATA *)&cmdutl_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&cmdutl_Vtbl

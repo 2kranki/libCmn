@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/30/2020 14:45:42.000)
+# ( 1/31/2020 18:06:40.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -176,6 +176,11 @@ OBJS += $(OBJDIR)/DateTime_object.o
 $(OBJDIR)/DateTime_object.o: $(SRCDIR)/DateTime_object.c $(SRCDIR)/DateTime.h $(SRCDIR)/DateTime_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/Dir.o
+
+$(OBJDIR)/Dir.o: $(SRCDIR)/Dir.c $(SRCDIR)/Dir.h $(SRCDIR)/Dir_internal.h $(SRCDIR)/dirEntry.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/DirEntry.o
 
 $(OBJDIR)/DirEntry.o: $(SRCDIR)/DirEntry.c $(SRCDIR)/DirEntry.h $(SRCDIR)/DirEntry_internal.h $(SRCDIR)/dateTime.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
@@ -189,6 +194,16 @@ $(OBJDIR)/DirEntry_json.o: $(SRCDIR)/DirEntry_json.c $(SRCDIR)/DirEntry.h $(SRCD
 OBJS += $(OBJDIR)/DirEntry_object.o
 
 $(OBJDIR)/DirEntry_object.o: $(SRCDIR)/DirEntry_object.c $(SRCDIR)/DirEntry.h $(SRCDIR)/DirEntry_internal.h $(SRCDIR)/dateTime.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Dir_json.o
+
+$(OBJDIR)/Dir_json.o: $(SRCDIR)/Dir_json.c $(SRCDIR)/Dir.h $(SRCDIR)/Dir_internal.h $(SRCDIR)/dirEntry.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Dir_object.o
+
+$(OBJDIR)/Dir_object.o: $(SRCDIR)/Dir_object.c $(SRCDIR)/Dir.h $(SRCDIR)/Dir_internal.h $(SRCDIR)/dirEntry.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Ebcdic.o
@@ -678,12 +693,12 @@ $(OBJDIR)/W32Str_object.o: $(SRCDIR)/W32Str_object.c $(SRCDIR)/W32Str.h $(SRCDIR
 
 OBJS += $(OBJDIR)/appl.o
 
-$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/CmdUtl.h $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h $(SRCDIR)/cmdutl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/appl_object.o
 
-$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/CmdUtl.h $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h $(SRCDIR)/cmdutl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/array.o
@@ -924,16 +939,6 @@ $(OBJDIR)/dec_json.o: $(SRCDIR)/dec_json.c $(SRCDIR)/dec.h $(SRCDIR)/dec_interna
 OBJS += $(OBJDIR)/dec_object.o
 
 $(OBJDIR)/dec_object.o: $(SRCDIR)/dec_object.c $(SRCDIR)/dec.h $(SRCDIR)/dec_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/dir.o
-
-$(OBJDIR)/dir.o: $(SRCDIR)/dir.c $(SRCDIR)/dir.h $(SRCDIR)/dirEntry.h $(SRCDIR)/dir_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/dir_object.o
-
-$(OBJDIR)/dir_object.o: $(SRCDIR)/dir_object.c $(SRCDIR)/dir.h $(SRCDIR)/dirEntry.h $(SRCDIR)/dir_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/disk.o
@@ -1774,6 +1779,12 @@ DirEntry_test: $(TEST_SRC)/DirEntry_test.c $(SRCDIR)/DirEntry.h $(SRCDIR)/DirEnt
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += Dir_test
+
+Dir_test: $(TEST_SRC)/Dir_test.c $(SRCDIR)/Dir.h $(SRCDIR)/Dir_internal.h $(SRCDIR)/dirEntry.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += Ebcdic_test
 
 Ebcdic_test: $(TEST_SRC)/Ebcdic_test.c $(SRCDIR)/Ebcdic.h $(SRCDIR)/Ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1998,7 +2009,7 @@ W32Str_test: $(TEST_SRC)/W32Str_test.c $(SRCDIR)/W32Str.h $(SRCDIR)/W32Str_inter
 
 TESTS += appl_test
 
-appl_test: $(TEST_SRC)/appl_test.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/cmn_defs.h 
+appl_test: $(TEST_SRC)/appl_test.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h $(SRCDIR)/cmdutl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c $<
 	$(TEST_BIN)/$(@F)
 
@@ -2131,12 +2142,6 @@ dbf_test: $(TEST_SRC)/dbf_test.c $(SRCDIR)/dbf.h $(SRCDIR)/dbf_internal.h $(SRCD
 TESTS += dec_test
 
 dec_test: $(TEST_SRC)/dec_test.c $(SRCDIR)/dec.h $(SRCDIR)/dec_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += dir_test
-
-dir_test: $(TEST_SRC)/dir_test.c $(SRCDIR)/dir.h $(SRCDIR)/dir_internal.h $(SRCDIR)/dirEntry.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

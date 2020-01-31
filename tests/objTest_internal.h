@@ -40,7 +40,7 @@
 
 
 #include    <objTest.h>
-#include    <appl_internal.h>
+#include    <Appl_internal.h>
 #include    <number.h>
 #include    <ObjArray.h>
 #include    <Path.h>
