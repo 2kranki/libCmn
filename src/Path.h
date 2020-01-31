@@ -430,6 +430,13 @@ extern "C" {
     );
 
 
+    /*!
+     Check to see if a path is a directory. If so, insure that the last character
+     of the path is the path seperator so that it will parse more cleanly.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS is returned, otherwise an ERESULT_*
+                 error is returned.
+     */
     ERESULT         Path_IsDir (
         PATH_DATA       *this
     );

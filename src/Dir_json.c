@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Path_json.c
+ * File:   Dir_json.c
  *
- *	Generated 01/29/2020 13:19:38
+ *	Generated 01/31/2020 10:23:30
  *
  */
 
@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <Path_internal.h>
+#include    <Dir_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -78,28 +78,27 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Path_ParseJsonFields(
+    ERESULT     Dir_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        PATH_DATA       *pObject
+        DIR_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        const
-        OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(Path_Class());
-        
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(stderr, "ERROR - objectType is invalid!\n");
-            goto exit00;
-        }
+#ifdef XYZZZY 
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
 
-        eRc = JsonIn_SubObjectInHash(pParser, "AStr");
-        eRc = AStr_ParseJsonFields(pParser, (ASTR_DATA *)pObject);
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
+        }
         JsonIn_SubObjectEnd(pParser);
+#endif
 
         // Return to caller.
     exit00:
@@ -114,18 +113,18 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    PATH_DATA * Path_ParseJsonObject(
+    DIR_DATA * Dir_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        PATH_DATA   *pObject = OBJ_NIL;
+        DIR_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(Path_Class());
+        pInfo = obj_getInfo(Dir_Class());
         
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -133,12 +132,12 @@ extern "C" {
             goto exit00;
         }
 
-        pObject = Path_New( );
+        pObject = Dir_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  Path_ParseJsonFields(pParser, pObject);
+        eRc =  Dir_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -160,13 +159,13 @@ extern "C" {
     //===============================================================
     
 
-    PATH_DATA *   Path_NewFromJsonString(
+    DIR_DATA *   Dir_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        PATH_DATA   *pObject = OBJ_NIL;
+        DIR_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -174,7 +173,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = Path_ParseJsonObject(pParser);
+        pObject = Dir_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -187,17 +186,17 @@ extern "C" {
     
     
 
-    PATH_DATA * Path_NewFromJsonStringA(
+    DIR_DATA * Dir_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        PATH_DATA   *pObject = OBJ_NIL;
+        DIR_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = Path_NewFromJsonString(pStr);
+            pObject = Dir_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -213,7 +212,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Path_ToJson(this);
+     ASTR_DATA      *pDesc = Dir_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -221,14 +220,45 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Path_ToJson(
-        PATH_DATA       *this
+    ASTR_DATA *     Dir_ToJson (
+        DIR_DATA   *this
     )
     {
-        ERESULT         eRc;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
+        ERESULT         eRc;
+
+#ifdef NDEBUG
+#else
+        if( !Dir_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+        
+        pStr = AStr_New();
+        if (pStr) {
+             AStr_AppendPrint(pStr,
+                              "{ \"objectType\":\"%s\", ",
+                              pInfo->pClassName
+             );
+     
+        eRc = Dir_ToJsonFields(this, pStr);      
+
+            AStr_AppendA(pStr, "}\n");
+        }
+
+        return pStr;
+    }
+    
+    
+    ERESULT         Dir_ToJsonFields (
+        DIR_DATA     *this,
+        ASTR_DATA       *pStr
+    )
+    {
 #ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
@@ -239,34 +269,16 @@ extern "C" {
             OBJ_ID          objId
         );
         ASTR_DATA       *pWrkStr;
-        #endif
-
-#ifdef NDEBUG
-#else
-        if( !Path_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
 #endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-             AStr_AppendPrint(pStr,
-                              "{ \"objectType\":\"%s\", \n",
-                              pInfo->pClassName
-             );
 
-            AStr_AppendA(pStr, "\"AStr\":{ ");
-            eRc = AStr_ToJsonFields(Path_getAStr(this), pStr);
-            if (ERESULT_FAILED(eRc)) {
-                obj_Release(pStr);
-                return OBJ_NIL;
-            }
-            AStr_AppendA(pStr, "} }\n");
-        }
+#ifdef XYZZZY 
+            JsonOut_Append_i32("fileIndex", this->fileIndex, pStr);
+            JsonOut_Append_i64("offset", this->offset, pStr);
+            JsonOut_Append_u32("lineNo", this->lineNo, pStr);
+            JsonOut_Append_Object("errorStr", this->pErrorStr, pStr);
+#endif
 
-        return pStr;
+        return ERESULT_SUCCESS;
     }
     
     

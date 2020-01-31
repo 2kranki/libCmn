@@ -1241,7 +1241,7 @@ int         test_Path_Version01(
     ERESULT     eRc;
     ASTR_DATA   *pStrF = OBJ_NIL;
     ASTR_DATA   *pStrE = OBJ_NIL;
-    ASTR_DATA   *pStrW = OBJ_NIL;
+    //ASTR_DATA   *pStrW = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = Path_NewA("~/git/libCmn/programs/genMake/tests/test.txt");

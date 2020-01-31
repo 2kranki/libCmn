@@ -1,25 +1,21 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          DIR Console Transmit Task (dir) Header
+//          Disk Directory Entries (Dir) Header
 //****************************************************************
 /*
  * Program
- *				Separate dir (dir)
+ *			Disk Directory Entries (Dir)
  * Purpose
- *				This object provides a standardized way of handling
- *              a separate dir to run things without complications
- *              of interfering with the main dir. A dir may be 
- *              called a dir on other O/S's.
+ *			This object provides a standardized way of handling
+ *          disk directories.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal dir. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	06/22/2015 Generated
+ *  06/22/2015 Generated
+ *	01/31/2020 Regenerated
  */
 
 
@@ -55,14 +51,21 @@
 
 
 #include        <cmn_defs.h>
+#include        <AStr.h>
 #include        <DirEntry.h>
 #include        <ObjEnum.h>
 #include        <Path.h>
-#include        <AStr.h>
 
 
 #ifndef         DIR_H
 #define         DIR_H
+
+
+//#define   DIR_IS_IMMUTABLE     1
+#define   DIR_JSON_SUPPORT     1
+//#define   DIR_SINGLETON        1
+
+
 
 
 
@@ -76,15 +79,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct dir_data_s	DIR_DATA;
+    typedef struct Dir_data_s	DIR_DATA;            // Inherits from OBJ
+    typedef struct Dir_class_data_s DIR_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct dir_vtbl_s	{
+    typedef struct Dir_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in table_object.c.
+        // method names to the vtbl definition in Dir_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(DIR_DATA *);
     } DIR_VTBL;
-    
-    
+
+    typedef struct Dir_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in Dir_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(DIR_DATA *);
+    } DIR_CLASS_VTBL;
+
 
 
 
@@ -97,47 +112,80 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /* Alloc() allocates an area large enough for the dir including
-     * the stack.  If 0 is passed for the stack size, then an ap-
-     * propriate default is chosen. The stack size is passed to Init()
-     * via obj_misc1.
+#ifdef  DIR_SINGLETON
+    DIR_DATA *      Dir_Shared (
+        void
+    );
+
+    void            Dir_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to Dir object if successful, otherwise OBJ_NIL.
      */
-    DIR_DATA *      dir_Alloc(
+    DIR_DATA *      Dir_Alloc (
         void
     );
     
     
-    ERESULT         dir_IsDirA(
-        const
-        char            *pPath
+    OBJ_ID          Dir_Class (
+        void
     );
     
     
-    ERESULT         dir_IsExistingA(
+    ERESULT         Dir_IsDirA (
         const
         char            *pPath
     );
-    
-    
-    ERESULT         dir_IsFileA(
+
+
+    ERESULT         Dir_IsExistingA (
         const
         char            *pPath
     );
-    
-    
-    ERESULT         dir_IsLinkA(
+
+
+    ERESULT         Dir_IsFileA (
         const
         char            *pPath
     );
+
+
+    ERESULT         Dir_IsLinkA (
+        const
+        char            *pPath
+    );
+
+
+    DIR_DATA *      Dir_New (
+        void
+    );
     
     
+#ifdef  DIR_JSON_SUPPORT
+    DIR_DATA *      Dir_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    DIR_DATA *      Dir_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    
-    
+
 
     
     //---------------------------------------------------------------
@@ -146,28 +194,25 @@ extern "C" {
 
     /*! Collect the matching files in the given directory.
      */
-    OBJENUM_DATA *  dir_EnumDir(
+    OBJENUM_DATA *  Dir_EnumDir (
         DIR_DATA        *this,
         PATH_DATA       *pPath
     );
 
-    
-    /* Init() sets up the default TaskBody() outlined above
-     * and initializes other fields needed. Init() assumes 
-     * that the size of the stack is passed to in obj_misc1.
-     */
-    DIR_DATA *     dir_Init(
-        DIR_DATA       *this
+
+    DIR_DATA *      Dir_Init (
+        DIR_DATA        *this
     );
 
 
-    // Create a new directory if needed.
-    ERESULT         dir_MakeDir(
-        DIR_DATA		*this,
+    /*! Create a new directory if needed.
+     */
+    ERESULT         Dir_MakeDir (
+        DIR_DATA        *this,
         PATH_DATA       *pPath,
         uint16_t        mode
     );
-    
+
 
     /*!
      Scan a directory using the supplied method.  The "." and ".." directory
@@ -180,32 +225,53 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         dir_ScanDir(
-        DIR_DATA		*this,
+    ERESULT         Dir_ScanDir (
+        DIR_DATA        *this,
         PATH_DATA       *pPath,
         bool            (*pScan)(void *, DIRENTRY_DATA *),
         void            *pObject
     );
-    
-    
+
+
+#ifdef  DIR_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Dir_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Dir_ToJson (
+        DIR_DATA        *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-     ASTR_DATA      *pDesc = dir_ToDebugString(pObj,4);
-     @endcode
-     @param     this    DIR_DATA object pointer
+     @code 
+        ASTR_DATA      *pDesc = Dir_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
-                 description, otherwise OBJ_NIL.
+                description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    dir_ToDebugString(
+    ASTR_DATA *     Dir_ToDebugString (
         DIR_DATA        *this,
         int             indent
     );
     
     
+
     
 #ifdef	__cplusplus
 }

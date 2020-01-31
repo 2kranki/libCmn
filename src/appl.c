@@ -76,7 +76,7 @@
 /* Header File Inclusion */
 #include    <appl_internal.h>
 #include    <ascii.h>
-#include    <dir.h>
+#include    <Dir.h>
 #include    <misc.h>
 #include    <scanner.h>
 #include    <str.h>

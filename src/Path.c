@@ -54,7 +54,15 @@ extern "C" {
 #endif
     
 
-    
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
+    const
+    char        *pPathSep = "/";
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    const
+    char        *pPathSep = "\\";
+#endif
+
 
 
  
@@ -62,16 +70,17 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            Path_task_body (
-        void            *pData
+    void            Path_AppendSep (
+        PATH_DATA       *this
     )
     {
-        //PATH_DATA  *this = pData;
-        
+        if (AStr_CharGetLastW32(Path_getAStr(this)) == *pPathSep)
+            ;
+        else {
+            AStr_AppendA(Path_getAStr(this), pPathSep);
+        }
     }
-#endif
 
 
 
@@ -192,6 +201,9 @@ extern "C" {
             len = (uint32_t)strlen(data);
             if (len) {
                 this = Path_NewA(data);
+                if (this) {
+                    Path_AppendSep(this);
+                }
             }
         }
 
@@ -500,7 +512,7 @@ extern "C" {
 
 
     ERESULT         Path_AppendDir(
-        PATH_DATA        *this,
+        PATH_DATA       *this,
         ASTR_DATA       *pDir
     )
     {
@@ -1520,6 +1532,9 @@ extern "C" {
         struct stat     statBuffer;
         int             iRc;
 #endif
+        #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+                DWORD           dwFileAttr;
+        #endif
         ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
 
         // Do initialization.
@@ -1537,6 +1552,16 @@ extern "C" {
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
                 eRc = ERESULT_SUCCESS;
+                Path_AppendSep(this);
+            }
+        }
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        dwFileAttr = GetFileAttributesA(pStrA);
+        if (dwFileAttr != INVALID_FILE_ATTRIBUTES) {
+            if (dwFileAttr & FILE_ATTRIBUTE_DIRECTORY) {
+                eRc = ERESULT_SUCCESS;
+                Path_AppendSep(this);
             }
         }
 #endif
@@ -1576,289 +1601,310 @@ extern "C" {
     
     
     
-        //---------------------------------------------------------------
-        //                       I s E x i s t i n g
-        //---------------------------------------------------------------
+    //---------------------------------------------------------------
+    //                       I s E x i s t i n g
+    //---------------------------------------------------------------
 
-        ERESULT         Path_IsExisting (
-            PATH_DATA        *this
-        )
-        {
-            const
-            char            *pStr = NULL;
-    #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-            struct stat     statBuffer;
-            int             iRc;
-    #endif
-            ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
+    ERESULT         Path_IsExisting (
+        PATH_DATA        *this
+    )
+    {
+        const
+        char            *pStrA = NULL;
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        struct stat     statBuffer;
+        int             iRc;
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        DWORD           dwFileAttr;
+#endif
+        ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
 
-            // Do initialization.
-    #ifdef NDEBUG
-    #else
-            if (!Path_Validate(this)) {
-                DEBUG_BREAK();
-                return ERESULT_INVALID_OBJECT;
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Path_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pStrA = (char *)Path_getData(this);
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        iRc = stat(pStrA, &statBuffer);
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
+                Path_AppendSep(this);
             }
-    #endif
+            eRc = ERESULT_SUCCESS;
+        }
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        dwFileAttr = GetFileAttributesA(pStrA);
+        if (dwFileAttr != INVALID_FILE_ATTRIBUTES) {
+            eRc = ERESULT_SUCCESS;
+            if (dwFileAttr & FILE_ATTRIBUTE_DIRECTORY) {
+                Path_AppendSep(this);
+            }
+        }
+#endif
 
-            pStr = (char *)Path_getData(this);
-    #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-            iRc = stat(pStr, &statBuffer);
-            if (0 == iRc) {
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       I s F i l e
+    //---------------------------------------------------------------
+
+    ERESULT         Path_IsFile (
+        PATH_DATA        *this
+    )
+    {
+        const
+        char            *pStr = NULL;
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        struct stat     statBuffer;
+        int             iRc;
+        //int             ourErrno;
+#endif
+        ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Path_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pStr = (char *)Path_getData(this);
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        iRc = stat(pStr, &statBuffer);
+#ifdef XYZZY
+        ourErrno = errno;
+        if (ourErrno) {
+            perror(NULL);
+        }
+#endif
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
+                Path_AppendSep(this);
+            }
+            if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
                 eRc = ERESULT_SUCCESS;
             }
-    #endif
+        }
+#endif
 
-            // Return to caller.
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       I s L i n k
+    //---------------------------------------------------------------
+
+    ERESULT         Path_IsLink (
+        PATH_DATA        *this
+    )
+    {
+        const
+        char            *pStr = NULL;
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        struct stat     statBuffer;
+        int             iRc;
+#endif
+        ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Path_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pStr = (char *)Path_getData(this);
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        iRc = stat(pStr, &statBuffer);
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
+                Path_AppendSep(this);
+            }
+            if ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {
+                eRc = ERESULT_SUCCESS;
+            }
+        }
+#endif
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                     M a k e  F i l e
+    //---------------------------------------------------------------
+
+    ERESULT         Path_MakeFile(
+        PATH_DATA        *this,
+        ASTR_DATA       *pFileName,
+        ASTR_DATA       *pFileExt
+    )
+    {
+        ERESULT         eRc;
+        int32_t         chr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = AStr_Truncate((ASTR_DATA *)this, 0);
+        if (ERESULT_HAS_FAILED(eRc)) {
             return eRc;
         }
 
-
-
-        //---------------------------------------------------------------
-        //                       I s F i l e
-        //---------------------------------------------------------------
-
-        ERESULT         Path_IsFile (
-            PATH_DATA        *this
-        )
-        {
-            const
-            char            *pStr = NULL;
-    #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-            struct stat     statBuffer;
-            int             iRc;
-            //int             ourErrno;
-    #endif
-            ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
-
-            // Do initialization.
-    #ifdef NDEBUG
-    #else
-            if (!Path_Validate(this)) {
-                DEBUG_BREAK();
-                return ERESULT_INVALID_OBJECT;
-            }
-    #endif
-
-            pStr = (char *)Path_getData(this);
-    #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-            iRc = stat(pStr, &statBuffer);
-    #ifdef XYZZY
-            ourErrno = errno;
-            if (ourErrno) {
-                perror(NULL);
-            }
-    #endif
-            if (0 == iRc) {
-                if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
-                    eRc = ERESULT_SUCCESS;
-                }
-            }
-    #endif
-
-            // Return to caller.
-            return eRc;
-        }
-
-
-
-        //---------------------------------------------------------------
-        //                       I s L i n k
-        //---------------------------------------------------------------
-
-        ERESULT         Path_IsLink (
-            PATH_DATA        *this
-        )
-        {
-            const
-            char            *pStr = NULL;
-    #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-            struct stat     statBuffer;
-            int             iRc;
-    #endif
-            ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
-
-            // Do initialization.
-    #ifdef NDEBUG
-    #else
-            if (!Path_Validate(this)) {
-                DEBUG_BREAK();
-                return ERESULT_INVALID_OBJECT;
-            }
-    #endif
-
-            pStr = (char *)Path_getData(this);
-    #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-            iRc = stat(pStr, &statBuffer);
-            if (0 == iRc) {
-                if ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {
-                    eRc = ERESULT_SUCCESS;
-                }
-            }
-    #endif
-
-            // Return to caller.
-            return eRc;
-        }
-
-
-
-        //---------------------------------------------------------------
-        //                     M a k e  F i l e
-        //---------------------------------------------------------------
-
-        ERESULT         Path_MakeFile(
-            PATH_DATA        *this,
-            ASTR_DATA       *pFileName,
-            ASTR_DATA       *pFileExt
-        )
-        {
-            ERESULT         eRc;
-            int32_t         chr;
-
-            // Do initialization.
-    #ifdef NDEBUG
-    #else
-            if( !Path_Validate(this) ) {
-                DEBUG_BREAK();
-                return ERESULT_INVALID_OBJECT;
-            }
-    #endif
-
-            eRc = AStr_Truncate((ASTR_DATA *)this, 0);
+        if (pFileName) {
+            eRc = AStr_Append((ASTR_DATA *)this, pFileName);
             if (ERESULT_HAS_FAILED(eRc)) {
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
                 return eRc;
             }
-
-            if (pFileName) {
-                eRc = AStr_Append((ASTR_DATA *)this, pFileName);
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    (void)AStr_Truncate((ASTR_DATA *)this, 0);
-                    return eRc;
-                }
-            }
-
-            if (pFileExt) {
-                chr = AStr_CharGetW32(pFileExt, 1);
-                if (chr == '.')
-                    ;
-                else {
-                    eRc = AStr_AppendA((ASTR_DATA *)this, ".");
-                    if (ERESULT_HAS_FAILED(eRc)) {
-                        (void)AStr_Truncate((ASTR_DATA *)this, 0);
-                        return eRc;
-                    }
-                }
-                eRc = AStr_Append((ASTR_DATA *)this, pFileExt);
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    (void)AStr_Truncate((ASTR_DATA *)this, 0);
-                    return eRc;
-                }
-            }
-
-            // Return to caller.
-            return ERESULT_SUCCESS;
         }
 
-
-
-        //---------------------------------------------------------------
-        //                     M a k e  P a t h
-        //---------------------------------------------------------------
-
-        ERESULT         Path_MakePath(
-            PATH_DATA        *this,
-            ASTR_DATA       *pDrive,
-            PATH_DATA       *pDir,
-            PATH_DATA       *pFileName
-            )
-        {
-            ERESULT         eRc;
-
-            // Do initialization.
-    #ifdef NDEBUG
-    #else
-            if( !Path_Validate(this) ) {
-                DEBUG_BREAK();
-                return ERESULT_INVALID_OBJECT;
+        if (pFileExt) {
+            chr = AStr_CharGetW32(pFileExt, 1);
+            if (chr == '.')
+                ;
+            else {
+                eRc = AStr_AppendA((ASTR_DATA *)this, ".");
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    (void)AStr_Truncate((ASTR_DATA *)this, 0);
+                    return eRc;
+                }
             }
-    #endif
-
-            eRc = AStr_Truncate((ASTR_DATA *)this, 0);
+            eRc = AStr_Append((ASTR_DATA *)this, pFileExt);
             if (ERESULT_HAS_FAILED(eRc)) {
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
                 return eRc;
             }
-
-            if (pDrive) {
-                eRc = AStr_Append((ASTR_DATA *)this, pDrive);
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    (void)AStr_Truncate((ASTR_DATA *)this, 0);
-                    return eRc;
-                }
-                eRc = AStr_AppendA((ASTR_DATA *)this, ":");
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    (void)AStr_Truncate((ASTR_DATA *)this, 0);
-                    return eRc;
-                }
-            }
-
-            if (pDir) {
-                eRc = AStr_Append((ASTR_DATA *)this, (ASTR_DATA *)pDir);
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    (void)AStr_Truncate((ASTR_DATA *)this, 0);
-                    return eRc;
-                }
-                eRc = AStr_AppendA((ASTR_DATA *)this, "/");
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    (void)AStr_Truncate((ASTR_DATA *)this, 0);
-                    return eRc;
-                }
-            }
-
-            if (pFileName) {
-                eRc = AStr_Append((ASTR_DATA *)this, (ASTR_DATA *)pFileName);
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    (void)AStr_Truncate((ASTR_DATA *)this, 0);
-                    return eRc;
-                }
-            }
-
-            eRc = Path_Clean(this);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                return eRc;
-            }
-
-            // Return to caller.
-            return ERESULT_SUCCESS;
         }
 
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
 
 
-        //---------------------------------------------------------------
-        //                          M a t c h
-        //---------------------------------------------------------------
 
-        ERESULT         Path_MatchA(
-            PATH_DATA       *this,
-            const
-            char            *pPattern
+    //---------------------------------------------------------------
+    //                     M a k e  P a t h
+    //---------------------------------------------------------------
+
+    ERESULT         Path_MakePath(
+        PATH_DATA        *this,
+        ASTR_DATA       *pDrive,
+        PATH_DATA       *pDir,
+        PATH_DATA       *pFileName
         )
-        {
-            ERESULT         eRc = ERESULT_SUCCESS;
+    {
+        ERESULT         eRc;
 
-    #ifdef NDEBUG
-    #else
-            if( !Path_Validate(this) ) {
-                DEBUG_BREAK();
-                return ERESULT_INVALID_OBJECT;
-            }
-    #endif
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
 
-            eRc =   AStr_MatchA((ASTR_DATA *)this, pPattern);
-
+        eRc = AStr_Truncate((ASTR_DATA *)this, 0);
+        if (ERESULT_HAS_FAILED(eRc)) {
             return eRc;
         }
+
+        if (pDrive) {
+            eRc = AStr_Append((ASTR_DATA *)this, pDrive);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
+                return eRc;
+            }
+            eRc = AStr_AppendA((ASTR_DATA *)this, ":");
+            if (ERESULT_HAS_FAILED(eRc)) {
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
+                return eRc;
+            }
+        }
+
+        if (pDir) {
+            eRc = AStr_Append((ASTR_DATA *)this, (ASTR_DATA *)pDir);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
+                return eRc;
+            }
+            eRc = AStr_AppendA((ASTR_DATA *)this, "/");
+            if (ERESULT_HAS_FAILED(eRc)) {
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
+                return eRc;
+            }
+        }
+
+        if (pFileName) {
+            eRc = AStr_Append((ASTR_DATA *)this, (ASTR_DATA *)pFileName);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                (void)AStr_Truncate((ASTR_DATA *)this, 0);
+                return eRc;
+            }
+        }
+
+        eRc = Path_Clean(this);
+        if (ERESULT_HAS_FAILED(eRc)) {
+            return eRc;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          M a t c h
+    //---------------------------------------------------------------
+
+    ERESULT         Path_MatchA(
+        PATH_DATA       *this,
+        const
+        char            *pPattern
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+#ifdef NDEBUG
+#else
+        if( !Path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc =   AStr_MatchA((ASTR_DATA *)this, pPattern);
+
+        return eRc;
+    }
 
 
 
