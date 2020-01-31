@@ -41,7 +41,7 @@
 
 #include        <NodeTstA.h>
 #include        <NodeBase_internal.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef NODETSTA_INTERNAL_H

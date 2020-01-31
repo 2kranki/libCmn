@@ -49,7 +49,7 @@
 #include        <NodePgm.h>
 #include        <NodeRtn.h>
 #include        <NodeTest.h>
-#include        <srcErrors.h>
+#include        <SrcErrors.h>
 #include        <trace.h>
 
 
@@ -875,19 +875,19 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&SrcParse_Vtbl);
         
-        this->pObjs = nodeArray_New( );
+        this->pObjs = NodeArray_New( );
         if (OBJ_NIL == this->pObjs) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pRtns = nodeArray_New( );
+        this->pRtns = NodeArray_New( );
         if (OBJ_NIL == this->pRtns) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pTests = nodeArray_New( );
+        this->pTests = NodeArray_New( );
         if (OBJ_NIL == this->pRtns) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -971,13 +971,13 @@ extern "C" {
         pObj = hjson_NewFromPath(pPath, 4);
         if (pObj) {
             pFileNode = hjson_ParseFileHash(pObj);
-            srcErrors_ExitOnFatal(OBJ_NIL);
+            SrcErrors_ExitOnFatal(OBJ_NIL);
             obj_Release(pObj);
             pObj = OBJ_NIL;
         }
         
         if (pFileNode) {
-            pHash = node_getData(pFileNode);
+            pHash = Node_getData(pFileNode);
             if (OBJ_NIL == pHash) {
                 DEBUG_BREAK();
                 fprintf(stderr, "Error: No JSON Hash to process\n\n\n");
@@ -1030,13 +1030,13 @@ extern "C" {
         pObj = hjson_NewA(pStrA, 4);
         if (pObj) {
             pFileNode = hjson_ParseFileHash(pObj);
-            srcErrors_ExitOnFatal(OBJ_NIL);
+            SrcErrors_ExitOnFatal(OBJ_NIL);
             obj_Release(pObj);
             pObj = OBJ_NIL;
         }
 
         if (pFileNode) {
-            pHash = node_getData(pFileNode);
+            pHash = Node_getData(pFileNode);
             if (OBJ_NIL == pHash) {
                 DEBUG_BREAK();
                 fprintf(stderr, "ERROR - No JSON Hash to process\n\n\n");
@@ -1145,18 +1145,18 @@ extern "C" {
         BREAK_NULL(this->pTests);
 
         // We cheat and let NodeLib parse the Object.
-        pHash = node_getData(this->pNodes);
+        pHash = Node_getData(this->pNodes);
         if (!obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) {
             DEBUG_BREAK();
-            return eResult_NewStrA(ERESULT_INVALID_DATA, "Missing parsed JSON nodes");
+            return eResult_NewStrA(ERESULT_INVALID_DATA, "Missing parsed JSON Nodes");
         }
         
         // Handle "library" or "program" section of source file.
-        pNode = nodeHash_FindA(pHash, 0, "library");
+        pNode = NodeHash_FindA(pHash, 0, "library");
         if (pNode) {
-            pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
+            pHashWrk = JsonIn_CheckNodeDataForHash(pNode);
             if (pHashWrk) {
-                pErr = SrcParse_ParseLibrary(this, node_getData(pNode));
+                pErr = SrcParse_ParseLibrary(this, Node_getData(pNode));
                 if (pErr) {
                     DEBUG_BREAK();
                     return pErr;
@@ -1168,11 +1168,11 @@ extern "C" {
             }
         }
         else {
-            pNode = nodeHash_FindA(pHash, 0, "program");
+            pNode = NodeHash_FindA(pHash, 0, "program");
             if (pNode) {
-                pHashWrk = jsonIn_CheckNodeDataForHash(pNode);
+                pHashWrk = JsonIn_CheckNodeDataForHash(pNode);
                 if (pHashWrk) {
-                    pErr = SrcParse_ParseProgram(this, node_getData(pNode));
+                    pErr = SrcParse_ParseProgram(this, Node_getData(pNode));
                     if (pErr) {
                         DEBUG_BREAK();
                         return pErr;
@@ -1185,15 +1185,15 @@ extern "C" {
             } else {
                 DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_DATA,
-                                       "Missing 'library' or 'program' JSON nodes");
+                                       "Missing 'library' or 'program' JSON Nodes");
             }
         }
 
-        pNode = nodeHash_FindA(pHash, 0, "objects");
+        pNode = NodeHash_FindA(pHash, 0, "objects");
         if (pNode) {
-            pArray = jsonIn_CheckNodeDataForArray(pNode);
+            pArray = JsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
-                pErr = SrcParse_ParseObjects(this, node_getData(pNode));
+                pErr = SrcParse_ParseObjects(this, Node_getData(pNode));
                 if (pErr) {
                     DEBUG_BREAK();
                     return pErr;
@@ -1205,11 +1205,11 @@ extern "C" {
             }
         }
         
-        pNode = nodeHash_FindA(pHash, 0, "routines");
+        pNode = NodeHash_FindA(pHash, 0, "routines");
         if (pNode) {
-            pArray = jsonIn_CheckNodeDataForArray(pNode);
+            pArray = JsonIn_CheckNodeDataForArray(pNode);
             if (pArray) {
-                pErr = SrcParse_ParseRoutines(this, node_getData(pNode));
+                pErr = SrcParse_ParseRoutines(this, Node_getData(pNode));
                 if (pErr) {
                     DEBUG_BREAK();
                     return pErr;
@@ -1264,7 +1264,7 @@ extern "C" {
             return pErr;
         }
         
-        eRc = nodeArray_AppendNode(this->pObjs, NodeObj_getNode(pObj), NULL);
+        eRc = NodeArray_AppendNode(this->pObjs, NodeObj_getNode(pObj), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(pObj);
@@ -1311,11 +1311,11 @@ extern "C" {
             }
     #endif
             
-            pArray = jsonIn_CheckNodeForArray(pNodes);
+            pArray = JsonIn_CheckNodeForArray(pNodes);
             if (pArray) {
-                iMax = nodeArray_getSize(pArray);
+                iMax = NodeArray_getSize(pArray);
                 for(i=0; i<iMax; ++i) {
-                    pNode = nodeArray_Get(pArray, (i+1));
+                    pNode = NodeArray_Get(pArray, (i+1));
                     if (pNode) {
                         pErr = SrcParse_ParseObject(this, pNode);
                         if (pErr) {
@@ -1420,7 +1420,7 @@ extern "C" {
             return pErr;
         }
         
-        eRc = nodeArray_AppendNode(this->pRtns, NodeRtn_getNode(pRtn), NULL);
+        eRc = NodeArray_AppendNode(this->pRtns, NodeRtn_getNode(pRtn), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(pRtn);
@@ -1467,11 +1467,11 @@ extern "C" {
         }
 #endif
         
-        pArray = jsonIn_CheckNodeForArray(pNodes);
+        pArray = JsonIn_CheckNodeForArray(pNodes);
         if (pArray) {
-            iMax = nodeArray_getSize(pArray);
+            iMax = NodeArray_getSize(pArray);
             for(i=0; i<iMax; ++i) {
-                pNode = nodeArray_Get(pArray, (i+1));
+                pNode = NodeArray_Get(pArray, (i+1));
                 if (pNode) {
                     pErr = SrcParse_ParseRoutine(this, pNode);
                     if (pErr) {
@@ -1649,7 +1649,7 @@ extern "C" {
             return pErr;
         }
         
-        eRc = nodeArray_AppendNode(this->pTests, NodeTest_getNode(pTest), NULL);
+        eRc = NodeArray_AppendNode(this->pTests, NodeTest_getNode(pTest), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(pTest);
@@ -1696,11 +1696,11 @@ extern "C" {
         }
 #endif
         
-        pArray = jsonIn_CheckNodeForArray(pNodes);
+        pArray = JsonIn_CheckNodeForArray(pNodes);
         if (pArray) {
-            iMax = nodeArray_getSize(pArray);
+            iMax = NodeArray_getSize(pArray);
             for(i=0; i<iMax; ++i) {
-                pNode = nodeArray_Get(pArray, (i+1));
+                pNode = NodeArray_Get(pArray, (i+1));
                 if (pNode) {
                     pErr = SrcParse_ParseTest(this, pNode);
                     if (pErr) {
@@ -1856,13 +1856,13 @@ extern "C" {
             }
         }
         if (this->pObjs) {
-            iMax = nodeArray_getSize(this->pObjs);
+            iMax = NodeArray_getSize(this->pObjs);
             if (iMax > 0) {
                 eRc = AStr_AppendPrint(pStr, "-----------------  SrcParse %d Objects "
                                        "-----------------\n", iMax);
             }
             for (i=0; i<iMax; i++) {
-                pObj = (NODEOBJ_DATA *)nodeArray_Get(this->pObjs, i+1);
+                pObj = (NODEOBJ_DATA *)NodeArray_Get(this->pObjs, i+1);
                 if (pObj) {
                     pWrk = NodeObj_ToString(pObj);
                     if (pWrk) {
@@ -1876,13 +1876,13 @@ extern "C" {
             AStr_AppendA(pStr, "\n");
         }
         if (this->pRtns) {
-            iMax = nodeArray_getSize(this->pRtns);
+            iMax = NodeArray_getSize(this->pRtns);
             if (iMax > 0) {
                 eRc = AStr_AppendPrint(pStr, "-----------------  SrcParse %d Routines "
                                        "-----------------\n", iMax);
             }
             for (i=0; i<iMax; i++) {
-                pRtn = (NODERTN_DATA *)nodeArray_Get(this->pRtns, i+1);
+                pRtn = (NODERTN_DATA *)NodeArray_Get(this->pRtns, i+1);
                 if (pRtn) {
                     pWrk = NodeRtn_ToString(pRtn);
                     if (pWrk) {
@@ -1896,13 +1896,13 @@ extern "C" {
             AStr_AppendA(pStr, "\n");
         }
         if (this->pTests) {
-            iMax = nodeArray_getSize(this->pTests);
+            iMax = NodeArray_getSize(this->pTests);
             if (iMax > 0) {
                 eRc = AStr_AppendPrint(pStr, "-----------------  SrcParse %d Tests "
                                        "-----------------\n", iMax);
             }
             for (i=0; i<iMax; i++) {
-                pTest = (NODETEST_DATA *)nodeArray_Get(this->pTests, i+1);
+                pTest = (NODETEST_DATA *)NodeArray_Get(this->pTests, i+1);
                 if (pTest) {
                     pWrk = NodeTest_ToString(pTest);
                     if (pWrk) {

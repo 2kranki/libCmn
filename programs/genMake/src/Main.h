@@ -78,9 +78,9 @@
 #include        <Dict.h>
 #include        <ExpandNodes.h>
 #include        <fbso.h>
-#include        <node.h>
-#include        <nodeArray.h>
-#include        <path.h>
+#include        <Node.h>
+#include        <NodeArray.h>
+#include        <Path.h>
 #include        <SrcParse.h>
 #include        <szHash.h>
 #include        <TextOut.h>

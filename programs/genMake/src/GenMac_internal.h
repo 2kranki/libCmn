@@ -41,7 +41,7 @@
 
 #include        <GenMac.h>
 #include        <GenBase_internal.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef GENMAC_INTERNAL_H

@@ -41,7 +41,7 @@
 
 #include        <GenWin.h>
 #include        <GenBase_internal.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef GENWIN_INTERNAL_H

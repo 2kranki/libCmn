@@ -24,7 +24,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <trace.h>
 #include    <Main_internal.h>
 
@@ -386,7 +386,7 @@ int         tearDown(
 
     
     szTbl_SharedReset( );
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -702,12 +702,12 @@ int         test_Main_CheckInputFilePath01(
         pPath = Main_CheckInputPath(pObj, pStr);
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
 
-        pPathCheck = path_NewA(pOutputA);
+        pPathCheck = Path_NewA(pOutputA);
         TINYTEST_FALSE( (OBJ_NIL == pPathCheck) );
-        eRc = path_Clean(pPathCheck);
+        eRc = Path_Clean(pPathCheck);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        iRc = str_CompareSpcl(path_getData(pPath), path_getData(pPathCheck), &offset);
+        iRc = str_CompareSpcl(Path_getData(pPath), Path_getData(pPathCheck), &offset);
         fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
         TINYTEST_TRUE( (0 == iRc) );
         
@@ -762,12 +762,12 @@ int         test_Main_CreateOutputFilePath01(
         pPath = Main_CreateOutputPath(pObj, pStr, pObj->pOsName);
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
 
-        pPathCheck = path_NewA(pOutputA);
+        pPathCheck = Path_NewA(pOutputA);
         TINYTEST_FALSE( (OBJ_NIL == pPathCheck) );
-        eRc = path_Clean(pPathCheck);
+        eRc = Path_Clean(pPathCheck);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        iRc = str_CompareSpcl(path_getData(pPath), path_getData(pPathCheck), &offset);
+        iRc = str_CompareSpcl(Path_getData(pPath), Path_getData(pPathCheck), &offset);
         fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
         TINYTEST_TRUE( (0 == iRc) );
         
@@ -814,18 +814,18 @@ int         test_Main_Generation04(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pInputPath = path_NewA(pInputPathA);
+        pInputPath = Path_NewA(pInputPathA);
         TINYTEST_FALSE( (OBJ_NIL == pInputPath) );
 
         pObj->osType = OSTYPE_MACOS64;
         eRc = Main_SetupOsArch(pObj);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = Main_ProcessArg(pObj, path_getAStr(pInputPath));
+        eRc = Main_ProcessArg(pObj, Path_getAStr(pInputPath));
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
         pOutputPath =   Main_CreateOutputPath(
                                             pObj,
-                                            path_getAStr(pInputPath),
+                                            Path_getAStr(pInputPath),
                                             pObj->pOsName
                         );
         TINYTEST_FALSE( (OBJ_NIL == pOutputPath) );
@@ -849,7 +849,7 @@ int         test_Main_Generation04(
         fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
         TINYTEST_TRUE( (0 == iRc) );
         
-        eRc = path_Delete(pOutputPath);
+        eRc = Path_Delete(pOutputPath);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pOutputPath);
@@ -894,18 +894,18 @@ int         test_Main_Generation05(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pInputPath = path_NewA(pInputPathA);
+        pInputPath = Path_NewA(pInputPathA);
         TINYTEST_FALSE( (OBJ_NIL == pInputPath) );
 
         pObj->osType = OSTYPE_MACOS64;
         eRc = Main_SetupOsArch(pObj);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = Main_ProcessArg(pObj, path_getAStr(pInputPath));
+        eRc = Main_ProcessArg(pObj, Path_getAStr(pInputPath));
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
         pOutputPath =   Main_CreateOutputPath(
                                             pObj,
-                                            path_getAStr(pInputPath),
+                                            Path_getAStr(pInputPath),
                                             pObj->pOsName
                         );
         TINYTEST_FALSE( (OBJ_NIL == pOutputPath) );
@@ -929,7 +929,7 @@ int         test_Main_Generation05(
         fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
         TINYTEST_TRUE( (0 == iRc) );
         
-        eRc = path_Delete(pOutputPath);
+        eRc = Path_Delete(pOutputPath);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pOutputPath);
@@ -974,18 +974,18 @@ int         test_Main_Generation06(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        pInputPath = path_NewA(pInputPathA);
+        pInputPath = Path_NewA(pInputPathA);
         TINYTEST_FALSE( (OBJ_NIL == pInputPath) );
 
         pObj->osType = OSTYPE_MACOS64;
         eRc = Main_SetupOsArch(pObj);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = Main_ProcessArg(pObj, path_getAStr(pInputPath));
+        eRc = Main_ProcessArg(pObj, Path_getAStr(pInputPath));
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
         pOutputPath =   Main_CreateOutputPath(
                                             pObj,
-                                            path_getAStr(pInputPath),
+                                            Path_getAStr(pInputPath),
                                             pObj->pOsName
                         );
         TINYTEST_FALSE( (OBJ_NIL == pOutputPath) );
@@ -1011,7 +1011,7 @@ int         test_Main_Generation06(
         TINYTEST_TRUE( (0 == iRc) );
 #endif
         
-        eRc = path_Delete(pOutputPath);
+        eRc = Path_Delete(pOutputPath);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pOutputPath);

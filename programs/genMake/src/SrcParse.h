@@ -55,7 +55,7 @@
 #include        <AStr.h>
 #include        <NodeLib.h>
 #include        <NodePgm.h>
-#include        <nodeArray.h>
+#include        <NodeArray.h>
 
 
 #ifndef         SRCPARSE_H

@@ -410,7 +410,7 @@ OBJ_INFO        Dict_Info = {
     "Dict",
     "Common Dictionary",
     (OBJ_DATA *)&Dict_ClassObj,
-    (OBJ_DATA *)&nodeHash_ClassObj,
+    (OBJ_DATA *)&NodeHash_ClassObj,
     (OBJ_IUNKNOWN *)&Dict_Vtbl,
     sizeof(DICT_DATA)
 };

@@ -53,7 +53,7 @@
 
 #include        <genMake.h>
 #include        <AStr.h>
-#include        <dateTime.h>
+#include        <DateTime.h>
 #include        <TextOut.h>
 #include        <NodeLib.h>
 #include        <NodePgm.h>

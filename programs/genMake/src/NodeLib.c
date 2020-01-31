@@ -134,7 +134,7 @@ extern "C" {
                                    "Error: Invalid Input Node!");
             return pErr;
         }
-        if (!obj_IsKindOf(node_getData(pNode), OBJ_IDENT_NODEHASH)) {
+        if (!obj_IsKindOf(Node_getData(pNode), OBJ_IDENT_NODEHASH)) {
             DEBUG_BREAK();
             pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
                                    "Error: Missing Input Hash Node!");
@@ -155,7 +155,7 @@ extern "C" {
         }
         *ppBase = OBJ_NIL;
 
-        pHash = jsonIn_CheckNodeForHash(pNode);
+        pHash = JsonIn_CheckNodeForHash(pNode);
         if (pHash) {
             // Ok, we have a hash, so there might a lot to parse here.
 
@@ -891,10 +891,10 @@ extern "C" {
 
         AStr_AppendA(pStr,
                      "# Generated file - Edits will be discarded by next generation!\n");
-        pDate = dateTime_NewCurrent();
+        pDate = DateTime_NewCurrent();
         if (pDate) {
             ASTR_DATA       *pWrk;
-            pWrk = dateTime_ToString(pDate);
+            pWrk = DateTime_ToString(pDate);
             AStr_AppendPrint(pStr, "# (%s)\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;

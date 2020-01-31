@@ -180,7 +180,7 @@ extern "C" {
         }
         *ppBase = OBJ_NIL;
 
-        pHash = jsonIn_CheckNodeForHash(pNode);
+        pHash = JsonIn_CheckNodeForHash(pNode);
         if (pHash) {
             // Ok, we have a hash, so there might a lot to parse here.
 
@@ -213,25 +213,25 @@ extern "C" {
             }
 
             // Scan off the test stuff if present.
-            pHashItem = nodeHash_FindA(pHash, 0, "json");
+            pHashItem = NodeHash_FindA(pHash, 0, "json");
             if (pHashItem) {
                 FALSE_DATA      *pFalse;
                 NULL_DATA       *pNull;
                 TRUE_DATA       *pTrue;
-                pFalse = jsonIn_CheckNodeDataForFalse(pHashItem);
+                pFalse = JsonIn_CheckNodeDataForFalse(pHashItem);
                 if (pFalse)
                     goto endJson;
-                pNull = jsonIn_CheckNodeDataForNull(pHashItem);
+                pNull = JsonIn_CheckNodeDataForNull(pHashItem);
                 if (pNull) {
                     pObj->pJson = NodeRtn_New();
                     goto endJson;
                 }
-                pTrue = jsonIn_CheckNodeDataForTrue(pHashItem);
+                pTrue = JsonIn_CheckNodeDataForTrue(pHashItem);
                 if (pTrue) {
                     pObj->pJson = NodeRtn_New();
                     goto endJson;
                 }
-                pHashItem = node_getData(pHashItem);
+                pHashItem = Node_getData(pHashItem);
                 // NodeRtn::Parse will provide a new NodeRtn.
                 pErr = NodeRtn_Parse(pHashItem, &pObj->pJson);
                 if (pErr) {
@@ -270,25 +270,25 @@ extern "C" {
             }
 
             // Scan off the test stuff if present.
-            pHashItem = nodeHash_FindA(pHash, 0, "test");
+            pHashItem = NodeHash_FindA(pHash, 0, "test");
             if (pHashItem) {
                 FALSE_DATA      *pFalse;
                 NULL_DATA       *pNull;
                 TRUE_DATA       *pTrue;
-                pFalse = jsonIn_CheckNodeDataForFalse(pHashItem);
+                pFalse = JsonIn_CheckNodeDataForFalse(pHashItem);
                 if (pFalse)
                     goto endTest;
-                pNull = jsonIn_CheckNodeDataForNull(pHashItem);
+                pNull = JsonIn_CheckNodeDataForNull(pHashItem);
                 if (pNull) {
                     pObj->pTest = NodeTest_New();
                     goto endTest;
                 }
-                pTrue = jsonIn_CheckNodeDataForTrue(pHashItem);
+                pTrue = JsonIn_CheckNodeDataForTrue(pHashItem);
                 if (pTrue) {
                     pObj->pTest = NodeTest_New();
                     goto endTest;
                 }
-                pHashItem = node_getData(pHashItem);
+                pHashItem = Node_getData(pHashItem);
                 // NodeTest::Parse will provide the NodeTest.
                 pErr = NodeTest_Parse(pHashItem, &pObj->pTest);
                 if (pErr) {

@@ -41,7 +41,7 @@
 
 #include        <NodeBase_internal.h>
 #include        <NodeObj.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef NODEOBJ_INTERNAL_H

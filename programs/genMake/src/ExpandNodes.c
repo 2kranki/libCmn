@@ -496,7 +496,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeArray_AppendNode(this->pRtns, NodeRtnA_getNode(pRtn), NULL);
+        eRc = NodeArray_AppendNode(this->pRtns, NodeRtnA_getNode(pRtn), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return  eResult_NewStrA(
@@ -540,7 +540,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeArray_AppendNode(this->pTests, NodeTstA_getNode(pTst), NULL);
+        eRc = NodeArray_AppendNode(this->pTests, NodeTstA_getNode(pTst), NULL);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return  eResult_NewStrA(
@@ -656,9 +656,9 @@ extern "C" {
         }
 #endif
         
-        iMax = nodeArray_getSize(this->pRtns);
+        iMax = NodeArray_getSize(this->pRtns);
         for (i=0; i<iMax; i++) {
-            pRtnA = (NODERTNA_DATA *)nodeArray_Get(this->pRtns, i+1);
+            pRtnA = (NODERTNA_DATA *)NodeArray_Get(this->pRtns, i+1);
             if (OBJ_NIL == pRtnA) {
                 DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_OBJECT,
@@ -672,9 +672,9 @@ extern "C" {
             eRc = NodeRtnA_CheckContraints(pRtnA, pArch, pOS);
         }
 
-        iMax = nodeArray_getSize(this->pTests);
+        iMax = NodeArray_getSize(this->pTests);
         for (i=0; i<iMax; i++) {
-            pTstA = (NODETSTA_DATA *)nodeArray_Get(this->pTests, i+1);
+            pTstA = (NODETSTA_DATA *)NodeArray_Get(this->pTests, i+1);
             if (OBJ_NIL == pTstA) {
                 DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_OBJECT,
@@ -724,12 +724,12 @@ extern "C" {
         ExpandNodes_setRtns(this, OBJ_NIL);
         ExpandNodes_setTests(this, OBJ_NIL);
 
-        this->pRtns = nodeArray_New( );
+        this->pRtns = NodeArray_New( );
         if (OBJ_NIL == this->pRtns) {
             DEBUG_BREAK();
             return ERESULT_OUT_OF_MEMORY;
         }
-        this->pTests = nodeArray_New( );
+        this->pTests = NodeArray_New( );
         if (OBJ_NIL == this->pTests) {
             DEBUG_BREAK();
             return ERESULT_OUT_OF_MEMORY;
@@ -1126,9 +1126,9 @@ extern "C" {
         }
     #endif
         
-    iMax = nodeArray_getSize(pObjs);
+    iMax = NodeArray_getSize(pObjs);
     for (i=0; i<iMax; i++) {
-        pObj = (NODEOBJ_DATA *)nodeArray_Get(pObjs, i+1);
+        pObj = (NODEOBJ_DATA *)NodeArray_Get(pObjs, i+1);
         if (OBJ_NIL == pObj) {
             DEBUG_BREAK();
             return eResult_NewStrA(ERESULT_INVALID_OBJECT,
@@ -1271,9 +1271,9 @@ extern "C" {
         }
     #endif
         
-        iMax = nodeArray_getSize(pRtns);
+        iMax = NodeArray_getSize(pRtns);
         for (i=0; i<iMax; i++) {
-            pRtn = (NODERTN_DATA *)nodeArray_Get(pRtns, i+1);
+            pRtn = (NODERTN_DATA *)NodeArray_Get(pRtns, i+1);
             if (OBJ_NIL == pRtn) {
                 DEBUG_BREAK();
                 return eResult_NewStrA(ERESULT_INVALID_OBJECT,
@@ -1333,13 +1333,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&ExpandNodes_Vtbl);
         
-        this->pRtns = nodeArray_New( );
+        this->pRtns = NodeArray_New( );
         if (OBJ_NIL == this->pRtns) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        this->pTests = nodeArray_New( );
+        this->pTests = NodeArray_New( );
         if (OBJ_NIL == this->pTests) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1621,11 +1621,11 @@ extern "C" {
         }
 #endif
         
-        pArray = nodeArray_getObjArray(this->pRtns);
-        eRc = objArray_SortAscending(pArray, (P_OBJ_COMPARE)NodeBase_Compare);
+        pArray = NodeArray_getObjArray(this->pRtns);
+        eRc = ObjArray_SortAscending(pArray, (P_OBJ_COMPARE)NodeBase_Compare);
         
-        pArray = nodeArray_getObjArray(this->pTests);
-        eRc = objArray_SortAscending(pArray, (P_OBJ_COMPARE)NodeBase_Compare);
+        pArray = NodeArray_getObjArray(this->pTests);
+        eRc = ObjArray_SortAscending(pArray, (P_OBJ_COMPARE)NodeBase_Compare);
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1805,13 +1805,13 @@ extern "C" {
             }
         }
         if (this->pRtns) {
-            iMax = nodeArray_getSize(this->pRtns);
+            iMax = NodeArray_getSize(this->pRtns);
             if (iMax > 0) {
                 eRc = AStr_AppendPrint(pStr, "-----------------  ExpandNodes %d Routines "
                                        "-----------------\n", iMax);
             }
             for (i=0; i<iMax; i++) {
-                pRtnA = (NODERTNA_DATA *)nodeArray_Get(this->pRtns, i+1);
+                pRtnA = (NODERTNA_DATA *)NodeArray_Get(this->pRtns, i+1);
                 if (pRtnA) {
                     pWrk = NodeRtnA_ToString(pRtnA);
                     if (pWrk) {
@@ -1825,13 +1825,13 @@ extern "C" {
             AStr_AppendA(pStr, "\n");
         }
         if (this->pTests) {
-            iMax = nodeArray_getSize(this->pTests);
+            iMax = NodeArray_getSize(this->pTests);
             if (iMax > 0) {
                 eRc = AStr_AppendPrint(pStr, "-----------------  ExpandNodes %d Tests "
                                        "-----------------\n", iMax);
             }
             for (i=0; i<iMax; i++) {
-                pTstA = (NODETSTA_DATA *)nodeArray_Get(this->pTests, i+1);
+                pTstA = (NODETSTA_DATA *)NodeArray_Get(this->pTests, i+1);
                 if (pTstA) {
                     pWrk = NodeTstA_ToString(pTstA);
                     if (pWrk) {

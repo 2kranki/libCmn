@@ -52,7 +52,7 @@
 
 
 #include        <genMake.h>
-#include        <node.h>
+#include        <Node.h>
 #include        <AStr.h>
 #include        <AStrC.h>
 #include        <AStrCArray.h>

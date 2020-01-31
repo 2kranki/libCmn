@@ -198,7 +198,7 @@ MAIN_DATA *     Main_Shared(
     if (NULL == this) {
         this = Main_New( );
         Main_setSingleton(this);
-        appl_setSingleton((APPL_DATA *)this);
+        Appl_setSingleton((APPL_DATA *)this);
         obj_Release(this);          // Shared controls object retention now.
     }
     
@@ -379,7 +379,7 @@ OBJ_INFO        Main_Info = {
     "Main",
     "Main Program Object",
     (OBJ_DATA *)&Main_ClassObj,
-    (OBJ_DATA *)&appl_ClassObj,
+    (OBJ_DATA *)&Appl_ClassObj,
     (OBJ_IUNKNOWN *)&Main_Vtbl
 };
 

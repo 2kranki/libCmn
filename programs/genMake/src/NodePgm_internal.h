@@ -41,7 +41,7 @@
 
 #include        <NodeBase_internal.h>
 #include        <NodePgm.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef NODEPGM_INTERNAL_H

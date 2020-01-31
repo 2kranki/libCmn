@@ -40,7 +40,7 @@
 
 
 #include        <GenBase.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef GENBASE_INTERNAL_H

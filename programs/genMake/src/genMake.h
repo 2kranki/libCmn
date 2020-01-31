@@ -55,10 +55,10 @@
 
 
 #include        <cmn_defs.h>
-#include        <appl.h>
+#include        <Appl.h>
 #include        <AStr.h>
-#include        <dateTime.h>
-#include        <path.h>
+#include        <DateTime.h>
+#include        <Path.h>
 
 
 #ifndef         GENMAKE_H

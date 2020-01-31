@@ -40,8 +40,8 @@
 
 
 #include        <Dict.h>
-#include        <jsonIn.h>
-#include        <nodeHash_internal.h>
+#include        <JsonIn.h>
+#include        <NodeHash_internal.h>
 
 
 #ifndef DICT_INTERNAL_H

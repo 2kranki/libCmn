@@ -45,8 +45,8 @@
 #include        <ExpandNodes.h>
 #include        <GenMac.h>
 #include        <GenWin.h>
-#include        <jsonIn.h>
-#include        <srcErrors.h>
+#include        <JsonIn.h>
+#include        <SrcErrors.h>
 #include        <SrcParse.h>
 #include        <trace.h>
 
@@ -394,7 +394,7 @@ extern "C" {
         pKey = osTypeID;
         pStr = AStr_NewA("msc64");
         if (pStr) {
-            eRc = nodeHash_AddUpdateA(Dict_getNodeHash(Main_getDict(this)), 0, pKey, pStr);
+            eRc = NodeHash_AddUpdateA(Dict_getNodeHash(Main_getDict(this)), 0, pKey, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", pKey);
@@ -1126,7 +1126,7 @@ extern "C" {
         }
 #endif
         
-        iRc = appl_getVerbose((APPL_DATA *)this);
+        iRc = Appl_getVerbose((APPL_DATA *)this);
         
         return iRc;
     }
@@ -1245,38 +1245,38 @@ extern "C" {
 #endif
         TRC_OBJ(this, "Main_CreateOutputPath(%s)\n", pStr ? AStr_getData(pStr) : "");
         
-        pPath = path_NewFromAStr(pStr);
-        appl_ErrorFatalOnBool(
+        pPath = Path_NewFromAStr(pStr);
+        Appl_ErrorFatalOnBool(
                     (OBJ_NIL == pPath),
                     "FATAL - Failed to create path \"from\" \n"
         );
-        eRc = path_Clean(pPath);
-        appl_ErrorFatalOnEresult(
+        eRc = Path_Clean(pPath);
+        Appl_ErrorFatalOnEresult(
                     eRc,
                     "FATAL - File, %s, does not exist or is not a file!\n",
-                    path_getData(pPath)
+                    Path_getData(pPath)
         );
-        eRc = path_IsFile(pPath);
-        appl_ErrorFatalOnEresult(
+        eRc = Path_IsFile(pPath);
+        Appl_ErrorFatalOnEresult(
                     eRc,
                     "FATAL - File, %s, does not exist or is not a file!\n",
-                    path_getData(pPath)
+                    Path_getData(pPath)
         );
-        eRc = path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
-        appl_ErrorFatalOnEresult(
+        eRc = Path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
+        Appl_ErrorFatalOnEresult(
                     eRc,
                     "FATAL - Unable to extract directory from File, %s!\n",
-                    path_getData(pPath)
+                    Path_getData(pPath)
         );
-        pArgDir = path_NewFromDriveDirFilename(pDrive, pDir, OBJ_NIL);
-        appl_ErrorFatalOnBool(
+        pArgDir = Path_NewFromDriveDirFilename(pDrive, pDir, OBJ_NIL);
+        Appl_ErrorFatalOnBool(
                     (OBJ_NIL == pArgDir),
                     "FATAL - Unable to extract directory from File, %s!\n",
-                    path_getData(pPath)
+                    Path_getData(pPath)
         );
         eRc = Dict_AddA(Main_getDict(this), srcDirID, (void *)pArgDir);
         
-        eRc = Dict_AddA(Main_getDict(this), srcFileID, path_getData(pPath));
+        eRc = Dict_AddA(Main_getDict(this), srcFileID, Path_getData(pPath));
         if (ERESULT_FAILED(eRc) ) {
             DEBUG_BREAK();
             fprintf(stderr, "FATAL - Failed to add 'srcFile' to Dictionary\n");
@@ -1378,26 +1378,26 @@ extern "C" {
         }
 #endif
         
-        pPath = path_NewFromAStr(pStr);
-        appl_ErrorFatalOnBool(
+        pPath = Path_NewFromAStr(pStr);
+        Appl_ErrorFatalOnBool(
                     (OBJ_NIL == pPath),
                     "FATAL - Failed to create path \"from\" \n"
         );
-        eRc = path_Clean(pPath);
-        appl_ErrorFatalOnEresult(
+        eRc = Path_Clean(pPath);
+        Appl_ErrorFatalOnEresult(
                     eRc,
                     "FATAL - File, %s, does not exist or is not a file!\n",
-                    path_getData(pPath)
+                    Path_getData(pPath)
         );
-        eRc = path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
-        appl_ErrorFatalOnEresult(
+        eRc = Path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
+        Appl_ErrorFatalOnEresult(
                     eRc,
                     "FATAL - Unable to extract directory from File, %s!\n",
-                    path_getData(pPath)
+                    Path_getData(pPath)
         );
 
         // Create the output file path if given.
-        pMakefile = path_NewA("Makefile.");
+        pMakefile = Path_NewA("Makefile.");
         if (OBJ_NIL == pMakefile) {
             DEBUG_BREAK();
             fprintf(
@@ -1406,7 +1406,7 @@ extern "C" {
                     );
             exit(EXIT_FAILURE);
         }
-        eRc = path_AppendA(pMakefile, this->pOsName);
+        eRc = Path_AppendA(pMakefile, this->pOsName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(
                     stderr,
@@ -1414,7 +1414,7 @@ extern "C" {
                     );
             exit(EXIT_FAILURE);
         }
-        eRc = path_AppendA(pMakefile, ".txt");
+        eRc = Path_AppendA(pMakefile, ".txt");
         if (ERESULT_FAILED(eRc)) {
             fprintf(
                     stderr,
@@ -1422,7 +1422,7 @@ extern "C" {
                     );
             exit(EXIT_FAILURE);
         }
-        pMakepath = path_NewFromDriveDirFilename(pDrive, pDir, pMakefile);
+        pMakepath = Path_NewFromDriveDirFilename(pDrive, pDir, pMakefile);
         if (OBJ_NIL == pMakefile) {
             DEBUG_BREAK();
             fprintf(
@@ -1431,15 +1431,15 @@ extern "C" {
                     );
             exit(EXIT_FAILURE);
         }
-        eRc = path_ExpandVars(pMakepath, this->pDict);
+        eRc = Path_ExpandVars(pMakepath, this->pDict);
         if (ERESULT_FAILED(eRc) ) {
             DEBUG_BREAK();
             fprintf(stderr, "FATAL - Failed to expand Makepath\n");
             exit(EXIT_FAILURE);
         }
-        eRc = path_IsFile(pMakepath);
+        eRc = Path_IsFile(pMakepath);
         if (!ERESULT_FAILED(eRc) && this->fBackup) {
-            eRc = path_VersionedRename(pMakepath);
+            eRc = Path_VersionedRename(pMakepath);
             if (ERESULT_FAILED(eRc) ) {
                 DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to back up old Makefile\n");
@@ -1570,24 +1570,24 @@ extern "C" {
         
         eRc = Main_ParseArgsDefault(this);
         if (ERESULT_FAILED(eRc)) {
-            appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly set defaults!");
+            Appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly set defaults!");
             exit(8);
         }
 
         for (;;) {
             
-            fRc = appl_IsMore((APPL_DATA *)this);
+            fRc = Appl_IsMore((APPL_DATA *)this);
             if (!fRc) {
                 break;
             }
             
-            eRc = appl_ProcessOptions((APPL_DATA *)this);
+            eRc = Appl_ProcessOptions((APPL_DATA *)this);
             if (ERESULT_FAILED(eRc)) {
-                appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly parse command line!");
+                Appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly parse command line!");
                 exit(8);
             }
             
-            pChrStr = appl_NextArg((APPL_DATA *)this);
+            pChrStr = Appl_NextArg((APPL_DATA *)this);
             if (NULL == pChrStr) {
                 break;
             }
@@ -1710,7 +1710,7 @@ extern "C" {
         /*  Now pExpand contains two arrays, Routines and Tests. Routines
             are compile only and form the library or program parts. Tests
             are full programs used to test the parts. These two arrays
-            plus the lib/pgm node are all that is needed to generate the
+            plus the lib/pgm Node are all that is needed to generate the
             makefile.
          */
         
@@ -1774,7 +1774,7 @@ extern "C" {
                 break;
                 
             default:
-                appl_Usage(
+                Appl_Usage(
                         (APPL_DATA *)this,
                         "ERROR - Failed to indicate type of makefile to generate!\n\n\n"
                 );
@@ -1816,7 +1816,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)appl_Init((APPL_DATA *)this); // Needed for Inheritance
+        this = (OBJ_ID)Appl_Init((APPL_DATA *)this); // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MAIN);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -1834,7 +1834,7 @@ extern "C" {
             return OBJ_NIL;
         }
         eRc = Dict_Defaults(this->pDict);
-        appl_setUsage(
+        Appl_setUsage(
                           (APPL_DATA *)this,
                           this,
                           (void *)Main_UsageDesc,
@@ -1933,7 +1933,7 @@ extern "C" {
         pOS = AStr_NewA("win64");
 #endif
         if (pOS) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, osTypeID, pOS);
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, osTypeID, pOS);
             if (ERESULT_FAILED(eRc) ) {
                 DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
@@ -1943,7 +1943,7 @@ extern "C" {
             pOS = OBJ_NIL;
         }
         if (pArch) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, osArchID, pArch);
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, osArchID, pArch);
             if (ERESULT_FAILED(eRc) ) {
                 DEBUG_BREAK();
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osArchID);
@@ -1956,7 +1956,7 @@ extern "C" {
 
         pStr = AStr_NewA("d");
         if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, makeTypeID, pStr);
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, makeTypeID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", makeTypeID);
                 exit(EXIT_FAILURE);
@@ -1972,7 +1972,7 @@ extern "C" {
         pStr = AStr_NewA("C:/PROGRAMS");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, libBaseID, pStr);
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, libBaseID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -1992,7 +1992,7 @@ extern "C" {
         pStr = AStr_NewA("C:/PROGRAMS");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, pgmBaseID, pStr);
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, pgmBaseID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -2007,7 +2007,7 @@ extern "C" {
         
         pStr = AStr_NewA("./src");
         if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, srcDirID, pStr);
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, srcDirID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -2027,7 +2027,7 @@ extern "C" {
         pStr = AStr_NewA("${TMP}");
 #endif
         if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, tmpDirID, pStr);
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, tmpDirID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -2042,7 +2042,7 @@ extern "C" {
         
         pStr = AStr_NewA("./tests");
         if (pStr) {
-            eRc = nodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, tstSrcID, pStr);
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, tstSrcID, pStr);
             if (ERESULT_FAILED(eRc) ) {
                 fprintf(
                         stderr,
@@ -2096,16 +2096,16 @@ extern "C" {
             eResult_Fprint(pErr, stderr);
             exit(12);
         }
-        srcErrors_Print(srcErrors_Shared());
-        srcErrors_ExitOnFatal(OBJ_NIL);
+        SrcErrors_Print(SrcErrors_Shared(), stderr);
+        SrcErrors_ExitOnFatal(OBJ_NIL);
         
         pErr = SrcParse_ParseNodes(pParser);
-        srcErrors_Print(srcErrors_Shared());
+        SrcErrors_Print(SrcErrors_Shared(), stderr);
         if (pErr) {
             eResult_Fprint(pErr, stderr);
             exit(12);
         }
-        srcErrors_ExitOnFatal(OBJ_NIL);
+        SrcErrors_ExitOnFatal(OBJ_NIL);
 
         Main_setParser(this, pParser);
         obj_Release(pParser);
@@ -2149,7 +2149,7 @@ extern "C" {
             eResult_Fprint(pErr, stderr);
             exit(12);
         }
-        srcErrors_ExitOnFatal(OBJ_NIL);
+        SrcErrors_ExitOnFatal(OBJ_NIL);
 
         pErr = SrcParse_ParseNodes(pParser);
         if (pErr) {
@@ -2232,30 +2232,30 @@ extern "C" {
             return eRc;
         }
 
-        if (!appl_getQuiet((APPL_DATA *)this)) {
+        if (!Appl_getQuiet((APPL_DATA *)this)) {
             fprintf(stderr, "\tProcessing - %s...\n", AStr_getData(pStr));
         }
         
         pPath = Main_CheckInputPath(this, pStr);
-        appl_ErrorFatalOnBool(
+        Appl_ErrorFatalOnBool(
                     (OBJ_NIL == pPath),
                     "FATAL - Failed to create path \"from\" \n"
         );
 
         eRc = Main_ParseInputFile(this, pPath);
-        appl_ErrorFatalOnEresult(
+        Appl_ErrorFatalOnEresult(
                     eRc,
                     "FATAL - Failed to parse input: %s",
-                    path_getData(pPath)
+                    Path_getData(pPath)
         );
-        if (!appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\tParsed input: %s...\n", path_getData(pPath));
+        if (!Appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\tParsed input: %s...\n", Path_getData(pPath));
         }
         obj_Release(pPath);
         pPath = OBJ_NIL;
 
         pMakepath = Main_CreateOutputPath(this, pStr, this->pOsName);
-        appl_ErrorFatalOnBool(
+        Appl_ErrorFatalOnBool(
                     (OBJ_NIL == pMakepath),
                     "FATAL - Failed to create path \"from\" \n"
         );
@@ -2268,8 +2268,8 @@ extern "C" {
             exit(EXIT_FAILURE);
         }
 
-        if (!appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\tCreating - %s...\n", path_getData(pMakepath));
+        if (!Appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\tCreating - %s...\n", Path_getData(pMakepath));
         }
         
         pWrk = Main_getStr(this);
@@ -2286,8 +2286,8 @@ extern "C" {
             exit(EXIT_FAILURE);
         }
 
-        if (!appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\t\t%s created.\n", path_getData(pMakepath));
+        if (!Appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\t\t%s created.\n", Path_getData(pMakepath));
         }
 
         // Return to caller.
@@ -2401,7 +2401,7 @@ extern "C" {
         }
 #endif
         
-        eRc = appl_SetupFromArgV((APPL_DATA *)this, cArgs, ppArgV, ppEnv, pPgmOptions);
+        eRc = Appl_SetupFromArgV((APPL_DATA *)this, cArgs, ppArgV, ppEnv, pPgmOptions);
         
         // Return to caller.
         return eRc;

@@ -24,7 +24,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <ExpandNodes_internal.h>
@@ -56,7 +56,7 @@ int             tearDown(
 
     
     szTbl_SharedReset( );
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -165,14 +165,14 @@ int             test_ExpandNodes_Program01(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pPrs->pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pPrs->pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pPrs->pNodes);
+        pHash = Node_getData(pPrs->pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
                         || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pPrs->pNodes, 0);
+            pWrk = Node_ToDebugString(pPrs->pNodes, 0);
             fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -213,13 +213,13 @@ int             test_ExpandNodes_Program01(
 
             pArray = ExpandNodes_getRtns(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
-            iMax = nodeArray_getSize(pArray);
+            iMax = NodeArray_getSize(pArray);
             fprintf(stderr, "\tObjs: Number of RtnAs: %d\n", iMax);
             TINYTEST_TRUE( (5 == iMax) );
 
             pArray = ExpandNodes_getTests(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
-            iMax = nodeArray_getSize(pArray);
+            iMax = NodeArray_getSize(pArray);
             fprintf(stderr, "\tObjs: Number of TstAs: %d\n", iMax);
             TINYTEST_TRUE( (2 == iMax) );
 
@@ -248,13 +248,13 @@ int             test_ExpandNodes_Program01(
 
             pArray = ExpandNodes_getRtns(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
-            iMax = nodeArray_getSize(pArray);
+            iMax = NodeArray_getSize(pArray);
             fprintf(stderr, "\tRtns: Number of RtnAs: %d\n", iMax);
             TINYTEST_TRUE( (3 == iMax) );
 
             pArray = ExpandNodes_getTests(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
-            iMax = nodeArray_getSize(pArray);
+            iMax = NodeArray_getSize(pArray);
             fprintf(stderr, "\tRtns: Number of TstAs: %d\n", iMax);
             TINYTEST_TRUE( (1 == iMax) );
 
@@ -338,14 +338,14 @@ int             test_ExpandNodes_Program02(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pPrs->pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pPrs->pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pPrs->pNodes);
+        pHash = Node_getData(pPrs->pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
                         || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pPrs->pNodes, 0);
+            pWrk = Node_ToDebugString(pPrs->pNodes, 0);
             fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -385,13 +385,13 @@ int             test_ExpandNodes_Program02(
 
             pArray = ExpandNodes_getRtns(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
-            iMax = nodeArray_getSize(pArray);
+            iMax = NodeArray_getSize(pArray);
             fprintf(stderr, "\tRtns: Number of RtnAs: %d\n", iMax);
             TINYTEST_TRUE( (4 == iMax) );
 
             pArray = ExpandNodes_getTests(pExpand);
             TINYTEST_FALSE( (OBJ_NIL == pArray) );
-            iMax = nodeArray_getSize(pArray);
+            iMax = NodeArray_getSize(pArray);
             fprintf(stderr, "\tRtns: Number of TstAs: %d\n", iMax);
             TINYTEST_TRUE( (2 == iMax) );
 

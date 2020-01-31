@@ -40,7 +40,7 @@
 
 
 #include        <ExpandNodes.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 #include        <NodeHdr.h>
 #include        <NodeLib.h>
 #include        <NodeObj.h>
@@ -49,7 +49,7 @@
 #include        <NodeRtnA.h>
 #include        <NodeTest.h>
 #include        <NodeTstA.h>
-#include        <nodeArray_internal.h>
+#include        <NodeArray_internal.h>
 
 
 #ifndef EXPANDNODES_INTERNAL_H

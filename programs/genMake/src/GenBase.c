@@ -691,7 +691,7 @@ extern "C" {
         AStr_AppendA(pStr,
                      "# Generated file - Edits will be discarded by next generation!\n");
         if (GenBase_getTime(this)) {
-            pWrk = dateTime_ToString(GenBase_getTime(this));
+            pWrk = DateTime_ToString(GenBase_getTime(this));
             AStr_AppendPrint(pStr, "# (%s)\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -744,7 +744,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&GenBase_Vtbl);
         
-        this->pTime = dateTime_NewCurrent();
+        this->pTime = DateTime_NewCurrent();
         if (OBJ_NIL == this->pTime) {
             DEBUG_BREAK();
             obj_Release(this);

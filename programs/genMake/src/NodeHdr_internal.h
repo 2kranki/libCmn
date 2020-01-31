@@ -41,7 +41,7 @@
 
 #include        <NodeBase_internal.h>
 #include        <NodeHdr.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef NODEHDR_INTERNAL_H

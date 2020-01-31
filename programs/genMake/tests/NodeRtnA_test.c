@@ -25,7 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <hjson.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <NodeRtnA_internal.h>
@@ -55,7 +55,7 @@ int             tearDown(
     // test method in the class.
 
     szTbl_SharedReset( );
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(
@@ -103,10 +103,10 @@ ERESULT_DATA *  InputStrToJSON(
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
-    srcErrors_ExitOnFatal(OBJ_NIL);
+    SrcErrors_ExitOnFatal(OBJ_NIL);
 
     if (pFileNode) {
-        pHash = node_getData(pFileNode);
+        pHash = Node_getData(pFileNode);
         if (OBJ_NIL == pHash) {
             fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
             exit(12);

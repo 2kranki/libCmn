@@ -25,8 +25,8 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <hjson.h>
-#include    <nodeHash.h>
-#include    <srcErrors.h>
+#include    <NodeHash.h>
+#include    <SrcErrors.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <NodeBase_internal.h>
@@ -57,7 +57,7 @@ int             tearDown(
 
     
     szTbl_SharedReset( );
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -105,10 +105,10 @@ ERESULT_DATA *  InputStrToJSON(
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
-    srcErrors_ExitOnFatal(OBJ_NIL);
+    SrcErrors_ExitOnFatal(OBJ_NIL);
 
     if (pFileNode) {
-        pHash = node_getData(pFileNode);
+        pHash = Node_getData(pFileNode);
         if (OBJ_NIL == pHash) {
             fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
             exit(12);
@@ -202,13 +202,13 @@ int             test_NodeBase_Parse01(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pNodes);
+        pHash = Node_getData(pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pNodes, 0);
+            pWrk = Node_ToDebugString(pNodes, 0);
             fprintf(stderr, "Parsed JSON:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -363,13 +363,13 @@ int             test_NodeBase_Parse02(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pNodes);
+        pHash = Node_getData(pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE((obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)));
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pNodes, 0);
+            pWrk = Node_ToDebugString(pNodes, 0);
             fprintf(stderr, "Parsed JSON:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;

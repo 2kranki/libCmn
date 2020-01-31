@@ -311,7 +311,7 @@ extern "C" {
         }
 #endif
         
-        eRc = nodeHash_AddA(Dict_getNodeHash(this), 0, pName, (void *)pData);
+        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pName, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -347,7 +347,7 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         
-        eRc = nodeHash_AddA(Dict_getNodeHash(this), 0, pName, pStr);
+        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pName, pStr);
         
         // Return to caller.
         obj_Release(pStr);
@@ -374,10 +374,10 @@ extern "C" {
         }
 #endif
         
-        if (nodeHash_FindA(Dict_getNodeHash(this), 0, pName)) {
-            eRc = nodeHash_DeleteA(Dict_getNodeHash(this), 0, pName);
+        if (NodeHash_FindA(Dict_getNodeHash(this), 0, pName)) {
+            eRc = NodeHash_DeleteA(Dict_getNodeHash(this), 0, pName);
         }
-        eRc = nodeHash_AddA(Dict_getNodeHash(this), 0, pName, (void *)pData);
+        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pName, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -409,10 +409,10 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         
-        if (nodeHash_FindA(Dict_getNodeHash(this), 0, pName)) {
-            eRc = nodeHash_DeleteA(Dict_getNodeHash(this), 0, pName);
+        if (NodeHash_FindA(Dict_getNodeHash(this), 0, pName)) {
+            eRc = NodeHash_DeleteA(Dict_getNodeHash(this), 0, pName);
         }
-        eRc = nodeHash_AddA(Dict_getNodeHash(this), 0, pName, pStr);
+        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pName, pStr);
         
         // Return to caller.
         obj_Release(pStr);
@@ -1296,7 +1296,7 @@ extern "C" {
 
                     // Find the name from the Dictionary.
                 do_replace:
-                    pNode = nodeHash_FindA(
+                    pNode = NodeHash_FindA(
                                            Dict_getNodeHash(this),
                                            0,
                                            AStr_getData(pName)
@@ -1307,7 +1307,7 @@ extern "C" {
                     }
                     obj_Release(pName);
                     pName = OBJ_NIL;
-                    pData = node_getData(pNode);
+                    pData = Node_getData(pNode);
                     if((OBJ_NIL == pData)
                        || !(obj_IsKindOf(pData, OBJ_IDENT_ASTR)
                             || obj_IsKindOf(pData, OBJ_IDENT_ASTRC))) {
@@ -1404,9 +1404,9 @@ extern "C" {
         }
 #endif
         
-        pNode = nodeHash_FindA(Dict_getNodeHash(this), 0, pNameA);
+        pNode = NodeHash_FindA(Dict_getNodeHash(this), 0, pNameA);
         if (pNode) {
-            pData = node_getData(pNode);
+            pData = Node_getData(pNode);
             if (OBJ_NIL == pData)
                 ;
             else  if (obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
@@ -1449,13 +1449,14 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)nodeHash_Init((NODEHASH_DATA *)this, NODEHASH_TABLE_SIZE_XLARGE);
+        this = (OBJ_ID)NodeHash_Init((NODEHASH_DATA *)this);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
         obj_setSize(this, cbSize);                        // Needed for Inheritance
+        (void)NodeHash_Setup((NODEHASH_DATA *)this, NODEHASH_TABLE_SIZE_XLARGE);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Dict_Vtbl);
         
@@ -1733,7 +1734,7 @@ extern "C" {
                     Dict_getSize(this)
             );
 
-        pWrkStr =   nodeHash_ToDebugString(Dict_getNodeHash(this), indent+3);
+        pWrkStr =   NodeHash_ToDebugString(Dict_getNodeHash(this), indent+3);
         AStr_Append(pStr, pWrkStr);
         obj_Release(pWrkStr);
         

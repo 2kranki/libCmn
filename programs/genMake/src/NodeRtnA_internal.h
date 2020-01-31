@@ -41,7 +41,7 @@
 
 #include        <NodeRtnA.h>
 #include        <NodeBase_internal.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef NODERTNA_INTERNAL_H

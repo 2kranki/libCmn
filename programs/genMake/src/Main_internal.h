@@ -40,9 +40,9 @@
 
 
 #include        <Main.h>
-#include        <appl_internal.h>
+#include        <Appl_internal.h>
 #include        <ExpandNodes.h>
-#include        <nodeHash.h>
+#include        <NodeHash.h>
 #include        <SrcParse.h>
 
 

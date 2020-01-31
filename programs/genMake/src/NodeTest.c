@@ -151,19 +151,19 @@ extern "C" {
         }
         *ppBase = OBJ_NIL;
 
-        if (jsonIn_CheckNodeForNull(pNode)) {
+        if (JsonIn_CheckNodeForNull(pNode)) {
             *ppBase = pTest;
             return OBJ_NIL;
         }
-        else if (jsonIn_CheckNodeForFalse(pNode)) {
+        else if (JsonIn_CheckNodeForFalse(pNode)) {
             obj_Release(pTest);
             return OBJ_NIL;
         }
-        else if (jsonIn_CheckNodeForTrue(pNode)) {
+        else if (JsonIn_CheckNodeForTrue(pNode)) {
             *ppBase = pTest;
             return OBJ_NIL;
         }
-        pName = jsonIn_CheckNodeForString(pNode);
+        pName = JsonIn_CheckNodeForString(pNode);
         if (pName) {
             pStrC = AStrC_NewFromAStr(pName);
             NodeTest_setName(pTest, pStrC);
@@ -173,7 +173,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        pHash = jsonIn_CheckNodeForHash(pNode);
+        pHash = JsonIn_CheckNodeForHash(pNode);
         if (pHash) {
             // Ok, we have a hash, so there might a lot to parse here.
 

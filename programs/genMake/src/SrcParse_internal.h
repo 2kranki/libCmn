@@ -40,7 +40,7 @@
 
 
 #include        <SrcParse.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef SRCPARSE_INTERNAL_H

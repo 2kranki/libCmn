@@ -655,9 +655,9 @@ extern "C" {
         }
 #endif
         
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         for (i=0; i<iMax; i++) {
-            pNode = (NODETSTA_DATA *)nodeArray_Get(pArray, i+1);
+            pNode = (NODETSTA_DATA *)NodeArray_Get(pArray, i+1);
             if (pNode) {
                 pStr = NodeTstA_GenMac(pNode, pDict);
                 if (pStr) {
@@ -702,9 +702,9 @@ extern "C" {
         }
 #endif
         
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         for (i=0; i<iMax; i++) {
-            pNode = (NODERTNA_DATA *)nodeArray_Get(pArray, i+1);
+            pNode = (NODERTNA_DATA *)NodeArray_Get(pArray, i+1);
             if (pNode) {
                 pStr = NodeRtnA_GenMac(pNode, pDict);
                 if (pStr) {

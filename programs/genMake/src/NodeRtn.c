@@ -151,7 +151,7 @@ extern "C" {
         }
         *ppBase = OBJ_NIL;
 
-        pHash = jsonIn_CheckNodeForHash(pNode);
+        pHash = JsonIn_CheckNodeForHash(pNode);
         if (pHash) {
             // Ok, we have a hash, so there might a lot to parse here.
 
@@ -181,14 +181,14 @@ extern "C" {
             }
 
             // Scan off the test stuff if present.
-            pHashItem = nodeHash_FindA(pHash, 0, "test");
+            pHashItem = NodeHash_FindA(pHash, 0, "test");
             if (pHashItem) {
                 FALSE_DATA      *pFalse;
-                pFalse = jsonIn_CheckNodeDataForFalse(pHashItem);
+                pFalse = JsonIn_CheckNodeDataForFalse(pHashItem);
                 if (pFalse)
                     ;
                 else {
-                    pHashItem = node_getData(pHashItem);
+                    pHashItem = Node_getData(pHashItem);
                     // NodeTest::Parse will provide the NodeTest.
                     pErr = NodeTest_Parse(pHashItem, &pRtn->pTest);
                     if (pErr) {

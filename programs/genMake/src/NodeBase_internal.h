@@ -39,11 +39,11 @@
 
 
 
-#include        <node_internal.h>
+#include        <Node_internal.h>
 #include        <NodeBase.h>
-#include        <nodeArray.h>
-#include        <nodeHash.h>
-#include        <jsonIn.h>
+#include        <NodeArray.h>
+#include        <NodeHash.h>
+#include        <JsonIn.h>
 #include        <SrcLoc.h>
 
 

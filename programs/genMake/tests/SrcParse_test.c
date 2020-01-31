@@ -25,11 +25,11 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <hjson.h>
-#include    <nodeHash.h>
+#include    <NodeHash.h>
 #include    <NodeObj.h>
 #include    <NodeRtn.h>
 #include    <NodeTest.h>
-#include    <srcErrors.h>
+#include    <SrcErrors.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <SrcParse_internal.h>
@@ -60,7 +60,7 @@ int             tearDown(
 
     
     szTbl_SharedReset( );
-    srcErrors_SharedReset( );
+    SrcErrors_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -108,14 +108,14 @@ ERESULT_DATA *  InputStrToJSON(
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
-    srcErrors_ExitOnFatal(OBJ_NIL);
+    SrcErrors_ExitOnFatal(OBJ_NIL);
 
     if (OBJ_NIL == pFileNode) {
         fprintf(stderr, "ERROR - No JSON Nodes to process\n\n\n");
         exit(12);
     }
     if (pFileNode) {
-        pHash = node_getData(pFileNode);
+        pHash = Node_getData(pFileNode);
         if (OBJ_NIL == pHash) {
             fprintf(stderr, "ERROR - No JSON Array or Hash to process\n\n\n");
             exit(12);
@@ -206,14 +206,14 @@ int             test_SrcParse_Object01(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pNodes);
+        pHash = Node_getData(pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
                         || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pNodes, 0);
+            pWrk = Node_ToDebugString(pNodes, 0);
             fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -226,11 +226,11 @@ int             test_SrcParse_Object01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, i+1);
+            pObj = (NODEOBJ_DATA *)NodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pObj) );
             pRtn = NodeObj_getJson(pObj);
             TINYTEST_TRUE( (OBJ_NIL == pRtn) );
@@ -285,14 +285,14 @@ int             test_SrcParse_Object02(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pNodes);
+        pHash = Node_getData(pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
                         || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pNodes, 0);
+            pWrk = Node_ToDebugString(pNodes, 0);
             fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -307,18 +307,18 @@ int             test_SrcParse_Object02(
         // Display the Output.
         if (pArray && fDumpNodes) {
             fprintf(stderr, "\n\n===> Object Array:\n\n");
-            ASTR_DATA   *pStr = nodeArray_ToDebugString(pArray, 0);
+            ASTR_DATA   *pStr = NodeArray_ToDebugString(pArray, 0);
             fprintf(stderr, "%s\n", AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
 
         // Validate the results.
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, i+1);
+            pObj = (NODEOBJ_DATA *)NodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pObj) );
             pRtn = NodeObj_getJson(pObj);
             TINYTEST_FALSE( (OBJ_NIL == pRtn) );
@@ -373,14 +373,14 @@ int             test_SrcParse_Object03(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pNodes);
+        pHash = Node_getData(pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
                         || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pNodes, 0);
+            pWrk = Node_ToDebugString(pNodes, 0);
             fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -393,11 +393,11 @@ int             test_SrcParse_Object03(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, i+1);
+            pObj = (NODEOBJ_DATA *)NodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pObj) );
             pRtn = NodeObj_getJson(pObj);
             TINYTEST_TRUE( (OBJ_NIL == pRtn) );
@@ -451,14 +451,14 @@ int             test_SrcParse_Routine01(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pNodes);
+        pHash = Node_getData(pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
                         || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pNodes, 0);
+            pWrk = Node_ToDebugString(pNodes, 0);
             fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -471,11 +471,11 @@ int             test_SrcParse_Routine01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pRtn = (NODERTN_DATA *)nodeArray_Get(pArray, i+1);
+            pRtn = (NODERTN_DATA *)NodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pRtn) );
             pTest = NodeRtn_getTest(pRtn);
             TINYTEST_TRUE( (OBJ_NIL == pTest) );
@@ -527,14 +527,14 @@ int             test_SrcParse_Routine02(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pNodes);
+        pHash = Node_getData(pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
                         || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pNodes, 0);
+            pWrk = Node_ToDebugString(pNodes, 0);
             fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -547,11 +547,11 @@ int             test_SrcParse_Routine02(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pRtn = (NODERTN_DATA *)nodeArray_Get(pArray, i+1);
+            pRtn = (NODERTN_DATA *)NodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pRtn) );
             pTest = NodeRtn_getTest(pRtn);
             TINYTEST_TRUE( (OBJ_NIL == pTest) );
@@ -602,14 +602,14 @@ int             test_SrcParse_Test01(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pNodes);
+        pHash = Node_getData(pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
                         || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pNodes, 0);
+            pWrk = Node_ToDebugString(pNodes, 0);
             fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -622,11 +622,11 @@ int             test_SrcParse_Test01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
 
         // Validate the results.
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         fprintf(stderr, "# of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
         for (i=0; i<iMax; i++) {
-            pTest = (NODETEST_DATA *)nodeArray_Get(pArray, i+1);
+            pTest = (NODETEST_DATA *)NodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pTest) );
         }
 
@@ -690,14 +690,14 @@ int             test_SrcParse_Nodes01(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pPrs->pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pPrs->pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pPrs->pNodes);
+        pHash = Node_getData(pPrs->pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
                         || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pPrs->pNodes, 0);
+            pWrk = Node_ToDebugString(pPrs->pNodes, 0);
             fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -728,10 +728,10 @@ int             test_SrcParse_Nodes01(
         // Validate Objects.
         pArray = SrcParse_getObjs(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
-        pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, 1);
+        pObj = (NODEOBJ_DATA *)NodeArray_Get(pArray, 1);
         TINYTEST_FALSE( (OBJ_NIL == pObj) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -743,7 +743,7 @@ int             test_SrcParse_Nodes01(
         pStrC = NodeObj_getName(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr")));
-        pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, 2);
+        pObj = (NODEOBJ_DATA *)NodeArray_Get(pArray, 2);
         TINYTEST_FALSE( (OBJ_NIL == pObj) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -759,10 +759,10 @@ int             test_SrcParse_Nodes01(
         // Validate Routines.
         pArray = SrcParse_getRtns(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Routines: %d\n", iMax);
         TINYTEST_TRUE( (1 == iMax) );
-        pRtn = (NODERTN_DATA *)nodeArray_Get(pArray, 1);
+        pRtn = (NODERTN_DATA *)NodeArray_Get(pArray, 1);
         TINYTEST_FALSE( (OBJ_NIL == pRtn) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -834,14 +834,14 @@ int             test_SrcParse_Nodes02(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         TINYTEST_FALSE( (OBJ_NIL == pPrs->pNodes) );
         TINYTEST_TRUE( (obj_IsKindOf(pPrs->pNodes, OBJ_IDENT_NODE)) );
-        pHash = node_getData(pPrs->pNodes);
+        pHash = Node_getData(pPrs->pNodes);
         TINYTEST_FALSE( (OBJ_NIL == pHash) );
         TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEARRAY)
                         || obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
 
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
-            pWrk = node_ToDebugString(pPrs->pNodes, 0);
+            pWrk = Node_ToDebugString(pPrs->pNodes, 0);
             fprintf(stderr, "\n====> JSON Input:\n%s\n\n\n", AStr_getData(pWrk));
             obj_Release(pWrk);
             pWrk = OBJ_NIL;
@@ -872,10 +872,10 @@ int             test_SrcParse_Nodes02(
         // Validate Objects.
         pArray = SrcParse_getObjs(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Objects: %d\n", iMax);
         TINYTEST_TRUE( (2 == iMax) );
-        pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, 1);
+        pObj = (NODEOBJ_DATA *)NodeArray_Get(pArray, 1);
         TINYTEST_FALSE( (OBJ_NIL == pObj) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -887,7 +887,7 @@ int             test_SrcParse_Nodes02(
         pStrC = NodeObj_getName(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr")));
-        pObj = (NODEOBJ_DATA *)nodeArray_Get(pArray, 2);
+        pObj = (NODEOBJ_DATA *)NodeArray_Get(pArray, 2);
         TINYTEST_FALSE( (OBJ_NIL == pObj) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
@@ -903,10 +903,10 @@ int             test_SrcParse_Nodes02(
         // Validate Routines.
         pArray = SrcParse_getRtns(pPrs);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        iMax = nodeArray_getSize(pArray);
+        iMax = NodeArray_getSize(pArray);
         fprintf(stderr, "\tNumber of Routines: %d\n", iMax);
         TINYTEST_TRUE( (1 == iMax) );
-        pRtn = (NODERTN_DATA *)nodeArray_Get(pArray, 1);
+        pRtn = (NODERTN_DATA *)NodeArray_Get(pArray, 1);
         TINYTEST_FALSE( (OBJ_NIL == pRtn) );
         if (fDumpNodes) {
             ASTR_DATA       *pWrk = OBJ_NIL;
