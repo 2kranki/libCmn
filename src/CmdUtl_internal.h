@@ -41,6 +41,14 @@
 
 #include        <CmdUtl.h>
 #include        <JsonIn.h>
+#include        <Node_internal.h>
+#include        <NodeArray.h>
+#include        <NodeHash.h>
+#include        <NodeTree.h>
+#include        <Path.h>
+#include        <srcFile.h>
+#include        <stdio.h>
+#include        <wchar.h>
 
 
 #ifndef CMDUTL_INTERNAL_H
@@ -69,11 +77,32 @@ struct CmdUtl_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+    CMDUTL_OPTION   *pOptions;
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    PATH_DATA       *pPath;             // Program Path
+    char            **ppArgV;
+    char            *pOptArg;
+    W32CHR_T        optopt;
+    char            errmsg[64];
+    int             subopt;
+    int             optIndex;
+
+    // ArgC/ArgV Stuff
+    ASTRARRAY_DATA  *pSavedArgs;
+    OBJ_ID          pObj;
+    void            (*pFatalError)(
+        const
+        char            *fmt,
+        ...
+    );
+
+    // Program Arguments and Options
+    uint16_t        cOptions;
+    char            fPermute;
+    uint8_t         rsvd8_1;
+    uint32_t        nextArg;
+    CMDUTL_OPTION   *pOptDefns;
 
 };
 #pragma pack(pop)
@@ -92,12 +121,12 @@ struct CmdUtl_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  CMDUTL_SINGLETON
-    CMDUTL_DATA *     CmdUtl_getSingleton (
+    CMDUTL_DATA *   CmdUtl_getSingleton (
         void
     );
 
     bool            CmdUtl_setSingleton (
-     CMDUTL_DATA       *pValue
+     CMDUTL_DATA        *pValue
 );
 #endif
 
@@ -107,8 +136,27 @@ struct CmdUtl_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            CmdUtl_setArgV (
+        CMDUTL_DATA     *this,
+        ASTRARRAY_DATA  *pValue
+    );
+
+
     OBJ_IUNKNOWN *  CmdUtl_getSuperVtbl (
         CMDUTL_DATA     *this
+    );
+
+
+    ERESULT         CmdUtl_AppendCharToField (
+        CMDUTL_DATA     *cbp,
+        W32CHR_T        chr
+    );
+
+
+    int             CmdUtl_Argtype (
+        const
+        char            *optstring,
+        char            c
     );
 
 
@@ -118,13 +166,83 @@ struct CmdUtl_data_s	{
     );
 
 
-    CMDUTL_DATA *       CmdUtl_Copy (
+    CMDUTL_DATA *   CmdUtl_Copy (
         CMDUTL_DATA     *this
+    );
+
+
+    int             CmdUtl_CreateErrorMsg (
+        CMDUTL_DATA     *this,
+        const
+        char            *pMsg,
+        const
+        char            *pData
     );
 
 
     void            CmdUtl_Dealloc (
         OBJ_ID          objId
+    );
+
+
+    int             CmdUtl_IsDashDash(
+        const
+        char            *arg
+    );
+
+
+    int             CmdUtl_IsLongOpt(
+        const
+        char            *arg
+    );
+
+
+    int             CmdUtl_IsShortOpt(
+        const
+        char            *arg
+    );
+
+
+    char *          CmdUtl_LongOptsArg(
+        char            *option
+    );
+
+
+    bool            CmdUtl_LongOptsEnd(
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             i
+    );
+
+
+    int             CmdUtl_LongOptsFallback(
+        CMDUTL_DATA     *this,
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             *pLongIndex
+    );
+
+
+    int             CmdUtl_LongOptsMatch(
+        const
+        char            *pLongName,
+        const
+        char            *option
+    );
+
+
+    bool            CmdUtl_OptstringFromLongOptions(
+        const
+        CMDUTL_OPTION   *pOptions,
+        int             len,
+        char            *pOptstring
+    );
+
+
+    int             CmdUtl_Parse(
+        CMDUTL_DATA     *this,
+        const
+        char            *optstring
     );
 
 
@@ -135,7 +253,7 @@ struct CmdUtl_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    CMDUTL_DATA *       CmdUtl_ParseJsonObject (
+    CMDUTL_DATA *   CmdUtl_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -169,6 +287,19 @@ struct CmdUtl_data_s	{
         ASTR_DATA       *pStr
     );
 #endif
+
+
+    int             CmdUtl_ParseLong(
+        CMDUTL_DATA     *this,
+        CMDUTL_OPTION   *pOptions,
+        int             *longindex
+    );
+
+
+    void            CmdUtl_Permute(
+        CMDUTL_DATA     *this,
+        int             index
+    );
 
 
     void *          CmdUtl_QueryInfo (

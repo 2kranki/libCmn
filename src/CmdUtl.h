@@ -167,7 +167,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  CMDUTL_SINGLETON
-    CMDUTL_DATA *     CmdUtl_Shared (
+    CMDUTL_DATA *   CmdUtl_Shared (
         void
     );
 
@@ -256,36 +256,36 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    OBJ_ID          CmdUtl_getObject(
+    OBJ_ID          CmdUtl_getObject (
         CMDUTL_DATA     *this
     );
 
-    bool            CmdUtl_setObject(
+    bool            CmdUtl_setObject (
         CMDUTL_DATA     *this,
         OBJ_ID          pValue
     );
 
 
-    CMDUTL_OPTION * CmdUtl_getOptionDefinitions(
+    CMDUTL_OPTION * CmdUtl_getOptionDefinitions (
         CMDUTL_DATA     *this
     );
 
 
-    PATH_DATA *     CmdUtl_getPath(
+    PATH_DATA *     CmdUtl_getPath (
         CMDUTL_DATA     *this
     );
 
-    bool            CmdUtl_setPath(
+    bool            CmdUtl_setPath (
         CMDUTL_DATA     *this,
         PATH_DATA       *pValue
     );
 
 
-    bool            CmdUtl_getPermute(
+    bool            CmdUtl_getPermute (
         CMDUTL_DATA     *this
     );
 
-    bool            CmdUtl_setPermute(
+    bool            CmdUtl_setPermute (
         CMDUTL_DATA     *this,
         bool            fValue
     );
@@ -307,7 +307,7 @@ extern "C" {
      @return:   true if there are more options or arguments to parse,
                 otherwise, false.
      */
-    bool            CmdUtl_IsMore(
+    bool            CmdUtl_IsMore (
         CMDUTL_DATA     *this
     );
 
@@ -318,7 +318,7 @@ extern "C" {
      @return:   If there is another argument, return the address of it's
                 character string, otherwise, return NULL.
      */
-    char *          CmdUtl_NextArg(
+    char *          CmdUtl_NextArg (
         CMDUTL_DATA     *this
     );
 
@@ -331,7 +331,7 @@ extern "C" {
      @return:   If successful, true and the appropriate argument processing
                     was performed; otherwise, false.
      */
-    ERESULT         CmdUtl_ProcessOption(
+    ERESULT         CmdUtl_ProcessOption (
         CMDUTL_DATA     *this,
         CMDUTL_OPTION   *pOption
     );
@@ -344,12 +344,12 @@ extern "C" {
       @return:   If successful, ERESULT_SUCCESS and the appropriate argument
                 processing was performed; otherwise, an ERESULT_* error code.
      */
-    ERESULT         CmdUtl_ProcessOptions(
+    ERESULT         CmdUtl_ProcessOptions (
         CMDUTL_DATA     *this
     );
 
 
-    bool            CmdUtl_Reset(
+    bool            CmdUtl_Reset (
         CMDUTL_DATA     *this,
         int             cArgs,
         char            **ppArgs
@@ -368,7 +368,7 @@ extern "C" {
      @return:   If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         CmdUtl_SetupOptions(
+    ERESULT         CmdUtl_SetupOptions (
         CMDUTL_DATA     *this,
         CMDUTL_OPTION   *pDefaultOptions,
         CMDUTL_OPTION   *pProgramOptions

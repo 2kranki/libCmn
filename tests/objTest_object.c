@@ -201,7 +201,7 @@ OBJ_INFO        objTest_Info = {
     "objTest",
     "Test Object",
     (OBJ_DATA *)&objTest_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&Appl_ClassObj,
     (OBJ_IUNKNOWN *)&objTest_Vtbl
 };
 

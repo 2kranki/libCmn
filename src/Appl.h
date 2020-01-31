@@ -242,7 +242,7 @@ extern "C" {
     );
     
     
-    APPL_DATA *     Appl_NewFromArgV(
+    APPL_DATA *     Appl_NewFromArgV (
         int             cArgs,
         const
         char            *ppArgs[],
@@ -273,7 +273,7 @@ extern "C" {
      @param     pCmdStr UTF-8 Command String
      @param     ppArgV  An eresult success/failure code (see eresult.h)
      */
-    ERESULT         appl_ParseProgramLine(
+    ERESULT         Appl_ParseProgramLine (
         const
         char            *pCmdStr,           // UTF-8 Command String
         ASTRCARRAY_DATA **ppArgV            // Output ArgV Array
@@ -285,33 +285,154 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    bool            Appl_setArgDefs (
+        APPL_DATA       *this,
+        CMDUTL_OPTION   *pProgramArgs
+    );
 
 
-    
+    CMDUTL_DATA *   Appl_getCmd (
+        APPL_DATA       *this
+    );
+
+
+    DATETIME_DATA * Appl_getDateTime (
+        APPL_DATA       *this
+    );
+
+
+    bool            Appl_getDebug (
+        APPL_DATA       *this
+    );
+
+
+    bool            Appl_getForce (
+        APPL_DATA       *this
+    );
+
+
+    PATH_DATA *     Appl_getProgramPath (
+        APPL_DATA       *this
+    );
+
+    bool            Appl_setProgramPath (
+        APPL_DATA       *this,
+        PATH_DATA       *pValue
+    );
+
+
+    bool            Appl_getQuiet (
+        APPL_DATA       *this
+    );
+
+
+    bool            Appl_setUsage (
+        APPL_DATA       *this,
+        OBJ_ID          pObj,
+        ERESULT         (*pUsageDesc)(OBJ_ID, FILE *, PATH_DATA *),
+        ERESULT         (*pUsageProgLine)(OBJ_ID, FILE *, PATH_DATA *, const char *),
+        ERESULT         (*pUsageOptions)(OBJ_ID, FILE *)
+    );
+
+
+    int             Appl_getVerbose (
+        APPL_DATA     *this
+    );
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         Appl_Disable (
-        APPL_DATA		*this
+    int             Appl_Exec (
+        APPL_DATA       *this
     );
 
 
-    ERESULT         Appl_Enable (
-        APPL_DATA		*this
+    /*!
+     Exit from the Application performing any cleanup needed.
+     @param     this        Object Pointer
+     @param     exitCode    exit code passed to O/S
+     */
+    void            Appl_Exit (
+        APPL_DATA       *this,
+        int             exitCode
     );
 
-   
+
     APPL_DATA *     Appl_Init (
         APPL_DATA       *this
     );
 
 
-    ERESULT         Appl_IsEnabled (
-        APPL_DATA		*this
+    /*!
+     Check to see if there are more options or arguments left to parse.
+     @param     this        Object Pointer
+     @return:   true if there are more options or arguments to parse,
+                otherwise, false.
+     */
+    bool            Appl_IsMore (
+        APPL_DATA       *this
     );
-    
- 
+
+
+    char *          Appl_NextArg (
+        APPL_DATA       *this
+    );
+
+
+    uint16_t        Appl_NumberOfProperties (
+        APPL_DATA       *this
+    );
+
+
+    /*!
+     Parse and merge the next set of zero or more options per their option
+     definitions. The parsing stops when the next argument is reached or
+     there are no more options and arguments.
+     @param     this        object pointer
+     and
+     @return:   If successful, ERESULT_SUCCESS and the appropriate argument
+                processing was performed; otherwise, an ERESULT_* error code.
+     */
+    ERESULT         Appl_ProcessOptions (
+        APPL_DATA       *this
+    );
+
+
+    ERESULT         Appl_PropertyAdd (
+        APPL_DATA       *this,
+        NODE_DATA       *pData
+    );
+
+
+    NODE_DATA *     Appl_PropertyFind (
+        APPL_DATA       *this,
+        const
+        char            *pName
+    );
+
+
+    /*!
+     Set up to parse the given input resetting any prior parse data.
+     @param     this        object pointer
+     @param     cArgs       number of charater strings in ppArgs
+     @param     ppArgV      pointer to a charater string array
+     @param     pPgmOptDefns pointer to an array of APPL_CLO elements
+                            and
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         Appl_SetupFromArgV (
+        APPL_DATA       *this,
+        uint16_t        cArgs,
+        char            *ppArgV[],
+        char            **ppEnv,
+        CMDUTL_OPTION   *pPgmOptDefns
+    );
+
+
 #ifdef  APPL_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
@@ -350,6 +471,24 @@ extern "C" {
     );
     
     
+    void            Appl_Usage (
+        APPL_DATA       *this,
+        char            *pMsg,
+        ...
+    );
+
+
+    /*!
+     Increase the Verbosity level by 1 allowing the program to increase it if necessary.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         Appl_VerboseIncrease (
+        APPL_DATA       *this
+    );
+
+
 
     
 #ifdef	__cplusplus

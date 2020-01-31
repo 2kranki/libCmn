@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/31/2020 18:06:40.000)
+# ( 1/31/2020 20:55:08.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -96,6 +96,16 @@ OBJS += $(OBJDIR)/AStr_object.o
 $(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/Appl.o
+
+$(OBJDIR)/Appl.o: $(SRCDIR)/Appl.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Appl_object.o
+
+$(OBJDIR)/Appl_object.o: $(SRCDIR)/Appl_object.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/BitMatrix.o
 
 $(OBJDIR)/BitMatrix.o: $(SRCDIR)/BitMatrix.c $(SRCDIR)/AStr.h $(SRCDIR)/BitMatrix.h $(SRCDIR)/BitMatrix_internal.h $(SRCDIR)/BitSet.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
@@ -139,6 +149,16 @@ $(OBJDIR)/Blocks.o: $(SRCDIR)/Blocks.c $(SRCDIR)/Blocks.h $(SRCDIR)/Blocks_inter
 OBJS += $(OBJDIR)/Blocks_object.o
 
 $(OBJDIR)/Blocks_object.o: $(SRCDIR)/Blocks_object.c $(SRCDIR)/Blocks.h $(SRCDIR)/Blocks_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/CmdUtl.o
+
+$(OBJDIR)/CmdUtl.o: $(SRCDIR)/CmdUtl.c $(SRCDIR)/AStr.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/CmdUtl_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/CmdUtl_object.o
+
+$(OBJDIR)/CmdUtl_object.o: $(SRCDIR)/CmdUtl_object.c $(SRCDIR)/AStr.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/CmdUtl_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Compiler.o
@@ -691,16 +711,6 @@ OBJS += $(OBJDIR)/W32Str_object.o
 $(OBJDIR)/W32Str_object.o: $(SRCDIR)/W32Str_object.c $(SRCDIR)/W32Str.h $(SRCDIR)/W32Str_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/appl.o
-
-$(OBJDIR)/appl.o: $(SRCDIR)/appl.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h $(SRCDIR)/cmdutl.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/appl_object.o
-
-$(OBJDIR)/appl_object.o: $(SRCDIR)/appl_object.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h $(SRCDIR)/cmdutl.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/array.o
 
 $(OBJDIR)/array.o: $(SRCDIR)/array.c $(SRCDIR)/array.h $(SRCDIR)/array_internal.h $(SRCDIR)/cmn_defs.h 
@@ -869,16 +879,6 @@ $(OBJDIR)/cfa.o: $(SRCDIR)/cfa.c $(SRCDIR)/cfa.h $(SRCDIR)/cfa_internal.h $(SRCD
 OBJS += $(OBJDIR)/cfa_object.o
 
 $(OBJDIR)/cfa_object.o: $(SRCDIR)/cfa_object.c $(SRCDIR)/cfa.h $(SRCDIR)/cfa_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/cmdutl.o
-
-$(OBJDIR)/cmdutl.o: $(SRCDIR)/cmdutl.c $(SRCDIR)/AStr.h $(SRCDIR)/cmdutl.h $(SRCDIR)/cmdutl_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/cmdutl_object.o
-
-$(OBJDIR)/cmdutl_object.o: $(SRCDIR)/cmdutl_object.c $(SRCDIR)/AStr.h $(SRCDIR)/cmdutl.h $(SRCDIR)/cmdutl_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/cmnMac64.o
@@ -1731,6 +1731,12 @@ AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += Appl_test
+
+Appl_test: $(TEST_SRC)/Appl_test.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += BitMatrix_test
 
 BitMatrix_test: $(TEST_SRC)/BitMatrix_test.c $(SRCDIR)/BitMatrix.h $(SRCDIR)/BitMatrix_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/BitSet.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
@@ -1752,6 +1758,12 @@ BlkdRcds16_test: $(TEST_SRC)/BlkdRcds16_test.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/
 TESTS += Blocks_test
 
 Blocks_test: $(TEST_SRC)/Blocks_test.c $(SRCDIR)/Blocks.h $(SRCDIR)/Blocks_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += CmdUtl_test
+
+CmdUtl_test: $(TEST_SRC)/CmdUtl_test.c $(SRCDIR)/CmdUtl.h $(SRCDIR)/CmdUtl_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2007,12 +2019,6 @@ W32Str_test: $(TEST_SRC)/W32Str_test.c $(SRCDIR)/W32Str.h $(SRCDIR)/W32Str_inter
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += appl_test
-
-appl_test: $(TEST_SRC)/appl_test.c $(SRCDIR)/appl.h $(SRCDIR)/appl_internal.h $(SRCDIR)/cmdutl.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += array_test
 
 array_test: $(TEST_SRC)/array_test.c $(SRCDIR)/array.h $(SRCDIR)/array_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2106,12 +2112,6 @@ cb_test: $(TEST_SRC)/cb_test.c $(SRCDIR)/cb.h $(SRCDIR)/cb_internal.h $(SRCDIR)/
 TESTS += cfa_test
 
 cfa_test: $(TEST_SRC)/cfa_test.c $(SRCDIR)/cfa.h $(SRCDIR)/cfa_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += cmdutl_test
-
-cmdutl_test: $(TEST_SRC)/cmdutl_test.c $(SRCDIR)/cmdutl.h $(SRCDIR)/cmdutl_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

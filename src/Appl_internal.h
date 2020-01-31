@@ -40,7 +40,9 @@
 
 
 #include        <Appl.h>
+#include        <AStrCArray.h>
 #include        <JsonIn.h>
+#include        <NodeHash.h>
 
 
 #ifndef APPL_INTERNAL_H
@@ -71,9 +73,49 @@ struct Appl_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    DATETIME_DATA   *pDateTime;
+    NODEHASH_DATA   *pProperties;
+
+    // Program Arguments and Options
+    int32_t         exitRC;         // Exit Return Code
+    uint16_t        fDebug;
+    uint16_t        fForce;
+    uint16_t        fQuiet;
+    uint16_t        iVerbose;
+    CMDUTL_DATA     *pCmd;
+    ASTRARRAY_DATA  *pArgs;
+    ASTRARRAY_DATA  *pEnv;
+    PATH_DATA       *pProgramPath;
+    CMDUTL_OPTION   *pPgmOptDefns;
+
+    OBJ_ID          pObjPrs;
+    ERESULT         (*pParseArgsDefaults)(OBJ_ID);
+    /*!
+     @return    If successful, ERESULT_SUCCESS_0, ERESULT_SUCCESS_1,
+                ERESULT_SUCCESS_2 or ERESULT_SUCCESS_3 to denote how
+                many parameters were used beyond the normal 1.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         (*pParseArgsLong)(
+                            OBJ_ID          this,
+                            bool            fTrue,
+                            ASTR_DATA       *pName,
+                            ASTR_DATA       *pWrk,
+                            uint32_t        index,
+                            ASTRARRAY_DATA  *pArgs
+                    );
+    ERESULT         (*pParseArgsShort)(OBJ_ID, int *, const char ***);
+    ERESULT         (*pParseArgsError)(OBJ_ID, int *, const char ***);
+
+    OBJ_ID          pObjProcess;
+    ERESULT         (*pProcessInit)(OBJ_ID);
+    ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *);
+
+    OBJ_ID          pObjUsage;
+    ERESULT         (*pUsageProgLine)(OBJ_ID, FILE *, PATH_DATA *, const char *);
+    ERESULT         (*pUsageDesc)(OBJ_ID, FILE *, PATH_DATA *);
+    ERESULT         (*pUsageOptions)(OBJ_ID, FILE *);
+
 
 };
 #pragma pack(pop)
@@ -92,12 +134,12 @@ struct Appl_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  APPL_SINGLETON
-    APPL_DATA *     Appl_getSingleton (
+    APPL_DATA * Appl_getSingleton (
         void
     );
 
-    bool            Appl_setSingleton (
-     APPL_DATA       *pValue
+    bool        Appl_setSingleton (
+     APPL_DATA          *pValue
 );
 #endif
 
@@ -107,24 +149,76 @@ struct Appl_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  Appl_getSuperVtbl (
-        APPL_DATA     *this
+    bool            Appl_setCmd(
+        APPL_DATA       *this,
+        CMDUTL_DATA     *pValue
+    );
+
+
+    bool            Appl_setDebug(
+        APPL_DATA       *this,
+        bool            fValue
+    );
+
+
+    bool            Appl_setParseArgsDefaults(
+        APPL_DATA       *this,
+        ERESULT         (*pValue)(OBJ_ID)
+    );
+
+
+    bool            Appl_setParseArgsKeywords(
+        APPL_DATA       *this,
+        void            (*pValue)(OBJ_ID, const char *)
+    );
+
+
+    OBJ_IUNKNOWN * Appl_getSuperVtbl (
+        APPL_DATA       *this
     );
 
 
     ERESULT         Appl_Assign (
-        APPL_DATA    *this,
-        APPL_DATA    *pOther
+        APPL_DATA       *this,
+        APPL_DATA       *pOther
     );
 
 
-    APPL_DATA *       Appl_Copy (
-        APPL_DATA     *this
+    ASTR_DATA *     Appl_ConstructProgramLine(
+        int             cArgs,
+        const
+        char            **ppArgs
+    );
+
+
+    APPL_DATA *     Appl_Copy (
+        APPL_DATA       *this
     );
 
 
     void            Appl_Dealloc (
         OBJ_ID          objId
+    );
+
+
+    ERESULT         Appl_Help(
+        APPL_DATA       *this,
+        ASTR_DATA       *pStr
+    );
+
+
+    ERESULT         Appl_ParseArgsLong(
+        APPL_DATA       *this,
+        bool            fTrue,
+        ASTR_DATA       *pArg
+    );
+
+
+    ERESULT         Appl_ParseArgsShort(
+        APPL_DATA       *this,
+        int             *pArgC,
+        const
+        char            ***pppArgV
     );
 
 
@@ -135,7 +229,7 @@ struct Appl_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    APPL_DATA *       Appl_ParseJsonObject (
+    APPL_DATA *     Appl_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -151,7 +245,7 @@ struct Appl_data_s	{
      */
     ERESULT         Appl_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        APPL_DATA     *pObject
+        APPL_DATA       *pObject
     );
 
 
@@ -165,7 +259,7 @@ struct Appl_data_s	{
                 error code.
      */
     ERESULT         Appl_ToJsonFields (
-        APPL_DATA     *this,
+        APPL_DATA       *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -180,11 +274,21 @@ struct Appl_data_s	{
 
 #ifdef  APPL_JSON_SUPPORT
     ASTR_DATA *     Appl_ToJson (
-        APPL_DATA      *this
+        APPL_DATA       *this
     );
 #endif
 
 
+    void            Appl_UsageArg(
+        APPL_DATA       *this,
+        ASTR_DATA       *pStr,              // in-out
+        CMDUTL_OPTION   *pOption
+    );
+
+
+    void            Appl_UsageNoMsg(
+        APPL_DATA       *this
+    );
 
 
 #ifdef NDEBUG

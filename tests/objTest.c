@@ -752,14 +752,13 @@ CMDUTL_OPTION       pPgmOpts[] = {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)appl_Init((APPL_DATA *)this);        // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OBJTEST);
+        this = (OBJ_ID)Appl_Init((APPL_DATA *)this);            // Needed for Inheritance
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                          // Needed for Inheritance
+        obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&objTest_Vtbl);
         
