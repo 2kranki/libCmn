@@ -80,14 +80,14 @@
 
 
 #include        <cmn_defs.h>
-#include        <appl.h>
+#include        <Appl.h>
 #include        <AStr.h>
-#include        <dateTime.h>
-#include        <path.h>
+#include        <DateTime.h>
+#include        <Path.h>
 
 
-#ifndef         GENMAKE_H
-#define         GENMAKE_H
+#ifndef         JSONPP_H
+#define         JSONPP_H
 
 
 
@@ -174,5 +174,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* GENMAKE_H */
+#endif	/* JSONPP_H */
 

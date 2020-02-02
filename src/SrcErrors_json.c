@@ -70,6 +70,43 @@ extern "C" {
      ****************************************************************/
     
     /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT     SrcErrors_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        SRCERRORS_DATA  *pObject
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        //int64_t         intIn;
+        //ASTR_DATA       *pWrk;
+
+#ifdef XYZZZY
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
+
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
+        }
+        JsonIn_SubObjectEnd(pParser);
+#endif
+
+        // Return to caller.
+    exit00:
+        return eRc;
+    }
+
+
+
+    /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
@@ -206,7 +243,7 @@ extern "C" {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        ASTR_DATA       *pWrkStr;
+        ERESULT         eRc;
 
 #ifdef NDEBUG
 #else
@@ -223,6 +260,32 @@ extern "C" {
                          pInfo->pClassName
         );
        
+        eRc = SrcErrors_ToJsonFields(this, pStr);
+
+        AStr_AppendA(pStr, "}\n");
+        
+        return pStr;
+    }
+    
+    
+    
+    ERESULT         SrcErrors_ToJsonFields (
+        SRCERRORS_DATA  *this,
+        ASTR_DATA       *pStr
+    )
+    {
+#ifdef XYZZZY
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+#endif
+        ASTR_DATA       *pWrkStr;
+
         AStr_AppendPrint(pStr,
                          "\"fFatal\":%s, ",
                          this->fFatal ? "true" : "false"
@@ -237,14 +300,13 @@ extern "C" {
             AStr_AppendA(pStr, "\n");
         }
 
-        AStr_AppendA(pStr, "}\n");
-        
-        return pStr;
+
+        return ERESULT_SUCCESS;
     }
-    
-    
-    
-    
+
+
+
+
     
 #ifdef	__cplusplus
 }

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'Dict'
-//	Generated 12/19/2019 08:52:09
+//	Class Object Metods and Tables for 'JsonPP'
+//	Generated 01/31/2020 23:01:53
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			DICT_OBJECT_C	    1
-#include        <Dict_internal.h>
-#ifdef  DICT_SINGLETON
+#define			JSONPP_OBJECT_C	    1
+#include        <JsonPP_internal.h>
+#ifdef  JSONPP_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct Dict_class_data_s	{
+struct JsonPP_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  DICT_SINGLETON
+#ifdef  JSONPP_SINGLETON
     volatile
-    DICT_DATA       *pSingleton;
+    JSONPP_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct Dict_class_data_s	{
 
 
 static
-void *          DictClass_QueryInfo (
+void *          JsonPPClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          DictClass_QueryInfo (
 
 static
 const
-OBJ_INFO        Dict_Info;            // Forward Reference
+OBJ_INFO        JsonPP_Info;            // Forward Reference
 
 
 
 
 static
-bool            DictClass_IsKindOf (
+bool            JsonPPClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_DICT_CLASS == classID) {
+    if (OBJ_IDENT_JSONPP_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(Dict_Class())->pClassSuperObject;
+    pObj = obj_getInfo(JsonPP_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            DictClass_IsKindOf (
 
 
 static
-uint16_t		DictClass_WhoAmI (
+uint16_t		JsonPPClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_DICT_CLASS;
+    return OBJ_IDENT_JSONPP_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		DictClass_WhoAmI (
 
 static
 const
-DICT_CLASS_VTBL    class_Vtbl = {
+JSONPP_CLASS_VTBL    class_Vtbl = {
     {
-        &Dict_Info,
-        DictClass_IsKindOf,
+        &JsonPP_Info,
+        JsonPPClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        Dict_Class,
-        DictClass_WhoAmI,
-        (P_OBJ_QUERYINFO)DictClass_QueryInfo,
-        NULL                        // DictClass_ToDebugString
+        JsonPP_Class,
+        JsonPPClass_WhoAmI,
+        (P_OBJ_QUERYINFO)JsonPPClass_QueryInfo,
+        NULL                        // JsonPPClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ DICT_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-DICT_CLASS_DATA  Dict_ClassObj = {
+JSONPP_CLASS_DATA  JsonPP_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(DICT_CLASS_DATA),                  // cbSize
+        sizeof(JSONPP_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,17 @@ DICT_CLASS_DATA  Dict_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  DICT_SINGLETON
-DICT_DATA *     Dict_getSingleton (
+#ifdef  JSONPP_SINGLETON
+JSONPP_DATA *     JsonPP_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(Dict_ClassObj.pSingleton);
+    return (OBJ_ID)(JsonPP_ClassObj.pSingleton);
 }
 
 
-bool            Dict_setSingleton (
-    DICT_DATA       *pValue
+bool            JsonPP_setSingleton (
+    JSONPP_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +192,10 @@ bool            Dict_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (Dict_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(Dict_ClassObj.pSingleton));
+    if (JsonPP_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(JsonPP_ClassObj.pSingleton));
     }
-    Dict_ClassObj.pSingleton = pValue;
+    JsonPP_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +205,17 @@ bool            Dict_setSingleton (
 
 
 
-DICT_DATA *     Dict_Shared (
+JSONPP_DATA *     JsonPP_Shared (
     void
 )
 {
-    DICT_DATA       *this = (OBJ_ID)(Dict_ClassObj.pSingleton);
+    JSONPP_DATA       *this = (OBJ_ID)(JsonPP_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = Dict_New( );
-        Dict_setSingleton(this);
+        this = JsonPP_New( );
+        JsonPP_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // Dict_ClassObj.pSingleton = OBJ_NIL;
+        // JsonPP_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +223,15 @@ DICT_DATA *     Dict_Shared (
 
 
 
-void            Dict_SharedReset (
+void            JsonPP_SharedReset (
     void
 )
 {
-    DICT_DATA       *this = (OBJ_ID)(Dict_ClassObj.pSingleton);
+    JSONPP_DATA       *this = (OBJ_ID)(JsonPP_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        Dict_ClassObj.pSingleton = OBJ_NIL;
+        JsonPP_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +247,13 @@ void            Dict_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          DictClass_QueryInfo (
+void *          JsonPPClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    DICT_CLASS_DATA *this = objId;
+    JSONPP_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +264,7 @@ void *          DictClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(DICT_DATA);
+            return (void *)sizeof(JSONPP_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,7 +279,7 @@ void *          DictClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&Dict_Info;
+                        return (void *)&JsonPP_Info;
                     }
                     break;
                     
@@ -297,19 +297,24 @@ void *          DictClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return Dict_New;
+                        return JsonPP_New;
                     }
                     break;
                     
-                case 'P':
-                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return Dict_ParseJsonObject;
-                    }
-                    break;
- 
+#ifdef  JSONPP_JSON_SUPPORT
+				case 'P':
+					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+						return JsonPP_ParseJsonFields;
+					}
+					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+						return JsonPP_ParseJsonObject;
+					}
+					break;
+#endif
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return DictClass_WhoAmI;
+                        return JsonPPClass_WhoAmI;
                     }
                     break;
                     
@@ -329,7 +334,7 @@ void *          DictClass_QueryInfo (
 
 
 static
-bool            Dict_IsKindOf (
+bool            JsonPP_IsKindOf (
     uint16_t		classID
 )
 {
@@ -337,14 +342,14 @@ bool            Dict_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_DICT == classID) {
+    if (OBJ_IDENT_JSONPP == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(Dict_Class())->pClassSuperObject;
+    pObj = obj_getInfo(JsonPP_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -358,25 +363,25 @@ bool            Dict_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            Dict_Dealloc (
+void            JsonPP_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          Dict_Class (
+OBJ_ID          JsonPP_Class (
     void
 )
 {
-    return (OBJ_ID)&Dict_ClassObj;
+    return (OBJ_ID)&JsonPP_ClassObj;
 }
 
 
 static
-uint16_t		Dict_WhoAmI (
+uint16_t		JsonPP_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_DICT;
+    return OBJ_IDENT_JSONPP;
 }
 
 
@@ -388,34 +393,34 @@ uint16_t		Dict_WhoAmI (
 //===========================================================
 
 const
-DICT_VTBL     Dict_Vtbl = {
+JSONPP_VTBL     JsonPP_Vtbl = {
     {
-        &Dict_Info,
-        Dict_IsKindOf,
-#ifdef  DICT_IS_SINGLETON
+        &JsonPP_Info,
+        JsonPP_IsKindOf,
+#ifdef  JSONPP_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        Dict_Dealloc,
-        Dict_Class,
-        Dict_WhoAmI,
-        (P_OBJ_QUERYINFO)Dict_QueryInfo,
-        (P_OBJ_TOSTRING)Dict_ToDebugString,
-        NULL,			// Dict_Enable,
-        NULL,			// Dict_Disable,
-        NULL,			// (P_OBJ_ASSIGN)Dict_Assign,
-        NULL,			// (P_OBJ_COMPARE)Dict_Compare,
-        NULL, 			// (P_OBJ_PTR)Dict_Copy,
-        NULL, 			// (P_OBJ_PTR)Dict_DeepCopy,
-        NULL 			// (P_OBJ_HASH)Dict_Hash,
+        JsonPP_Dealloc,
+        JsonPP_Class,
+        JsonPP_WhoAmI,
+        (P_OBJ_QUERYINFO)JsonPP_QueryInfo,
+        (P_OBJ_TOSTRING)JsonPP_ToDebugString,
+        NULL,			// JsonPP_Enable,
+        NULL,			// JsonPP_Disable,
+        NULL,			// (P_OBJ_ASSIGN)JsonPP_Assign,
+        NULL,			// (P_OBJ_COMPARE)JsonPP_Compare,
+        NULL, 			// (P_OBJ_PTR)JsonPP_Copy,
+        NULL, 			// (P_OBJ_PTR)JsonPP_DeepCopy,
+        NULL 			// (P_OBJ_HASH)JsonPP_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Dict_IsEnabled,
+    //JsonPP_IsEnabled,
  
 };
 
@@ -423,14 +428,16 @@ DICT_VTBL     Dict_Vtbl = {
 
 static
 const
-OBJ_INFO        Dict_Info = {
-    "Dict",
-    "Program Dictionary",
-    (OBJ_DATA *)&Dict_ClassObj,
-    (OBJ_DATA *)&NodeHash_ClassObj,
-    (OBJ_IUNKNOWN *)&Dict_Vtbl,
-    sizeof(DICT_DATA)
+OBJ_INFO        JsonPP_Info = {
+    "JsonPP",
+    "JsonPP",	// <-- Fill in description
+    (OBJ_DATA *)&JsonPP_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&JsonPP_Vtbl,
+    sizeof(JSONPP_DATA)
 };
+#warning -- adjust super class object in Info above 
+//			if object inherits from another class
 
 
 

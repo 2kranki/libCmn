@@ -40,7 +40,7 @@
 
 
 #include        <NodeClass.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef NODECLASS_INTERNAL_H

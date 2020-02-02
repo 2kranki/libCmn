@@ -40,7 +40,7 @@
 
 
 #include        <NodeField.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef NODEFIELD_INTERNAL_H

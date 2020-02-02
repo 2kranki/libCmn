@@ -1,5 +1,5 @@
 //
-//  lexFileToJSON.c
+//  lexFileToJson.c
 //
 //  Created by bob on 3/20/16.
 //
@@ -170,7 +170,7 @@ int         main(
         for (i=0; i<cOptions; ++i) {
             fprintf(stdout, "//\tfiles = \"%s\"\n", ppOptions[i]);
         }
-        pGmrFile = path_NewA(ppOptions[0]);
+        pGmrFile = Path_NewA(ppOptions[0]);
         if (pGmrFile) {
             pSrc = srcFile_NewFromPath(pGmrFile, 1, 4, true, fNL);
             if (pSrc) {
@@ -178,11 +178,11 @@ int         main(
                 if (srcFlag) {
                     for (;;) {
                         pToken = srcFile_InputLookAhead(pSrc, 1);
-                        pJSON = token_ToJSON(pToken);
+                        pJSON = Token_ToJson(pToken);
                         display_output(pJSON);
                         obj_Release(pJSON);
                         pJSON = OBJ_NIL;
-                        if (token_getClass(pToken) == -1) {
+                        if (Token_getClass(pToken) == -1) {
                             break;
                         }
                         pToken = srcFile_InputAdvance(pSrc, 1);
@@ -203,11 +203,11 @@ int         main(
                     BREAK_FALSE(fRc);
                     for (;;) {
                         pToken = lex_InputLookAhead((LEX_DATA *)pLex, 1);
-                        pJSON = token_ToJSON(pToken);
+                        pJSON = Token_ToJson(pToken);
                         display_output(pJSON);
                         obj_Release(pJSON);
                         pJSON = OBJ_NIL;
-                        if (token_getClass(pToken) == -1) {
+                        if (Token_getClass(pToken) == -1) {
                             break;
                         }
                         pToken = lex_InputAdvance((LEX_DATA *)pLex, 1);

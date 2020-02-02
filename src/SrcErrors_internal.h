@@ -130,6 +130,20 @@ struct SrcErrors_data_s	{
     SRCERRORS_DATA * SrcErrors_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+
+
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT     SrcErrors_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        SRCERRORS_DATA  *pObject
+    );
 #endif
 
 
@@ -143,6 +157,12 @@ struct SrcErrors_data_s	{
 #ifdef  SRCERRORS_JSON_SUPPORT
     ASTR_DATA *     SrcErrors_ToJson (
         SRCERRORS_DATA      *this
+    );
+
+
+    ERESULT         SrcErrors_ToJsonFields (
+        SRCERRORS_DATA  *this,
+        ASTR_DATA       *pStr
     );
 #endif
 

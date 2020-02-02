@@ -196,8 +196,8 @@ int         main(
         for (i=0; i<cOptions; ++i) {
             fprintf(stdout, "//\tfiles = \"%s\"\n", ppOptions[i]);
         }
-        pGmrFile = path_NewA(ppOptions[0]);
-        path_Clean(pGmrFile);
+        pGmrFile = Path_NewA(ppOptions[0]);
+        Path_Clean(pGmrFile);
         if (pGmrFile) {
             if (srcFlag) {
                 pSrc = srcFile_NewFromPath(pGmrFile, 1, 4);
@@ -205,16 +205,16 @@ int         main(
                 for (;;) {
                     pToken = srcFile_InputLookAhead(pSrc, 1);
                     if (jsonFlag) {
-                        pStr = token_ToJSON(pToken);
+                        pStr = Token_ToJson(pToken);
                         display_output(pStr);
                     }
                     else {
-                        pStr = token_ToDebugString(pToken, 0);
+                        pStr = Token_ToDebugString(pToken, 0);
                         display_output(pStr);
                     }
                     obj_Release(pStr);
                     pStr = OBJ_NIL;
-                    if (token_getClass(pToken) == -1) {
+                    if (Token_getClass(pToken) == -1) {
                         break;
                     }
                     pToken = srcFile_InputAdvance(pSrc, 1);
@@ -236,16 +236,16 @@ int         main(
                 for (;;) {
                     pToken = lex_InputLookAhead((LEX_DATA *)pLex, 1);
                     if (jsonFlag) {
-                        pStr = token_ToJSON(pToken);
+                        pStr = Token_ToJson(pToken);
                         display_output(pStr);
                     }
                     else {
-                        pStr = token_ToDebugString(pToken, 0);
+                        pStr = Token_ToDebugString(pToken, 0);
                         display_output(pStr);
                     }
                     obj_Release(pStr);
                     pStr = OBJ_NIL;
-                    if (token_getClass(pToken) == -1) {
+                    if (Token_getClass(pToken) == -1) {
                         break;
                     }
                     pToken = lex_InputAdvance((LEX_DATA *)pLex, 1);

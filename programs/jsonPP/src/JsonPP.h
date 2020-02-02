@@ -1,16 +1,16 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          MAIN Console Transmit Task (Main) Header
+//          JSONPP Console Transmit Task (JsonPP) Header
 //****************************************************************
 /*
  * Program
- *			Separate Main (Main)
+ *			Separate JsonPP (JsonPP)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate Main to run things without complications
- *          of interfering with the main Main. A Main may be 
- *          called a Main on other O/S's.
+ *          a separate JsonPP to run things without complications
+ *          of interfering with the main JsonPP. A JsonPP may be 
+ *          called a JsonPP on other O/S's.
  *
  * Remarks
  *	1.      None
@@ -55,13 +55,13 @@
 #include        <AStr.h>
 
 
-#ifndef         MAIN_H
-#define         MAIN_H
+#ifndef         JSONPP_H
+#define         JSONPP_H
 
 
-//#define   MAIN_IS_IMMUTABLE     1
-//#define   MAIN_JSON_SUPPORT     1
-//#define   MAIN_SINGLETON        1
+//#define   JSONPP_IS_IMMUTABLE     1
+//#define   JSONPP_JSON_SUPPORT     1
+//#define   JSONPP_SINGLETON        1
 
 
 
@@ -77,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Main_data_s	MAIN_DATA;            // Inherits from OBJ
-    typedef struct Main_class_data_s MAIN_CLASS_DATA;   // Inherits from OBJ
+    typedef struct JsonPP_data_s	JSONPP_DATA;            // Inherits from OBJ
+    typedef struct JsonPP_class_data_s JSONPP_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Main_vtbl_s	{
+    typedef struct JsonPP_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Main_object.c.
+        // method names to the vtbl definition in JsonPP_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(MAIN_DATA *);
-    } MAIN_VTBL;
+        //bool        (*pIsEnabled)(JSONPP_DATA *);
+    } JSONPP_VTBL;
 
-    typedef struct Main_class_vtbl_s	{
+    typedef struct JsonPP_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Main_object.c.
+        // method names to the vtbl definition in JsonPP_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(MAIN_DATA *);
-    } MAIN_CLASS_VTBL;
+        //bool        (*pIsEnabled)(JSONPP_DATA *);
+    } JSONPP_CLASS_VTBL;
 
 
 
@@ -110,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  MAIN_SINGLETON
-    MAIN_DATA *     Main_Shared (
+#ifdef  JSONPP_SINGLETON
+    JSONPP_DATA *     JsonPP_Shared (
         void
     );
 
-    void            Main_SharedReset (
+    void            JsonPP_SharedReset (
         void
     );
 #endif
@@ -125,29 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Main object if successful, otherwise OBJ_NIL.
+     @return    pointer to JsonPP object if successful, otherwise OBJ_NIL.
      */
-    MAIN_DATA *     Main_Alloc (
+    JSONPP_DATA *     JsonPP_Alloc (
         void
     );
     
     
-    OBJ_ID          Main_Class (
+    OBJ_ID          JsonPP_Class (
         void
     );
     
     
-    MAIN_DATA *     Main_New (
+    JSONPP_DATA *     JsonPP_New (
         void
     );
     
     
-#ifdef  MAIN_JSON_SUPPORT
-    MAIN_DATA *   Main_NewFromJsonString (
+#ifdef  JSONPP_JSON_SUPPORT
+    JSONPP_DATA *   JsonPP_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    MAIN_DATA *   Main_NewFromJsonStringA (
+    JSONPP_DATA *   JsonPP_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -166,33 +166,33 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Main_Disable (
-        MAIN_DATA		*this
+    ERESULT     JsonPP_Disable (
+        JSONPP_DATA		*this
     );
 
 
-    ERESULT     Main_Enable (
-        MAIN_DATA		*this
+    ERESULT     JsonPP_Enable (
+        JSONPP_DATA		*this
     );
 
    
-    MAIN_DATA *   Main_Init (
-        MAIN_DATA     *this
+    JSONPP_DATA *   JsonPP_Init (
+        JSONPP_DATA     *this
     );
 
 
-    ERESULT     Main_IsEnabled (
-        MAIN_DATA		*this
+    ERESULT     JsonPP_IsEnabled (
+        JSONPP_DATA		*this
     );
     
  
-#ifdef  MAIN_JSON_SUPPORT
+#ifdef  JSONPP_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Main_ToJson(this);
+     ASTR_DATA      *pDesc = JsonPP_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -200,8 +200,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Main_ToJson (
-        MAIN_DATA   *this
+    ASTR_DATA *     JsonPP_ToJson (
+        JSONPP_DATA   *this
     );
 #endif
 
@@ -210,7 +210,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Main_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = JsonPP_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -218,8 +218,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    Main_ToDebugString (
-        MAIN_DATA     *this,
+    ASTR_DATA *    JsonPP_ToDebugString (
+        JSONPP_DATA     *this,
         int             indent
     );
     
@@ -230,5 +230,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* MAIN_H */
+#endif	/* JSONPP_H */
 

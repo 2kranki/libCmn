@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   main_internal.h
- *	Generated 07/17/2017 14:59:49
+ * File:   Main_internal.h
+ *	Generated 01/31/2020 22:44:45
  *
  * Notes:
  *  --	N/A
@@ -39,13 +39,16 @@
 
 
 
-#include        <main.h>
-#include        <appl_internal.h>
-#include        <nodeHash.h>
+#include        <Main.h>
+#include        <JsonIn.h>
 
 
 #ifndef MAIN_INTERNAL_H
 #define	MAIN_INTERNAL_H
+
+
+
+#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -56,188 +59,137 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct main_data_s	{
+struct Main_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    APPL_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    NODEHASH_DATA   *pDict;
-    PATH_DATA       *pFilePath;
-    PATH_DATA       *pOutputPath;
-    TEXTOUT_DATA    *pOutput;
-    NODE_DATA       *pNodes;
-    ASTR_DATA       *pOut;
-    uint32_t        indent;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        rsvd16;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct main_class_data_s  main_ClassObj;
+    struct Main_class_data_s  Main_ClassObj;
 
     extern
     const
-    MAIN_VTBL         main_Vtbl;
+    MAIN_VTBL         Main_Vtbl;
+
 
 
     //---------------------------------------------------------------
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
-    
+
 #ifdef  MAIN_SINGLETON
-    MAIN_DATA *     main_getSingleton(
+    MAIN_DATA *     Main_getSingleton (
         void
     );
-    
-    bool            main_setSingleton(
-        MAIN_DATA       *pValue
-    );
+
+    bool            Main_setSingleton (
+     MAIN_DATA       *pValue
+);
 #endif
-    
-    
-    void *          mainClass_QueryInfo(
-        OBJ_ID          objId,
-        uint32_t        type,
-        void            *pData
-    );
-    
-    
-    
+
+
 
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-    
-    void            main_Dealloc(
+
+    OBJ_IUNKNOWN *  Main_getSuperVtbl (
+        MAIN_DATA     *this
+    );
+
+
+    ERESULT         Main_Assign (
+        MAIN_DATA    *this,
+        MAIN_DATA    *pOther
+    );
+
+
+    MAIN_DATA *       Main_Copy (
+        MAIN_DATA     *this
+    );
+
+
+    void            Main_Dealloc (
         OBJ_ID          objId
     );
 
-    ERESULT         main_DictAdd(
-        MAIN_DATA       *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    );
-    
-    ERESULT         main_DictAddA(
-        MAIN_DATA       *this,
-        const
-        char            *pName,
-        const
-        char            *pData
+
+#ifdef  MAIN_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    MAIN_DATA *       Main_ParseJsonObject (
+        JSONIN_DATA     *pParser
     );
 
-    ERESULT         main_DictAddUpdate(
-        MAIN_DATA       *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    );
-    
-    ERESULT         main_DictAddUpdateA(
-        MAIN_DATA        *this,
-        const
-        char            *pName,
-        const
-        char            *pData
-    );
-    
-    ERESULT         main_ParseArgsDefault(
-        MAIN_DATA        *this
-    );
-    
-    int             main_ParseArgsLong(
-        MAIN_DATA       *this,
-        int             *pArgC,
-        const
-        char            ***pppArgV
-    );
-    
-    int             main_ParseArgsShort(
-        MAIN_DATA       *this,
-        int             *pArgC,
-        const
-        char            ***pppArgV
-    );
-    
+
     /*!
-     Parse the given file into a JSON Node structure and
-     perform some cursory checks on the structure.
-     @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
      */
-    ERESULT         main_ParseInputFile(
-        MAIN_DATA       *this,
-        PATH_DATA       *pPath
+    ERESULT         Main_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        MAIN_DATA     *pObject
     );
-    
+
+
     /*!
-     Parse the given string into a JSON Node structure and
-     perform some cursory checks on the structure.
-     @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
      */
-    ERESULT         main_ParseInputStr(
-        MAIN_DATA       *this,
-        const
-        char            *pStr
-    );
-    
-    ERESULT         main_ProcessInit(
-        MAIN_DATA       *this
-    );
-    
-    /*!
-     Process each command line argument, parsing the HJSON file and
-     generating the Makefile.
-     @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT         main_ProcessArg(
-        MAIN_DATA       *this,
+    ERESULT         Main_ToJsonFields (
+        MAIN_DATA     *this,
         ASTR_DATA       *pStr
     );
-    
-    void *          main_QueryInfo(
+#endif
+
+
+    void *          Main_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ERESULT         main_UsageDesc(
-        MAIN_DATA       *this,
-        FILE            *pOutput,
-        PATH_DATA       *pProgramPath
+#ifdef  MAIN_JSON_SUPPORT
+    ASTR_DATA *     Main_ToJson (
+        MAIN_DATA      *this
     );
-    
+#endif
 
-    ERESULT         main_UsageProgLine(
-        MAIN_DATA       *this,
-        FILE            *pOutput,
-        PATH_DATA       *pProgramPath,
-        const
-        char            *pNameA
-    );
-    
-    
-    ERESULT         main_UsageOptions(
-        MAIN_DATA       *this,
-        FILE            *pOutput
-    );
-    
-    
+
 
 
 #ifdef NDEBUG
 #else
-    bool			main_Validate(
+    bool			Main_Validate (
         MAIN_DATA       *this
     );
 #endif

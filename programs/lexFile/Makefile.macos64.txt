@@ -1,0 +1,77 @@
+# Generated file - Edits will be discarded by next generation!
+# ( 2/ 1/2020  0:39:52.000)
+
+PGMNAM=lexFile
+SYS=macos64
+TEMP=/tmp
+BASE_OBJ = $(TEMP)/$(PGMNAM)
+SRCDIR = ./src
+TEST_SRC = ./tests
+INSTALL_BASE = $(HOME)/Support/bin
+LIB_BASE = $(HOME)/Support/lib/$(SYS)
+
+CFLAGS += -g -Werror -I$(SRCDIR)
+ifdef  NDEBUG
+CFLAGS += -DNDEBUG
+else   #DEBUG
+CFLAGS += -D_DEBUG
+endif  #NDEBUG
+CFLAGS += -D__MACOS64_ENV__
+CFLAGS_LIBS = 
+# libCmn
+LIBCMN_BASE = $(LIB_BASE)/libCmn
+CFLAGS += -I$(LIBCMN_BASE)/include
+CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)
+CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses
+
+LIBOBJ = $(BASE_OBJ)/$(SYS)
+ifdef  NDEBUG
+LIB_FILENAME=$(PGMNAM)R.a
+OBJDIR = $(LIBOBJ)/o/r
+else   #DEBUG
+LIB_FILENAME=$(PGMNAM)D.a
+OBJDIR = $(LIBOBJ)/o/d
+endif  #NDEBUG
+TEST_OBJ = $(OBJDIR)/tests
+TEST_BIN = $(OBJDIR)/tests
+LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)
+
+.SUFFIXES:
+.SUFFIXES: .asm .c .cpp .o
+
+OBJS =
+
+TESTS =
+
+
+
+
+.PHONY: test
+test: $(TESTS)
+
+
+.PHONY: clean
+clean:
+	-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)
+
+
+.PHONY: install
+install:
+	-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)
+	cp $(OBJDIR)/$(PGMNAM) $(INSTALL_BASE)/$(PGMNAM)
+
+
+.PHONY: link
+link: $(OBJS) $(SRCDIR)/lexFile.c
+	CC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^
+
+
+.PHONY: create_dirs
+create_dirs:
+	[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests
+
+
+.PHONY: all
+all:  clean create_dirs link
+
+

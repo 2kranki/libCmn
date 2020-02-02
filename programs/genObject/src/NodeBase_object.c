@@ -427,7 +427,7 @@ OBJ_INFO        NodeBase_Info = {
     "NodeBase",
     "NodeBase",	// <-- Fill in description
     (OBJ_DATA *)&NodeBase_ClassObj,
-    (OBJ_DATA *)&node_ClassObj,
+    (OBJ_DATA *)&Node_ClassObj,
     (OBJ_IUNKNOWN *)&NodeBase_Vtbl,
     sizeof(NODEBASE_DATA)
 };

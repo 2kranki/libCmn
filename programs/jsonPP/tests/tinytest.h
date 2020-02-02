@@ -1,3 +1,4 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*! 
     Simple unit testing for c/c++
     Copyright 2012, Cosmin Cremarenco.
@@ -63,6 +64,15 @@ typedef struct TinyTestRegistryStruct
   TinyTestSuite* m_headSuite;
 } TinyTestRegistry;
 
+#ifndef DEBUG_BREAK
+#   ifdef NDEBUG
+#       define DEBUG_BREAK( )  /**/
+#   else
+#       define DEBUG_BREAK( )\
+                if( cmn_AmIBeingDebugged() ){ __asm__("int $3\n" : : );}
+#   endif
+#endif
+
 #ifndef TINYTEST_NOTESTING
 
 #define TINYTEST_FALSE_MSG(actual, msg)                                 \
@@ -76,6 +86,7 @@ typedef struct TinyTestRegistryStruct
               "\x1b[0m"                                                 \
             "%s:%d false, actual: %s\n",                                \
            __FILE__, __LINE__, #actual);                                \
+	if( cmn_AmIBeingDebugged() ){ __asm__("int $3\n" : : );}            \
     if ( msg ) printf(msg);                                             \
     return 0;                                                           \
   }
@@ -98,7 +109,8 @@ typedef struct TinyTestRegistryStruct
             "%s:%d true, actual: %s\n",                                 \
            __FILE__, __LINE__, #actual                                  \
     );                                                                  \
-    if ( msg ) printf(msg);                                             \
+	if( cmn_AmIBeingDebugged() ){ __asm__("int $3\n" : : );}            \
+    if ( msg ) printf(msg);                                            \
     return 0;                                                           \
   }
 
@@ -119,6 +131,7 @@ typedef struct TinyTestRegistryStruct
               "\x1b[0m"                                                 \
             "%s:%d expected %s, actual: %s\n",                          \
            __FILE__, __LINE__, #expected, #actual);                     \
+	if( cmn_AmIBeingDebugged() ){ __asm__("int $3\n" : : );}            \
     if ( msg ) printf(msg);                                             \
     return 0;                                                           \
   }
@@ -137,6 +150,7 @@ typedef struct TinyTestRegistryStruct
               "\x1b[0m"                                                 \
             "%s:%d expected \"%s\", actual: \"%s\"\n",                  \
            __FILE__, __LINE__, expected, actual);                       \
+	if( cmn_AmIBeingDebugged() ){ __asm__("int $3\n" : : );}            \
     if ( msg ) printf(msg);                                             \
     return 0;                                                           \
   }
@@ -155,6 +169,7 @@ typedef struct TinyTestRegistryStruct
               "\x1b[0m"                                                 \
             "%s:%d assertion failed: \"%s\"\n",                         \
            __FILE__, __LINE__, #assertion);                             \
+	if( cmn_AmIBeingDebugged() ){ __asm__("int $3\n" : : );}            \
     if ( msg ) printf(msg);                                             \
     return 0;                                                           \
   }

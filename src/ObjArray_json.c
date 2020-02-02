@@ -70,43 +70,27 @@ extern "C" {
      ****************************************************************/
     
     /*!
-     Parse the new object from an established parser.
-     @param pParser an established jsonIn Parser Object
-     @return    a new object if successful, otherwise, OBJ_NIL
-     @warning   Returned object must be released.
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
      */
-    OBJARRAY_DATA * ObjArray_ParseJsonObject(
-        JSONIN_DATA     *pParser
+    ERESULT     ObjArray_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        OBJARRAY_DATA   *pObject
     )
     {
-        ERESULT         eRc;
-        OBJARRAY_DATA   *pObject = OBJ_NIL;
-        const
-        OBJ_INFO        *pInfo;
+        ERESULT         eRc = ERESULT_SUCCESS;
         int64_t         intIn;
-        //ASTR_DATA       *pWrk;
         uint32_t        numEntries = 0;
         uint32_t        i;
         NODEARRAY_DATA  *pArray;
         NODEHASH_DATA   *pHash;
         NODE_DATA       *pNode;
 
-        pInfo = obj_getInfo(ObjArray_Class());
-        
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(stderr, "ERROR - objectType is invalid!\n");
-            goto exit00;
-        }
-
-        pObject = ObjArray_New( );
-        if (OBJ_NIL == pObject) {
-            goto exit00;
-        }
-        
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "Size", &intIn);
-        numEntries = (uint32_t)intIn;
-
+        (void)JsonIn_FindU32NodeInHashA(pParser, "Size", &numEntries);
         eRc = JsonIn_FindArrayNodeInHashA(pParser, "Objects", &pArray);
         for (i=0; i<numEntries; i++) {
             uint32_t        index = 0;
@@ -127,6 +111,43 @@ extern "C" {
                 JsonIn_SubObjectEnd(pParser);
             }
         }
+
+        // Return to caller.
+    exit00:
+        return eRc;
+    }
+
+
+
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    OBJARRAY_DATA * ObjArray_ParseJsonObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        OBJARRAY_DATA   *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+
+        pInfo = obj_getInfo(ObjArray_Class());
+        
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+
+        pObject = ObjArray_New( );
+        if (OBJ_NIL == pObject) {
+            goto exit00;
+        }
+        
+        eRc =  ObjArray_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -216,19 +237,7 @@ extern "C" {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        void *          (*pQueryInfo)(
-            OBJ_ID          objId,
-            uint32_t        type,
-            void            *pData
-        );
-        ASTR_DATA *     (*pToJson)(
-            OBJ_ID          objId
-        );
-        ASTR_DATA       *pWrkStr;
-        uint32_t        i;
-        uint32_t        iMax;
-        uint32_t        numEntries = 0;
-        OBJ_ID          pObj;
+        ERESULT         eRc;
 
 #ifdef NDEBUG
 #else
@@ -244,8 +253,37 @@ extern "C" {
                          "{ \"objectType\":\"%s\", ",
                          pInfo->pClassName
         );
+
+
+        eRc = ObjArray_ToJsonFields(this, pStr);
+
+        AStr_AppendA(pStr, "}\n");
+        
+        return pStr;
+    }
+    
+    
+    
+    ERESULT         ObjArray_ToJsonFields (
+        OBJARRAY_DATA   *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+        ASTR_DATA       *pWrkStr;
+        uint32_t        i;
+        uint32_t        iMax;
+        uint32_t        numEntries = 0;
+        OBJ_ID          pObj;
+
         iMax = ObjArray_getSize(this);
-       
         for (i=0; i<iMax; i++) {
             pObj = ObjArray_Get(this, i+1);
             if (pObj) {
@@ -307,14 +345,14 @@ extern "C" {
                 }
             }
         }
-        AStr_AppendA(pStr, "] }\n");
-        
-        return pStr;
+        AStr_AppendA(pStr, "]\n");
+
+        return ERESULT_SUCCESS;
     }
-    
-    
-    
-    
+
+
+
+
     
 #ifdef	__cplusplus
 }

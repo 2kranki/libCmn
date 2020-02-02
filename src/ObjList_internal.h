@@ -146,6 +146,20 @@ struct ObjList_data_s	{
     OBJLIST_DATA *   ObjList_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+
+
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT     ObjList_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        OBJLIST_DATA    *pObject
+    );
 #endif
 
 
@@ -159,6 +173,12 @@ struct ObjList_data_s	{
 #ifdef  OBJLIST_JSON_SUPPORT
     ASTR_DATA *     ObjList_ToJson (
         OBJLIST_DATA      *this
+    );
+
+
+    ERESULT         ObjList_ToJsonFields (
+        OBJLIST_DATA    *this,
+        ASTR_DATA       *pStr
     );
 #endif
 

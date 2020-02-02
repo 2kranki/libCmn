@@ -174,11 +174,11 @@ extern "C" {
         }
 #endif
 
-        iMax = nodeArray_getSize(pNodes);
+        iMax = NodeArray_getSize(pNodes);
         for (i=0; i<iMax; i++) {
-            pNode = nodeArray_Get(pNodes, i+1);
+            pNode = NodeArray_Get(pNodes, i+1);
             if (pNode) {
-                pStr = jsonIn_CheckNodeForString(pNode);
+                pStr = JsonIn_CheckNodeForString(pNode);
                 if (pStr) {
                     pStrC = AStrC_NewFromAStr(pStr);
                     if (pStrC) {
@@ -256,7 +256,7 @@ extern "C" {
                                    "Error: Invalid Input Node!");
             return pErr;
         }
-        if (!obj_IsKindOf(node_getData(pNode), OBJ_IDENT_NODEHASH)) {
+        if (!obj_IsKindOf(Node_getData(pNode), OBJ_IDENT_NODEHASH)) {
             DEBUG_BREAK();
             pErr = eResult_NewStrA(ERESULT_INVALID_PARAMETER,
                                    "Error: Missing Input Hash Node!");
@@ -276,41 +276,41 @@ extern "C" {
         }
     #endif
 
-        if (jsonIn_CheckNodeForNull(pNode)) {
+        if (JsonIn_CheckNodeForNull(pNode)) {
             return OBJ_NIL;
         }
-        else if (jsonIn_CheckNodeForFalse(pNode)) {
+        else if (JsonIn_CheckNodeForFalse(pNode)) {
             obj_Release(*ppBase);
             *ppBase = OBJ_NIL;
             return OBJ_NIL;
         }
-        else if (jsonIn_CheckNodeForTrue(pNode)) {
+        else if (JsonIn_CheckNodeForTrue(pNode)) {
             return OBJ_NIL;
         }
-        pArray = jsonIn_CheckNodeForArray(pNode);
+        pArray = JsonIn_CheckNodeForArray(pNode);
         if (pArray) {
             // We have an array of Dependencies. So, add them to the base node.
-            pErr = NodeBase_AccumStrings(node_getData(pNode), NodeBase_getDeps(*ppBase));
+            pErr = NodeBase_AccumStrings(Node_getData(pNode), NodeBase_getDeps(*ppBase));
             if (pErr) {
                 DEBUG_BREAK();
                 return pErr;
             }
             return OBJ_NIL;
         }
-        pHash = jsonIn_CheckNodeForHash(pNode);
+        pHash = JsonIn_CheckNodeForHash(pNode);
         if (pHash) {
             // Ok, we have a hash, so there might a lot to parse here.
 
-            pHashItem = nodeHash_FindA(pHash, 0, "arch");
+            pHashItem = NodeHash_FindA(pHash, 0, "arch");
             if (pHashItem) {
-                pStr = jsonIn_CheckNodeDataForString(pHashItem);
+                pStr = JsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
                     pErr = NodeBase_AccumString(pStr, NodeBase_getArches(*ppBase));
                     if (pErr) {
                         return pErr;
                     }
                 } else {
-                   pArray = jsonIn_CheckNodeDataForArray(pHashItem);
+                   pArray = JsonIn_CheckNodeDataForArray(pHashItem);
                    if (pArray) {
                        pErr = NodeBase_AccumStrings(pArray, NodeBase_getArches(*ppBase));
                        if (pErr) {
@@ -320,16 +320,16 @@ extern "C" {
                 }
             }
 
-            pHashItem = nodeHash_FindA(pHash, 0, "deps");
+            pHashItem = NodeHash_FindA(pHash, 0, "deps");
             if (pHashItem) {
-                pStr = jsonIn_CheckNodeDataForString(pHashItem);
+                pStr = JsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
                     pErr = NodeBase_AccumString(pStr, NodeBase_getDeps(*ppBase));
                     if (pErr) {
                         return pErr;
                     }
                 } else {
-                    pArray = jsonIn_CheckNodeDataForArray(pHashItem);
+                    pArray = JsonIn_CheckNodeDataForArray(pHashItem);
                     if (pArray) {
                         pErr = NodeBase_AccumStrings(pArray, NodeBase_getDeps(*ppBase));
                         if (pErr) {
@@ -339,16 +339,16 @@ extern "C" {
                 }
             }
 
-            pHashItem = nodeHash_FindA(pHash, 0, "hdrs");
+            pHashItem = NodeHash_FindA(pHash, 0, "hdrs");
             if (pHashItem) {
-                pStr = jsonIn_CheckNodeDataForString(pHashItem);
+                pStr = JsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
                     pErr = NodeBase_AccumString(pStr, NodeBase_getHdrs(*ppBase));
                     if (pErr) {
                         return pErr;
                     }
                 } else {
-                    pArray = jsonIn_CheckNodeDataForArray(pHashItem);
+                    pArray = JsonIn_CheckNodeDataForArray(pHashItem);
                     if (pArray) {
                         pErr = NodeBase_AccumStrings(pArray, NodeBase_getHdrs(*ppBase));
                         if (pErr) {
@@ -358,16 +358,16 @@ extern "C" {
                 }
             }
 
-            pHashItem = nodeHash_FindA(pHash, 0, "srcs");
+            pHashItem = NodeHash_FindA(pHash, 0, "srcs");
             if (pHashItem) {
-                pStr = jsonIn_CheckNodeDataForString(pHashItem);
+                pStr = JsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
                     pErr = NodeBase_AccumString(pStr, NodeBase_getSrcs(*ppBase));
                     if (pErr) {
                         return pErr;
                     }
                 } else {
-                    pArray = jsonIn_CheckNodeDataForArray(pHashItem);
+                    pArray = JsonIn_CheckNodeDataForArray(pHashItem);
                     if (pArray) {
                         pErr = NodeBase_AccumStrings(pArray, NodeBase_getSrcs(*ppBase));
                         if (pErr) {
@@ -377,9 +377,9 @@ extern "C" {
                 }
             }
 
-            pHashItem = nodeHash_FindA(pHash, 0, "desc");
+            pHashItem = NodeHash_FindA(pHash, 0, "desc");
             if (pHashItem) {
-                ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
+                ASTR_DATA       *pStr = JsonIn_CheckNodeForString(Node_getData(pHashItem));
                 ASTRC_DATA      *pStrC;
                 if (pStr) {
                     pStrC = AStrC_NewFromAStr(pStr);
@@ -389,9 +389,9 @@ extern "C" {
                 }
             }
 
-            pHashItem = nodeHash_FindA(pHash, 0, "name");
+            pHashItem = NodeHash_FindA(pHash, 0, "name");
             if (pHashItem) {
-                ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
+                ASTR_DATA       *pStr = JsonIn_CheckNodeForString(Node_getData(pHashItem));
                 ASTRC_DATA      *pStrC;
                 if (pStr) {
                     pStrC = AStrC_NewFromAStr(pStr);
@@ -401,9 +401,9 @@ extern "C" {
                 }
             }
 
-            pHashItem = nodeHash_FindA(pHash, 0, "ext");
+            pHashItem = NodeHash_FindA(pHash, 0, "ext");
             if (pHashItem) {
-                ASTR_DATA       *pStr = jsonIn_CheckNodeForString(node_getData(pHashItem));
+                ASTR_DATA       *pStr = JsonIn_CheckNodeForString(Node_getData(pHashItem));
                 ASTRC_DATA      *pStrC;
                 if (pStr) {
                     pStrC = AStrC_NewFromAStr(pStr);
@@ -413,16 +413,16 @@ extern "C" {
                 }
             }
 
-            pHashItem = nodeHash_FindA(pHash, 0, "os");
+            pHashItem = NodeHash_FindA(pHash, 0, "os");
             if (pHashItem) {
-                pStr = jsonIn_CheckNodeDataForString(pHashItem);
+                pStr = JsonIn_CheckNodeDataForString(pHashItem);
                 if (pStr) {
                     pErr = NodeBase_AccumString(pStr, NodeBase_getOSs(*ppBase));
                     if (pErr) {
                         return pErr;
                     }
                 } else {
-                    pArray = jsonIn_CheckNodeDataForArray(pHashItem);
+                    pArray = JsonIn_CheckNodeDataForArray(pHashItem);
                     if (pArray) {
                         pErr = NodeBase_AccumStrings(pArray, NodeBase_getOSs(*ppBase));
                         if (pErr) {
@@ -1764,7 +1764,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)node_Init((NODE_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)Node_Init((NODE_DATA *)this);        // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEBASE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();

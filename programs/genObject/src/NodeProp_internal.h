@@ -40,7 +40,7 @@
 
 
 #include        <NodeProp.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef NODEPROP_INTERNAL_H

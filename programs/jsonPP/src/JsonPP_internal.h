@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Main_internal.h
- *	Generated 12/19/2019 08:55:05
+ * File:   JsonPP_internal.h
+ *	Generated 01/31/2020 23:01:52
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <Main.h>
+#include        <JsonPP.h>
 #include        <JsonIn.h>
 
 
-#ifndef MAIN_INTERNAL_H
-#define	MAIN_INTERNAL_H
+#ifndef JSONPP_INTERNAL_H
+#define	JSONPP_INTERNAL_H
 
 
 
@@ -64,7 +64,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Main_data_s	{
+struct JsonPP_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -79,11 +79,11 @@ struct Main_data_s	{
 #pragma pack(pop)
 
     extern
-    struct Main_class_data_s  Main_ClassObj;
+    struct JsonPP_class_data_s  JsonPP_ClassObj;
 
     extern
     const
-    MAIN_VTBL         Main_Vtbl;
+    JSONPP_VTBL         JsonPP_Vtbl;
 
 
 
@@ -91,13 +91,13 @@ struct Main_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  MAIN_SINGLETON
-    MAIN_DATA *     Main_getSingleton (
+#ifdef  JSONPP_SINGLETON
+    JSONPP_DATA *     JsonPP_getSingleton (
         void
     );
 
-    bool            Main_setSingleton (
-     MAIN_DATA       *pValue
+    bool            JsonPP_setSingleton (
+     JSONPP_DATA       *pValue
 );
 #endif
 
@@ -107,33 +107,80 @@ struct Main_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  Main_getSuperVtbl (
-        MAIN_DATA     *this
+    OBJ_IUNKNOWN *  JsonPP_getSuperVtbl (
+        JSONPP_DATA     *this
     );
 
 
-    void            Main_Dealloc (
+    ERESULT         JsonPP_Assign (
+        JSONPP_DATA    *this,
+        JSONPP_DATA    *pOther
+    );
+
+
+    JSONPP_DATA *       JsonPP_Copy (
+        JSONPP_DATA     *this
+    );
+
+
+    void            JsonPP_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  MAIN_JSON_SUPPORT
-    MAIN_DATA *       Main_ParseJsonObject (
+#ifdef  JSONPP_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    JSONPP_DATA *       JsonPP_ParseJsonObject (
         JSONIN_DATA     *pParser
+    );
+
+
+    /*!
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         JsonPP_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        JSONPP_DATA     *pObject
+    );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         JsonPP_ToJsonFields (
+        JSONPP_DATA     *this,
+        ASTR_DATA       *pStr
     );
 #endif
 
 
-    void *          Main_QueryInfo (
+    void *          JsonPP_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
-    ASTR_DATA *     Main_ToJson (
-        MAIN_DATA      *this
+#ifdef  JSONPP_JSON_SUPPORT
+    ASTR_DATA *     JsonPP_ToJson (
+        JSONPP_DATA      *this
     );
 #endif
 
@@ -142,8 +189,8 @@ struct Main_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			Main_Validate (
-        MAIN_DATA       *this
+    bool			JsonPP_Validate (
+        JSONPP_DATA       *this
     );
 #endif
 
@@ -153,5 +200,5 @@ struct Main_data_s	{
 }
 #endif
 
-#endif	/* MAIN_INTERNAL_H */
+#endif	/* JSONPP_INTERNAL_H */
 

@@ -70,40 +70,26 @@ extern "C" {
      ****************************************************************/
     
     /*!
-     Parse the new object from an established parser.
-     @param pParser an established jsonIn Parser Object
-     @return    a new object if successful, otherwise, OBJ_NIL
-     @warning   Returned object must be released.
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
      */
-    OBJLIST_DATA * ObjList_ParseJsonObject(
-        JSONIN_DATA     *pParser
+    ERESULT     ObjList_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        OBJLIST_DATA    *pObject
     )
     {
-        ERESULT         eRc;
-        OBJLIST_DATA   *pObject = OBJ_NIL;
-        const
-        OBJ_INFO        *pInfo;
+        ERESULT         eRc = ERESULT_SUCCESS;
         int64_t         intIn;
-        //ASTR_DATA       *pWrk;
         uint32_t        i;
         uint32_t        iMax;
         NODEARRAY_DATA  *pArray;
         NODEHASH_DATA   *pHash;
         NODE_DATA       *pNode;
 
-        pInfo = obj_getInfo(ObjList_Class());
-        
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(stderr, "ERROR - objectType is invalid!\n");
-            goto exit00;
-        }
-
-        pObject = ObjList_New( );
-        if (OBJ_NIL == pObject) {
-            goto exit00;
-        }
-        
         eRc = JsonIn_FindIntegerNodeInHashA(pParser, "Size", &intIn);
         iMax = (uint32_t)intIn;
 
@@ -124,6 +110,43 @@ extern "C" {
                 JsonIn_SubObjectEnd(pParser);
             }
         }
+
+        // Return to caller.
+    exit00:
+        return eRc;
+    }
+
+
+
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    OBJLIST_DATA * ObjList_ParseJsonObject(
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        OBJLIST_DATA   *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+
+        pInfo = obj_getInfo(ObjList_Class());
+        
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+
+        pObject = ObjList_New( );
+        if (OBJ_NIL == pObject) {
+            goto exit00;
+        }
+        
+        eRc =  ObjList_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -213,6 +236,39 @@ extern "C" {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
+        ERESULT         eRc;
+
+#ifdef NDEBUG
+#else
+        if( !ObjList_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+
+        pStr = AStr_New();
+        if (pStr) {
+             AStr_AppendPrint(pStr,
+                              "{ \"objectType\":\"%s\", ",
+                              pInfo->pClassName
+             );
+            
+            eRc = ObjList_ToJsonFields(this, pStr);
+
+            AStr_AppendA(pStr, "}\n");
+        }
+
+        return pStr;
+    }
+    
+    
+    
+    ERESULT         ObjList_ToJsonFields (
+        OBJLIST_DATA    *this,
+        ASTR_DATA       *pStr
+    )
+    {
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
             uint32_t        type,
@@ -226,86 +282,69 @@ extern "C" {
         uint32_t        i;
         uint32_t        iMax;
 
-#ifdef NDEBUG
-#else
-        if( !ObjList_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
         iMax = ObjList_getSize(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-             AStr_AppendPrint(pStr,
-                              "{ \"objectType\":\"%s\", ",
-                              pInfo->pClassName
-             );
-            
-            AStr_AppendPrint(pStr,
-                             "\"Size\":%d, "
-                             "\"Objects\":[\n",
-                             iMax
-            );
-            if (iMax > 0) {
-                pEntry = ObjList_Head(this);
-                for (i=0; i<(iMax-1); i++) {
-                    if (pEntry) {
-                        pQueryInfo = obj_getVtbl(pEntry)->pQueryInfo;
-                        if (pQueryInfo) {
-                            pToJson =   (*pQueryInfo)(
-                                                      pEntry,
-                                                      OBJ_QUERYINFO_TYPE_METHOD,
-                                                      "ToJson"
-                                                      );
-                            if (pToJson) {
-                                pWrkStr = (*pToJson)(pEntry);
-                                if (pWrkStr) {
-                                    AStr_AppendA(pStr, "\t{\"Object\": ");
-                                    AStr_Append(pStr, pWrkStr);
-                                    obj_Release(pWrkStr);
-                                    pWrkStr = OBJ_NIL;
-                                    AStr_AppendA(pStr, "},\n");
-                                }
+        AStr_AppendPrint(pStr,
+                         "\"Size\":%d, "
+                         "\"Objects\":[\n",
+                         iMax
+        );
+        if (iMax > 0) {
+            pEntry = ObjList_Head(this);
+            for (i=0; i<(iMax-1); i++) {
+                if (pEntry) {
+                    pQueryInfo = obj_getVtbl(pEntry)->pQueryInfo;
+                    if (pQueryInfo) {
+                        pToJson =   (*pQueryInfo)(
+                                                  pEntry,
+                                                  OBJ_QUERYINFO_TYPE_METHOD,
+                                                  "ToJson"
+                                                  );
+                        if (pToJson) {
+                            pWrkStr = (*pToJson)(pEntry);
+                            if (pWrkStr) {
+                                AStr_AppendA(pStr, "\t{\"Object\": ");
+                                AStr_Append(pStr, pWrkStr);
+                                obj_Release(pWrkStr);
+                                pWrkStr = OBJ_NIL;
+                                AStr_AppendA(pStr, "},\n");
                             }
                         }
                     }
-                    else
-                        break;
-                    pEntry = ObjList_Next(this);
                 }
+                else
+                    break;
+                pEntry = ObjList_Next(this);
             }
-            if (pEntry) {
-                 pQueryInfo = obj_getVtbl(pEntry)->pQueryInfo;
-                 if (pQueryInfo) {
-                     pToJson =   (*pQueryInfo)(
-                                               pEntry,
-                                               OBJ_QUERYINFO_TYPE_METHOD,
-                                               "ToJson"
-                                               );
-                     if (pToJson) {
-                         pWrkStr = (*pToJson)(pEntry);
-                         if (pWrkStr) {
-                             AStr_AppendA(pStr, "\t{\"Object\": ");
-                             AStr_Append(pStr, pWrkStr);
-                             obj_Release(pWrkStr);
-                             pWrkStr = OBJ_NIL;
-                             AStr_AppendA(pStr, "}\n");
-                         }
+        }
+        if (pEntry) {
+             pQueryInfo = obj_getVtbl(pEntry)->pQueryInfo;
+             if (pQueryInfo) {
+                 pToJson =   (*pQueryInfo)(
+                                           pEntry,
+                                           OBJ_QUERYINFO_TYPE_METHOD,
+                                           "ToJson"
+                                           );
+                 if (pToJson) {
+                     pWrkStr = (*pToJson)(pEntry);
+                     if (pWrkStr) {
+                         AStr_AppendA(pStr, "\t{\"Object\": ");
+                         AStr_Append(pStr, pWrkStr);
+                         obj_Release(pWrkStr);
+                         pWrkStr = OBJ_NIL;
+                         AStr_AppendA(pStr, "}\n");
                      }
                  }
-            }
-
-            AStr_AppendA(pStr, "]}\n");
+             }
         }
 
-        return pStr;
+        AStr_AppendA(pStr, "]\n");
+
+        return ERESULT_SUCCESS;
     }
-    
-    
-    
-    
+
+
+
+
     
 #ifdef	__cplusplus
 }

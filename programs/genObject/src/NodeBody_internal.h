@@ -40,7 +40,7 @@
 
 
 #include        <NodeBody.h>
-#include        <jsonIn.h>
+#include        <JsonIn.h>
 
 
 #ifndef NODEBODY_INTERNAL_H

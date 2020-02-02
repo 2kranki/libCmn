@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Main.c
- *	Generated 01/31/2020 22:44:45
+ * File:   JsonPP.c
+ *	Generated 01/31/2020 23:01:52
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <Main_internal.h>
+#include        <JsonPP_internal.h>
 #include        <trace.h>
 
 
@@ -64,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            Main_task_body (
+    void            JsonPP_task_body (
         void            *pData
     )
     {
-        //MAIN_DATA  *this = pData;
+        //JSONPP_DATA  *this = pData;
         
     }
 #endif
@@ -84,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    MAIN_DATA *     Main_Alloc (
+    JSONPP_DATA *     JsonPP_Alloc (
         void
     )
     {
-        MAIN_DATA       *this;
-        uint32_t        cbSize = sizeof(MAIN_DATA);
+        JSONPP_DATA       *this;
+        uint32_t        cbSize = sizeof(JSONPP_DATA);
         
         // Do initialization.
         
@@ -101,15 +101,15 @@ extern "C" {
 
 
 
-    MAIN_DATA *     Main_New (
+    JSONPP_DATA *     JsonPP_New (
         void
     )
     {
-        MAIN_DATA       *this;
+        JSONPP_DATA       *this;
         
-        this = Main_Alloc( );
+        this = JsonPP_Alloc( );
         if (this) {
-            this = Main_Init(this);
+            this = JsonPP_Init(this);
         } 
         return this;
     }
@@ -126,15 +126,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        Main_getPriority (
-        MAIN_DATA     *this
+    uint16_t        JsonPP_getPriority (
+        JSONPP_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -145,14 +145,14 @@ extern "C" {
     }
 
 
-    bool            Main_setPriority (
-        MAIN_DATA     *this,
+    bool            JsonPP_setPriority (
+        JSONPP_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -169,13 +169,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        Main_getSize (
-        MAIN_DATA       *this
+    uint32_t        JsonPP_getSize (
+        JSONPP_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -190,15 +190,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * Main_getStr (
-        MAIN_DATA     *this
+    ASTR_DATA * JsonPP_getStr (
+        JSONPP_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -208,14 +208,14 @@ extern "C" {
     }
     
     
-    bool        Main_setStr (
-        MAIN_DATA     *this,
+    bool        JsonPP_setStr (
+        JSONPP_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -238,15 +238,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Main_getSuperVtbl (
-        MAIN_DATA     *this
+    OBJ_IUNKNOWN *  JsonPP_getSuperVtbl (
+        JSONPP_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -275,16 +275,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = Main_Assign(this,pOther);
+        ERESULT eRc = JsonPP_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another MAIN object
+     @param     pOther  a pointer to another JSONPP object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         Main_Assign (
-        MAIN_DATA		*this,
-        MAIN_DATA     *pOther
+    ERESULT         JsonPP_Assign (
+        JSONPP_DATA		*this,
+        JSONPP_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -292,11 +292,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Main_Validate(pOther)) {
+        if (!JsonPP_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -358,9 +358,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         Main_Compare (
-        MAIN_DATA     *this,
-        MAIN_DATA     *pOther
+    ERESULT         JsonPP_Compare (
+        JSONPP_DATA     *this,
+        JSONPP_DATA     *pOther
     )
     {
         int             i = 0;
@@ -374,11 +374,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Main_Validate(pOther)) {
+        if (!JsonPP_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -416,36 +416,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Main      *pCopy = Main_Copy(this);
+        JsonPP      *pCopy = JsonPP_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a MAIN object which must be 
+     @return    If successful, a JSONPP object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    MAIN_DATA *     Main_Copy (
-        MAIN_DATA       *this
+    JSONPP_DATA *     JsonPP_Copy (
+        JSONPP_DATA       *this
     )
     {
-        MAIN_DATA       *pOther = OBJ_NIL;
+        JSONPP_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef MAIN_IS_IMMUTABLE
+#ifdef JSONPP_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = Main_New( );
+        pOther = JsonPP_New( );
         if (pOther) {
-            eRc = Main_Assign(this, pOther);
+            eRc = JsonPP_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -463,11 +463,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            Main_Dealloc (
+    void            JsonPP_Dealloc (
         OBJ_ID          objId
     )
     {
-        MAIN_DATA   *this = objId;
+        JSONPP_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -476,7 +476,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -484,11 +484,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((MAIN_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((JSONPP_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        Main_setStr(this, OBJ_NIL);
+        JsonPP_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -509,32 +509,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Main      *pDeepCopy = Main_Copy(this);
+        JsonPP      *pDeepCopy = JsonPP_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a MAIN object which must be 
+     @return    If successful, a JSONPP object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    MAIN_DATA *     Main_DeepyCopy (
-        MAIN_DATA       *this
+    JSONPP_DATA *     JsonPP_DeepyCopy (
+        JSONPP_DATA       *this
     )
     {
-        MAIN_DATA       *pOther = OBJ_NIL;
+        JSONPP_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = Main_New( );
+        pOther = JsonPP_New( );
         if (pOther) {
-            eRc = Main_Assign(this, pOther);
+            eRc = JsonPP_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -557,8 +557,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Main_Disable (
-        MAIN_DATA		*this
+    ERESULT         JsonPP_Disable (
+        JSONPP_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -566,7 +566,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -592,8 +592,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Main_Enable (
-        MAIN_DATA		*this
+    ERESULT         JsonPP_Enable (
+        JSONPP_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -601,7 +601,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -621,11 +621,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    MAIN_DATA *   Main_Init (
-        MAIN_DATA       *this
+    JSONPP_DATA *   JsonPP_Init (
+        JSONPP_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(MAIN_DATA);
+        uint32_t        cbSize = sizeof(JSONPP_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -643,7 +643,7 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MAIN);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_JSONPP);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -651,7 +651,7 @@ extern "C" {
         }
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Main_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&JsonPP_Vtbl);
         
         /*
         this->pArray = objArray_New( );
@@ -664,7 +664,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -672,11 +672,11 @@ extern "C" {
 #if defined(__APPLE__) && defined(XYZZY)
         fprintf(
                 stderr, 
-                "Main::sizeof(MAIN_DATA) = %lu\n", 
-                sizeof(MAIN_DATA)
+                "JsonPP::sizeof(JSONPP_DATA) = %lu\n", 
+                sizeof(JSONPP_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(MAIN_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(JSONPP_DATA));
 #endif
 
         return this;
@@ -688,8 +688,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Main_IsEnabled (
-        MAIN_DATA		*this
+    ERESULT         JsonPP_IsEnabled (
+        JSONPP_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -697,7 +697,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -724,14 +724,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = Main_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = JsonPP_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "Main", prefix,
+                        the object name, "JsonPP", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -739,13 +739,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          Main_QueryInfo (
+    void *          JsonPP_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        MAIN_DATA     *this = objId;
+        JSONPP_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -754,7 +754,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -763,11 +763,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(MAIN_DATA);
+            return (void *)sizeof(JSONPP_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)Main_Class();
+                return (void *)JsonPP_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -797,34 +797,34 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return Main_Disable;
+                            return JsonPP_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return Main_Enable;
+                            return JsonPP_Enable;
                         }
                         break;
 
-#ifdef  MAIN_JSON_SUPPORT
+#ifdef  JSONPP_JSON_SUPPORT
                     case 'P':
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return Main_ParseJsonFields;
+                            return JsonPP_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return Main_ParseJsonObject;
+                            return JsonPP_ParseJsonObject;
                         }
                         break;
 #endif
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return Main_ToDebugString;
+                            return JsonPP_ToDebugString;
                         }
-#ifdef  MAIN_JSON_SUPPORT
+#ifdef  JSONPP_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return Main_ToJson;
+                            return JsonPP_ToJson;
                         }
 #endif
                         break;
@@ -835,10 +835,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == Main_ToDebugString)
+                if (pData == JsonPP_ToDebugString)
                     return "ToDebugString";
-#ifdef  MAIN_JSON_SUPPORT
-                if (pData == Main_ToJson)
+#ifdef  JSONPP_JSON_SUPPORT
+                if (pData == JsonPP_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -860,7 +860,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Main_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = JsonPP_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -868,8 +868,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Main_ToDebugString (
-        MAIN_DATA      *this,
+    ASTR_DATA *     JsonPP_ToDebugString (
+        JSONPP_DATA      *this,
         int             indent
     )
     {
@@ -883,7 +883,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!JsonPP_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -904,7 +904,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    Main_getSize(this),
+                    JsonPP_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -942,15 +942,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            Main_Validate (
-        MAIN_DATA      *this
+    bool            JsonPP_Validate (
+        JSONPP_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_MAIN))
+            if (obj_IsKindOf(this, OBJ_IDENT_JSONPP))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -966,7 +966,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(MAIN_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(JSONPP_DATA))) {
             return false;
         }
 

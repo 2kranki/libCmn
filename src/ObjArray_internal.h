@@ -126,6 +126,20 @@ struct ObjArray_data_s	{
     OBJARRAY_DATA *       ObjArray_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+
+
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT     ObjArray_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        OBJARRAY_DATA   *pObject
+    );
 #endif
 
 
@@ -139,6 +153,12 @@ struct ObjArray_data_s	{
 #ifdef  OBJARRAY_JSON_SUPPORT
     ASTR_DATA *     ObjArray_ToJson (
         OBJARRAY_DATA      *this
+    );
+
+
+    ERESULT         ObjArray_ToJsonFields (
+        OBJARRAY_DATA   *this,
+        ASTR_DATA       *pStr
     );
 #endif
 

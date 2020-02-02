@@ -40,8 +40,8 @@
 
 
 #include        <NodeBase.h>
-#include        <jsonIn.h>
-#include        <node_internal.h>
+#include        <JsonIn.h>
+#include        <Node_internal.h>
 
 
 #ifndef NODEBASE_INTERNAL_H
