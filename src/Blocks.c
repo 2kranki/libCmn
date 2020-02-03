@@ -650,21 +650,7 @@ extern "C" {
         }
 #endif
 
-        // Delete all the active records.
-        for (;;) {
-            pNode = listdl_Tail(&this->activeList);
-            if (pNode) {
-                eRc = Blocks_RecordFree(this, pNode->data);
-            }
-            else
-                break;
-        }
-
-        // Delete all the blocks.
-        while (listdl_Count(&this->blocks)) {
-            pBlock = listdl_DeleteTail(&this->blocks);
-            mem_Free(pBlock);
-        }
+        (void)Blocks_Reset(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1232,6 +1218,55 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                      R e s e t
+    //---------------------------------------------------------------
+
+    /*!
+     Reset this object to its beginning state.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Blocks_Reset (
+        BLOCKS_DATA     *this
+    )
+    {
+        ERESULT         eRc;
+        BLOCKS_BLOCK    *pBlock;
+        BLOCKS_NODE     *pNode;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!Blocks_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+
+        // Delete all the active records.
+        for (;;) {
+            pNode = listdl_Tail(&this->activeList);
+            if (pNode) {
+                eRc = Blocks_RecordFree(this, pNode->data);
+            }
+            else
+                break;
+        }
+
+        // Delete all the blocks.
+        while (listdl_Count(&this->blocks)) {
+            pBlock = listdl_DeleteTail(&this->blocks);
+            mem_Free(pBlock);
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //----------------------------------------------------------
     //                      S e t u p
     //----------------------------------------------------------
@@ -1271,7 +1306,7 @@ extern "C" {
         }
 #endif
 
-        eRc = Blocks_DeleteAllRecords(this);
+        eRc = Blocks_Reset(this);
 
         this->blockSize = blockSize;
         this->blockAvail = blockSize - sizeof(BLOCKS_BLOCK);

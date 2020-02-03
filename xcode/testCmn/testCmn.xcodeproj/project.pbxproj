@@ -291,6 +291,10 @@
 		C4B0464C23E4A73700162B4F /* Appl.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B0464823E4A73600162B4F /* Appl.c */; };
 		C4B0465123E4A76300162B4F /* CmdUtl.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B0464E23E4A76200162B4F /* CmdUtl.c */; };
 		C4B0465223E4A76300162B4F /* CmdUtl_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B0464F23E4A76200162B4F /* CmdUtl_object.c */; };
+		C4B0467E23E71AAA00162B4F /* ObjHash_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B0467923E71AA700162B4F /* ObjHash_object.c */; };
+		C4B0467F23E71AAA00162B4F /* ObjHash_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B0467A23E71AA700162B4F /* ObjHash_json.c */; };
+		C4B0468023E71AAA00162B4F /* ObjHash.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B0467D23E71AA900162B4F /* ObjHash.c */; };
+		C4B0468623E8707300162B4F /* ObjHash_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4B0468523E8707200162B4F /* ObjHash_test.c */; };
 		C4BB273620C4387B00FE72AC /* SRecords.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BB273220C4387700FE72AC /* SRecords.c */; };
 		C4BB273720C4387B00FE72AC /* SRecords_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BB273420C4387900FE72AC /* SRecords_object.c */; };
 		C4BED99A23009C40006DF1C1 /* scanReader_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4BED99623009C3E006DF1C1 /* scanReader_object.c */; };
@@ -912,6 +916,12 @@
 		C4B0465023E4A76300162B4F /* CmdUtl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CmdUtl.h; sourceTree = "<group>"; };
 		C4B0465723E4C78F00162B4F /* objTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objTest.h; sourceTree = "<group>"; };
 		C4B0465823E4C79000162B4F /* objTest_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objTest_internal.h; sourceTree = "<group>"; };
+		C4B0467923E71AA700162B4F /* ObjHash_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ObjHash_object.c; sourceTree = "<group>"; };
+		C4B0467A23E71AA700162B4F /* ObjHash_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ObjHash_json.c; sourceTree = "<group>"; };
+		C4B0467B23E71AA800162B4F /* ObjHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjHash.h; sourceTree = "<group>"; };
+		C4B0467C23E71AA900162B4F /* ObjHash_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjHash_internal.h; sourceTree = "<group>"; };
+		C4B0467D23E71AA900162B4F /* ObjHash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ObjHash.c; sourceTree = "<group>"; };
+		C4B0468523E8707200162B4F /* ObjHash_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ObjHash_test.c; sourceTree = "<group>"; };
 		C4BB273220C4387700FE72AC /* SRecords.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SRecords.c; sourceTree = "<group>"; };
 		C4BB273320C4387800FE72AC /* SRecords_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRecords_internal.h; sourceTree = "<group>"; };
 		C4BB273420C4387900FE72AC /* SRecords_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SRecords_object.c; sourceTree = "<group>"; };
@@ -1046,6 +1056,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
+				C4B0468523E8707200162B4F /* ObjHash_test.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -1438,6 +1449,11 @@
 				C48EA13423A7EAB200CCAF2B /* ObjEnum_object.c */,
 				C48EA13623A7EAB300CCAF2B /* ObjEnum.c */,
 				C48EA13723A7EAB300CCAF2B /* ObjEnum.h */,
+				C4B0467C23E71AA900162B4F /* ObjHash_internal.h */,
+				C4B0467A23E71AA700162B4F /* ObjHash_json.c */,
+				C4B0467923E71AA700162B4F /* ObjHash_object.c */,
+				C4B0467D23E71AA900162B4F /* ObjHash.c */,
+				C4B0467B23E71AA800162B4F /* ObjHash.h */,
 				C49D985223A6ACE9003A25FD /* ObjList_internal.h */,
 				C4E1383B23BF84510095EABE /* ObjList_json.c */,
 				C49D985023A6ACE8003A25FD /* ObjList_object.c */,
@@ -1811,6 +1827,7 @@
 				C43A106B239B4FFB0033158E /* FileRef_object.c in Sources */,
 				C4B0465123E4A76300162B4F /* CmdUtl.c in Sources */,
 				C4917E02210A96C200FE234E /* screen_object.c in Sources */,
+				C4B0468623E8707300162B4F /* ObjHash_test.c in Sources */,
 				C4B0464123E47E1C00162B4F /* Dir_object.c in Sources */,
 				C42C553223CBC2FA00AA762C /* Node_object.c in Sources */,
 				C4359AEE1FC9C3D800CA858E /* lru_object.c in Sources */,
@@ -1887,6 +1904,7 @@
 				C4359BE71FC9C48400CA858E /* szHash.c in Sources */,
 				C43599C71FC9C36800CA858E /* audioCW_object.c in Sources */,
 				C463898821EA71EC00DFCE35 /* bpt32idx_object.c in Sources */,
+				C4B0468023E71AAA00162B4F /* ObjHash.c in Sources */,
 				C4359BDF1FC9C48400CA858E /* trctbl.c in Sources */,
 				C4359B081FC9C3D800CA858E /* listdl.c in Sources */,
 				C4EBE2B523C90111008E9EE8 /* NodeArray_json.c in Sources */,
@@ -1913,6 +1931,7 @@
 				C49D985323A6ACE9003A25FD /* ObjList_object.c in Sources */,
 				C4B0460123E2083800162B4F /* DateTime_object.c in Sources */,
 				C48EA13923A7EAB300CCAF2B /* ObjEnum.c in Sources */,
+				C4B0467E23E71AAA00162B4F /* ObjHash_object.c in Sources */,
 				C43599CD1FC9C36800CA858E /* AStrArray_object.c in Sources */,
 				C421233D1FE82A8C00F45294 /* pplex3.c in Sources */,
 				C4E137E023BBE6F30095EABE /* Value.c in Sources */,
@@ -1998,6 +2017,7 @@
 				C406601E2184DE8A004CF223 /* disks_object.c in Sources */,
 				C4359A3C1FC9C38800CA858E /* endian.c in Sources */,
 				C40DEA642071BB21007CE920 /* md5ChkSum_object.c in Sources */,
+				C4B0467F23E71AAA00162B4F /* ObjHash_json.c in Sources */,
 				C42C552823CB73A500AA762C /* NodeLink_object.c in Sources */,
 				C4EBE2F523CA1B22008E9EE8 /* Name_object.c in Sources */,
 				C4B045B123D7F39100162B4F /* TextIn_object.c in Sources */,

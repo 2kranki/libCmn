@@ -243,11 +243,6 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         Blocks_DeleteAllRecords(
-        BLOCKS_DATA     *this
-    );
-
-
     /*!
      Create an Enumerator that will enumerate through all the blocks.
      @return    If successful, valid enumerator. Otherwise, OBJ_NIL.
@@ -311,6 +306,17 @@ extern "C" {
     void *          Blocks_RecordNew (
         BLOCKS_DATA     *this,
         uint32_t        *pUnique            // Optional Unique Number.
+    );
+
+
+    /*!
+     Reset this object to its beginning state.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Blocks_Reset (
+        BLOCKS_DATA     *this
     );
 
 

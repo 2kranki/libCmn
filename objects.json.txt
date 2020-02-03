@@ -102,7 +102,7 @@
         {name:"objCb", test:{"srcs":["objTest.c", 
                                                     "objTest_object.c"]}},
         {name:"ObjEnum"},
-        {name:"objHash", deps:["listdl.h"], json:true},
+        {name:"ObjHash", deps:["listdl.h"], json:true},
         {name:"ObjList", deps:["listdl.h"], json:true},
         {name:"objMatrix"},
         {name:"ObjMethod", json:true},

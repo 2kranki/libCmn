@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 1/31/2020 22:58:08.000)
+# ( 2/ 3/2020 19:46:02.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -469,6 +469,21 @@ $(OBJDIR)/ObjEnum.o: $(SRCDIR)/ObjEnum.c $(SRCDIR)/ObjEnum.h $(SRCDIR)/ObjEnum_i
 OBJS += $(OBJDIR)/ObjEnum_object.o
 
 $(OBJDIR)/ObjEnum_object.o: $(SRCDIR)/ObjEnum_object.c $(SRCDIR)/ObjEnum.h $(SRCDIR)/ObjEnum_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ObjHash.o
+
+$(OBJDIR)/ObjHash.o: $(SRCDIR)/ObjHash.c $(SRCDIR)/ObjHash.h $(SRCDIR)/ObjHash_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ObjHash_json.o
+
+$(OBJDIR)/ObjHash_json.o: $(SRCDIR)/ObjHash_json.c $(SRCDIR)/ObjHash.h $(SRCDIR)/ObjHash_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ObjHash_object.o
+
+$(OBJDIR)/ObjHash_object.o: $(SRCDIR)/ObjHash_object.c $(SRCDIR)/ObjHash.h $(SRCDIR)/ObjHash_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/ObjList.o
@@ -1261,21 +1276,6 @@ OBJS += $(OBJDIR)/objCb_object.o
 $(OBJDIR)/objCb_object.o: $(SRCDIR)/objCb_object.c $(SRCDIR)/objCb.h $(SRCDIR)/objCb_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/objHash.o
-
-$(OBJDIR)/objHash.o: $(SRCDIR)/objHash.c $(SRCDIR)/listdl.h $(SRCDIR)/objHash.h $(SRCDIR)/objHash_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/objHash_json.o
-
-$(OBJDIR)/objHash_json.o: $(SRCDIR)/objHash_json.c $(SRCDIR)/objHash.h $(SRCDIR)/objHash_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/objHash_object.o
-
-$(OBJDIR)/objHash_object.o: $(SRCDIR)/objHash_object.c $(SRCDIR)/listdl.h $(SRCDIR)/objHash.h $(SRCDIR)/objHash_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/objMatrix.o
 
 $(OBJDIR)/objMatrix.o: $(SRCDIR)/objMatrix.c $(SRCDIR)/objMatrix.h $(SRCDIR)/objMatrix_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1911,6 +1911,12 @@ ObjEnum_test: $(TEST_SRC)/ObjEnum_test.c $(SRCDIR)/ObjEnum.h $(SRCDIR)/ObjEnum_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += ObjHash_test
+
+ObjHash_test: $(TEST_SRC)/ObjHash_test.c $(SRCDIR)/ObjHash.h $(SRCDIR)/ObjHash_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += ObjList_test
 
 ObjList_test: $(TEST_SRC)/ObjList_test.c $(SRCDIR)/ObjList.h $(SRCDIR)/ObjList_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
@@ -2311,12 +2317,6 @@ TESTS += objCb_test
 
 objCb_test: $(TEST_SRC)/objCb_test.c $(SRCDIR)/objCb.h $(SRCDIR)/objCb_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += objHash_test
-
-objHash_test: $(TEST_SRC)/objHash_test.c $(SRCDIR)/objHash.h $(SRCDIR)/objHash_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += objMatrix_test

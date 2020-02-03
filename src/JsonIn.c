@@ -57,9 +57,10 @@
 #include        <null.h>
 #include        <number.h>
 #include        <ObjArray_internal.h>
+#include        <ObjHash_internal.h>
 #include        <ObjList_internal.h>
 #include        <ObjMethod_internal.h>
-#include        <objHash.h>
+#include        <ObjHash.h>
 #include        <SrcError_internal.h>
 #include        <SrcErrors_internal.h>
 #include        <SrcLoc.h>
@@ -1954,6 +1955,13 @@ extern "C" {
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)ObjArray_ParseJsonObject(this);
+            return pObj;
+        }
+
+        pInfo = obj_getInfo(ObjHash_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)ObjHash_ParseJsonObject(this);
             return pObj;
         }
 
