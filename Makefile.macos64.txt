@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 2/ 3/2020 19:46:02.000)
+# ( 2/12/2020 15:06:01.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -639,6 +639,16 @@ $(OBJDIR)/TextIn.o: $(SRCDIR)/TextIn.c $(SRCDIR)/TextIn.h $(SRCDIR)/TextIn_inter
 OBJS += $(OBJDIR)/TextIn_object.o
 
 $(OBJDIR)/TextIn_object.o: $(SRCDIR)/TextIn_object.c $(SRCDIR)/TextIn.h $(SRCDIR)/TextIn_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/TextIns.o
+
+$(OBJDIR)/TextIns.o: $(SRCDIR)/TextIns.c $(SRCDIR)/TextIns.h $(SRCDIR)/TextIns_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/TextIns_object.o
+
+$(OBJDIR)/TextIns_object.o: $(SRCDIR)/TextIns_object.c $(SRCDIR)/TextIns.h $(SRCDIR)/TextIns_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/TextOut.o
@@ -1986,6 +1996,12 @@ TRegex_test: $(TEST_SRC)/TRegex_test.c $(SRCDIR)/TRegex.h $(SRCDIR)/TRegex_inter
 TESTS += TextIn_test
 
 TextIn_test: $(TEST_SRC)/TextIn_test.c $(SRCDIR)/TextIn.h $(SRCDIR)/TextIn_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += TextIns_test
+
+TextIns_test: $(TEST_SRC)/TextIns_test.c $(SRCDIR)/TextIns.h $(SRCDIR)/TextIns_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

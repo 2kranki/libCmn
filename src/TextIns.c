@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Blocks.c
- *	Generated 01/10/2020 11:54:27
+ * File:   TextIns.c
+ *	Generated 02/12/2020 09:43:59
  *
  */
 
@@ -41,8 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <Blocks_internal.h>
-#include        <enum_internal.h>
+#include        <TextIns_internal.h>
 #include        <trace.h>
 
 
@@ -63,77 +62,16 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+#ifdef XYZZY
     static
-    bool            Blocks_AddBlock (
-        BLOCKS_DATA     *this
+    void            TextIns_task_body (
+        void            *pData
     )
     {
-        BLOCKS_BLOCK    *pBlock;
-        BLOCKS_NODE     *pNode;
-        uint32_t        i;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Blocks_Validate(this)) {
-            DEBUG_BREAK();
-        }
-        if (0 == this->blockSize) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        if (0 == listdl_Count(&this->freeList))
-            ;
-        else {
-            return true;
-        }
-
-        // Get a new block.
-        pBlock = (BLOCKS_BLOCK *)mem_Malloc( this->blockSize );
-        if( NULL == pBlock ) {
-            return false;
-        }
-        listdl_Add2Tail(&this->blocks, pBlock);
-        ++this->cBlocks;
-
-        // Now chain the entries to the Free chain.
-        for (i=0; i<this->cRecordsPerBlock; ++i) {
-            pNode = (BLOCKS_NODE *)((uint8_t *)&pBlock->data + (this->recordSize * i));
-            listdl_Add2Tail(&this->freeList, pNode);
-        }
-
-        // Return to caller.
-        return true;
+        //TEXTINS_DATA  *this = pData;
+        
     }
-
-
-
-    ERESULT         Blocks_RecordFreeExit (
-        BLOCKS_DATA     *this,
-        void            *pRecord,
-        void            *pArg3
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        //BLOCKS_NODE     *pNode = (BLOCKS_NODE *)((uint8_t *)pRecord - sizeof(BLOCKS_NODE));
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
 #endif
-
-        eRc = Blocks_RecordFree(this, pRecord);
-
-        // Return to caller.
-        return eRc;
-    }
-
-
 
 
 
@@ -146,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    BLOCKS_DATA *     Blocks_Alloc (
+    TEXTINS_DATA *     TextIns_Alloc (
         void
     )
     {
-        BLOCKS_DATA       *this;
-        uint32_t        cbSize = sizeof(BLOCKS_DATA);
+        TEXTINS_DATA       *this;
+        uint32_t        cbSize = sizeof(TEXTINS_DATA);
         
         // Do initialization.
         
@@ -163,205 +101,114 @@ extern "C" {
 
 
 
-    BLOCKS_DATA *     Blocks_New (
+    TEXTINS_DATA *     TextIns_New (
         void
     )
     {
-        BLOCKS_DATA       *this;
+        TEXTINS_DATA       *this;
         
-        this = Blocks_Alloc( );
+        this = TextIns_Alloc( );
         if (this) {
-            this = Blocks_Init(this);
+            this = TextIns_Init(this);
         } 
         return this;
     }
 
 
 
-    BLOCKS_DATA *   Blocks_NewWithSizes (
-        uint32_t        blockSize,
-        uint32_t        recordSize
-    )
-    {
-        BLOCKS_DATA     *this;
-        ERESULT         eRc;
-
-        this = Blocks_Alloc( );
-        if (this) {
-            this = Blocks_Init(this);
-            if (this) {
-                eRc = Blocks_SetupSizes(this, blockSize, recordSize);
-                if (ERESULT_FAILED(eRc)) {
-                    DEBUG_BREAK();
-                    obj_Release(this);
-                    this = OBJ_NIL;
-                }
-            }
-        }
-        return this;
-    }
-
-
-
-    int32_t         Blocks_Available (
-        uint32_t        blockSize       // If 0, use default size.
-    )
-    {
-        int32_t         avail = 0;
-
-        if (blockSize == 0) {
-            blockSize = BLKS_BLOCK_SIZE;
-        }
-        avail = blockSize - sizeof(BLOCKS_BLOCK);
-
-        return avail;
-    }
-
-
-
-
+    
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                  B l o c k  A v a i l
+    //                          P a t h s
     //---------------------------------------------------------------
 
-    uint32_t        Blocks_getBlockAvail (
-        BLOCKS_DATA     *this
+    OBJARRAY_DATA * TextIns_getPaths (
+        TEXTINS_DATA    *this
     )
     {
+
+        // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !Blocks_Validate(this) ) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
-            return 0;
+            return OBJ_NIL;
         }
 #endif
 
-        return this->blockAvail;
+        return this->pPaths;
     }
 
 
-
-    uint32_t        Blocks_getBlockSize (
-        BLOCKS_DATA     *this
+    bool            TextIns_setPaths (
+        TEXTINS_DATA    *this,
+        OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !Blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->blockSize;
-    }
-
-
-
-    /*!
-     * The delete exit is called whenever an active record is to be
-     * freed allowing any clean up to be performed.
-     */
-    bool            Blocks_setDeleteExit (
-        BLOCKS_DATA     *this,
-        P_ERESULT_EXIT3 pDelete,
-        OBJ_ID          pObj,           // Used as first parameter of scan method
-        void            *pArg3          // Used as third parameter of scan method
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Blocks_Validate(this) ) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        this->pDelete   = pDelete;
-        this->pObj      = pObj;
-        this->pArg3     = pArg3;
+        obj_Retain(pValue);
+        if (this->pPaths) {
+            obj_Release(this->pPaths);
+        }
+        this->pPaths = pValue;
 
         return true;
     }
 
 
-    LISTDL_DATA *   Blocks_getList (
-        BLOCKS_DATA     *this
+
+    //---------------------------------------------------------------
+    //                          R e u s e
+    //---------------------------------------------------------------
+    
+    bool            TextIns_getReuse (
+        TEXTINS_DATA    *this
     )
     {
+
+        // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !Blocks_Validate(this) ) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return &this->activeList;
+        return this->fReuse;
     }
 
 
-
-    uint32_t        Blocks_getNumActive (
-        BLOCKS_DATA     *this
+    bool            TextIns_setReuse (
+        TEXTINS_DATA    *this,
+        bool            value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !Blocks_Validate(this) ) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
-            return 0;
+            return false;
         }
 #endif
 
-        return listdl_Count(&this->activeList);
-    }
+        if (value)
+            this->fReuse = 1;
+        else
+            this->fReuse = 0;
 
-
-
-    //---------------------------------------------------------------
-    //                R e c o r d s  P e r  B l o c k
-    //---------------------------------------------------------------
-
-    uint32_t        Blocks_getRecordsPerBlock(
-        BLOCKS_DATA     *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->cRecordsPerBlock;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                      R e c o r d  S i z e
-    //---------------------------------------------------------------
-
-    uint32_t        Blocks_getRecordSize(
-        BLOCKS_DATA     *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->recordSize;
+        return true;
     }
 
 
@@ -370,36 +217,82 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        Blocks_getSize (
-        BLOCKS_DATA       *this
+    uint32_t        TextIns_getSize (
+        TEXTINS_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Blocks_Validate(this)) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return this->cBlocks;
+        return 0;
     }
 
 
 
     //---------------------------------------------------------------
+    //                          S t a c k
+    //---------------------------------------------------------------
+    
+    OBJARRAY_DATA * TextIns_getStack (
+        TEXTINS_DATA    *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!TextIns_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStack;
+    }
+    
+    
+    bool            TextIns_setStack (
+        TEXTINS_DATA    *this,
+        OBJARRAY_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!TextIns_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStack) {
+            obj_Release(this->pStack);
+        }
+        this->pStack = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Blocks_getSuperVtbl (
-        BLOCKS_DATA     *this
+    OBJ_IUNKNOWN *  TextIns_getSuperVtbl (
+        TEXTINS_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Blocks_Validate(this)) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -410,27 +303,6 @@ extern "C" {
     }
     
   
-
-    //---------------------------------------------------------------
-    //                        U n i q u e
-    //---------------------------------------------------------------
-
-    uint32_t        Blocks_getUnique (
-        BLOCKS_DATA     *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->recordSize;
-    }
-
-
 
 
 
@@ -449,16 +321,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = Blocks_Assign(this,pOther);
+        ERESULT eRc = TextIns_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another BLOCKS object
+     @param     pOther  a pointer to another TEXTINS object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         Blocks_Assign (
-        BLOCKS_DATA		*this,
-        BLOCKS_DATA     *pOther
+    ERESULT         TextIns_Assign (
+        TEXTINS_DATA		*this,
+        TEXTINS_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -466,15 +338,25 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Blocks_Validate(this)) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Blocks_Validate(pOther)) {
+        if (!TextIns_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -522,9 +404,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         Blocks_Compare (
-        BLOCKS_DATA     *this,
-        BLOCKS_DATA     *pOther
+    ERESULT         TextIns_Compare (
+        TEXTINS_DATA     *this,
+        TEXTINS_DATA     *pOther
     )
     {
         int             i = 0;
@@ -538,11 +420,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!Blocks_Validate(this)) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Blocks_Validate(pOther)) {
+        if (!TextIns_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -580,40 +462,44 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Blocks      *pCopy = Blocks_Copy(this);
+        TextIns      *pCopy = TextIns_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a BLOCKS object which must be 
+     @return    If successful, a TEXTINS object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    BLOCKS_DATA *     Blocks_Copy (
-        BLOCKS_DATA       *this
+    TEXTINS_DATA *     TextIns_Copy (
+        TEXTINS_DATA       *this
     )
     {
-        BLOCKS_DATA       *pOther = OBJ_NIL;
+        TEXTINS_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Blocks_Validate(this)) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = Blocks_New( );
+#ifdef TEXTINS_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = TextIns_New( );
         if (pOther) {
-            eRc = Blocks_Assign(this, pOther);
+            eRc = TextIns_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -623,11 +509,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            Blocks_Dealloc (
+    void            TextIns_Dealloc (
         OBJ_ID          objId
     )
     {
-        BLOCKS_DATA     *this = objId;
+        TEXTINS_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -635,7 +522,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!Blocks_Validate(this)) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -643,11 +530,12 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((BLOCKS_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((TEXTINS_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        (void)Blocks_Reset(this);
+        TextIns_setPaths(this, OBJ_NIL);
+        TextIns_setStack(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -660,49 +548,52 @@ extern "C" {
 
 
 
-    //----------------------------------------------------------
-    //           D e l e t e  A l l  R e c o r d s
-    //----------------------------------------------------------
-
-    ERESULT         Blocks_DeleteAllRecords(
-        BLOCKS_DATA     *this
+    //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        TextIns      *pDeepCopy = TextIns_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a TEXTINS object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    TEXTINS_DATA *     TextIns_DeepyCopy (
+        TEXTINS_DATA       *this
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        BLOCKS_BLOCK    *pBlock;
-        BLOCKS_NODE     *pNode;
-
+        TEXTINS_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Blocks_Validate(this) ) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
 #endif
-
-        // Delete all the active records.
-        for (;;) {
-            pNode = listdl_Tail(&this->activeList);
-            if (pNode) {
-                eRc = Blocks_RecordFree(this, pNode->data);
+        
+        pOther = TextIns_New( );
+        if (pOther) {
+            eRc = TextIns_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
             }
-            else
-                break;
         }
-
-        // Delete all the blocks.
-        while (listdl_Count(&this->blocks)) {
-            pBlock = listdl_DeleteTail(&this->blocks);
-            mem_Free(pBlock);
-        }
-
+        
         // Return to caller.
-        return eRc;
+        return pOther;
     }
-
-
-
+    
+    
+    
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -713,20 +604,20 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Blocks_Disable (
-        BLOCKS_DATA		*this
+    ERESULT         TextIns_Disable (
+        TEXTINS_DATA		*this
     )
     {
         //ERESULT         eRc;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!Blocks_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
@@ -748,20 +639,20 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Blocks_Enable (
-        BLOCKS_DATA		*this
+    ERESULT         TextIns_Enable (
+        TEXTINS_DATA		*this
     )
     {
         //ERESULT         eRc;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!Blocks_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
@@ -773,91 +664,54 @@ extern "C" {
 
 
 
-    //----------------------------------------------------------
-    //                        E n u m
-    //----------------------------------------------------------
+    //---------------------------------------------------------------
+    //                          G e t  L i n e
+    //---------------------------------------------------------------
 
-    ERESULT         Blocks_Enum (
-        BLOCKS_DATA     *this,
-        ENUM_DATA       **ppEnum
+    ERESULT         TextIns_GetLineA (
+        TEXTINS_DATA    *this,
+        int             size,
+        char            *pBuffer,
+        SRCLOC          *pLoc
     )
     {
-        ENUM_DATA       *pEnum = OBJ_NIL;
-        //uint32_t        i;
-        BLOCKS_BLOCK    *pBlock;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Blocks_Validate(this) ) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
-            if (ppEnum) {
-                *ppEnum = pEnum;
-            }
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        pEnum = enum_New( );
-        if (pEnum) {
-        }
-        else {
-            if (ppEnum) {
-                *ppEnum = pEnum;
-            }
-            return ERESULT_OUT_OF_MEMORY;
-        }
-
-        pBlock = listdl_Head(&this->blocks);
-        for (; pBlock; ) {
-            enum_Append(pEnum, (void *)pBlock->data, NULL);
-            pBlock = listdl_Next(&this->blocks, pBlock);
-        }
+        eRc = TextIn_GetLineA(TextIns_StackTop(this), size, pBuffer, pLoc);
 
         // Return to caller.
-        if (ppEnum) {
-            *ppEnum = pEnum;
-        }
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
-
-    //---------------------------------------------------------------
-    //                          F o r  E a c h
-    //---------------------------------------------------------------
-
-    ERESULT         Blocks_ForEach(
-        BLOCKS_DATA     *this,
-        P_ERESULT_EXIT3 pScan,
-        OBJ_ID          pObj,            // Used as first parameter of scan method
-        void            *pArg3
+    ERESULT         TextIns_GetLineW32 (
+        TEXTINS_DATA    *this,
+        int             size,
+        W32CHR_T        *pBuffer,
+        SRCLOC          *pLoc
     )
     {
-        BLOCKS_NODE     *pEntry = OBJ_NIL;
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Blocks_Validate(this) ) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( NULL == pScan ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
 
-        pEntry = listdl_Head(&this->activeList);
-        while ( pEntry ) {
-            eRc = pScan(pObj, pEntry->data, pArg3);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                break;
-            }
-            pEntry = listdl_Next(&this->activeList, pEntry);
-        }
+        eRc = TextIn_GetLineW32(TextIns_StackTop(this), size, pBuffer, pLoc);
 
         // Return to caller.
         return eRc;
@@ -869,11 +723,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    BLOCKS_DATA *   Blocks_Init (
-        BLOCKS_DATA       *this
+    TEXTINS_DATA *   TextIns_Init (
+        TEXTINS_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(BLOCKS_DATA);
+        uint32_t        cbSize = sizeof(TEXTINS_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -890,33 +744,34 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BLOCKS);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_TEXTINS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Blocks_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&TextIns_Vtbl);
         
-        listdl_Init(&this->blocks,  offsetof(BLOCKS_BLOCK, list));
-        listdl_Init(&this->activeList, 0);
-        listdl_Init(&this->freeList, 0);
-
-    #ifdef NDEBUG
-    #else
-        if (!Blocks_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        //fprintf(stderr, "Blocks::sizeof(BLOCKS_DATA) = %lu\n", sizeof(BLOCKS_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "TextIns::sizeof(TEXTINS_DATA) = %lu\n", 
+                sizeof(TEXTINS_DATA)
+        );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(BLOCKS_DATA));
-    #endif
+        BREAK_NOT_BOUNDARY4(sizeof(TEXTINS_DATA));
+#endif
 
         return this;
     }
@@ -927,8 +782,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Blocks_IsEnabled (
-        BLOCKS_DATA		*this
+    ERESULT         TextIns_IsEnabled (
+        TEXTINS_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -936,7 +791,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Blocks_Validate(this)) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -953,6 +808,176 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          N e w  S r c
+    //---------------------------------------------------------------
+
+    ERESULT         TextIns_NewSrcFromAStr (
+        TEXTINS_DATA    *this,
+        PATH_DATA       *pFilePath,     // [in] doc only
+        ASTR_DATA       *pAStr,         // Buffer of file data
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        TEXTIN_DATA     *pSrc;
+        uint16_t        index;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIns_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        index = TextIns_PathAdd(this, pFilePath);
+        if (0 == index) {
+            return ERESULT_GENERAL_FAILURE;
+        }
+
+        pSrc = TextIn_NewFromAStr(pFilePath, pAStr, index, tabSize);
+        if (OBJ_NIL == pSrc) {
+            obj_Release(this);
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        TextIns_StackPush(this, pSrc);
+        obj_Release(pSrc);
+        pSrc = OBJ_NIL;
+
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         TextIns_NewSrcFromPath (
+        TEXTINS_DATA    *this,
+        PATH_DATA       *pFilePath,
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        TEXTIN_DATA     *pSrc;
+        uint16_t        index;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIns_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        index = TextIns_PathAdd(this, pFilePath);
+        if (0 == index) {
+            return ERESULT_GENERAL_FAILURE;
+        }
+
+        pSrc = TextIn_NewFromPath(pFilePath, index, tabSize);
+        if (OBJ_NIL == pSrc) {
+            obj_Release(this);
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        TextIns_StackPush(this, pSrc);
+        obj_Release(pSrc);
+        pSrc = OBJ_NIL;
+
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         P a t h
+    //---------------------------------------------------------------
+
+    /*!
+     Get a path given its index.
+     @param     this    object pointer
+     @param     index   path name index (relative to 1)
+     @return    if successful, path object pointer.  Otherwise, OBJ_NIL.
+     */
+    PATH_DATA *     TextIns_Path (
+        TEXTINS_DATA    *this,
+        uint16_t        index
+    )
+    {
+        //ERESULT         eRc;
+        PATH_DATA       *pPath = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIns_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        if (this->pPaths) {
+            pPath = ObjArray_Get(this->pPaths, index);
+        }
+
+        // Return to caller.
+        return pPath;
+    }
+
+
+    /*!
+     Add a path to the paths if it is not already there and return its index.
+     @param     this    object pointer
+     @param     pPath   path name object
+     @return    if successful, the path name index relative to 1.
+                Otherwise, 0.
+     */
+    uint16_t        TextIns_PathAdd (
+        TEXTINS_DATA    *this,
+        PATH_DATA       *pPath
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        PATH_DATA       *pPathF = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIns_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+        if (OBJ_NIL == this->pPaths) {
+            this->pPaths = ObjArray_New( );
+            if (OBJ_NIL == this->pPaths) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+
+        iMax = ObjArray_getSize(this->pPaths);
+        for (i=0; i < iMax; i++) {
+            pPathF = (PATH_DATA *)ObjArray_Get(this->pPaths, i+1);
+            if (pPathF && (ERESULT_SUCCESS_EQUAL == Path_Compare(pPath, pPathF))) {
+                return i+1;
+            }
+        }
+
+        i = 0;
+        eRc = ObjArray_AppendObj(this->pPaths, pPath, &i);
+        if (ERESULT_FAILED(eRc)) {
+            return 0;
+        }
+
+        // Return to caller.
+        return i;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -963,14 +988,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = Blocks_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = TextIns_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "Blocks", prefix,
+                        the object name, "TextIns", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -978,13 +1003,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          Blocks_QueryInfo (
+    void *          TextIns_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        BLOCKS_DATA     *this = objId;
+        TEXTINS_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -993,7 +1018,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!Blocks_Validate(this)) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1002,11 +1027,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(BLOCKS_DATA);
+            return (void *)sizeof(TEXTINS_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)Blocks_Class();
+                return (void *)TextIns_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -1036,23 +1061,34 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return Blocks_Disable;
+                            return TextIns_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return Blocks_Enable;
+                            return TextIns_Enable;
                         }
                         break;
 
+#ifdef  TEXTINS_JSON_SUPPORT
+                    case 'P':
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return TextIns_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return TextIns_ParseJsonObject;
+                        }
+                        break;
+#endif
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return Blocks_ToDebugString;
+                            return TextIns_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  TEXTINS_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return Blocks_ToJson;
+                            return TextIns_ToJson;
                         }
 #endif
                         break;
@@ -1063,10 +1099,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == Blocks_ToDebugString)
+                if (pData == TextIns_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
-                if (pData == Blocks_ToJson)
+#ifdef  TEXTINS_JSON_SUPPORT
+                if (pData == TextIns_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1080,182 +1116,82 @@ extern "C" {
     
     
     
-    //----------------------------------------------------------
-    //                  R e c o r d
-    //----------------------------------------------------------
-
-    ERESULT         Blocks_RecordFree(
-        BLOCKS_DATA     *this,
-        void            *pRecord
-    )
-    {
-        BLOCKS_NODE     *pNode = (BLOCKS_NODE *)((uint8_t *)pRecord - sizeof(BLOCKS_NODE));
-        bool            fRc;
-        ERESULT         eRc = ERESULT_SUCCESS;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        fRc = listdl_Delete(&this->activeList, pNode);
-        if (fRc) {
-            if (this->pDelete) {
-                eRc = this->pDelete(this->pObj, pRecord, this->pArg3);
-            }
-            listdl_Add2Head(&this->freeList, pNode);
-        }
-        else
-            eRc = ERESULT_DATA_NOT_FOUND;
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-    void *          Blocks_RecordGet(
-        BLOCKS_DATA    *this,
-        int32_t        index                    // (relative to 1)
-    )
-    {
-        BLOCKS_NODE     *pNode;
-        void            *pData = NULL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-
-        pNode = listdl_Index(&this->activeList, index);
-        if (pNode) {
-            pData = pNode->data;
-        }
-
-        // Return to caller.
-        return pData;
-    }
-
-
-
-    void *          Blocks_RecordGetUnique(
-        BLOCKS_DATA    *this,
-        uint32_t       unique
-    )
-    {
-        BLOCKS_NODE     *pNode = NULL;
-
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-
-        while ((pNode = listdl_Next(&this->activeList, pNode))) {
-            if (pNode->unique == unique) {
-                return pNode->data;
-            }
-        }
-
-        // Return to caller.
-        return NULL;
-    }
-
-
-
-    void *          Blocks_RecordNew(
-        BLOCKS_DATA     *this,
-        uint32_t        *pUnique
-    )
-    {
-        bool            fRc;
-        //uint32_t        i;
-        BLOCKS_NODE     *pNode;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            //this->eRc = ERESULT_INVALID_OBJECT;
-            return NULL;
-        }
-#endif
-
-        if (0 == listdl_Count(&this->freeList)) {
-            fRc = Blocks_AddBlock(this);
-            if (!fRc)
-                return NULL;
-        }
-
-        pNode = listdl_DeleteHead(&this->freeList);
-        if (pNode) {
-            memset(pNode->data, 0, (this->recordSize - sizeof(BLOCKS_NODE)));
-            listdl_Add2Head(&this->activeList, pNode);
-        }
-        pNode->unique = ++this->unique;
-
-        // Return to caller.
-        if (pUnique) {
-            *pUnique = pNode->unique;
-        }
-        return pNode->data;
-    }
-
-
-
     //---------------------------------------------------------------
-    //                      R e s e t
+    //                      S t a c k  G e t
     //---------------------------------------------------------------
 
     /*!
-     Reset this object to its beginning state.
+     Get an input object given its index.
+     @param     this    object pointer
+     @param     index   path name index (relative to 1)
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    TEXTIN_DATA *   TextIns_StackGet(
+        TEXTINS_DATA    *this,
+        uint16_t        index
+    )
+    {
+        TEXTIN_DATA     *pItem = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TextIns_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        if (OBJ_NIL == this->pStack) {
+            return OBJ_NIL;
+        }
+
+        pItem = ObjArray_Get(this->pStack, index);
+
+        // Return to caller.
+        return pItem;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      S t a c k  P o p
+    //---------------------------------------------------------------
+
+    /*!
+     Pop an input object from the stack so that the next input is from
+     the pushed object.
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Blocks_Reset (
-        BLOCKS_DATA     *this
+    ERESULT         TextIns_StackPop(
+        TEXTINS_DATA    *this
     )
     {
-        ERESULT         eRc;
-        BLOCKS_BLOCK    *pBlock;
-        BLOCKS_NODE     *pNode;
+        TEXTIN_DATA     *pItem = OBJ_NIL;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!Blocks_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if( !TextIns_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
-
-        // Delete all the active records.
-        for (;;) {
-            pNode = listdl_Tail(&this->activeList);
-            if (pNode) {
-                eRc = Blocks_RecordFree(this, pNode->data);
-            }
-            else
-                break;
+#endif
+        if (OBJ_NIL == this->pStack) {
+            return ERESULT_DATA_NOT_FOUND;
         }
 
-        // Delete all the blocks.
-        while (listdl_Count(&this->blocks)) {
-            pBlock = listdl_DeleteTail(&this->blocks);
-            mem_Free(pBlock);
+        /* Pop 1 element from the top of the parse stack.
+         */
+        if( ObjArray_getSize(this->pStack) ) {
+            pItem = ObjArray_DeleteLast(this->pStack);
+            obj_Release(pItem);
+            pItem = OBJ_NIL;
+        }
+        else {
+            return ERESULT_DATA_NOT_FOUND;
         }
 
         // Return to caller.
@@ -1264,58 +1200,82 @@ extern "C" {
 
 
 
-    //----------------------------------------------------------
-    //                      S e t u p
-    //----------------------------------------------------------
+    //---------------------------------------------------------------
+    //                      S t a c k  P u s h
+    //---------------------------------------------------------------
 
-    ERESULT         Blocks_SetupSizes(
-        BLOCKS_DATA     *this,
-        uint32_t        blockSize,
-        uint32_t        recordSize
+    /*!
+     Push the given input object to the stack making it the top of the
+     stack and so that the next input is from this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         TextIns_StackPush(
+        TEXTINS_DATA    *this,
+        TEXTIN_DATA     *pItem
     )
     {
         ERESULT         eRc;
 
         // Do initialization.
-        if (blockSize == 0)
-            blockSize = BLKS_BLOCK_SIZE;
 #ifdef NDEBUG
 #else
-        if (!Blocks_Validate(this)) {
+        if( !TextIns_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-#ifdef XYZZY
-        if (this->cBlocks) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_ALREADY_EXISTS;
-        }
-#endif
-        if (recordSize > 0)
-            ;
-        else {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-        if (recordSize > (blockSize - sizeof(BLOCKS_BLOCK))) {
+        if  ((NULL == pItem) || !(obj_IsKindOf(pItem, OBJ_IDENT_TEXTIN))) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
-        eRc = Blocks_Reset(this);
+        if (OBJ_NIL == this->pStack) {
+            this->pStack = ObjArray_New( );
+            if (OBJ_NIL == this->pStack) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
 
-        this->blockSize = blockSize;
-        this->blockAvail = blockSize - sizeof(BLOCKS_BLOCK);
-        this->dataSize = recordSize;
-        recordSize = recordSize + sizeof(BLOCKS_NODE);
-        this->recordSize = ((recordSize + 4 - 1) >> 2) << 2;
-        if (recordSize) {
-            this->cRecordsPerBlock = this->blockAvail / recordSize;
+        eRc = ObjArray_AppendObj(this->pStack, pItem, NULL);
+        if (ERESULT_HAS_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eRc;
         }
 
         // Return to caller.
         return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      S t a c k  T o p
+    //---------------------------------------------------------------
+
+    TEXTIN_DATA *   TextIns_StackTop(
+        TEXTINS_DATA    *this
+    )
+    {
+        TEXTIN_DATA     *pItem = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TextIns_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (this->pStack) {
+            pItem = ObjArray_GetLast(this->pStack);
+        }
+
+        // Return to caller.
+        return pItem;
     }
 
 
@@ -1328,7 +1288,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Blocks_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = TextIns_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1336,8 +1296,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Blocks_ToDebugString (
-        BLOCKS_DATA      *this,
+    ASTR_DATA *     TextIns_ToDebugString (
+        TEXTINS_DATA    *this,
         int             indent
     )
     {
@@ -1351,7 +1311,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Blocks_Validate(this)) {
+        if (!TextIns_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1372,7 +1332,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    Blocks_getSize(this),
+                    TextIns_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1405,50 +1365,20 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  U n i q u e  F r o m  D a t a
-    //---------------------------------------------------------------
-
-    uint32_t        Blocks_UniqueFromData(
-        BLOCKS_DATA     *this,
-        void            *pData
-    )
-    {
-        //uint32_t        i;
-        BLOCKS_NODE     *pNode;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Blocks_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return 0;
-        }
-#endif
-
-        pNode = Ptr2Node(pData);
-
-        // Return to caller.
-        return pNode->unique;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            Blocks_Validate (
-        BLOCKS_DATA      *this
+#ifdef NDEBUG
+#else
+    bool            TextIns_Validate (
+        TEXTINS_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_BLOCKS))
+            if (obj_IsKindOf(this, OBJ_IDENT_TEXTINS))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1464,14 +1394,14 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(BLOCKS_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(TEXTINS_DATA))) {
             return false;
         }
 
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     

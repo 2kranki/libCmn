@@ -266,8 +266,8 @@ extern "C" {
 
     TEXTIN_DATA *   TextIn_NewFromFile (
         PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
         FILE            *pFile,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
     {
@@ -276,7 +276,7 @@ extern "C" {
 
         this = TextIn_New( );
         if (this) {
-            eRc = TextIn_SetupFile(this, pFilePath, fileIndex, pFile, tabSize);
+            eRc = TextIn_SetupFile(this, pFilePath, pFile, fileIndex, tabSize);
         }
 
         return this;
@@ -1136,8 +1136,8 @@ extern "C" {
     //TODO: Terminate line with '\0'.
     ERESULT         TextIn_GetLineA (
         TEXTIN_DATA     *this,
-        char            *pBuffer,
         int             size,
+        char            *pBuffer,
         SRCLOC          *pLoc
     )
     {
@@ -1220,8 +1220,8 @@ extern "C" {
 
     ERESULT         TextIn_GetLineW32 (
         TEXTIN_DATA     *this,
-        W32CHR_T        *pBuffer,
         int             size,
+        W32CHR_T        *pBuffer,
         SRCLOC          *pLoc
     )
     {
@@ -1723,6 +1723,7 @@ extern "C" {
     ERESULT         TextIn_SetupBase(
         TEXTIN_DATA     *this,
         PATH_DATA       *pPath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
     {
@@ -1766,6 +1767,7 @@ extern "C" {
         }
         this->curChr.loc.lineNo  = 1;
         this->curChr.loc.colNo   = 0;
+        this->curChr.loc.fileIndex = fileIndex;
         this->state = TEXTIN_STATE_NORMAL;
 
         return ERESULT_SUCCESS;
@@ -1791,7 +1793,7 @@ extern "C" {
         }
 #endif
 
-        eRc = TextIn_SetupBase(this, pFilePath, tabSize);
+        eRc = TextIn_SetupBase(this, pFilePath, fileIndex, tabSize);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;
@@ -1813,8 +1815,8 @@ extern "C" {
     ERESULT         TextIn_SetupFile (
         TEXTIN_DATA     *this,
         PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
         FILE            *pFile,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     )
     {
@@ -1833,7 +1835,7 @@ extern "C" {
         }
 #endif
 
-        eRc = TextIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
+        eRc = TextIn_SetupBase((TEXTIN_DATA *)this, pFilePath, fileIndex, tabSize);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;
@@ -1873,7 +1875,7 @@ extern "C" {
         }
 #endif
 
-        eRc = TextIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
+        eRc = TextIn_SetupBase((TEXTIN_DATA *)this, pFilePath, fileIndex, tabSize);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -1924,7 +1926,7 @@ extern "C" {
         }
 #endif
 
-        eRc = TextIn_SetupBase((TEXTIN_DATA *)this, pFilePath, tabSize);
+        eRc = TextIn_SetupBase((TEXTIN_DATA *)this, pFilePath, fileIndex, tabSize);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }

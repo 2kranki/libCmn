@@ -76,10 +76,10 @@ typedef struct  node_record_s NODE_RECORD;
 struct  node_record_s {
     // RBT_NODE must be first field in this struct.
     RBT_NODE        node;
+    char            name[16];
     uint32_t        unique;
 };
 #pragma pack(pop)
-
 
 
 //---------------------------------------------------------------
@@ -299,8 +299,124 @@ int         test_rbt_Tree_AddFind01(
 
 
 
+int         test_rbt_Tree_AddFind02(
+    const
+    char        *pTestName
+)
+{
+    BLOCKS_DATA     *pBlocks = OBJ_NIL;
+    RBT_TREE        tree = {0};
+    RBT_TREE        *pTree = &tree;
+    RBT_ITER        iter = {0};
+    //NODE_RECORD     record = {0};
+    //NODE_RECORD     *pRecord = &record;
+    char            *pFound = NULL;
+    ERESULT         eRc;
+    bool            fRc;
+    char            **ppStrA;
+    char            *pStrA;
+    int             iRc;
+    int             i;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pBlocks = Blocks_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pBlocks) );
+    if (pBlocks) {
+
+        eRc = Blocks_SetupSizes(pBlocks, 0, sizeof(NODE_RECORD));
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pTree = rbt_Init(
+                         pTree,
+                         (void *)strcmp,
+                         (sizeof(NODE_RECORD) - sizeof(RBT_NODE)),
+                         (void *)Blocks_RecordNew,
+                         (void *)Blocks_RecordFree,
+                         pBlocks
+                );
+        TINYTEST_TRUE( (&tree == pTree) );
+
+        ppStrA = strings;
+        while (*ppStrA) {
+            NODE_RECORD     *pRcd;
+            NODE_RECORD     *pRcd2;
+            fprintf(stderr, "\tInserting %s\n", *ppStrA);
+            pRcd = Blocks_RecordNew(pBlocks, NULL);
+            strcpy(pRcd->name, *ppStrA);
+            fRc = rbt_NodeInit(pTree, (RBT_NODE *)pRcd, pRcd->name, pRcd->name);
+            TINYTEST_TRUE( (fRc) );
+            fRc = rbt_InsertNode(pTree, (RBT_NODE *)pRcd);
+            TINYTEST_TRUE( (fRc) );
+            fRc = rbt_VerifyTree(pTree, pTree->pRoot);
+            TINYTEST_TRUE( (fRc) );
+            fprintf(stderr, "\tFinding %s\n", *ppStrA);
+            pFound = rbt_Find(pTree, *ppStrA);
+            // Note: what is returned by Find is the data pointer of the insert.
+            //      In this case, it will be a pointer to the string within the record.
+            //      See rbt_NodeInit above.
+            TINYTEST_FALSE( (NULL == pFound) );
+            TINYTEST_TRUE( (0 == strcmp(pFound, *ppStrA)) );
+            fprintf(stderr, "\t\tFound\n");
+            pRcd2 = (NODE_RECORD *)(((uint8_t *)pFound) - offsetof(NODE_RECORD, name));
+            TINYTEST_TRUE( (pRcd == pRcd2) );
+            ++ppStrA;
+        }
+
+        ppStrA = strings;
+        while (*ppStrA) {
+            fprintf(stderr, "\tFinding %s\n", *ppStrA);
+            pFound = rbt_Find(pTree, *ppStrA);
+            // Note: what is returned by Find is the data pointer of the insert.
+            //      In this case, it will be a pointer to the string within the record.
+            //      See rbt_NodeInit above.
+            XCTAssertTrue( (0 == strcmp(pFound, *ppStrA)) );
+            fprintf(stderr, "\t\tFound\n");
+            ++ppStrA;
+        }
+
+        fprintf(stderr, "\tAscending Iteration:\n");
+        rbt_iter_init(&iter, pTree);
+        i = 0;
+        for (pStrA=rbt_iter_first(&iter); pStrA; pStrA=rbt_iter_next(&iter)) {
+            fprintf(stderr, "\t\t%s\n", pStrA);
+            i++;
+        }
+        XCTAssertTrue( (33 == i) );
+
+        fprintf(stderr, "\tDeleting every other entry:\n");
+        ppStrA = strings;
+        while (*ppStrA) {
+            //NODE_RECORD     newRcd = {0};
+            fprintf(stderr, "\tDeleting %s\n", *ppStrA);
+            iRc = rbt_Delete(pTree, *ppStrA);
+            TINYTEST_TRUE( (iRc) );
+            fRc = rbt_VerifyTree(pTree, pTree->pRoot);
+            TINYTEST_TRUE( (fRc) );
+            fprintf(stderr, "\tFinding %s\n", *ppStrA);
+            pFound = rbt_Find(pTree, *ppStrA);
+            TINYTEST_TRUE( (NULL == pFound) );
+            fprintf(stderr, "\t\tNot Found\n");
+            ++ppStrA;
+            ++ppStrA;
+        }
+
+        rbt_DumpTree(pTree);
+        fRc = rbt_VerifyTree(pTree, pTree->pRoot);
+        TINYTEST_TRUE( (fRc) );
+
+        obj_Release(pBlocks);
+        pBlocks = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_rbt_tree);
+    TINYTEST_ADD_TEST(test_rbt_Tree_AddFind02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_rbt_Tree_AddFind01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_rbt_Tree_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

@@ -193,7 +193,7 @@ static
 const
 OBJ_INFO        srcFiles_Info = {
     "srcFiles",
-    "srcFiles",				// <-- Fill in description
+    "Stacked Source Input Files",
     (OBJ_DATA *)&srcFiles_ClassObj,
     (OBJ_DATA *)&obj_ClassObj
 };

@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          VALUE Console Transmit Task (Value) Header
+//          Primitive Value (Value) Header
 //****************************************************************
 /*
  * Program
- *			Separate Value (Value)
+ *			Primitive Value (Value)
  * Purpose
  *          This object provides a way to create an object from
  *          most primitive data including just raw memory.

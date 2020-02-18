@@ -341,19 +341,19 @@ int             test_TextIn_GetLine01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "abc")) );
 
-        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (buffer[0] == '\0') );
 
-        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "def")) );
 
-        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (eRc == ERESULT_EOF_ERROR) );
 
         obj_Release(pObj);
@@ -394,11 +394,11 @@ int             test_TextIn_GetLine02(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "{")) );
 
-        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "    \"one\": {")) );
 
@@ -436,19 +436,19 @@ int             test_TextIn_GetLine03(
 
         TextIn_setUpperLimit(pObj, 2);
 
-        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "ab")) );
 
-        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (buffer[0] == '\0') );
 
-        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "de")) );
 
-        eRc = TextIn_GetLineA(pObj, buffer, 128, &loc);
+        eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (eRc == ERESULT_EOF_ERROR) );
 
         obj_Release(pObj);

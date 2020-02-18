@@ -74,12 +74,12 @@ struct rbt_Node_s {
 struct rbt_tree_s {
     RBT_NODE            *pRoot;
     int                 (*pCmp)(void *, void *);
-    uint32_t            size;
-    uint32_t            dataSize;
-    
+    uint32_t            size;               // Number of Nodes in the Tree
+    uint32_t            dataSize;           // Size passed in rbt_Init(), but not
+    //                                      // used internally
     RBT_NODE *          (*pNodeAlloc)(OBJ_ID, uint32_t *);
     void                (*pNodeFree)(OBJ_ID, RBT_NODE *);
-    OBJ_ID              pObjAllocFree;
+    OBJ_ID              pObjAllocFree;      // Object passed to pNodeAlloc & pNodeFree
     
 };
 
@@ -109,17 +109,45 @@ RBT_NODE *      rbt_getRoot             (RBT_TREE *this);
 RBT_TREE *      rbt_Alloc               (void);
 int             rbt_Delete              (RBT_TREE *this, void *pKey);
 void            rbt_DeleteAll           (RBT_TREE *this);
+
+/*! Find an entry in the table using the init supplied comparison routine.
+    @param  this        Tree Pointer
+    @param  pKey        Key Pointer
+    @return If Successful, the Value pointer supplied in the insert.
+            Otherwise, NULL is returned.
+ */
 void *          rbt_Find                (RBT_TREE *this, void *pKey);
+
 RBT_NODE        *rbt_FindNode           (RBT_TREE *this, RBT_NODE *pNode);
+
+/*! Initialize the tree structure.
+ @param  pTree      Tree Pointer
+ @param  pCmp       Comparison Routine Pointer which will be passed the Key
+                    pointers provided in the Insert() or NodeInit().
+ @param  dataSize   the size of the data ???
+ @param  pNodeAlloc Node Allocator called if needed by Insert() or ???
+ @param  pNodeFree  Node Free called upon node deletion
+ @param  pObj       The object passed to pNodeAlloc and pNodeFree
+
+ @return            If Successful, the Tree pointer supplied; otherwise, NULL.
+*/
 RBT_TREE *      rbt_Init (
     RBT_TREE        *pTree,
     int             (*pCmp)(void *, void *),
     uint32_t        dataSize,
     RBT_NODE *      (*pNodeAlloc)(OBJ_ID, uint32_t *),
     void            (*pNodeFree)(OBJ_ID, RBT_NODE *),
-    OBJ_ID          pObjAllocFree
+    OBJ_ID          pObj
 );
+
 bool            rbt_Insert              (RBT_TREE *this, void *pKey, void *pValue);
+
+/*! Insert the given node into the tree. No allocations are made by this
+    method. The node's links and color are simply updated.
+   @param  this        Tree Pointer
+   @param  pNode       Node Pointer
+   @return If Successful, true; otherwise, false.
+*/
 bool            rbt_InsertNode          (RBT_TREE *this, RBT_NODE *pNode);
 
 

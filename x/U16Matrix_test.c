@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 01/25/2020 21:31:26
+ *	Generated 02/18/2020 11:52:42
  */
 
 
@@ -25,8 +25,8 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <JsonOut_internal.h>
-#ifdef  JSONOUT_JSON_SUPPORT
+#include    <U16Matrix_internal.h>
+#ifdef  U16MATRIX_JSON_SUPPORT
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
@@ -55,7 +55,7 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  JSONOUT_JSON_SUPPORT
+#ifdef  U16MATRIX_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
@@ -82,25 +82,25 @@ int             tearDown (
 
 
 
-int             test_JsonOut_OpenClose (
+int             test_U16Matrix_OpenClose (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    JSONOUT_DATA	    *pObj = OBJ_NIL;
+    U16MATRIX_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = JsonOut_Alloc( );
+    pObj = U16Matrix_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = JsonOut_Init( pObj );
+    pObj = U16Matrix_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_JSONOUT);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_U16MATRIX);
         TINYTEST_TRUE( (fRc) );
         
         // Test something.
@@ -116,38 +116,38 @@ int             test_JsonOut_OpenClose (
 
 
 
-int             test_JsonOut_Copy01 (
+int             test_U16Matrix_Copy01 (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    JSONOUT_DATA	    *pObj1 = OBJ_NIL;
-    JSONOUT_DATA	    *pObj2 = OBJ_NIL;
+    U16MATRIX_DATA	    *pObj1 = OBJ_NIL;
+    U16MATRIX_DATA	    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(JSONOUT_JSON_SUPPORT) && defined(XYZZY)
+#if defined(U16MATRIX_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = JsonOut_New( );
+    pObj1 = U16Matrix_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_JSONOUT);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_U16MATRIX);
         TINYTEST_TRUE( (fRc) );
         
         // Test assign.
-        pObj2 = JsonOut_New();
+        pObj2 = U16Matrix_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        eRc = JsonOut_Assign(pObj1, pObj2);
+        eRc = U16Matrix_Assign(pObj1, pObj2);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_JSONOUT);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_U16MATRIX);
         TINYTEST_TRUE( (fRc) );
-        //eRc = JsonOut_Compare(pObj1, pObj2);
+        //eRc = U16Matrix_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -155,10 +155,10 @@ int             test_JsonOut_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = JsonOut_Copy(pObj1);
+        pObj2 = U16Matrix_Copy(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_JSONOUT);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_U16MATRIX);
         TINYTEST_TRUE( (fRc) );
         //TODO: Add More tests here!
 
@@ -166,17 +166,17 @@ int             test_JsonOut_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(JSONOUT_JSON_SUPPORT) && defined(XYZZY)
-        pStr = JsonOut_ToJson(pObj1);
+#if defined(U16MATRIX_JSON_SUPPORT) && defined(XYZZY)
+        pStr = U16Matrix_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = JsonOut_NewFromJsonString(pStr);
+        pObj2 = U16Matrix_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_JSONOUT);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_U16MATRIX);
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = JsonOut_Compare(pObj1, pObj2);
+        //eRc = U16Matrix_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
@@ -193,23 +193,23 @@ int             test_JsonOut_Copy01 (
 
 
 
-int             test_JsonOut_Test01 (
+int             test_U16Matrix_Test01 (
     const
     char            *pTestName
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    JSONOUT_DATA	    *pObj = OBJ_NIL;
+    U16MATRIX_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = JsonOut_New( );
+    pObj = U16Matrix_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_JSONOUT);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_U16MATRIX);
         TINYTEST_TRUE( (fRc) );
         
         obj_Release(pObj);
@@ -222,58 +222,14 @@ int             test_JsonOut_Test01 (
 
 
 
-int             test_JsonOut_Array01 (
-    const
-    char            *pTestName
-)
-{
-    //ERESULT         eRc = ERESULT_SUCCESS;
-    JSONOUT_DATA    *pObj = OBJ_NIL;
-    bool            fRc;
-    ASTR_DATA       *pStr = OBJ_NIL;
-    uint8_t         x[12] = {'a','b','c','d','e','f','g','h',0};
-    const
-    char            *x8 =   "\t\"x\":[\n\t\t97, 98, 99, 100, 101,"
-                            " 102, 103, 104, \n\t\t0\n\t],\n";
 
-    fprintf(stderr, "Performing: %s\n", pTestName);
-
-    pStr = AStr_New();
-    TINYTEST_FALSE( (OBJ_NIL == pStr) );
-
-    JsonOut_Append_u8_array("x", 9, x, pStr);
-    fprintf(stderr, "u8_array:\n%s\n", AStr_getData(pStr));
-    TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,x8)) );
-    obj_Release(pStr);
-    pStr = OBJ_NIL;
-
-    pObj = JsonOut_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        //obj_TraceSet(pObj, true);
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_JSONOUT);
-        TINYTEST_TRUE( (fRc) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
-}
-
-
-
-
-TINYTEST_START_SUITE(test_JsonOut);
-    TINYTEST_ADD_TEST(test_JsonOut_Array01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_JsonOut_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_JsonOut_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_JsonOut_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_U16Matrix);
+    TINYTEST_ADD_TEST(test_U16Matrix_Test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_U16Matrix_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_U16Matrix_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_JsonOut);
+TINYTEST_MAIN_SINGLE_SUITE(test_U16Matrix);
 
 
 

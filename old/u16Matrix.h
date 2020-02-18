@@ -5,9 +5,9 @@
 //****************************************************************
 /*
  * Program
- *				Unsigned 16-bit element Matrix (u16Matrix)
+ *			Unsigned 16-bit element Matrix (u16Matrix)
  * Purpose
- *				This object provides an unsigned 16-bit element Matrix.
+ *			This object provides an unsigned 16-bit element Matrix.
  *
  * Remarks
  *	1.      A matrix of M X N size has M rows (height) and N columns (width).

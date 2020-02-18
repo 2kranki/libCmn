@@ -1,11 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   ObjHash_json.c
+ * File:   U16Array_json.c
  *
- *	Generated 02/02/2020 09:55:43
- *
- * Todo:
- *   **     Scoping is only partialy implemented and is not operational.
+ *	Generated 02/18/2020 11:52:34
  *
  */
 
@@ -45,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <ObjHash_internal.h>
+#include    <U16Array_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -81,44 +78,27 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     ObjHash_ParseJsonFields (
+    ERESULT     U16Array_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        OBJHASH_DATA     *pObject
+        U16ARRAY_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
-        uint32_t        cHash = 0;
-        uint32_t        count = 0;
-        uint32_t        i;
-        NODEARRAY_DATA  *pArray = OBJ_NIL;
-        NODEHASH_DATA   *pHash;
-        NODE_DATA       *pNode;
 
-        eRc = ObjHash_Reset(pObject);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "cHash", &cHash);
-        eRc = ObjHash_Setup(pObject, cHash);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "count", &count);
-        eRc = JsonIn_FindArrayNodeInHashA(pParser, "entries", &pArray);
-        if (!ERESULT_FAILED(eRc)) {
-            for (i=0; i<count; i++) {
-                OBJ_ID          pObj = OBJ_NIL;
-                pNode = NodeArray_Get(pArray, i+1);
-                pHash = JsonIn_CheckNodeForHash(pNode);
-                if (pHash) {
-                    eRc = JsonIn_SubObjectFromHash(pParser, pHash);
-                    eRc = JsonIn_SubObjectInHash(pParser, "Object");
-                    pObj = JsonIn_ParseObject(pParser);
-                    if (pObj) {
-                        eRc = ObjHash_Add(pObject, pObj, NULL);
-                        obj_Release(pObj);
-                    }
-                    JsonIn_SubObjectEnd(pParser);
-                    JsonIn_SubObjectEnd(pParser);
-                }
-            }
+#ifdef XYZZZY 
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
+
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
         }
+        JsonIn_SubObjectEnd(pParser);
+#endif
 
         // Return to caller.
     exit00:
@@ -133,18 +113,18 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    OBJHASH_DATA * ObjHash_ParseJsonObject (
+    U16ARRAY_DATA * U16Array_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        OBJHASH_DATA   *pObject = OBJ_NIL;
+        U16ARRAY_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(ObjHash_Class());
+        pInfo = obj_getInfo(U16Array_Class());
         
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -152,12 +132,12 @@ extern "C" {
             goto exit00;
         }
 
-        pObject = ObjHash_New( );
+        pObject = U16Array_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  ObjHash_ParseJsonFields(pParser, pObject);
+        eRc =  U16Array_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -179,13 +159,13 @@ extern "C" {
     //===============================================================
     
 
-    OBJHASH_DATA *   ObjHash_NewFromJsonString (
+    U16ARRAY_DATA *   U16Array_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        OBJHASH_DATA   *pObject = OBJ_NIL;
+        U16ARRAY_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -193,7 +173,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = ObjHash_ParseJsonObject(pParser);
+        pObject = U16Array_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -206,17 +186,17 @@ extern "C" {
     
     
 
-    OBJHASH_DATA * ObjHash_NewFromJsonStringA (
+    U16ARRAY_DATA * U16Array_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        OBJHASH_DATA   *pObject = OBJ_NIL;
+        U16ARRAY_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = ObjHash_NewFromJsonString(pStr);
+            pObject = U16Array_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -232,7 +212,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = ObjHash_ToJson(this);
+     ASTR_DATA      *pDesc = U16Array_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -240,8 +220,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ObjHash_ToJson (
-        OBJHASH_DATA   *this
+    ASTR_DATA *     U16Array_ToJson (
+        U16ARRAY_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -251,7 +231,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !ObjHash_Validate(this) ) {
+        if( !U16Array_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -265,7 +245,7 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = ObjHash_ToJsonFields(this, pStr);      
+            eRc = U16Array_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -274,11 +254,12 @@ extern "C" {
     }
     
     
-    ERESULT         ObjHash_ToJsonFields (
-        OBJHASH_DATA     *this,
+    ERESULT         U16Array_ToJsonFields (
+        U16ARRAY_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
+#ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
             uint32_t        type,
@@ -287,58 +268,15 @@ extern "C" {
         ASTR_DATA *     (*pToJson)(
             OBJ_ID          objId
         );
-        //ASTR_DATA       *pWrkStr;
-        uint32_t        i;
-        uint32_t        j;
-        LISTDL_DATA     *pNodeList;
-        OBJHASH_NODE    *pNode;
-        ASTR_DATA       *pData;
+        ASTR_DATA       *pWrkStr;
+#endif
 
-        AStr_AppendPrint(
-                         pStr,
-                         "\t\"cHash\":%d, \"count\":%d,\n\t\"entries\":[\n\t\t",
-                         this->cHash,
-                         this->num
-        );
-
-        // Scan the Hash Table creating entries for each of the objects
-        // in the table and appending them to the array.
-        j = this->num;
-        for (i=0; i < this->cHash; ++i) {
-            pNodeList = &this->pHash[i];
-            pNode = listdl_Head(pNodeList);
-            while (pNode) {
-                pData = OBJ_NIL;
-                pQueryInfo = obj_getVtbl(pNode->pObject)->pQueryInfo;
-                if (pQueryInfo) {
-                    pToJson =   (*pQueryInfo)(
-                                          pNode->pObject,
-                                          OBJ_QUERYINFO_TYPE_METHOD,
-                                          "ToJson"
-                                );
-                    if (pToJson) {
-                        pData = (*pToJson)(pNode->pObject);
-                        if (pData) {
-                            AStr_AppendPrint(
-                                        pStr,
-                                        "{Object: %s}",
-                                        AStr_getData(pData)
-                            );
-                            obj_Release(pData);
-                            pData = OBJ_NIL;
-                            if (j-- > 1) {
-                                AStr_AppendA(pStr, ",\n\t\t");
-                            }
-                            else {
-                                AStr_AppendA(pStr, "\n");
-                            }
-                        }
-                    }
-                }
-                pNode = listdl_Next(pNodeList, pNode);
-            }
-        }
-        AStr_AppendA(pStr, "\t]\n");
+#ifdef XYZZZY 
+            JsonOut_Append_i32("fileIndex", this->fileIndex, pStr);
+            JsonOut_Append_i64("offset", this->offset, pStr);
+            JsonOut_Append_u32("lineNo", this->lineNo, pStr);
+            JsonOut_Append_Object("errorStr", this->pErrorStr, pStr);
+#endif
 
         return ERESULT_SUCCESS;
     }

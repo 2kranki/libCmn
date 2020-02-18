@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SRCFILES Console Transmit Task (srcFiles) Header
+//          Stacked Source Input Files (srcFiles) Header
 //****************************************************************
 /*
  * Program
- *				Separate srcFiles (srcFiles)
+ *				Stacked Source Input Files (srcFiles)
  * Purpose
  *				This object serves two purposes. First, it provides
  *              for file inclusion by using a stack of sources which
@@ -54,6 +54,7 @@
 
 #include        <cmn_defs.h>
 #include        <srcFile.h>
+#include        <ObjArray.h>
 #include        <Path.h>
 #include        <Token.h>
 
@@ -102,7 +103,7 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * srcFiles_getPaths(
+    OBJARRAY_DATA * srcFiles_getPaths(
         SRCFILES_DATA   *this
     );
     

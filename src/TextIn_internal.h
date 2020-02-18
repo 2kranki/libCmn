@@ -101,7 +101,7 @@ struct TextIn_data_s	{
         W32STR_DATA         *pWStr;
     };
     uint16_t        type;               // see TEXTIN_TYPE
-    uint16_t        tabSize;            /* Tab Spacing Size */
+    uint16_t        tabSize;            // Tab Spacing Size
     uint8_t         state;
     uint8_t         fFile;              // true == FILE parameter was supplied and
     //                                  //          we are not responsible for closing
@@ -111,10 +111,13 @@ struct TextIn_data_s	{
     uint8_t         fStripNL;
     uint8_t         fAtEOF;
     uint8_t         fCols80;            // true == IBM 80 Column Card Input
-    //                                  //      (ie cols 1-71 data,
-    //                                  //          col 72 continuation indicator,
-    //                                  //          cols 73-80 optional sequence number)
+    //                                  //          (ie
+    //                                  //              cols 1-71 data,
+    //                                  //              col  72 continuation indicator,
+    //                                  //              cols 73-80 optional sequence
+    //                                  //                          number
     uint8_t         fSeq80;             // Validate sequence numbers
+    //                                  // (Only valid if fCols80 == true)
     PATH_DATA       *pPath;
     const
     char            *pPathA;
@@ -129,6 +132,13 @@ struct TextIn_data_s	{
 #endif
     TEXTIN_CHAR     curChr;
     TEXTIN_CHAR     savChr;
+    ERESULT         (*pLineExit)(
+                                 OBJ_ID,
+                                 int             len,
+                                 char            *pBuffer,
+                                 SRCLOC          *pLoc
+                    );
+    OBJ_ID          oLineExit;
 
 };
 #pragma pack(pop)
@@ -232,6 +242,7 @@ struct TextIn_data_s	{
     ERESULT         textIn_SetupBase(
         TEXTIN_DATA     *this,
         PATH_DATA       *pPath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
 

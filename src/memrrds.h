@@ -191,16 +191,6 @@ uint32_t            memrrds_getSize (
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         memrrds_Disable (
-        MEMRRDS_DATA	*this
-    );
-
-
-    ERESULT         memrrds_Enable (
-        MEMRRDS_DATA	*this
-    );
-
-   
     MEMRRDS_DATA *  memrrds_Init (
         MEMRRDS_DATA    *this
     );

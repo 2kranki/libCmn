@@ -58,7 +58,7 @@ struct srcFiles_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ASTRARRAY_DATA  *pPaths;
+    OBJARRAY_DATA   *pPaths;
     OBJARRAY_DATA   *pStack;
     SRCFILE_DATA    *pTop;
     uint8_t         fReuse;
@@ -76,7 +76,7 @@ struct srcFiles_data_s	{
     // Internal Functions
     bool            srcFiles_setPaths(
         SRCFILES_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        OBJARRAY_DATA   *pValue
     );
     
 

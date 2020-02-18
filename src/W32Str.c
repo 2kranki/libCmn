@@ -286,7 +286,7 @@ extern "C" {
     
     W32STR_DATA *     W32Str_NewA(
         const
-        char            *pStr
+        char            *pStrA
     )
     {
         W32STR_DATA       *this;
@@ -294,16 +294,16 @@ extern "C" {
         int32_t         len;
         
         // Do initialization.
-        if (NULL == pStr) {
+        if (NULL == pStrA) {
             return OBJ_NIL;
         }
         
         this = W32Str_Alloc( );
         this = W32Str_Init(this);
         if (this) {
-            len = utf8_StrLenA(pStr);
+            len = utf8_StrLenA(pStrA);
             if (len) {
-                eRc = W32Str_AppendA(this, pStr);
+                eRc = W32Str_AppendA(this, pStrA);
                 if (ERESULT_HAS_FAILED(eRc)) {
                     obj_Release(this);
                     this = OBJ_NIL;
@@ -349,7 +349,7 @@ extern "C" {
     
     W32STR_DATA *     W32Str_NewFromEnv(
         const
-        char            *pStr
+        char            *pStrA
     )
     {
         W32STR_DATA       *this =  OBJ_NIL;
@@ -357,11 +357,11 @@ extern "C" {
         size_t          len;
         
         // Do initialization.
-        if (NULL == pStr) {
+        if (NULL == pStrA) {
             return this;
         }
         
-        pData = getenv(pStr);
+        pData = getenv(pStrA);
         if (NULL == pData)
             ;
         else {
@@ -547,7 +547,7 @@ extern "C" {
     ERESULT         W32Str_AppendA(
         W32STR_DATA		*this,
         const
-        char            *pStr
+        char            *pStrA
     )
     {
         ERESULT         eRc;
@@ -567,7 +567,7 @@ extern "C" {
         }
 #endif
         
-        len = (uint32_t)utf8_StrLenA(pStr);
+        len = (uint32_t)utf8_StrLenA(pStrA);
         if (0 == len) {
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -583,7 +583,7 @@ extern "C" {
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pInsert = array_Ptr((ARRAY_DATA *)this, index);
             for (i=0; i<len; ++i) {
-                chr = utf8_Utf8ToW32_Scan(&pStr);
+                chr = utf8_Utf8ToW32_Scan(&pStrA);
                 *pInsert++ = chr;
             }
             *pInsert = '\0';

@@ -482,6 +482,8 @@ extern "C" {
         OBJ_IDENT_TABLE_CLASS,
         OBJ_IDENT_TEXTIN,               // Text Input Class
         OBJ_IDENT_TEXTIN_CLASS,
+        OBJ_IDENT_TEXTINS,              // Multiple Text Input Class
+        OBJ_IDENT_TEXTINS_CLASS,
         OBJ_IDENT_TEXTOUT,              // Text Output Class
         OBJ_IDENT_TEXTOUT_CLASS,
         OBJ_IDENT_THREAD,               // Separate Threads with own stack

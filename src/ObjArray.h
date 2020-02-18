@@ -357,7 +357,7 @@ extern "C" {
     );
     
     /*!
-     Find entry 1 in the array.
+     Find the last entry in the array.
      @param     this    objArray object pointer
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      */

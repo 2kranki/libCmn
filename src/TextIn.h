@@ -7,10 +7,9 @@
  * Program
  *			Text File Input (TextIn)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate TextIn to run things without complications
- *          of interfering with the main TextIn. A TextIn may be 
- *          called a TextIn on other O/S's.
+ *			This object provides support to read a text file from
+ *			one of several sources and either at the byte level or
+ *			the line level.
  *
  * Remarks
  *	1.      None
@@ -160,8 +159,15 @@ extern "C" {
 
     TEXTIN_DATA *  TextIn_NewFromFile (
         PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
         FILE            *pFile,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
+
+    TEXTIN_DATA *   TextIn_NewFromPath (
+        PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
 
@@ -271,15 +277,15 @@ extern "C" {
      */
     ERESULT         TextIn_GetLineA (
         TEXTIN_DATA     *this,
-        char            *pBuffer,
         int             size,
+        char            *pBuffer,
         SRCLOC          *pLoc
     );
 
     ERESULT         TextIn_GetLineW32 (
         TEXTIN_DATA     *this,
-        W32CHR_T        *pBuffer,
         int             size,
+        W32CHR_T        *pBuffer,
         SRCLOC          *pLoc
     );
 
@@ -320,15 +326,15 @@ extern "C" {
        TEXTIN_DATA      *this,
        PATH_DATA        *pFilePath,     // Optoinal Path used for Documentation Only
        ASTR_DATA        *pStr,          // Buffer of file data
-       uint16_t         fileIndex,      // File Path Index for a separate path table
+       uint16_t        fileIndex,      // File Path Index for a separate path table
        uint16_t         tabSize         // Tab Spacing if any (0 will default to 4)
     );
 
     ERESULT         TextIn_SetupFile (
        TEXTIN_DATA     *this,
        PATH_DATA       *pFilePath,
-       uint16_t        fileIndex,      // File Path Index for a separate path table
        FILE            *pFile,
+       uint16_t        fileIndex,      // File Path Index for a separate path table
        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
 

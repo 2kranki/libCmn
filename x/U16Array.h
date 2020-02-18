@@ -1,21 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          JSON Object Output Support (JsonOut) Header
+//          Unsigned 16-Bit Array (U16Array) Header
 //****************************************************************
 /*
  * Program
- *			JSON Object Output Support (JsonOut)
+ *			Unsigned 16-Bit Array (U16Array)
  * Purpose
- *			This object provides a standardized way of generating
- *			certain field types for JSON.
+ *			This object provides a standardized way of handling
+ *          a separate U16Array to run things without complications
+ *          of interfering with the main U16Array. A U16Array may be 
+ *          called a U16Array on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	08/27/2017 Generated
- *	01/25/2020 Regenerated
+ *	02/18/2020 Generated
  */
 
 
@@ -54,13 +55,13 @@
 #include        <AStr.h>
 
 
-#ifndef         JSONOUT_H
-#define         JSONOUT_H
+#ifndef         U16ARRAY_H
+#define         U16ARRAY_H
 
 
-//#define   JSONOUT_IS_CONSTANT      1
-//#define   JSONOUT_JSON_SUPPORT     1
-//#define   JSONOUT_SINGLETON        1
+//#define   U16ARRAY_IS_IMMUTABLE     1
+//#define   U16ARRAY_JSON_SUPPORT     1
+//#define   U16ARRAY_SINGLETON        1
 
 
 
@@ -76,45 +77,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct JsonOut_data_s	JSONOUT_DATA;            // Inherits from OBJ
-    typedef struct JsonOut_class_data_s JSONOUT_CLASS_DATA;   // Inherits from OBJ
+    typedef struct U16Array_data_s	U16ARRAY_DATA;            // Inherits from OBJ
+    typedef struct U16Array_class_data_s U16ARRAY_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct JsonOut_vtbl_s	{
+    typedef struct U16Array_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in JsonOut_object.c.
+        // method names to the vtbl definition in U16Array_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(JSONOUT_DATA *);
-    } JSONOUT_VTBL;
+        //bool        (*pIsEnabled)(U16ARRAY_DATA *);
+    } U16ARRAY_VTBL;
 
-    typedef struct JsonOut_class_vtbl_s	{
+    typedef struct U16Array_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in JsonOut_object.c.
+        // method names to the vtbl definition in U16Array_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(JSONOUT_DATA *);
-    } JSONOUT_CLASS_VTBL;
+        //bool        (*pIsEnabled)(U16ARRAY_DATA *);
+    } U16ARRAY_CLASS_VTBL;
 
-
-    typedef struct JsonOut_Flag1_s {
-        uint8_t         flag;
-        const
-        char            *pName;
-    } JSONOUT_FLAG1;
-
-    typedef struct JsonOut_Flag2_s {
-        uint16_t        flag;
-        const
-        char            *pName;
-    } JSONOUT_FLAG2;
-
-    typedef struct JsonOut_Flag4_s {
-        uint32_t        flag;
-        const
-        char            *pName;
-    } JSONOUT_FLAG4;
 
 
 
@@ -127,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  JSONOUT_SINGLETON
-    JSONOUT_DATA *     JsonOut_Shared (
+#ifdef  U16ARRAY_SINGLETON
+    U16ARRAY_DATA *     U16Array_Shared (
         void
     );
 
-    void            JsonOut_SharedReset (
+    void            U16Array_SharedReset (
         void
     );
 #endif
@@ -142,102 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to JsonOut object if successful, otherwise OBJ_NIL.
+     @return    pointer to U16Array object if successful, otherwise OBJ_NIL.
      */
-    JSONOUT_DATA *  JsonOut_Alloc (
+    U16ARRAY_DATA *     U16Array_Alloc (
         void
     );
     
     
-    OBJ_ID          JsonOut_Class (
+    OBJ_ID          U16Array_Class (
         void
     );
     
     
-    void            JsonOut_Append_i32 (
-        const
-        char            *pNameA,
-        int32_t         num,
-        ASTR_DATA       *pStr
-    );
-
-    void            JsonOut_Append_i32_array (
-        const
-        char            *pNameA,
-        uint32_t        num,            // Number of entries
-        const
-        int32_t         *pNum,          // First Entry Pointer
-        ASTR_DATA       *pStr
-    );
-
-
-    void            JsonOut_Append_i64 (
-        const
-        char            *pNameA,
-        int64_t         num,
-        ASTR_DATA       *pStr
-    );
-
-
-    /*!
-     Attempt to append a object's json string to an already existing string
-     with a given name if possible.
-     @param     pNameA  Name for the object
-     @param     pObj    non-null object pointer
-     @param     pStr    string to be added on to
-     */
-    void            JsonOut_Append_Object (
-        const
-        char            *pNameA,
-        OBJ_ID          pObj,
-        ASTR_DATA       *pStr
-    );
-
-
-    void            JsonOut_Append_u8 (
-        const
-        char            *pNameA,
-        uint8_t         num,
-        ASTR_DATA       *pStr
-    );
-
-    void            JsonOut_Append_u8_array (
-        const
-        char            *pNameA,
-        uint32_t        num,            // Number of entries
-        const
-        uint8_t         *pNum,          // First Entry Pointer
-        ASTR_DATA       *pStr
-    );
-
-
-    void            JsonOut_Append_u16 (
-        const
-        char            *pNameA,
-        uint16_t        num,
-        ASTR_DATA       *pStr
-    );
-
-
-    void            JsonOut_Append_u32 (
-        const
-        char            *pNameA,
-        uint32_t        num,
-        ASTR_DATA       *pStr
-    );
-
-
-    JSONOUT_DATA *  JsonOut_New (
+    U16ARRAY_DATA *     U16Array_New (
         void
     );
     
     
-#ifdef  JSONOUT_JSON_SUPPORT
-    JSONOUT_DATA *   JsonOut_NewFromJsonString(
+#ifdef  U16ARRAY_JSON_SUPPORT
+    U16ARRAY_DATA *   U16Array_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    JSONOUT_DATA *   JsonOut_NewFromJsonStringA(
+    U16ARRAY_DATA *   U16Array_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -256,33 +166,33 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         JsonOut_Disable (
-        JSONOUT_DATA    *this
+    ERESULT     U16Array_Disable (
+        U16ARRAY_DATA		*this
     );
 
 
-    ERESULT         JsonOut_Enable (
-        JSONOUT_DATA	*this
+    ERESULT     U16Array_Enable (
+        U16ARRAY_DATA		*this
     );
 
    
-    JSONOUT_DATA *  JsonOut_Init (
-        JSONOUT_DATA    *this
+    U16ARRAY_DATA *   U16Array_Init (
+        U16ARRAY_DATA     *this
     );
 
 
-    ERESULT         JsonOut_IsEnabled (
-        JSONOUT_DATA	*this
+    ERESULT     U16Array_IsEnabled (
+        U16ARRAY_DATA		*this
     );
     
  
-#ifdef  JSONOUT_JSON_SUPPORT
+#ifdef  U16ARRAY_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = JsonOut_ToJson(this);
+     ASTR_DATA      *pDesc = U16Array_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -290,8 +200,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     JsonOut_ToJson(
-        JSONOUT_DATA   *this
+    ASTR_DATA *     U16Array_ToJson (
+        U16ARRAY_DATA   *this
     );
 #endif
 
@@ -300,7 +210,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = JsonOut_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = U16Array_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -308,8 +218,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    JsonOut_ToDebugString (
-        JSONOUT_DATA     *this,
+    ASTR_DATA *    U16Array_ToDebugString (
+        U16ARRAY_DATA     *this,
         int             indent
     );
     
@@ -320,5 +230,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* JSONOUT_H */
+#endif	/* U16ARRAY_H */
 

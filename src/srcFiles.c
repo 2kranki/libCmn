@@ -106,7 +106,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    ASTRARRAY_DATA *    srcFiles_getPaths(
+    OBJARRAY_DATA *     srcFiles_getPaths(
         SRCFILES_DATA       *this
     )
     {
@@ -125,7 +125,7 @@ extern "C" {
     
     bool            srcFiles_setPaths(
         SRCFILES_DATA   *this,
-        ASTRARRAY_DATA  *pValue
+        OBJARRAY_DATA   *pValue
     )
     {
         
@@ -150,24 +150,24 @@ extern "C" {
     
     
     bool            srcFiles_getReuse(
-        SRCFILES_DATA   *cbp
+        SRCFILES_DATA   *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcFiles_Validate( cbp ) )
+        if( !srcFiles_Validate(this) )
             return false;
 #endif
         
         // Return to caller.
-        return cbp->fReuse;
+        return this->fReuse;
     }
     
     
     bool            srcFiles_setReuse(
-        SRCFILES_DATA   *cbp,
+        SRCFILES_DATA   *this,
         bool            fValue
     )
     {
@@ -175,15 +175,15 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !srcFiles_Validate( cbp ) )
+        if( !srcFiles_Validate(this) )
             return false;
 #endif
         
         if (fValue) {
-            cbp->fReuse = true;
+            this->fReuse = true;
         }
         else {
-            cbp->fReuse = false;
+            this->fReuse = false;
         }
         
         // Return to caller.
@@ -350,7 +350,7 @@ extern "C" {
     //                          N e w  S r c
     //---------------------------------------------------------------
     
-    ERESULT         srcFiles_NewSrcFromAStr(
+    ERESULT         srcFiles_NewSrcFromAStr (
         SRCFILES_DATA   *this,
         PATH_DATA       *pFilePath,     // [in] doc only
         ASTR_DATA       *pAStr,         // Buffer of file data
@@ -382,7 +382,7 @@ extern "C" {
     }
     
     
-    ERESULT         srcFiles_NewSrcFromFile(
+    ERESULT         srcFiles_NewSrcFromFile (
         SRCFILES_DATA   *this,
         FILE            *pFile,
         uint16_t        fileIndex,      // File Path Index for a separate path table
@@ -413,7 +413,7 @@ extern "C" {
     }
 
     
-    ERESULT         srcFiles_NewSrcFromPath(
+    ERESULT         srcFiles_NewSrcFromPath (
         SRCFILES_DATA   *this,
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
@@ -444,6 +444,97 @@ extern "C" {
     }
 
     
+
+    //---------------------------------------------------------------
+    //                         P a t h
+    //---------------------------------------------------------------
+
+    /*!
+     Get a path given its index.
+     @param     this    object pointer
+     @param     index   path name index (relative to 1)
+     @return    if successful, path object pointer.  Otherwise, OBJ_NIL.
+     */
+    PATH_DATA *     srcFiles_Path (
+        SRCFILES_DATA   *this,
+        uint16_t        index
+    )
+    {
+        //ERESULT         eRc;
+        PATH_DATA       *pPath = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcFiles_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        if (this->pPaths) {
+            pPath = ObjArray_Get(this->pPaths, index);
+        }
+
+        // Return to caller.
+        return pPath;
+    }
+
+
+    /*!
+     Add a path to the paths if it is not already there and return its index.
+     @param     this    object pointer
+     @param     pPath   path name object
+     @return    if successful, the path name index relative to 1.
+                Otherwise, 0.
+     */
+    uint16_t        srcFiles_PathAdd (
+        SRCFILES_DATA   *this,
+        PATH_DATA       *pPath
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        PATH_DATA       *pPathF = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!srcFiles_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+        if (OBJ_NIL == this->pPaths) {
+            this->pPaths = ObjArray_New( );
+            if (OBJ_NIL == this->pPaths) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+
+        iMax = ObjArray_getSize(this->pPaths);
+        for (i=0; i < iMax; i++) {
+            pPathF = (PATH_DATA *)ObjArray_Get(this->pPaths, i+1);
+            if (pPathF && (ERESULT_SUCCESS_EQUAL == Path_Compare(pPath, pPathF))) {
+                return i+1;
+            }
+        }
+
+        i = 0;
+        eRc = ObjArray_AppendObj(this->pPaths, pPath, &i);
+        if (ERESULT_FAILED(eRc)) {
+            return 0;
+        }
+
+        // Return to caller.
+        return i;
+    }
+
+
 
     //---------------------------------------------------------------
     //                      S t a c k  G e t

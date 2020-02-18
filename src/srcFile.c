@@ -152,7 +152,8 @@ extern "C" {
 
         this = srcFile_New( );
         if (this) {
-            eRc = TextIn_SetupFile((TEXTIN_DATA *)this, OBJ_NIL, fileIndex, pFile, tabSize);
+            eRc = TextIn_SetupFile((TEXTIN_DATA *)this, OBJ_NIL,
+                                   pFile, fileIndex, tabSize);
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 obj_Release(this);
