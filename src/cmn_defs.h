@@ -282,8 +282,14 @@ extern "C" {
         OBJ_IDENT_HEX_CLASS,
         OBJ_IDENT_HJSON,                // HJSON (loose JSON) Parser
         OBJ_IDENT_HJSON_CLASS,
+        OBJ_IDENT_I16ARRAY,             // Array of int16_t
+        OBJ_IDENT_I16ARRAY_CLASS,
+        OBJ_IDENT_I16MATRIX,            // Matrix of int16_t
+        OBJ_IDENT_I16MATRIX_CLASS,
         OBJ_IDENT_I32ARRAY,             // Array of int32_t
         OBJ_IDENT_I32ARRAY_CLASS,
+        OBJ_IDENT_I32MATRIX,            // Matrix of int32_t
+        OBJ_IDENT_I32MATRIX_CLASS,
         OBJ_IDENT_IO,                   // I/O Interface
         OBJ_IDENT_IOBASE,               // I/O Base Logic
         OBJ_IDENT_IOBASE_CLASS,

@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   U16Array_json.c
+ * File:   I16Matrix_json.c
  *
- *	Generated 02/18/2020 11:52:34
+ *	Generated 02/19/2020 09:50:41
  *
  */
 
@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <U16Array_internal.h>
+#include    <I16Matrix_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -78,85 +78,27 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     U16Array_ParseJsonFields (
+    ERESULT     I16Matrix_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        U16ARRAY_DATA     *pObject
+        I16MATRIX_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
-        uint32_t        count = 0;
-        uint32_t        i;
-        NODEARRAY_DATA  *pArray;
-        NODE_DATA       *pNode;
-        NAME_DATA       *pName;
-        ASTR_DATA       *pStr;
 
-        (void)JsonIn_FindU32NodeInHashA(pParser, "size", &count);
-        if (count && pObject) {
-            eRc = JsonIn_FindArrayNodeInHashA(pParser, "data", &pArray);
-            if (pArray) {
-                if (count == NodeArray_getSize(pArray))
-                    ;
-                else {
-                    fprintf(
-                            stderr,
-                            "ERROR - JSON Count, %d, does not match array size, %d!\n",
-                            count,
-                            NodeArray_getSize(pArray)
-                    );
-                    goto exit00;
-                }
-            }
-            else {
-                fprintf(
-                    stderr,
-                    "ERROR - JSON Count, %d, is present, but Entries were not found!\n",
-                    count
-                );
-                goto exit00;
-            }
+#ifdef XYZZZY 
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
 
-            for(i=0; i<count; i++) {
-                //fprintf(stderr, "\t\tLooking for Node(%d)\n", i+1);
-                pNode = NodeArray_Get(pArray, i+1);
-                if (OBJ_NIL == pNode) {
-                    fprintf(
-                            stderr,
-                            "ERROR - JSON Count, %d, does not match array size, %d!\n",
-                            count,
-                            NodeArray_getSize(pArray)
-                    );
-                    goto exit00;
-                }
-                pName = Node_getName(pNode);
-                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))
-                    ;
-                else {
-                    fprintf(
-                            stderr,
-                            "ERROR - Node name is not valid!\n"
-                    );
-                    goto exit00;
-                }
-                pStr = Node_getData(pNode);
-                if (OBJ_NIL == pStr) {
-                    fprintf(
-                            stderr,
-                            "ERROR - Node's data is not valid!\n"
-                    );
-                    goto exit00;
-                }
-#ifdef XYZZY
-                fprintf(stderr,
-                        "\t\t...found - %s -- 0x%02X\n",
-                        AStr_getData(pStr),
-                        (uint8_t)AStr_ToInt64(pStr));
-#endif
-                eRc = U16Array_AppendData(pObject, (uint16_t)AStr_ToInt64(pStr));
-            }
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
         }
+        JsonIn_SubObjectEnd(pParser);
+#endif
 
         // Return to caller.
     exit00:
@@ -171,18 +113,18 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    U16ARRAY_DATA * U16Array_ParseJsonObject (
+    I16MATRIX_DATA * I16Matrix_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        U16ARRAY_DATA   *pObject = OBJ_NIL;
+        I16MATRIX_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(U16Array_Class());
+        pInfo = obj_getInfo(I16Matrix_Class());
         
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -190,12 +132,12 @@ extern "C" {
             goto exit00;
         }
 
-        pObject = U16Array_New( );
+        pObject = I16Matrix_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  U16Array_ParseJsonFields(pParser, pObject);
+        eRc =  I16Matrix_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -217,13 +159,13 @@ extern "C" {
     //===============================================================
     
 
-    U16ARRAY_DATA *   U16Array_NewFromJsonString (
+    I16MATRIX_DATA *   I16Matrix_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        U16ARRAY_DATA   *pObject = OBJ_NIL;
+        I16MATRIX_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -231,7 +173,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = U16Array_ParseJsonObject(pParser);
+        pObject = I16Matrix_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -244,17 +186,17 @@ extern "C" {
     
     
 
-    U16ARRAY_DATA * U16Array_NewFromJsonStringA (
+    I16MATRIX_DATA * I16Matrix_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        U16ARRAY_DATA   *pObject = OBJ_NIL;
+        I16MATRIX_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = U16Array_NewFromJsonString(pStr);
+            pObject = I16Matrix_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -270,7 +212,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = U16Array_ToJson(this);
+     ASTR_DATA      *pDesc = I16Matrix_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -278,8 +220,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     U16Array_ToJson (
-        U16ARRAY_DATA   *this
+    ASTR_DATA *     I16Matrix_ToJson (
+        I16MATRIX_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -289,7 +231,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !U16Array_Validate(this) ) {
+        if( !I16Matrix_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -303,7 +245,7 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = U16Array_ToJsonFields(this, pStr);      
+            eRc = I16Matrix_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -312,8 +254,8 @@ extern "C" {
     }
     
     
-    ERESULT         U16Array_ToJsonFields (
-        U16ARRAY_DATA   *this,
+    ERESULT         I16Matrix_ToJsonFields (
+        I16MATRIX_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
@@ -328,30 +270,13 @@ extern "C" {
         );
         ASTR_DATA       *pWrkStr;
 #endif
-        int             j;
-        int             jMax;
-        uint16_t        *pData;
 
-        AStr_AppendPrint(pStr,
-                         "\"size\":%d, \n\t\"data\":[",
-                         U16Array_getSize(this)
-        );
-
-        jMax = array_getSize((ARRAY_DATA *)this);
-        pData = array_Ptr((ARRAY_DATA *)this, 1);
-        if (jMax) {
-            for (j=0; j<(jMax-1); ++j) {
-                if ((j % 5) == 0) {
-                    AStr_AppendA(pStr, "\n\t\t");
-                }
-                AStr_AppendPrint(pStr, "%u,", *pData++);
-            }
-            if ((j % 5) == 0) {
-                AStr_AppendA(pStr, "\n\t\t");
-            }
-            AStr_AppendPrint(pStr, "%u\n", *pData++);
-        }
-        AStr_AppendA(pStr, "\t]}\n");
+#ifdef XYZZZY 
+            JsonOut_Append_i32("fileIndex", this->fileIndex, pStr);
+            JsonOut_Append_i64("offset", this->offset, pStr);
+            JsonOut_Append_u32("lineNo", this->lineNo, pStr);
+            JsonOut_Append_Object("errorStr", this->pErrorStr, pStr);
+#endif
 
         return ERESULT_SUCCESS;
     }

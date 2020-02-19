@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'U16Array'
-//	Generated 02/18/2020 11:52:34
+//	Class Object Metods and Tables for 'I32Matrix'
+//	Generated 02/19/2020 09:52:24
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			U16ARRAY_OBJECT_C	    1
-#include        <U16Array_internal.h>
-#ifdef  U16ARRAY_SINGLETON
+#define			I32MATRIX_OBJECT_C	    1
+#include        <I32Matrix_internal.h>
+#ifdef  I32MATRIX_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct U16Array_class_data_s	{
+struct I32Matrix_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  U16ARRAY_SINGLETON
+#ifdef  I32MATRIX_SINGLETON
     volatile
-    U16ARRAY_DATA       *pSingleton;
+    I32MATRIX_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct U16Array_class_data_s	{
 
 
 static
-void *          U16ArrayClass_QueryInfo (
+void *          I32MatrixClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          U16ArrayClass_QueryInfo (
 
 static
 const
-OBJ_INFO        U16Array_Info;            // Forward Reference
+OBJ_INFO        I32Matrix_Info;            // Forward Reference
 
 
 
 
 static
-bool            U16ArrayClass_IsKindOf (
+bool            I32MatrixClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_U16ARRAY_CLASS == classID) {
+    if (OBJ_IDENT_I32MATRIX_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(U16Array_Class())->pClassSuperObject;
+    pObj = obj_getInfo(I32Matrix_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            U16ArrayClass_IsKindOf (
 
 
 static
-uint16_t		U16ArrayClass_WhoAmI (
+uint16_t		I32MatrixClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_U16ARRAY_CLASS;
+    return OBJ_IDENT_I32MATRIX_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		U16ArrayClass_WhoAmI (
 
 static
 const
-U16ARRAY_CLASS_VTBL    class_Vtbl = {
+I32MATRIX_CLASS_VTBL    class_Vtbl = {
     {
-        &U16Array_Info,
-        U16ArrayClass_IsKindOf,
+        &I32Matrix_Info,
+        I32MatrixClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        U16Array_Class,
-        U16ArrayClass_WhoAmI,
-        (P_OBJ_QUERYINFO)U16ArrayClass_QueryInfo,
-        NULL                        // U16ArrayClass_ToDebugString
+        I32Matrix_Class,
+        I32MatrixClass_WhoAmI,
+        (P_OBJ_QUERYINFO)I32MatrixClass_QueryInfo,
+        NULL                        // I32MatrixClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ U16ARRAY_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-U16ARRAY_CLASS_DATA  U16Array_ClassObj = {
+I32MATRIX_CLASS_DATA  I32Matrix_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(U16ARRAY_CLASS_DATA),                  // cbSize
+        sizeof(I32MATRIX_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,17 @@ U16ARRAY_CLASS_DATA  U16Array_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  U16ARRAY_SINGLETON
-U16ARRAY_DATA *     U16Array_getSingleton (
+#ifdef  I32MATRIX_SINGLETON
+I32MATRIX_DATA *     I32Matrix_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(U16Array_ClassObj.pSingleton);
+    return (OBJ_ID)(I32Matrix_ClassObj.pSingleton);
 }
 
 
-bool            U16Array_setSingleton (
-    U16ARRAY_DATA       *pValue
+bool            I32Matrix_setSingleton (
+    I32MATRIX_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +192,10 @@ bool            U16Array_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (U16Array_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(U16Array_ClassObj.pSingleton));
+    if (I32Matrix_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(I32Matrix_ClassObj.pSingleton));
     }
-    U16Array_ClassObj.pSingleton = pValue;
+    I32Matrix_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +205,17 @@ bool            U16Array_setSingleton (
 
 
 
-U16ARRAY_DATA *     U16Array_Shared (
+I32MATRIX_DATA *     I32Matrix_Shared (
     void
 )
 {
-    U16ARRAY_DATA       *this = (OBJ_ID)(U16Array_ClassObj.pSingleton);
+    I32MATRIX_DATA       *this = (OBJ_ID)(I32Matrix_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = U16Array_New( );
-        U16Array_setSingleton(this);
+        this = I32Matrix_New( );
+        I32Matrix_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // U16Array_ClassObj.pSingleton = OBJ_NIL;
+        // I32Matrix_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +223,15 @@ U16ARRAY_DATA *     U16Array_Shared (
 
 
 
-void            U16Array_SharedReset (
+void            I32Matrix_SharedReset (
     void
 )
 {
-    U16ARRAY_DATA       *this = (OBJ_ID)(U16Array_ClassObj.pSingleton);
+    I32MATRIX_DATA       *this = (OBJ_ID)(I32Matrix_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        U16Array_ClassObj.pSingleton = OBJ_NIL;
+        I32Matrix_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +247,13 @@ void            U16Array_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          U16ArrayClass_QueryInfo (
+void *          I32MatrixClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    U16ARRAY_CLASS_DATA *this = objId;
+    I32MATRIX_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +264,7 @@ void *          U16ArrayClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(U16ARRAY_DATA);
+            return (void *)sizeof(I32MATRIX_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,7 +279,7 @@ void *          U16ArrayClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&U16Array_Info;
+                        return (void *)&I32Matrix_Info;
                     }
                     break;
                     
@@ -297,24 +297,24 @@ void *          U16ArrayClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return U16Array_New;
+                        return I32Matrix_New;
                     }
                     break;
                     
-#ifdef  U16ARRAY_JSON_SUPPORT
+#ifdef  I32MATRIX_JSON_SUPPORT
 				case 'P':
 					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-						return U16Array_ParseJsonFields;
+						return I32Matrix_ParseJsonFields;
 					}
 					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-						return U16Array_ParseJsonObject;
+						return I32Matrix_ParseJsonObject;
 					}
 					break;
 #endif
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return U16ArrayClass_WhoAmI;
+                        return I32MatrixClass_WhoAmI;
                     }
                     break;
                     
@@ -334,7 +334,7 @@ void *          U16ArrayClass_QueryInfo (
 
 
 static
-bool            U16Array_IsKindOf (
+bool            I32Matrix_IsKindOf (
     uint16_t		classID
 )
 {
@@ -342,14 +342,14 @@ bool            U16Array_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_U16ARRAY == classID) {
+    if (OBJ_IDENT_I32MATRIX == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(U16Array_Class())->pClassSuperObject;
+    pObj = obj_getInfo(I32Matrix_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -363,25 +363,25 @@ bool            U16Array_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            U16Array_Dealloc (
+void            I32Matrix_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          U16Array_Class (
+OBJ_ID          I32Matrix_Class (
     void
 )
 {
-    return (OBJ_ID)&U16Array_ClassObj;
+    return (OBJ_ID)&I32Matrix_ClassObj;
 }
 
 
 static
-uint16_t		U16Array_WhoAmI (
+uint16_t		I32Matrix_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_U16ARRAY;
+    return OBJ_IDENT_I32MATRIX;
 }
 
 
@@ -393,34 +393,34 @@ uint16_t		U16Array_WhoAmI (
 //===========================================================
 
 const
-U16ARRAY_VTBL     U16Array_Vtbl = {
+I32MATRIX_VTBL     I32Matrix_Vtbl = {
     {
-        &U16Array_Info,
-        U16Array_IsKindOf,
-#ifdef  U16ARRAY_IS_SINGLETON
+        &I32Matrix_Info,
+        I32Matrix_IsKindOf,
+#ifdef  I32MATRIX_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        U16Array_Dealloc,
-        U16Array_Class,
-        U16Array_WhoAmI,
-        (P_OBJ_QUERYINFO)U16Array_QueryInfo,
-        (P_OBJ_TOSTRING)U16Array_ToDebugString,
-        NULL,			// U16Array_Enable,
-        NULL,			// U16Array_Disable,
-        (P_OBJ_ASSIGN)U16Array_Assign,
-        NULL,			// (P_OBJ_COMPARE)U16Array_Compare,
-        (P_OBJ_PTR)U16Array_Copy,
-        NULL, 			// (P_OBJ_PTR)U16Array_DeepCopy,
-        NULL 			// (P_OBJ_HASH)U16Array_Hash,
+        I32Matrix_Dealloc,
+        I32Matrix_Class,
+        I32Matrix_WhoAmI,
+        (P_OBJ_QUERYINFO)I32Matrix_QueryInfo,
+        (P_OBJ_TOSTRING)I32Matrix_ToDebugString,
+        NULL,			// I32Matrix_Enable,
+        NULL,			// I32Matrix_Disable,
+        NULL,			// (P_OBJ_ASSIGN)I32Matrix_Assign,
+        NULL,			// (P_OBJ_COMPARE)I32Matrix_Compare,
+        NULL, 			// (P_OBJ_PTR)I32Matrix_Copy,
+        NULL, 			// (P_OBJ_PTR)I32Matrix_DeepCopy,
+        NULL 			// (P_OBJ_HASH)I32Matrix_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //U16Array_IsEnabled,
+    //I32Matrix_IsEnabled,
  
 };
 
@@ -428,13 +428,13 @@ U16ARRAY_VTBL     U16Array_Vtbl = {
 
 static
 const
-OBJ_INFO        U16Array_Info = {
-    "U16Array",
-    "Unsigned 16-Bit Dynamic Array",
-    (OBJ_DATA *)&U16Array_ClassObj,
-    (OBJ_DATA *)&array_ClassObj,
-    (OBJ_IUNKNOWN *)&U16Array_Vtbl,
-    sizeof(U16ARRAY_DATA)
+OBJ_INFO        I32Matrix_Info = {
+    "I32Matrix",
+    "Signed 32-Bit Matrix",
+    (OBJ_DATA *)&I32Matrix_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&I32Matrix_Vtbl,
+    sizeof(I32MATRIX_DATA)
 };
 
 

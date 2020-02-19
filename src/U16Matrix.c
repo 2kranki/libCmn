@@ -62,16 +62,208 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            U16Matrix_task_body (
-        void            *pData
+    bool            U16Matrix_IsIndexValid (
+        U16MATRIX_DATA  *this,
+        uint32_t        i,
+        uint32_t        j
     )
     {
-        //U16MATRIX_DATA  *this = pData;
-        
+
+        if ((1 <= i) && (i <= this->m)) {
+        }
+        else {
+            return false;
+        }
+        if ((1 <= j) && (j <= this->n)) {
+        }
+        else {
+            return false;
+        }
+
+        // Return to caller.
+        return true;
     }
+
+
+
+    uint32_t        U16Matrix_Index (
+        U16MATRIX_DATA  *this,
+        uint32_t        i,
+        uint32_t        j
+    )
+    {
+        uint32_t        index;
+
+#ifdef NDEBUG
+#else
+        if (!U16Matrix_IsIndexValid(this, i, j)) {
+            return -1;
+        }
 #endif
+
+        index = ((i - 1) * this->n) + (j - 1);
+
+        // Return to caller.
+        return index;
+    }
+
+
+
+    bool            U16Matrix_AddRowToValueCheck (
+        U16MATRIX_DATA  *this,
+        MATRIX_BUILD    *pBuild,
+        uint32_t        row
+    )
+    // This routine adds the specified row from the sparse matrix to the
+    // compressed matrix.  We try to fit the row as best as possible given
+    // the current state of the compressed matrix.
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+        uint32_t        j;
+        uint16_t        value;
+        int32_t         baseNew = 0;        /* new base for value/check */
+
+        /*
+         * Now search the value table for a base such that the non-
+         * zero entries of the row fit into zero entries of the value
+         * table.
+         */
+        iMax = pBuild->baseMax - this->n;   // Start at the last row added
+        for( i=0; i < iMax; i++ ) {
+            baseNew = i;
+            for( j=1; j <= this->n; j++ ) {
+                value = U16Matrix_Get(this, row, j);
+                if( value ) {
+                    if( pBuild->pCheck[i+j-1] == 0 )
+                        ;
+                    else {
+                        baseNew = -1;
+                        break;
+                    }
+                }
+            }
+            // Break if we found a fit for the row.
+            if( baseNew == i )
+                break;
+        }
+        if( baseNew == -1 ) {           /*** table overflow ***/
+            return false;
+        }
+        if( baseNew > pBuild->baseMax ) {
+            pBuild->baseMax = baseNew;
+        }
+        pBuild->pBase[row-1] = baseNew;
+
+        // Now add the row to the base/value/check table.
+        for( j=1; j<=this->n; j++ ) {
+            value = U16Matrix_Get(this, row, j);
+            if( value ) {
+                if (pBuild->pValue[baseNew+j-1]) {
+                    DEBUG_BREAK();
+                }
+                pBuild->pValue[baseNew+j-1] = value;
+                pBuild->pCheck[baseNew+j-1] = row;
+                if ((baseNew + j) > pBuild->highest) {
+                    pBuild->highest = baseNew + j;
+                }
+            }
+        }
+
+        // Return to caller.
+        return true;
+    }
+
+
+
+    MATRIX_BUILD *  U16Matrix_BuildValueCheck (
+        U16MATRIX_DATA  *this
+    )
+    {
+        MATRIX_BUILD    *pBuild = NULL;
+        uint32_t        i;
+        uint32_t        baseMax;
+
+#ifdef NDEBUG
+#else
+        if( !U16Matrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+
+        pBuild = mem_Calloc( 1, sizeof(MATRIX_BUILD) );
+        if( NULL == pBuild ) {
+            return NULL;
+        }
+        pBuild->m = this->m;
+        pBuild->n = this->n;
+        baseMax = this->m * this->n;
+        pBuild->baseMax = baseMax;
+        pBuild->pBase = (int32_t *)mem_Calloc( this->m, sizeof(int32_t) );
+        if( NULL == pBuild->pBase ) {
+            mem_Free(pBuild);
+            return NULL;
+        }
+        pBuild->pValue  = (uint16_t *)mem_Calloc( baseMax, sizeof(uint16_t) );
+        if( NULL == pBuild->pValue ) {
+            mem_Free(pBuild->pBase);
+            mem_Free(pBuild);
+            return NULL;
+        }
+        pBuild->pCheck  = (uint32_t *)mem_Calloc( baseMax, sizeof(uint32_t) );
+        if( NULL == pBuild->pCheck ) {
+            mem_Free(pBuild->pValue);
+            mem_Free(pBuild->pBase);
+            mem_Free(pBuild);
+            return NULL;
+        }
+
+        // Build the compressed table adding each row.
+        for (i=1; i<=this->m; ++i) {
+            U16Matrix_AddRowToValueCheck( this, pBuild, i );
+        }
+
+        // Return to caller.
+        return pBuild;
+    }
+
+
+
+    ERESULT         U16Matrix_FreeValueCheck (
+        U16MATRIX_DATA  *this,
+        MATRIX_BUILD    *pBuild
+    )
+    {
+
+#ifdef NDEBUG
+#else
+        if( !U16Matrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (pBuild) {
+            if (pBuild->pCheck) {
+                mem_Free(pBuild->pCheck);
+                pBuild->pCheck = NULL;
+            }
+            if (pBuild->pValue) {
+                mem_Free(pBuild->pValue);
+                pBuild->pValue = NULL;
+            }
+            if (pBuild->pBase) {
+                mem_Free(pBuild->pBase);
+                pBuild->pBase = NULL;
+            }
+            mem_Free(pBuild);
+            pBuild = NULL;
+        }
+
+        return ERESULT_SUCCESS;
+    }
+
 
 
 
@@ -115,6 +307,78 @@ extern "C" {
     }
 
 
+    U16MATRIX_DATA * U16Matrix_NewWithSizes (
+        uint32_t        ySize,          // Height (y-axis, Number of Rows, i)
+        uint32_t        xSize           // Width (x-axis, Number of Columns, j)
+
+    )
+    {
+        ERESULT         eRc;
+        U16MATRIX_DATA  *this;
+
+        this = U16Matrix_New( );
+        if (this) {
+            eRc = U16Matrix_Setup(this, ySize, xSize);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+        }
+
+        // Return to caller.
+        return this;
+    }
+
+
+
+    U16MATRIX_DATA * U16Matrix_NewIdentity (
+        uint32_t        n
+    )
+    {
+        ERESULT         eRc;
+        U16MATRIX_DATA  *this;
+        uint32_t        i;
+
+        this = U16Matrix_New( );
+        if (this) {
+            eRc = U16Matrix_Setup(this, n, n);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            for (i=1; i<=n; ++i) {
+                U16Matrix_Set(this, i, i, 1);
+            }
+        }
+
+        // Return to caller.
+        return this;
+    }
+
+
+
+    U16MATRIX_DATA * U16Matrix_NewSquare (
+        uint32_t        n
+    )
+    {
+        U16MATRIX_DATA  *this;
+        ERESULT         eRc;
+
+        this = U16Matrix_New( );
+        if (this) {
+            eRc = U16Matrix_Setup(this, n, n);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+        }
+
+        // Return to caller.
+        return this;
+    }
+
+
+
 
     
 
@@ -123,10 +387,10 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          P r i o r i t y
+    //                              M
     //---------------------------------------------------------------
-    
-    uint16_t        U16Matrix_getPriority (
+
+    uint32_t        U16Matrix_getM (
         U16MATRIX_DATA     *this
     )
     {
@@ -140,14 +404,13 @@ extern "C" {
         }
 #endif
 
-        //return this->priority;
-        return 0;
+        return this->m;
     }
 
 
-    bool            U16Matrix_setPriority (
-        U16MATRIX_DATA     *this,
-        uint16_t        value
+    bool            U16Matrix_setM (
+        U16MATRIX_DATA  *this,
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
@@ -158,7 +421,49 @@ extern "C" {
         }
 #endif
 
-        //this->priority = value;
+        this->m = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                              N
+    //---------------------------------------------------------------
+
+    uint32_t        U16Matrix_getN (
+        U16MATRIX_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!U16Matrix_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->n;
+    }
+
+
+    bool            U16Matrix_setN (
+        U16MATRIX_DATA  *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!U16Matrix_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->n = value;
 
         return true;
     }
@@ -187,54 +492,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * U16Matrix_getStr (
-        U16MATRIX_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!U16Matrix_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        U16Matrix_setStr (
-        U16MATRIX_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!U16Matrix_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
@@ -258,11 +515,55 @@ extern "C" {
     
   
 
-    
+
 
     //===============================================================
     //                          M e t h o d s
     //===============================================================
+
+
+    //---------------------------------------------------------------
+    //                       A d d
+    //---------------------------------------------------------------
+
+    ERESULT         U16Matrix_Add (
+        U16MATRIX_DATA  *this,
+        U16MATRIX_DATA  *pOther
+    )
+    {
+        uint32_t        i;
+        uint16_t        *pDst;
+        uint16_t        *pSrc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!U16Matrix_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!U16Matrix_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (this->cElems == pOther->cElems)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        for (i=0; i<this->cElems; ++i) {
+            pDst = array_GetAddrOf((ARRAY_DATA *)this, i+1);
+            pSrc = array_GetAddrOf((ARRAY_DATA *)pOther, i+1);
+            *pDst += *pSrc;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
 
 
     //---------------------------------------------------------------
@@ -335,14 +636,13 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        pOther->m =this->m;
+        pOther->n =this->n;
+        pOther->cElems = this->cElems;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -365,13 +665,9 @@ extern "C" {
     {
         int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+        uint16_t        *pValue1;
+        uint16_t        *pValue2;
+
 #ifdef NDEBUG
 #else
         if (!U16Matrix_Validate(this)) {
@@ -384,30 +680,208 @@ extern "C" {
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
+        if ((this->m == pOther->m) && (this->m == pOther->m))
+            ;
+        else {
+            return ERESULT_SUCCESS_UNEQUAL;
         }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
+        if (this->cElems == pOther->cElems)
+            ;
+        else {
+            return ERESULT_SUCCESS_UNEQUAL;
+        }
 
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
+        for (i=0; i<this->cElems; i++) {
+            pValue1 = array_GetAddrOf((ARRAY_DATA *)this, i+1);
+            pValue2 = array_GetAddrOf((ARRAY_DATA *)pOther, i+1);
+            if (pValue1 && pValue2) {
+                if (*pValue1 == *pValue2)
+                    ;
+                else {
+                    return ERESULT_SUCCESS_UNEQUAL;
+                }
+            } else {
+                return ERESULT_SUCCESS_UNEQUAL;
+            }
         }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
+
         return eRc;
     }
     
    
  
+    //---------------------------------------------------------------
+    //        G e n e r a t e  C o m p r e s s e d  T a b l e
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     U16Matrix_CompressedTable(
+        U16MATRIX_DATA  *this,
+        const
+        char            *pPrefix
+    )
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+        MATRIX_BUILD    *pBuild = NULL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        uint32_t        sizeMatrix;
+        uint32_t        sizeBuild;
+        bool            fSmall = true;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !U16Matrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        pBuild = U16Matrix_BuildValueCheck(this);
+        if( NULL == pBuild ) {
+            return OBJ_NIL;
+        }
+
+        // Check savings.
+        sizeMatrix = pBuild->m * pBuild->n * sizeof(uint16_t);
+        if ((pBuild->m > (65536-1)) || (pBuild->highest > (65536-1))) {
+            fSmall = false;
+            sizeBuild  = pBuild->m * sizeof(uint32_t);          // Base
+            sizeBuild += pBuild->highest * sizeof(uint32_t);    // Check
+            sizeBuild += pBuild->highest * sizeof(uint16_t);    // Value
+        }
+        else {
+            sizeBuild  = pBuild->m * sizeof(int16_t);           // Base
+            sizeBuild += pBuild->highest * sizeof(uint16_t);    // Check
+            sizeBuild += pBuild->highest * sizeof(uint16_t);    // Value
+        }
+        if (sizeMatrix > sizeBuild)
+            ;
+        else {
+            return OBJ_NIL;
+        }
+
+        pStr = AStr_New();
+        if( NULL == pStr ) {
+            return OBJ_NIL;
+        }
+
+        AStr_AppendPrint( pStr,
+                 "//    ***  Compressed Matrix Table   ***\n\n"
+        );
+        iMax = this->m;
+        if (fSmall) {
+            AStr_AppendPrint( pStr,
+                     "static\nconst\nuint16_t baseTable[%d] = {\n",
+                     iMax
+            );
+        }
+        else {
+            AStr_AppendPrint( pStr,
+                     "static\nconst\nuint32_t baseTable[%d] = {\n",
+                     iMax
+                     );
+        }
+        AStr_AppendPrint( pStr,
+                 "\t\t\t// X\n"
+                 );
+        for (i=0; i<(iMax-1); ++i) {
+            AStr_AppendPrint( pStr,
+                       "\t%d,\t\t// %d\n",
+                       pBuild->pBase[i],
+                       i+1
+            );
+        }
+        AStr_AppendPrint( pStr,
+                   "\t%d\t\t// %d\n};\n",
+                   pBuild->pBase[iMax-1],
+                   iMax
+        );
+        iMax = pBuild->highest;
+        AStr_AppendPrint( pStr,
+                   "static\nconst\nuint16_t valueTable[%d] = {\n",
+                   iMax
+        );
+        AStr_AppendPrint( pStr,
+                 "\t\t\t//     Y\n"
+                 );
+        for (i=0; i<(iMax-1); ++i) {
+            AStr_AppendPrint( pStr,
+                       "\t%d,\t\t// %d - %d\n",
+                       pBuild->pValue[i],
+                       i,
+                       pBuild->pCheck[i]
+            );
+        }
+        AStr_AppendPrint( pStr,
+                   "\t%d\t\t// %d - %d\n};\n",
+                   pBuild->pValue[iMax-1],
+                   (iMax-1),
+                   pBuild->pCheck[iMax-1]
+        );
+        if (fSmall) {
+            AStr_AppendPrint( pStr,
+                     "static\nconst\nuint16_t checkTable[%d] = {\n",
+                     iMax
+                     );
+        }
+        else {
+            AStr_AppendPrint( pStr,
+                     "static\nconst\nuint32_t checkTable[%d] = {\n",
+                     iMax
+                     );
+        }
+        AStr_AppendPrint( pStr,
+                 "//  Y\n"
+                 );
+        for (i=0; i<(iMax-1); ++i) {
+            AStr_AppendPrint( pStr,
+                       "\t%d,\t\t// %d\n",
+                       pBuild->pCheck[i],
+                       i
+            );
+        }
+        AStr_AppendPrint( pStr,
+                   "\t%d\t\t// %d\n};\n",
+                   pBuild->pCheck[iMax-1],
+                   (iMax-1)
+        );
+        AStr_AppendA(pStr, "#ifdef XYZZY\n");
+        AStr_AppendPrint(pStr,
+                   "static\nconst\nuint32_t tableMax = %d;\n",
+                   iMax
+        );
+        AStr_AppendA(pStr, "#endif\n\n\n");
+
+        AStr_AppendPrint(pStr,
+                   "uint16_t\t\t%s_Get(uint16_t i, uint16_t j)\n",
+                   pPrefix
+        );
+        AStr_AppendA(pStr, "{\n");
+        AStr_AppendA(pStr, "\tuint32_t\t\tbase;\n");
+        AStr_AppendA(pStr, "\tuint32_t\t\tindex;\n");
+        AStr_AppendPrint(pStr, "\tuint32_t\t\thighest = %d;\n", pBuild->highest);
+        AStr_AppendA(pStr, "\tuint16_t\t\tvalue;\n\n");
+        AStr_AppendA(pStr, "\tbase = baseTable[i-1];\n");
+        AStr_AppendA(pStr,  "\tindex = base + j - 1;\n");
+        AStr_AppendA(pStr, "\tif (index >= highest)\n");
+        AStr_AppendA(pStr,  "\t\treturn 0;\n");
+        AStr_AppendA(pStr, "\tif (checkTable[index] == j)\n");
+        AStr_AppendA(pStr, "\t\tvalue = valueTable[index];\n");
+        AStr_AppendA(pStr, "\telse\n");
+        AStr_AppendA(pStr, "\t\tvalue = 0;\n\n");
+        AStr_AppendA(pStr, "\treturn value;\n");
+        AStr_AppendA(pStr, "}\n");
+        AStr_AppendA(pStr, "\n\n\n\n\n\n");
+
+        U16Matrix_FreeValueCheck(this, pBuild);
+
+        // Return to caller.
+        return pStr;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -487,8 +961,6 @@ extern "C" {
             ((U16MATRIX_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        U16Matrix_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -618,6 +1090,44 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          G e t
+    //---------------------------------------------------------------
+
+    uint16_t        U16Matrix_Get (
+        U16MATRIX_DATA  *this,
+        uint32_t        i,
+        uint32_t        j
+    )
+    {
+        uint32_t        offset;
+        uint16_t        value = 0;
+        uint16_t        *pValue;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !U16Matrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        offset = U16Matrix_Index(this, i, j);
+        if (-1 == offset) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        pValue = array_GetAddrOf((ARRAY_DATA *)this, offset+1);
+        if (pValue)
+            value = *pValue;
+
+        // Return to caller.
+        return value;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -642,8 +1152,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_U16MATRIX);
+        this = (OBJ_ID)array_Init((ARRAY_DATA *)this);          // Needed for Inheritance
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -653,14 +1162,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&U16Matrix_Vtbl);
         
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        */
+        array_setElemSize((ARRAY_DATA *)this, 2);
 
 #ifdef NDEBUG
 #else
@@ -714,6 +1216,63 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      M u l t i p l y
+    //---------------------------------------------------------------
+
+    U16MATRIX_DATA * U16Matrix_Multiply(
+        U16MATRIX_DATA    *this,
+        U16MATRIX_DATA    *pOther
+    )
+    {
+        U16MATRIX_DATA  *pMatrix = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        j;
+        uint32_t        k;
+        uint16_t        sum;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !U16Matrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if( !U16Matrix_Validate(pOther) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (this->n == pOther->m)
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pMatrix = U16Matrix_NewWithSizes(this->m, pOther->n);
+        if (pMatrix == OBJ_NIL) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        for (i=1; i <= pMatrix->m; ++i) {
+            for (j=1; j <= pMatrix->n; ++j) {
+                // Compute the inner product.
+                sum = 0;
+                for (k=1; k<=this->n; ++k) {
+                    sum += U16Matrix_Get(this, i, k) * U16Matrix_Get(pOther, k, j);
+                }
+                U16Matrix_Set(pMatrix, i, j, sum);
+            }
+        }
+
+        // Return to caller.
+        return pMatrix;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -854,6 +1413,169 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                    S c a l a r  A d d
+    //---------------------------------------------------------------
+
+    ERESULT         U16Matrix_ScalarAdd(
+        U16MATRIX_DATA    *this,
+        uint16_t        value
+    )
+    {
+        uint32_t        i;
+        uint32_t        j;
+        uint32_t        offset;
+        uint16_t        *pValue;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !U16Matrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        for (i=1; i <= this->m; ++i) {
+            for (j=1; j <= this->n; ++j) {
+                offset = U16Matrix_Index(this, i, j);
+                if (-1 == offset)
+                    ;
+                else {
+                    pValue = array_GetAddrOf((ARRAY_DATA *)this, offset+1);
+                    if (pValue)
+                        *pValue += value;
+                }
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                 S c a l a r  M u l t i p l y
+    //---------------------------------------------------------------
+
+    ERESULT         U16Matrix_ScalarMultiply(
+        U16MATRIX_DATA    *this,
+        uint16_t        value
+    )
+    {
+        uint32_t        i;
+        uint32_t        j;
+        uint32_t        offset;
+        uint16_t        *pValue;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !U16Matrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        for (i=1; i <= this->m; ++i) {
+            for (j=1; j <= this->n; ++j) {
+                offset = U16Matrix_Index(this, i, j);
+                if (-1 == offset)
+                    ;
+                else {
+                    pValue = array_GetAddrOf((ARRAY_DATA *)this, offset+1);
+                    if (pValue)
+                        *pValue *= value;
+                }
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S e t
+    //---------------------------------------------------------------
+
+    ERESULT         U16Matrix_Set (
+        U16MATRIX_DATA  *this,
+        uint32_t        i,
+        uint32_t        j,
+        uint16_t        value
+    )
+    {
+        uint32_t        offset;
+        uint16_t        *pValue;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !U16Matrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        offset = U16Matrix_Index(this, i, j);
+        if (-1 == offset) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_INDEX;
+        }
+        pValue = array_GetAddrOf((ARRAY_DATA *)this, offset+1);
+        if (pValue)
+            *pValue = value;
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S e t u p
+    //---------------------------------------------------------------
+
+    ERESULT         U16Matrix_Setup (
+        U16MATRIX_DATA  *this,
+        uint32_t        m,
+        uint32_t        n
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        matrixMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!U16Matrix_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        this->n = n;
+        this->m = m;
+        this->cElems = n * m;
+        matrixMax = ((this->cElems + 1) >> 1) << 1;    // Round up by factor of 2
+
+        if (matrixMax) {
+            eRc = array_Expand((ARRAY_DATA *)this, matrixMax);
+        }
+        eRc = array_Truncate((ARRAY_DATA *)this, matrixMax);
+        if (matrixMax) {
+            eRc = array_ZeroAll((ARRAY_DATA *)this);
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -880,7 +1602,9 @@ extern "C" {
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        
+        uint32_t        i;
+        uint32_t        j;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -902,14 +1626,39 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d retain=%d\n",
+                    "{%p(%s) size=%d retain=%d m=%d n=%d\n",
                     this,
                     pInfo->pClassName,
                     U16Matrix_getSize(this),
-                    obj_getRetainCount(this)
+                    obj_getRetainCount(this),
+                    this->m,
+                    this->n
             );
 
-#ifdef  XYZZY        
+        if (indent) {
+            AStr_AppendCharRepeatW32(pStr, indent+5, ' ');
+        }
+        AStr_AppendA(pStr, " ");
+        for (i=0; i<(this->m/10); ++i) {
+            AStr_AppendA(pStr, "1234567890");
+        }
+        AStr_AppendA(pStr, "\n");
+        for (i=1; i<=this->m; ++i) {
+            if (indent) {
+                AStr_AppendCharRepeatW32(pStr, indent+3, ' ');
+            }
+            AStr_AppendPrint(pStr, "%2d |", i );
+            for (j=1; j<=(this->n-1); ++j) {
+                AStr_AppendPrint(pStr, "%2d, ", U16Matrix_Get(this, i, j) );
+            }
+            AStr_AppendPrint(pStr,"%2d", U16Matrix_Get(this, i, this->n) );
+            AStr_AppendA(pStr, " |\n");
+        }
+        if (indent) {
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        }
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
@@ -978,7 +1727,39 @@ extern "C" {
 
 
     
-    
+    //---------------------------------------------------------------
+    //                       Z e r o
+    //---------------------------------------------------------------
+
+    ERESULT         U16Matrix_Zero(
+        U16MATRIX_DATA  *this
+    )
+    {
+        uint32_t        i;
+        uint16_t        *pValue;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !U16Matrix_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        for (i=0; i<this->cElems; ++i) {
+            pValue = array_GetAddrOf((ARRAY_DATA *)this, i+1);
+            if (pValue)
+                *pValue = 0;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+
     
 #ifdef	__cplusplus
 }

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   U16Array.c
- *	Generated 02/18/2020 11:52:34
+ * File:   I16Matrix.c
+ *	Generated 02/19/2020 09:50:41
  *
  */
 
@@ -41,9 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <U16Array_internal.h>
-#include        <file.h>
-#include        <Path_internal.h>
+#include        <I16Matrix_internal.h>
 #include        <trace.h>
 
 
@@ -66,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            U16Array_task_body (
+    void            I16Matrix_task_body (
         void            *pData
     )
     {
-        //U16ARRAY_DATA  *this = pData;
+        //I16MATRIX_DATA  *this = pData;
         
     }
 #endif
@@ -86,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    U16ARRAY_DATA *     U16Array_Alloc (
+    I16MATRIX_DATA *     I16Matrix_Alloc (
         void
     )
     {
-        U16ARRAY_DATA       *this;
-        uint32_t        cbSize = sizeof(U16ARRAY_DATA);
+        I16MATRIX_DATA       *this;
+        uint32_t        cbSize = sizeof(I16MATRIX_DATA);
         
         // Do initialization.
         
@@ -103,15 +101,15 @@ extern "C" {
 
 
 
-    U16ARRAY_DATA *     U16Array_New (
+    I16MATRIX_DATA *     I16Matrix_New (
         void
     )
     {
-        U16ARRAY_DATA       *this;
+        I16MATRIX_DATA       *this;
         
-        this = U16Array_Alloc( );
+        this = I16Matrix_Alloc( );
         if (this) {
-            this = U16Array_Init(this);
+            this = I16Matrix_Init(this);
         } 
         return this;
     }
@@ -125,67 +123,42 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                            A r r a y
-    //---------------------------------------------------------------
-
-    ARRAY_DATA *    U16Array_getArray (
-        U16ARRAY_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!U16Array_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return (ARRAY_DATA *)this;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                      B i g  E n d i a n
+    //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    bool            U16Array_getBigEndian (
-        U16ARRAY_DATA   *this
+    uint16_t        I16Matrix_getPriority (
+        I16MATRIX_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return this->fBigEndian;
+        //return this->priority;
+        return 0;
     }
 
 
-    bool            U16Array_setBigEndian (
-        U16ARRAY_DATA   *this,
-        bool            value
+    bool            I16Matrix_setPriority (
+        I16MATRIX_DATA     *this,
+        uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        if (value)
-            this->fBigEndian = 1;
-        else
-            this->fBigEndian = 0;
+        //this->priority = value;
 
         return true;
     }
@@ -196,36 +169,84 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        U16Array_getSize (
-        U16ARRAY_DATA       *this
+    uint32_t        I16Matrix_getSize (
+        I16MATRIX_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return array_getSize((ARRAY_DATA *)this);
+        return 0;
     }
 
 
 
     //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA * I16Matrix_getStr (
+        I16MATRIX_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!I16Matrix_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool        I16Matrix_setStr (
+        I16MATRIX_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!I16Matrix_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+#ifdef  PROPERTY_STR_OWNED
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+#endif
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  U16Array_getSuperVtbl (
-        U16ARRAY_DATA     *this
+    OBJ_IUNKNOWN *  I16Matrix_getSuperVtbl (
+        I16MATRIX_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -245,106 +266,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                       A p p e n d
-    //---------------------------------------------------------------
-
-    ERESULT         U16Array_AppendData (
-        U16ARRAY_DATA    *this,
-        uint16_t        data
-    )
-    {
-        ERESULT         eRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        eRc =   array_InsertData(
-                     (ARRAY_DATA *)this,
-                     (array_getSize((ARRAY_DATA *)this) + 1),
-                     1,
-                     &data
-                 );
-        if (ERESULT_HAS_FAILED(eRc)) {
-            DEBUG_BREAK();
-            return eRc;
-        }
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-    ERESULT         U16Array_AppendFile(
-        U16ARRAY_DATA    *this,
-        PATH_DATA       *pPath
-    )
-    {
-        int64_t         size = 0;
-        int             chr;
-        FILE            *pFile;
-        uint16_t        data;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        size = file_SizeA(Path_getData(pPath));
-        if (-1 == size) {
-            return ERESULT_DATA_NOT_FOUND;
-        }
-        if (0 == size) {
-            return ERESULT_DATA_NOT_FOUND;
-        }
-
-        pFile = fopen(Path_getData(pPath), "rb");
-        if (NULL == pFile) {
-            return ERESULT_FILE_NOT_FOUND;
-        }
-        while ( !feof(pFile) ) {
-            chr = fgetc(pFile);
-            if (feof(pFile)) {
-                break;
-            }
-            if (this->fBigEndian) {
-                data = (chr & 0xFF) << 8;
-            }
-            else {
-                data = chr & 0xFF;
-            }
-            chr = fgetc(pFile);
-            if (feof(pFile)) {
-                break;
-            }
-            if (this->fBigEndian) {
-                data |= chr & 0xFF;
-            }
-            else {
-                data |= (chr & 0xFF) << 8;
-            }
-            U16Array_AppendData(this, data);
-        }
-        fclose(pFile);
-        pFile = NULL;
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-
-
-    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -354,16 +275,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = U16Array_Assign(this,pOther);
+        ERESULT eRc = I16Matrix_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another U16ARRAY object
+     @param     pOther  a pointer to another I16MATRIX object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         U16Array_Assign (
-        U16ARRAY_DATA		*this,
-        U16ARRAY_DATA     *pOther
+    ERESULT         I16Matrix_Assign (
+        I16MATRIX_DATA		*this,
+        I16MATRIX_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -371,11 +292,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!U16Array_Validate(pOther)) {
+        if (!I16Matrix_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -420,6 +341,8 @@ extern "C" {
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
+        //FIXME: Implement the assignment.        
+        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -435,9 +358,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         U16Array_Compare (
-        U16ARRAY_DATA     *this,
-        U16ARRAY_DATA     *pOther
+    ERESULT         I16Matrix_Compare (
+        I16MATRIX_DATA     *this,
+        I16MATRIX_DATA     *pOther
     )
     {
         int             i = 0;
@@ -451,11 +374,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!U16Array_Validate(pOther)) {
+        if (!I16Matrix_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -493,36 +416,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        U16Array      *pCopy = U16Array_Copy(this);
+        I16Matrix      *pCopy = I16Matrix_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a U16ARRAY object which must be 
+     @return    If successful, a I16MATRIX object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    U16ARRAY_DATA *     U16Array_Copy (
-        U16ARRAY_DATA       *this
+    I16MATRIX_DATA *     I16Matrix_Copy (
+        I16MATRIX_DATA       *this
     )
     {
-        U16ARRAY_DATA       *pOther = OBJ_NIL;
+        I16MATRIX_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef U16ARRAY_IS_IMMUTABLE
+#ifdef I16MATRIX_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = U16Array_New( );
+        pOther = I16Matrix_New( );
         if (pOther) {
-            eRc = U16Array_Assign(this, pOther);
+            eRc = I16Matrix_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -540,11 +463,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            U16Array_Dealloc (
+    void            I16Matrix_Dealloc (
         OBJ_ID          objId
     )
     {
-        U16ARRAY_DATA   *this = objId;
+        I16MATRIX_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -553,7 +476,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -561,9 +484,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((U16ARRAY_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((I16MATRIX_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
+
+        I16Matrix_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -584,32 +509,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        U16Array      *pDeepCopy = U16Array_Copy(this);
+        I16Matrix      *pDeepCopy = I16Matrix_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a U16ARRAY object which must be 
+     @return    If successful, a I16MATRIX object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    U16ARRAY_DATA *     U16Array_DeepyCopy (
-        U16ARRAY_DATA       *this
+    I16MATRIX_DATA *     I16Matrix_DeepyCopy (
+        I16MATRIX_DATA       *this
     )
     {
-        U16ARRAY_DATA       *pOther = OBJ_NIL;
+        I16MATRIX_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = U16Array_New( );
+        pOther = I16Matrix_New( );
         if (pOther) {
-            eRc = U16Array_Assign(this, pOther);
+            eRc = I16Matrix_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -623,93 +548,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          D e l e t e
-    //---------------------------------------------------------------
-
-    uint16_t         U16Array_Delete (
-        U16ARRAY_DATA    *this,
-        uint32_t        index
-    )
-    {
-        uint16_t        data = 0;
-        uint16_t        *pData;
-        ERESULT         eRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-        if ((index > 0) && (index <= array_getSize((ARRAY_DATA *)this)))
-            ;
-        else {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        pData = array_Ptr((ARRAY_DATA *)this, index);
-        if (pData) {
-            data = *pData;
-            eRc = array_Delete((ARRAY_DATA *)this, index, 1);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                return 0;
-            }
-        }
-
-        // Return to caller.
-        return data;
-    }
-
-
-    uint16_t         U16Array_DeleteFirst (
-        U16ARRAY_DATA    *this
-    )
-    {
-        uint16_t        data = 0;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        data = U16Array_Delete(this, 1);
-
-        // Return to caller.
-        return data;
-    }
-
-
-    uint16_t         U16Array_DeleteLast (
-        U16ARRAY_DATA    *this
-    )
-    {
-        uint16_t        data = 0;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        data = U16Array_Delete(this, array_getSize((ARRAY_DATA *)this));
-
-        // Return to caller.
-        return data;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -719,8 +557,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         U16Array_Disable (
-        U16ARRAY_DATA		*this
+    ERESULT         I16Matrix_Disable (
+        I16MATRIX_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -728,7 +566,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -754,8 +592,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         U16Array_Enable (
-        U16ARRAY_DATA		*this
+    ERESULT         I16Matrix_Enable (
+        I16MATRIX_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -763,7 +601,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -780,89 +618,14 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                         G e t
-    //---------------------------------------------------------------
-
-    uint16_t         U16Array_Get (
-        U16ARRAY_DATA    *this,
-        uint32_t        index
-    )
-    {
-        uint16_t        data;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-        if ((index > 0) && (index <= array_getSize((ARRAY_DATA *)this)))
-            ;
-        else {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        data = *((uint16_t *)array_Ptr((ARRAY_DATA *)this, index));
-
-        return data;
-    }
-
-
-    uint16_t        U16Array_GetFirst (
-        U16ARRAY_DATA    *this
-    )
-    {
-        uint16_t        data;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        data = U16Array_Get(this, 1);
-
-        return data;
-    }
-
-
-    uint16_t         U16Array_GetLast (
-        U16ARRAY_DATA    *this
-    )
-    {
-        uint16_t        data;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        data = U16Array_Get(this, array_getSize((ARRAY_DATA *)this));
-
-        return data;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    U16ARRAY_DATA *   U16Array_Init (
-        U16ARRAY_DATA       *this
+    I16MATRIX_DATA *   I16Matrix_Init (
+        I16MATRIX_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(U16ARRAY_DATA);
+        uint32_t        cbSize = sizeof(I16MATRIX_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -879,7 +642,8 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)array_Init((ARRAY_DATA *)this);          // Needed for Inheritance
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_I16MATRIX);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -887,9 +651,8 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&U16Array_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&I16Matrix_Vtbl);
         
-        array_setElemSize((ARRAY_DATA *)this, 2);
         /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {
@@ -901,7 +664,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -910,11 +673,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "U16Array::sizeof(U16ARRAY_DATA) = %lu\n", 
-                sizeof(U16ARRAY_DATA)
+                "I16Matrix::sizeof(I16MATRIX_DATA) = %lu\n", 
+                sizeof(I16MATRIX_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(U16ARRAY_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(I16MATRIX_DATA));
 #endif
 
         return this;
@@ -923,46 +686,11 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                          I n s e r t
-    //---------------------------------------------------------------
-
-    ERESULT         U16Array_Insert (
-        U16ARRAY_DATA   *this,
-        uint32_t        index,
-        uint16_t        data
-    )
-    {
-        ERESULT         eRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if ((index > 0) && (index <= array_getSize((ARRAY_DATA *)this)))
-            ;
-        else {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        eRc = array_InsertData((ARRAY_DATA *)this, index, 1, &data);
-
-        // Return to caller.
-        return ERESULT_SUCCESSFUL_COMPLETION;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         U16Array_IsEnabled (
-        U16ARRAY_DATA		*this
+    ERESULT         I16Matrix_IsEnabled (
+        I16MATRIX_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -970,7 +698,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -997,14 +725,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = U16Array_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = I16Matrix_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "U16Array", prefix,
+                        the object name, "I16Matrix", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1012,13 +740,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          U16Array_QueryInfo (
+    void *          I16Matrix_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        U16ARRAY_DATA     *this = objId;
+        I16MATRIX_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1027,7 +755,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1036,11 +764,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(U16ARRAY_DATA);
+            return (void *)sizeof(I16MATRIX_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)U16Array_Class();
+                return (void *)I16Matrix_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -1070,34 +798,34 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return U16Array_Disable;
+                            return I16Matrix_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return U16Array_Enable;
+                            return I16Matrix_Enable;
                         }
                         break;
 
-#ifdef  U16ARRAY_JSON_SUPPORT
+#ifdef  I16MATRIX_JSON_SUPPORT
                     case 'P':
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return U16Array_ParseJsonFields;
+                            return I16Matrix_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return U16Array_ParseJsonObject;
+                            return I16Matrix_ParseJsonObject;
                         }
                         break;
 #endif
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return U16Array_ToDebugString;
+                            return I16Matrix_ToDebugString;
                         }
-#ifdef  U16ARRAY_JSON_SUPPORT
+#ifdef  I16MATRIX_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return U16Array_ToJson;
+                            return I16Matrix_ToJson;
                         }
 #endif
                         break;
@@ -1108,10 +836,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == U16Array_ToDebugString)
+                if (pData == I16Matrix_ToDebugString)
                     return "ToDebugString";
-#ifdef  U16ARRAY_JSON_SUPPORT
-                if (pData == U16Array_ToJson)
+#ifdef  I16MATRIX_JSON_SUPPORT
+                if (pData == I16Matrix_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1126,40 +854,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                            S e t
-    //---------------------------------------------------------------
-
-    ERESULT         U16Array_SetData (
-        U16ARRAY_DATA   *this,
-        uint32_t        index,
-        uint16_t        data
-    )
-    {
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if ((index > 0) && (index <= array_getSize((ARRAY_DATA *)this)))
-            ;
-        else {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        *((uint16_t *)array_Ptr((ARRAY_DATA *)this, index)) = data;
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1167,7 +861,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = U16Array_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = I16Matrix_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1175,24 +869,22 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     U16Array_ToDebugString (
-        U16ARRAY_DATA   *this,
+    ASTR_DATA *     I16Matrix_ToDebugString (
+        I16MATRIX_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        int             j;
-        int             jMax;
+        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        uint16_t        *pData;
-
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!U16Array_Validate(this)) {
+        if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1210,44 +902,14 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d retain=%d data=[\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    U16Array_getSize(this),
+                    I16Matrix_getSize(this),
                     obj_getRetainCount(this)
             );
 
-        jMax = array_getSize((ARRAY_DATA *)this);
-        pData = array_Ptr((ARRAY_DATA *)this, 1);
-        if (indent) {
-            AStr_AppendCharRepeatA(pStr, indent, ' ');
-        }
-        if (jMax) {
-            for (j=0; j<(jMax-1); ++j) {
-                if ((j % 8) == 0) {
-                    if (j != 0) {
-                        AStr_AppendA(pStr, "\n");
-                    }
-                    if (indent) {
-                        AStr_AppendCharRepeatA(pStr, indent, ' ');
-                    }
-                    AStr_AppendA(pStr, "\t");
-                }
-                AStr_AppendPrint(pStr, "%d,", *pData++);
-            }
-            if ((j % 8) == 0) {
-                if (j != 0) {
-                    AStr_AppendA(pStr, "\n");
-                }
-                if (indent) {
-                    AStr_AppendCharRepeatA(pStr, indent, ' ');
-                }
-                AStr_AppendA(pStr, "\t");
-            }
-            AStr_AppendPrint(pStr, "%d]\n", *pData);
-        }
-
-#ifdef  XYZZY
+#ifdef  XYZZY        
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
@@ -1281,15 +943,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            U16Array_Validate (
-        U16ARRAY_DATA      *this
+    bool            I16Matrix_Validate (
+        I16MATRIX_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_U16ARRAY))
+            if (obj_IsKindOf(this, OBJ_IDENT_I16MATRIX))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1305,7 +967,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(U16ARRAY_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(I16MATRIX_DATA))) {
             return false;
         }
 
@@ -1316,61 +978,7 @@ extern "C" {
 
 
     
-    //---------------------------------------------------------------
-    //                  W r i t e  T o  F i l e
-    //---------------------------------------------------------------
-
-    ERESULT         U16Array_WriteToFile (
-        U16ARRAY_DATA   *this,
-        PATH_DATA       *pPath
-    )
-    {
-        FILE            *pFile;
-        uint32_t        index = 0;
-        uint32_t        size;
-        uint16_t        *pData;
-        uint16_t        data;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !U16Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( !Path_Validate(pPath) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-        pData = (uint16_t *)array_getData((ARRAY_DATA *)this);
-        size = array_getSize((ARRAY_DATA *)this);
-        pFile = fopen(Path_getData(pPath), "w");
-        if (NULL == pFile) {
-            return ERESULT_OPEN_ERROR;
-        }
-        while ( index < size ) {
-            data = pData[index++];
-            if (this->fBigEndian) {
-                fputc(((data >> 8) & 0xFF), pFile);
-                fputc((data & 0xFF), pFile);
-            }
-            else {
-                fputc((data & 0xFF), pFile);
-                fputc(((data >> 8) & 0xFF), pFile);
-            }
-        }
-        fclose(pFile);
-        pFile = NULL;
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-
-
+    
     
 #ifdef	__cplusplus
 }

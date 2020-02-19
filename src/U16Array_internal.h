@@ -40,6 +40,7 @@
 
 
 #include        <U16Array.h>
+#include        <array_internal.h>
 #include        <JsonIn.h>
 
 
@@ -67,13 +68,13 @@ extern "C" {
 struct U16Array_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    ARRAY_DATA      super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
+    uint8_t         fBigEndian;     // FALSE == little endian, TRUE == Big Endian
+    uint8_t         rsvd8;
     uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)

@@ -141,6 +141,7 @@ extern "C" {
         ERESULT_OUT_OF_RANGE                = -44,
         ERESULT_UNSUPPORTED_PARAMETER       = -45,
         ERESULT_INVALID_SYNTAX              = -46,
+        ERESULT_INVALID_INDEX               = -47,
 
         // File Related Errors
         ERESULT_CLOSE_ERROR                 = -64,

@@ -13,7 +13,9 @@
  *          called a array on other O/S's.
  *
  * Remarks
- *	1.      None
+ *	1.      Since this object supports Assign(), the array elements
+ *          should not contain pointers unless Assign() and Copy()
+ *          are not used.
  *
  * History
  *	11/08/2017 Generated
@@ -392,6 +394,9 @@ extern "C" {
     );
     
     
+    ERESULT         array_ZeroAll(
+        ARRAY_DATA      *this
+    );
 
     
 #ifdef	__cplusplus

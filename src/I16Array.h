@@ -1,13 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Unsigned 16-Bit Dynamic Array (U16Array) Header
+//          Signed 16-Bit Array (I16Array) Header
 //****************************************************************
 /*
  * Program
- *			Unsigned 16-Bit Dynamic Array (U16Array)
+ *			Signed 16-Bit Array (I16Array)
  * Purpose
- *			This object provides a dynamic array of uint16_t data
+ *          This object provides a dynamic array of int16_t data
  *          elements.
  *
  * Remarks
@@ -16,8 +16,7 @@
  *          as an offset otherwise an error.
  *
  * History
- *  08/07/2015 Generated
- *	02/18/2020 Rgenerated and JSON support added
+ *	02/19/2020 Generated
  */
 
 
@@ -56,13 +55,13 @@
 #include        <AStr.h>
 
 
-#ifndef         U16ARRAY_H
-#define         U16ARRAY_H
+#ifndef         I16ARRAY_H
+#define         I16ARRAY_H
 
 
-//#define   U16ARRAY_IS_IMMUTABLE     1
-#define   U16ARRAY_JSON_SUPPORT     1
-//#define   U16ARRAY_SINGLETON        1
+//#define   I16ARRAY_IS_IMMUTABLE     1
+#define   I16ARRAY_JSON_SUPPORT     1
+//#define   I16ARRAY_SINGLETON        1
 
 
 
@@ -78,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct U16Array_data_s	U16ARRAY_DATA;            // Inherits from OBJ
-    typedef struct U16Array_class_data_s U16ARRAY_CLASS_DATA;   // Inherits from OBJ
+    typedef struct I16Array_data_s	I16ARRAY_DATA;            // Inherits from OBJ
+    typedef struct I16Array_class_data_s I16ARRAY_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct U16Array_vtbl_s	{
+    typedef struct I16Array_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in U16Array_object.c.
+        // method names to the vtbl definition in I16Array_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(U16ARRAY_DATA *);
-    } U16ARRAY_VTBL;
+        //bool        (*pIsEnabled)(I16ARRAY_DATA *);
+    } I16ARRAY_VTBL;
 
-    typedef struct U16Array_class_vtbl_s	{
+    typedef struct I16Array_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in U16Array_object.c.
+        // method names to the vtbl definition in I16Array_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(U16ARRAY_DATA *);
-    } U16ARRAY_CLASS_VTBL;
+        //bool        (*pIsEnabled)(I16ARRAY_DATA *);
+    } I16ARRAY_CLASS_VTBL;
 
 
 
@@ -111,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  U16ARRAY_SINGLETON
-    U16ARRAY_DATA * U16Array_Shared (
+#ifdef  I16ARRAY_SINGLETON
+    I16ARRAY_DATA * I16Array_Shared (
         void
     );
 
-    void            U16Array_SharedReset (
+    void            I16Array_SharedReset (
         void
     );
 #endif
@@ -126,29 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to U16Array object if successful, otherwise OBJ_NIL.
+     @return    pointer to I16Array object if successful, otherwise OBJ_NIL.
      */
-    U16ARRAY_DATA * U16Array_Alloc (
+    I16ARRAY_DATA * I16Array_Alloc (
         void
     );
     
     
-    OBJ_ID          U16Array_Class (
+    OBJ_ID          I16Array_Class (
         void
     );
     
     
-    U16ARRAY_DATA * U16Array_New (
+    I16ARRAY_DATA * I16Array_New (
         void
     );
     
     
-#ifdef  U16ARRAY_JSON_SUPPORT
-    U16ARRAY_DATA * U16Array_NewFromJsonString (
+#ifdef  I16ARRAY_JSON_SUPPORT
+    I16ARRAY_DATA * I16Array_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    U16ARRAY_DATA * U16Array_NewFromJsonStringA (
+    I16ARRAY_DATA * I16Array_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -160,14 +159,14 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            U16Array_setBigEndian(
-        U16ARRAY_DATA   *this,
+    bool            I16Array_setBigEndian(
+        I16ARRAY_DATA   *this,
         bool            value
     );
 
 
-    uint32_t        U16Array_getSize(
-        U16ARRAY_DATA    *this
+    uint32_t        I16Array_getSize(
+        I16ARRAY_DATA    *this
     );
 
 
@@ -176,14 +175,14 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         U16Array_AppendData (
-        U16ARRAY_DATA   *this,
+    ERESULT         I16Array_AppendData (
+        I16ARRAY_DATA   *this,
         uint16_t        data
     );
 
 
-    ERESULT         U16Array_AppendFile (
-        U16ARRAY_DATA    *this,
+    ERESULT         I16Array_AppendFile (
+        I16ARRAY_DATA    *this,
         PATH_DATA       *pPath
     );
 
@@ -194,16 +193,27 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code
-        ERESULT eRc = U16Array_Assign(this,pOther);
+        ERESULT eRc = I16Array_Assign(this,pOther);
      @endcode
      @param     this    object pointer
-     @param     pOther  a pointer to another U16ARRAY object
+     @param     pOther  a pointer to another I16ARRAY object
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error
      */
-    ERESULT         U16Array_Assign (
-        U16ARRAY_DATA   *this,
-        U16ARRAY_DATA   *pOther
+    ERESULT         I16Array_Assign (
+        I16ARRAY_DATA   *this,
+        I16ARRAY_DATA   *pOther
+    );
+
+
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other,
+                otherwise ERESULT_SUCCESS_UNEQUAL
+     */
+    ERESULT         I16Array_Compare (
+        I16ARRAY_DATA     *this,
+        I16ARRAY_DATA     *pOther
     );
 
 
@@ -211,76 +221,76 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code
-        U16Array      *pCopy = U16Array_Copy(this);
+        I16Array      *pCopy = I16Array_Copy(this);
      @endcode
      @param     this    object pointer
-     @return    If successful, a U16ARRAY object which must be
+     @return    If successful, a I16ARRAY object which must be
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    U16ARRAY_DATA * U16Array_Copy (
-        U16ARRAY_DATA   *this
+    I16ARRAY_DATA * I16Array_Copy (
+        I16ARRAY_DATA   *this
     );
 
 
-    uint16_t        U16Array_Delete (
-        U16ARRAY_DATA   *this,
+    uint16_t        I16Array_Delete (
+        I16ARRAY_DATA   *this,
         uint32_t        index
     );
 
 
-    uint16_t        U16Array_DeleteFirst (
-        U16ARRAY_DATA   *this
+    uint16_t        I16Array_DeleteFirst (
+        I16ARRAY_DATA   *this
     );
 
 
-    uint16_t        U16Array_DeleteLast (
-        U16ARRAY_DATA    *this
+    uint16_t        I16Array_DeleteLast (
+        I16ARRAY_DATA    *this
     );
 
 
     // If an error occurs, Get() returns 0.
-    uint16_t        U16Array_Get (
-        U16ARRAY_DATA   *this,
+    uint16_t        I16Array_Get (
+        I16ARRAY_DATA   *this,
         uint32_t        index
     );
 
 
-    uint16_t        U16Array_GetFirst (
-        U16ARRAY_DATA    *this
+    uint16_t        I16Array_GetFirst (
+        I16ARRAY_DATA    *this
     );
 
-    uint16_t        U16Array_GetLast (
-        U16ARRAY_DATA    *this
-    );
-
-
-    U16ARRAY_DATA *   U16Array_Init (
-        U16ARRAY_DATA     *this
+    uint16_t        I16Array_GetLast (
+        I16ARRAY_DATA    *this
     );
 
 
-    ERESULT         U16Array_InsertData (
-        U16ARRAY_DATA   *this,
+    I16ARRAY_DATA *   I16Array_Init (
+        I16ARRAY_DATA     *this
+    );
+
+
+    ERESULT         I16Array_InsertData (
+        I16ARRAY_DATA   *this,
         uint32_t        index,
         uint16_t        data
     );
 
 
-    ERESULT         U16Array_SetData (
-        U16ARRAY_DATA   *this,
+    ERESULT         I16Array_SetData (
+        I16ARRAY_DATA   *this,
         uint32_t        index,
         uint16_t        data
     );
 
 
-#ifdef  U16ARRAY_JSON_SUPPORT
+#ifdef  I16ARRAY_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = U16Array_ToJson(this);
+     ASTR_DATA      *pDesc = I16Array_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -288,8 +298,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     U16Array_ToJson (
-        U16ARRAY_DATA   *this
+    ASTR_DATA *     I16Array_ToJson (
+        I16ARRAY_DATA   *this
     );
 #endif
 
@@ -298,7 +308,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = U16Array_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = I16Array_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -306,14 +316,14 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     U16Array_ToDebugString (
-        U16ARRAY_DATA   *this,
+    ASTR_DATA *    I16Array_ToDebugString (
+        I16ARRAY_DATA     *this,
         int             indent
     );
     
     
-    ERESULT         U16Array_WriteToFile(
-        U16ARRAY_DATA   *this,
+    ERESULT         I16Array_WriteToFile(
+        I16ARRAY_DATA   *this,
         PATH_DATA       *pPath
     );
 
@@ -324,5 +334,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* U16ARRAY_H */
+#endif	/* I16ARRAY_H */
 

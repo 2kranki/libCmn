@@ -663,18 +663,22 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
+        pOther->elemSize = 0;
+        pOther->max = 0;
+        pOther->size = 0;
         newSize = array_OffsetOf(this, (this->max + 1));
-        pOther->elemSize = this->elemSize;
-        pOther->pArray = mem_Malloc(newSize);
-        if (pOther->pArray == NULL) {
-            return ERESULT_OUT_OF_MEMORY;
+        if (this->pArray && newSize) {
+            pOther->pArray = mem_Malloc(newSize);
+            if (pOther->pArray == NULL) {
+                eRc = ERESULT_OUT_OF_MEMORY;
+                goto eom;
+            }
+            memmove(pOther->pArray, this->pArray, newSize);
+            pOther->elemSize = this->elemSize;
+            pOther->max = this->max;
+            pOther->size = this->size;
+            pOther->fZeroNew = this->fZeroNew;
         }
-        memmove(pOther->pArray, this->pArray, newSize);
-        pOther->max = this->max;
-        pOther->size = this->size;
-        pOther->fZeroNew = this->fZeroNew;
-
-        //goto eom;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -1613,7 +1617,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         array_Truncate(
-        ARRAY_DATA    *this,
+        ARRAY_DATA      *this,
         uint32_t        len
     )
     {
@@ -1776,11 +1780,12 @@ extern "C" {
                     array_Ptr(this, offset),
                     '\0',
                     array_OffsetOf(this, (numElems + 1))
-                    );
+            );
         }
         
-        if ((offset + numElems - 1) > this->size)
+        if ((offset + numElems - 1) > this->size) {
             this->size = offset + numElems - 1;
+        }
         
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1788,6 +1793,35 @@ extern "C" {
     
     
     
+        ERESULT         array_ZeroAll(
+            ARRAY_DATA      *this
+        )
+        {
+
+            // Do initialization.
+    #ifdef NDEBUG
+    #else
+            if( !array_Validate(this) ) {
+                DEBUG_BREAK();
+                return ERESULT_INVALID_OBJECT;
+            }
+    #endif
+
+            // Clear the elements.
+            if (this->pArray && this->max) {
+                memset(
+                        array_Ptr(this, 1),
+                        '\0',
+                        array_OffsetOf(this, this->max)
+                );
+            }
+
+            // Return to caller.
+            return ERESULT_SUCCESS;
+        }
+
+
+
 
     
 #ifdef	__cplusplus

@@ -183,7 +183,7 @@ ARRAY_VTBL     array_Vtbl = {
         (P_OBJ_TOSTRING)array_ToDebugString,
         NULL,			// array_Enable,
         NULL,			// array_Disable,
-        NULL,			// (P_OBJ_ASSIGN)array_Assign,
+        (P_OBJ_ASSIGN)array_Assign,
         NULL,			// (P_OBJ_COMPARE)array_Compare,
         (P_OBJ_COPY)array_Copy,
         (P_OBJ_DEEPCOPY)array_DeepCopy,

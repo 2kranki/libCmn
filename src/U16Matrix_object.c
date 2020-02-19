@@ -411,9 +411,9 @@ U16MATRIX_VTBL     U16Matrix_Vtbl = {
         (P_OBJ_TOSTRING)U16Matrix_ToDebugString,
         NULL,			// U16Matrix_Enable,
         NULL,			// U16Matrix_Disable,
-        NULL,			// (P_OBJ_ASSIGN)U16Matrix_Assign,
-        NULL,			// (P_OBJ_COMPARE)U16Matrix_Compare,
-        NULL, 			// (P_OBJ_PTR)U16Matrix_Copy,
+        (P_OBJ_ASSIGN)U16Matrix_Assign,
+        (P_OBJ_COMPARE)U16Matrix_Compare,
+        (P_OBJ_PTR)U16Matrix_Copy,
         NULL, 			// (P_OBJ_PTR)U16Matrix_DeepCopy,
         NULL 			// (P_OBJ_HASH)U16Matrix_Hash,
     },
@@ -432,7 +432,7 @@ OBJ_INFO        U16Matrix_Info = {
     "U16Matrix",
     "Unsigned 16-Bit Matrix",
     (OBJ_DATA *)&U16Matrix_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&array_ClassObj,
     (OBJ_IUNKNOWN *)&U16Matrix_Vtbl,
     sizeof(U16MATRIX_DATA)
 };

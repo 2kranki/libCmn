@@ -7,16 +7,25 @@
  * Program
  *			Unsigned 16-Bit Matrix (U16Matrix)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate U16Matrix to run things without complications
- *          of interfering with the main U16Matrix. A U16Matrix may be 
- *          called a U16Matrix on other O/S's.
+ *			This object provides an unsigned 16-bit element Matrix.
  *
  * Remarks
- *	1.      None
+ *  1.      A matrix of M X N size has Y rows (height) and X columns
+ *          (width). (i,j) is used to access each element of the matrix.
+ *          Rules, 1 <= i <= Y and 1 <= j <= X, must hold true. If M == N
+ *          then we have a square matrix. Initial matrices are always
+ *          zeroed or nulled. As in mathematics, we assume that the
+ *          upper-left corner is (1,1) and as i increases we are going
+ *          downwards and as j increases we are going towards the right.
+ *  2.      Dragon book is "Compiler Principles, Techniques, and Tools" by
+ *          Alfred Aho, Ravi Sethi and Jeffrey Ullman. The compressed table
+ *          technique is derived from the end of the Lexical Analysis chapter.
  *
  * History
- *	02/18/2020 Generated
+ *  07/30/2015 Generated.
+ *  12/18/2016 Corrected M X N definitions as well as element access. Added
+ *              scalar addition and multiplication plus inner product.
+ *	02/18/2020 Regenerated and added JSON support.
  */
 
 
@@ -111,7 +120,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  U16MATRIX_SINGLETON
-    U16MATRIX_DATA *     U16Matrix_Shared (
+    U16MATRIX_DATA * U16Matrix_Shared (
         void
     );
 
@@ -127,7 +136,7 @@ extern "C" {
      released.
      @return    pointer to U16Matrix object if successful, otherwise OBJ_NIL.
      */
-    U16MATRIX_DATA *     U16Matrix_Alloc (
+    U16MATRIX_DATA * U16Matrix_Alloc (
         void
     );
     
@@ -137,17 +146,35 @@ extern "C" {
     );
     
     
-    U16MATRIX_DATA *     U16Matrix_New (
+    U16MATRIX_DATA * U16Matrix_New (
         void
     );
     
     
+    U16MATRIX_DATA * U16Matrix_NewWithSizes (
+        uint32_t        mSize,          // Height (y-axis, Number of Rows, i)
+        uint32_t        nSize           // Width (x-axis, Number of Columns, j)
+    );
+
+
+    // Returns an N X N Identity Matrix.
+    U16MATRIX_DATA * U16Matrix_NewIdentity (
+        uint32_t        nSize           // Width (x-axis, Number of Columns, j)
+    );
+
+
+    // Returns an N X N Zeroed Matrix.
+    U16MATRIX_DATA * U16Matrix_NewSquare (
+        uint32_t        nSize           // Width (x-axis, Number of Columns, j)
+    );
+
+
 #ifdef  U16MATRIX_JSON_SUPPORT
-    U16MATRIX_DATA *   U16Matrix_NewFromJsonString (
+    U16MATRIX_DATA * U16Matrix_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    U16MATRIX_DATA *   U16Matrix_NewFromJsonStringA (
+    U16MATRIX_DATA * U16Matrix_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -159,6 +186,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        U16Matrix_getM (
+        U16MATRIX_DATA  *this
+    );
+
+
+    uint32_t        U16Matrix_getN (
+        U16MATRIX_DATA  *this
+    );
+
+
 
 
     
@@ -166,26 +203,160 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     U16Matrix_Disable (
-        U16MATRIX_DATA		*this
+    /*!
+     Add other matrix to this one. Both must have the same sizes.
+     @param     this    object pointer
+     @param     pOther  a pointer to another U16MATRIX object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         U16Matrix_Add (
+        U16MATRIX_DATA  *this,
+        U16MATRIX_DATA  *pOther
     );
 
 
-    ERESULT     U16Matrix_Enable (
-        U16MATRIX_DATA		*this
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = U16Matrix_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another U16MATRIX object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         U16Matrix_Assign (
+        U16MATRIX_DATA  *this,
+        U16MATRIX_DATA  *pOther
+    );
+
+
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other,
+                otherwise ERESULT_SUCCESS_UNEQUAL
+     */
+    ERESULT         U16Matrix_Compare (
+        U16MATRIX_DATA     *this,
+        U16MATRIX_DATA     *pOther
+    );
+
+
+    /*!
+     Generates a C compilable module that will search the compressed table
+     for i, j and return the value or zero if not available. Compression is
+     based on removing zero entries from the table and is derived from the
+     end of the Lexical Analysis Chapter in the Dragon Book.
+     @param     this    object pointer
+     @param     pPrefix Prefix for the Get Routine Name
+     @return    If successful, an AStr object which must be released.
+                Otherwise, OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     U16Matrix_CompressedTable (
+        U16MATRIX_DATA  *this,
+        const
+        char            *pPrefix        // Prefix for the Get Routine Name
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        U16Matrix      *pCopy = U16Matrix_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a U16MATRIX object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    U16MATRIX_DATA * U16Matrix_Copy (
+        U16MATRIX_DATA  *this
+    );
+
+
+    /*!
+     Return a matrix element.
+     @param     this    object pointer
+     @param     i       0 < i < m
+     @param     j       0 < j < n
+     @return    If successful, the matrix element, otherwise 0.
+     */
+    uint16_t        U16Matrix_Get (
+        U16MATRIX_DATA  *this,
+        uint32_t        i,
+        uint32_t        j
     );
 
    
-    U16MATRIX_DATA *   U16Matrix_Init (
+    U16MATRIX_DATA * U16Matrix_Init (
         U16MATRIX_DATA     *this
     );
 
 
-    ERESULT     U16Matrix_IsEnabled (
-        U16MATRIX_DATA		*this
+    /*!
+     Multiply is matrix multiplication as in newMatrix = this X other
+     which creates an n x p matrix where this matrix is n x m and
+     other matrix is m x p. The multiplication is not commutative.
+     this X other may not equal other X this.
+     @param     this    U16MATRIX_DATA object pointer
+     @param     pOther  U16MATRIX_DATA object pointer
+     @return    If successful, a new matrix, otherwise OBJ_NIL and
+                getLastError() ERESULT_* error code
+     */
+    U16MATRIX_DATA * U16Matrix_Multiply (
+        U16MATRIX_DATA   *this,
+        U16MATRIX_DATA   *pOther
     );
-    
- 
+
+
+    /*!
+     Scalar Addition is adding a value to each element of the array.
+     @param     this    U16MATRIX_DATA object pointer
+     @param     value   value to be added to each element
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error
+                code
+     */
+    ERESULT         U16Matrix_ScalarAdd (
+        U16MATRIX_DATA  *this,
+        uint16_t        value
+    );
+
+
+    /*!
+     Scalar Multiply is multipling a value to each element of the array.
+     @param     this    U16MATRIX_DATA object pointer
+     @param     value   value to be multiplied to each element
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error
+                code
+     */
+    ERESULT         U16Matrix_ScalarMultiply (
+        U16MATRIX_DATA  *this,
+        uint16_t        value
+    );
+
+
+    /*!
+     Replace a matrix element with the given value.
+     @param     this    object pointer
+     @param     i       0 < i < m
+     @param     j       0 < j < n
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error
+                code
+     */
+    ERESULT         U16Matrix_Set (
+        U16MATRIX_DATA  *this,
+        uint32_t        i,
+        uint32_t        j,
+        uint16_t        value
+    );
+
+
 #ifdef  U16MATRIX_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
@@ -219,11 +390,22 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    U16Matrix_ToDebugString (
-        U16MATRIX_DATA     *this,
+        U16MATRIX_DATA  *this,
         int             indent
     );
     
     
+    /*!
+     Replace all matrix elements with zero.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error
+                code
+     */
+    ERESULT         U16Matrix_Zero (
+        U16MATRIX_DATA  *this
+    );
+
+
 
     
 #ifdef	__cplusplus

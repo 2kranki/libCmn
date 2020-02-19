@@ -1,23 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Unsigned 16-Bit Dynamic Array (U16Array) Header
+//          Signed 32-Bit Matrix (I32Matrix) Header
 //****************************************************************
 /*
  * Program
- *			Unsigned 16-Bit Dynamic Array (U16Array)
+ *			Signed 32-Bit Matrix (I32Matrix)
  * Purpose
- *			This object provides a dynamic array of uint16_t data
- *          elements.
+ *			This object provides a standardized way of handling
+ *          a separate I32Matrix to run things without complications
+ *          of interfering with the main I32Matrix. A I32Matrix may be 
+ *          called a I32Matrix on other O/S's.
  *
  * Remarks
- *    1.    All offsets or indices are relative to 1, not 0. 0 is
- *          considered before the beginning of the array if used
- *          as an offset otherwise an error.
+ *	1.      None
  *
  * History
- *  08/07/2015 Generated
- *	02/18/2020 Rgenerated and JSON support added
+ *	02/19/2020 Generated
  */
 
 
@@ -56,13 +55,13 @@
 #include        <AStr.h>
 
 
-#ifndef         U16ARRAY_H
-#define         U16ARRAY_H
+#ifndef         I32MATRIX_H
+#define         I32MATRIX_H
 
 
-//#define   U16ARRAY_IS_IMMUTABLE     1
-#define   U16ARRAY_JSON_SUPPORT     1
-//#define   U16ARRAY_SINGLETON        1
+//#define   I32MATRIX_IS_IMMUTABLE     1
+#define   I32MATRIX_JSON_SUPPORT     1
+//#define   I32MATRIX_SINGLETON        1
 
 
 
@@ -78,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct U16Array_data_s	U16ARRAY_DATA;            // Inherits from OBJ
-    typedef struct U16Array_class_data_s U16ARRAY_CLASS_DATA;   // Inherits from OBJ
+    typedef struct I32Matrix_data_s	I32MATRIX_DATA;            // Inherits from OBJ
+    typedef struct I32Matrix_class_data_s I32MATRIX_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct U16Array_vtbl_s	{
+    typedef struct I32Matrix_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in U16Array_object.c.
+        // method names to the vtbl definition in I32Matrix_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(U16ARRAY_DATA *);
-    } U16ARRAY_VTBL;
+        //bool        (*pIsEnabled)(I32MATRIX_DATA *);
+    } I32MATRIX_VTBL;
 
-    typedef struct U16Array_class_vtbl_s	{
+    typedef struct I32Matrix_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in U16Array_object.c.
+        // method names to the vtbl definition in I32Matrix_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(U16ARRAY_DATA *);
-    } U16ARRAY_CLASS_VTBL;
+        //bool        (*pIsEnabled)(I32MATRIX_DATA *);
+    } I32MATRIX_CLASS_VTBL;
 
 
 
@@ -111,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  U16ARRAY_SINGLETON
-    U16ARRAY_DATA * U16Array_Shared (
+#ifdef  I32MATRIX_SINGLETON
+    I32MATRIX_DATA *     I32Matrix_Shared (
         void
     );
 
-    void            U16Array_SharedReset (
+    void            I32Matrix_SharedReset (
         void
     );
 #endif
@@ -126,29 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to U16Array object if successful, otherwise OBJ_NIL.
+     @return    pointer to I32Matrix object if successful, otherwise OBJ_NIL.
      */
-    U16ARRAY_DATA * U16Array_Alloc (
+    I32MATRIX_DATA *     I32Matrix_Alloc (
         void
     );
     
     
-    OBJ_ID          U16Array_Class (
+    OBJ_ID          I32Matrix_Class (
         void
     );
     
     
-    U16ARRAY_DATA * U16Array_New (
+    I32MATRIX_DATA *     I32Matrix_New (
         void
     );
     
     
-#ifdef  U16ARRAY_JSON_SUPPORT
-    U16ARRAY_DATA * U16Array_NewFromJsonString (
+#ifdef  I32MATRIX_JSON_SUPPORT
+    I32MATRIX_DATA *   I32Matrix_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    U16ARRAY_DATA * U16Array_NewFromJsonStringA (
+    I32MATRIX_DATA *   I32Matrix_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -160,127 +159,40 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            U16Array_setBigEndian(
-        U16ARRAY_DATA   *this,
-        bool            value
-    );
 
 
-    uint32_t        U16Array_getSize(
-        U16ARRAY_DATA    *this
-    );
-
-
-
+    
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         U16Array_AppendData (
-        U16ARRAY_DATA   *this,
-        uint16_t        data
+    ERESULT     I32Matrix_Disable (
+        I32MATRIX_DATA		*this
     );
 
 
-    ERESULT         U16Array_AppendFile (
-        U16ARRAY_DATA    *this,
-        PATH_DATA       *pPath
+    ERESULT     I32Matrix_Enable (
+        I32MATRIX_DATA		*this
+    );
+
+   
+    I32MATRIX_DATA *   I32Matrix_Init (
+        I32MATRIX_DATA     *this
     );
 
 
-    /*!
-     Assign the contents of this object to the other object (ie
-     this -> other).  Any objects in other will be released before
-     a copy of the object is performed.
-     Example:
-     @code
-        ERESULT eRc = U16Array_Assign(this,pOther);
-     @endcode
-     @param     this    object pointer
-     @param     pOther  a pointer to another U16ARRAY object
-     @return    If successful, ERESULT_SUCCESS otherwise an
-                ERESULT_* error
-     */
-    ERESULT         U16Array_Assign (
-        U16ARRAY_DATA   *this,
-        U16ARRAY_DATA   *pOther
+    ERESULT     I32Matrix_IsEnabled (
+        I32MATRIX_DATA		*this
     );
-
-
-    /*!
-     Copy the current object creating a new object.
-     Example:
-     @code
-        U16Array      *pCopy = U16Array_Copy(this);
-     @endcode
-     @param     this    object pointer
-     @return    If successful, a U16ARRAY object which must be
-                released, otherwise OBJ_NIL.
-     @warning   Remember to release the returned object.
-     */
-    U16ARRAY_DATA * U16Array_Copy (
-        U16ARRAY_DATA   *this
-    );
-
-
-    uint16_t        U16Array_Delete (
-        U16ARRAY_DATA   *this,
-        uint32_t        index
-    );
-
-
-    uint16_t        U16Array_DeleteFirst (
-        U16ARRAY_DATA   *this
-    );
-
-
-    uint16_t        U16Array_DeleteLast (
-        U16ARRAY_DATA    *this
-    );
-
-
-    // If an error occurs, Get() returns 0.
-    uint16_t        U16Array_Get (
-        U16ARRAY_DATA   *this,
-        uint32_t        index
-    );
-
-
-    uint16_t        U16Array_GetFirst (
-        U16ARRAY_DATA    *this
-    );
-
-    uint16_t        U16Array_GetLast (
-        U16ARRAY_DATA    *this
-    );
-
-
-    U16ARRAY_DATA *   U16Array_Init (
-        U16ARRAY_DATA     *this
-    );
-
-
-    ERESULT         U16Array_InsertData (
-        U16ARRAY_DATA   *this,
-        uint32_t        index,
-        uint16_t        data
-    );
-
-
-    ERESULT         U16Array_SetData (
-        U16ARRAY_DATA   *this,
-        uint32_t        index,
-        uint16_t        data
-    );
-
-
-#ifdef  U16ARRAY_JSON_SUPPORT
+    
+ 
+#ifdef  I32MATRIX_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = U16Array_ToJson(this);
+     ASTR_DATA      *pDesc = I32Matrix_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -288,8 +200,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     U16Array_ToJson (
-        U16ARRAY_DATA   *this
+    ASTR_DATA *     I32Matrix_ToJson (
+        I32MATRIX_DATA   *this
     );
 #endif
 
@@ -298,7 +210,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = U16Array_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = I32Matrix_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -306,23 +218,17 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     U16Array_ToDebugString (
-        U16ARRAY_DATA   *this,
+    ASTR_DATA *    I32Matrix_ToDebugString (
+        I32MATRIX_DATA     *this,
         int             indent
     );
     
     
-    ERESULT         U16Array_WriteToFile(
-        U16ARRAY_DATA   *this,
-        PATH_DATA       *pPath
-    );
-
-
 
     
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* U16ARRAY_H */
+#endif	/* I32MATRIX_H */
 
