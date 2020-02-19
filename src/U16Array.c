@@ -343,7 +343,6 @@ extern "C" {
 
 
 
-
     //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
@@ -441,14 +440,8 @@ extern "C" {
     )
     {
         int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+        int             iMax;
+
 #ifdef NDEBUG
 #else
         if (!U16Array_Validate(this)) {
@@ -461,26 +454,22 @@ extern "C" {
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
+        if (U16Array_getSize(this) == U16Array_getSize(pOther))
+            ;
+        else {
+            return ERESULT_SUCCESS_UNEQUAL;
         }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
 
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
+        iMax = U16Array_getSize(this);
+        for (i=0; i<iMax; i++) {
+            if (U16Array_Get(this, i+1) == U16Array_Get(pOther, i+1))
+                ;
+            else {
+                return ERESULT_SUCCESS_UNEQUAL;
+            }
         }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+
+        return ERESULT_SUCCESS_EQUAL;
     }
     
    
@@ -1233,7 +1222,7 @@ extern "C" {
                     }
                     AStr_AppendA(pStr, "\t");
                 }
-                AStr_AppendPrint(pStr, "%d,", *pData++);
+                AStr_AppendPrint(pStr, "%u,", *pData++);
             }
             if ((j % 8) == 0) {
                 if (j != 0) {
@@ -1244,7 +1233,7 @@ extern "C" {
                 }
                 AStr_AppendA(pStr, "\t");
             }
-            AStr_AppendPrint(pStr, "%d]\n", *pData);
+            AStr_AppendPrint(pStr, "%u]\n", *pData);
         }
 
 #ifdef  XYZZY

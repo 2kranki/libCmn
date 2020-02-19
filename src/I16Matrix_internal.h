@@ -40,6 +40,7 @@
 
 
 #include        <I16Matrix.h>
+#include        <array_internal.h>
 #include        <JsonIn.h>
 
 
@@ -57,6 +58,19 @@ extern "C" {
 #endif
 
 
+    typedef struct matrix_build_s {
+        uint32_t        m;              // Height (Number of Rows, i)
+        uint32_t        n;              // Width (Number of Columns, j)
+        uint32_t        baseMax;        // Highest index allowed (m * n)
+        uint32_t        maxBase;        // Current Highest Index Used
+        uint32_t        highest;        // Highest pCheck entry used
+        int32_t         *pBase;            // Row Base Index (j) into VALUE/CHECK
+        uint32_t        *pCheck;        // Column Check for Row indexed from pBase
+        int16_t         *pValue;        // Row and Column value given Check
+    } MATRIX_BUILD;
+
+
+
 
 
     //---------------------------------------------------------------
@@ -67,13 +81,13 @@ extern "C" {
 struct I16Matrix_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    ARRAY_DATA      super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    uint32_t        m;              // Height (Number of Rows, j)
+    uint32_t        n;              // Width (Number of Columns, i)
+    uint32_t        cElems;         // Size of Elems (ie m * n)
 
 };
 #pragma pack(pop)
@@ -112,9 +126,21 @@ struct I16Matrix_data_s	{
     );
 
 
+    bool            I16Matrix_AddRowToValueCheck (
+        I16MATRIX_DATA  *this,
+        MATRIX_BUILD    *pBuild,
+        uint32_t        row
+    );
+
+
     ERESULT         I16Matrix_Assign (
         I16MATRIX_DATA    *this,
         I16MATRIX_DATA    *pOther
+    );
+
+
+    MATRIX_BUILD *  I16Matrix_BuildValueCheck (
+        I16MATRIX_DATA  *this
     );
 
 
@@ -125,6 +151,26 @@ struct I16Matrix_data_s	{
 
     void            I16Matrix_Dealloc (
         OBJ_ID          objId
+    );
+
+
+    ERESULT         I16Matrix_FreeValueCheck (
+        I16MATRIX_DATA  *this,
+        MATRIX_BUILD    *pBuild
+    );
+
+
+    uint32_t        I16Matrix_Index (
+        I16MATRIX_DATA  *this,
+        uint32_t        i,
+        uint32_t        j
+    );
+
+
+    bool            I16Matrix_IsIndexValid (
+        I16MATRIX_DATA  *this,
+        uint32_t        i,
+        uint32_t        j
     );
 
 
@@ -160,6 +206,13 @@ struct I16Matrix_data_s	{
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
+    );
+
+
+    ERESULT         I16Matrix_Setup (
+        I16MATRIX_DATA  *this,
+        uint32_t        m,
+        uint32_t        n
     );
 
 

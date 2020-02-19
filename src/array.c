@@ -647,25 +647,9 @@ extern "C" {
 
         // Release objects and areas in other object.
         array_FreeArray(pOther);
-
-        // Create a copy of objects and areas in this object placing
-        // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
-            }
-            else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
-            }
-        }
-#endif
+        pOther->elemSize = 0;
 
         // Copy other data from this object to other.
-        pOther->elemSize = 0;
-        pOther->max = 0;
-        pOther->size = 0;
         newSize = array_OffsetOf(this, (this->max + 1));
         if (this->pArray && newSize) {
             pOther->pArray = mem_Malloc(newSize);

@@ -126,16 +126,16 @@ struct U16Matrix_data_s	{
     );
 
 
-    ERESULT         U16Matrix_Assign (
-        U16MATRIX_DATA    *this,
-        U16MATRIX_DATA    *pOther
-    );
-
-
     bool            U16Matrix_AddRowToValueCheck (
         U16MATRIX_DATA  *this,
         MATRIX_BUILD    *pBuild,
         uint32_t        row
+    );
+
+
+    ERESULT         U16Matrix_Assign (
+        U16MATRIX_DATA    *this,
+        U16MATRIX_DATA    *pOther
     );
 
 

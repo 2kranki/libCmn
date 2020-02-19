@@ -412,7 +412,7 @@ U16ARRAY_VTBL     U16Array_Vtbl = {
         NULL,			// U16Array_Enable,
         NULL,			// U16Array_Disable,
         (P_OBJ_ASSIGN)U16Array_Assign,
-        NULL,			// (P_OBJ_COMPARE)U16Array_Compare,
+        (P_OBJ_COMPARE)U16Array_Compare,
         (P_OBJ_PTR)U16Array_Copy,
         NULL, 			// (P_OBJ_PTR)U16Array_DeepCopy,
         NULL 			// (P_OBJ_HASH)U16Array_Hash,

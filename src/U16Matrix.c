@@ -584,8 +584,8 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         U16Matrix_Assign (
-        U16MATRIX_DATA		*this,
-        U16MATRIX_DATA     *pOther
+        U16MATRIX_DATA	*this,
+        U16MATRIX_DATA  *pOther
     )
     {
         ERESULT     eRc;
@@ -663,8 +663,8 @@ extern "C" {
         U16MATRIX_DATA     *pOther
     )
     {
-        int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        uint32_t        i = 0;
         uint16_t        *pValue1;
         uint16_t        *pValue2;
 
@@ -1162,7 +1162,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&U16Matrix_Vtbl);
         
-        array_setElemSize((ARRAY_DATA *)this, 2);
+        array_setElemSize((ARRAY_DATA *)this, sizeof(int16_t));
 
 #ifdef NDEBUG
 #else
@@ -1653,9 +1653,6 @@ extern "C" {
             }
             AStr_AppendPrint(pStr,"%2d", U16Matrix_Get(this, i, this->n) );
             AStr_AppendA(pStr, " |\n");
-        }
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
         }
 
 #ifdef  XYZZY

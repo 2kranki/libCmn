@@ -208,6 +208,17 @@ extern "C" {
 
 
     /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other,
+                otherwise ERESULT_SUCCESS_UNEQUAL
+     */
+    ERESULT         U16Array_Compare (
+        U16ARRAY_DATA     *this,
+        U16ARRAY_DATA     *pOther
+    );
+
+
+    /*!
      Copy the current object creating a new object.
      Example:
      @code

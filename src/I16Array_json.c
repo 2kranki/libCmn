@@ -84,21 +84,77 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        //int64_t         intIn;
-        //ASTR_DATA       *pWrk;
+        uint32_t        count = 0;
+        uint32_t        i;
+        NODEARRAY_DATA  *pArray;
+        NODE_DATA       *pNode;
+        NAME_DATA       *pName;
+        ASTR_DATA       *pStr;
 
-#ifdef XYZZZY 
-        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
-        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
+        (void)JsonIn_FindU32NodeInHashA(pParser, "size", &count);
+        if (count && pObject) {
+            eRc = JsonIn_FindArrayNodeInHashA(pParser, "data", &pArray);
+            if (pArray) {
+                if (count == NodeArray_getSize(pArray))
+                    ;
+                else {
+                    fprintf(
+                            stderr,
+                            "ERROR - JSON Count, %d, does not match array size, %d!\n",
+                            count,
+                            NodeArray_getSize(pArray)
+                    );
+                    goto exit00;
+                }
+            }
+            else {
+                fprintf(
+                    stderr,
+                    "ERROR - JSON Count, %d, is present, but Entries were not found!\n",
+                    count
+                );
+                goto exit00;
+            }
 
-        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
-        }
-        JsonIn_SubObjectEnd(pParser);
+            for(i=0; i<count; i++) {
+                //fprintf(stderr, "\t\tLooking for Node(%d)\n", i+1);
+                pNode = NodeArray_Get(pArray, i+1);
+                if (OBJ_NIL == pNode) {
+                    fprintf(
+                            stderr,
+                            "ERROR - JSON Count, %d, does not match array size, %d!\n",
+                            count,
+                            NodeArray_getSize(pArray)
+                    );
+                    goto exit00;
+                }
+                pName = Node_getName(pNode);
+                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))
+                    ;
+                else {
+                    fprintf(
+                            stderr,
+                            "ERROR - Node name is not valid!\n"
+                    );
+                    goto exit00;
+                }
+                pStr = Node_getData(pNode);
+                if (OBJ_NIL == pStr) {
+                    fprintf(
+                            stderr,
+                            "ERROR - Node's data is not valid!\n"
+                    );
+                    goto exit00;
+                }
+#ifdef XYZZY
+                fprintf(stderr,
+                        "\t\t...found - %s -- 0x%02X\n",
+                        AStr_getData(pStr),
+                        (uint8_t)AStr_ToInt64(pStr));
 #endif
+                eRc = I16Array_AppendData(pObject, (int16_t)AStr_ToInt64(pStr));
+            }
+        }
 
         // Return to caller.
     exit00:
@@ -270,13 +326,30 @@ extern "C" {
         );
         ASTR_DATA       *pWrkStr;
 #endif
+        int             j;
+        int             jMax;
+        int16_t         *pData;
 
-#ifdef XYZZZY 
-            JsonOut_Append_i32("fileIndex", this->fileIndex, pStr);
-            JsonOut_Append_i64("offset", this->offset, pStr);
-            JsonOut_Append_u32("lineNo", this->lineNo, pStr);
-            JsonOut_Append_Object("errorStr", this->pErrorStr, pStr);
-#endif
+        AStr_AppendPrint(pStr,
+                         "\"size\":%d, \n\t\"data\":[",
+                         I16Array_getSize(this)
+        );
+
+        jMax = array_getSize((ARRAY_DATA *)this);
+        pData = array_Ptr((ARRAY_DATA *)this, 1);
+        if (jMax) {
+            for (j=0; j<(jMax-1); ++j) {
+                if ((j % 5) == 0) {
+                    AStr_AppendA(pStr, "\n\t\t");
+                }
+                AStr_AppendPrint(pStr, "%d,", *pData++);
+            }
+            if ((j % 5) == 0) {
+                AStr_AppendA(pStr, "\n\t\t");
+            }
+            AStr_AppendPrint(pStr, "%d\n", *pData++);
+        }
+        AStr_AppendA(pStr, "\t]}\n");
 
         return ERESULT_SUCCESS;
     }

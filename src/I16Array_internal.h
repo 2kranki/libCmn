@@ -72,9 +72,9 @@ struct I16Array_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
+    uint8_t         fBigEndian;     // FALSE == little endian, TRUE == Big Endian
+    uint8_t         rsvd8;
     uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
@@ -93,7 +93,7 @@ struct I16Array_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  I16ARRAY_SINGLETON
-    I16ARRAY_DATA *     I16Array_getSingleton (
+    I16ARRAY_DATA * I16Array_getSingleton (
         void
     );
 
@@ -119,7 +119,7 @@ struct I16Array_data_s	{
     );
 
 
-    I16ARRAY_DATA *       I16Array_Copy (
+    I16ARRAY_DATA * I16Array_Copy (
         I16ARRAY_DATA     *this
     );
 
@@ -136,7 +136,7 @@ struct I16Array_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    I16ARRAY_DATA *       I16Array_ParseJsonObject (
+    I16ARRAY_DATA * I16Array_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -179,7 +179,7 @@ struct I16Array_data_s	{
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     I16Array_ToJson (
-        I16ARRAY_DATA      *this
+        I16ARRAY_DATA   *this
     );
 
 
@@ -193,7 +193,7 @@ struct I16Array_data_s	{
                 error code.
      */
     ERESULT         I16Array_ToJsonFields (
-        I16ARRAY_DATA     *this,
+        I16ARRAY_DATA   *this,
         ASTR_DATA       *pStr
     );
 #endif

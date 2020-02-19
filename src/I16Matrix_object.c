@@ -432,7 +432,7 @@ OBJ_INFO        I16Matrix_Info = {
     "I16Matrix",
     "Signed 16-Bit Matrix",
     (OBJ_DATA *)&I16Matrix_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&array_ClassObj,
     (OBJ_IUNKNOWN *)&I16Matrix_Vtbl,
     sizeof(I16MATRIX_DATA)
 };

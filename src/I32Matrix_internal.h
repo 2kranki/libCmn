@@ -40,6 +40,7 @@
 
 
 #include        <I32Matrix.h>
+#include        <array_internal.h>
 #include        <JsonIn.h>
 
 
@@ -58,6 +59,18 @@ extern "C" {
 
 
 
+    typedef struct matrix_build_s {
+        uint32_t        m;              // Height (Number of Rows, i)
+        uint32_t        n;              // Width (Number of Columns, j)
+        uint32_t        baseMax;        // Highest index allowed (m * n)
+        uint32_t        maxBase;        // Current Highest Index Used
+        uint32_t        highest;        // Highest pCheck entry used
+        int32_t         *pBase;            // Row Base Index (j) into VALUE/CHECK
+        uint32_t        *pCheck;        // Column Check for Row indexed from pBase
+        int32_t         *pValue;        // Row and Column value given Check
+    } MATRIX_BUILD;
+
+
 
     //---------------------------------------------------------------
     //                  Object Data Description
@@ -67,13 +80,13 @@ extern "C" {
 struct I32Matrix_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    ARRAY_DATA      super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    uint32_t        m;              // Height (Number of Rows, j)
+    uint32_t        n;              // Width (Number of Columns, i)
+    uint32_t        cElems;         // Size of Elems (ie m * n)
 
 };
 #pragma pack(pop)
@@ -92,7 +105,7 @@ struct I32Matrix_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  I32MATRIX_SINGLETON
-    I32MATRIX_DATA *     I32Matrix_getSingleton (
+    I32MATRIX_DATA * I32Matrix_getSingleton (
         void
     );
 
@@ -112,19 +125,51 @@ struct I32Matrix_data_s	{
     );
 
 
+    bool            I32Matrix_AddRowToValueCheck (
+        I32MATRIX_DATA  *this,
+        MATRIX_BUILD    *pBuild,
+        uint32_t        row
+    );
+
+
     ERESULT         I32Matrix_Assign (
         I32MATRIX_DATA    *this,
         I32MATRIX_DATA    *pOther
     );
 
 
-    I32MATRIX_DATA *       I32Matrix_Copy (
-        I32MATRIX_DATA     *this
+    MATRIX_BUILD *  I32Matrix_BuildValueCheck (
+        I32MATRIX_DATA  *this
+    );
+
+
+    I32MATRIX_DATA * I32Matrix_Copy (
+        I32MATRIX_DATA    *this
     );
 
 
     void            I32Matrix_Dealloc (
         OBJ_ID          objId
+    );
+
+
+    ERESULT         I32Matrix_FreeValueCheck (
+        I32MATRIX_DATA  *this,
+        MATRIX_BUILD    *pBuild
+    );
+
+
+    uint32_t        I32Matrix_Index (
+        I32MATRIX_DATA  *this,
+        uint32_t        i,
+        uint32_t        j
+    );
+
+
+    bool            I32Matrix_IsIndexValid (
+        I32MATRIX_DATA  *this,
+        uint32_t        i,
+        uint32_t        j
     );
 
 
@@ -135,7 +180,7 @@ struct I32Matrix_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    I32MATRIX_DATA *       I32Matrix_ParseJsonObject (
+    I32MATRIX_DATA * I32Matrix_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -151,7 +196,7 @@ struct I32Matrix_data_s	{
      */
     ERESULT         I32Matrix_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        I32MATRIX_DATA     *pObject
+        I32MATRIX_DATA  *pObject
     );
 #endif
 
@@ -160,6 +205,13 @@ struct I32Matrix_data_s	{
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
+    );
+
+
+    ERESULT         I32Matrix_Setup (
+        I32MATRIX_DATA  *this,
+        uint32_t        m,
+        uint32_t        n
     );
 
 
@@ -178,7 +230,7 @@ struct I32Matrix_data_s	{
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     I32Matrix_ToJson (
-        I32MATRIX_DATA      *this
+        I32MATRIX_DATA  *this
     );
 
 
@@ -192,7 +244,7 @@ struct I32Matrix_data_s	{
                 error code.
      */
     ERESULT         I32Matrix_ToJsonFields (
-        I32MATRIX_DATA     *this,
+        I32MATRIX_DATA  *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -203,7 +255,7 @@ struct I32Matrix_data_s	{
 #ifdef NDEBUG
 #else
     bool			I32Matrix_Validate (
-        I32MATRIX_DATA       *this
+        I32MATRIX_DATA  *this
     );
 #endif
 

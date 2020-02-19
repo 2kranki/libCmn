@@ -411,9 +411,9 @@ I32MATRIX_VTBL     I32Matrix_Vtbl = {
         (P_OBJ_TOSTRING)I32Matrix_ToDebugString,
         NULL,			// I32Matrix_Enable,
         NULL,			// I32Matrix_Disable,
-        NULL,			// (P_OBJ_ASSIGN)I32Matrix_Assign,
-        NULL,			// (P_OBJ_COMPARE)I32Matrix_Compare,
-        NULL, 			// (P_OBJ_PTR)I32Matrix_Copy,
+        (P_OBJ_ASSIGN)I32Matrix_Assign,
+        (P_OBJ_COMPARE)I32Matrix_Compare,
+        (P_OBJ_PTR)I32Matrix_Copy,
         NULL, 			// (P_OBJ_PTR)I32Matrix_DeepCopy,
         NULL 			// (P_OBJ_HASH)I32Matrix_Hash,
     },
@@ -432,7 +432,7 @@ OBJ_INFO        I32Matrix_Info = {
     "I32Matrix",
     "Signed 32-Bit Matrix",
     (OBJ_DATA *)&I32Matrix_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&array_ClassObj,
     (OBJ_IUNKNOWN *)&I32Matrix_Vtbl,
     sizeof(I32MATRIX_DATA)
 };

@@ -122,13 +122,13 @@ int             test_I16Array_Copy01 (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    I16ARRAY_DATA	    *pObj1 = OBJ_NIL;
-    I16ARRAY_DATA	    *pObj2 = OBJ_NIL;
+    I16ARRAY_DATA	*pObj1 = OBJ_NIL;
+    I16ARRAY_DATA	*pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(I16ARRAY_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA	    *pStr = OBJ_NIL;
-#endif
-   
+    int             i;
+    int16_t         data;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj1 = I16Array_New( );
@@ -139,6 +139,11 @@ int             test_I16Array_Copy01 (
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_I16ARRAY);
         TINYTEST_TRUE( (fRc) );
         
+        for (i=1; i<=64; ++i) {
+            eRc = I16Array_AppendData(pObj1, i);
+            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        }
+
         // Test assign.
         pObj2 = I16Array_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
@@ -147,9 +152,8 @@ int             test_I16Array_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_I16ARRAY);
         TINYTEST_TRUE( (fRc) );
-        //eRc = I16Array_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
-        //TODO: Add More tests here!
+        eRc = I16Array_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -160,13 +164,13 @@ int             test_I16Array_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_I16ARRAY);
         TINYTEST_TRUE( (fRc) );
-        //TODO: Add More tests here!
+        eRc = I16Array_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(I16ARRAY_JSON_SUPPORT) && defined(XYZZY)
         pStr = I16Array_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
@@ -176,12 +180,11 @@ int             test_I16Array_Copy01 (
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = I16Array_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        eRc = I16Array_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
-#endif
 
         obj_Release(pObj1);
         pObj1 = OBJ_NIL;
@@ -198,10 +201,12 @@ int             test_I16Array_Test01 (
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
-    I16ARRAY_DATA	    *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    I16ARRAY_DATA	*pObj = OBJ_NIL;
     bool            fRc;
-   
+    int             i;
+    int16_t         data;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = I16Array_New( );
@@ -212,6 +217,16 @@ int             test_I16Array_Test01 (
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_I16ARRAY);
         TINYTEST_TRUE( (fRc) );
         
+        for (i=1; i<=64; ++i) {
+            eRc = I16Array_AppendData(pObj, i);
+            XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        }
+
+        for (i=1; i<=64; ++i) {
+            data = I16Array_Get(pObj, i);
+            XCTAssertTrue( (data == i) );
+        }
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -225,7 +240,7 @@ int             test_I16Array_Test01 (
 
 TINYTEST_START_SUITE(test_I16Array);
     TINYTEST_ADD_TEST(test_I16Array_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_I16Array_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_I16Array_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_I16Array_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
