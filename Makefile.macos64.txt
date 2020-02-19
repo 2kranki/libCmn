@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 2/12/2020 15:06:01.000)
+# ( 2/19/2020 20:30:44.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -246,6 +246,36 @@ OBJS += $(OBJDIR)/FileRef_object.o
 $(OBJDIR)/FileRef_object.o: $(SRCDIR)/FileRef_object.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/I16Array.o
+
+$(OBJDIR)/I16Array.o: $(SRCDIR)/I16Array.c $(SRCDIR)/I16Array.h $(SRCDIR)/I16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I16Array_json.o
+
+$(OBJDIR)/I16Array_json.o: $(SRCDIR)/I16Array_json.c $(SRCDIR)/I16Array.h $(SRCDIR)/I16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I16Array_object.o
+
+$(OBJDIR)/I16Array_object.o: $(SRCDIR)/I16Array_object.c $(SRCDIR)/I16Array.h $(SRCDIR)/I16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I16Matrix.o
+
+$(OBJDIR)/I16Matrix.o: $(SRCDIR)/I16Matrix.c $(SRCDIR)/I16Array.h $(SRCDIR)/I16Matrix.h $(SRCDIR)/I16Matrix_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I16Matrix_json.o
+
+$(OBJDIR)/I16Matrix_json.o: $(SRCDIR)/I16Matrix_json.c $(SRCDIR)/I16Matrix.h $(SRCDIR)/I16Matrix_internal.h $(SRCDIR)/I16Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I16Matrix_object.o
+
+$(OBJDIR)/I16Matrix_object.o: $(SRCDIR)/I16Matrix_object.c $(SRCDIR)/I16Array.h $(SRCDIR)/I16Matrix.h $(SRCDIR)/I16Matrix_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/I32Array.o
 
 $(OBJDIR)/I32Array.o: $(SRCDIR)/I32Array.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
@@ -259,6 +289,21 @@ $(OBJDIR)/I32Array_json.o: $(SRCDIR)/I32Array_json.c $(SRCDIR)/I32Array.h $(SRCD
 OBJS += $(OBJDIR)/I32Array_object.o
 
 $(OBJDIR)/I32Array_object.o: $(SRCDIR)/I32Array_object.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I32Matrix.o
+
+$(OBJDIR)/I32Matrix.o: $(SRCDIR)/I32Matrix.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Matrix.h $(SRCDIR)/I32Matrix_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I32Matrix_json.o
+
+$(OBJDIR)/I32Matrix_json.o: $(SRCDIR)/I32Matrix_json.c $(SRCDIR)/I32Matrix.h $(SRCDIR)/I32Matrix_internal.h $(SRCDIR)/I32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/I32Matrix_object.o
+
+$(OBJDIR)/I32Matrix_object.o: $(SRCDIR)/I32Matrix_object.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Matrix.h $(SRCDIR)/I32Matrix_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/JsonIn.o
@@ -689,6 +734,36 @@ $(OBJDIR)/Token_json.o: $(SRCDIR)/Token_json.c $(SRCDIR)/Token.h $(SRCDIR)/Token
 OBJS += $(OBJDIR)/Token_object.o
 
 $(OBJDIR)/Token_object.o: $(SRCDIR)/Token_object.c $(SRCDIR)/AStrC.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/Token.h $(SRCDIR)/Token_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/U16Array.o
+
+$(OBJDIR)/U16Array.o: $(SRCDIR)/U16Array.c $(SRCDIR)/U16Array.h $(SRCDIR)/U16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/U16Array_json.o
+
+$(OBJDIR)/U16Array_json.o: $(SRCDIR)/U16Array_json.c $(SRCDIR)/U16Array.h $(SRCDIR)/U16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/U16Array_object.o
+
+$(OBJDIR)/U16Array_object.o: $(SRCDIR)/U16Array_object.c $(SRCDIR)/U16Array.h $(SRCDIR)/U16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/U16Matrix.o
+
+$(OBJDIR)/U16Matrix.o: $(SRCDIR)/U16Matrix.c $(SRCDIR)/U16Array.h $(SRCDIR)/U16Matrix.h $(SRCDIR)/U16Matrix_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/U16Matrix_json.o
+
+$(OBJDIR)/U16Matrix_json.o: $(SRCDIR)/U16Matrix_json.c $(SRCDIR)/U16Matrix.h $(SRCDIR)/U16Matrix_internal.h $(SRCDIR)/U16Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/U16Matrix_object.o
+
+$(OBJDIR)/U16Matrix_object.o: $(SRCDIR)/U16Matrix_object.c $(SRCDIR)/U16Array.h $(SRCDIR)/U16Matrix.h $(SRCDIR)/U16Matrix_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Value.o
@@ -1621,26 +1696,6 @@ OBJS += $(OBJDIR)/u12Array_object.o
 $(OBJDIR)/u12Array_object.o: $(SRCDIR)/u12Array_object.c $(SRCDIR)/array.h $(SRCDIR)/u12Array.h $(SRCDIR)/u12Array_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/u16Array.o
-
-$(OBJDIR)/u16Array.o: $(SRCDIR)/u16Array.c $(SRCDIR)/array.h $(SRCDIR)/u16Array.h $(SRCDIR)/u16Array_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/u16Array_object.o
-
-$(OBJDIR)/u16Array_object.o: $(SRCDIR)/u16Array_object.c $(SRCDIR)/array.h $(SRCDIR)/u16Array.h $(SRCDIR)/u16Array_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/u16Matrix.o
-
-$(OBJDIR)/u16Matrix.o: $(SRCDIR)/u16Matrix.c $(SRCDIR)/u16Matrix.h $(SRCDIR)/u16Matrix_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/u16Matrix_object.o
-
-$(OBJDIR)/u16Matrix_object.o: $(SRCDIR)/u16Matrix_object.c $(SRCDIR)/u16Matrix.h $(SRCDIR)/u16Matrix_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/u32Array.o
 
 $(OBJDIR)/u32Array.o: $(SRCDIR)/u32Array.c $(SRCDIR)/array.h $(SRCDIR)/u32Array.h $(SRCDIR)/u32Array_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1819,9 +1874,27 @@ FileRef_test: $(TEST_SRC)/FileRef_test.c $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += I16Array_test
+
+I16Array_test: $(TEST_SRC)/I16Array_test.c $(SRCDIR)/I16Array.h $(SRCDIR)/I16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += I16Matrix_test
+
+I16Matrix_test: $(TEST_SRC)/I16Matrix_test.c $(SRCDIR)/I16Matrix.h $(SRCDIR)/I16Matrix_internal.h $(SRCDIR)/I16Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += I32Array_test
 
 I32Array_test: $(TEST_SRC)/I32Array_test.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += I32Matrix_test
+
+I32Matrix_test: $(TEST_SRC)/I32Matrix_test.c $(SRCDIR)/I32Matrix.h $(SRCDIR)/I32Matrix_internal.h $(SRCDIR)/I32Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2020,6 +2093,18 @@ TokenList_test: $(TEST_SRC)/TokenList_test.c $(SRCDIR)/TokenList.h $(SRCDIR)/Tok
 TESTS += Token_test
 
 Token_test: $(TEST_SRC)/Token_test.c $(SRCDIR)/Token.h $(SRCDIR)/Token_internal.h $(SRCDIR)/AStrC.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += U16Array_test
+
+U16Array_test: $(TEST_SRC)/U16Array_test.c $(SRCDIR)/U16Array.h $(SRCDIR)/U16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += U16Matrix_test
+
+U16Matrix_test: $(TEST_SRC)/U16Matrix_test.c $(SRCDIR)/U16Matrix.h $(SRCDIR)/U16Matrix_internal.h $(SRCDIR)/U16Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2524,18 +2609,6 @@ true_test: $(TEST_SRC)/true_test.c $(SRCDIR)/true.h $(SRCDIR)/true_internal.h $(
 TESTS += u12Array_test
 
 u12Array_test: $(TEST_SRC)/u12Array_test.c $(SRCDIR)/u12Array.h $(SRCDIR)/u12Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += u16Array_test
-
-u16Array_test: $(TEST_SRC)/u16Array_test.c $(SRCDIR)/u16Array.h $(SRCDIR)/u16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += u16Matrix_test
-
-u16Matrix_test: $(TEST_SRC)/u16Matrix_test.c $(SRCDIR)/u16Matrix.h $(SRCDIR)/u16Matrix_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
