@@ -113,7 +113,8 @@ typedef struct io_vtbl_s    {
         IO_VTBL     *pVtbl;
     } IO_INTERFACE;
     
-#define IO_INTERFACE_DATA(data,obj_id,interface) (data *)(((uint8_t *)objId)-offsetof(data,interface))
+#define IO_INTERFACE_DATA(data,obj_id,interface)\
+            (data *)(((uint8_t *)objId)-offsetof(data,interface))
 
     
 #endif  // IOINTERFACE_H
