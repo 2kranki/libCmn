@@ -102,7 +102,7 @@
         {name:"null", json:true},
         {name:"number", json:true},
         {name:"ObjArray", deps:["array.h"], json:true},
-        {name:"objCb", test:{"srcs":["objTest.c", 
+        {name:"ObjCb", test:{"srcs":["objTest.c", 
                                                     "objTest_object.c"]}},
         {name:"ObjEnum"},
         {name:"ObjHash", deps:["listdl.h"], json:true},

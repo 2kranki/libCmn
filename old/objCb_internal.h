@@ -66,11 +66,11 @@ extern "C" {
         OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 #define OBJCB_FLAG_STOP    OBJ_FLAG_USER1
         
+        
+        // Common Data
         PSXCOND_DATA    *pEmpty;
         PSXCOND_DATA    *pFull;
         PSXMUTEX_DATA   *pMutex;
-        
-        // Common Data
         uint16_t        cEntries;	// maximum number of elements
         uint16_t        rsvd;
         volatile

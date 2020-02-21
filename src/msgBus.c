@@ -86,7 +86,7 @@ extern "C" {
         uint32_t        nodeID;
 
         // WARNING: We had to make this pausible.
-        fRc = objCb_Get(this->pBuffer, (void **)&pEntry);
+        fRc = ObjCb_Get(this->pBuffer, (void **)&pEntry);
         if (fRc && pEntry) {
             origin = MsgData_getOrigin(pEntry);
             dest = MsgData_getDestination(pEntry);
@@ -396,7 +396,7 @@ extern "C" {
         if (OBJ_NIL == pEntry) {
             return ERESULT_INVALID_DATA;
         }
-        fRc = objCb_Put(this->pBuffer, pEntry);
+        fRc = ObjCb_Put(this->pBuffer, pEntry);
         obj_Release(pEntry);
         pEntry = OBJ_NIL;
         if (!fRc) {
@@ -480,7 +480,7 @@ extern "C" {
 
         // WARNING: Order is important here!
 
-        objCb_Pause(this->pBuffer);
+        ObjCb_Pause(this->pBuffer);
         psxThread_Wait(500);
         psxThread_Terminate(this->pThread);
         
@@ -616,7 +616,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pBuffer = objCb_New(messageCount);
+        this->pBuffer = ObjCb_NewWithSize(messageCount);
         if (OBJ_NIL == this->pBuffer) {
             DEBUG_BREAK();
             obj_Release(this);
