@@ -116,6 +116,7 @@ struct Sym_data_s	{
 #endif
     uint8_t         fAbs;           // True == Absolute Value
     uint8_t         fRel;           // True == Relocatable Value
+    uint16_t        rsvd16;
 
 };
 #pragma pack(pop)

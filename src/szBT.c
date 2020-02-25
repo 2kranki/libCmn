@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Main.c
- *	Generated 02/22/2020 22:24:56
+ * File:   szBT.c
+ *	Generated 02/25/2020 10:00:27
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <Main_internal.h>
+#include        <szBT_internal.h>
 #include        <trace.h>
 
 
@@ -62,16 +62,319 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            Main_task_body (
-        void            *pData
+    //---------------------------------------------------------------
+    //                  D e l e t e  E x i t
+    //---------------------------------------------------------------
+
+    ERESULT         szBT_DeleteExit(
+        NODEBT_DATA     *this,
+        SZBT_RECORD     *pRecord,
+        void            *pArg3
     )
     {
-        //MAIN_DATA  *this = pData;
-        
-    }
+
+#ifdef IF_NEEDED
+        if (pRecord->node.pKey) {
+            obj_Release(pRecord->node.pKey);
+            pRecord->node.pKey = OBJ_NIL;
+        }
+        if (pRecord->node.pValue) {
+            obj_Release(pRecord->node.pValue);
+            pRecord->node.pValue = OBJ_NIL;
+        }
 #endif
+
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  E n u m  E x i t
+    //---------------------------------------------------------------
+
+    ERESULT         szBT_EnumExit(
+        SZBT_DATA       *this,
+        SZBT_RECORD     *pRecord,
+        NODEENUM_DATA   *pEnum
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        //NODE_DATA       *pNode = pRecord->node.pKey;
+
+#ifdef IF_NEEDED
+        if (pNode && pEnum) {
+            eRc = NodeEnum_AppendObj(pEnum, (NODE_DATA *)pNode);
+        }
+#endif
+
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  F i n d  E x i t
+    //---------------------------------------------------------------
+
+    ERESULT         szBT_FindExit(
+        NODEBT_DATA     *this,
+        SZBT_RECORD     *pRecord,
+        SZBT_FIND       *pFind
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODE_DATA       *pNode = pRecord->node.pKey;
+
+        if (pNode) {
+            if (pFind->unique == pRecord->unique) {
+                pFind->pRecord = pRecord;
+                return ERESULT_DATA_NOT_FOUND;
+            }
+        }
+
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  F i n d  U n i q u e
+    //---------------------------------------------------------------
+
+    SZBT_RECORD *   szBT_FindUnique(
+        NODEBT_DATA     *this,
+        uint32_t        unique
+    )
+    {
+        LISTDL_DATA     *pList;
+        BLOCKS_NODE     *pEntry = NULL;
+        SZBT_RECORD     *pRecord = NULL;
+
+        pList = Blocks_getList((BLOCKS_DATA *)this);
+        if (pList) {
+            pEntry = listdl_Head(pList);
+            while (pEntry) {
+                pRecord = (SZBT_RECORD *)pEntry->data;
+                if (unique == pRecord->unique) {
+                    break;
+                }
+                pEntry = listdl_Next(pList, pEntry);
+            }
+        }
+
+        return pRecord;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  L e f t - M o s t  C h i l d
+    //---------------------------------------------------------------
+
+    // The Left-Most Child is the smallest key of the sub-tree from
+    // the given node.
+
+    SZBT_RECORD *   szBT_LeftMostChild(
+        SZBT_DATA       *this,
+        SZBT_RECORD     *pRecord
+    )
+    {
+
+        // Do initialization.
+        if (NULL == pRecord) {
+            return NULL;
+        }
+
+        if (pRecord) {
+            while (pRecord->node.pLink[RBT_LEFT]) {
+                pRecord = (SZBT_RECORD *)pRecord->node.pLink[RBT_LEFT];
+            }
+        }
+
+        // Return to caller.
+        return pRecord;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  N o d e  C o m p a r e
+    //---------------------------------------------------------------
+
+    int             szBT_NodeCmp(
+        void            *pKeyA,
+        void            *pKeyB
+    )
+    {
+        int             iRc;
+
+        iRc = strcmp((char *)pKeyA, (char *)pKeyB);
+        return iRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  N o d e s  E x i t
+    //---------------------------------------------------------------
+
+    ERESULT         szBT_NodesExit(
+        NODEBT_DATA     *this,
+        SZBT_RECORD     *pRecord,
+        NODEARRAY_DATA  *pArray
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        NODE_DATA       *pNode = pRecord->node.pKey;
+
+        if (pNode && pArray) {
+            eRc = NodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
+        }
+
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  V i s i t  E x i t
+    //---------------------------------------------------------------
+
+    ERESULT         szBT_VisitExit(
+        NODEBT_DATA     *this,
+        SZBT_RECORD     *pRecord,
+        NODEBT_VISIT    *pParms
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODE_DATA       *pNode;
+
+        if (pRecord) {
+            pNode = pRecord->node.pKey;
+            if (pNode) {
+                if (pParms->pScan) {
+                    eRc = pParms->pScan(pParms->pObj, pNode, pParms->pArg3);
+                }
+            }
+        }
+
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  V i s i t  N o d e s
+    //---------------------------------------------------------------
+
+    /*! Visit all the nodes from the given node and below in the Tree
+     using a Pre-order traversal.
+     */
+    ERESULT         szBT_VisitNodeInRecurse(
+        SZBT_DATA       *this,
+        SZBT_RECORD     *pRecord,
+        P_ERESULT_EXIT3 pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        SZBT_RECORD     *pWork;
+
+        if (pRecord) {
+            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_LEFT];
+            if (pWork) {
+                eRc = szBT_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+            eRc = pScan(pObj, pRecord->node.pKey, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_RIGHT];
+            if (pWork) {
+                eRc = szBT_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+        }
+
+        return eRc;
+    }
+
+
+    /*! Visit all the nodes from the given node and below in the Tree
+     using a Post-order traversal.
+     */
+    ERESULT         szBT_VisitNodePostRecurse(
+        SZBT_DATA       *this,
+        SZBT_RECORD     *pRecord,
+        P_ERESULT_EXIT3 pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        SZBT_RECORD     *pWork;
+
+        if (pRecord) {
+            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_LEFT];
+            if (pWork) {
+                eRc = szBT_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_RIGHT];
+            if (pWork) {
+                eRc = szBT_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+            eRc = pScan(pObj, pRecord->node.pKey, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+        }
+
+        return eRc;
+    }
+
+
+    /*! Visit all the nodes from the given node and below in the Tree
+     using a Pre-order traversal.
+     */
+    ERESULT         szBT_VisitNodePreRecurse(
+        SZBT_DATA       *this,
+        SZBT_RECORD     *pRecord,
+        P_ERESULT_EXIT3 pScan,
+        OBJ_ID          pObj,            // Used as first parameter of scan method
+        void            *pArg3
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        SZBT_RECORD     *pWork;
+
+        if (pRecord) {
+            eRc = pScan(pObj, pRecord->node.pKey, pArg3);
+            if (ERESULT_FAILED(eRc))
+                return eRc;
+            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_LEFT];
+            if (pWork) {
+                eRc = szBT_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_RIGHT];
+            if (pWork) {
+                eRc = szBT_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
+                if (ERESULT_FAILED(eRc))
+                    return eRc;
+            }
+        }
+
+        return eRc;
+    }
+
 
 
 
@@ -84,12 +387,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    MAIN_DATA *     Main_Alloc (
+    SZBT_DATA *     szBT_Alloc (
         void
     )
     {
-        MAIN_DATA       *this;
-        uint32_t        cbSize = sizeof(MAIN_DATA);
+        SZBT_DATA       *this;
+        uint32_t        cbSize = sizeof(SZBT_DATA);
         
         // Do initialization.
         
@@ -101,15 +404,15 @@ extern "C" {
 
 
 
-    MAIN_DATA *     Main_New (
+    SZBT_DATA *     szBT_New (
         void
     )
     {
-        MAIN_DATA       *this;
+        SZBT_DATA       *this;
         
-        this = Main_Alloc( );
+        this = szBT_Alloc( );
         if (this) {
-            this = Main_Init(this);
+            this = szBT_Init(this);
         } 
         return this;
     }
@@ -126,15 +429,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        Main_getPriority (
-        MAIN_DATA     *this
+    uint16_t        szBT_getPriority (
+        SZBT_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -145,14 +448,14 @@ extern "C" {
     }
 
 
-    bool            Main_setPriority (
-        MAIN_DATA     *this,
+    bool            szBT_setPriority (
+        SZBT_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -169,84 +472,36 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        Main_getSize (
-        MAIN_DATA       *this
+    uint32_t        szBT_getSize (
+        SZBT_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return 0;
+        return (uint32_t)this->tree.size;
     }
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * Main_getStr (
-        MAIN_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Main_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        Main_setStr (
-        MAIN_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Main_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Main_getSuperVtbl (
-        MAIN_DATA     *this
+    OBJ_IUNKNOWN *  szBT_getSuperVtbl (
+        SZBT_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -266,6 +521,62 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      A d d  U p d a t e
+    //---------------------------------------------------------------
+
+    ERESULT         szBT_AddUpdateA (
+        SZBT_DATA       *this,
+        const
+        char            *pNameA,            // UTF-8
+        void            *pData
+    )
+    {
+        void            *pFound;
+        SZBT_RECORD     *pRecord = NULL;
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        int             iRc;
+        uint32_t        unique;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!szBT_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        pFound = szBT_FindA(this, pNameA);
+        if (pFound) {
+            eRc = szBT_DeleteA(this, pNameA);
+        }
+
+        pRecord = Blocks_RecordNew((BLOCKS_DATA *)this, &unique);
+        if (NULL == pRecord) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        pRecord->node.pKey = (void *)pNameA;
+        pRecord->unique = this->unique++;
+        pRecord->node.color = RBT_RED;
+        pRecord->node.pValue = pData;
+
+        iRc = rbt_InsertNode(&this->tree, (RBT_NODE *)pRecord);
+        if (iRc) {
+            eRc = ERESULT_SUCCESS;
+        }
+        else
+            eRc = ERESULT_DATA_ALREADY_EXISTS;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -275,16 +586,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = Main_Assign(this,pOther);
+        ERESULT eRc = szBT_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another MAIN object
+     @param     pOther  a pointer to another SZBT object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         Main_Assign (
-        MAIN_DATA		*this,
-        MAIN_DATA     *pOther
+    ERESULT         szBT_Assign (
+        SZBT_DATA		*this,
+        SZBT_DATA       *pOther
     )
     {
         ERESULT     eRc;
@@ -292,11 +603,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Main_Validate(pOther)) {
+        if (!szBT_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -358,9 +669,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         Main_Compare (
-        MAIN_DATA     *this,
-        MAIN_DATA     *pOther
+    ERESULT         szBT_Compare (
+        SZBT_DATA     *this,
+        SZBT_DATA     *pOther
     )
     {
         int             i = 0;
@@ -374,11 +685,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Main_Validate(pOther)) {
+        if (!szBT_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -416,36 +727,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Main      *pCopy = Main_Copy(this);
+        szBT      *pCopy = szBT_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a MAIN object which must be 
+     @return    If successful, a SZBT object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    MAIN_DATA *     Main_Copy (
-        MAIN_DATA       *this
+    SZBT_DATA *     szBT_Copy (
+        SZBT_DATA       *this
     )
     {
-        MAIN_DATA       *pOther = OBJ_NIL;
+        SZBT_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef MAIN_IS_IMMUTABLE
+#ifdef SZBT_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = Main_New( );
+        pOther = szBT_New( );
         if (pOther) {
-            eRc = Main_Assign(this, pOther);
+            eRc = szBT_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -463,11 +774,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            Main_Dealloc (
+    void            szBT_Dealloc (
         OBJ_ID          objId
     )
     {
-        MAIN_DATA   *this = objId;
+        SZBT_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -476,7 +787,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -484,11 +795,9 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((MAIN_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((SZBT_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        Main_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -509,32 +818,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Main      *pDeepCopy = Main_Copy(this);
+        szBT      *pDeepCopy = szBT_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a MAIN object which must be 
+     @return    If successful, a SZBT object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    MAIN_DATA *     Main_DeepyCopy (
-        MAIN_DATA       *this
+    SZBT_DATA *     szBT_DeepyCopy (
+        SZBT_DATA       *this
     )
     {
-        MAIN_DATA       *pOther = OBJ_NIL;
+        SZBT_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = Main_New( );
+        pOther = szBT_New( );
         if (pOther) {
-            eRc = Main_Assign(this, pOther);
+            eRc = szBT_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -548,6 +857,44 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          D e l e t e
+    //---------------------------------------------------------------
+
+    ERESULT         szBT_DeleteA (
+        SZBT_DATA       *this,
+        const
+        char            *pNameA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             iRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!szBT_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        iRc = rbt_Delete(&this->tree, (void *)pNameA);
+        if (iRc)
+            eRc = ERESULT_SUCCESS;
+        else
+            eRc = ERESULT_DATA_NOT_FOUND;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -557,8 +904,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Main_Disable (
-        MAIN_DATA		*this
+    ERESULT         szBT_Disable (
+        SZBT_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -566,7 +913,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -592,8 +939,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Main_Enable (
-        MAIN_DATA		*this
+    ERESULT         szBT_Enable (
+        SZBT_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -601,7 +948,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -618,15 +965,96 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          F i n d
+    //---------------------------------------------------------------
+
+    void *          szBT_FindA (
+        SZBT_DATA       *this,
+        const
+        char            *pNameA             // UTF-8
+    )
+    {
+        SZBT_RECORD     record = {0};
+        SZBT_RECORD     *pFound = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !szBT_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if(NULL == pNameA) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        record.node.pKey = (void *)pNameA;
+
+        pFound = (SZBT_RECORD *)rbt_FindNode(&this->tree, (RBT_NODE *)&record);
+
+        // Return to caller.
+        return pFound ? pFound->node.pValue : NULL;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          F o r  E a c h
+    //---------------------------------------------------------------
+
+    ERESULT         szBT_ForEach(
+        SZBT_DATA       *this,
+        P_ERESULT_EXIT3 pScan,
+        OBJ_ID          pObj,               // Used as first parameter of scan method
+        void            *pArg3              // Used as third parameter of scan method
+    )
+    {
+        LISTDL_DATA     *pList = NULL;
+        BLOCKS_NODE     *pEntry = NULL;
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !szBT_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( NULL == pScan ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        pList = Blocks_getList((BLOCKS_DATA *)this);
+        pEntry = listdl_Head(pList);
+        while (pEntry) {
+            SZBT_RECORD         *pRecord = (SZBT_RECORD *)pEntry->data;
+
+            eRc =   pScan(pObj, pRecord->node.pKey, pArg3);
+            if (ERESULT_FAILED(eRc))
+                break;
+
+            pEntry = listdl_Next(pList, pEntry);
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    MAIN_DATA *   Main_Init (
-        MAIN_DATA       *this
+    SZBT_DATA *   szBT_Init (
+        SZBT_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(MAIN_DATA);
-        //ERESULT         eRc;
+        uint32_t        cbSize = sizeof(SZBT_DATA);
+        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -642,7 +1070,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)Appl_Init((APPL_DATA *)this);            // Needed for Inheritance
+        this = (OBJ_ID)Blocks_Init((BLOCKS_DATA *)this);        // Needed for Inheritance
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -650,20 +1078,40 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Main_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&szBT_Vtbl);
         
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
+        this->unique = 1;
+        // Set up Blocks to hold tree data.
+        eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(SZBT_RECORD));
+        if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
+        Blocks_setDeleteExit(
+                        (BLOCKS_DATA *)this,
+                        (void *)szBT_DeleteExit,
+                        this,               // 1st parameter
+                        NULL                // 3rd parameter
+        );
+
+        // Set up Red-Black tree to use Blocks to hold its data.
+        rbt_Init(
+                 &this->tree,
+                 (void *)szBT_NodeCmp,
+                 (sizeof(SZBT_RECORD) - sizeof(RBT_NODE)),
+                 (void *)Blocks_RecordNew,
+                 (void *)Blocks_RecordFree,
+                 this
+        );
+        this->tree.pNodeAlloc = (void *)Blocks_RecordNew;
+        this->tree.pNodeFree = (void *)Blocks_RecordFree;
+        this->tree.pObjAllocFree = this;
+        this->tree.dataSize = sizeof(SZBT_RECORD) - sizeof(RBT_NODE);
 
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -672,11 +1120,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "Main::sizeof(MAIN_DATA) = %lu\n", 
-                sizeof(MAIN_DATA)
+                "szBT::sizeof(SZBT_DATA) = %lu\n", 
+                sizeof(SZBT_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(MAIN_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(SZBT_DATA));
 #endif
 
         return this;
@@ -688,8 +1136,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Main_IsEnabled (
-        MAIN_DATA		*this
+    ERESULT         szBT_IsEnabled (
+        SZBT_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -697,7 +1145,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -724,14 +1172,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = Main_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = szBT_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "Main", prefix,
+                        the object name, "szBT", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -739,13 +1187,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          Main_QueryInfo (
+    void *          szBT_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        MAIN_DATA     *this = objId;
+        SZBT_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -754,7 +1202,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -763,11 +1211,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(MAIN_DATA);
+            return (void *)sizeof(SZBT_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)Main_Class();
+                return (void *)szBT_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -797,34 +1245,34 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return Main_Disable;
+                            return szBT_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return Main_Enable;
+                            return szBT_Enable;
                         }
                         break;
 
-#ifdef  MAIN_JSON_SUPPORT
+#ifdef  SZBT_JSON_SUPPORT
                     case 'P':
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return Main_ParseJsonFields;
+                            return szBT_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return Main_ParseJsonObject;
+                            return szBT_ParseJsonObject;
                         }
                         break;
 #endif
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return Main_ToDebugString;
+                            return szBT_ToDebugString;
                         }
-#ifdef  MAIN_JSON_SUPPORT
+#ifdef  SZBT_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return Main_ToJson;
+                            return szBT_ToJson;
                         }
 #endif
                         break;
@@ -835,10 +1283,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == Main_ToDebugString)
+                if (pData == szBT_ToDebugString)
                     return "ToDebugString";
-#ifdef  MAIN_JSON_SUPPORT
-                if (pData == Main_ToJson)
+#ifdef  SZBT_JSON_SUPPORT
+                if (pData == szBT_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -860,7 +1308,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Main_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = szBT_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -868,8 +1316,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Main_ToDebugString (
-        MAIN_DATA      *this,
+    ASTR_DATA *     szBT_ToDebugString (
+        SZBT_DATA      *this,
         int             indent
     )
     {
@@ -884,7 +1332,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if (!szBT_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -905,7 +1353,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    Main_getSize(this),
+                    szBT_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -943,15 +1391,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            Main_Validate (
-        MAIN_DATA      *this
+    bool            szBT_Validate (
+        SZBT_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_MAIN))
+            if (obj_IsKindOf(this, OBJ_IDENT_SZBT))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -967,7 +1415,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(MAIN_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(SZBT_DATA))) {
             return false;
         }
 
@@ -978,7 +1426,39 @@ extern "C" {
 
 
     
-    
+    //---------------------------------------------------------------
+    //                     V e r i f y  T r e e
+    //---------------------------------------------------------------
+
+    ERESULT         szBT_VerifyTree(
+        SZBT_DATA       *this
+    )
+    {
+        ERESULT         eRc;
+        int             iRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !szBT_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        iRc = rbt_VerifyTree(&this->tree, rbt_getRoot(&this->tree));
+        if (iRc)
+            eRc = ERESULT_SUCCESS;
+        else
+            eRc = ERESULT_DATA_ERROR;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+
     
 #ifdef	__cplusplus
 }

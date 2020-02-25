@@ -115,6 +115,37 @@ extern "C" {
     }
 
 
+    SYM_DATA *     Sym_NewWithUTF8AndClass(
+        int32_t         cls,
+        const
+        char            *pNameA,
+        OBJ_ID          pData
+    )
+    {
+        SYM_DATA        *this;
+        NAME_DATA       *pName = OBJ_NIL;
+
+        if (OBJ_NIL == pNameA) {
+            return OBJ_NIL;
+        }
+
+        this = Sym_New( );
+        if (this) {
+            if (pNameA) {
+                pName = Name_NewUTF8(pNameA);
+                Node_setName(Sym_getNode(this), pName);
+                obj_Release(pName);
+                pName = OBJ_NIL;
+            }
+            Node_setClass(Sym_getNode(this), cls);
+            Node_setData(Sym_getNode(this), pData);
+        }
+
+        return this;
+    }
+
+
+
 
     
 
@@ -161,6 +192,28 @@ extern "C" {
         this->fAbs = value ? 1 : 0;
 
         return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          N o d e
+    //---------------------------------------------------------------
+
+    NODE_DATA *     Sym_getNode (
+        SYM_DATA        *this
+    )
+    {
+
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (NODE_DATA *)this;
     }
 
 
@@ -754,8 +807,8 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-//#if defined(__APPLE__) && defined(XYZZY)
-#if defined(__APPLE__)
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
         fprintf(
                 stderr, 
                 "Sym::sizeof(SYM_DATA) = %lu\n", 

@@ -1,22 +1,21 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          MAIN Console Transmit Task (Main) Header
+//          Static String Binary Tree (szBT) Header
 //****************************************************************
 /*
  * Program
- *			Separate Main (Main)
+ *			Static String Binary Tree (szBT)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate Main to run things without complications
- *          of interfering with the main Main. A Main may be 
- *          called a Main on other O/S's.
+ *			This object provides a search tree for data indexed
+ *          by a NUL-Terminated UTF-8 string. No data or keys are
+ *          stored within the tree, only pointers are stored.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	02/22/2020 Generated
+ *	02/25/2020 Generated
  */
 
 
@@ -55,13 +54,13 @@
 #include        <AStr.h>
 
 
-#ifndef         MAIN_H
-#define         MAIN_H
+#ifndef         SZBT_H
+#define         SZBT_H
 
 
-//#define   MAIN_IS_IMMUTABLE     1
-//#define   MAIN_JSON_SUPPORT     1
-//#define   MAIN_SINGLETON        1
+//#define   SZBT_IS_IMMUTABLE     1
+//#define   SZBT_JSON_SUPPORT     1
+//#define   SZBT_SINGLETON        1
 
 
 
@@ -77,26 +76,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Main_data_s	MAIN_DATA;            // Inherits from OBJ
-    typedef struct Main_class_data_s MAIN_CLASS_DATA;   // Inherits from OBJ
+    typedef struct szBT_data_s	SZBT_DATA;            // Inherits from OBJ
+    typedef struct szBT_class_data_s SZBT_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Main_vtbl_s	{
+    typedef struct szBT_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Main_object.c.
+        // method names to the vtbl definition in szBT_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(MAIN_DATA *);
-    } MAIN_VTBL;
+        //bool        (*pIsEnabled)(SZBT_DATA *);
+    } SZBT_VTBL;
 
-    typedef struct Main_class_vtbl_s	{
+    typedef struct szBT_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Main_object.c.
+        // method names to the vtbl definition in szBT_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(MAIN_DATA *);
-    } MAIN_CLASS_VTBL;
+        //bool        (*pIsEnabled)(SZBT_DATA *);
+    } SZBT_CLASS_VTBL;
 
 
 
@@ -110,12 +109,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  MAIN_SINGLETON
-    MAIN_DATA *     Main_Shared (
+#ifdef  SZBT_SINGLETON
+    SZBT_DATA *     szBT_Shared (
         void
     );
 
-    void            Main_SharedReset (
+    void            szBT_SharedReset (
         void
     );
 #endif
@@ -125,29 +124,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Main object if successful, otherwise OBJ_NIL.
+     @return    pointer to szBT object if successful, otherwise OBJ_NIL.
      */
-    MAIN_DATA *     Main_Alloc (
+    SZBT_DATA *     szBT_Alloc (
         void
     );
     
     
-    OBJ_ID          Main_Class (
+    OBJ_ID          szBT_Class (
         void
     );
     
     
-    MAIN_DATA *     Main_New (
+    SZBT_DATA *     szBT_New (
         void
     );
     
     
-#ifdef  MAIN_JSON_SUPPORT
-    MAIN_DATA *   Main_NewFromJsonString (
+#ifdef  SZBT_JSON_SUPPORT
+    SZBT_DATA *   szBT_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    MAIN_DATA *   Main_NewFromJsonStringA (
+    SZBT_DATA *   szBT_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -159,6 +158,9 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        szBT_getSize (
+        SZBT_DATA       *this
+    );
 
 
     
@@ -166,33 +168,67 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Main_Disable (
-        MAIN_DATA		*this
+    /*!
+     Add the given node to the Hash. Duplicates are not allowed.
+     @param     this        Object Pointer
+     @param     pNameA      Name Character String Pointer
+     @param     pData       Data Pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
+                error code is returned.
+     */
+    ERESULT         szBT_AddUpdateA (
+        SZBT_DATA       *this,
+        const
+        char            *pNameA,            // UTF-8
+        void            *pData
     );
 
 
-    ERESULT     Main_Enable (
-        MAIN_DATA		*this
-    );
-
-   
-    MAIN_DATA *   Main_Init (
-        MAIN_DATA     *this
+    ERESULT         szBT_DeleteA (
+        SZBT_DATA       *this,
+        const
+        char            *pNameA
     );
 
 
-    ERESULT     Main_IsEnabled (
-        MAIN_DATA		*this
+    /*!
+     Search the Tree for a particular node using the characteristics of
+     the given node and its compare function.
+     @return    If successful, an NODE object is returned.  Otherwise,
+                OBJ_NIL.
+     */
+    void *          szBT_FindA (
+        SZBT_DATA       *this,
+        const
+        char            *pNameA
     );
-    
- 
-#ifdef  MAIN_JSON_SUPPORT
+
+
+    /*!
+     Scan all the nodes of the Tree in no particular order.
+     @return    ERESULT_SUCCESS if successful completion.  Otherwise,
+                an ERESULT_* error code is returned.
+     */
+    ERESULT         szBT_ForEach (
+        SZBT_DATA       *this,
+        P_ERESULT_EXIT3 pScan,
+        OBJ_ID          pObj,               // Used as first parameter of scan method
+        void            *pArg3              // Used as third parameter of scan method
+    );
+
+
+    SZBT_DATA *     szBT_Init (
+        SZBT_DATA       *this
+    );
+
+
+#ifdef  SZBT_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Main_ToJson(this);
+     ASTR_DATA      *pDesc = szBT_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -200,8 +236,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Main_ToJson (
-        MAIN_DATA   *this
+    ASTR_DATA *     szBT_ToJson (
+        SZBT_DATA       *this
     );
 #endif
 
@@ -210,7 +246,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Main_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = szBT_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -218,17 +254,22 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    Main_ToDebugString (
-        MAIN_DATA     *this,
+    ASTR_DATA *    szBT_ToDebugString (
+        SZBT_DATA       *this,
         int             indent
     );
     
     
+    ERESULT         szBT_VerifyTree (
+        SZBT_DATA       *this
+    );
+
+
 
     
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* MAIN_H */
+#endif	/* SZBT_H */
 

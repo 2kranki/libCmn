@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'TblE'
-//	Generated 02/22/2020 22:19:59
+//	Class Object Metods and Tables for 'szBT'
+//	Generated 02/25/2020 10:00:28
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			TBLE_OBJECT_C	    1
-#include        <TblE_internal.h>
-#ifdef  TBLE_SINGLETON
+#define			SZBT_OBJECT_C	    1
+#include        <szBT_internal.h>
+#ifdef  SZBT_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct TblE_class_data_s	{
+struct szBT_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  TBLE_SINGLETON
+#ifdef  SZBT_SINGLETON
     volatile
-    TBLE_DATA       *pSingleton;
+    SZBT_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct TblE_class_data_s	{
 
 
 static
-void *          TblEClass_QueryInfo (
+void *          szBTClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          TblEClass_QueryInfo (
 
 static
 const
-OBJ_INFO        TblE_Info;            // Forward Reference
+OBJ_INFO        szBT_Info;            // Forward Reference
 
 
 
 
 static
-bool            TblEClass_IsKindOf (
+bool            szBTClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_TBLE_CLASS == classID) {
+    if (OBJ_IDENT_SZBT_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(TblE_Class())->pClassSuperObject;
+    pObj = obj_getInfo(szBT_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            TblEClass_IsKindOf (
 
 
 static
-uint16_t		TblEClass_WhoAmI (
+uint16_t		szBTClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_TBLE_CLASS;
+    return OBJ_IDENT_SZBT_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		TblEClass_WhoAmI (
 
 static
 const
-TBLE_CLASS_VTBL    class_Vtbl = {
+SZBT_CLASS_VTBL    class_Vtbl = {
     {
-        &TblE_Info,
-        TblEClass_IsKindOf,
+        &szBT_Info,
+        szBTClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        TblE_Class,
-        TblEClass_WhoAmI,
-        (P_OBJ_QUERYINFO)TblEClass_QueryInfo,
-        NULL                        // TblEClass_ToDebugString
+        szBT_Class,
+        szBTClass_WhoAmI,
+        (P_OBJ_QUERYINFO)szBTClass_QueryInfo,
+        NULL                        // szBTClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ TBLE_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-TBLE_CLASS_DATA  TblE_ClassObj = {
+SZBT_CLASS_DATA  szBT_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(TBLE_CLASS_DATA),                  // cbSize
+        sizeof(SZBT_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,17 @@ TBLE_CLASS_DATA  TblE_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  TBLE_SINGLETON
-TBLE_DATA *     TblE_getSingleton (
+#ifdef  SZBT_SINGLETON
+SZBT_DATA *     szBT_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(TblE_ClassObj.pSingleton);
+    return (OBJ_ID)(szBT_ClassObj.pSingleton);
 }
 
 
-bool            TblE_setSingleton (
-    TBLE_DATA       *pValue
+bool            szBT_setSingleton (
+    SZBT_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +192,10 @@ bool            TblE_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (TblE_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(TblE_ClassObj.pSingleton));
+    if (szBT_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(szBT_ClassObj.pSingleton));
     }
-    TblE_ClassObj.pSingleton = pValue;
+    szBT_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +205,17 @@ bool            TblE_setSingleton (
 
 
 
-TBLE_DATA *     TblE_Shared (
+SZBT_DATA *     szBT_Shared (
     void
 )
 {
-    TBLE_DATA       *this = (OBJ_ID)(TblE_ClassObj.pSingleton);
+    SZBT_DATA       *this = (OBJ_ID)(szBT_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = TblE_New( );
-        TblE_setSingleton(this);
+        this = szBT_New( );
+        szBT_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // TblE_ClassObj.pSingleton = OBJ_NIL;
+        // szBT_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +223,15 @@ TBLE_DATA *     TblE_Shared (
 
 
 
-void            TblE_SharedReset (
+void            szBT_SharedReset (
     void
 )
 {
-    TBLE_DATA       *this = (OBJ_ID)(TblE_ClassObj.pSingleton);
+    SZBT_DATA       *this = (OBJ_ID)(szBT_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        TblE_ClassObj.pSingleton = OBJ_NIL;
+        szBT_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +247,13 @@ void            TblE_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          TblEClass_QueryInfo (
+void *          szBTClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    TBLE_CLASS_DATA *this = objId;
+    SZBT_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +264,7 @@ void *          TblEClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(TBLE_DATA);
+            return (void *)sizeof(SZBT_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,7 +279,7 @@ void *          TblEClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&TblE_Info;
+                        return (void *)&szBT_Info;
                     }
                     break;
                     
@@ -297,24 +297,24 @@ void *          TblEClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return TblE_New;
+                        return szBT_New;
                     }
                     break;
                     
-#ifdef  TBLE_JSON_SUPPORT
+#ifdef  SZBT_JSON_SUPPORT
 				case 'P':
 					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-						return TblE_ParseJsonFields;
+						return szBT_ParseJsonFields;
 					}
 					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-						return TblE_ParseJsonObject;
+						return szBT_ParseJsonObject;
 					}
 					break;
 #endif
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return TblEClass_WhoAmI;
+                        return szBTClass_WhoAmI;
                     }
                     break;
                     
@@ -334,7 +334,7 @@ void *          TblEClass_QueryInfo (
 
 
 static
-bool            TblE_IsKindOf (
+bool            szBT_IsKindOf (
     uint16_t		classID
 )
 {
@@ -342,14 +342,14 @@ bool            TblE_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_TBLE == classID) {
+    if (OBJ_IDENT_SZBT == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(TblE_Class())->pClassSuperObject;
+    pObj = obj_getInfo(szBT_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -363,25 +363,25 @@ bool            TblE_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            TblE_Dealloc (
+void            szBT_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          TblE_Class (
+OBJ_ID          szBT_Class (
     void
 )
 {
-    return (OBJ_ID)&TblE_ClassObj;
+    return (OBJ_ID)&szBT_ClassObj;
 }
 
 
 static
-uint16_t		TblE_WhoAmI (
+uint16_t		szBT_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_TBLE;
+    return OBJ_IDENT_SZBT;
 }
 
 
@@ -393,34 +393,34 @@ uint16_t		TblE_WhoAmI (
 //===========================================================
 
 const
-TBLE_VTBL     TblE_Vtbl = {
+SZBT_VTBL     szBT_Vtbl = {
     {
-        &TblE_Info,
-        TblE_IsKindOf,
-#ifdef  TBLE_IS_SINGLETON
+        &szBT_Info,
+        szBT_IsKindOf,
+#ifdef  SZBT_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        TblE_Dealloc,
-        TblE_Class,
-        TblE_WhoAmI,
-        (P_OBJ_QUERYINFO)TblE_QueryInfo,
-        (P_OBJ_TOSTRING)TblE_ToDebugString,
-        NULL,			// TblE_Enable,
-        NULL,			// TblE_Disable,
-        NULL,			// (P_OBJ_ASSIGN)TblE_Assign,
-        NULL,			// (P_OBJ_COMPARE)TblE_Compare,
-        NULL, 			// (P_OBJ_PTR)TblE_Copy,
-        NULL, 			// (P_OBJ_PTR)TblE_DeepCopy,
-        NULL 			// (P_OBJ_HASH)TblE_Hash,
+        szBT_Dealloc,
+        szBT_Class,
+        szBT_WhoAmI,
+        (P_OBJ_QUERYINFO)szBT_QueryInfo,
+        (P_OBJ_TOSTRING)szBT_ToDebugString,
+        NULL,			// szBT_Enable,
+        NULL,			// szBT_Disable,
+        NULL,			// (P_OBJ_ASSIGN)szBT_Assign,
+        NULL,			// (P_OBJ_COMPARE)szBT_Compare,
+        NULL, 			// (P_OBJ_PTR)szBT_Copy,
+        NULL, 			// (P_OBJ_PTR)szBT_DeepCopy,
+        NULL 			// (P_OBJ_HASH)szBT_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //TblE_IsEnabled,
+    //szBT_IsEnabled,
  
 };
 
@@ -428,13 +428,13 @@ TBLE_VTBL     TblE_Vtbl = {
 
 static
 const
-OBJ_INFO        TblE_Info = {
-    "TblE",
-    "TBL Machine Emulator",
-    (OBJ_DATA *)&TblE_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&TblE_Vtbl,
-    sizeof(TBLE_DATA)
+OBJ_INFO        szBT_Info = {
+    "szBT",
+    "Static String Binary Tree",
+    (OBJ_DATA *)&szBT_ClassObj,
+    (OBJ_DATA *)&Blocks_ClassObj,
+    (OBJ_IUNKNOWN *)&szBT_Vtbl,
+    sizeof(SZBT_DATA)
 };
 
 

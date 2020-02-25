@@ -123,6 +123,28 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                          N o d e B T
+    //---------------------------------------------------------------
+
+    NODEBT_DATA *   Syms_getNodeBT (
+        SYMS_DATA       *this
+    )
+    {
+
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (NODEBT_DATA *)this;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -181,7 +203,7 @@ extern "C" {
         }
 #endif
 
-        return 0;
+        return NodeBT_getSize(Syms_getNodeBT(this));
     }
 
 
@@ -263,6 +285,44 @@ extern "C" {
     //===============================================================
     //                          M e t h o d s
     //===============================================================
+
+
+    //---------------------------------------------------------------
+    //                          A d d
+    //---------------------------------------------------------------
+
+    ERESULT         Syms_Add (
+        SYMS_DATA       *this,
+        SYM_DATA        *pSym,
+        bool            fReplace
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pSym) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (obj_IsKindOf(pSym, OBJ_IDENT_SYM))
+            ;
+        else {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        eRc = NodeBT_Add(Syms_getNodeBT(this), Sym_getNode(pSym), fReplace);
+
+        // Return to caller.
+        return eRc;
+    }
+
 
 
     //---------------------------------------------------------------
@@ -548,6 +608,36 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                        D e l e t e
+    //---------------------------------------------------------------
+
+    ERESULT         Syms_DeleteA (
+        SYMS_DATA       *this,
+        int32_t         cls,
+        const
+        char            *pNameA
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = NodeBT_DeleteA(Syms_getNodeBT(this), cls, pNameA);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -613,6 +703,67 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        E n u m
+    //---------------------------------------------------------------
+
+    NODEENUM_DATA *  Syms_Enum (
+        SYMS_DATA        *this
+    )
+    {
+        //ERESULT         eRc;
+        NODEENUM_DATA   *pEnum;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pEnum = NodeBT_Enum(Syms_getNodeBT(this));
+
+        // Return to caller.
+        return pEnum;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          F i n d
+    //---------------------------------------------------------------
+
+    SYM_DATA *      Syms_FindA (
+        SYMS_DATA       *this,
+        int32_t         cls,
+        const
+        char            *pNameA
+    )
+    {
+        //ERESULT         eRc;
+        SYM_DATA        *pSym;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pSym = (SYM_DATA *)NodeBT_FindA(Syms_getNodeBT(this), cls, pNameA);
+
+        // Return to caller.
+        return pSym;
     }
 
 
@@ -875,7 +1026,7 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         //uint32_t        i;
@@ -908,6 +1059,11 @@ extern "C" {
                     Syms_getSize(this),
                     obj_getRetainCount(this)
             );
+
+        pWrkStr = NodeBT_ToDebugString(Syms_getNodeBT(this), indent+3);
+        AStr_Append(pStr, pWrkStr);
+        obj_Release(pWrkStr);
+        pWrkStr = OBJ_NIL;
 
 #ifdef  XYZZY        
         if (this->pData) {

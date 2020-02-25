@@ -167,7 +167,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Add the given node to the Hash. If duplicates are not allowed, then
+     Add the given node to the Tree. If duplicates are not allowed, then
      the node's name must not exist in the Hash.  Otherwise, the node will
      be added to the head of the Hash list effectively blocking access to
      other nodes with the same name.  The A versions creates a node from
@@ -229,7 +229,7 @@ extern "C" {
         NODEBT_DATA     *this,
         int32_t         cls,
         const
-        char            *pName
+        char            *pNameA
     );
 
 

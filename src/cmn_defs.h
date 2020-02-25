@@ -476,6 +476,8 @@ extern "C" {
         OBJ_IDENT_SYM_CLASS,
         OBJ_IDENT_SYMS,                 // Symbol Table
         OBJ_IDENT_SYMS_CLASS,
+        OBJ_IDENT_SZBT,                 // Static String Binary Tree
+        OBJ_IDENT_SZBT_CLASS,
         OBJ_IDENT_SZDATA,               // Static String with Data
         OBJ_IDENT_SZDATA_CLASS,
         OBJ_IDENT_SZHASH,               // Store void data with a char string key

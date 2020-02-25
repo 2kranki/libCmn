@@ -53,6 +53,8 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <NodeEnum.h>
+#include        <Sym.h>
 
 
 #ifndef         SYMS_H
@@ -159,6 +161,9 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        Syms_getSize (
+        SYMS_DATA       *this
+    );
 
 
     
@@ -166,26 +171,65 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Syms_Disable (
-        SYMS_DATA		*this
+    /*!
+     Add the given node to the Hash. If duplicates are not allowed, then
+     the node's name must not exist in the Hash.  Otherwise, the node will
+     be added to the head of the Hash list effectively blocking access to
+     other nodes with the same name.  The A versions creates a node from
+     the data given before trying to add it to the Hash.
+     @param     this        Object Pointer
+     @param     pSym        Symbol Entry Object Pointer
+     @param     fReplace    true == replace current entry if it exists,
+                            otherwise, return ERESULT_DATA_ALREADY_EXISTS
+                            error.
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
+     error code is returned.
+     */
+    ERESULT         Syms_Add (
+        SYMS_DATA       *this,
+        SYM_DATA        *pSym,
+        bool            fReplace
     );
 
 
-    ERESULT     Syms_Enable (
-        SYMS_DATA		*this
-    );
-
-   
-    SYMS_DATA *   Syms_Init (
-        SYMS_DATA     *this
+    ERESULT         Syms_DeleteA (
+        SYMS_DATA       *this,
+        int32_t         cls,
+        const
+        char            *pNameA
     );
 
 
-    ERESULT     Syms_IsEnabled (
-        SYMS_DATA		*this
+    /*!
+     Create an enumerator for the entries.
+     @return    If successful, an ENUM object is returned.  Otherwise,
+     OBJ_NIL.
+     @warning   Remember to release the returned ENUM object.
+     */
+    NODEENUM_DATA *  Syms_Enum (
+        SYMS_DATA        *this
     );
-    
- 
+
+
+    /*!
+     Search the entries for a particular symbol entry using the
+     characteristics of the given node and its compare function.
+     @return    If successful, an SYM object is returned.  Otherwise,
+                OBJ_NIL.
+     */
+    SYM_DATA *      Syms_FindA (
+        SYMS_DATA       *this,
+        int32_t         cls,
+        const
+        char            *pNameA
+    );
+
+
+    SYMS_DATA *     Syms_Init (
+        SYMS_DATA       *this
+    );
+
+
 #ifdef  SYMS_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in

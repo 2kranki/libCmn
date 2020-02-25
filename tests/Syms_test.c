@@ -32,6 +32,45 @@
 #endif
 
 
+static
+char        *strings[] = {
+    "bob",
+    "bobby",
+    "iryana",
+    "dashsa",
+    "dasha",
+    "name",
+    "way",
+    "bigger",
+    "Now",
+    "is",
+    "the",
+    "time",
+    "for",
+    "all",
+    "good",
+    "men",
+    "to",
+    "come",
+    "aid",
+    "of",
+    "their",
+    "country",
+    "We",
+    "need",
+    "another",
+    "item",
+    "in",
+    "here",
+    "Are",
+    "you",
+    "alright",
+    "with",
+    "this",
+    (char *)NULL
+};
+
+
 
 int             setUp (
     const
@@ -200,10 +239,14 @@ int             test_Syms_Test01 (
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT         eRc = ERESULT_SUCCESS;
     SYMS_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
-   
+    SYM_DATA        *pSym;
+    SYM_DATA        *pSymFnd;
+    uint32_t        i;
+    uint32_t        cnt;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = Syms_New( );
@@ -214,6 +257,22 @@ int             test_Syms_Test01 (
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_SYMS);
         TINYTEST_TRUE( (fRc) );
         
+        for (i=0; i<33; ++i) {
+            pSym = Sym_NewWithUTF8AndClass(0, strings[i], OBJ_NIL);
+            TINYTEST_FALSE( (OBJ_NIL == pSym) );
+            eRc = Syms_Add(pObj, pSym, false);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            cnt = Syms_getSize(pObj);
+            XCTAssertTrue( (cnt == (i+1)) );
+            fprintf(stderr, "\tAdded %p - %s\n", pSym, strings[i]);
+            fprintf(stderr, "\tLooking for: %s\n", strings[i]);
+            pSymFnd = Syms_FindA(pObj, 0, strings[i]);
+            XCTAssertTrue( (pSymFnd) );
+            fprintf(stderr, "\t\tFound\n");
+            obj_Release(pSym);
+            pSym = OBJ_NIL;
+        }
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

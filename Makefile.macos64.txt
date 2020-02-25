@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 2/25/2020  0:07:01.000)
+# ( 2/25/2020 17:44:24.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -1636,6 +1636,16 @@ OBJS += $(OBJDIR)/str.o
 $(OBJDIR)/str.o: $(SRCDIR)/str.c $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/szBT.o
+
+$(OBJDIR)/szBT.o: $(SRCDIR)/szBT.c $(SRCDIR)/szBT.h $(SRCDIR)/szBT_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/szBT_object.o
+
+$(OBJDIR)/szBT_object.o: $(SRCDIR)/szBT_object.c $(SRCDIR)/szBT.h $(SRCDIR)/szBT_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/szData.o
 
 $(OBJDIR)/szData.o: $(SRCDIR)/szData.c $(SRCDIR)/szData.h $(SRCDIR)/szData_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2603,6 +2613,12 @@ srcFiles_test: $(TEST_SRC)/srcFiles_test.c $(SRCDIR)/srcFiles.h $(SRCDIR)/srcFil
 TESTS += str_test
 
 str_test: $(TEST_SRC)/str_test.c $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += szBT_test
+
+szBT_test: $(TEST_SRC)/szBT_test.c $(SRCDIR)/szBT.h $(SRCDIR)/szBT_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

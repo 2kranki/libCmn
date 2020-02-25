@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Node.h>
 
 
 #ifndef         SYM_H
@@ -154,6 +155,14 @@ extern "C" {
 #endif
 
 
+    SYM_DATA *     Sym_NewWithUTF8AndClass(
+        int32_t         cls,
+        const
+        char            *pNameA,
+        OBJ_ID          pData
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -180,6 +189,11 @@ extern "C" {
     bool            Sym_setAbs (
         SYM_DATA        *this,
         bool            value
+    );
+
+
+    NODE_DATA *     Sym_getNode (
+        SYM_DATA        *this
     );
 
 

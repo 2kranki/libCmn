@@ -1,22 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   TblE_internal.h
- *	Generated 02/22/2020 22:19:59
+ * File:   szBT_internal.h
+ *	Generated 02/25/2020 10:00:27
  *
  * Notes:
- *
- *      The original machine was a byte addressable program memory, a
- *      512 32-bit word data memory and a 1000 32-bit word stack. Initial
- *      input was simply an array of integers (0..255) and the program
- *      counter starting at 0. The idea for this was to be able to fit
- *      the machine in very small computers.
- *
- *      I have decided to go with a byte addressable program and data
- *      memory, a growable stack, 128 32-bit registers.  The memory
- *      will be read/write.  I also am including an I/O system similar
- *      in concept to what William Waite included in his macro systems,
- *      simcmp and stage2.
- *
+ *  --	N/A
  *
  */
 
@@ -51,12 +39,14 @@
 
 
 
-#include        <TblE.h>
+#include        <szBT.h>
+#include        <Blocks_internal.h>
 #include        <JsonIn.h>
+#include        <rbt_tree.h>
 
 
-#ifndef TBLE_INTERNAL_H
-#define	TBLE_INTERNAL_H
+#ifndef SZBT_INTERNAL_H
+#define	SZBT_INTERNAL_H
 
 
 
@@ -69,6 +59,40 @@ extern "C" {
 #endif
 
 
+    //      Node Record Descriptor
+    typedef struct  szBT_record_s     SZBT_RECORD;
+#pragma pack(push, 1)
+    struct  szBT_record_s {
+        // RBT_NODE must be first field in this struct.
+        RBT_NODE        node;
+        uint32_t        unique;
+        //char            *pNameA;              // Use node.key
+        //void            *pData;               // Use node.value
+    };
+#pragma pack(pop)
+
+
+
+#pragma pack(push, 1)
+    typedef struct  szBT_find_s {
+        uint32_t        unique;
+        SZBT_RECORD     *pRecord;
+    } SZBT_FIND;
+#pragma pack(pop)
+
+
+
+#pragma pack(push, 1)
+    typedef struct  nodeBT_visit_s {
+        SZBT_RECORD     *pRecord;       // Current Record
+        P_ERESULT_EXIT3 pScan;
+        OBJ_ID          pObj;           // Used as first parameter of scan method
+        void            *pArg3;
+    } NODEBT_VISIT;
+#pragma pack(pop)
+
+
+
 
 
     //---------------------------------------------------------------
@@ -76,55 +100,27 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct TblE_data_s	{
+struct szBT_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    BLOCKS_DATA     super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        pc;
-    uint16_t        rsvd16_1;
-    uint16_t        cProgram;
-    uint16_t        programMax;
-    uint8_t         *pProgram;
-
-    uint16_t        cMemory;
-    uint16_t        memoryMax;
-    uint8_t         *pMemory;
-
-    int32_t         regs[128];
-
-    uint32_t        cStack;
-    uint32_t        *pStack;
-    uint32_t        stackPointer;
-    uint32_t        stackPointerMax;
-
-    uint8_t         fTest;              // Used to test for true/false and re/set
-    //                                  // by certain actions
-    uint8_t         fSingleStep;        // If true, execute one opcode and stop
-    uint8_t         rsvd8_1;
-    uint8_t         rsvd8_2;
-    int32_t         accumulator;
-    TBLE_OPCODE_ENTRY
-                    opcodes[256];
-    uint32_t        actionPointer;
-
-    // Interrupts
-    OBJ_ID          pInterruptObj;
-    bool            (*pInvalidMemAddr)(OBJ_ID, uint16_t pgmAddr, int32_t addr);
-    bool            (*pInvalidPgmAddr)(OBJ_ID, uint16_t pgmAddr, int32_t addr);
-    bool            (*pInvalidRegAddr)(OBJ_ID, uint16_t pgmAddr, int32_t reg);
+    RBT_TREE        tree;
+    SZBT_RECORD     *pRoot;
+    uint32_t        size;            // maximum number of elements
+    uint32_t        unique;
 
 };
 #pragma pack(pop)
 
     extern
-    struct TblE_class_data_s  TblE_ClassObj;
+    struct szBT_class_data_s  szBT_ClassObj;
 
     extern
     const
-    TBLE_VTBL         TblE_Vtbl;
+    SZBT_VTBL         szBT_Vtbl;
 
 
 
@@ -132,13 +128,13 @@ struct TblE_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  TBLE_SINGLETON
-    TBLE_DATA *     TblE_getSingleton (
+#ifdef  SZBT_SINGLETON
+    SZBT_DATA *     szBT_getSingleton (
         void
     );
 
-    bool            TblE_setSingleton (
-     TBLE_DATA       *pValue
+    bool            szBT_setSingleton (
+     SZBT_DATA       *pValue
 );
 #endif
 
@@ -148,62 +144,35 @@ struct TblE_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  TblE_getSuperVtbl (
-        TBLE_DATA     *this
+    OBJ_IUNKNOWN *  szBT_getSuperVtbl (
+        SZBT_DATA     *this
     );
 
 
-    ERESULT         TblE_Assign (
-        TBLE_DATA    *this,
-        TBLE_DATA    *pOther
+    ERESULT         szBT_Assign (
+        SZBT_DATA    *this,
+        SZBT_DATA    *pOther
     );
 
 
-    TBLE_DATA *       TblE_Copy (
-        TBLE_DATA     *this
+    SZBT_DATA *       szBT_Copy (
+        SZBT_DATA     *this
     );
 
 
-    void            TblE_Dealloc (
+    void            szBT_Dealloc (
         OBJ_ID          objId
     );
 
 
-    /*!
-     Free the areas gotten for the machine.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         TblE_Free (
-        TBLE_DATA        *this
-    );
-
-
-    int32_t         TblE_MemSet (
-        TBLE_DATA       *this,
-        uint32_t        index,
-        uint32_t        len,
-        uint8_t         value
-    );
-
-
-    int32_t         TblE_OperandGet (
-        TBLE_DATA       *this,
-        uint8_t         type,
-        uint32_t        addr,
-        uint16_t        *pLen       // Returned Operand Length
-    );
-
-
-#ifdef  TBLE_JSON_SUPPORT
+#ifdef  SZBT_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    TBLE_DATA *       TblE_ParseJsonObject (
+    SZBT_DATA *       szBT_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -217,27 +186,27 @@ struct TblE_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         TblE_ParseJsonFields (
+    ERESULT         szBT_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        TBLE_DATA       *pObject
+        SZBT_DATA     *pObject
     );
 #endif
 
 
-    void *          TblE_QueryInfo (
+    void *          szBT_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  TBLE_JSON_SUPPORT
+#ifdef  SZBT_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = TblE_ToJson(this);
+     ASTR_DATA      *pDesc = szBT_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -245,8 +214,8 @@ struct TblE_data_s	{
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     TblE_ToJson (
-        TBLE_DATA      *this
+    ASTR_DATA *     szBT_ToJson (
+        SZBT_DATA      *this
     );
 
 
@@ -259,8 +228,8 @@ struct TblE_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         TblE_ToJsonFields (
-        TBLE_DATA     *this,
+    ERESULT         szBT_ToJsonFields (
+        SZBT_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -270,8 +239,8 @@ struct TblE_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			TblE_Validate (
-        TBLE_DATA       *this
+    bool			szBT_Validate (
+        SZBT_DATA       *this
     );
 #endif
 
@@ -281,5 +250,5 @@ struct TblE_data_s	{
 }
 #endif
 
-#endif	/* TBLE_INTERNAL_H */
+#endif	/* SZBT_INTERNAL_H */
 
