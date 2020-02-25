@@ -1,0 +1,16 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+
+{
+    "program":{
+        "name":"tbl",
+        "deps":["Cmn"],
+        "hdrs":["Tbl_defs.h"],
+        "main":"MainProgram.c"
+    },
+    "objects":[
+        {name:"TblE", desc:"TBL Machine Emulator", json:true},
+        {name:"TblC", desc:"TBL Language Compiler", json:true},
+        {name:"TblP", desc:"TBL Language Parser", json:true},
+        {name:"Main"},
+    ]
+}

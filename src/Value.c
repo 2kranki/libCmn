@@ -586,6 +586,48 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        M i s c 1 6
+    //---------------------------------------------------------------
+
+    uint16_t        Value_getMisc16 (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->misc16;
+    }
+
+
+    bool            Value_setMisc16 (
+        VALUE_DATA      *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->misc16 = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n t 8
     //---------------------------------------------------------------
 

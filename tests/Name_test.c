@@ -112,6 +112,79 @@ int             test_Name_OpenClose (
 
 
 
+int             test_Name_Copy01 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    NAME_DATA       *pObj1 = OBJ_NIL;
+    NAME_DATA       *pObj2 = OBJ_NIL;
+    bool            fRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj1 = Name_NewUTF8("abc");
+    TINYTEST_FALSE( (OBJ_NIL == pObj1) );
+    if (pObj1) {
+
+        //obj_TraceSet(pObj1, true);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_NAME);
+        TINYTEST_TRUE( (fRc) );
+
+        // Test assign.
+        pObj2 = Name_New();
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        eRc = Name_Assign(pObj1, pObj2);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NAME);
+        TINYTEST_TRUE( (fRc) );
+        eRc = Name_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        // Test copy.
+        pObj2 = Name_Copy(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NAME);
+        TINYTEST_TRUE( (fRc) );
+        eRc = Name_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        // Test json support.
+        pStr = Name_ToJson(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
+        pObj2 = Name_NewFromJsonString(pStr);
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NAME);
+        TINYTEST_TRUE( (fRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        eRc = Name_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        obj_Release(pObj1);
+        pObj1 = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 int             test_Name_Test01 (
     const
     char            *pTestName
@@ -424,6 +497,7 @@ TINYTEST_START_SUITE(test_Name);
     TINYTEST_ADD_TEST(test_Name_UTF8Con,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Name_UTF8,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Name_Test01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Name_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Name_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

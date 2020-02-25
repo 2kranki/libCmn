@@ -2,7 +2,7 @@
 /*
  * File:   Name_json.c
  *
- *	Generated 02/24/2020 08:50:41
+ *	Generated 01/11/2020 10:01:40
  *
  */
 
@@ -47,9 +47,8 @@
 #include    <stdlib.h>
 #include    <string.h>
 #include    <AStr_internal.h>
-#include    <dec.h>
+#include    <dec_internal.h>
 #include    <JsonIn.h>
-#include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeHash.h>
 #include    <utf8_internal.h>
@@ -71,77 +70,24 @@ extern "C" {
      ****************************************************************/
     
     /*!
-     Parse the object from an established parser.
-     @param pParser     an established jsonIn Parser Object
-     @param pObject     an Object to be filled in with the
-                        parsed fields.
-     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT     Name_ParseJsonFields (
-        JSONIN_DATA     *pParser,
-        NAME_DATA     *pObject
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        //int64_t         intIn;
-        //ASTR_DATA       *pWrk;
-
-        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "hash", &pObject->hash);
-
-        switch (pObject->type) {
-
-            case NAME_TYPE_INTEGER:
-                (void)JsonIn_FindIntegerNodeInHashA(pParser, "integer", &pObject->integer);
-                break;
-
-            case NAME_TYPE_ASTR:
-                eRc = JsonIn_SubObjectInHash(pParser, "object");
-                if (!ERESULT_FAILED(eRc)) {
-                    pObject->pObj = AStr_ParseJsonObject(pParser);
-                    JsonIn_SubObjectEnd(pParser);
-                }
-                break;
-
-            case NAME_TYPE_UTF8:
-            case NAME_TYPE_UTF8_CON:
-                eRc = JsonIn_SubObjectInHash(pParser, "utf8");
-                if (!ERESULT_FAILED(eRc)) {
-                    pObject->pChrs = (const char *)utf8_ParseJsonObject(pParser, NULL);
-                    JsonIn_SubObjectEnd(pParser);
-                }
-                pObject->type = NAME_TYPE_UTF8;
-                break;
-
-            default:
-                DEBUG_BREAK();
-                break;
-        }
-
-        // Return to caller.
-    exit00:
-        return eRc;
-    }
-    
-    
-    
-    /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NAME_DATA * Name_ParseJsonObject (
+    NAME_DATA * Name_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        NAME_DATA   *pObject = OBJ_NIL;
+        NAME_DATA       *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
-        //int64_t         intIn;
-        //ASTR_DATA       *pWrk;
+        uint32_t        type = 0;
+        ASTR_DATA       *pWrk;
+        uint8_t         *pUtf8;
+        int64_t         integer;
+        int64_t         intIn;
 
         pInfo = obj_getInfo(Name_Class());
         
@@ -151,12 +97,50 @@ extern "C" {
             goto exit00;
         }
 
-        pObject = Name_New( );
-        if (OBJ_NIL == pObject) {
-            goto exit00;
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
+        type = (uint32_t)intIn;
+
+        switch (type) {
+
+            case NAME_TYPE_ASTR:
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
+                pWrk = AStr_ParseJsonObject(pParser);
+                pObject = Name_NewAStr(pWrk);
+                obj_Release(pWrk);
+                JsonIn_SubObjectEnd(pParser);
+                if (OBJ_NIL == pObject) {
+                    goto exit00;
+                }
+                break;
+
+            case NAME_TYPE_INTEGER:
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
+                integer = dec_ParseJsonObject(pParser);
+                pObject = Name_NewInt(integer);
+                JsonIn_SubObjectEnd(pParser);
+                if (OBJ_NIL == pObject) {
+                    goto exit00;
+                }
+                break;
+
+            case NAME_TYPE_UTF8:
+                eRc = JsonIn_SubObjectInHash(pParser, "data");
+                pUtf8 = utf8_ParseJsonObject(pParser, NULL);
+                JsonIn_SubObjectEnd(pParser);
+                if (pUtf8) {
+                    pObject = Name_New();
+                    if (pObject) {
+                        pObject->type = NAME_TYPE_UTF8;
+                        pObject->pChrs = (void *)pUtf8;
+                        pUtf8 = NULL;
+                    }
+                }
+
+                break;
+
+            default:
+                break;
         }
-        
-        eRc =  Name_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -178,7 +162,7 @@ extern "C" {
     //===============================================================
     
 
-    NAME_DATA *   Name_NewFromJsonString (
+    NAME_DATA *   Name_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
@@ -205,16 +189,16 @@ extern "C" {
     
     
 
-    NAME_DATA * Name_NewFromJsonStringA (
+    NAME_DATA * Name_NewFromJsonStringA(
         const
-        char            *pStringA
+        char            *pString
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
         NAME_DATA   *pObject = OBJ_NIL;
         
-        if (pStringA) {
-            pStr = AStr_NewA(pStringA);
+        if (pString) {
+            pStr = AStr_NewA(pString);
             pObject = Name_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -239,14 +223,14 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Name_ToJson (
+    ASTR_DATA *     Name_ToJson(
         NAME_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        ERESULT         eRc;
+        ASTR_DATA       *pWrkStr;
 
 #ifdef NDEBUG
 #else
@@ -263,59 +247,66 @@ extern "C" {
                               "{ \"objectType\":\"%s\", ",
                               pInfo->pClassName
              );
-     
-            eRc = Name_ToJsonFields(this, pStr);      
+            
+            switch (this->type) {
+
+                case NAME_TYPE_UNKNOWN:
+                    AStr_AppendPrint(
+                                 pStr,
+                                 "\"type\":%u /*NAME_TYPE_UNKNOWN*/ ",
+                                 NAME_TYPE_UNKNOWN
+                     );
+                    break;
+
+                case NAME_TYPE_INTEGER:
+                    AStr_AppendPrint(
+                                 pStr,
+                                 "\"type\":%u /*NAME_TYPE_INTEGER*/, \"data\":",
+                                 NAME_TYPE_INTEGER
+                     );
+                    pWrkStr = dec_UInt64ToJson(this->integer);
+                    if (pWrkStr) {
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                    }
+                    break;
+
+                case NAME_TYPE_ASTR:
+                    AStr_AppendPrint(
+                                 pStr,
+                                 "\"type\":%u /*NAME_TYPE_ASTR*/, \"data\":",
+                                 NAME_TYPE_ASTR
+                     );
+                    pWrkStr = AStr_ToJson(this->pObj);
+                    if (pWrkStr) {
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                    }
+                    break;
+
+                case NAME_TYPE_UTF8:
+                case NAME_TYPE_UTF8_CON:
+                    AStr_AppendPrint(
+                                     pStr,
+                                     "\"type\":%u /*NAME_TYPE_UTF8*/, \"data\":",
+                                     NAME_TYPE_UTF8
+                                     );
+                    pWrkStr = utf8_DataToJson(this->pChrs);
+                    if (pWrkStr) {
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                        pWrkStr = OBJ_NIL;
+                    }
+                    break;
+
+            }
 
             AStr_AppendA(pStr, "}\n");
         }
 
         return pStr;
-    }
-    
-    
-    ERESULT         Name_ToJsonFields (
-        NAME_DATA     *this,
-        ASTR_DATA       *pStr
-    )
-    {
-#ifdef XYZZZY 
-        void *          (*pQueryInfo)(
-            OBJ_ID          objId,
-            uint32_t        type,
-            void            *pData
-        );
-        ASTR_DATA *     (*pToJson)(
-            OBJ_ID          objId
-        );
-        ASTR_DATA       *pWrkStr;
-#endif
-
-        JsonOut_Append_u16("type", this->type, pStr);
-        JsonOut_Append_u32("hash", this->hash, pStr);
-        switch (this->type) {
-
-            case NAME_TYPE_INTEGER:
-                JsonOut_Append_i64("integer", this->integer, pStr);
-                break;
-
-            case NAME_TYPE_ASTR:
-                JsonOut_Append_Object("object", this->pObj, pStr);
-                break;
-
-            case NAME_TYPE_UTF8:
-                JsonOut_Append_utf8("utf8", this->pChrs, pStr);
-                break;
-
-            case NAME_TYPE_UTF8_CON:
-                JsonOut_Append_utf8("utf8", this->pChrs, pStr);
-                break;
-
-            default:
-                DEBUG_BREAK();
-                break;
-        }
-
-        return ERESULT_SUCCESS;
     }
     
     

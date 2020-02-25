@@ -213,11 +213,11 @@ extern "C" {
     );
 
 
-    NODE_DATA *     Node_NewFromJSONString(
+    NODE_DATA *     Node_NewFromJsonString(
         ASTR_DATA       *pString
     );
 
-    NODE_DATA *     Node_NewFromJSONStringA(
+    NODE_DATA *     Node_NewFromJsonStringA(
         const
         char            *pString
     );

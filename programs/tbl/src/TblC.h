@@ -1,21 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          JSON Object Output Support (JsonOut) Header
+//          TBLC Console Transmit Task (TblC) Header
 //****************************************************************
 /*
  * Program
- *			JSON Object Output Support (JsonOut)
+ *			Separate TblC (TblC)
  * Purpose
- *			This object provides a standardized way of generating
- *			certain field types for JSON.
+ *			This object provides a standardized way of handling
+ *          a separate TblC to run things without complications
+ *          of interfering with the main TblC. A TblC may be 
+ *          called a TblC on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	08/27/2017 Generated
- *	01/25/2020 Regenerated
+ *	02/22/2020 Generated
  */
 
 
@@ -50,17 +51,17 @@
 
 
 
-#include        <cmn_defs.h>
+#include        <Tbl_defs.h>
 #include        <AStr.h>
 
 
-#ifndef         JSONOUT_H
-#define         JSONOUT_H
+#ifndef         TBLC_H
+#define         TBLC_H
 
 
-//#define   JSONOUT_IS_CONSTANT      1
-//#define   JSONOUT_JSON_SUPPORT     1
-//#define   JSONOUT_SINGLETON        1
+//#define   TBLC_IS_IMMUTABLE     1
+#define   TBLC_JSON_SUPPORT     1
+//#define   TBLC_SINGLETON        1
 
 
 
@@ -76,45 +77,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct JsonOut_data_s	JSONOUT_DATA;            // Inherits from OBJ
-    typedef struct JsonOut_class_data_s JSONOUT_CLASS_DATA;   // Inherits from OBJ
+    typedef struct TblC_data_s	TBLC_DATA;            // Inherits from OBJ
+    typedef struct TblC_class_data_s TBLC_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct JsonOut_vtbl_s	{
+    typedef struct TblC_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in JsonOut_object.c.
+        // method names to the vtbl definition in TblC_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(JSONOUT_DATA *);
-    } JSONOUT_VTBL;
+        //bool        (*pIsEnabled)(TBLC_DATA *);
+    } TBLC_VTBL;
 
-    typedef struct JsonOut_class_vtbl_s	{
+    typedef struct TblC_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in JsonOut_object.c.
+        // method names to the vtbl definition in TblC_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(JSONOUT_DATA *);
-    } JSONOUT_CLASS_VTBL;
+        //bool        (*pIsEnabled)(TBLC_DATA *);
+    } TBLC_CLASS_VTBL;
 
-
-    typedef struct JsonOut_Flag1_s {
-        uint8_t         flag;
-        const
-        char            *pName;
-    } JSONOUT_FLAG1;
-
-    typedef struct JsonOut_Flag2_s {
-        uint16_t        flag;
-        const
-        char            *pName;
-    } JSONOUT_FLAG2;
-
-    typedef struct JsonOut_Flag4_s {
-        uint32_t        flag;
-        const
-        char            *pName;
-    } JSONOUT_FLAG4;
 
 
 
@@ -127,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  JSONOUT_SINGLETON
-    JSONOUT_DATA *     JsonOut_Shared (
+#ifdef  TBLC_SINGLETON
+    TBLC_DATA *     TblC_Shared (
         void
     );
 
-    void            JsonOut_SharedReset (
+    void            TblC_SharedReset (
         void
     );
 #endif
@@ -142,110 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to JsonOut object if successful, otherwise OBJ_NIL.
+     @return    pointer to TblC object if successful, otherwise OBJ_NIL.
      */
-    JSONOUT_DATA *  JsonOut_Alloc (
+    TBLC_DATA *     TblC_Alloc (
         void
     );
     
     
-    OBJ_ID          JsonOut_Class (
+    OBJ_ID          TblC_Class (
         void
     );
     
     
-    void            JsonOut_Append_i32 (
-        const
-        char            *pNameA,
-        int32_t         num,
-        ASTR_DATA       *pStr
-    );
-
-    void            JsonOut_Append_i32_array (
-        const
-        char            *pNameA,
-        uint32_t        num,            // Number of entries
-        const
-        int32_t         *pNum,          // First Entry Pointer
-        ASTR_DATA       *pStr
-    );
-
-
-    void            JsonOut_Append_i64 (
-        const
-        char            *pNameA,
-        int64_t         num,
-        ASTR_DATA       *pStr
-    );
-
-
-    /*!
-     Attempt to append a object's json string to an already existing string
-     with a given name if possible.
-     @param     pNameA  Name for the object
-     @param     pObj    non-null object pointer
-     @param     pStr    string to be added on to
-     */
-    void            JsonOut_Append_Object (
-        const
-        char            *pNameA,
-        OBJ_ID          pObj,
-        ASTR_DATA       *pStr
-    );
-
-
-    void            JsonOut_Append_u8 (
-        const
-        char            *pNameA,
-        uint8_t         num,
-        ASTR_DATA       *pStr
-    );
-
-    void            JsonOut_Append_u8_array (
-        const
-        char            *pNameA,
-        uint32_t        num,            // Number of entries
-        const
-        uint8_t         *pNum,          // First Entry Pointer
-        ASTR_DATA       *pStr
-    );
-
-
-    void            JsonOut_Append_u16 (
-        const
-        char            *pNameA,
-        uint16_t        num,
-        ASTR_DATA       *pStr
-    );
-
-
-    void            JsonOut_Append_u32 (
-        const
-        char            *pNameA,
-        uint32_t        num,
-        ASTR_DATA       *pStr
-    );
-
-
-    void            JsonOut_Append_utf8 (
-        const
-        char            *pNameA,
-        const
-        char            *pStrA,                 // UTF-8 String to be saved
-        ASTR_DATA       *pStr
-    );
-
-    JSONOUT_DATA *  JsonOut_New (
+    TBLC_DATA *     TblC_New (
         void
     );
     
     
-#ifdef  JSONOUT_JSON_SUPPORT
-    JSONOUT_DATA *   JsonOut_NewFromJsonString(
+#ifdef  TBLC_JSON_SUPPORT
+    TBLC_DATA *   TblC_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    JSONOUT_DATA *   JsonOut_NewFromJsonStringA(
+    TBLC_DATA *   TblC_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -264,33 +166,33 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         JsonOut_Disable (
-        JSONOUT_DATA    *this
+    ERESULT     TblC_Disable (
+        TBLC_DATA		*this
     );
 
 
-    ERESULT         JsonOut_Enable (
-        JSONOUT_DATA	*this
+    ERESULT     TblC_Enable (
+        TBLC_DATA		*this
     );
 
    
-    JSONOUT_DATA *  JsonOut_Init (
-        JSONOUT_DATA    *this
+    TBLC_DATA *   TblC_Init (
+        TBLC_DATA     *this
     );
 
 
-    ERESULT         JsonOut_IsEnabled (
-        JSONOUT_DATA	*this
+    ERESULT     TblC_IsEnabled (
+        TBLC_DATA		*this
     );
     
  
-#ifdef  JSONOUT_JSON_SUPPORT
+#ifdef  TBLC_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = JsonOut_ToJson(this);
+     ASTR_DATA      *pDesc = TblC_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -298,8 +200,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     JsonOut_ToJson(
-        JSONOUT_DATA   *this
+    ASTR_DATA *     TblC_ToJson (
+        TBLC_DATA   *this
     );
 #endif
 
@@ -308,7 +210,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = JsonOut_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = TblC_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -316,8 +218,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    JsonOut_ToDebugString (
-        JSONOUT_DATA     *this,
+    ASTR_DATA *    TblC_ToDebugString (
+        TBLC_DATA     *this,
         int             indent
     );
     
@@ -328,5 +230,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* JSONOUT_H */
+#endif	/* TBLC_H */
 

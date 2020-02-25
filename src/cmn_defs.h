@@ -472,12 +472,10 @@ extern "C" {
         OBJ_IDENT_SRCLOC_CLASS,
         OBJ_IDENT_SRECORDS,             // S-Record Reader/Writer
         OBJ_IDENT_SRECORDS_CLASS,
-        OBJ_IDENT_SYMATTR,              // Symbol Table Attributes
-        OBJ_IDENT_SYMATTR_CLASS,
-        OBJ_IDENT_SYMENTRY,             // Symbol Table Entry
-        OBJ_IDENT_SYMENTRY_CLASS,
-        OBJ_IDENT_SYMTABLE,             // Symbol Table
-        OBJ_IDENT_SYMTABLE_CLASS,
+        OBJ_IDENT_SYM,                  // Symbol Entry
+        OBJ_IDENT_SYM_CLASS,
+        OBJ_IDENT_SYMS,                 // Symbol Table
+        OBJ_IDENT_SYMS_CLASS,
         OBJ_IDENT_SZDATA,               // Static String with Data
         OBJ_IDENT_SZDATA_CLASS,
         OBJ_IDENT_SZHASH,               // Store void data with a char string key

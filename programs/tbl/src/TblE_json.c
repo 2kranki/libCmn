@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Name_json.c
+ * File:   TblE_json.c
  *
- *	Generated 02/24/2020 08:50:41
+ *	Generated 02/22/2020 22:19:59
  *
  */
 
@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <Name_internal.h>
+#include    <TblE_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -52,7 +52,7 @@
 #include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeHash.h>
-#include    <utf8_internal.h>
+#include    <utf8.h>
 
 
 
@@ -78,46 +78,27 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     Name_ParseJsonFields (
+    ERESULT     TblE_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        NAME_DATA     *pObject
+        TBLE_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
+#ifdef XYZZZY 
         (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "hash", &pObject->hash);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
 
-        switch (pObject->type) {
-
-            case NAME_TYPE_INTEGER:
-                (void)JsonIn_FindIntegerNodeInHashA(pParser, "integer", &pObject->integer);
-                break;
-
-            case NAME_TYPE_ASTR:
-                eRc = JsonIn_SubObjectInHash(pParser, "object");
-                if (!ERESULT_FAILED(eRc)) {
-                    pObject->pObj = AStr_ParseJsonObject(pParser);
-                    JsonIn_SubObjectEnd(pParser);
-                }
-                break;
-
-            case NAME_TYPE_UTF8:
-            case NAME_TYPE_UTF8_CON:
-                eRc = JsonIn_SubObjectInHash(pParser, "utf8");
-                if (!ERESULT_FAILED(eRc)) {
-                    pObject->pChrs = (const char *)utf8_ParseJsonObject(pParser, NULL);
-                    JsonIn_SubObjectEnd(pParser);
-                }
-                pObject->type = NAME_TYPE_UTF8;
-                break;
-
-            default:
-                DEBUG_BREAK();
-                break;
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
         }
+        JsonIn_SubObjectEnd(pParser);
+#endif
 
         // Return to caller.
     exit00:
@@ -132,18 +113,18 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NAME_DATA * Name_ParseJsonObject (
+    TBLE_DATA * TblE_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        NAME_DATA   *pObject = OBJ_NIL;
+        TBLE_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(Name_Class());
+        pInfo = obj_getInfo(TblE_Class());
         
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -151,12 +132,12 @@ extern "C" {
             goto exit00;
         }
 
-        pObject = Name_New( );
+        pObject = TblE_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  Name_ParseJsonFields(pParser, pObject);
+        eRc =  TblE_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -178,13 +159,13 @@ extern "C" {
     //===============================================================
     
 
-    NAME_DATA *   Name_NewFromJsonString (
+    TBLE_DATA *   TblE_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        NAME_DATA   *pObject = OBJ_NIL;
+        TBLE_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -192,7 +173,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = Name_ParseJsonObject(pParser);
+        pObject = TblE_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -205,17 +186,17 @@ extern "C" {
     
     
 
-    NAME_DATA * Name_NewFromJsonStringA (
+    TBLE_DATA * TblE_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        NAME_DATA   *pObject = OBJ_NIL;
+        TBLE_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = Name_NewFromJsonString(pStr);
+            pObject = TblE_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -231,7 +212,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Name_ToJson(this);
+     ASTR_DATA      *pDesc = TblE_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -239,8 +220,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Name_ToJson (
-        NAME_DATA   *this
+    ASTR_DATA *     TblE_ToJson (
+        TBLE_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -250,7 +231,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Name_Validate(this) ) {
+        if( !TblE_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -264,7 +245,7 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = Name_ToJsonFields(this, pStr);      
+            eRc = TblE_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -273,8 +254,8 @@ extern "C" {
     }
     
     
-    ERESULT         Name_ToJsonFields (
-        NAME_DATA     *this,
+    ERESULT         TblE_ToJsonFields (
+        TBLE_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
@@ -290,30 +271,12 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
 
-        JsonOut_Append_u16("type", this->type, pStr);
-        JsonOut_Append_u32("hash", this->hash, pStr);
-        switch (this->type) {
-
-            case NAME_TYPE_INTEGER:
-                JsonOut_Append_i64("integer", this->integer, pStr);
-                break;
-
-            case NAME_TYPE_ASTR:
-                JsonOut_Append_Object("object", this->pObj, pStr);
-                break;
-
-            case NAME_TYPE_UTF8:
-                JsonOut_Append_utf8("utf8", this->pChrs, pStr);
-                break;
-
-            case NAME_TYPE_UTF8_CON:
-                JsonOut_Append_utf8("utf8", this->pChrs, pStr);
-                break;
-
-            default:
-                DEBUG_BREAK();
-                break;
-        }
+#ifdef XYZZZY 
+            JsonOut_Append_i32("fileIndex", this->fileIndex, pStr);
+            JsonOut_Append_i64("offset", this->offset, pStr);
+            JsonOut_Append_u32("lineNo", this->lineNo, pStr);
+            JsonOut_Append_Object("errorStr", this->pErrorStr, pStr);
+#endif
 
         return ERESULT_SUCCESS;
     }

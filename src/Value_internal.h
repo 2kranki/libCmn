@@ -72,7 +72,7 @@ struct Value_data_s	{
 
     // Common Data
     uint16_t        type;           // Value Type (see VALUE_TYPE)
-    uint16_t        rsvd16;
+    uint16_t        misc16;
     uint32_t        user;           // User Specified
     ASTR_DATA       *pStr;
     union {

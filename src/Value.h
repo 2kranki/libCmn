@@ -314,6 +314,19 @@ extern "C" {
     );
 
 
+    /*! Property: 16-Bit Miscellaneous property which can be used for
+                    whatever is necessary.
+     */
+    uint16_t        Value_getMisc16 (
+        VALUE_DATA      *this
+    );
+
+    bool            Value_setMisc16 (
+        VALUE_DATA      *this,
+        uint16_t        value
+    );
+
+
     OBJ_DATA *      Value_getObject (
         VALUE_DATA      *this
     );

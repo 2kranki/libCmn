@@ -103,6 +103,9 @@ extern "C" {
             goto exit00;
         }
         
+        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc16", &intIn);
+        pObject->misc16 = (uint32_t)intIn;
+
         eRc = JsonIn_FindIntegerNodeInHashA(pParser, "user", &intIn);
         pObject->user = (uint32_t)intIn;
 
@@ -495,6 +498,11 @@ extern "C" {
                    obj_Release(pStr);
                    pStr = OBJ_NIL;
            }
+            AStr_AppendPrint(
+                             pStr,
+                             ", \"misc16\":%u ",
+                             this->misc16
+            );
             AStr_AppendA(pStr, "}\n");
         }
 

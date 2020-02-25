@@ -24,8 +24,8 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-//#include    <SrcErrors.h>
-//#include    <szTbl.h>
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <Node_internal.h>
 #include    <NodeArray.h>
@@ -54,8 +54,8 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    //SrcErrors_SharedReset( );
-    //szTbl_SharedReset( );
+    SrcErrors_SharedReset( );
+    szTbl_SharedReset( );
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(
@@ -276,25 +276,65 @@ int         test_Node_Property01(
 
 
 
-int         test_Node_Copy01(
+int             test_Node_Copy01 (
     const
     char            *pTestName
 )
 {
-    //ERESULT         eRc;
+    ERESULT         eRc = ERESULT_SUCCESS;
     NODE_DATA       *pObj1 = OBJ_NIL;
     NODE_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+
     pObj1 = Node_NewWithUTF8ConAndClass(0, "abc", OBJ_NIL);
-    XCTAssertFalse( (OBJ_NIL == pObj1) );
+    TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
-        pObj2 = Node_Copy(pObj1);
-        XCTAssertFalse( (OBJ_NIL == pObj2) );
+        //obj_TraceSet(pObj1, true);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_NODE);
+        TINYTEST_TRUE( (fRc) );
+
+        // Test assign.
+        pObj2 = Node_New();
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        eRc = Node_Assign(pObj1, pObj2);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NODE);
         TINYTEST_TRUE( (fRc) );
+        eRc = Node_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        // Test copy.
+        pObj2 = Node_Copy(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NODE);
+        TINYTEST_TRUE( (fRc) );
+        eRc = Node_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        // Test json support.
+        pStr = Node_ToJson(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
+        pObj2 = Node_NewFromJsonString(pStr);
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NODE);
+        TINYTEST_TRUE( (fRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        eRc = Node_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -303,8 +343,7 @@ int         test_Node_Copy01(
         pObj1 = OBJ_NIL;
     }
 
-    szTbl_SharedReset();
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 

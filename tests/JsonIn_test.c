@@ -204,36 +204,36 @@ int             test_JsonIn_01(
             TINYTEST_FALSE( (OBJ_NIL == pHash) );
             TINYTEST_TRUE(( obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH) ));
             eRc = JsonIn_SubObjectFromHash(pObj, pHash);
-            eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Hash", &hash);
-            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            fprintf(stderr, "\t\tHash(%d) = %lld\n", i+1, hash);
-            eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Ident", &ident);
-            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            fprintf(stderr, "\t\tIdent(%d) = %lld\n", i+1, ident);
-            eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Length", &len);
-            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            fprintf(stderr, "\t\tlen(%d) = %lld\n", i+1, len);
-            eRc = JsonIn_SubObjectInHash(pObj, "Data");
-            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            pData = utf8_ParseJsonObject(pObj, &len2);
-            TINYTEST_FALSE( (NULL == pData) );
-            TINYTEST_TRUE((len == len2));
-            fprintf(stderr, "\t\tdata(%d) = %s\n", i+1, pData);
-            if (pData) {
-                mem_Free(pData);
-                pData = NULL;
-            }
-            pNode = NodeHash_FindA(pObj->pHash, 0, "data");
-            TINYTEST_FALSE( (NULL == pNode) );
-            pStrWrk = JsonIn_CheckNodeDataForString(pNode);
-            if (pStrWrk) {
-                fprintf(stderr, "\t\tdata from check = %s\n", AStr_getData(pStrWrk));
-            }
-            else {
-                fprintf(stderr, "\t\tdata from check = NULL\n");
-            }
-            eRc = JsonIn_SubObjectEnd(pObj);
-            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+                eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Hash", &hash);
+                TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+                fprintf(stderr, "\t\tHash(%d) = %lld\n", i+1, hash);
+                eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Ident", &ident);
+                TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+                fprintf(stderr, "\t\tIdent(%d) = %lld\n", i+1, ident);
+                eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Length", &len);
+                TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+                fprintf(stderr, "\t\tlen(%d) = %lld\n", i+1, len);
+                eRc = JsonIn_SubObjectInHash(pObj, "Data");
+                    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+                    pData = utf8_ParseJsonObject(pObj, &len2);
+                    TINYTEST_FALSE( (NULL == pData) );
+                    TINYTEST_TRUE((len == len2));
+                    fprintf(stderr, "\t\tdata(%d) = %s\n", i+1, pData);
+                    if (pData) {
+                        mem_Free(pData);
+                        pData = NULL;
+                    }
+                    pNode = NodeHash_FindA(pObj->pHash, 0, "data");
+                    TINYTEST_FALSE( (NULL == pNode) );
+                    pStrWrk = JsonIn_CheckNodeDataForString(pNode);
+                    if (pStrWrk) {
+                        fprintf(stderr, "\t\tdata from check = %s\n", AStr_getData(pStrWrk));
+                    }
+                    else {
+                        fprintf(stderr, "\t\tdata from check = NULL\n");
+                    }
+                eRc = JsonIn_SubObjectEnd(pObj);
+                TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             eRc = JsonIn_SubObjectEnd(pObj);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         }

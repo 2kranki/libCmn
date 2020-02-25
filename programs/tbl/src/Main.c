@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   JsonOut.c
- *	Generated 01/25/2020 21:31:26
+ * File:   Main.c
+ *	Generated 02/22/2020 22:24:56
  *
  */
 
@@ -41,9 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <JsonOut_internal.h>
+#include        <Main_internal.h>
 #include        <trace.h>
-#include        <utf8_internal.h>
 
 
 
@@ -65,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            JsonOut_task_body (
+    void            Main_task_body (
         void            *pData
     )
     {
-        //JSONOUT_DATA  *this = pData;
+        //MAIN_DATA  *this = pData;
         
     }
 #endif
@@ -85,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    JSONOUT_DATA *     JsonOut_Alloc (
+    MAIN_DATA *     Main_Alloc (
         void
     )
     {
-        JSONOUT_DATA       *this;
-        uint32_t        cbSize = sizeof(JSONOUT_DATA);
+        MAIN_DATA       *this;
+        uint32_t        cbSize = sizeof(MAIN_DATA);
         
         // Do initialization.
         
@@ -102,203 +101,22 @@ extern "C" {
 
 
 
-    void            JsonOut_Append_i32 (
-        const
-        char            *pNameA,
-        int32_t         num,
-        ASTR_DATA       *pStr
-    )
-    {
-        if (pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\": %ld,\n", pNameA, num);
-        }
-    }
-
-    void            JsonOut_Append_i32_array (
-        const
-        char            *pNameA,
-        uint32_t        num,            // Number of entries
-        const
-        int32_t         *pNum,          // First Entry Pointer
-        ASTR_DATA       *pStr
-    )
-    {
-        uint32_t        i;
-
-        if (num && pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\":[\n\t\t", pNameA);
-            for (i=0; i<(num - 1); i++,pNum++) {
-                AStr_AppendPrint(pStr, "%u, ", *pNum);
-                if ((i > 0) && (0== (i % 8))) {
-                    AStr_AppendPrint(pStr, "\n\t\t");
-                }
-            }
-            if ((i > 0) && (0== (i % 8))) {
-                AStr_AppendPrint(pStr, "\n\t\t");
-            }
-            AStr_AppendPrint(pStr, "%u\n", *pNum);
-            AStr_AppendPrint(pStr, "\t],\n");
-        }
-    }
-
-
-
-    void            JsonOut_Append_i64 (
-        const
-        char            *pNameA,
-        int64_t         num,
-        ASTR_DATA       *pStr
-    )
-    {
-        if (pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\": %lld,\n", pNameA, num);
-        }
-    }
-
-
-    void            JsonOut_Append_Object (
-        const
-        char            *pNameA,
-        OBJ_ID          pObj,
-        ASTR_DATA       *pStr
-    )
-    {
-        void *          (*pQueryInfo)(
-            OBJ_ID          objId,
-            uint32_t        type,
-            void            *pData
-        );
-        ASTR_DATA *     (*pToJson)(
-            OBJ_ID          objId
-        );
-        ASTR_DATA       *pWrkStr;
-
-        if (pObj && pStr && pNameA) {
-           pQueryInfo = obj_getVtbl(pObj)->pQueryInfo;
-           if (pQueryInfo) {
-               pToJson =   (*pQueryInfo)(
-                                         pObj,
-                                         OBJ_QUERYINFO_TYPE_METHOD,
-                                         "ToJson"
-                                         );
-               if (pToJson) {
-                   pWrkStr = (*pToJson)(pObj);
-                   if (pWrkStr) {
-                       AStr_AppendPrint(pStr, "\t\"%s\": ", pNameA);
-                       AStr_Append(pStr, pWrkStr);
-                       obj_Release(pWrkStr);
-                       pWrkStr = OBJ_NIL;
-                       AStr_AppendA(pStr, ",\n");
-                   }
-               }
-           }
-        }
-    }
-
-
-    void            JsonOut_Append_u8 (
-        const
-        char            *pNameA,
-        uint8_t         num,
-        ASTR_DATA       *pStr
-    )
-    {
-        if (pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\": %u,\n", pNameA, num);
-        }
-    }
-
-
-    void            JsonOut_Append_u8_array (
-        const
-        char            *pNameA,
-        uint32_t        num,            // Number of entries
-        const
-        uint8_t         *pNum,          // First Entry Pointer
-        ASTR_DATA       *pStr
-    )
-    {
-        uint32_t        i;
-
-        if (num && pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\":[\n\t\t", pNameA);
-            for (i=0; i<(num - 1); i++,pNum++) {
-                AStr_AppendPrint(pStr, "%u, ", *pNum);
-                if ((i > 0) && (0== (i % 8))) {
-                    AStr_AppendPrint(pStr, "\n\t\t");
-                }
-            }
-            if ((i > 0) && (0== (i % 8))) {
-                AStr_AppendPrint(pStr, "\n\t\t");
-            }
-            AStr_AppendPrint(pStr, "%u\n", *pNum);
-            AStr_AppendPrint(pStr, "\t],\n");
-        }
-    }
-
-
-    void            JsonOut_Append_u16 (
-        const
-        char            *pNameA,
-        uint16_t        num,
-        ASTR_DATA       *pStr
-    )
-    {
-        if (pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\": %u,\n", pNameA, num);
-        }
-    }
-
-
-    void            JsonOut_Append_u32 (
-        const
-        char            *pNameA,
-        uint32_t        num,
-        ASTR_DATA       *pStr
-    )
-    {
-        if (pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\": %lu,\n", pNameA, num);
-        }
-    }
-
-
-
-    void            JsonOut_Append_utf8 (
-        const
-        char            *pNameA,
-        const
-        char            *pStrA,
-        ASTR_DATA       *pStr
-    )
-    {
-        ASTR_DATA       *pWrkStr;
-
-        if (pStrA && pStr && pNameA) {
-            pWrkStr = utf8_DataToJson(pStrA);
-            AStr_AppendPrint(pStr, "\t\"%s\": %s,\n", pNameA, AStr_getData(pWrkStr));
-            obj_Release(pWrkStr);
-            pWrkStr = 0;
-        }
-    }
-
-
-    JSONOUT_DATA *     JsonOut_New (
+    MAIN_DATA *     Main_New (
         void
     )
     {
-        JSONOUT_DATA       *this;
+        MAIN_DATA       *this;
         
-        this = JsonOut_Alloc( );
+        this = Main_Alloc( );
         if (this) {
-            this = JsonOut_Init(this);
+            this = Main_Init(this);
         } 
         return this;
     }
 
 
 
-
+    
 
     //===============================================================
     //                      P r o p e r t i e s
@@ -308,15 +126,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        JsonOut_getPriority (
-        JSONOUT_DATA     *this
+    uint16_t        Main_getPriority (
+        MAIN_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -327,14 +145,14 @@ extern "C" {
     }
 
 
-    bool            JsonOut_setPriority (
-        JSONOUT_DATA     *this,
+    bool            Main_setPriority (
+        MAIN_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -351,13 +169,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        JsonOut_getSize (
-        JSONOUT_DATA       *this
+    uint32_t        Main_getSize (
+        MAIN_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -372,15 +190,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * JsonOut_getStr (
-        JSONOUT_DATA     *this
+    ASTR_DATA * Main_getStr (
+        MAIN_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -390,14 +208,14 @@ extern "C" {
     }
     
     
-    bool        JsonOut_setStr (
-        JSONOUT_DATA     *this,
+    bool        Main_setStr (
+        MAIN_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -420,15 +238,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  JsonOut_getSuperVtbl (
-        JSONOUT_DATA     *this
+    OBJ_IUNKNOWN *  Main_getSuperVtbl (
+        MAIN_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -457,16 +275,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = JsonOut_Assign(this,pOther);
+        ERESULT eRc = Main_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another JSONOUT object
+     @param     pOther  a pointer to another MAIN object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         JsonOut_Assign (
-        JSONOUT_DATA		*this,
-        JSONOUT_DATA     *pOther
+    ERESULT         Main_Assign (
+        MAIN_DATA		*this,
+        MAIN_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -474,11 +292,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!JsonOut_Validate(pOther)) {
+        if (!Main_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -540,9 +358,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         JsonOut_Compare (
-        JSONOUT_DATA     *this,
-        JSONOUT_DATA     *pOther
+    ERESULT         Main_Compare (
+        MAIN_DATA     *this,
+        MAIN_DATA     *pOther
     )
     {
         int             i = 0;
@@ -556,11 +374,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!JsonOut_Validate(pOther)) {
+        if (!Main_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -598,36 +416,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        JsonOut      *pCopy = JsonOut_Copy(this);
+        Main      *pCopy = Main_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a JSONOUT object which must be 
+     @return    If successful, a MAIN object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    JSONOUT_DATA *     JsonOut_Copy (
-        JSONOUT_DATA       *this
+    MAIN_DATA *     Main_Copy (
+        MAIN_DATA       *this
     )
     {
-        JSONOUT_DATA       *pOther = OBJ_NIL;
+        MAIN_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef JSONOUT_IS_CONSTANT
+#ifdef MAIN_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = JsonOut_New( );
+        pOther = Main_New( );
         if (pOther) {
-            eRc = JsonOut_Assign(this, pOther);
+            eRc = Main_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -645,11 +463,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            JsonOut_Dealloc (
+    void            Main_Dealloc (
         OBJ_ID          objId
     )
     {
-        JSONOUT_DATA   *this = objId;
+        MAIN_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -658,7 +476,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -666,11 +484,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((JSONOUT_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((MAIN_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        JsonOut_setStr(this, OBJ_NIL);
+        Main_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -691,32 +509,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        JsonOut      *pDeepCopy = JsonOut_Copy(this);
+        Main      *pDeepCopy = Main_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a JSONOUT object which must be 
+     @return    If successful, a MAIN object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    JSONOUT_DATA *     JsonOut_DeepyCopy (
-        JSONOUT_DATA       *this
+    MAIN_DATA *     Main_DeepyCopy (
+        MAIN_DATA       *this
     )
     {
-        JSONOUT_DATA       *pOther = OBJ_NIL;
+        MAIN_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = JsonOut_New( );
+        pOther = Main_New( );
         if (pOther) {
-            eRc = JsonOut_Assign(this, pOther);
+            eRc = Main_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -739,8 +557,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         JsonOut_Disable (
-        JSONOUT_DATA		*this
+    ERESULT         Main_Disable (
+        MAIN_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -748,7 +566,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -774,8 +592,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         JsonOut_Enable (
-        JSONOUT_DATA		*this
+    ERESULT         Main_Enable (
+        MAIN_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -783,7 +601,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -803,11 +621,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    JSONOUT_DATA *   JsonOut_Init (
-        JSONOUT_DATA       *this
+    MAIN_DATA *   Main_Init (
+        MAIN_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(JSONOUT_DATA);
+        uint32_t        cbSize = sizeof(MAIN_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -824,16 +642,15 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_JSONOUT);
+        this = (OBJ_ID)Appl_Init((APPL_DATA *)this);            // Needed for Inheritance
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&JsonOut_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Main_Vtbl);
         
         /*
         this->pArray = objArray_New( );
@@ -846,19 +663,20 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "JsonOut::sizeof(JSONOUT_DATA) = %lu\n", 
-                sizeof(JSONOUT_DATA)
+                "Main::sizeof(MAIN_DATA) = %lu\n", 
+                sizeof(MAIN_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(JSONOUT_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(MAIN_DATA));
 #endif
 
         return this;
@@ -870,8 +688,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         JsonOut_IsEnabled (
-        JSONOUT_DATA		*this
+    ERESULT         Main_IsEnabled (
+        MAIN_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -879,7 +697,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -906,14 +724,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = JsonOut_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Main_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "JsonOut", prefix,
+                        the object name, "Main", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -921,13 +739,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          JsonOut_QueryInfo (
+    void *          Main_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        JSONOUT_DATA     *this = objId;
+        MAIN_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -936,7 +754,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -945,11 +763,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(JSONOUT_DATA);
+            return (void *)sizeof(MAIN_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)JsonOut_Class();
+                return (void *)Main_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -979,34 +797,34 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return JsonOut_Disable;
+                            return Main_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return JsonOut_Enable;
+                            return Main_Enable;
                         }
                         break;
 
-#ifdef  JSONOUT_JSON_SUPPORT
+#ifdef  MAIN_JSON_SUPPORT
                     case 'P':
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return JsonOut_ParseJsonFields;
+                            return Main_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return JsonOut_ParseJsonObject;
+                            return Main_ParseJsonObject;
                         }
                         break;
 #endif
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return JsonOut_ToDebugString;
+                            return Main_ToDebugString;
                         }
-#ifdef  JSONOUT_JSON_SUPPORT
+#ifdef  MAIN_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return JsonOut_ToJson;
+                            return Main_ToJson;
                         }
 #endif
                         break;
@@ -1017,10 +835,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == JsonOut_ToDebugString)
+                if (pData == Main_ToDebugString)
                     return "ToDebugString";
-#ifdef  JSONOUT_JSON_SUPPORT
-                if (pData == JsonOut_ToJson)
+#ifdef  MAIN_JSON_SUPPORT
+                if (pData == Main_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1042,7 +860,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = JsonOut_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Main_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1050,22 +868,23 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     JsonOut_ToDebugString (
-        JSONOUT_DATA      *this,
+    ASTR_DATA *     Main_ToDebugString (
+        MAIN_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1086,7 +905,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    JsonOut_getSize(this),
+                    Main_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1124,15 +943,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            JsonOut_Validate (
-        JSONOUT_DATA      *this
+    bool            Main_Validate (
+        MAIN_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_JSONOUT))
+            if (obj_IsKindOf(this, OBJ_IDENT_MAIN))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1148,7 +967,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(JSONOUT_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(MAIN_DATA))) {
             return false;
         }
 

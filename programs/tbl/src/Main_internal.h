@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Node_internal.h
- *	Generated 01/12/2020 16:09:18
+ * File:   Main_internal.h
+ *	Generated 02/22/2020 22:24:56
  *
  * Notes:
  *  --	N/A
@@ -39,18 +39,13 @@
 
 
 
-#include        <Node.h>
+#include        <Main.h>
+#include        <Appl_internal.h>
 #include        <JsonIn.h>
-#include        <listdl.h>
-#include        <Name.h>
-#include        <NodeArray.h>
-#include        <NodeBT.h>
-#include        <szData.h>
-#include        <szTbl.h>
 
 
-#ifndef NODE_INTERNAL_H
-#define	NODE_INTERNAL_H
+#ifndef MAIN_INTERNAL_H
+#define	MAIN_INTERNAL_H
 
 
 
@@ -70,40 +65,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Node_data_s	{
+struct Main_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    APPL_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-#define NODE_DUP_NAME   OBJ_FLAG_USER1  // We allocated Name
 
     // Common Data
-    int32_t         cls;
-    int32_t         type;
-    uint32_t        unique;
-    uint32_t        misc;
-    NAME_DATA       *pName;
-    OBJ_ID          pData;
-    OBJ_ID          pExtra;
-    OBJ_ID          pOther;
-    NODEBT_DATA     *pProperties;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        rsvd16;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct Node_class_data_s  Node_ClassObj;
+    struct Main_class_data_s  Main_ClassObj;
 
     extern
     const
-    NODE_VTBL         Node_Vtbl;
-
-    extern
-    const
-    uint32_t        node_cProps;
-    extern
-    const
-    OBJ_PROP        node_pProps[];
+    MAIN_VTBL         Main_Vtbl;
 
 
 
@@ -111,13 +92,13 @@ struct Node_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NODE_SINGLETON
-    NODE_DATA *     Node_getSingleton (
+#ifdef  MAIN_SINGLETON
+    MAIN_DATA *     Main_getSingleton (
         void
     );
 
-    bool            Node_setSingleton (
-     NODE_DATA       *pValue
+    bool            Main_setSingleton (
+     MAIN_DATA       *pValue
 );
 #endif
 
@@ -127,69 +108,92 @@ struct Node_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            Node_setName (
-        NODE_DATA       *this,
-        NAME_DATA       *pValue
+    OBJ_IUNKNOWN *  Main_getSuperVtbl (
+        MAIN_DATA     *this
     );
 
 
-    bool            Node_setProperties (
-        NODE_DATA       *this,
-        NODEBT_DATA     *pValue
+    ERESULT         Main_Assign (
+        MAIN_DATA    *this,
+        MAIN_DATA    *pOther
     );
 
 
-    OBJ_IUNKNOWN *  Node_getSuperVtbl (
-        NODE_DATA     *this
+    MAIN_DATA *       Main_Copy (
+        MAIN_DATA     *this
     );
 
 
-    void            Node_Dealloc (
+    void            Main_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  NODE_JSON_SUPPORT
+#ifdef  MAIN_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NODE_DATA *       Node_ParseJsonObject (
+    MAIN_DATA *       Main_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
 
     /*!
-     Parse the object from an established parser.
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
      @param pParser     an established jsonIn Parser Object
      @param pObject     an Object to be filled in with the
                         parsed fields.
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Node_ParseJsonFields(
+    ERESULT         Main_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        NODE_DATA       *pObject
+        MAIN_DATA     *pObject
     );
 #endif
 
 
-    void *          Node_QueryInfo (
+    void *          Main_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  NODE_JSON_SUPPORT
-    ASTR_DATA *     Node_ToJson (
-        NODE_DATA       *this
+#ifdef  MAIN_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Main_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Main_ToJson (
+        MAIN_DATA      *this
     );
 
-    ERESULT         Node_ToJsonFields (
-        NODE_DATA     *this,
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Main_ToJsonFields (
+        MAIN_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -199,8 +203,8 @@ struct Node_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			Node_Validate (
-        NODE_DATA       *this
+    bool			Main_Validate (
+        MAIN_DATA       *this
     );
 #endif
 
@@ -210,5 +214,5 @@ struct Node_data_s	{
 }
 #endif
 
-#endif	/* NODE_INTERNAL_H */
+#endif	/* MAIN_INTERNAL_H */
 
