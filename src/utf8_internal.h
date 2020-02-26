@@ -90,6 +90,12 @@ struct utf8_data_s	{
     );
     
     
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new UTF-8 String if successful, otherwise, NULL
+     @warning   Returned UTF-8 string must be freed using mem_Free().
+     */
     uint8_t *       utf8_ParseJsonObject(
         JSONIN_DATA     *pParser,
         uint32_t        *pLength

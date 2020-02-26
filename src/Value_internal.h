@@ -79,7 +79,7 @@ struct Value_data_s	{
         int8_t          i8;
         int16_t         i16;
         int32_t         i32;
-        int64_t            i64;
+        int64_t         i64;
         //        int128_t        i128;
         uint8_t         u8;
         uint16_t        u16;

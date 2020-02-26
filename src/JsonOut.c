@@ -196,6 +196,28 @@ extern "C" {
     }
 
 
+    void            JsonOut_Append_String (
+        const
+        char            *pNameA,
+        ASTR_DATA       *pObj,
+        ASTR_DATA       *pStr
+    )
+    {
+        ASTR_DATA       *pWrkStr;
+
+        if (pObj && pStr && pNameA) {
+            pWrkStr = AStr_ToJson(pObj);
+            if (pWrkStr) {
+                       AStr_AppendPrint(pStr, "\t\"%s\": ", pNameA);
+                       AStr_Append(pStr, pWrkStr);
+                       obj_Release(pWrkStr);
+                       pWrkStr = OBJ_NIL;
+                       AStr_AppendA(pStr, ",\n");
+            }
+        }
+    }
+
+
     void            JsonOut_Append_u8 (
         const
         char            *pNameA,

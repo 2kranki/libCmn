@@ -138,7 +138,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  VALUE_SINGLETON
-    VALUE_DATA *     Value_Shared (
+    VALUE_DATA *    Value_Shared (
         void
     );
 

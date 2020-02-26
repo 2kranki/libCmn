@@ -1712,6 +1712,52 @@ extern "C" {
 
 
 
+    ERESULT         JsonIn_FindUtf8NodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        uint8_t         **ppStrA,
+        uint32_t        *pLen
+    )
+    {
+        ERESULT         eRc;
+        uint8_t         *pData = NULL;
+        uint32_t        len = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        if (ppStrA)
+            *ppStrA = NULL;
+        if (pLen)
+            *pLen = 0;
+
+        eRc = JsonIn_SubObjectInHash(this, pSectionA);
+        if (ERESULT_FAILED(eRc)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+
+        pData = utf8_ParseJsonObject(this, &len);
+        if ((NULL == pData) || (0 == len)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+
+        eRc = JsonIn_SubObjectEnd(this);
+
+        if (ppStrA)
+            *ppStrA = pData;
+        if (pLen)
+            *pLen = len;
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------

@@ -194,6 +194,22 @@ extern "C" {
     );
 
 
+    /*!
+     Attempt to append a string's json string to an already existing string
+     with a given name if possible. This is normally parsed with
+     JsonIn_FindStringNodeInHashA()
+     @param     pNameA  Name for the object
+     @param     pObj    non-null string pointer
+     @param     pStr    string to be added on to
+     */
+    void            JsonOut_Append_String (
+        const
+        char            *pNameA,
+        ASTR_DATA       *pObj,
+        ASTR_DATA       *pStr
+    );
+
+
     void            JsonOut_Append_u8 (
         const
         char            *pNameA,

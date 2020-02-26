@@ -162,6 +162,8 @@ int             test_JsonIn_01(
     NODEHASH_DATA   *pHash;
     uint32_t        i = 0;
     uint8_t         *pData = NULL;
+    uint8_t         *pData2 = NULL;
+    uint32_t        dataLen = 0;
     ASTR_DATA       *pStrWrk;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -174,7 +176,7 @@ int             test_JsonIn_01(
 
         pStr = AStr_NewA(JsonInput);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        obj_TraceSet(pObj, true);
+        //obj_TraceSet(pObj, true);
         eRc = JsonIn_ParseAStr(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
@@ -234,6 +236,14 @@ int             test_JsonIn_01(
                     }
                 eRc = JsonIn_SubObjectEnd(pObj);
                 TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+                pData2 = NULL;
+                len = 0;
+                eRc = JsonIn_FindUtf8NodeInHashA(pObj, "Data", &pData2, &dataLen);
+                TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+                fprintf(stderr, "\t\tdata2(%d) = %s\n", dataLen, pData2);
+                TINYTEST_TRUE((0 == strcmp(AStr_getData(pStrWrk), (char *)pData2)));
+                mem_Free(pData2);
+                pData2 = NULL;
             eRc = JsonIn_SubObjectEnd(pObj);
             TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         }
@@ -277,7 +287,7 @@ int             test_JsonIn_Float01(
 
         pStr = AStr_NewA(JsonInput);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        obj_TraceSet(pObj, true);
+        //obj_TraceSet(pObj, true);
         eRc = JsonIn_ParseAStr(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 

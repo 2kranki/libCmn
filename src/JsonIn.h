@@ -501,7 +501,8 @@ extern "C" {
 
 
     /*!
-     Find a named string value in the JSON Hash Node tree.
+     Find a named string value in the JSON Hash Node tree. This is
+     normally used to parse JsonOut_Append_String();
      @param     this    Object Pointer
      @param     pSectionA Name of integer value (required)
      @param     ppStr   Pointer to a string pointer to be returned if
@@ -515,6 +516,29 @@ extern "C" {
         const
         char            *pSectionA,
         ASTR_DATA       **ppStr
+    );
+
+
+    /*!
+     Find a named UTF-8 string value in the JSON Hash Node tree. This is
+     normally used to parse JsonOut_Append_utf8().
+     @param     this    Object Pointer
+     @param     pSectionA Name of integer value (required)
+     @param     ppStrA  Optional Pointer to a string pointer to be returned
+                        if ERESULT_SUCCESS is returned and this pointer is
+                        non-null.
+     @param     pLen    Optional Length of string found.
+     @return    If successful, ERESULT_SUCCESS and an string value in *ppStrA
+                if present and a length value in *pLen if present
+                if ppStrA is non-null. Otherwise, an ERESULT_* error code.
+     @warning   Returned UTF-8 string must be freed using mem_Free().
+     */
+    ERESULT         JsonIn_FindUtf8NodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        uint8_t         **ppStrA,
+        uint32_t        *pLen
     );
 
 
@@ -613,7 +637,7 @@ extern "C" {
      *  Pushing the current JSON tree on the internal stack.
      *  Setting up the found section as the parser input.
      @param     this    object pointer
-     @param     pSect   Section Name String (required)
+     @param     pSectA  Section Name String (required)
      @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code.
      @warning   The SubobjectEnd() method should be called once the sub-object
                 is parsed.
@@ -621,7 +645,7 @@ extern "C" {
     ERESULT         JsonIn_SubObjectInHash (
         JSONIN_DATA     *this,
         const
-        char            *pSect
+        char            *pSectA
     );
 
 
