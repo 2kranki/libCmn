@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   szBT_internal.h
- *	Generated 02/25/2020 10:00:27
+ * File:   Opc360_internal.h
+ *	Generated 02/29/2020 23:01:22
  *
  * Notes:
  *  --	N/A
@@ -39,14 +39,13 @@
 
 
 
-#include        <szBT.h>
-#include        <Blocks_internal.h>
+#include        <Opc360.h>
 #include        <JsonIn.h>
-#include        <rbt_tree.h>
+#include        <Opcode_internal.h>
 
 
-#ifndef SZBT_INTERNAL_H
-#define	SZBT_INTERNAL_H
+#ifndef OPC360_INTERNAL_H
+#define	OPC360_INTERNAL_H
 
 
 
@@ -59,40 +58,6 @@ extern "C" {
 #endif
 
 
-    //      Node Record Descriptor
-    typedef struct  szBT_record_s     SZBT_RECORD;
-#pragma pack(push, 1)
-    struct  szBT_record_s {
-        // RBT_NODE must be first field in this struct.
-        RBT_NODE        node;
-        uint32_t        unique;
-        //char            *pNameA;              // Use node.key
-        //void            *pData;               // Use node.value
-    };
-#pragma pack(pop)
-
-
-
-#pragma pack(push, 1)
-    typedef struct  szBT_find_s {
-        uint32_t        unique;
-        SZBT_RECORD     *pRecord;
-    } SZBT_FIND;
-#pragma pack(pop)
-
-
-
-#pragma pack(push, 1)
-    typedef struct  nodeBT_visit_s {
-        SZBT_RECORD     *pRecord;       // Current Record
-        P_ERESULT_EXIT3 pScan;
-        OBJ_ID          pObj;           // Used as first parameter of scan method
-        void            *pArg3;
-    } NODEBT_VISIT;
-#pragma pack(pop)
-
-
-
 
 
     //---------------------------------------------------------------
@@ -100,32 +65,21 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct szBT_data_s	{
+struct Opc360_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    BLOCKS_DATA     super;
+    OPCODE_DATA     super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-
-    // Common Data
-    RBT_TREE        tree;
-    SZBT_RECORD     *pRoot;
-    uint32_t        size;            // maximum number of elements
-    uint32_t        unique;
-
-    // Record Deletion Exit
-    P_ERESULT_EXIT3 pDeleteExit;
-    OBJ_ID          pDeleteObj;      // Used as first parameter of pDelete
-    //                              // second parameter is key and third is data
 
 };
 #pragma pack(pop)
 
     extern
-    struct szBT_class_data_s  szBT_ClassObj;
+    struct Opc360_class_data_s  Opc360_ClassObj;
 
     extern
     const
-    SZBT_VTBL         szBT_Vtbl;
+    OPC360_VTBL         Opc360_Vtbl;
 
 
 
@@ -133,13 +87,13 @@ struct szBT_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  SZBT_SINGLETON
-    SZBT_DATA *     szBT_getSingleton (
+#ifdef  OPC360_SINGLETON
+    OPC360_DATA *     Opc360_getSingleton (
         void
     );
 
-    bool            szBT_setSingleton (
-     SZBT_DATA       *pValue
+    bool            Opc360_setSingleton (
+     OPC360_DATA       *pValue
 );
 #endif
 
@@ -149,35 +103,35 @@ struct szBT_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  szBT_getSuperVtbl (
-        SZBT_DATA     *this
+    OBJ_IUNKNOWN *  Opc360_getSuperVtbl (
+        OPC360_DATA     *this
     );
 
 
-    ERESULT         szBT_Assign (
-        SZBT_DATA    *this,
-        SZBT_DATA    *pOther
+    ERESULT         Opc360_Assign (
+        OPC360_DATA    *this,
+        OPC360_DATA    *pOther
     );
 
 
-    SZBT_DATA *       szBT_Copy (
-        SZBT_DATA     *this
+    OPC360_DATA *       Opc360_Copy (
+        OPC360_DATA     *this
     );
 
 
-    void            szBT_Dealloc (
+    void            Opc360_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  SZBT_JSON_SUPPORT
+#ifdef  OPC360_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SZBT_DATA *       szBT_ParseJsonObject (
+    OPC360_DATA *       Opc360_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -191,27 +145,27 @@ struct szBT_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         szBT_ParseJsonFields (
+    ERESULT         Opc360_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SZBT_DATA     *pObject
+        OPC360_DATA     *pObject
     );
 #endif
 
 
-    void *          szBT_QueryInfo (
+    void *          Opc360_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  SZBT_JSON_SUPPORT
+#ifdef  OPC360_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = szBT_ToJson(this);
+     ASTR_DATA      *pDesc = Opc360_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -219,8 +173,8 @@ struct szBT_data_s	{
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     szBT_ToJson (
-        SZBT_DATA      *this
+    ASTR_DATA *     Opc360_ToJson (
+        OPC360_DATA      *this
     );
 
 
@@ -233,8 +187,8 @@ struct szBT_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         szBT_ToJsonFields (
-        SZBT_DATA     *this,
+    ERESULT         Opc360_ToJsonFields (
+        OPC360_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -244,8 +198,8 @@ struct szBT_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			szBT_Validate (
-        SZBT_DATA       *this
+    bool			Opc360_Validate (
+        OPC360_DATA       *this
     );
 #endif
 
@@ -255,5 +209,5 @@ struct szBT_data_s	{
 }
 #endif
 
-#endif	/* SZBT_INTERNAL_H */
+#endif	/* OPC360_INTERNAL_H */
 

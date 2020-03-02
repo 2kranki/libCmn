@@ -1,21 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Static String Binary Tree (szBT) Header
+//          Universal Opcode Table (Opcodes) Header
 //****************************************************************
 /*
  * Program
- *			Static String Binary Tree (szBT)
+ *			Universal Opcode Table (Opcodes)
  * Purpose
- *			This object provides a search tree for data indexed
- *          by a NUL-Terminated UTF-8 string. No data or keys are
- *          stored within the tree, only pointers are stored.
+ *			This object provides a standardized way of handling
+ *          a separate Opcodes to run things without complications
+ *          of interfering with the main Opcodes. A Opcodes may be 
+ *          called a Opcodes on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	02/25/2020 Generated
+ *	02/27/2020 Generated
  */
 
 
@@ -52,15 +53,17 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <ObjEnum.h>
+#include        <Opcode.h>
 
 
-#ifndef         SZBT_H
-#define         SZBT_H
+#ifndef         OPCODES_H
+#define         OPCODES_H
 
 
-//#define   SZBT_IS_IMMUTABLE     1
-//#define   SZBT_JSON_SUPPORT     1
-//#define   SZBT_SINGLETON        1
+//#define   OPCODES_IS_IMMUTABLE     1
+#define   OPCODES_JSON_SUPPORT     1
+//#define   OPCODES_SINGLETON        1
 
 
 
@@ -76,26 +79,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct szBT_data_s	SZBT_DATA;            // Inherits from OBJ
-    typedef struct szBT_class_data_s SZBT_CLASS_DATA;   // Inherits from OBJ
+    typedef struct Opcodes_data_s	OPCODES_DATA;            // Inherits from OBJ
+    typedef struct Opcodes_class_data_s OPCODES_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct szBT_vtbl_s	{
+    typedef struct Opcodes_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in szBT_object.c.
+        // method names to the vtbl definition in Opcodes_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SZBT_DATA *);
-    } SZBT_VTBL;
+        //bool        (*pIsEnabled)(OPCODES_DATA *);
+    } OPCODES_VTBL;
 
-    typedef struct szBT_class_vtbl_s	{
+    typedef struct Opcodes_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in szBT_object.c.
+        // method names to the vtbl definition in Opcodes_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SZBT_DATA *);
-    } SZBT_CLASS_VTBL;
+        //bool        (*pIsEnabled)(OPCODES_DATA *);
+    } OPCODES_CLASS_VTBL;
 
 
 
@@ -109,12 +112,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  SZBT_SINGLETON
-    SZBT_DATA *     szBT_Shared (
+#ifdef  OPCODES_SINGLETON
+    OPCODES_DATA *     Opcodes_Shared (
         void
     );
 
-    void            szBT_SharedReset (
+    void            Opcodes_SharedReset (
         void
     );
 #endif
@@ -124,29 +127,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to szBT object if successful, otherwise OBJ_NIL.
+     @return    pointer to Opcodes object if successful, otherwise OBJ_NIL.
      */
-    SZBT_DATA *     szBT_Alloc (
+    OPCODES_DATA *     Opcodes_Alloc (
         void
     );
     
     
-    OBJ_ID          szBT_Class (
+    OBJ_ID          Opcodes_Class (
         void
     );
     
     
-    SZBT_DATA *     szBT_New (
+    OPCODES_DATA *     Opcodes_New (
         void
     );
     
     
-#ifdef  SZBT_JSON_SUPPORT
-    SZBT_DATA *   szBT_NewFromJsonString (
+#ifdef  OPCODES_JSON_SUPPORT
+    OPCODES_DATA *   Opcodes_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    SZBT_DATA *   szBT_NewFromJsonStringA (
+    OPCODES_DATA *   Opcodes_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -158,15 +161,8 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            szBT_setDeleteExit(
-        SZBT_DATA       *this,
-        ERESULT         (*pDeleteExit)(OBJ_ID, void *pKey, void *pData),
-        OBJ_ID          pObj
-    );
-
-
-    uint32_t        szBT_getSize (
-        SZBT_DATA       *this
+    uint32_t        Opcodes_getSize (
+        OPCODES_DATA    *this
     );
 
 
@@ -176,91 +172,61 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Add the given node to the Tree. If the name is found within the
-     Tree, the data will not be added.
+     Add the given node to the Tree. Duplicates are not allowed.
      @param     this        Object Pointer
-     @param     pNameA      Name Character String Pointer
-     @param     pData       Data Pointer
+     @param     pOpc        Opcode Entry Object Pointer
      @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
                 error code is returned.
      */
-    ERESULT         szBT_AddA (
-        SZBT_DATA       *this,
-        const
-        char            *pNameA,            // UTF-8
-        void            *pData
+    ERESULT         Opcodes_Add (
+        OPCODES_DATA    *this,
+        OPCODE_DATA     *pOpc
     );
 
 
-    /*!
-     Add the given node to the Tree. If the name is already in the
-     Tree, the data is replaced.
-     @param     this        Object Pointer
-     @param     pNameA      Name Character String Pointer
-     @param     pData       Data Pointer
-     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
-                error code is returned.
-     */
-    ERESULT         szBT_AddUpdateA (
-        SZBT_DATA       *this,
-        const
-        char            *pNameA,            // UTF-8
-        void            *pData
-    );
-
-
-    ERESULT         szBT_DeleteA (
-        SZBT_DATA       *this,
+    ERESULT         Opcodes_DeleteA (
+        OPCODES_DATA    *this,
         const
         char            *pNameA
     );
 
 
-    ERESULT         szBT_DeleteAll (
-        SZBT_DATA       *this
+    /*!
+     Create an enumerator for the entries.
+     @return    If successful, an ENUM object is returned.  Otherwise,
+     OBJ_NIL.
+     @warning   Remember to release the returned ENUM object.
+     */
+    OBJENUM_DATA *  Opcodes_Enum (
+        OPCODES_DATA    *this
     );
 
 
     /*!
-     Search the Tree for a particular node using the characteristics of
-     the given node and its compare function.
-     @return    If successful, an NODE object is returned.  Otherwise,
+     Search the entries for a particular symbol entry using the
+     characteristics of the given node and its compare function.
+     @return    If successful, an SYM object is returned.  Otherwise,
                 OBJ_NIL.
      */
-    void *          szBT_FindA (
-        SZBT_DATA       *this,
+    OPCODE_DATA *   Opcodes_FindA (
+        OPCODES_DATA    *this,
         const
         char            *pNameA
     );
 
 
-    /*!
-     Scan all the nodes of the Tree in no particular order.
-     @return    ERESULT_SUCCESS if successful completion.  Otherwise,
-                an ERESULT_* error code is returned.
-     */
-    ERESULT         szBT_ForEach (
-        SZBT_DATA       *this,
-        P_ERESULT_EXIT4 pScan,
-        OBJ_ID          pObj,               // Used as first parameter of scan method
-        //                                  // second parameter is key
-        //                                  // third parameter is data
-        void            *pArg4              // Used as fourth parameter of scan method
+    OPCODES_DATA *   Opcodes_Init (
+        OPCODES_DATA     *this
     );
 
 
-    SZBT_DATA *     szBT_Init (
-        SZBT_DATA       *this
-    );
-
-
-#ifdef  SZBT_JSON_SUPPORT
+#ifdef  OPCODES_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = szBT_ToJson(this);
+     ASTR_DATA      *pDesc = Opcodes_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -268,8 +234,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     szBT_ToJson (
-        SZBT_DATA       *this
+    ASTR_DATA *     Opcodes_ToJson (
+        OPCODES_DATA   *this
     );
 #endif
 
@@ -278,7 +244,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = szBT_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Opcodes_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -286,14 +252,20 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    szBT_ToDebugString (
-        SZBT_DATA       *this,
+    ASTR_DATA *    Opcodes_ToDebugString (
+        OPCODES_DATA    *this,
         int             indent
     );
     
     
-    ERESULT         szBT_VerifyTree (
-        SZBT_DATA       *this
+    /*!
+     Verify the binary tree used by this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Opcodes_VerifyTree (
+        OPCODES_DATA        *this
     );
 
 
@@ -303,5 +275,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* SZBT_H */
+#endif	/* OPCODES_H */
 

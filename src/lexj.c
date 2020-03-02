@@ -1020,7 +1020,7 @@ extern "C" {
                             this,
                             "\tnumber: \"%ls\"\n",
                             W32Str_getData(this->super.pStr)
-                            );
+                    );
                     fMore = false;
                     break;
                     

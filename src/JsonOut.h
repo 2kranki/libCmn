@@ -182,7 +182,8 @@ extern "C" {
     /*!
      Attempt to append a object's json string to an already existing string
      with a given name if possible.
-     @param     pNameA  Name for the object
+     @param     pNameA  Optional Name for the object (If not present, then
+                        just the object hash appended.)
      @param     pObj    non-null object pointer
      @param     pStr    string to be added on to
      */
@@ -206,6 +207,14 @@ extern "C" {
         const
         char            *pNameA,
         ASTR_DATA       *pObj,
+        ASTR_DATA       *pStr
+    );
+
+    void            JsonOut_Append_StringA (
+        const
+        char            *pNameA,
+        const
+        char            *pObjA,
         ASTR_DATA       *pStr
     );
 

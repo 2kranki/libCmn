@@ -303,6 +303,80 @@ int             test_JsonIn_Float01(
         TINYTEST_FALSE( (OBJ_NIL == pStrWrk) );
         fprintf(stderr, "\tData = %s\n", AStr_getData(pStrWrk));
         TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStrWrk, "3.141600E+00")));
+
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_JsonIn_Integers01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    JSONIN_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr;
+    const
+    char            *JsonInput = "{ "
+        "\"objectType\":\"IntegerArray\", "
+        "\"data\":[1,2,3],"
+    "}\n";
+    int64_t         type = 0;
+    NODE_DATA       *pNode;
+    NODEARRAY_DATA  *pArray = OBJ_NIL;
+    ASTR_DATA       *pStrWrk = OBJ_NIL;
+    uint32_t        i;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = JsonIn_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = JsonIn_Init(pObj);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pStr = AStr_NewA(JsonInput);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        //obj_TraceSet(pObj, true);
+        eRc = JsonIn_ParseAStr(pObj, pStr);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        eRc = JsonIn_ConfirmObjectType(pObj, "IntegerArray");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        // This illustrates one way of parsing an Integer Array.
+        eRc = JsonIn_FindArrayNodeInHashA(pObj, "data", &pArray);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pArray) );
+        TINYTEST_TRUE((3 == NodeArray_getSize(pArray)));
+        for (i=0; i<NodeArray_getSize(pArray); i++) {
+            int64_t         num = 0;
+            pNode = NodeArray_Get(pArray, i+1);
+            TINYTEST_FALSE( (OBJ_NIL == pNode) );
+            {
+                ASTR_DATA       *pWrk;
+                pWrk = Node_ToDebugString(pNode, 0);
+                if (pWrk) {
+                    fprintf(stderr, "Node(%d): %s\n", i+1, AStr_getData(pWrk));
+                    obj_Release(pWrk);
+                }
+            }
+            pStrWrk = JsonIn_CheckNodeForInteger(pNode);
+            TINYTEST_FALSE( (OBJ_NIL == pStrWrk) );
+            fprintf(stderr, "\tData(%d) = %s\n", i+1, AStr_getData(pStrWrk));
+            num = AStr_ToInt64(pStrWrk);
+            TINYTEST_TRUE((num == i+1));
+        }
+
         obj_Release(pStr);
         pStr = OBJ_NIL;
         obj_Release(pObj);
@@ -317,6 +391,7 @@ int             test_JsonIn_Float01(
 
 
 TINYTEST_START_SUITE(test_JsonIn);
+    TINYTEST_ADD_TEST(test_JsonIn_Integers01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonIn_Float01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonIn_01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonIn_OpenClose,setUp,tearDown);

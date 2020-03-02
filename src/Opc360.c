@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   JsonOut.c
- *	Generated 01/25/2020 21:31:26
+ * File:   Opc360.c
+ *	Generated 02/29/2020 23:01:22
  *
  */
 
@@ -41,9 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <JsonOut_internal.h>
+#include        <Opc360_internal.h>
 #include        <trace.h>
-#include        <utf8_internal.h>
 
 
 
@@ -56,6 +55,76 @@ extern "C" {
     
 
     
+    typedef struct Opcode_feature_s {
+        char        *pDesc;
+        uint16_t    value;
+    } OPCODE_FEATURE;
+
+    static
+    OPCODE_FEATURE  OpcFeatures[] = {
+        {"OPCODE_FEATURE_CC",      0x0080},    // Condition Code is set
+        {"OPCODE_FEATURE_PR",      0x0040},    // Privileged Instruction
+        {"OPCODE_FEATURE_DEC",     0x0020},    // Requires Decimal Arithmetic Unit
+        {"OPCODE_FEATURE_MEMP",    0x0010},    // Requires Storage Protection
+        {"OPCODE_FEATURE_DIRC",    0x0008},    // Requires Direct Control Feature
+    };
+    static
+    uint16_t        cOpcFeatures = sizeof(OpcFeatures)/sizeof(OPCODE_FEATURE);
+
+
+    typedef struct Opcode_interrupt_s {
+        char        *pDesc;
+        uint16_t    value;
+    } OPCODE_INTERRUPT;
+
+    static
+    OPCODE_INTERRUPT OpcInterrupts[] = {
+        {"OPCODE_INTERRUPT_OPER",    1},    // Operation
+        {"OPCODE_INTERRUPT_PRIV",    2},    // Priviliged Operation
+        {"OPCODE_INTERRUPT_EXEC",    3},    // Execute
+        {"OPCODE_INTERRUPT_PROT",    4},    // Protection
+        {"OPCODE_INTERRUPT_ADDR",    5},    // Addressing
+        {"OPCODE_INTERRUPT_SPEC",    6},    // Specification
+        {"OPCODE_INTERRUPT_DATA",    7},    // Data
+        {"OPCODE_INTERRUPT_FIXO",    8},    // Fixed-point Overflow
+        {"OPCODE_INTERRUPT_FIXD",    9},    // Fixed-point Divide
+        {"OPCODE_INTERRUPT_DECO",   10},    // Decimal Overflow
+        {"OPCODE_INTERRUPT_DECD",   11},    // Decimal Divide
+        {"OPCODE_INTERRUPT_EXO",    12},    // Exponent Overflow
+        {"OPCODE_INTERRUPT_EXU",    13},    // Exponent Underflow
+        {"OPCODE_INTERRUPT_SIG",    14},    // Significance
+        {"OPCODE_INTERRUPT_FPD",    15},    // Floating-point Divide
+        {"OPCODE_INTERRUPT_SEGT",   16},    // Segment Translation
+        {"OPCODE_INTERRUPT_PAGT",   17}     // Page Translation
+    };
+    static
+    uint16_t        cOpcInterrupts = sizeof(OpcInterrupts)/sizeof(OPCODE_INTERRUPT);
+
+
+    typedef struct Opcode_type_s {
+        uint16_t    value;
+        char        *pDesc;
+    } OPCODE_TYPE;
+
+    static
+    OPCODE_TYPE     OpcTypes[] = {
+        {0,     "OPCODE_TYPE_UNKNOWN"},
+        {1,     "OPCODE_TYPE_NONE"},           // No operands
+        {2,     "OPCODE_TYPE_I"},              // integer
+        {3,     "OPCODE_TYPE_R"},              // r1
+        {4,     "OPCODE_TYPE_RR"},             // r1,r2
+        {5,     "OPCODE_TYPE_RS"},             // r1,r3,d2(b2)
+        {6,     "OPCODE_TYPE_RX"},             // r1,d2(x2,b2)
+        {7,     "OPCODE_TYPE_SI"},             // d1(b1),i2
+        {8,     "OPCODE_TYPE_SS1"},            // d1(l1,b1),d2(l2,b2)
+        {9,     "OPCODE_TYPE_SS2"},            // d1(l,b1),d2(b2)
+        {10,    "OPCODE_TYPE_PSEUDO"},         // Pseudo Opcode
+        {11,    "OPCODE_TYPE_MACRO"},          // Macro Instruction
+    };
+    static
+    uint16_t        cOpcTypes = sizeof(OpcTypes)/sizeof(OPCODE_TYPE);
+
+
 
 
  
@@ -65,11 +134,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            JsonOut_task_body (
+    void            Opc360_task_body (
         void            *pData
     )
     {
-        //JSONOUT_DATA  *this = pData;
+        //OPC360_DATA  *this = pData;
         
     }
 #endif
@@ -85,12 +154,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    JSONOUT_DATA *     JsonOut_Alloc (
+    OPC360_DATA *     Opc360_Alloc (
         void
     )
     {
-        JSONOUT_DATA       *this;
-        uint32_t        cbSize = sizeof(JSONOUT_DATA);
+        OPC360_DATA       *this;
+        uint32_t        cbSize = sizeof(OPC360_DATA);
         
         // Do initialization.
         
@@ -102,242 +171,143 @@ extern "C" {
 
 
 
-    void            JsonOut_Append_i32 (
-        const
-        char            *pNameA,
-        int32_t         num,
-        ASTR_DATA       *pStr
-    )
-    {
-        if (pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\": %ld,\n", pNameA, num);
-        }
-    }
-
-    void            JsonOut_Append_i32_array (
-        const
-        char            *pNameA,
-        uint32_t        num,            // Number of entries
-        const
-        int32_t         *pNum,          // First Entry Pointer
-        ASTR_DATA       *pStr
+    const
+    char *          Opc360_FeatureDesc (
+        uint16_t        num
     )
     {
         uint32_t        i;
 
-        if (num && pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\":[\n\t\t", pNameA);
-            for (i=0; i<(num - 1); i++,pNum++) {
-                AStr_AppendPrint(pStr, "%u, ", *pNum);
-                if ((i > 0) && (0== (i % 8))) {
-                    AStr_AppendPrint(pStr, "\n\t\t");
+        if (num) {
+            for (i=0; i<cOpcFeatures; i++) {
+                if (num == OpcFeatures[i].value) {
+                    return OpcFeatures[i].pDesc;
                 }
             }
-            if ((i > 0) && (0== (i % 8))) {
-                AStr_AppendPrint(pStr, "\n\t\t");
-            }
-            AStr_AppendPrint(pStr, "%u\n", *pNum);
-            AStr_AppendPrint(pStr, "\t],\n");
         }
+        return 0;
     }
 
 
-
-    void            JsonOut_Append_i64 (
+    uint16_t        Opc360_FeatureValue (
         const
-        char            *pNameA,
-        int64_t         num,
-        ASTR_DATA       *pStr
+        char             *pStrA
     )
     {
-        if (pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\": %lld,\n", pNameA, num);
-        }
-    }
+        uint32_t            i;
 
-
-    void            JsonOut_Append_Object (
-        const
-        char            *pNameA,
-        OBJ_ID          pObj,
-        ASTR_DATA       *pStr
-    )
-    {
-        void *          (*pQueryInfo)(
-            OBJ_ID          objId,
-            uint32_t        type,
-            void            *pData
-        );
-        ASTR_DATA *     (*pToJson)(
-            OBJ_ID          objId
-        );
-        ASTR_DATA       *pWrkStr;
-
-        if (pObj && pStr) {
-           pQueryInfo = obj_getVtbl(pObj)->pQueryInfo;
-           if (pQueryInfo) {
-               pToJson =   (*pQueryInfo)(
-                                         pObj,
-                                         OBJ_QUERYINFO_TYPE_METHOD,
-                                         "ToJson"
-                                         );
-               if (pToJson) {
-                   pWrkStr = (*pToJson)(pObj);
-                   if (pWrkStr) {
-                       if (pNameA) {
-                           AStr_AppendPrint(pStr, "\t\"%s\": ", pNameA);
-                       }
-                       AStr_Append(pStr, pWrkStr);
-                       obj_Release(pWrkStr);
-                       pWrkStr = OBJ_NIL;
-                       AStr_AppendA(pStr, ",\n");
-                   }
-               }
-           }
-        }
-    }
-
-
-    void            JsonOut_Append_String (
-        const
-        char            *pNameA,
-        ASTR_DATA       *pObj,
-        ASTR_DATA       *pStr
-    )
-    {
-        ASTR_DATA       *pWrkStr;
-
-        if (pObj && pStr && pNameA) {
-            pWrkStr = AStr_ToJson(pObj);
-            if (pWrkStr) {
-                       AStr_AppendPrint(pStr, "\t\"%s\": ", pNameA);
-                       AStr_Append(pStr, pWrkStr);
-                       obj_Release(pWrkStr);
-                       pWrkStr = OBJ_NIL;
-                       AStr_AppendA(pStr, ",\n");
+        if (pStrA) {
+            for (i=0; i<cOpcFeatures; i++) {
+                if (0 == strcmp(pStrA, OpcFeatures[i].pDesc)) {
+                    return OpcFeatures[i].value;
+                }
             }
         }
+        return 0;
     }
 
 
-    void            JsonOut_Append_StringA (
-        const
-        char            *pNameA,
-        const
-        char            *pObjA,
-        ASTR_DATA       *pStr
-    )
-    {
-        ASTR_DATA       *pWrk;
 
-        if (pObjA && pStr && pNameA) {
-            pWrk = AStr_NewA(pObjA);
-            if (pWrk) {
-                JsonOut_Append_String(pNameA, pWrk, pStr);
-                obj_Release(pWrk);
-            }
-        }
-    }
-
-
-    void            JsonOut_Append_u8 (
-        const
-        char            *pNameA,
-        uint8_t         num,
-        ASTR_DATA       *pStr
-    )
-    {
-        if (pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\": %u,\n", pNameA, num);
-        }
-    }
-
-
-    void            JsonOut_Append_u8_array (
-        const
-        char            *pNameA,
-        uint32_t        num,            // Number of entries
-        const
-        uint8_t         *pNum,          // First Entry Pointer
-        ASTR_DATA       *pStr
+    const char *    Opc360_InterruptDesc (
+        uint16_t        num
     )
     {
         uint32_t        i;
 
-        if (num && pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\":[\n\t\t", pNameA);
-            for (i=0; i<(num - 1); i++,pNum++) {
-                AStr_AppendPrint(pStr, "%u, ", *pNum);
-                if ((i > 0) && (0== (i % 8))) {
-                    AStr_AppendPrint(pStr, "\n\t\t");
+        if (num) {
+            for (i=0; i<cOpcInterrupts; i++) {
+                if (num == OpcInterrupts[i].value) {
+                    return OpcInterrupts[i].pDesc;
                 }
             }
-            if ((i > 0) && (0== (i % 8))) {
-                AStr_AppendPrint(pStr, "\n\t\t");
+        }
+        return 0;
+    }
+
+
+    uint16_t          Opc360_InterruptValue (
+        const
+        char              *pStrA
+    )
+    {
+        uint32_t            i;
+
+        if (pStrA) {
+            for (i=0; i<cOpcInterrupts; i++) {
+                if (0 == strcmp(pStrA, OpcInterrupts[i].pDesc)) {
+                    return OpcInterrupts[i].value;
+                }
             }
-            AStr_AppendPrint(pStr, "%u\n", *pNum);
-            AStr_AppendPrint(pStr, "\t],\n");
         }
-    }
-
-
-    void            JsonOut_Append_u16 (
-        const
-        char            *pNameA,
-        uint16_t        num,
-        ASTR_DATA       *pStr
-    )
-    {
-        if (pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\": %u,\n", pNameA, num);
-        }
-    }
-
-
-    void            JsonOut_Append_u32 (
-        const
-        char            *pNameA,
-        uint32_t        num,
-        ASTR_DATA       *pStr
-    )
-    {
-        if (pStr && pNameA) {
-            AStr_AppendPrint(pStr, "\t\"%s\": %lu,\n", pNameA, num);
-        }
+        return 0;
     }
 
 
 
-    void            JsonOut_Append_utf8 (
-        const
-        char            *pNameA,
-        const
-        char            *pStrA,
-        ASTR_DATA       *pStr
-    )
-    {
-        ASTR_DATA       *pWrkStr;
-
-        if (pStrA && pStr && pNameA) {
-            pWrkStr = utf8_DataToJson(pStrA);
-            AStr_AppendPrint(pStr, "\t\"%s\": %s,\n", pNameA, AStr_getData(pWrkStr));
-            obj_Release(pWrkStr);
-            pWrkStr = 0;
-        }
-    }
-
-
-    JSONOUT_DATA *     JsonOut_New (
+    OPC360_DATA *     Opc360_New (
         void
     )
     {
-        JSONOUT_DATA       *this;
+        OPC360_DATA       *this;
         
-        this = JsonOut_Alloc( );
+        this = Opc360_Alloc( );
         if (this) {
-            this = JsonOut_Init(this);
+            this = Opc360_Init(this);
         } 
         return this;
+    }
+
+
+
+    OPC360_DATA *   Opc360_NewA (
+        const
+        char            *pNameA
+    )
+    {
+        OPC360_DATA       *this;
+
+        this = Opc360_New( );
+        if (this) {
+            Opcode_setNameA((OPCODE_DATA *)this, pNameA);
+        }
+        return this;
+    }
+
+
+
+    const
+    char *          Opc360_TypeDesc (
+        uint16_t        num
+    )
+    {
+        uint32_t        i;
+
+        if (num) {
+            for (i=0; i<cOpcTypes; i++) {
+                if (num == OpcTypes[i].value) {
+                    return OpcTypes[i].pDesc;
+                }
+            }
+        }
+        return 0;
+    }
+
+
+    uint16_t          Opc360_TypeValue (
+        const
+        char              *pStrA
+    )
+    {
+        uint32_t            i;
+
+        if (pStrA) {
+            for (i=0; i<cOpcTypes; i++) {
+                if (0 == strcmp(pStrA, OpcTypes[i].pDesc)) {
+                    return OpcTypes[i].value;
+                }
+            }
+        }
+        return 0;
     }
 
 
@@ -349,18 +319,86 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          P r i o r i t y
+    //                         E n t r y
     //---------------------------------------------------------------
-    
-    uint16_t        JsonOut_getPriority (
-        JSONOUT_DATA     *this
+
+    OPCODE_ENTRY *  Opc360_getEntry (
+        OPC360_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return &((OPCODE_DATA *)this)->entry;
+    }
+
+
+    //---------------------------------------------------------------
+    //                          N a m e
+    //---------------------------------------------------------------
+
+    const
+    char *          Opc360_getNameA (
+        OPC360_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opc360_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Opc360_getEntry(this)->Name;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         O p c o d e
+    //---------------------------------------------------------------
+
+    OPCODE_DATA *   Opc360_getOpcode (
+        OPC360_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opc360_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (OPCODE_DATA *)this;
+    }
+
+
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        Opc360_getPriority (
+        OPC360_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -371,14 +409,14 @@ extern "C" {
     }
 
 
-    bool            JsonOut_setPriority (
-        JSONOUT_DATA     *this,
+    bool            Opc360_setPriority (
+        OPC360_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -392,16 +430,16 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S i z e
+    //                         S i z e
     //---------------------------------------------------------------
     
-    uint32_t        JsonOut_getSize (
-        JSONOUT_DATA       *this
+    uint32_t        Opc360_getSize (
+        OPC360_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -413,66 +451,18 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * JsonOut_getStr (
-        JSONOUT_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!JsonOut_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        JsonOut_setStr (
-        JSONOUT_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!JsonOut_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  JsonOut_getSuperVtbl (
-        JSONOUT_DATA     *this
+    OBJ_IUNKNOWN *  Opc360_getSuperVtbl (
+        OPC360_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -501,16 +491,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = JsonOut_Assign(this,pOther);
+        ERESULT eRc = Opc360_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another JSONOUT object
+     @param     pOther  a pointer to another OPC360 object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         JsonOut_Assign (
-        JSONOUT_DATA		*this,
-        JSONOUT_DATA     *pOther
+    ERESULT         Opc360_Assign (
+        OPC360_DATA		*this,
+        OPC360_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -518,11 +508,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!JsonOut_Validate(pOther)) {
+        if (!Opc360_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -567,8 +557,6 @@ extern "C" {
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -584,51 +572,27 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         JsonOut_Compare (
-        JSONOUT_DATA     *this,
-        JSONOUT_DATA     *pOther
+    ERESULT         Opc360_Compare (
+        OPC360_DATA     *this,
+        OPC360_DATA     *pOther
     )
     {
-        int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!JsonOut_Validate(pOther)) {
+        if (!Opc360_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
+        eRc = Opcode_Compare((OPCODE_DATA *)this, (OPCODE_DATA *)pOther);
 
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
         return eRc;
     }
     
@@ -642,36 +606,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        JsonOut      *pCopy = JsonOut_Copy(this);
+        Opc360      *pCopy = Opc360_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a JSONOUT object which must be 
+     @return    If successful, a OPC360 object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    JSONOUT_DATA *     JsonOut_Copy (
-        JSONOUT_DATA       *this
+    OPC360_DATA *     Opc360_Copy (
+        OPC360_DATA       *this
     )
     {
-        JSONOUT_DATA       *pOther = OBJ_NIL;
+        OPC360_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef JSONOUT_IS_CONSTANT
+#ifdef OPC360_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = JsonOut_New( );
+        pOther = Opc360_New( );
         if (pOther) {
-            eRc = JsonOut_Assign(this, pOther);
+            eRc = Opc360_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -689,11 +653,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            JsonOut_Dealloc (
+    void            Opc360_Dealloc (
         OBJ_ID          objId
     )
     {
-        JSONOUT_DATA   *this = objId;
+        OPC360_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -702,7 +666,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -710,11 +674,9 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((JSONOUT_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((OPC360_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        JsonOut_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -735,32 +697,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        JsonOut      *pDeepCopy = JsonOut_Copy(this);
+        Opc360      *pDeepCopy = Opc360_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a JSONOUT object which must be 
+     @return    If successful, a OPC360 object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    JSONOUT_DATA *     JsonOut_DeepyCopy (
-        JSONOUT_DATA       *this
+    OPC360_DATA *     Opc360_DeepyCopy (
+        OPC360_DATA       *this
     )
     {
-        JSONOUT_DATA       *pOther = OBJ_NIL;
+        OPC360_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = JsonOut_New( );
+        pOther = Opc360_New( );
         if (pOther) {
-            eRc = JsonOut_Assign(this, pOther);
+            eRc = Opc360_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -783,8 +745,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         JsonOut_Disable (
-        JSONOUT_DATA		*this
+    ERESULT         Opc360_Disable (
+        OPC360_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -792,7 +754,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -818,8 +780,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         JsonOut_Enable (
-        JSONOUT_DATA		*this
+    ERESULT         Opc360_Enable (
+        OPC360_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -827,7 +789,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -847,11 +809,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    JSONOUT_DATA *   JsonOut_Init (
-        JSONOUT_DATA       *this
+    OPC360_DATA *   Opc360_Init (
+        OPC360_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(JSONOUT_DATA);
+        uint32_t        cbSize = sizeof(OPC360_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -868,41 +830,39 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_JSONOUT);
+        this = (OBJ_ID)Opcode_Init((OPCODE_DATA *)this);        // Needed for Inheritance
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&JsonOut_Vtbl);
-        
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        */
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Opc360_Vtbl);
+
+        Opc360_getOpcode(this)->pFeatureDesc = Opc360_FeatureDesc;
+        Opc360_getOpcode(this)->pFeatureValue = Opc360_FeatureValue;
+        Opc360_getOpcode(this)->pInterruptDesc = Opc360_InterruptDesc;
+        Opc360_getOpcode(this)->pInterruptValue = Opc360_InterruptValue;
+        Opc360_getOpcode(this)->pTypeDesc = Opc360_TypeDesc;
+        Opc360_getOpcode(this)->pTypeValue = Opc360_TypeValue;
 
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "JsonOut::sizeof(JSONOUT_DATA) = %lu\n", 
-                sizeof(JSONOUT_DATA)
+                "Opc360::sizeof(OPC360_DATA) = %lu\n", 
+                sizeof(OPC360_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(JSONOUT_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(OPC360_DATA));
 #endif
 
         return this;
@@ -914,8 +874,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         JsonOut_IsEnabled (
-        JSONOUT_DATA		*this
+    ERESULT         Opc360_IsEnabled (
+        OPC360_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -923,7 +883,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -950,14 +910,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = JsonOut_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Opc360_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "JsonOut", prefix,
+                        the object name, "Opc360", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -965,13 +925,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          JsonOut_QueryInfo (
+    void *          Opc360_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        JSONOUT_DATA     *this = objId;
+        OPC360_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -980,7 +940,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -988,69 +948,74 @@ extern "C" {
         
         switch (type) {
                 
-        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(JSONOUT_DATA);
-            break;
-            
-            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)JsonOut_Class();
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(OPC360_DATA);
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)Opc360_Class();
+                break;
+
+            // Query for an address to specific data within the object.
+            // This should be used very sparingly since it breaks the
+            // object's encapsulation.
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+
+                    case 'O':
+                        if (str_Compare("Opcode", (char *)pStr) == 0) {
+                            return this;
+                        }
+                        break;
+
+                    case 'S':
+                        if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
+                            return &this->pSuperVtbl;
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
-                
+
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return JsonOut_Disable;
+                            return Opc360_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return JsonOut_Enable;
+                            return Opc360_Enable;
                         }
                         break;
 
-#ifdef  JSONOUT_JSON_SUPPORT
+#ifdef  OPC360_JSON_SUPPORT
                     case 'P':
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return JsonOut_ParseJsonFields;
+                            return Opc360_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return JsonOut_ParseJsonObject;
+                            return Opc360_ParseJsonObject;
                         }
                         break;
 #endif
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return JsonOut_ToDebugString;
+                            return Opc360_ToDebugString;
                         }
-#ifdef  JSONOUT_JSON_SUPPORT
+#ifdef  OPC360_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return JsonOut_ToJson;
+                            return Opc360_ToJson;
                         }
 #endif
                         break;
@@ -1061,10 +1026,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == JsonOut_ToDebugString)
+                if (pData == Opc360_ToDebugString)
                     return "ToDebugString";
-#ifdef  JSONOUT_JSON_SUPPORT
-                if (pData == JsonOut_ToJson)
+#ifdef  OPC360_JSON_SUPPORT
+                if (pData == Opc360_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1086,7 +1051,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = JsonOut_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Opc360_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1094,22 +1059,23 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     JsonOut_ToDebugString (
-        JSONOUT_DATA      *this,
+    ASTR_DATA *     Opc360_ToDebugString (
+        OPC360_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!JsonOut_Validate(this)) {
+        if (!Opc360_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1130,7 +1096,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    JsonOut_getSize(this),
+                    Opc360_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1168,15 +1134,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            JsonOut_Validate (
-        JSONOUT_DATA      *this
+    bool            Opc360_Validate (
+        OPC360_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_JSONOUT))
+            if (obj_IsKindOf(this, OBJ_IDENT_OPC360))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1192,7 +1158,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(JSONOUT_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(OPC360_DATA))) {
             return false;
         }
 

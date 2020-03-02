@@ -820,6 +820,77 @@ int         test_lexj_Number09(
 
 
 
+int         test_lexj_Number10(
+    const
+    char        *pTestName
+)
+{
+    LEXJ_DATA       *pLexJ = OBJ_NIL;
+    TOKEN_DATA      *pToken;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pStringToParse = "{\"one\" : 0x11}";
+    ASTR_DATA       *pAStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pLexJ = lexj_NewA(pStringToParse, 4, true);
+    XCTAssertFalse( (OBJ_NIL == pLexJ) );
+    obj_TraceSet(pLexJ, true);
+    if (pLexJ) {
+
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_SEP_LBRACE == Token_getClass(pToken)) );
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_CONSTANT_STRING == Token_getClass(pToken)) );
+        pStr = Token_ToDataString(pToken);
+        XCTAssertTrue( (0 == strcmp("one", AStr_getData(pStr))) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_SEP_COLON == Token_getClass(pToken)) );
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_CONSTANT_INTEGER == Token_getClass(pToken)) );
+        pStr = Token_ToDataString(pToken);
+        XCTAssertTrue( (0 == strcmp("0x11", AStr_getData(pStr))) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_SEP_RBRACE == Token_getClass(pToken)) );
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEX_CLASS_EOF == Token_getClass(pToken)) );
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+
+        obj_Release(pLexJ);
+        pLexJ = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_lexj_String01(
     const
     char        *pTestName
@@ -1043,6 +1114,7 @@ TINYTEST_START_SUITE(test_lexj);
     TINYTEST_ADD_TEST(test_lexj_String03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_String02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_String01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_lexj_Number10,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_lexj_Number09,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_Number08,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_Number07,setUp,tearDown);

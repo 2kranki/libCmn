@@ -339,7 +339,7 @@ extern "C" {
     
     
     /*!
-     This routine restarts token the flow from the last checkpoint and
+     This routine restarts the token flow from the last checkpoint and
      terminates the checkpoint process.
      @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_???.
      */

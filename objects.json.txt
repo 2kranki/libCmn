@@ -109,6 +109,8 @@
         {name:"objMatrix"},
         {name:"ObjMethod", json:true},
         {name:"ObjVLink", deps:["i32Array.h"], json:true},
+        {name:"Opcode", "deps":["cmn_defs.h", "Node.h"], json:true},
+        {name:"Opcode", "deps":["cmn_defs.h", "NodeBT.h", "Opcode.h"], json:true},
         {name:"Parser"},
         {name:"Path", deps:["AStr.h"], json:true},
         {name:"plist", deps:["ObjArray.h"]},

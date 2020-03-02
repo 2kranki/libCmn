@@ -62,16 +62,17 @@ extern "C" {
 #pragma pack(push, 1)
     typedef struct sym_entry_s {
         uint16_t        cbSize;             // Control Block Size in bytes
-        uint16_t        flags;
+        uint16_t        Flags;
         #define SYM_ABS     0x8000              // Absolute value
         #define SYM_REL     0x4000              // Relocatable value
         // Note: Abs or Rel may not be valid in initial passes.
-        uint32_t        hash;               // Hash Code for name
-        uint8_t         nameLen;
-        char            name[63];           // NUL-terminated name
-        uint32_t        token;              // unique token for name
-        int32_t         cls;                // User Defined Class
-        int32_t         type;               // See SYM_TYPE
+        uint32_t        Hash;               // Hash Code for name
+        uint8_t         cName;
+#define SYM_ENTRY_NAME_MAX  63
+        char            Name[63];           // NUL-terminated name
+        uint32_t        Token;              // unique token for name
+        int32_t         Cls;                // User Defined Class
+        int32_t         Type;               // See SYM_TYPE
         uint32_t        prim;               // See SYM_PRIMITIVE;
         uint32_t        len;                // Data Length in Bytes
         uint32_t        dup;                // Duplication Factor

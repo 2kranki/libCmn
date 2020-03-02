@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   szBT_internal.h
- *	Generated 02/25/2020 10:00:27
+ * File:   Opcodes_internal.h
+ *	Generated 02/27/2020 16:46:25
  *
  * Notes:
  *  --	N/A
@@ -39,58 +39,22 @@
 
 
 
-#include        <szBT.h>
-#include        <Blocks_internal.h>
+#include        <Opcodes.h>
 #include        <JsonIn.h>
-#include        <rbt_tree.h>
+#include        <Opcode_internal.h>
+#include        <szBT.h>
 
 
-#ifndef SZBT_INTERNAL_H
-#define	SZBT_INTERNAL_H
+#ifndef OPCODES_INTERNAL_H
+#define	OPCODES_INTERNAL_H
 
 
-
-#define     PROPERTY_STR_OWNED 1
 
 
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
-
-    //      Node Record Descriptor
-    typedef struct  szBT_record_s     SZBT_RECORD;
-#pragma pack(push, 1)
-    struct  szBT_record_s {
-        // RBT_NODE must be first field in this struct.
-        RBT_NODE        node;
-        uint32_t        unique;
-        //char            *pNameA;              // Use node.key
-        //void            *pData;               // Use node.value
-    };
-#pragma pack(pop)
-
-
-
-#pragma pack(push, 1)
-    typedef struct  szBT_find_s {
-        uint32_t        unique;
-        SZBT_RECORD     *pRecord;
-    } SZBT_FIND;
-#pragma pack(pop)
-
-
-
-#pragma pack(push, 1)
-    typedef struct  nodeBT_visit_s {
-        SZBT_RECORD     *pRecord;       // Current Record
-        P_ERESULT_EXIT3 pScan;
-        OBJ_ID          pObj;           // Used as first parameter of scan method
-        void            *pArg3;
-    } NODEBT_VISIT;
-#pragma pack(pop)
-
 
 
 
@@ -100,32 +64,24 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct szBT_data_s	{
+struct Opcodes_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    BLOCKS_DATA     super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    RBT_TREE        tree;
-    SZBT_RECORD     *pRoot;
-    uint32_t        size;            // maximum number of elements
-    uint32_t        unique;
-
-    // Record Deletion Exit
-    P_ERESULT_EXIT3 pDeleteExit;
-    OBJ_ID          pDeleteObj;      // Used as first parameter of pDelete
-    //                              // second parameter is key and third is data
+    SZBT_DATA       *pTree;
 
 };
 #pragma pack(pop)
 
     extern
-    struct szBT_class_data_s  szBT_ClassObj;
+    struct Opcodes_class_data_s  Opcodes_ClassObj;
 
     extern
     const
-    SZBT_VTBL         szBT_Vtbl;
+    OPCODES_VTBL         Opcodes_Vtbl;
 
 
 
@@ -133,13 +89,13 @@ struct szBT_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  SZBT_SINGLETON
-    SZBT_DATA *     szBT_getSingleton (
+#ifdef  OPCODES_SINGLETON
+    OPCODES_DATA *  Opcodes_getSingleton (
         void
     );
 
-    bool            szBT_setSingleton (
-     SZBT_DATA       *pValue
+    bool            Opcodes_setSingleton (
+     OPCODES_DATA       *pValue
 );
 #endif
 
@@ -149,35 +105,40 @@ struct szBT_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  szBT_getSuperVtbl (
-        SZBT_DATA     *this
+    OBJ_IUNKNOWN *  Opcodes_getSuperVtbl (
+        OPCODES_DATA     *this
     );
 
 
-    ERESULT         szBT_Assign (
-        SZBT_DATA    *this,
-        SZBT_DATA    *pOther
+    SZBT_DATA *     Opcodes_getTree (
+        OPCODES_DATA    *this
     );
 
 
-    SZBT_DATA *       szBT_Copy (
-        SZBT_DATA     *this
+    ERESULT         Opcodes_Assign (
+        OPCODES_DATA    *this,
+        OPCODES_DATA    *pOther
     );
 
 
-    void            szBT_Dealloc (
+    OPCODES_DATA *       Opcodes_Copy (
+        OPCODES_DATA     *this
+    );
+
+
+    void            Opcodes_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  SZBT_JSON_SUPPORT
+#ifdef  OPCODES_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SZBT_DATA *       szBT_ParseJsonObject (
+    OPCODES_DATA *       Opcodes_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -191,27 +152,27 @@ struct szBT_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         szBT_ParseJsonFields (
+    ERESULT         Opcodes_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SZBT_DATA     *pObject
+        OPCODES_DATA     *pObject
     );
 #endif
 
 
-    void *          szBT_QueryInfo (
+    void *          Opcodes_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  SZBT_JSON_SUPPORT
+#ifdef  OPCODES_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = szBT_ToJson(this);
+     ASTR_DATA      *pDesc = Opcodes_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -219,8 +180,8 @@ struct szBT_data_s	{
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     szBT_ToJson (
-        SZBT_DATA      *this
+    ASTR_DATA *     Opcodes_ToJson (
+        OPCODES_DATA      *this
     );
 
 
@@ -233,8 +194,8 @@ struct szBT_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         szBT_ToJsonFields (
-        SZBT_DATA     *this,
+    ERESULT         Opcodes_ToJsonFields (
+        OPCODES_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -244,8 +205,8 @@ struct szBT_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			szBT_Validate (
-        SZBT_DATA       *this
+    bool			Opcodes_Validate (
+        OPCODES_DATA       *this
     );
 #endif
 
@@ -255,5 +216,5 @@ struct szBT_data_s	{
 }
 #endif
 
-#endif	/* SZBT_INTERNAL_H */
+#endif	/* OPCODES_INTERNAL_H */
 

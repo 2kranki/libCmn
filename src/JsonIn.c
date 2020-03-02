@@ -61,6 +61,8 @@
 #include        <ObjList_internal.h>
 #include        <ObjMethod_internal.h>
 #include        <ObjHash.h>
+#include        <Opc360_internal.h>
+#include        <Opcode_internal.h>
 #include        <SrcError_internal.h>
 #include        <SrcErrors_internal.h>
 #include        <SrcLoc.h>
@@ -1585,6 +1587,39 @@ extern "C" {
     }
 
 
+    ERESULT         JsonIn_FindU8NodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        uint8_t         *pInt
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pData;
+        int64_t         num = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "integer", (void **)&pData);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        num = AStr_ToInt64(pData);
+
+        if (pInt) {
+            *pInt = (uint8_t)num;
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
     ERESULT         JsonIn_FindU16NodeInHashA (
         JSONIN_DATA     *this,
         const
@@ -2022,6 +2057,20 @@ extern "C" {
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)ObjMethod_ParseJsonObject(this);
+            return pObj;
+        }
+
+        pInfo = obj_getInfo(Opc360_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)Opc360_ParseJsonObject(this);
+            return pObj;
+        }
+
+        pInfo = obj_getInfo(Opcode_Class());
+        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            pObj = (OBJ_ID)Opcode_ParseJsonObject(this);
             return pObj;
         }
 

@@ -478,6 +478,13 @@ extern "C" {
         int32_t         *pInt
     );
 
+    ERESULT         JsonIn_FindU8NodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        uint8_t         *pInt
+    );
+
     ERESULT         JsonIn_FindU16NodeInHashA (
         JSONIN_DATA     *this,
         const
@@ -607,7 +614,7 @@ extern "C" {
 
     /*!
      Restore the JSON Node Tree that was saved from a prior call to the method,
-     SubobjectInHash().
+     SubobjectInHash() or JsonIn_SubObjectFromHash().
      @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_* error code
      */

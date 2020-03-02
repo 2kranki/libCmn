@@ -185,14 +185,15 @@ bool            str_Concat(
 
 /* str_Copy() copies the Input String to the Output String in-
  * cluding the nul-terminator for the Maximum number of Chars
- * specified.  The Output String is always left nul-terminated.
+ * specified less 1 for the nul-terminator.  The Output String
+ * is always left nul-terminated.
  * Returns:
  *	TRUE				=	Successful Completion
  *	FALSE               =	Output Field Overflow or Invalid Parameters
  */
 bool            str_Copy(
     char			*pszOut,		/* Output Buffer Pointer */
-    int             outLen,			/* Output Buffer Length */
+    int             outLen,			/* Output Buffer Length (includes NUL) */
     const
     char            *pszIn          /* Input String Pointer */
 );

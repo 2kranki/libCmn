@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   szBT.c
- *	Generated 02/25/2020 10:00:27
+ * File:   Opcodes.c
+ *	Generated 02/27/2020 16:46:25
  *
  */
 
@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <szBT_internal.h>
+#include        <Opcodes_internal.h>
+#include        <ObjEnum_internal.h>
 #include        <trace.h>
 
 
@@ -66,312 +67,65 @@ extern "C" {
     //                  D e l e t e  E x i t
     //---------------------------------------------------------------
 
-    ERESULT         szBT_DeleteExit(
-        SZBT_DATA       *this,
-        SZBT_RECORD     *pRecord,
-        void            *pArg3
+    ERESULT         Opcodes_DeleteExit (
+        OPCODES_DATA    *this,
+        void            *pKey,
+        void            *pData
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
 
-        if (this->pDeleteExit) {
-            eRc =   this->pDeleteExit(
-                                    this->pDeleteObj,
-                                    pRecord->node.pKey,
-                                    pRecord->node.pValue
-                    );
-        }
-
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                  E n u m  E x i t
-    //---------------------------------------------------------------
-
-    ERESULT         szBT_EnumExit(
-        SZBT_DATA       *this,
-        SZBT_RECORD     *pRecord,
-        NODEENUM_DATA   *pEnum
-    )
-    {
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        //NODE_DATA       *pNode = pRecord->node.pKey;
-
-#ifdef IF_NEEDED
-        if (pNode && pEnum) {
-            eRc = NodeEnum_AppendObj(pEnum, (NODE_DATA *)pNode);
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Opcodes_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        return eRc;
-    }
+        // We can ignore the key since it is part of the data object.
 
-
-
-    //---------------------------------------------------------------
-    //                  F i n d  E x i t
-    //---------------------------------------------------------------
-
-    ERESULT         szBT_FindExit(
-        NODEBT_DATA     *this,
-        SZBT_RECORD     *pRecord,
-        SZBT_FIND       *pFind
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        NODE_DATA       *pNode = pRecord->node.pKey;
-
-        if (pNode) {
-            if (pFind->unique == pRecord->unique) {
-                pFind->pRecord = pRecord;
-                return ERESULT_DATA_NOT_FOUND;
-            }
-        }
-
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                  F i n d  U n i q u e
-    //---------------------------------------------------------------
-
-    SZBT_RECORD *   szBT_FindUnique(
-        NODEBT_DATA     *this,
-        uint32_t        unique
-    )
-    {
-        LISTDL_DATA     *pList;
-        BLOCKS_NODE     *pEntry = NULL;
-        SZBT_RECORD     *pRecord = NULL;
-
-        pList = Blocks_getList((BLOCKS_DATA *)this);
-        if (pList) {
-            pEntry = listdl_Head(pList);
-            while (pEntry) {
-                pRecord = (SZBT_RECORD *)pEntry->data;
-                if (unique == pRecord->unique) {
-                    break;
-                }
-                pEntry = listdl_Next(pList, pEntry);
-            }
-        }
-
-        return pRecord;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                  L e f t - M o s t  C h i l d
-    //---------------------------------------------------------------
-
-    // The Left-Most Child is the smallest key of the sub-tree from
-    // the given node.
-
-    SZBT_RECORD *   szBT_LeftMostChild(
-        SZBT_DATA       *this,
-        SZBT_RECORD     *pRecord
-    )
-    {
-
-        // Do initialization.
-        if (NULL == pRecord) {
-            return NULL;
-        }
-
-        if (pRecord) {
-            while (pRecord->node.pLink[RBT_LEFT]) {
-                pRecord = (SZBT_RECORD *)pRecord->node.pLink[RBT_LEFT];
-            }
-        }
+        // Release the Opcode object.
+        obj_Release(pData);
 
         // Return to caller.
-        return pRecord;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                  N o d e  C o m p a r e
-    //---------------------------------------------------------------
-
-    int             szBT_NodeCmp(
-        void            *pKeyA,
-        void            *pKeyB
-    )
-    {
-        int             iRc;
-
-        iRc = strcmp((char *)pKeyA, (char *)pKeyB);
-        return iRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                  N o d e s  E x i t
-    //---------------------------------------------------------------
-
-    ERESULT         szBT_NodesExit(
-        NODEBT_DATA     *this,
-        SZBT_RECORD     *pRecord,
-        NODEARRAY_DATA  *pArray
-    )
-    {
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODE_DATA       *pNode = pRecord->node.pKey;
-
-        if (pNode && pArray) {
-            eRc = NodeArray_AppendNode(pArray, (NODE_DATA *)pNode, NULL);
-        }
-
         return eRc;
     }
 
 
 
     //---------------------------------------------------------------
-    //                  V i s i t  E x i t
+    //                  S c a n  E x i t
     //---------------------------------------------------------------
 
-    ERESULT         szBT_VisitExit(
-        NODEBT_DATA     *this,
-        SZBT_RECORD     *pRecord,
-        NODEBT_VISIT    *pParms
+    ERESULT         Opcodes_ScanExit (
+        OPCODES_DATA    *this,
+        const
+        char            *pKey,
+        OPCODE_DATA     *pData,
+        OBJENUM_DATA    *pEnum
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        NODE_DATA       *pNode;
 
-        if (pRecord) {
-            pNode = pRecord->node.pKey;
-            if (pNode) {
-                if (pParms->pScan) {
-                    eRc = pParms->pScan(pParms->pObj, pNode, pParms->pArg3);
-                }
-            }
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Opcodes_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
         }
+#endif
 
+        // We can ignore the key since it is part of the data object.
+
+        eRc = ObjEnum_AppendObj(pEnum, pData);
+
+        // Return to caller.
         return eRc;
     }
 
-
-
-    //---------------------------------------------------------------
-    //                  V i s i t  N o d e s
-    //---------------------------------------------------------------
-
-    /*! Visit all the nodes from the given node and below in the Tree
-     using a Pre-order traversal.
-     */
-    ERESULT         szBT_VisitNodeInRecurse(
-        SZBT_DATA       *this,
-        SZBT_RECORD     *pRecord,
-        P_ERESULT_EXIT3 pScan,
-        OBJ_ID          pObj,            // Used as first parameter of scan method
-        void            *pArg3
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        SZBT_RECORD     *pWork;
-
-        if (pRecord) {
-            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_LEFT];
-            if (pWork) {
-                eRc = szBT_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
-                if (ERESULT_FAILED(eRc))
-                    return eRc;
-            }
-            eRc = pScan(pObj, pRecord->node.pKey, pArg3);
-            if (ERESULT_FAILED(eRc))
-                return eRc;
-            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_RIGHT];
-            if (pWork) {
-                eRc = szBT_VisitNodeInRecurse(this, pWork, pScan, pObj, pArg3);
-                if (ERESULT_FAILED(eRc))
-                    return eRc;
-            }
-        }
-
-        return eRc;
-    }
-
-
-    /*! Visit all the nodes from the given node and below in the Tree
-     using a Post-order traversal.
-     */
-    ERESULT         szBT_VisitNodePostRecurse(
-        SZBT_DATA       *this,
-        SZBT_RECORD     *pRecord,
-        P_ERESULT_EXIT3 pScan,
-        OBJ_ID          pObj,            // Used as first parameter of scan method
-        void            *pArg3
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        SZBT_RECORD     *pWork;
-
-        if (pRecord) {
-            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_LEFT];
-            if (pWork) {
-                eRc = szBT_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
-                if (ERESULT_FAILED(eRc))
-                    return eRc;
-            }
-            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_RIGHT];
-            if (pWork) {
-                eRc = szBT_VisitNodePostRecurse(this, pWork, pScan, pObj, pArg3);
-                if (ERESULT_FAILED(eRc))
-                    return eRc;
-            }
-            eRc = pScan(pObj, pRecord->node.pKey, pArg3);
-            if (ERESULT_FAILED(eRc))
-                return eRc;
-        }
-
-        return eRc;
-    }
-
-
-    /*! Visit all the nodes from the given node and below in the Tree
-     using a Pre-order traversal.
-     */
-    ERESULT         szBT_VisitNodePreRecurse(
-        SZBT_DATA       *this,
-        SZBT_RECORD     *pRecord,
-        P_ERESULT_EXIT3 pScan,
-        OBJ_ID          pObj,            // Used as first parameter of scan method
-        void            *pArg3
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        SZBT_RECORD     *pWork;
-
-        if (pRecord) {
-            eRc = pScan(pObj, pRecord->node.pKey, pArg3);
-            if (ERESULT_FAILED(eRc))
-                return eRc;
-            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_LEFT];
-            if (pWork) {
-                eRc = szBT_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
-                if (ERESULT_FAILED(eRc))
-                    return eRc;
-            }
-            pWork = (SZBT_RECORD *)pRecord->node.pLink[RBT_RIGHT];
-            if (pWork) {
-                eRc = szBT_VisitNodePreRecurse(this, pWork, pScan, pObj, pArg3);
-                if (ERESULT_FAILED(eRc))
-                    return eRc;
-            }
-        }
-
-        return eRc;
-    }
 
 
 
@@ -385,12 +139,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SZBT_DATA *     szBT_Alloc (
+    OPCODES_DATA *     Opcodes_Alloc (
         void
     )
     {
-        SZBT_DATA       *this;
-        uint32_t        cbSize = sizeof(SZBT_DATA);
+        OPCODES_DATA       *this;
+        uint32_t        cbSize = sizeof(OPCODES_DATA);
         
         // Do initialization.
         
@@ -402,15 +156,15 @@ extern "C" {
 
 
 
-    SZBT_DATA *     szBT_New (
+    OPCODES_DATA *     Opcodes_New (
         void
     )
     {
-        SZBT_DATA       *this;
+        OPCODES_DATA       *this;
         
-        this = szBT_Alloc( );
+        this = Opcodes_Alloc( );
         if (this) {
-            this = szBT_Init(this);
+            this = Opcodes_Init(this);
         } 
         return this;
     }
@@ -424,27 +178,24 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                    D e l e t e  E x i t
+    //                       N o d e B T
     //---------------------------------------------------------------
 
-    bool            szBT_setDeleteExit(
-        SZBT_DATA       *this,
-        ERESULT         (*pDeleteExit)(OBJ_ID, void *pKey, void *pData),
-        OBJ_ID          pObj
+    NODEBT_DATA *   Opcodes_getNodeBT (
+        OPCODES_DATA    *this
     )
     {
+
+        // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
-            return false;
+            return OBJ_NIL;
         }
 #endif
 
-        this->pDeleteExit = pDeleteExit;
-        this->pDeleteObj  = pObj;
-
-        return true;
+        return (NODEBT_DATA *)this;
     }
 
 
@@ -453,15 +204,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        szBT_getPriority (
-        SZBT_DATA     *this
+    uint16_t        Opcodes_getPriority (
+        OPCODES_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -472,14 +223,14 @@ extern "C" {
     }
 
 
-    bool            szBT_setPriority (
-        SZBT_DATA     *this,
+    bool            Opcodes_setPriority (
+        OPCODES_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -496,19 +247,19 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        szBT_getSize (
-        SZBT_DATA       *this
+    uint32_t        Opcodes_getSize (
+        OPCODES_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return (uint32_t)this->tree.size;
+        return szBT_getSize(Opcodes_getTree(this));
     }
 
 
@@ -517,15 +268,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  szBT_getSuperVtbl (
-        SZBT_DATA     *this
+    OBJ_IUNKNOWN *  Opcodes_getSuperVtbl (
+        OPCODES_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -537,7 +288,53 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                         T r e e
+    //---------------------------------------------------------------
+
+    SZBT_DATA *     Opcodes_getTree (
+        OPCODES_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opcodes_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pTree;
+    }
+
+
+    bool            Opcodes_setTree (
+        OPCODES_DATA    *this,
+        SZBT_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Opcodes_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pTree) {
+            obj_Release(this->pTree);
+        }
+        this->pTree = pValue;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -548,104 +345,36 @@ extern "C" {
     //                          A d d
     //---------------------------------------------------------------
 
-    ERESULT         szBT_AddA (
-        SZBT_DATA       *this,
-        const
-        char            *pNameA,            // UTF-8
-        void            *pData
+    ERESULT         Opcodes_Add (
+        OPCODES_DATA    *this,
+        OPCODE_DATA     *pOpc
     )
     {
-        void            *pFound;
-        SZBT_RECORD     *pRecord = NULL;
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        int             iRc;
-        uint32_t        unique;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pNameA) {
+        if (OBJ_NIL == pOpc) {
             DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (obj_IsKindOf(pOpc, OBJ_IDENT_OPCODE))
+            ;
+        else {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
-        pFound = szBT_FindA(this, pNameA);
-        if (pFound) {
-            return ERESULT_DATA_ALREADY_EXISTS;
-         }
-
-        pRecord = Blocks_RecordNew((BLOCKS_DATA *)this, &unique);
-        if (NULL == pRecord) {
-            return ERESULT_OUT_OF_MEMORY;
+        obj_Retain(pOpc);
+        eRc = szBT_AddA(this->pTree, Opcode_getNameA(pOpc), pOpc);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pOpc);
         }
-        pRecord->node.pKey = (void *)pNameA;
-        pRecord->unique = this->unique++;
-        pRecord->node.color = RBT_RED;
-        pRecord->node.pValue = pData;
-
-        iRc = rbt_InsertNode(&this->tree, (RBT_NODE *)pRecord);
-        if (iRc) {
-            eRc = ERESULT_SUCCESS;
-        }
-        else
-            eRc = ERESULT_DATA_ALREADY_EXISTS;
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-    ERESULT         szBT_AddUpdateA (
-        SZBT_DATA       *this,
-        const
-        char            *pNameA,            // UTF-8
-        void            *pData
-    )
-    {
-        void            *pFound;
-        SZBT_RECORD     *pRecord = NULL;
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        int             iRc;
-        uint32_t        unique;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!szBT_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pNameA) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-        pFound = szBT_FindA(this, pNameA);
-        if (pFound) {
-            eRc = szBT_DeleteA(this, pNameA);
-        }
-
-        pRecord = Blocks_RecordNew((BLOCKS_DATA *)this, &unique);
-        if (NULL == pRecord) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-        pRecord->node.pKey = (void *)pNameA;
-        pRecord->unique = this->unique++;
-        pRecord->node.color = RBT_RED;
-        pRecord->node.pValue = pData;
-
-        iRc = rbt_InsertNode(&this->tree, (RBT_NODE *)pRecord);
-        if (iRc) {
-            eRc = ERESULT_SUCCESS;
-        }
-        else
-            eRc = ERESULT_DATA_ALREADY_EXISTS;
 
         // Return to caller.
         return eRc;
@@ -663,28 +392,28 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = szBT_Assign(this,pOther);
+        ERESULT eRc = Opcodes_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another SZBT object
+     @param     pOther  a pointer to another OPCODES object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         szBT_Assign (
-        SZBT_DATA		*this,
-        SZBT_DATA       *pOther
+    ERESULT         Opcodes_Assign (
+        OPCODES_DATA	*this,
+        OPCODES_DATA    *pOther
     )
     {
-        ERESULT     eRc;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!szBT_Validate(pOther)) {
+        if (!Opcodes_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -701,12 +430,9 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
+        if (pOther->pTree) {
+            szBT_DeleteAll(pOther->pTree);
         }
-#endif
 
         // Create a copy of objects and areas in this object placing
         // them in other.
@@ -746,9 +472,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         szBT_Compare (
-        SZBT_DATA     *this,
-        SZBT_DATA     *pOther
+    ERESULT         Opcodes_Compare (
+        OPCODES_DATA     *this,
+        OPCODES_DATA     *pOther
     )
     {
         int             i = 0;
@@ -762,11 +488,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!szBT_Validate(pOther)) {
+        if (!Opcodes_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -804,36 +530,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        szBT      *pCopy = szBT_Copy(this);
+        Opcodes      *pCopy = Opcodes_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a SZBT object which must be 
+     @return    If successful, a OPCODES object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SZBT_DATA *     szBT_Copy (
-        SZBT_DATA       *this
+    OPCODES_DATA *     Opcodes_Copy (
+        OPCODES_DATA       *this
     )
     {
-        SZBT_DATA       *pOther = OBJ_NIL;
+        OPCODES_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef SZBT_IS_IMMUTABLE
+#ifdef OPCODES_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = szBT_New( );
+        pOther = Opcodes_New( );
         if (pOther) {
-            eRc = szBT_Assign(this, pOther);
+            eRc = Opcodes_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -851,11 +577,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            szBT_Dealloc (
+    void            Opcodes_Dealloc (
         OBJ_ID          objId
     )
     {
-        SZBT_DATA   *this = objId;
+        OPCODES_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -864,7 +590,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -872,9 +598,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((SZBT_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((OPCODES_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
+
+        Opcodes_setTree(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -895,32 +623,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        szBT      *pDeepCopy = szBT_Copy(this);
+        Opcodes      *pDeepCopy = Opcodes_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a SZBT object which must be 
+     @return    If successful, a OPCODES object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SZBT_DATA *     szBT_DeepyCopy (
-        SZBT_DATA       *this
+    OPCODES_DATA *     Opcodes_DeepyCopy (
+        OPCODES_DATA       *this
     )
     {
-        SZBT_DATA       *pOther = OBJ_NIL;
+        OPCODES_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = szBT_New( );
+        pOther = Opcodes_New( );
         if (pOther) {
-            eRc = szBT_Assign(this, pOther);
+            eRc = Opcodes_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -934,62 +662,31 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          D e l e t e
+    //                        D e l e t e
     //---------------------------------------------------------------
 
-    ERESULT         szBT_DeleteA (
-        SZBT_DATA       *this,
+    ERESULT         Opcodes_DeleteA (
+        OPCODES_DATA    *this,
         const
         char            *pNameA
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int             iRc;
+        ERESULT         eRc;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (NULL == pNameA) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
 
-        iRc = rbt_Delete(&this->tree, (void *)pNameA);
-        if (iRc)
-            eRc = ERESULT_SUCCESS;
-        else
-            eRc = ERESULT_DATA_NOT_FOUND;
+        eRc = szBT_DeleteA(this->pTree, pNameA);
 
         // Return to caller.
         return eRc;
     }
-
-
-        ERESULT         szBT_DeleteAll (
-            SZBT_DATA       *this
-        )
-        {
-            ERESULT         eRc = ERESULT_SUCCESS;
-
-            // Do initialization.
-    #ifdef NDEBUG
-    #else
-            if (!szBT_Validate(this)) {
-                DEBUG_BREAK();
-                return ERESULT_INVALID_OBJECT;
-            }
-    #endif
-
-            rbt_DeleteAll(&this->tree);
-
-            // Return to caller.
-            return eRc;
-        }
 
 
 
@@ -1003,8 +700,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         szBT_Disable (
-        SZBT_DATA		*this
+    ERESULT         Opcodes_Disable (
+        OPCODES_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -1012,7 +709,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1038,8 +735,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         szBT_Enable (
-        SZBT_DATA		*this
+    ERESULT         Opcodes_Enable (
+        OPCODES_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -1047,7 +744,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1064,84 +761,67 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          F i n d
+    //                        E n u m
     //---------------------------------------------------------------
 
-    void *          szBT_FindA (
-        SZBT_DATA       *this,
-        const
-        char            *pNameA             // UTF-8
+    OBJENUM_DATA *  Opcodes_Enum (
+        OPCODES_DATA    *this
     )
     {
-        SZBT_RECORD     record = {0};
-        SZBT_RECORD     *pFound = NULL;
+        ERESULT         eRc;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szBT_Validate(this) ) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        if(NULL == pNameA) {
-            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
 #endif
-        record.node.pKey = (void *)pNameA;
 
-        pFound = (SZBT_RECORD *)rbt_FindNode(&this->tree, (RBT_NODE *)&record);
+        pEnum = ObjEnum_New();
+        if (pEnum) {
+            eRc = szBT_ForEach(this->pTree, (void *)Opcodes_ScanExit, this, pEnum);
+            if (pEnum->pArray) {
+                eRc = ObjArray_SortAscending(pEnum->pArray, NULL);
+            }
+        }
 
         // Return to caller.
-        return pFound ? pFound->node.pValue : NULL;
+        return pEnum;
     }
 
 
 
     //---------------------------------------------------------------
-    //                          F o r  E a c h
+    //                          F i n d
     //---------------------------------------------------------------
 
-    ERESULT         szBT_ForEach(
-        SZBT_DATA       *this,
-        P_ERESULT_EXIT4 pScan,
-        OBJ_ID          pObj,               // Used as first parameter of scan method
-        //                                  // second parameter is key
-        //                                  // third parameter is data
-        void            *pArg4              // Used as fourth parameter of scan method
+    OPCODE_DATA *   Opcodes_FindA (
+        OPCODES_DATA    *this,
+        const
+        char            *pNameA
     )
     {
-        LISTDL_DATA     *pList = NULL;
-        BLOCKS_NODE     *pEntry = NULL;
-        ERESULT         eRc = ERESULT_SUCCESS;
+        //ERESULT         eRc;
+        OPCODE_DATA     *pOpc;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szBT_Validate(this) ) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( NULL == pScan ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
         }
 #endif
 
-        pList = Blocks_getList((BLOCKS_DATA *)this);
-        pEntry = listdl_Head(pList);
-        while (pEntry) {
-            SZBT_RECORD         *pRecord = (SZBT_RECORD *)pEntry->data;
-
-            eRc =   pScan(pObj, pRecord->node.pKey, pRecord->node.pValue, pArg4);
-            if (ERESULT_FAILED(eRc))
-                break;
-
-            pEntry = listdl_Next(pList, pEntry);
-        }
+        pOpc = (OPCODE_DATA *)szBT_FindA(this->pTree, pNameA);
 
         // Return to caller.
-        return eRc;
+        return pOpc;
     }
 
 
@@ -1150,11 +830,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    SZBT_DATA *   szBT_Init (
-        SZBT_DATA       *this
+    OPCODES_DATA *  Opcodes_Init (
+        OPCODES_DATA    *this
     )
     {
-        uint32_t        cbSize = sizeof(SZBT_DATA);
+        uint32_t        cbSize = sizeof(OPCODES_DATA);
         ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -1171,7 +851,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)Blocks_Init((BLOCKS_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OPCODE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1179,40 +859,19 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&szBT_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Opcodes_Vtbl);
         
-        this->unique = 1;
-        // Set up Blocks to hold tree data.
-        eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(SZBT_RECORD));
-        if (ERESULT_FAILED(eRc)) {
+        this->pTree = szBT_New( );
+        if (OBJ_NIL == this->pTree) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        Blocks_setDeleteExit(
-                        (BLOCKS_DATA *)this,
-                        (void *)szBT_DeleteExit,
-                        this,               // 1st parameter
-                        NULL                // 3rd parameter
-        );
-
-        // Set up Red-Black tree to use Blocks to hold its data.
-        rbt_Init(
-                 &this->tree,
-                 (void *)szBT_NodeCmp,
-                 (sizeof(SZBT_RECORD) - sizeof(RBT_NODE)),
-                 (void *)Blocks_RecordNew,
-                 (void *)Blocks_RecordFree,
-                 this
-        );
-        this->tree.pNodeAlloc = (void *)Blocks_RecordNew;
-        this->tree.pNodeFree = (void *)Blocks_RecordFree;
-        this->tree.pObjAllocFree = this;
-        this->tree.dataSize = sizeof(SZBT_RECORD) - sizeof(RBT_NODE);
+        eRc = szBT_setDeleteExit(this->pTree, (void *)Opcodes_DeleteExit, this);
 
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -1221,11 +880,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "szBT::sizeof(SZBT_DATA) = %lu\n", 
-                sizeof(SZBT_DATA)
+                "Opcodes::sizeof(OPCODES_DATA) = %lu\n", 
+                sizeof(OPCODES_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(SZBT_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(OPCODES_DATA));
 #endif
 
         return this;
@@ -1237,8 +896,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         szBT_IsEnabled (
-        SZBT_DATA		*this
+    ERESULT         Opcodes_IsEnabled (
+        OPCODES_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -1246,7 +905,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1273,14 +932,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = szBT_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Opcodes_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "szBT", prefix,
+                        the object name, "Opcodes", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1288,13 +947,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          szBT_QueryInfo (
+    void *          Opcodes_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SZBT_DATA     *this = objId;
+        OPCODES_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1303,7 +962,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1312,11 +971,11 @@ extern "C" {
         switch (type) {
                 
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(SZBT_DATA);
+            return (void *)sizeof(OPCODES_DATA);
             break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)szBT_Class();
+                return (void *)Opcodes_Class();
                 break;
                 
 #ifdef XYZZY  
@@ -1346,34 +1005,34 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return szBT_Disable;
+                            return Opcodes_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return szBT_Enable;
+                            return Opcodes_Enable;
                         }
                         break;
 
-#ifdef  SZBT_JSON_SUPPORT
+#ifdef  OPCODES_JSON_SUPPORT
                     case 'P':
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return szBT_ParseJsonFields;
+                            return Opcodes_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return szBT_ParseJsonObject;
+                            return Opcodes_ParseJsonObject;
                         }
                         break;
 #endif
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return szBT_ToDebugString;
+                            return Opcodes_ToDebugString;
                         }
-#ifdef  SZBT_JSON_SUPPORT
+#ifdef  OPCODES_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return szBT_ToJson;
+                            return Opcodes_ToJson;
                         }
 #endif
                         break;
@@ -1384,10 +1043,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == szBT_ToDebugString)
+                if (pData == Opcodes_ToDebugString)
                     return "ToDebugString";
-#ifdef  SZBT_JSON_SUPPORT
-                if (pData == szBT_ToJson)
+#ifdef  OPCODES_JSON_SUPPORT
+                if (pData == Opcodes_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1409,7 +1068,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = szBT_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Opcodes_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1417,14 +1076,14 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     szBT_ToDebugString (
-        SZBT_DATA      *this,
+    ASTR_DATA *     Opcodes_ToDebugString (
+        OPCODES_DATA    *this,
         int             indent
     )
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pWrkStr = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //uint32_t        i;
@@ -1433,7 +1092,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!szBT_Validate(this)) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1454,11 +1113,16 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    szBT_getSize(this),
+                    Opcodes_getSize(this),
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
+        //FIXME: pWrkStr = NodeBT_ToDebugString(Opcodes_getNodeBT(this), indent+3);
+        //FIXME: AStr_Append(pStr, pWrkStr);
+        obj_Release(pWrkStr);
+        pWrkStr = OBJ_NIL;
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
@@ -1492,15 +1156,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            szBT_Validate (
-        SZBT_DATA      *this
+    bool            Opcodes_Validate (
+        OPCODES_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_SZBT))
+            if (obj_IsKindOf(this, OBJ_IDENT_OPCODES))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1516,7 +1180,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(SZBT_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(OPCODES_DATA))) {
             return false;
         }
 
@@ -1528,30 +1192,31 @@ extern "C" {
 
     
     //---------------------------------------------------------------
-    //                     V e r i f y  T r e e
+    //                  V e r i f y  T r e e
     //---------------------------------------------------------------
 
-    ERESULT         szBT_VerifyTree(
-        SZBT_DATA       *this
+    /*!
+     Verify the binary tree used by this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Opcodes_VerifyTree (
+        OPCODES_DATA        *this
     )
     {
         ERESULT         eRc;
-        int             iRc;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !szBT_Validate(this) ) {
+        if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        iRc = rbt_VerifyTree(&this->tree, rbt_getRoot(&this->tree));
-        if (iRc)
-            eRc = ERESULT_SUCCESS;
-        else
-            eRc = ERESULT_DATA_ERROR;
+        eRc = szBT_VerifyTree(this->pTree);
 
         // Return to caller.
         return eRc;
