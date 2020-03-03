@@ -537,7 +537,29 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                          T r e e
+    //---------------------------------------------------------------
+
+    RBT_TREE *      szBT_getTree (
+        SZBT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!szBT_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return &this->tree;
+    }
+
+
+
 
     //===============================================================
     //                          M e t h o d s

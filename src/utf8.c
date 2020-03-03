@@ -603,6 +603,53 @@ extern "C" {
     
     
     
+    uint32_t         utf8_Utf8ToChrConStr(
+        uint32_t        lenStr,         // Input String Length (if zero,
+        //                              // we use NUL-terminator to stop)
+        const
+        char            *pStr,          // Input String pointer
+        uint32_t        lenDest,        // in bytes including NUL
+        char            *pDest
+    )
+    {
+        uint32_t        lenUsed = 0;    // In bytes exluding NUL
+        uint32_t        lenChr;
+        uint32_t        lenCon;
+        W32CHR_T        chr;
+
+        if (0 == lenStr) {
+            lenStr = -1;
+        }
+
+        while (lenStr && *pStr) {
+            lenChr = utf8_Utf8ToW32(pStr, &chr);
+            lenCon = utf8_W32ToChrCon(chr, NULL);
+            if (pDest) {
+                if (lenCon <= lenDest) {
+                    lenUsed += utf8_W32ToChrCon(*pStr, pDest);
+                    pDest += lenCon;
+                    lenDest -= lenCon;
+                }
+                else
+                    break;
+            }
+            else {
+                lenUsed += lenCon;
+            }
+            pStr += lenChr;
+        }
+        if (pDest && lenDest) {
+            *pDest = '\0';
+        }
+        else {
+            ++lenUsed;      // bump for NUL-terminator
+        }
+
+        return lenUsed;
+    }
+
+
+
     int             utf8_Utf8ToW32(
         const
         char            *pSrc,

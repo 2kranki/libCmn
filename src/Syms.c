@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <Syms_internal.h>
+#include        <ObjEnum_internal.h>
 #include        <trace.h>
 
 
@@ -62,16 +63,70 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            Syms_task_body (
+    //---------------------------------------------------------------
+    //                  D e l e t e  E x i t
+    //---------------------------------------------------------------
+
+    ERESULT         Syms_DeleteExit (
+        SYMS_DATA       *this,
+        void            *pKey,
         void            *pData
     )
     {
-        //SYMS_DATA  *this = pData;
-        
-    }
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
 #endif
+
+        // We can ignore the key since it is part of the data object.
+
+        // Release the Opcode object.
+        obj_Release(pData);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  S c a n  E x i t
+    //---------------------------------------------------------------
+
+    ERESULT         Syms_ScanExit (
+        SYMS_DATA       *this,
+        const
+        char            *pKey,
+        SYM_DATA        *pData,
+        OBJENUM_DATA    *pEnum
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // We can ignore the key since it is part of the data object.
+
+        eRc = ObjEnum_AppendObj(pEnum, pData);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
 
 
 
@@ -121,28 +176,6 @@ extern "C" {
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
-
-    //---------------------------------------------------------------
-    //                          N o d e B T
-    //---------------------------------------------------------------
-
-    NODEBT_DATA *   Syms_getNodeBT (
-        SYMS_DATA       *this
-    )
-    {
-
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return (NODEBT_DATA *)this;
-    }
-
-
 
     //---------------------------------------------------------------
     //                          P r i o r i t y
@@ -203,59 +236,11 @@ extern "C" {
         }
 #endif
 
-        return NodeBT_getSize(Syms_getNodeBT(this));
+        return szBT_getSize(this->pTree);
     }
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * Syms_getStr (
-        SYMS_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        Syms_setStr (
-        SYMS_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -280,7 +265,53 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                         T r e e
+    //---------------------------------------------------------------
+
+    SZBT_DATA *     Syms_getTree (
+        SYMS_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pTree;
+    }
+
+
+    bool            Syms_setTree (
+        SYMS_DATA       *this,
+        SZBT_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pTree) {
+            obj_Release(this->pTree);
+        }
+        this->pTree = pValue;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -293,11 +324,10 @@ extern "C" {
 
     ERESULT         Syms_Add (
         SYMS_DATA       *this,
-        SYM_DATA        *pSym,
-        bool            fReplace
+        SYM_DATA        *pSym
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -317,7 +347,11 @@ extern "C" {
         }
 #endif
 
-        eRc = NodeBT_Add(Syms_getNodeBT(this), Sym_getNode(pSym), fReplace);
+        obj_Retain(pSym);
+        eRc = szBT_AddA(this->pTree, Sym_getNameA(pSym), pSym);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pSym);
+        }
 
         // Return to caller.
         return eRc;
@@ -548,7 +582,7 @@ extern "C" {
         }
 #endif
 
-        Syms_setStr(this, OBJ_NIL);
+        Syms_setTree(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -618,7 +652,7 @@ extern "C" {
         char            *pNameA
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -629,7 +663,7 @@ extern "C" {
         }
 #endif
 
-        eRc = NodeBT_DeleteA(Syms_getNodeBT(this), cls, pNameA);
+        eRc = szBT_DeleteA(this->pTree, pNameA);
 
         // Return to caller.
         return eRc;
@@ -711,12 +745,12 @@ extern "C" {
     //                        E n u m
     //---------------------------------------------------------------
 
-    NODEENUM_DATA *  Syms_Enum (
-        SYMS_DATA        *this
+    OBJENUM_DATA *  Syms_Enum (
+        SYMS_DATA       *this
     )
     {
-        //ERESULT         eRc;
-        NODEENUM_DATA   *pEnum;
+        ERESULT         eRc;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -728,7 +762,13 @@ extern "C" {
         }
 #endif
 
-        pEnum = NodeBT_Enum(Syms_getNodeBT(this));
+        pEnum = ObjEnum_New();
+        if (pEnum) {
+            eRc = szBT_ForEach(this->pTree, (void *)Syms_ScanExit, this, pEnum);
+            if (pEnum->pArray) {
+                eRc = ObjArray_SortAscending(pEnum->pArray, NULL);
+            }
+        }
 
         // Return to caller.
         return pEnum;
@@ -748,7 +788,7 @@ extern "C" {
     )
     {
         //ERESULT         eRc;
-        SYM_DATA        *pSym;
+        SYM_DATA        *pSym = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -760,7 +800,7 @@ extern "C" {
         }
 #endif
 
-        pSym = (SYM_DATA *)NodeBT_FindA(Syms_getNodeBT(this), cls, pNameA);
+        pSym = (SYM_DATA *)szBT_FindA(this->pTree, pNameA);
 
         // Return to caller.
         return pSym;
@@ -777,7 +817,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(SYMS_DATA);
-        //ERESULT         eRc;
+        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -793,7 +833,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)NodeBT_Init((NODEBT_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYMS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -803,14 +843,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Syms_Vtbl);
         
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
+        this->pTree = szBT_New( );
+        if (OBJ_NIL == this->pTree) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
+        eRc = szBT_setDeleteExit(this->pTree, (void *)Syms_DeleteExit, this);
 
 #ifdef NDEBUG
 #else
@@ -1026,11 +1065,12 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
+        //ASTR_DATA       *pWrkStr = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //uint32_t        i;
         //uint32_t        j;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1060,12 +1100,26 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-        pWrkStr = NodeBT_ToDebugString(Syms_getNodeBT(this), indent+3);
-        AStr_Append(pStr, pWrkStr);
-        obj_Release(pWrkStr);
-        pWrkStr = OBJ_NIL;
+        pEnum = Syms_Enum(this);
+        if (pEnum) {
+            for (;;) {
+                SYM_DATA        *pSym = OBJ_NIL;
+                ASTR_DATA       *pWrk = OBJ_NIL;
+                eRc = ObjEnum_Next(pEnum, 1, (OBJ_ID *)&pSym, NULL);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
+                }
+                pWrk = Sym_ToDebugString(pSym, indent+4);
+                if (pWrk) {
+                    AStr_Append(pStr, pWrk);
+                    obj_Release(pWrk);
+                }
+            }
+            obj_Release(pEnum);
+            pEnum = OBJ_NIL;
+        }
 
-#ifdef  XYZZY        
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(

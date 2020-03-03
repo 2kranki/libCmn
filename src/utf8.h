@@ -296,6 +296,22 @@ extern "C" {
     );
     
     
+    /*!
+     utf8_Utf8ToChrConStr() converts the given UTF-8 string to a
+     NUL-terminated ascii string and returns its length.
+     If pDest is NULL, it simply returns the length needed
+     including the NUL-terminator.
+     */
+    uint32_t         utf8_Utf8ToChrConStr(
+        uint32_t        lenStr,         // Input String Length (if zero,
+        //                              // we use NUL-terminator to stop)
+        const
+        char            *pStr,          // Input String pointer
+        uint32_t        lenDest,        // in bytes including NUL
+        char            *pDest
+    );
+
+
     // Utf8ToW32() converts the UTF-8 string to one UNICODE character
     // if possible and returns the length used of the UTF-8 string.
     // If an error occurred, -1 is returned for both the UNICODE
@@ -315,7 +331,7 @@ extern "C" {
     
     
     /*!
-     utf8_WCToChrCon() converts the given UNICODE character to a
+     utf8_W32ToChrCon() converts the given UNICODE character to a
      NUL-terminated ascii string and returns its length.
      If pDest is NULL, we simply return the length needed
      excluding the NUL-terminator.
@@ -338,7 +354,7 @@ extern "C" {
 
     
     /*!
-     WCToChrConStr() converts an input string to a character
+     utf8_W32ToUtf8Str() converts an input string to a character
      constant string and returns the size of the new string 
      excluding the NUL-terminator. If pDest is NULL, we cal-
      culate the size of area needed including NUL-terminator 

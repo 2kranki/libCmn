@@ -41,15 +41,13 @@
 
 #include        <Syms.h>
 #include        <JsonIn.h>
-#include        <NodeBT_internal.h>
+#include        <szBT_internal.h>
 
 
 #ifndef SYMS_INTERNAL_H
 #define	SYMS_INTERNAL_H
 
 
-
-#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -68,13 +66,11 @@ extern "C" {
 struct Syms_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    NODEBT_DATA     super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    SZBT_DATA       *pTree;
 
 };
 #pragma pack(pop)

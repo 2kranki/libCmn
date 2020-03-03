@@ -370,6 +370,8 @@ extern "C" {
         OBJ_IDENT_OBJ_CLASS,
         OBJ_IDENT_OBJARRAY,             // Array of Objects
         OBJ_IDENT_OBJARRAY_CLASS,
+        OBJ_IDENT_OBJBT,                // 
+        OBJ_IDENT_OBJBT_CLASS,
         OBJ_IDENT_OBJCB,                // Circular Buffer of Objects
         OBJ_IDENT_OBJCB_CLASS,
         OBJ_IDENT_OBJENUM,              // Object Enumeration

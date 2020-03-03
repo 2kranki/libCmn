@@ -432,7 +432,7 @@ OBJ_INFO        Syms_Info = {
     "Syms",
     "Simple Symbol Table",
     (OBJ_DATA *)&Syms_ClassObj,
-    (OBJ_DATA *)&NodeBT_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&Syms_Vtbl,
     sizeof(SYMS_DATA)
 };

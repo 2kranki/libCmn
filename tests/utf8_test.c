@@ -364,6 +364,7 @@ int         test_utf8_StrW32_02(
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     len = utf8_StrLenA(string1A);
+    fprintf(stderr, "\tlen = %d\n", len);
     XCTAssertTrue( (4 == len) );
     pW32Str = utf8_ChrConToW32Str(string1A);
     XCTAssertFalse( (NULL == pW32Str) );
@@ -380,8 +381,34 @@ int         test_utf8_StrW32_02(
 
 
 
+int         test_utf8_Utf8_01(
+    const
+    char        *pTestName
+)
+{
+    uint32_t    len = 0;
+    int         rc;
+    char        str[128];
+
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    len = utf8_Utf8ToChrConStr(0, string1A, 128, str);
+    fprintf(stderr, "\tlen = %d\n", len);
+    fprintf(stderr, "\tstr = %s\n", str);
+    XCTAssertTrue( (16 == len) );
+    rc = strcmp(str, "\\x01\\x02\\x03\\x04");
+    XCTAssertTrue( (0 == rc) );
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_utf8);
+  TINYTEST_ADD_TEST(test_utf8_Utf8_01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_StrW32_02,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_StrW32_01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_utf8_JSON02,setUp,tearDown);

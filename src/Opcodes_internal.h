@@ -121,7 +121,7 @@ struct Opcodes_data_s	{
     );
 
 
-    OPCODES_DATA *       Opcodes_Copy (
+    OPCODES_DATA *  Opcodes_Copy (
         OPCODES_DATA     *this
     );
 

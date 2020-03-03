@@ -53,7 +53,6 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <Node.h>
 
 
 #ifndef         SYM_H
@@ -143,6 +142,13 @@ extern "C" {
     );
     
     
+    SYM_DATA *      Sym_NewA(
+        int32_t         cls,
+        const
+        char            *pNameA
+    );
+
+
 #ifdef  SYM_JSON_SUPPORT
     SYM_DATA *      Sym_NewFromJsonString (
         ASTR_DATA       *pString
@@ -153,14 +159,6 @@ extern "C" {
         char            *pStringA
     );
 #endif
-
-
-    SYM_DATA *     Sym_NewWithUTF8AndClass(
-        int32_t         cls,
-        const
-        char            *pNameA,
-        OBJ_ID          pData
-    );
 
 
 
@@ -180,20 +178,93 @@ extern "C" {
     );
 
 
-    /*! Property: Value is Relocatable
+    /*! Property: Alignment (0,2,4,8,16,...)
      */
-    bool            Sym_getAbs (
+    uint16_t        Sym_getAlign (
+        SYM_DATA     *this
+    );
+
+    bool            Sym_setAlign (
+        SYM_DATA        *this,
+        uint16_t        value
+    );
+
+
+    /*! Property: Class
+     */
+    int32_t         Sym_getClass (
         SYM_DATA        *this
     );
 
-    bool            Sym_setAbs (
+    bool            Sym_setClass (
+        SYM_DATA        *this,
+        int32_t         value
+    );
+
+
+    /*! Property: Duplication Factor
+     */
+    uint16_t        Sym_getDup (
+        SYM_DATA     *this
+    );
+
+    bool            Sym_setDup (
+        SYM_DATA        *this,
+        uint16_t        value
+    );
+
+
+    const
+    char *          Sym_getNameA (
+        SYM_DATA        *this
+    );
+
+
+    /*! Property: Value is Relocatable
+     */
+    bool            Sym_getRel (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setRel (
         SYM_DATA        *this,
         bool            value
     );
 
 
-    NODE_DATA *     Sym_getNode (
+    /*! Property: Scale
+     */
+    uint16_t        Sym_getScale (
+        SYM_DATA     *this
+    );
+
+    bool            Sym_setScale (
+        SYM_DATA        *this,
+        uint16_t        value
+    );
+
+
+    /*! Property: Type
+     */
+    int32_t         Sym_getType (
         SYM_DATA        *this
+    );
+
+    bool            Sym_setType (
+        SYM_DATA        *this,
+        int32_t         value
+    );
+
+
+    /*! Property: Value
+     */
+    int32_t         Sym_getValue (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setValue (
+        SYM_DATA        *this,
+        int32_t         value
     );
 
 
@@ -201,6 +272,53 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = Sym_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another SYM object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         Sym_Assign (
+        SYM_DATA        *this,
+        SYM_DATA        *pOther
+    );
+
+
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         Sym_Compare (
+        SYM_DATA     *this,
+        SYM_DATA     *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        Sym      *pCopy = Sym_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a SYM object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    SYM_DATA *     Sym_Copy (
+        SYM_DATA       *this
+    );
+
 
     SYM_DATA *      Sym_Init (
         SYM_DATA        *this

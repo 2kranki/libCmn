@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include        <Sym_internal.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
@@ -115,15 +116,14 @@ extern "C" {
     }
 
 
-    SYM_DATA *     Sym_NewWithUTF8AndClass(
+
+    SYM_DATA *     Sym_NewA(
         int32_t         cls,
         const
-        char            *pNameA,
-        OBJ_ID          pData
+        char            *pNameA
     )
     {
         SYM_DATA        *this;
-        NAME_DATA       *pName = OBJ_NIL;
 
         if (OBJ_NIL == pNameA) {
             return OBJ_NIL;
@@ -131,14 +131,8 @@ extern "C" {
 
         this = Sym_New( );
         if (this) {
-            if (pNameA) {
-                pName = Name_NewUTF8(pNameA);
-                Node_setName(Sym_getNode(this), pName);
-                obj_Release(pName);
-                pName = OBJ_NIL;
-            }
-            Node_setClass(Sym_getNode(this), cls);
-            Node_setData(Sym_getNode(this), pData);
+            Sym_setNameA(this, pNameA);
+            Sym_getEntry(this)->Cls = cls;
         }
 
         return this;
@@ -147,7 +141,6 @@ extern "C" {
 
 
 
-    
 
     //===============================================================
     //                      P r o p e r t i e s
@@ -171,8 +164,7 @@ extern "C" {
         }
 #endif
 
-        //return this->priority;
-        return this->fAbs ? true : false;
+        return (Sym_getEntry(this)->Flags & SYM_ABS) ? true : false;
     }
 
 
@@ -189,7 +181,11 @@ extern "C" {
         }
 #endif
 
-        this->fAbs = value ? 1 : 0;
+        if (value) {
+            Sym_getEntry(this)->Flags |= SYM_ABS;
+        } else {
+            Sym_getEntry(this)->Flags &= ~SYM_ABS;
+        }
 
         return true;
     }
@@ -197,32 +193,10 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          N o d e
+    //                        A l i g n
     //---------------------------------------------------------------
 
-    NODE_DATA *     Sym_getNode (
-        SYM_DATA        *this
-    )
-    {
-
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return (NODE_DATA *)this;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          P r i o r i t y
-    //---------------------------------------------------------------
-    
-    uint16_t        Sym_getPriority (
+    uint16_t        Sym_getAlign (
         SYM_DATA     *this
     )
     {
@@ -236,13 +210,12 @@ extern "C" {
         }
 #endif
 
-        //return this->priority;
-        return 0;
+        return Sym_getEntry(this)->Align;
     }
 
 
-    bool            Sym_setPriority (
-        SYM_DATA     *this,
+    bool            Sym_setAlign (
+        SYM_DATA        *this,
         uint16_t        value
     )
     {
@@ -254,7 +227,165 @@ extern "C" {
         }
 #endif
 
-        //this->priority = value;
+        Sym_getEntry(this)->Align = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          C l a s s
+    //---------------------------------------------------------------
+
+    int32_t         Sym_getClass (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->Cls;
+    }
+
+
+    bool            Sym_setClass (
+        SYM_DATA        *this,
+        int32_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->Cls = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          D u p
+    //---------------------------------------------------------------
+
+    uint16_t        Sym_getDup (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->Dup;
+    }
+
+
+    bool            Sym_setDup (
+        SYM_DATA        *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->Dup = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        E n t r y
+    //---------------------------------------------------------------
+
+    SYM_ENTRY *     Sym_getEntry (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return &this->entry;
+    }
+
+
+    //---------------------------------------------------------------
+    //                          N a m e
+    //---------------------------------------------------------------
+
+    const
+    char *          Sym_getNameA (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->Name;
+    }
+
+
+    bool            Sym_setNameA (
+        SYM_DATA        *this,
+        const
+        char            *pValue
+    )
+    {
+        uint32_t        len;
+
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+        if (NULL == pValue) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        str_Copy((char *)Sym_getEntry(this)->Name, SYM_ENTRY_NAME_MAX, pValue);
+        len = utf8_StrLenA(pValue);
+        //FIXME: Sym_getEntry(this)->cName = len;
 
         return true;
     }
@@ -280,7 +411,7 @@ extern "C" {
 #endif
 
         //return this->priority;
-        return this->fRel ? true : false;
+        return (Sym_getEntry(this)->Flags & SYM_REL) ? true : false;
     }
 
 
@@ -297,7 +428,53 @@ extern "C" {
         }
 #endif
 
-        this->fRel = value ? 1 : 0;
+        if (value) {
+            Sym_getEntry(this)->Flags |= SYM_REL;
+        } else {
+            Sym_getEntry(this)->Flags &= ~SYM_REL;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        S c a l e
+    //---------------------------------------------------------------
+
+    uint16_t        Sym_getScale (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->Scale;
+    }
+
+
+    bool            Sym_setScale (
+        SYM_DATA        *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->Scale = value;
 
         return true;
     }
@@ -326,54 +503,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * Sym_getStr (
-        SYM_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        Sym_setStr (
-        SYM_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-#endif
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
@@ -397,7 +526,91 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                          T y p e
+    //---------------------------------------------------------------
+
+    int32_t         Sym_getType (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->Type;
+    }
+
+
+    bool            Sym_setType (
+        SYM_DATA        *this,
+        int32_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->Type = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          V a l u e
+    //---------------------------------------------------------------
+
+    int32_t         Sym_getValue (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->Value;
+    }
+
+
+    bool            Sym_setValue (
+        SYM_DATA        *this,
+        int32_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->Value = value;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -474,14 +687,11 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        memcpy(&pOther->entry, &this->entry, sizeof(SYM_ENTRY));
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -523,17 +733,13 @@ extern "C" {
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
+        i = this->entry.Cls - pOther->entry.Cls;
+        if (0 == i) {
+            i = strcmp(this->entry.Name, pOther->entry.Name);
+            if (0 == i) {
+                return ERESULT_SUCCESS_EQUAL;
+            }
         }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
-
         
         if (i < 0) {
             eRc = ERESULT_SUCCESS_LESS_THAN;
@@ -626,8 +832,6 @@ extern "C" {
             ((SYM_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        Sym_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -781,7 +985,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)Node_Init((NODE_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYM);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1019,7 +1223,9 @@ extern "C" {
         OBJ_INFO        *pInfo;
         //uint32_t        i;
         //uint32_t        j;
-        
+        char            NameA[256];
+        uint32_t        len;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1048,7 +1254,45 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
+        len = utf8_Utf8ToChrConStr(0, this->entry.Name, sizeof(NameA), NameA);
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+        }
+        AStr_AppendPrint(pStr, "Name:\"%s\",\n", NameA);
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+        }
+        AStr_AppendPrint(pStr, "Class:%d,\n", this->entry.Cls);
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+        }
+        AStr_AppendPrint(pStr, "Type:%d,\n", this->entry.Type);
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+        }
+        AStr_AppendPrint(pStr, "Prim:%d,\n", this->entry.Prim);
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+        }
+        AStr_AppendPrint(pStr, "Len:%d,\n", this->entry.Len);
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+        }
+        AStr_AppendPrint(pStr, "Dup:%d,\n", this->entry.Dup);
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+        }
+        AStr_AppendPrint(pStr, "Align:%d,\n", this->entry.Align);
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+        }
+        AStr_AppendPrint(pStr, "Scale:%d,\n", this->entry.Scale);
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+        }
+        AStr_AppendPrint(pStr, "Value:%d,\n", this->entry.Value);
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(

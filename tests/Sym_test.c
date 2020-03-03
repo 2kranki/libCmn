@@ -125,20 +125,22 @@ int             test_Sym_Copy01 (
     SYM_DATA	    *pObj1 = OBJ_NIL;
     SYM_DATA	    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(SYM_JSON_SUPPORT) && defined(XYZZY)
+#if defined(SYM_JSON_SUPPORT)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = Sym_New( );
+    pObj1 = Sym_NewA(1, "abc" );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_SYM);
         TINYTEST_TRUE( (fRc) );
-        
+        TINYTEST_TRUE( (1 == Sym_getClass(pObj1)) );
+        TINYTEST_TRUE( (0 == strcmp(Sym_getNameA(pObj1), "abc")) );
+
         // Test assign.
         pObj2 = Sym_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
@@ -147,9 +149,8 @@ int             test_Sym_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SYM);
         TINYTEST_TRUE( (fRc) );
-        //eRc = Sym_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
-        //TODO: Add More tests here!
+        eRc = Sym_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -160,15 +161,14 @@ int             test_Sym_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SYM);
         TINYTEST_TRUE( (fRc) );
-        //eRc = Sym_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
-        //TODO: Add More tests here!
+        eRc = Sym_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(SYM_JSON_SUPPORT) && defined(XYZZY)
+#if defined(SYM_JSON_SUPPORT)
         pStr = Sym_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
@@ -178,8 +178,8 @@ int             test_Sym_Copy01 (
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = Sym_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        eRc = Sym_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -227,7 +227,7 @@ int             test_Sym_Test01 (
 
 TINYTEST_START_SUITE(test_Sym);
     TINYTEST_ADD_TEST(test_Sym_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_Sym_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Sym_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Sym_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

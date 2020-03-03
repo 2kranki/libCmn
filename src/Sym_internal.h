@@ -41,7 +41,6 @@
 
 #include        <Sym.h>
 #include        <JsonIn.h>
-#include        <Node_internal.h>
 
 
 #ifndef SYM_INTERNAL_H
@@ -61,35 +60,28 @@ extern "C" {
 
 #pragma pack(push, 1)
     typedef struct sym_entry_s {
-        uint16_t        cbSize;             // Control Block Size in bytes
         uint16_t        Flags;
         #define SYM_ABS     0x8000              // Absolute value
         #define SYM_REL     0x4000              // Relocatable value
         // Note: Abs or Rel may not be valid in initial passes.
         uint32_t        Hash;               // Hash Code for name
-        uint8_t         cName;
-#define SYM_ENTRY_NAME_MAX  63
-        char            Name[63];           // NUL-terminated name
+#define SYM_ENTRY_NAME_MAX  64
+        char            Name[64];           // NUL-terminated name
         uint32_t        Token;              // unique token for name
         int32_t         Cls;                // User Defined Class
         int32_t         Type;               // See SYM_TYPE
-        uint32_t        prim;               // See SYM_PRIMITIVE;
-        uint32_t        len;                // Data Length in Bytes
-        uint32_t        dup;                // Duplication Factor
-        uint16_t        align;              // Required Storage Alignment
+        uint16_t        Prim;               // See SYM_PRIMITIVE;
+        uint16_t        Len;                // Data Length in Bytes
+        uint16_t        Dup;                // Duplication Factor
+        uint16_t        Align;              // Required Storage Alignment
         //                                  //  0 == None (same as 1)
         //                                  //  1 == Byte Boundary
         //                                  //  2 == 16 Bit Boundary
         //                                  //  4 == 32 Bit Boundary
         //                                  //  8 == 64 Bit Boundary
         //                                  // 16 == 128 Bit Boundary
-        uint16_t        scale;
-#if defined(__MACOSX32_ENV__) || defined(__MACOS64_ENV__)
-        uint64_t        value;
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        uint64_t        value;
-#endif
+        uint16_t        Scale;
+        int32_t         Value;
     } SYM_ENTRY;
 #pragma pack(pop)
 
@@ -103,21 +95,11 @@ extern "C" {
 struct Sym_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    NODE_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ASTR_DATA       *pStr;
-#if defined(__MACOSX32_ENV__) || defined(__MACOS64_ENV__)
-    int64_t         value;
-#elif defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-    int64_t         value;
-#else
-    int32_t         value;
-#endif
-    uint8_t         fAbs;           // True == Absolute Value
-    uint8_t         fRel;           // True == Relocatable Value
-    uint16_t        rsvd16;
+    SYM_ENTRY       entry;
 
 };
 #pragma pack(pop)
@@ -150,6 +132,18 @@ struct Sym_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
+
+    SYM_ENTRY *     Sym_getEntry (
+        SYM_DATA        *this
+    );
+
+
+    bool            Sym_setNameA (
+        SYM_DATA        *this,
+        const
+        char            *pValue
+    );
+
 
     OBJ_IUNKNOWN *  Sym_getSuperVtbl (
         SYM_DATA        *this
