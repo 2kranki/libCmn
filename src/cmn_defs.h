@@ -254,6 +254,8 @@ extern "C" {
         OBJ_IDENT_ERESULT_CLASS,
         OBJ_IDENT_EXECARRAY,            // An Array of Function/Object(s) pairs
         OBJ_IDENT_EXECARRAY_CLASS,
+        OBJ_IDENT_EXPR,                 // Universal Expression Parser
+        OBJ_IDENT_EXPR_CLASS,
         OBJ_IDENT_FALSE,
         OBJ_IDENT_FALSE_CLASS,
         OBJ_IDENT_FBSI,                 // Fixed Blocked Input Class

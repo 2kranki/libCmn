@@ -184,6 +184,7 @@ extern "C" {
         PPLEX_OP_LOG_OR,                    // ||
         PPLEX_OP_LEFT,                      // <<
         PPLEX_OP_LT,                        // <
+        PPLEX_OP_MINUS,                     // - (unary)
         PPLEX_OP_MOD,                       // %
         PPLEX_OP_MUL,                       // *
         PPLEX_OP_NE,                        // !=

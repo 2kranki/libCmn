@@ -14,6 +14,7 @@
  *	1.      All offsets/indices are relative to one. Zero is normally
  *          used to denote beginning or end of the data depending on
  *          the operation.
+ *  2.      obj's Misc fields are not used by this object.
  *
  * History
  *	06/08/2015 Generated

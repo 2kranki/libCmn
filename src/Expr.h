@@ -1,22 +1,19 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Scanner UTF-32 Reader (scanReader) Header
+//          Universal Expression Parser (Expr) Header
 //****************************************************************
 /*
  * Program
- *			Scanner UTF-32 Reader (scanReader)
+ *			Universal Expression Parser (Expr)
  * Purpose
- *			A Scanner UTF-32 Reader is responsible for providing
- *          UTF-32 characters one at a time from a UTF-8 buffer.
- *          Instead of supporting push back, it supports look-ahead
- *          via the peek() function.
+ *			This object provides Universal Expression Parser.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	08/11/2019 Generated
+ *	03/03/2020 Generated
  */
 
 
@@ -53,15 +50,15 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <SrcLoc.h>
-#include        <w32Reader.h>
 
 
-#ifndef         SCANREADER_H
-#define         SCANREADER_H
+#ifndef         EXPR_H
+#define         EXPR_H
 
 
-//#define   SCANREADER_SINGLETON    1
+//#define   EXPR_IS_IMMUTABLE     1
+//#define   EXPR_JSON_SUPPORT     1
+//#define   EXPR_SINGLETON        1
 
 
 
@@ -77,37 +74,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct scanReader_data_s	SCANREADER_DATA;            // Inherits from OBJ
-    typedef struct scanReader_class_data_s SCANREADER_CLASS_DATA;   // Inherits from OBJ
+    typedef struct Expr_data_s	EXPR_DATA;            // Inherits from OBJ
+    typedef struct Expr_class_data_s EXPR_CLASS_DATA;   // Inherits from OBJ
 
-    // Conforms to w32Reader Interface
-    typedef struct scanReader_vtbl_s	{
+    typedef struct Expr_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in scanReader_object.c.
+        // method names to the vtbl definition in Expr_object.c.
         // Properties:
         // Methods:
-        // Next() reads the next UTF-32 character from the scan string.
-        // It will return -1 if an error or end-of-string (EOS) is encountered.
-        W32CHR_T    (*pNext)(OBJ_ID);
-        // Peek() returns the n'th character after the current one or -1 if
-        // beyond the end-of-string (EOS).
-        W32CHR_T    (*pPeek)(
-             OBJ_ID,
-             uint32_t                    // Number of chars to look ahead
-        );
-        // Rescan() restarts the scan to the beginning of the data.
-        ERESULT     (*pRescan)(OBJ_ID);
-    } SCANREADER_VTBL;
+        //bool        (*pIsEnabled)(EXPR_DATA *);
+    } EXPR_VTBL;
 
-    typedef struct scanReader_class_vtbl_s	{
+    typedef struct Expr_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in scanReader_object.c.
+        // method names to the vtbl definition in Expr_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SCANREADER_DATA *);
-    } SCANREADER_CLASS_VTBL;
+        //bool        (*pIsEnabled)(EXPR_DATA *);
+    } EXPR_CLASS_VTBL;
 
 
 
@@ -121,12 +107,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  SCANREADER_SINGLETON
-    SCANREADER_DATA * scanReader_Shared (
+#ifdef  EXPR_SINGLETON
+    EXPR_DATA *     Expr_Shared (
         void
     );
 
-    bool            scanReader_SharedReset (
+    void            Expr_SharedReset (
         void
     );
 #endif
@@ -136,44 +122,40 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to scanReader object if successful, otherwise OBJ_NIL.
+     @return    pointer to Expr object if successful, otherwise OBJ_NIL.
      */
-    SCANREADER_DATA * scanReader_Alloc (
+    EXPR_DATA *     Expr_Alloc (
         void
     );
     
     
-    OBJ_ID          scanReader_Class (
+    OBJ_ID          Expr_Class (
         void
     );
     
     
-    SCANREADER_DATA * scanReader_New (
+    EXPR_DATA *     Expr_New (
         void
     );
     
     
-    SCANREADER_DATA * scanReader_NewA (
+#ifdef  EXPR_JSON_SUPPORT
+    EXPR_DATA *   Expr_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    EXPR_DATA *   Expr_NewFromJsonStringA (
         const
-        char            *pStr
+        char            *pStringA
     );
-    
-    
-    
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    W32_READER *    scanReader_getReader (
-        SCANREADER_DATA *this
-    );
-    
-    
-    const
-    char *          scanReader_getStr (
-        SCANREADER_DATA     *this
-    );
 
 
     
@@ -181,57 +163,60 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    SCANREADER_DATA * scanReader_Init (
-        SCANREADER_DATA     *this
+    ERESULT     Expr_Disable (
+        EXPR_DATA		*this
     );
 
 
-    /*!
-     Next() scans the next charater from the data.
-     @param     this    object pointer
-     @return    the next UTF-32 character or -1 for EOF
-     */
-    W32CHR_T        scanReader_Next (
-        SCANREADER_DATA *this
+    ERESULT     Expr_Enable (
+        EXPR_DATA		*this
+    );
+
+   
+    EXPR_DATA *   Expr_Init (
+        EXPR_DATA     *this
+    );
+
+
+    ERESULT     Expr_IsEnabled (
+        EXPR_DATA		*this
     );
     
-    
+ 
+#ifdef  EXPR_JSON_SUPPORT
     /*!
-     Peek() returns the n'th character after the last one read.
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Expr_ToJson(this);
+     @endcode
      @param     this    object pointer
-     @param     n       Number of chars to look ahead (relative to 1)
-     @return    the requested UTF-32 character or -1 for EOF
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
      */
-    W32CHR_T        scanReader_Peek (
-        SCANREADER_DATA *this,
-        uint32_t         n               // Number of chars to look ahead
+    ASTR_DATA *     Expr_ToJson (
+        EXPR_DATA   *this
     );
-    
-    
-    /*!
-     Rescan() restarts the scan to the beginning of the data.
-     @param     this    object pointer
-     @return    An ERESULT result code
-     */
-    ERESULT         scanReader_Rescan (
-        SCANREADER_DATA *this
-    );
-    
-    
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = scanReader_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Expr_ToDebugString(this,4);
      @endcode 
-     @param     this    SCANREADER object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    scanReader_ToDebugString (
-        SCANREADER_DATA     *this,
+    ASTR_DATA *    Expr_ToDebugString (
+        EXPR_DATA     *this,
         int             indent
     );
     
@@ -242,5 +227,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* SCANREADER_H */
+#endif	/* EXPR_H */
 

@@ -102,6 +102,19 @@ extern "C" {
 
 
 
+    void            JsonOut_Append_i16 (
+        const
+        char            *pNameA,
+        int16_t         num,
+        ASTR_DATA       *pStr
+    )
+    {
+        if (pStr && pNameA) {
+            AStr_AppendPrint(pStr, "\t\"%s\": %ld,\n", pNameA, num);
+        }
+    }
+
+
     void            JsonOut_Append_i32 (
         const
         char            *pNameA,

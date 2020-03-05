@@ -711,7 +711,8 @@ extern "C" {
         
         if ((**ppSrc & 0x80) == 0) {
             ch = *ppSrc[0];
-            *ppSrc += 1;
+            if (ch)
+                *ppSrc += 1;
         }
         else if (((**ppSrc & 0xE0) == 0xC0)
                  && ((*(*ppSrc+1) & 0xC0) == 0x80)) {

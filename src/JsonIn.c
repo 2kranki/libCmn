@@ -1554,6 +1554,39 @@ extern "C" {
     }
 
 
+    ERESULT         JsonIn_FindI16NodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        int16_t         *pInt
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pData;
+        int64_t         num = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "integer", (void **)&pData);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        num = AStr_ToInt64(pData);
+
+        if (pInt) {
+            *pInt = (int16_t)num;
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
     ERESULT         JsonIn_FindI32NodeInHashA (
         JSONIN_DATA     *this,
         const

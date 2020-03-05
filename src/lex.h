@@ -103,7 +103,7 @@ extern "C" {
          * LEX_CLASS_GROUP_LOWEST.
          */
         LEX_CLASS_EOF=-1,
-        LEX_CLASS_RESERVED=0,
+        LEX_CLASS_UNKNOWN=0,
         
         LEX_CLASS_GROUP_LOWEST=256,
         

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Sym_internal.h
- *	Generated 02/22/2020 20:18:12
+ * File:   Expr_internal.h
+ *	Generated 03/03/2020 17:03:28
  *
  * Notes:
  *  --	N/A
@@ -39,16 +39,19 @@
 
 
 
-#include        <Sym.h>
+#include        <Expr.h>
 #include        <JsonIn.h>
+#include        <lex.h>
+#include        <Parser_internal.h>
+#include        <pplex.h>
+#include        <SrcErrors.h>
+#include        <Token.h>
 
 
-#ifndef SYM_INTERNAL_H
-#define	SYM_INTERNAL_H
+#ifndef EXPR_INTERNAL_H
+#define	EXPR_INTERNAL_H
 
 
-
-#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -58,29 +61,39 @@ extern "C" {
 
 
 
+
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Sym_data_s	{
+struct Expr_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    PARSER_DATA     super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    SYM_ENTRY       entry;
+    LEX_DATA        *pLex;
+
+    // Find an Identifier. If not found, return 0.
+    int32_t         (*pFindValueA)(OBJ_ID, const char *);
+    OBJ_ID          pObjFind;
+
+    // Input a Character.
+    void            (*pInputAdvanceChar)(OBJ_ID, int32_t);
+    int32_t         (*pInputLookAhead)(OBJ_ID, uint32_t);
+    OBJ_ID          pObjInput;
 
 };
 #pragma pack(pop)
 
     extern
-    struct Sym_class_data_s  Sym_ClassObj;
+    struct Expr_class_data_s  Expr_ClassObj;
 
     extern
     const
-    SYM_VTBL         Sym_Vtbl;
+    EXPR_VTBL         Expr_Vtbl;
 
 
 
@@ -88,13 +101,13 @@ struct Sym_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  SYM_SINGLETON
-    SYM_DATA *      Sym_getSingleton (
+#ifdef  EXPR_SINGLETON
+    EXPR_DATA *     Expr_getSingleton (
         void
     );
 
-    bool            Sym_setSingleton (
-     SYM_DATA           *pValue
+    bool            Expr_setSingleton (
+     EXPR_DATA       *pValue
 );
 #endif
 
@@ -104,47 +117,93 @@ struct Sym_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    SYM_ENTRY *     Sym_getEntry (
-        SYM_DATA        *this
+    OBJ_IUNKNOWN *  Expr_getSuperVtbl (
+        EXPR_DATA     *this
     );
 
 
-    bool            Sym_setNameA (
-        SYM_DATA        *this,
-        const
-        char            *pValue
+    ERESULT         Expr_Assign (
+        EXPR_DATA    *this,
+        EXPR_DATA    *pOther
     );
 
 
-    OBJ_IUNKNOWN *  Sym_getSuperVtbl (
-        SYM_DATA        *this
+    EXPR_DATA *       Expr_Copy (
+        EXPR_DATA     *this
     );
 
 
-    ERESULT         Sym_Assign (
-        SYM_DATA        *this,
-        SYM_DATA        *pOther
-    );
-
-
-    SYM_DATA *      Sym_Copy (
-        SYM_DATA        *this
-    );
-
-
-    void            Sym_Dealloc (
+    void            Expr_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  SYM_JSON_SUPPORT
+    //      >>> Parsing Methods <<<
+    int32_t         Expr_Add(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_And(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_Cond(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_Eq(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_Expr(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_LogicalAnd(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_LogicalOr(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_Mult(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_Number(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_Or(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_Primary(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_Rel(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_Shift(
+        EXPR_DATA       *this
+    );
+
+    int32_t         Expr_Xor(
+        EXPR_DATA       *this
+    );
+
+
+#ifdef  EXPR_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SYM_DATA *       Sym_ParseJsonObject (
+    EXPR_DATA *       Expr_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -158,27 +217,27 @@ struct Sym_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Sym_ParseJsonFields (
+    ERESULT         Expr_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SYM_DATA     *pObject
+        EXPR_DATA     *pObject
     );
 #endif
 
 
-    void *          Sym_QueryInfo (
+    void *          Expr_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  SYM_JSON_SUPPORT
+#ifdef  EXPR_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Sym_ToJson(this);
+     ASTR_DATA      *pDesc = Expr_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -186,8 +245,8 @@ struct Sym_data_s	{
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Sym_ToJson (
-        SYM_DATA      *this
+    ASTR_DATA *     Expr_ToJson (
+        EXPR_DATA      *this
     );
 
 
@@ -200,8 +259,8 @@ struct Sym_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Sym_ToJsonFields (
-        SYM_DATA     *this,
+    ERESULT         Expr_ToJsonFields (
+        EXPR_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -211,8 +270,8 @@ struct Sym_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			Sym_Validate (
-        SYM_DATA       *this
+    bool			Expr_Validate (
+        EXPR_DATA       *this
     );
 #endif
 
@@ -222,5 +281,5 @@ struct Sym_data_s	{
 }
 #endif
 
-#endif	/* SYM_INTERNAL_H */
+#endif	/* EXPR_INTERNAL_H */
 

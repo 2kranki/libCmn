@@ -68,9 +68,9 @@ extern "C" {
 
 #pragma pack(push, 1)
     typedef struct Token_s    {
-        SRCLOC          src;
         uint16_t        len;                // Character/Token Length (Optional)
         uint16_t        type;               // Type in union below
+        SRCLOC          src;
         int16_t         cls;                // Character/Token Class (Optional)
         int16_t         misc;
         union {
@@ -79,9 +79,6 @@ extern "C" {
             int64_t         integer;            // Integer
             uint32_t        strToken;           // String Index Token
             W32CHR_T        w32chr[2];          // Unicode Character followed by NUL
-            char            *pStrA;             // UTF-8 String
-            const
-            char            *pStrConA;          // UTF-8 String Constant
         };
         // Do NOT declare any variables here, put them above the union.
     } TOKEN;

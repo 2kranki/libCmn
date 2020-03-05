@@ -157,7 +157,7 @@ struct TextIn_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  TEXTIN_SINGLETON
-    TEXTIN_DATA *     TextIn_getSingleton (
+    TEXTIN_DATA *   TextIn_getSingleton (
         void
     );
 

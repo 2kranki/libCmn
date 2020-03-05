@@ -28,6 +28,7 @@
  *          is PPLEX Tokens.
  *  2.      Keywords are not handled here. They should be handled
  *          in the next phase of the lexer.
+ *  3.      OBJ_FLAG_USER1..OBJ_FLAG_USER6 are used by this object.
  *
  * History
  *	05/25/2015 Generated

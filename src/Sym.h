@@ -99,6 +99,37 @@ extern "C" {
     } SYM_CLASS_VTBL;
 
 
+// WARNING: Objects that inherit from this one cannot expand entry.
+//          Those fields must be added here.
+
+#pragma pack(push, 1)
+    typedef struct sym_entry_s {
+        uint16_t        Flags;
+        #define SYM_ABS     0x8000              // Absolute value
+        #define SYM_REL     0x4000              // Relocatable value
+        // Note: Abs or Rel may not be valid in initial passes.
+        uint32_t        Hash;               // Hash Code for name
+#define SYM_ENTRY_NAME_MAX  64
+        char            Name[64];           // NUL-terminated name
+        uint32_t        Token;              // unique token for name
+        int32_t         Cls;                // User Defined Class
+        int32_t         Type;               // See SYM_TYPE
+        uint16_t        Prim;               // See SYM_PRIMITIVE;
+        uint16_t        Len;                // Data Length in Bytes
+        uint16_t        Dup;                // Duplication Factor
+        uint16_t        Align;              // Required Storage Alignment
+        //                                  //  0 == None (same as 1)
+        //                                  //  1 == Byte Boundary
+        //                                  //  2 == 16 Bit Boundary
+        //                                  //  4 == 32 Bit Boundary
+        //                                  //  8 == 64 Bit Boundary
+        //                                  // 16 == 128 Bit Boundary
+        uint16_t        Scale;
+        int32_t         Value;
+    } SYM_ENTRY;
+#pragma pack(pop)
+
+
 
 
     /****************************************************************

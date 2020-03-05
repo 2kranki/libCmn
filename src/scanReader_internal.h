@@ -70,9 +70,9 @@ struct scanReader_data_s	{
 
     // Common Data
     const
-    char            *pData;
+    char            *pData;         // All of the Data
     const
-    char            *pStr;
+    char            *pStr;          // Current Scan Pointer within Data
     SRCLOC          loc;
 
 };

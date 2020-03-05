@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'Value'
-//	Generated 12/31/2019 15:27:11
+//	Class Object Metods and Tables for 'Expr'
+//	Generated 03/03/2020 17:03:28
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			VALUE_OBJECT_C	    1
-#include        <Value_internal.h>
-#ifdef  VALUE_SINGLETON
+#define			EXPR_OBJECT_C	    1
+#include        <Expr_internal.h>
+#ifdef  EXPR_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct Value_class_data_s	{
+struct Expr_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  VALUE_SINGLETON
+#ifdef  EXPR_SINGLETON
     volatile
-    VALUE_DATA       *pSingleton;
+    EXPR_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct Value_class_data_s	{
 
 
 static
-void *          ValueClass_QueryInfo (
+void *          ExprClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          ValueClass_QueryInfo (
 
 static
 const
-OBJ_INFO        Value_Info;            // Forward Reference
+OBJ_INFO        Expr_Info;            // Forward Reference
 
 
 
 
 static
-bool            ValueClass_IsKindOf (
+bool            ExprClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_VALUE_CLASS == classID) {
+    if (OBJ_IDENT_EXPR_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(Value_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Expr_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            ValueClass_IsKindOf (
 
 
 static
-uint16_t		ValueClass_WhoAmI (
+uint16_t		ExprClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_VALUE_CLASS;
+    return OBJ_IDENT_EXPR_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		ValueClass_WhoAmI (
 
 static
 const
-VALUE_CLASS_VTBL    class_Vtbl = {
+EXPR_CLASS_VTBL    class_Vtbl = {
     {
-        &Value_Info,
-        ValueClass_IsKindOf,
+        &Expr_Info,
+        ExprClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        Value_Class,
-        ValueClass_WhoAmI,
-        (P_OBJ_QUERYINFO)ValueClass_QueryInfo,
-        NULL                        // ValueClass_ToDebugString
+        Expr_Class,
+        ExprClass_WhoAmI,
+        (P_OBJ_QUERYINFO)ExprClass_QueryInfo,
+        NULL                        // ExprClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ VALUE_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-VALUE_CLASS_DATA  Value_ClassObj = {
+EXPR_CLASS_DATA  Expr_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(VALUE_CLASS_DATA),                  // cbSize
+        sizeof(EXPR_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,17 @@ VALUE_CLASS_DATA  Value_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  VALUE_SINGLETON
-VALUE_DATA *     Value_getSingleton (
+#ifdef  EXPR_SINGLETON
+EXPR_DATA *     Expr_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(Value_ClassObj.pSingleton);
+    return (OBJ_ID)(Expr_ClassObj.pSingleton);
 }
 
 
-bool            Value_setSingleton (
-    VALUE_DATA       *pValue
+bool            Expr_setSingleton (
+    EXPR_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +192,10 @@ bool            Value_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (Value_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(Value_ClassObj.pSingleton));
+    if (Expr_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Expr_ClassObj.pSingleton));
     }
-    Value_ClassObj.pSingleton = pValue;
+    Expr_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +205,17 @@ bool            Value_setSingleton (
 
 
 
-VALUE_DATA *     Value_Shared (
+EXPR_DATA *     Expr_Shared (
     void
 )
 {
-    VALUE_DATA       *this = (OBJ_ID)(Value_ClassObj.pSingleton);
+    EXPR_DATA       *this = (OBJ_ID)(Expr_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = Value_New( );
-        Value_setSingleton(this);
+        this = Expr_New( );
+        Expr_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // Value_ClassObj.pSingleton = OBJ_NIL;
+        // Expr_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +223,15 @@ VALUE_DATA *     Value_Shared (
 
 
 
-void            Value_SharedReset (
+void            Expr_SharedReset (
     void
 )
 {
-    VALUE_DATA       *this = (OBJ_ID)(Value_ClassObj.pSingleton);
+    EXPR_DATA       *this = (OBJ_ID)(Expr_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        Value_ClassObj.pSingleton = OBJ_NIL;
+        Expr_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +247,13 @@ void            Value_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          ValueClass_QueryInfo (
+void *          ExprClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    VALUE_CLASS_DATA *this = objId;
+    EXPR_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +264,7 @@ void *          ValueClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(VALUE_DATA);
+            return (void *)sizeof(EXPR_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,7 +279,7 @@ void *          ValueClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&Value_Info;
+                        return (void *)&Expr_Info;
                     }
                     break;
                     
@@ -297,19 +297,24 @@ void *          ValueClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return Value_New;
+                        return Expr_New;
                     }
                     break;
                     
-                case 'P':
-                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return Value_ParseJsonObject;
-                    }
-                    break;
- 
+#ifdef  EXPR_JSON_SUPPORT
+				case 'P':
+					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+						return Expr_ParseJsonFields;
+					}
+					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+						return Expr_ParseJsonObject;
+					}
+					break;
+#endif
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return ValueClass_WhoAmI;
+                        return ExprClass_WhoAmI;
                     }
                     break;
                     
@@ -329,7 +334,7 @@ void *          ValueClass_QueryInfo (
 
 
 static
-bool            Value_IsKindOf (
+bool            Expr_IsKindOf (
     uint16_t		classID
 )
 {
@@ -337,14 +342,14 @@ bool            Value_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_VALUE == classID) {
+    if (OBJ_IDENT_EXPR == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(Value_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Expr_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -358,25 +363,25 @@ bool            Value_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            Value_Dealloc (
+void            Expr_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          Value_Class (
+OBJ_ID          Expr_Class (
     void
 )
 {
-    return (OBJ_ID)&Value_ClassObj;
+    return (OBJ_ID)&Expr_ClassObj;
 }
 
 
 static
-uint16_t		Value_WhoAmI (
+uint16_t		Expr_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_VALUE;
+    return OBJ_IDENT_EXPR;
 }
 
 
@@ -388,34 +393,34 @@ uint16_t		Value_WhoAmI (
 //===========================================================
 
 const
-VALUE_VTBL     Value_Vtbl = {
+EXPR_VTBL     Expr_Vtbl = {
     {
-        &Value_Info,
-        Value_IsKindOf,
-#ifdef  VALUE_IS_SINGLETON
+        &Expr_Info,
+        Expr_IsKindOf,
+#ifdef  EXPR_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        Value_Dealloc,
-        Value_Class,
-        Value_WhoAmI,
-        (P_OBJ_QUERYINFO)Value_QueryInfo,
-        (P_OBJ_TOSTRING)Value_ToDebugString,
-        NULL,			// Value_Enable,
-        NULL,			// Value_Disable,
-        (P_OBJ_ASSIGN)Value_Assign,
-        (P_OBJ_COMPARE)Value_Compare,
-        (P_OBJ_PTR)Value_Copy,
-        NULL, 			// (P_OBJ_PTR)Value_DeepCopy,
-        NULL 			// (P_OBJ_HASH)Value_Hash,
+        Expr_Dealloc,
+        Expr_Class,
+        Expr_WhoAmI,
+        (P_OBJ_QUERYINFO)Expr_QueryInfo,
+        (P_OBJ_TOSTRING)Expr_ToDebugString,
+        NULL,			// Expr_Enable,
+        NULL,			// Expr_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Expr_Assign,
+        NULL,			// (P_OBJ_COMPARE)Expr_Compare,
+        NULL, 			// (P_OBJ_PTR)Expr_Copy,
+        NULL, 			// (P_OBJ_PTR)Expr_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Expr_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Value_IsEnabled,
+    //Expr_IsEnabled,
  
 };
 
@@ -423,13 +428,13 @@ VALUE_VTBL     Value_Vtbl = {
 
 static
 const
-OBJ_INFO        Value_Info = {
-    "Value",
-    "Primitive Value",
-    (OBJ_DATA *)&Value_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&Value_Vtbl,
-    sizeof(VALUE_DATA)
+OBJ_INFO        Expr_Info = {
+    "Expr",
+    "Universal Expression Parser",
+    (OBJ_DATA *)&Expr_ClassObj,
+    (OBJ_DATA *)&Parser_ClassObj,
+    (OBJ_IUNKNOWN *)&Expr_Vtbl,
+    sizeof(EXPR_DATA)
 };
 
 

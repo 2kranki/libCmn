@@ -88,42 +88,6 @@ extern "C" {
     )
     {
 
-        switch (this->data.type) {
-
-            case TOKEN_TYPE_UNKNOWN:
-            case TOKEN_TYPE_CHAR:
-            case TOKEN_TYPE_DOUBLE:
-            case TOKEN_TYPE_INTEGER:
-            case TOKEN_TYPE_STR_UTF8:
-            case TOKEN_TYPE_STRCON_UTF8:
-            case TOKEN_TYPE_STRTOKEN:
-            case TOKEN_TYPE_W32CHAR:
-            case TOKEN_TYPE_USER:
-                break;
-
-#ifdef XYZZY
-            case VALUE_TYPE_OBJECT:
-                if (this->value.pObject) {
-                    obj_Release(this->value.pObject);
-                    this->value.pObject = OBJ_NIL;
-                }
-                break;
-
-            case VALUE_TYPE_DATA:
-                this->value.data.pData = NULL;
-                this->value.data.length = 0;
-                break;
-
-            case VALUE_TYPE_DATA_FREE:
-                if (this->value.data.pData) {
-                    mem_Free(this->value.data.pData);
-                    this->value.data.pData = NULL;
-                }
-                this->value.data.length = 0;
-                break;
-#endif
-
-        }
         this->data.type = TOKEN_TYPE_UNKNOWN;
 
     }
@@ -380,6 +344,10 @@ extern "C" {
     )
     {
 
+        if (OBJ_NIL == this) {
+            return 0;                   // This should signify UNKNOWN Class.
+        }
+        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else

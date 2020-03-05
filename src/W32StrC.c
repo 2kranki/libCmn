@@ -456,6 +456,36 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      A d v a n c e
+    //---------------------------------------------------------------
+
+    void            W32StrC_Advance (
+        W32STRC_DATA    *this,
+        int32_t         offset
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        amt;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!W32StrC_Validate(this)) {
+            DEBUG_BREAK();
+            // return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        amt = obj_getMisc(this);
+        amt += offset;
+        obj_setMisc(this, amt);
+
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -992,6 +1022,119 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       L o o k  A h e a d
+    //---------------------------------------------------------------
+
+    W32CHR_T        W32StrC_LookAhead(
+        W32STRC_DATA    *this,
+        uint32_t        offset              // Relative to 1
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        amt = 0;
+        W32CHR_T        chr = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!W32StrC_Validate(this)) {
+            DEBUG_BREAK();
+            // return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+
+        amt = obj_getMisc(this);
+        amt += offset - 1;
+        if (amt < W32StrC_getLength(this))
+            chr = this->pArray[amt];
+
+        return chr;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          M a t c h
+    //---------------------------------------------------------------
+
+    bool            W32StrC_MatchChr(
+        W32STRC_DATA    *this,
+        W32CHR_T        chr
+    )
+    {
+        int32_t         index;
+        bool            fMatch = true;
+
+        index = obj_getMisc(this);
+        if (index < W32StrC_getLength(this))
+            ;
+        else {
+            return false;
+        }
+
+        if (chr == this->pArray[index])
+            ;
+        else {
+            fMatch = false;
+        }
+
+        if (fMatch) {
+            obj_setMisc(this, index+1);
+        }
+
+        return fMatch;
+    }
+
+
+    bool            W32StrC_MatchStrA(
+        W32STRC_DATA    *this,
+        const
+        char            *pStrA
+    )
+    {
+        W32CHR_T        chr;
+        int32_t         index;
+        int32_t         len = 0;
+        bool            fMatch = true;
+
+        index = obj_getMisc(this);
+        if (index < W32StrC_getLength(this))
+            ;
+        else {
+            return false;
+        }
+
+        for (;;) {
+            chr = utf8_Utf8ToW32_Scan( &pStrA );
+            if (chr == '\0') {
+                if (len)
+                    break;
+                else {
+                    fMatch = false;
+                }
+                break;
+            }
+            if (chr == this->pArray[index]) {
+                ++index;
+                ++len;
+            }
+            else {
+                fMatch = false;
+                break;
+            }
+        }
+
+        if (fMatch) {
+            obj_setMisc(this, index);
+        }
+
+        return fMatch;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       M i d
     //---------------------------------------------------------------
 
@@ -1185,6 +1328,33 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          R e s e t
+    //---------------------------------------------------------------
+
+    void            W32StrC_Reset (
+        W32STRC_DATA    *this
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        amt = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!W32StrC_Validate(this)) {
+            DEBUG_BREAK();
+            // return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        obj_setMisc(this, amt);
+
+    }
+
+
+
     //---------------------------------------------------------------
     //                       R i g h t
     //---------------------------------------------------------------

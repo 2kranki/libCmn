@@ -314,7 +314,49 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                        T y p e
+    //---------------------------------------------------------------
+
+    int16_t         Opcode_getType (
+        OPCODE_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Opcode_getEntry(this)->iLen;
+    }
+
+
+    bool            Opcode_setType (
+        OPCODE_DATA     *this,
+        int16_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Opcode_getEntry(this)->iLen = value;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s

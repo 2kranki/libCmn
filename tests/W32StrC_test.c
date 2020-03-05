@@ -420,8 +420,77 @@ int         test_W32StrC_Mid(
 
 
 
+int             test_Expr_LookAhead01 (
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    const
+    char            *pExpr1A = "1+1";
+    const
+    char            *pExpr2A = "2*5+1";
+    const
+    char            *pExpr3A = "1+2*5";
+    W32STRC_DATA     *pW32 = OBJ_NIL;
+    W32CHR_T        chr;
+    bool            fRc;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pW32 = W32StrC_NewA(pExpr1A);
+    TINYTEST_FALSE( (OBJ_NIL == pW32) );
+    chr = W32StrC_LookAhead(pW32, 1);
+    TINYTEST_TRUE( ('1' == chr) );
+    chr = W32StrC_LookAhead(pW32, 2);
+    TINYTEST_TRUE( ('+' == chr) );
+    chr = W32StrC_LookAhead(pW32, 3);
+    TINYTEST_TRUE( ('1' == chr) );
+    chr = W32StrC_LookAhead(pW32, 4);
+    TINYTEST_TRUE( (0 == chr) );
+    chr = W32StrC_LookAhead(pW32, 10);
+    TINYTEST_TRUE( (0 == chr) );
+    W32StrC_Advance(pW32, 1);
+    chr = W32StrC_LookAhead(pW32, 1);
+    TINYTEST_TRUE( ('+' == chr) );
+    W32StrC_Advance(pW32, 1);
+    chr = W32StrC_LookAhead(pW32, 1);
+    TINYTEST_TRUE( ('1' == chr) );
+    W32StrC_Advance(pW32, 1);
+    chr = W32StrC_LookAhead(pW32, 1);
+    TINYTEST_TRUE( (0 == chr) );
+
+    W32StrC_Reset(pW32);
+    TINYTEST_TRUE( (0 == obj_getMisc(pW32)) );
+    fRc = W32StrC_MatchStrA(pW32, "1+");
+    TINYTEST_TRUE( (fRc) );
+    fprintf(stderr, "\tMisc = %d\n", obj_getMisc(pW32));
+    TINYTEST_TRUE( (2 == obj_getMisc(pW32)) );
+    fRc = W32StrC_MatchStrA(pW32, "1+");
+    TINYTEST_TRUE( (!fRc) );
+    fprintf(stderr, "\tMisc = %d\n", obj_getMisc(pW32));
+    TINYTEST_TRUE( (2 == obj_getMisc(pW32)) );
+    fRc = W32StrC_MatchStrA(pW32, "1");
+    TINYTEST_TRUE( (fRc) );
+    fprintf(stderr, "\tMisc = %d\n", obj_getMisc(pW32));
+    TINYTEST_TRUE( (3 == obj_getMisc(pW32)) );
+    fRc = W32StrC_MatchStrA(pW32, "1");
+    TINYTEST_TRUE( (!fRc) );
+    fprintf(stderr, "\tMisc = %d\n", obj_getMisc(pW32));
+    TINYTEST_TRUE( (3 == obj_getMisc(pW32)) );
+
+    obj_Release(pW32);
+    pW32 = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_W32StrC);
+    TINYTEST_ADD_TEST(test_Expr_LookAhead01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_W32StrC_Mid,setUp,tearDown);
     TINYTEST_ADD_TEST(test_W32StrC_NewConW,setUp,tearDown);
     TINYTEST_ADD_TEST(test_W32StrC_NewW,setUp,tearDown);

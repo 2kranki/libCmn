@@ -20,6 +20,8 @@
  *          restored.  Also, you may be faced with little-endian
  *          vs big-endian translation which this object does not
  *          do.
+ *    2.    None of the object's (OBJ_DATA) user flags and misc data
+ *          are used by this object.
  *
  * History
  *  08/26/2017 Generated
@@ -415,6 +417,18 @@ extern "C" {
     ERESULT         Value_Assign (
         VALUE_DATA      *this,
         VALUE_DATA      *pOther
+    );
+
+
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         Value_Compare (
+        VALUE_DATA     *this,
+        VALUE_DATA     *pOther
     );
 
 

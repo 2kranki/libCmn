@@ -1349,7 +1349,7 @@ extern "C" {
         VALUE_DATA     *pOther
     )
     {
-        int             i = 0;
+        int             iRc = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
 #ifdef  xyzzy        
         const
@@ -1370,22 +1370,75 @@ extern "C" {
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
+        switch (this->type) {
+
+            case VALUE_TYPE_DOUBLE:
+                iRc = (int)(this->value.flt - pOther->value.flt);
+                break;
+
+            case VALUE_TYPE_INT8:
+                iRc = this->value.i8 - pOther->value.i8;
+                break;
+
+            case VALUE_TYPE_INT16:
+                iRc = this->value.i16 - pOther->value.i16;
+                break;
+
+            case VALUE_TYPE_INT32:
+                iRc = this->value.i32 - pOther->value.i32;
+                break;
+
+            case VALUE_TYPE_INT64:
+                iRc = (int)(this->value.i64 - pOther->value.i64);
+                break;
+
+            case VALUE_TYPE_UINT8:
+                iRc = this->value.u8 - pOther->value.u8;
+                break;
+
+            case VALUE_TYPE_UINT16:
+                iRc = this->value.u16 - pOther->value.u16;
+                break;
+
+            case VALUE_TYPE_UINT32:
+                iRc = this->value.u32 - pOther->value.u32;
+                break;
+
+            case VALUE_TYPE_UINT64:
+                iRc = (int)(this->value.u64 - pOther->value.u64);
+                break;
+
+            case VALUE_TYPE_OBJECT:
+                if (this->value.pObject) {
+                    if (obj_getVtbl(this->value.pObject)->pCompare
+                        && obj_getVtbl(pOther->value.pObject)->pCompare) {
+                        eRc = obj_getVtbl(this->value.pObject)->pCompare(this, pOther);
+                        return eRc;
+                    }
+                }
+                break;
+
+            case VALUE_TYPE_DATA:
+            case VALUE_TYPE_DATA_FREE:
+                iRc = this->value.data.length - pOther->value.data.length;
+                if (0 == iRc) {
+                    iRc =   memcmp(
+                                 this->value.data.pData,
+                                 pOther->value.data.pData,
+                                 this->value.data.length
+                            );
+                }
+                break;
+
+            default:
+                break;
         }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
 
         
-        if (i < 0) {
+        if (iRc < 0) {
             eRc = ERESULT_SUCCESS_LESS_THAN;
         }
-        if (i > 0) {
+        if (iRc > 0) {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         

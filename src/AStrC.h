@@ -12,7 +12,8 @@
  *          version of AStr.
  *
  * Remarks
- *	1.      None
+ *  1.      OBJ_FLAG_USER1 is used by this object.
+ *  2.      obj's Misc fields are not used by this object.
  *
  * History
  *	02/19/2016 Generated

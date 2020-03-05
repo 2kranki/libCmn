@@ -331,7 +331,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     bool            scanner_ScanDec32(
-        char            **ppCmdStr,         // NUL terminated string pointer
+        char            **ppStr,            // NUL terminated string pointer
         uint32_t        *pScannedLen,       // (returned) Scanned Length
         uint32_t        *pValue             // (returned) Scanned Number
     )
@@ -346,11 +346,11 @@ extern "C" {
         int             chrLen = 0;
 
         // Do initialization.
-        if( NULL == ppCmdStr ) {
+        if( NULL == ppStr ) {
             fRc = false;
             goto Exit90;
         }
-        pCurChr = *ppCmdStr;
+        pCurChr = *ppStr;
         
         // Scan off leading white-space.
         scanner_ScanWhite( &pCurChr, &cLen );
@@ -428,8 +428,8 @@ extern "C" {
         
         // Return to caller.
     Exit90:
-        if( fRc && ppCmdStr ) {
-            *ppCmdStr = pCurChr;
+        if( fRc && ppStr ) {
+            *ppStr = pCurChr;
         }
         if( fRc && pScannedLen ) {
             *pScannedLen = cLen;
@@ -734,15 +734,15 @@ extern "C" {
     /*!
      Set up an ArgC/ArgV type array given a command line string
      excluding the program name.
-     @param     pCmdStrA    Pointer to a UTF-8 Argument character string
+     @param     pStrA    Pointer to a UTF-8 Argument character string
      @return    If successful, an AStrArray object which must be
                 released containing the Argument Array, otherwise
                 OBJ_NIL if an error occurred.
      @warning   Remember to release the returned AStrArray object.
      */
-    ASTRARRAY_DATA * scanner_ScanStringToAstrArray(
+    ASTRARRAY_DATA * scanner_ScanStringToAStrArray(
         const
-        char            *pCmdStrA
+        char            *pStrA
     )
     {
         ERESULT         eRc;
@@ -756,7 +756,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if(pCmdStrA && (utf8_StrLenA(pCmdStrA) > 0))
+        if(pStrA && (utf8_StrLenA(pStrA) > 0))
             ;
         else {
             DEBUG_BREAK();
@@ -770,7 +770,7 @@ extern "C" {
             //return ERESULT_OUT_OF_MEMORY;
             return OBJ_NIL;
         }
-        pCurChr = (char *)pCmdStrA;
+        pCurChr = (char *)pStrA;
         
         // Set up program name argument.
         pArg = AStr_NewA("");

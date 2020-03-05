@@ -108,17 +108,17 @@ extern "C" {
         const
         char            Name[OPCODE_ENTRY_NAME_MAX];
         uint8_t         cCode;              // Operation Code Length
-#define OPCODE_ENTRY_CCODE_MAX 6
+#define OPCODE_ENTRY_CCODE_MAX 8
         uint8_t         iCode[OPCODE_ENTRY_CCODE_MAX]; // Operation Code
         uint8_t         iMask[OPCODE_ENTRY_CCODE_MAX];
-        uint8_t         iType;              // See ASMPOT_PSEUDO.
         uint8_t         iLen;               // Full Instruction Length including operands
         uint8_t         cCondCodes;         // Operation Code Length
 #define OPCODE_ENTRY_CCONDCODE_MAX 8
 #define OPCODE_ENTRY_SZCONDCODE_MAX 11
         const
         char            szCondCodes[OPCODE_ENTRY_CCONDCODE_MAX][OPCODE_ENTRY_SZCONDCODE_MAX];
-        uint8_t         rsvd8[3];
+        uint8_t         rsvd8[2];
+        int16_t         iType;              //
         uint16_t        iFeatures;
 #define OPCODE_ENTRY_IFEATURES_MAX 16
         uint16_t        rsvd16;

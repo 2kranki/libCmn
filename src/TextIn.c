@@ -1778,7 +1778,7 @@ extern "C" {
         TEXTIN_DATA     *this,
         PATH_DATA       *pFilePath,
         ASTR_DATA       *pStr,        // Buffer of file data
-        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        fileIndex,    // File Path Index for a separate path table
         uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
     )
     {
@@ -1937,6 +1937,44 @@ extern "C" {
         this->pU8Array = pBuffer;
         this->fAtEOF = 0;
         this->fOpen = 1;
+
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         TextIn_SetupW32Str(
+        TEXTIN_DATA     *this,
+        PATH_DATA       *pFilePath,
+        W32STR_DATA     *pStr,        // Buffer of file data
+        uint16_t        fileIndex,    // File Path Index for a separate path table
+        uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TextIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = TextIn_SetupBase(this, pFilePath, fileIndex, tabSize);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eRc;
+        }
+
+        // Open the file.
+        this->type = TEXTIN_TYPE_WSTR;
+        obj_Retain(pStr);
+        this->pWStr = pStr;
+        this->fAtEOF = 0;
+        this->fOpen = 1;
+        this->curChr.loc.fileIndex = fileIndex;
+        this->curChr.loc.offset = 1;        // W32Str is relative to 1.
 
         return ERESULT_SUCCESS;
     }

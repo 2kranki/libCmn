@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 02/22/2020 20:18:16
+ *	Generated 03/03/2020 17:03:28
  */
 
 
@@ -24,51 +24,13 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
-#include    <trace.h>
-#include    <Syms_internal.h>
-#ifdef  SYMS_JSON_SUPPORT
+#include    <Expr_internal.h>
+#ifdef  EXPR_JSON_SUPPORT
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
-
-
-static
-char        *strings[] = {
-    "bob",
-    "bobby",
-    "iryana",
-    "dashsa",
-    "dasha",
-    "name",
-    "way",
-    "bigger",
-    "Now",
-    "is",
-    "the",
-    "time",
-    "for",
-    "all",
-    "good",
-    "men",
-    "to",
-    "come",
-    "aid",
-    "of",
-    "their",
-    "country",
-    "We",
-    "need",
-    "another",
-    "item",
-    "in",
-    "here",
-    "Are",
-    "you",
-    "alright",
-    "with",
-    "this",
-    (char *)NULL
-};
+#include    <trace.h>
+#include    <W32StrC.h>
 
 
 
@@ -94,7 +56,7 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  SYMS_JSON_SUPPORT
+#ifdef  EXPR_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
@@ -121,25 +83,25 @@ int             tearDown (
 
 
 
-int             test_Syms_OpenClose (
+int             test_Expr_OpenClose (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SYMS_DATA	    *pObj = OBJ_NIL;
+    EXPR_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Syms_Alloc( );
+    pObj = Expr_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = Syms_Init( pObj );
+    pObj = Expr_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_EXPR);
         TINYTEST_TRUE( (fRc) );
         
         // Test something.
@@ -155,38 +117,38 @@ int             test_Syms_OpenClose (
 
 
 
-int             test_Syms_Copy01 (
+int             test_Expr_Copy01 (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SYMS_DATA	    *pObj1 = OBJ_NIL;
-    SYMS_DATA	    *pObj2 = OBJ_NIL;
+    EXPR_DATA	    *pObj1 = OBJ_NIL;
+    EXPR_DATA	    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(SYMS_JSON_SUPPORT) && defined(XYZZY)
+#if defined(EXPR_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = Syms_New( );
+    pObj1 = Expr_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_EXPR);
         TINYTEST_TRUE( (fRc) );
         
         // Test assign.
-        pObj2 = Syms_New();
+        pObj2 = Expr_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        eRc = Syms_Assign(pObj1, pObj2);
+        eRc = Expr_Assign(pObj1, pObj2);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_EXPR);
         TINYTEST_TRUE( (fRc) );
-        //eRc = Syms_Compare(pObj1, pObj2);
+        //eRc = Expr_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -194,12 +156,12 @@ int             test_Syms_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = Syms_Copy(pObj1);
+        pObj2 = Expr_Copy(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_EXPR);
         TINYTEST_TRUE( (fRc) );
-        //eRc = Syms_Compare(pObj1, pObj2);
+        //eRc = Expr_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -207,17 +169,17 @@ int             test_Syms_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(SYMS_JSON_SUPPORT) && defined(XYZZY)
-        pStr = Syms_ToJson(pObj1);
+#if defined(EXPR_JSON_SUPPORT) && defined(XYZZY)
+        pStr = Expr_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = Syms_NewFromJsonString(pStr);
+        pObj2 = Expr_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_EXPR);
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = Syms_Compare(pObj1, pObj2);
+        //eRc = Expr_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
@@ -234,56 +196,62 @@ int             test_Syms_Copy01 (
 
 
 
-int             test_Syms_Test01 (
+int             test_Expr_Test01 (
     const
     char            *pTestName
 )
 {
-    ERESULT         eRc = ERESULT_SUCCESS;
-    SYMS_DATA	    *pObj = OBJ_NIL;
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    EXPR_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
-    SYM_DATA        *pSym;
-    SYM_DATA        *pSymFnd;
-    uint32_t        i;
-    uint32_t        cnt;
-    ASTR_DATA       *pStr;
+    int32_t         iRc;
+    const
+    char            *pExpr1A = "1+1";
+    const
+    char            *pExpr2A = "2*5+1";
+    const
+    char            *pExpr3A = "1+2*5";
+    W32STRC_DATA     *pW32 = OBJ_NIL;
+    W32CHR_T        chr;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Syms_New( );
+    pW32 = W32StrC_NewA(pExpr1A);
+    TINYTEST_FALSE( (OBJ_NIL == pW32) );
+    chr = W32StrC_LookAhead(pW32, 1);
+    TINYTEST_TRUE( ('1' == chr) );
+    chr = W32StrC_LookAhead(pW32, 2);
+    TINYTEST_TRUE( ('+' == chr) );
+    chr = W32StrC_LookAhead(pW32, 3);
+    TINYTEST_TRUE( ('1' == chr) );
+    chr = W32StrC_LookAhead(pW32, 4);
+    TINYTEST_TRUE( (0 == chr) );
+    chr = W32StrC_LookAhead(pW32, 10);
+    TINYTEST_TRUE( (0 == chr) );
+    W32StrC_Advance(pW32, 1);
+    chr = W32StrC_LookAhead(pW32, 1);
+    TINYTEST_TRUE( ('+' == chr) );
+    W32StrC_Advance(pW32, 1);
+    chr = W32StrC_LookAhead(pW32, 1);
+    TINYTEST_TRUE( ('1' == chr) );
+    W32StrC_Advance(pW32, 1);
+    chr = W32StrC_LookAhead(pW32, 1);
+    TINYTEST_TRUE( (0 == chr) );
+
+    pObj = Expr_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_EXPR);
         TINYTEST_TRUE( (fRc) );
         
-        for (i=0; i<33; ++i) {
-            pSym = Sym_NewA(0, strings[i]);
-            TINYTEST_FALSE( (OBJ_NIL == pSym) );
-            eRc = Syms_Add(pObj, pSym);
-            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-            cnt = Syms_getSize(pObj);
-            XCTAssertTrue( (cnt == (i+1)) );
-            fprintf(stderr, "\tAdded %p - %s\n", pSym, strings[i]);
-            fprintf(stderr, "\tLooking for: %s\n", strings[i]);
-            pSymFnd = Syms_FindA(pObj, 0, strings[i]);
-            XCTAssertTrue( (pSymFnd) );
-            fprintf(stderr, "\t\tFound\n");
-            obj_Release(pSym);
-            pSym = OBJ_NIL;
-        }
-
-        pStr = Syms_ToDebugString(pObj, 0);
-        if (pStr) {
-            fprintf(stderr, "DEBUG:\n%s\n", AStr_getData(pStr));
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-    
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+
+    obj_Release(pW32);
+    pW32 = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
@@ -292,13 +260,13 @@ int             test_Syms_Test01 (
 
 
 
-TINYTEST_START_SUITE(test_Syms);
-    TINYTEST_ADD_TEST(test_Syms_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_Syms_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Syms_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_Expr);
+    TINYTEST_ADD_TEST(test_Expr_Test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_Expr_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Expr_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_Syms);
+TINYTEST_MAIN_SINGLE_SUITE(test_Expr);
 
 
 

@@ -12,8 +12,15 @@
  *          its data remain constant since other programs rely
  *          on that.
  *
+ *          Advance(), LookAhead() and Reset() provide a mechanism
+ *          for scanning the string. It does use the obj's Misc
+ *          field.
+ *
  * Remarks
- *	1.      None
+ *	1.      OBJ_FLAG_USER1 is used by this object.
+ *  2.      obj's Misc fields are not used by this object unless
+ *          the scan methods (Advance, LookAhead or Reset) are
+ *          used.
  *
  * History
  *  02/19/2016 Generated
@@ -213,6 +220,16 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     Advance the index into the string by the offset amount.
+     @warning   This method uses obj's misc field.
+     */
+    void            W32StrC_Advance(
+        W32STRC_DATA    *this,
+        int32_t         offset
+    );
+
+
+    /*!
      Assign the contents of this object to the other object (ie
      this -> other).  Any objects in other will be released before
      a copy of the object is performed.
@@ -316,6 +333,42 @@ extern "C" {
 
 
     /*!
+     Return the character pointed at by the obj's Misc plus offset.
+     @return    If successful, the indexed character, otherwise 0.
+     @warning   This method uses obj's misc field.
+     */
+    W32CHR_T        W32StrC_LookAhead(
+        W32STRC_DATA    *this,
+        uint32_t        offset              // Relative to 1
+    );
+
+
+    /*!
+     Match the given character against the current obj's Misc
+     index into the string.  If they match, advance the scan.
+     @return    If they match, return true otherwise false.
+     @warning   This method uses obj's misc field.
+     */
+    bool            W32StrC_MatchChr(
+        W32STRC_DATA    *this,
+        W32CHR_T        chr
+    );
+
+
+    /*!
+     Match the given UTF-8 String against the current obj's Misc
+     index into the string.  If they match, it advances the scan.
+     @return    If they match, return true otherwise false.
+     @warning   This method uses obj's misc field.
+     */
+    bool            W32StrC_MatchStrA(
+        W32STRC_DATA    *this,
+        const
+        char            *pStrA
+    );
+
+
+    /*!
      Create a new string from a portion of the current string starting
      at index with len number of characters.
      @return    If successful, an WStrC object which must be released,
@@ -338,6 +391,15 @@ extern "C" {
         W32STRC_DATA    *this,
         uint32_t        offset,         /* Relative to 1 */
         uint32_t        len
+    );
+
+
+    /*!
+     Reset the scan index.
+     @warning   This method uses obj's misc field.
+     */
+    void            W32StrC_Reset(
+        W32STRC_DATA    *this
     );
 
 

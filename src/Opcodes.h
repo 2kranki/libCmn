@@ -129,7 +129,7 @@ extern "C" {
      released.
      @return    pointer to Opcodes object if successful, otherwise OBJ_NIL.
      */
-    OPCODES_DATA *     Opcodes_Alloc (
+    OPCODES_DATA *  Opcodes_Alloc (
         void
     );
     
@@ -139,17 +139,17 @@ extern "C" {
     );
     
     
-    OPCODES_DATA *     Opcodes_New (
+    OPCODES_DATA *  Opcodes_New (
         void
     );
     
     
 #ifdef  OPCODES_JSON_SUPPORT
-    OPCODES_DATA *   Opcodes_NewFromJsonString (
+    OPCODES_DATA *  Opcodes_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    OPCODES_DATA *   Opcodes_NewFromJsonStringA (
+    OPCODES_DATA *  Opcodes_NewFromJsonStringA (
         const
         char            *pStringA
     );

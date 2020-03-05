@@ -167,7 +167,7 @@ extern "C" {
             }
         } else {
         tryIntType:
-            eRc = JsonIn_FindU8NodeInHashA(pParser, "iType", &pObject->entry.iType);
+            eRc = JsonIn_FindI16NodeInHashA(pParser, "iType", &pObject->entry.iType);
         }
         (void)JsonIn_FindU8NodeInHashA(pParser, "iLen", &pObject->entry.iLen);
         // The optional iFeatures can be integer or array of descriptions.
@@ -425,7 +425,7 @@ extern "C" {
                 AStr_AppendPrint(pStr, "\tiType:\"%s\",\n", pDesc);
             }
         } else {
-            JsonOut_Append_u8("iType", this->entry.iType, pStr);
+            JsonOut_Append_i16("iType", this->entry.iType, pStr);
         }
         JsonOut_Append_u8("iLen", this->entry.iLen, pStr);
         if (this->entry.cCondCodes) {
