@@ -263,7 +263,7 @@ int         test_CmdUtl_CommandString01(
     ASTR_DATA       *pStr = OBJ_NIL;
     ASTRARRAY_DATA  *pArray = OBJ_NIL;
     uint32_t        cArray;
-    bool            fDebug = false;
+    bool            fDebug = true;
 
 
     fprintf(stderr, "Performing: %s\n", pTestName);

@@ -45,7 +45,7 @@
 #include        <ascii.h>
 #include        <Dir.h>
 #include        <misc.h>
-#include        <scanner.h>
+#include        <Scanner.h>
 #include        <str.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -61,75 +61,75 @@ extern "C" {
     
 
     
-       // NOTE:    These options will be searched after the program option
-       //          defaults.  So, they can be over-ridden by the same.
-       CMDUTL_OPTION       defaultOptDefns[] = {
-           {
-               NULL,                       // Long
-               '?',                        // Short
-               CMDUTL_ARG_OPTION_NONE,     // Class
-               CMDUTL_TYPE_EXEC,           // Type
-               0,                          // Offset
-               (void *)Appl_Help,          // Executed Routine
-               "Display Help"              // Description
-           },
-           {
-               "debug",
-               'd',
-               CMDUTL_ARG_OPTION_NONE,
-               CMDUTL_TYPE_BOOL,
-               offsetof(APPL_DATA, fDebug),
-               NULL,
-               "Set Debug Mode"
-           },
-           {
-               "force",
-               'f',
-               CMDUTL_ARG_OPTION_NONE,
-               CMDUTL_TYPE_BOOL,
-               offsetof(APPL_DATA, fForce),
-               NULL,
-               "Set Force Mode"
-           },
-           {
-               "help",
-               'h',
-               CMDUTL_ARG_OPTION_NONE,
-               CMDUTL_TYPE_EXEC,
-               0,
-               (void *)Appl_Help,
-               "Display Help"
-           },
-           {
-               "quiet",
-               's',
-               CMDUTL_ARG_OPTION_NONE,
-               CMDUTL_TYPE_BOOL,
-               offsetof(APPL_DATA, fQuiet),
-               NULL,
-               "Set Quiet Mode"
+   // NOTE:    These options will be searched after the program option
+   //          defaults.  So, they can be over-ridden by the same.
+   CMDUTL_OPTION       defaultOptDefns[] = {
+       {
+           NULL,                       // Long
+           '?',                        // Short
+           CMDUTL_ARG_OPTION_NONE,     // Class
+           CMDUTL_TYPE_EXEC,           // Type
+           0,                          // Offset
+           (void *)Appl_Help,          // Executed Routine
+           "Display Help"              // Description
+       },
+       {
+           "debug",
+           'd',
+           CMDUTL_ARG_OPTION_NONE,
+           CMDUTL_TYPE_BOOL,
+           offsetof(APPL_DATA, fDebug),
+           NULL,
+           "Set Debug Mode"
+       },
+       {
+           "force",
+           'f',
+           CMDUTL_ARG_OPTION_NONE,
+           CMDUTL_TYPE_BOOL,
+           offsetof(APPL_DATA, fForce),
+           NULL,
+           "Set Force Mode"
+       },
+       {
+           "help",
+           'h',
+           CMDUTL_ARG_OPTION_NONE,
+           CMDUTL_TYPE_EXEC,
+           0,
+           (void *)Appl_Help,
+           "Display Help"
+       },
+       {
+           "quiet",
+           's',
+           CMDUTL_ARG_OPTION_NONE,
+           CMDUTL_TYPE_BOOL,
+           offsetof(APPL_DATA, fQuiet),
+           NULL,
+           "Set Quiet Mode"
 
-           },
-           {
-               "silent",
-               's',
-               CMDUTL_ARG_OPTION_NONE,
-               CMDUTL_TYPE_BOOL,
-               offsetof(APPL_DATA, fQuiet),
-               NULL,
-               "Set Quiet Mode"
-           },
-           {
-               "verbose",
-               'v',
-               CMDUTL_ARG_OPTION_NONE,
-               CMDUTL_TYPE_INCR,
-               offsetof(APPL_DATA, iVerbose),
-               NULL,
-               "Set Verbose Mode"
-           },
-           {NULL,0,0,0,0,NULL,NULL}                    // End of Table
-       };
+       },
+       {
+           "silent",
+           's',
+           CMDUTL_ARG_OPTION_NONE,
+           CMDUTL_TYPE_BOOL,
+           offsetof(APPL_DATA, fQuiet),
+           NULL,
+           "Set Quiet Mode"
+       },
+       {
+           "verbose",
+           'v',
+           CMDUTL_ARG_OPTION_NONE,
+           CMDUTL_TYPE_INCR,
+           offsetof(APPL_DATA, iVerbose),
+           NULL,
+           "Set Verbose Mode"
+       },
+       {NULL,0,0,0,0,NULL,NULL}                    // End of Table
+   };
 
 
 

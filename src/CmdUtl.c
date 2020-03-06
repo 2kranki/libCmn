@@ -118,7 +118,7 @@ optparse is a public domain package which we have altered substantially to be on
 #include        <AStrArray.h>
 #include        <NodeArray.h>
 #include        <NodeHash.h>
-#include        <scanner.h>
+#include        <Scanner.h>
 #include        <SrcErrors.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -436,13 +436,9 @@ extern "C" {
         char            *pCmdStrA
     )
     {
-        ERESULT         eRc;
-        bool            fRc;
-        char            *pCurCmd;
-        uint32_t        cmdLen = 0;
-        char            *pCurChr;
+        //ERESULT         eRc;
         ASTRARRAY_DATA  *pArgs = OBJ_NIL;
-        ASTR_DATA       *pArg = OBJ_NIL;
+        SCANNER_DATA    *pScan = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -455,44 +451,14 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        pArgs = AStrArray_New( );
-        if (OBJ_NIL == pArgs) {
-            DEBUG_BREAK();
+        pScan = Scanner_NewA(pCmdStrA);
+        if (OBJ_NIL == pScan) {
             //return ERESULT_OUT_OF_MEMORY;
             return OBJ_NIL;
         }
-        pCurChr = (char *)pCmdStrA;
-
-        // Set up program name argument.
-        pArg = AStr_NewA("");
-        if (pArg) {
-            eRc = AStrArray_AppendStr(pArgs, pArg, NULL);
-            obj_Release(pArg);
-            pArg = OBJ_NIL;
-        }
-
-        // Scan off the each parameter.
-        while( pCurChr && *pCurChr ) {
-            pCurCmd = NULL;
-            cmdLen = 0;
-
-            // Pass over white space.
-            fRc = scanner_ScanWhite(&pCurChr, NULL);
-
-            // Handle Quoted Arguments.
-            pArg = scanner_ScanStringToAStr(&pCurChr, NULL);
-            if (pArg) {
-                eRc = AStrArray_AppendStr(pArgs, pArg, NULL);
-                obj_Release(pArg);
-                pArg = OBJ_NIL;
-            }
-
-            // Bypass certain terminators.
-            if (*pCurChr && ((*pCurChr == '=') || (*pCurChr == ','))) {
-                pCurChr++;
-            }
-
-        }
+        pArgs = Scanner_ScanStringToAstrArray(pScan);
+        obj_Release(pScan);
+        pScan = OBJ_NIL;
 
         // Return to caller.
         return pArgs;

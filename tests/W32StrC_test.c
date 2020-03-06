@@ -159,8 +159,9 @@ int             test_W32StrC_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_W32STRC);
         TINYTEST_TRUE( (fRc) );
-        //TODO: Add More tests here!
-
+        eRc = W32StrC_Compare(pObj1, pObj2);
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 

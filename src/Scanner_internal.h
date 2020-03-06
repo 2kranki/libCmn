@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   W32StrC_internal.h
- *	Generated 01/23/2020 22:22:04
+ * File:   Scanner_internal.h
+ *	Generated 03/04/2020 21:17:29
  *
  * Notes:
  *  --	N/A
@@ -39,17 +39,15 @@
 
 
 
-#include        <W32StrC.h>
+#include        <Scanner.h>
 #include        <JsonIn.h>
-#include        <utf8.h>
+#include        <W32StrC_internal.h>
 
 
-#ifndef W32STRC_INTERNAL_H
-#define	W32STRC_INTERNAL_H
+#ifndef SCANNER_INTERNAL_H
+#define	SCANNER_INTERNAL_H
 
 
-
-#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -65,26 +63,23 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct W32StrC_data_s	{
+struct Scanner_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    W32STRC_DATA    super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-    #define W32STRC_FLAG_MALLOC OBJ_FLAG_USER1
 
     // Common Data
-    uint32_t        len;        // Number of chars excluding trailing NUL
-    W32CHR_T        *pArray;
 
 };
 #pragma pack(pop)
 
     extern
-    struct W32StrC_class_data_s  W32StrC_ClassObj;
+    struct Scanner_class_data_s  Scanner_ClassObj;
 
     extern
     const
-    W32STRC_VTBL         W32StrC_Vtbl;
+    SCANNER_VTBL         Scanner_Vtbl;
 
 
 
@@ -92,13 +87,13 @@ struct W32StrC_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  W32STRC_SINGLETON
-    W32STRC_DATA *  W32StrC_getSingleton (
+#ifdef  SCANNER_SINGLETON
+    SCANNER_DATA *     Scanner_getSingleton (
         void
     );
 
-    bool            W32StrC_setSingleton (
-     W32STRC_DATA       *pValue
+    bool            Scanner_setSingleton (
+     SCANNER_DATA       *pValue
 );
 #endif
 
@@ -108,88 +103,92 @@ struct W32StrC_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  W32StrC_getSuperVtbl (
-        W32STRC_DATA     *this
+    OBJ_IUNKNOWN *  Scanner_getSuperVtbl (
+        SCANNER_DATA     *this
     );
 
 
-    ERESULT         W32StrC_Assign (
-        W32STRC_DATA    *this,
-        W32STRC_DATA    *pOther
+    ERESULT         Scanner_Assign (
+        SCANNER_DATA    *this,
+        SCANNER_DATA    *pOther
     );
 
 
-    W32STRC_DATA *  W32StrC_Copy (
-        W32STRC_DATA    *this
+    SCANNER_DATA *       Scanner_Copy (
+        SCANNER_DATA     *this
     );
 
 
-    bool            W32StrC_CopyFromA(
-        W32STRC_DATA    *this,
-        const
-        char            *pStrA
-    );
-
-
-    bool            W32StrC_CopyFromW32(
-        W32STRC_DATA    *this,
-        const
-        W32CHR_T        *pStrW32
-    );
-
-
-    void            W32StrC_Dealloc (
+    void            Scanner_Dealloc (
         OBJ_ID          objId
     );
 
 
-    bool            W32StrC_FreeLine(
-        W32STRC_DATA    *this
-    );
-
-
-#ifdef  W32STRC_JSON_SUPPORT
+#ifdef  SCANNER_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    W32STRC_DATA *   W32StrC_ParseJsonObject (
+    SCANNER_DATA *       Scanner_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
 
     /*!
-     Parse the object from an established parser.
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
      @param pParser     an established jsonIn Parser Object
      @param pObject     an Object to be filled in with the
                         parsed fields.
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         W32StrC_ParseJsonFields(
+    ERESULT         Scanner_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        W32STRC_DATA    *pObject
+        SCANNER_DATA     *pObject
     );
 #endif
 
 
-    void *          W32StrC_QueryInfo (
+    void *          Scanner_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  W32STRC_JSON_SUPPORT
-    ASTR_DATA *     W32StrC_ToJson (
-        W32STRC_DATA    *this
+#ifdef  SCANNER_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Scanner_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Scanner_ToJson (
+        SCANNER_DATA      *this
     );
 
 
-    ERESULT         W32StrC_ToJsonFields (
-        W32STRC_DATA    *this,
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Scanner_ToJsonFields (
+        SCANNER_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -199,8 +198,8 @@ struct W32StrC_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool            W32StrC_Validate (
-        W32STRC_DATA    *this
+    bool			Scanner_Validate (
+        SCANNER_DATA       *this
     );
 #endif
 
@@ -210,5 +209,5 @@ struct W32StrC_data_s	{
 }
 #endif
 
-#endif	/* W32STRC_INTERNAL_H */
+#endif	/* SCANNER_INTERNAL_H */
 

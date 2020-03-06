@@ -127,7 +127,7 @@ extern "C" {
             |   (('-' | '+' | ) [1-9][0-9]+)        ** Decimal **
      The value scanned is returned if scan is successful.
      Nothing is changed if the scan is unsuccessful.
-     @param     ppCmdStr    [in/out] pointer to a UTF-8 string pointer. On output
+     @param     ppStr       [in/out] pointer to a UTF-8 string pointer. On output
                             the pointer will be updated just past the last acceptable
                             character scanned.
      @param     pScannedLen Optional pointer to number of characters which created
@@ -137,7 +137,7 @@ extern "C" {
                 otherwise false.
      */
     bool            scanner_ScanDec32 (
-        char            **ppCmdStr,         // NUL terminated string pointer
+        char            **ppStr,            // NUL terminated string pointer
         uint32_t        *pScannedLen,       // (returned) Scanned Length
         uint32_t        *pValue             // (returned) Scanned Number
     );

@@ -129,7 +129,7 @@
         {name:"psxThread", deps:["psxMutex.h","psxSem.h"]},
         {name:"ptrArray"},
         {name:"rrds", deps:["hash32.h","listdl.h","path.h"]},
-        {name:"scanner"},
+        {name:"Scanner", json:true},
         {name:"scanReader"},
         {name:"screen"},
         {name:"sidx"},

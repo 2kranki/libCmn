@@ -2,7 +2,7 @@
 /*
  * File:   W32StrC_json.c
  *
- *	Generated 03/05/2020 13:19:12
+ *	Generated 01/23/2020 22:22:04
  *
  */
 
@@ -49,7 +49,6 @@
 #include    <AStr_internal.h>
 #include    <dec.h>
 #include    <JsonIn.h>
-#include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeHash.h>
 #include    <utf8.h>
@@ -78,48 +77,54 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     W32StrC_ParseJsonFields (
+    ERESULT     W32StrC_ParseJsonFields(
         JSONIN_DATA     *pParser,
         W32STRC_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        //int64_t         intIn;
-        ASTR_DATA       *pWrk = OBJ_NIL;
-        //uint8_t         *pData;
-        //uint32_t        len;
+        const
+        OBJ_INFO        *pInfo;
+        int64_t         intIn;
+        ASTR_DATA       *pWrk;
         uint32_t        crc = 0;
-        uint32_t        len = 0;
+        uint32_t        length = 0;
+        const
+        char            *pSrcA;
         bool            fRc;
 
-        (void)JsonIn_FindU32NodeInHashA(pParser, "crc", &crc);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "len", &len);
+        pInfo = obj_getInfo(W32StrC_Class());
+        
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
 
-         if (len && pObject) {
-             eRc = JsonIn_FindAStrNodeInHashA(pParser, "data", &pWrk);
-             if (ERESULT_OK(eRc)) {
-                 fRc = W32StrC_CopyFromA(pObject, AStr_getData(pWrk));
-                 if (!fRc) {
-                     W32StrC_FreeLine(pObject);
-                     eRc = ERESULT_INVALID_SYNTAX;
-                     goto Exit00;
-                 } else if (!(len == W32StrC_getLength(pObject))) {
-                     W32StrC_FreeLine(pObject);
-                     eRc = ERESULT_INVALID_SYNTAX;
-                     goto Exit00;
-                 } else if (!(crc == W32StrC_getCrcIEEE(pObject))) {
-                     W32StrC_FreeLine(pObject);
-                     eRc = ERESULT_INVALID_SYNTAX;
-                     goto Exit00;
-                 }
-                 eRc = W32StrC_CopyFromA(pObject, AStr_getData(pWrk));
-                 obj_Release(pWrk);
-                 pWrk = OBJ_NIL;
-             }
-         }
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
+       crc = (uint32_t)intIn;
+
+       eRc = JsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
+       length = (uint32_t)intIn;
+
+        if (length && pObject) {
+            eRc = JsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
+            pSrcA = AStr_getData(pWrk);
+            fRc = W32StrC_CopyFromA(pObject, pSrcA);
+            if (!fRc) {
+                W32StrC_FreeLine(pObject);
+                eRc = ERESULT_INVALID_SYNTAX;
+            } else if (!(length == W32StrC_getLength(pObject))) {
+                W32StrC_FreeLine(pObject);
+                eRc = ERESULT_INVALID_SYNTAX;
+            } else if (!(crc == W32StrC_getCrcIEEE(pObject))) {
+                W32StrC_FreeLine(pObject);
+                eRc = ERESULT_INVALID_SYNTAX;
+            }
+        }
 
         // Return to caller.
-    Exit00:
+    exit00:
         return eRc;
     }
     
@@ -131,7 +136,7 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    W32STRC_DATA * W32StrC_ParseJsonObject (
+    W32STRC_DATA * W32StrC_ParseJsonObject(
         JSONIN_DATA     *pParser
     )
     {
@@ -177,7 +182,7 @@ extern "C" {
     //===============================================================
     
 
-    W32STRC_DATA *   W32StrC_NewFromJsonString (
+    W32STRC_DATA *   W32StrC_NewFromJsonString(
         ASTR_DATA       *pString
     )
     {
@@ -204,7 +209,7 @@ extern "C" {
     
     
 
-    W32STRC_DATA * W32StrC_NewFromJsonStringA (
+    W32STRC_DATA * W32StrC_NewFromJsonStringA(
         const
         char            *pStringA
     )
@@ -238,14 +243,28 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     W32StrC_ToJson (
+    ASTR_DATA *     W32StrC_ToJson(
         W32STRC_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        ERESULT         eRc;
+#ifdef XYZZZY 
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+        ASTR_DATA       *pWrkStr;
+#endif
+        uint32_t        crc = 0;
+        W32CHR_T        *pChrW;
+        char            str[16];
+        uint32_t        i;
 
 #ifdef NDEBUG
 #else
@@ -262,29 +281,29 @@ extern "C" {
                               "{ \"objectType\":\"%s\", ",
                               pInfo->pClassName
              );
-     
-            eRc = W32StrC_ToJsonFields(this, pStr);      
+            
+        crc = W32StrC_getCrcIEEE(this);
+        AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
+        AStr_AppendPrint(pStr, ", \"len\":%u", this->len);
+
+        if (this->len) {
+            AStr_AppendA(pStr, ", \"data\":\"");
+            pChrW = this->pArray;
+            for (i=0; i<this->len; ++i) {
+                utf8_W32ToChrCon(*pChrW, str);
+                AStr_AppendA(pStr, str);
+                pChrW++;
+            }
+            AStr_AppendA(pStr, "\" ");
+        }
+        else {
+            AStr_AppendA(pStr, ", \"data\":null ");
+        }
 
             AStr_AppendA(pStr, "}\n");
         }
 
         return pStr;
-    }
-    
-    
-    ERESULT         W32StrC_ToJsonFields (
-        W32STRC_DATA    *this,
-        ASTR_DATA       *pStr
-    )
-    {
-        uint32_t        crc = 0;
-
-        crc = W32StrC_getCrcIEEE(this);
-        JsonOut_Append_u32("crc", crc, pStr);
-        JsonOut_Append_u32("len", this->len, pStr);
-        JsonOut_Append_AStrW32("data", this->pArray, pStr);
-
-        return ERESULT_SUCCESS;
     }
     
     

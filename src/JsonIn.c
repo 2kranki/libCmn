@@ -1452,6 +1452,49 @@ extern "C" {
 
 
 
+    ERESULT         JsonIn_FindAStrNodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        ASTR_DATA       **ppStr
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pData = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pData = AStr_New();
+        if (OBJ_NIL == pData) {
+            eRc = ERESULT_OUT_OF_MEMORY;
+            goto Exit00;
+        }
+
+        eRc = JsonIn_SubObjectInHash(this, pSectionA);
+        if (ERESULT_OK(eRc)) {
+            eRc = AStr_ParseJsonFields(this, pData);
+            JsonIn_SubObjectEnd(this);
+        } else {
+            obj_Release(pData);
+            pData = OBJ_NIL;
+        }
+
+    Exit00:
+        if (ppStr) {
+            *ppStr = pData;
+        }
+        return eRc;
+    }
+
+
+
     ERESULT         JsonIn_FindFloatNodeInHashA (
         JSONIN_DATA     *this,
         const

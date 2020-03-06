@@ -893,6 +893,32 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          H a s h
+    //---------------------------------------------------------------
+
+    uint32_t        W32StrC_Hash(
+        W32STRC_DATA    *this
+    )
+    {
+        uint32_t        hash = 0;
+
+#ifdef NDEBUG
+#else
+        if( !W32StrC_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        if (this->pArray) {
+            hash = str_HashW32(this->pArray, NULL);
+        }
+
+        return hash;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -1066,6 +1092,16 @@ extern "C" {
         int32_t         index;
         bool            fMatch = true;
 
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!W32StrC_Validate(this)) {
+            DEBUG_BREAK();
+            // return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+
         index = obj_getMisc(this);
         if (index < W32StrC_getLength(this))
             ;
@@ -1097,6 +1133,16 @@ extern "C" {
         int32_t         index;
         int32_t         len = 0;
         bool            fMatch = true;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!W32StrC_Validate(this)) {
+            DEBUG_BREAK();
+            // return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
 
         index = obj_getMisc(this);
         if (index < W32StrC_getLength(this))
@@ -1301,6 +1347,9 @@ extern "C" {
 #ifdef  W32STRC_JSON_SUPPORT
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return W32StrC_ToJson;
+                        }
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return W32StrC_ToJsonFields;
                         }
 #endif
                         break;

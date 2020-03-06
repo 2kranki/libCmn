@@ -526,25 +526,25 @@ extern "C" {
         W32CHR_T            w32Char
     )
     {
-        bool                iRc = -1;
+        int                 iRc = -1;
         
-        if ( (w32Char >= '0') && (w32Char <= '0') ) {
+        if ( (w32Char >= '0') && (w32Char <= '9') ) {
             iRc = w32Char - '0';
         }
         else if ( (w32Char >= 'a') && (w32Char <= 'f') ) {
-            iRc = w32Char - 'a';
+            iRc = w32Char - 'a' + 10;
         }
         else if ( (w32Char >= 'A') && (w32Char <= 'F') ) {
-            iRc = w32Char - 'A';
+            iRc = w32Char - 'A' + 10;
         }
         else if ( (w32Char >= 0xFF10) && (w32Char <= 0xFF19) ) {
-            iRc = w32Char - 0xFF10;
+            iRc = w32Char - 0xFF10 + 10;
         }
         else if ( (w32Char >= 0xFF21) && (w32Char <= 0xFF26) ) {
-            iRc = w32Char - 0xFF21;
+            iRc = w32Char - 0xFF21 + 10;
         }
         else if ( (w32Char >= 0xFF41) && (w32Char <= 0xFF46) ) {
-            iRc = w32Char - 0xFF41;
+            iRc = w32Char - 0xFF41 + 10;
         }
 
         return iRc;

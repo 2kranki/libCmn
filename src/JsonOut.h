@@ -203,25 +203,51 @@ extern "C" {
 
 
     /*!
-     Attempt to append a string's json string to an already existing string
+     Attempt to append an AStr's json string to an already existing string
      with a given name if possible. This is normally parsed with
-     JsonIn_FindStringNodeInHashA()
+     JsonIn_FindAStrNodeInHashA()
      @param     pNameA  Name for the object
      @param     pObj    non-null string pointer
      @param     pStr    string to be added on to
      */
-    void            JsonOut_Append_String (
+    void            JsonOut_Append_AStr (
         const
         char            *pNameA,
         ASTR_DATA       *pObj,
         ASTR_DATA       *pStr
     );
 
-    void            JsonOut_Append_StringA (
+
+    /*!
+     Attempt to append a UTF-8 string as an AStr json string to
+     an already existing AStr with a given name if possible.
+     This is normally parsed with JsonIn_FindAStrNodeInHashA()
+     @param     pNameA  Name for the object
+     @param     pObjA   non-null UTF-8 string pointer
+     @param     pStr    string to be added on to
+     */
+    void            JsonOut_Append_AStrA (
         const
         char            *pNameA,
         const
         char            *pObjA,
+        ASTR_DATA       *pStr
+    );
+
+
+    /*!
+     Attempt to append a UTF-32 string as an AStr json string to
+     an already existing AStr with a given name if possible.
+     This is normally parsed with JsonIn_FindAStrNodeInHashA()
+     @param     pNameA  Name for the object
+     @param     pObjW32 non-null UTF-32 string pointer
+     @param     pStr    string to be added on to
+     */
+    void            JsonOut_Append_AStrW32 (
+        const
+        char            *pNameA,
+        const
+        W32CHR_T        *pObjW32,
         ASTR_DATA       *pStr
     );
 

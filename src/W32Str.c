@@ -1829,7 +1829,7 @@ extern "C" {
         
         pStr = array_Ptr((ARRAY_DATA *)this, 1);
         if (pStr) {
-            hash = str_HashW32( pStr, NULL );
+            hash = str_HashW32(pStr, NULL);
         }
         
         return hash;

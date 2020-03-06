@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 3/ 3/2020  2:42:23.000)
+# ( 3/ 6/2020  6:44:16.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -679,6 +679,21 @@ $(OBJDIR)/SRecords.o: $(SRCDIR)/SRecords.c $(SRCDIR)/SRecords.h $(SRCDIR)/SRecor
 OBJS += $(OBJDIR)/SRecords_object.o
 
 $(OBJDIR)/SRecords_object.o: $(SRCDIR)/SRecords_object.c $(SRCDIR)/SRecords.h $(SRCDIR)/SRecords_internal.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Scanner.o
+
+$(OBJDIR)/Scanner.o: $(SRCDIR)/Scanner.c $(SRCDIR)/Scanner.h $(SRCDIR)/Scanner_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Scanner_json.o
+
+$(OBJDIR)/Scanner_json.o: $(SRCDIR)/Scanner_json.c $(SRCDIR)/Scanner.h $(SRCDIR)/Scanner_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Scanner_object.o
+
+$(OBJDIR)/Scanner_object.o: $(SRCDIR)/Scanner_object.c $(SRCDIR)/Scanner.h $(SRCDIR)/Scanner_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SrcError.o
@@ -1621,16 +1636,6 @@ OBJS += $(OBJDIR)/scanReader_object.o
 $(OBJDIR)/scanReader_object.o: $(SRCDIR)/scanReader_object.c $(SRCDIR)/scanReader.h $(SRCDIR)/scanReader_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/scanner.o
-
-$(OBJDIR)/scanner.o: $(SRCDIR)/scanner.c $(SRCDIR)/scanner.h $(SRCDIR)/scanner_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/scanner_object.o
-
-$(OBJDIR)/scanner_object.o: $(SRCDIR)/scanner_object.c $(SRCDIR)/scanner.h $(SRCDIR)/scanner_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/screen.o
 
 $(OBJDIR)/screen.o: $(SRCDIR)/screen.c $(SRCDIR)/screen.h $(SRCDIR)/screen_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2166,6 +2171,12 @@ SRecords_test: $(TEST_SRC)/SRecords_test.c $(SRCDIR)/SRecords.h $(SRCDIR)/SRecor
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += Scanner_test
+
+Scanner_test: $(TEST_SRC)/Scanner_test.c $(SRCDIR)/Scanner.h $(SRCDIR)/Scanner_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += SrcError_test
 
 SrcError_test: $(TEST_SRC)/SrcError_test.c $(SRCDIR)/SrcError.h $(SRCDIR)/SrcError_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
@@ -2655,12 +2666,6 @@ rrds_test: $(TEST_SRC)/rrds_test.c $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(
 TESTS += scanReader_test
 
 scanReader_test: $(TEST_SRC)/scanReader_test.c $(SRCDIR)/scanReader.h $(SRCDIR)/scanReader_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += scanner_test
-
-scanner_test: $(TEST_SRC)/scanner_test.c $(SRCDIR)/scanner.h $(SRCDIR)/scanner_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

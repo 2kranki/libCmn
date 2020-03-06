@@ -1,30 +1,24 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Constant NUL-terminated Wide String (W32StrC) Header
+//          String Scanner (Scanner) Header
 //****************************************************************
 /*
  * Program
- *			Constant NUL-terminated Wide String (W32StrC)
+ *			String Scanner (Scanner)
  * Purpose
- *          This object provides a constant wide NUL-terminated
- *          string which can not be changed. It is important that
- *          its data remain constant since other programs rely
- *          on that.
- *
- *          Advance(), LookAhead() and Reset() provide a mechanism
- *          for scanning the string. It does use the obj's Misc
- *          field.
+ *			This object provides a standardized way of handling
+ *          a separate Scanner to run things without complications
+ *          of interfering with the main Scanner. A Scanner may be 
+ *          called a Scanner on other O/S's.
  *
  * Remarks
- *	1.      OBJ_FLAG_USER1 is used by this object.
- *  2.      obj's Misc fields are not used by this object unless
- *          the scan methods (Advance, LookAhead or Reset) are
- *          used.
+ *  1.      OBJ_FLAG_USER1 is used by this object.
+ *  2.      obj's Misc fields are used by this object.
  *
  * History
- *  02/19/2016 Generated
- *	01/23/2020 Regenerated
+ *  07/26/2018 Generated
+ *	03/04/2020 Regenerated
  */
 
 
@@ -61,17 +55,15 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <W32Str.h>
-#include        <stdio.h>
 
 
-#ifndef         W32STRC_H
-#define         W32STRC_H
+#ifndef         SCANNER_H
+#define         SCANNER_H
 
 
-#define     W32STRC_IS_CONSTANT     1
-#define     W32STRC_JSON_SUPPORT    1
-//#define   W32STRC_SINGLETON       1
+//#define   SCANNER_IS_IMMUTABLE     1
+#define   SCANNER_JSON_SUPPORT     1
+//#define   SCANNER_SINGLETON        1
 
 
 
@@ -87,30 +79,26 @@ extern "C" {
     //****************************************************************
 
 
-#ifdef DEFINED_IN_CMNDEFS
-    typedef struct W32StrC_data_s	W32STRC_DATA;            // Inherits from OBJ
-    typedef struct W32StrC_class_data_s W32STRC_CLASS_DATA;   // Inherits from OBJ
-#endif
+    typedef struct Scanner_data_s	SCANNER_DATA;            // Inherits from OBJ
+    typedef struct Scanner_class_data_s SCANNER_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct W32StrC_vtbl_s	{
+    typedef struct Scanner_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in W32StrC_object.c.
+        // method names to the vtbl definition in Scanner_object.c.
         // Properties:
         // Methods:
-        const
-        W32CHR_T *  (*pGetData)(W32STRC_DATA *);
-        uint32_t    (*pGetLength)(W32STRC_DATA *);
-    } W32STRC_VTBL;
+        //bool        (*pIsEnabled)(SCANNER_DATA *);
+    } SCANNER_VTBL;
 
-    typedef struct W32StrC_class_vtbl_s	{
+    typedef struct Scanner_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in W32StrC_object.c.
+        // method names to the vtbl definition in Scanner_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(W32STRC_DATA *);
-    } W32STRC_CLASS_VTBL;
+        //bool        (*pIsEnabled)(SCANNER_DATA *);
+    } SCANNER_CLASS_VTBL;
 
 
 
@@ -124,12 +112,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  W32STRC_SINGLETON
-    W32STRC_DATA *  W32StrC_Shared (
+#ifdef  SCANNER_SINGLETON
+    SCANNER_DATA *  Scanner_Shared (
         void
     );
 
-    void            W32StrC_SharedReset (
+    void            Scanner_SharedReset (
         void
     );
 #endif
@@ -139,49 +127,41 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to W32StrC object if successful, otherwise OBJ_NIL.
+     @return    pointer to Scanner object if successful, otherwise OBJ_NIL.
      */
-    W32STRC_DATA *  W32StrC_Alloc (
+    SCANNER_DATA *  Scanner_Alloc (
+        void
+    );
+
+
+    OBJ_ID          Scanner_Class (
         void
     );
     
     
-    OBJ_ID          W32StrC_Class (
+    SCANNER_DATA *  Scanner_New (
         void
     );
     
-    
-    W32STRC_DATA *  W32StrC_New (
-        void
-    );
-    
-    
-    W32STRC_DATA *  W32StrC_NewA(
+
+    SCANNER_DATA *  Scanner_NewA (
         const
-        char            *pStr
+        char            *pStrA
     );
 
-    W32STRC_DATA *  W32StrC_NewConW32(
-        const
-        W32CHR_T        *pStr
-    );
 
-    W32STRC_DATA *  W32StrC_NewFromW32Str(
-        W32STR_DATA     *pStr
-    );
-
-    W32STRC_DATA *  W32StrC_NewW32(
+    SCANNER_DATA *  Scanner_NewW32(
         const
         W32CHR_T        *pStr
     );
 
 
-#ifdef  W32STRC_JSON_SUPPORT
-    W32STRC_DATA *   W32StrC_NewFromJsonString(
+#ifdef  SCANNER_JSON_SUPPORT
+    SCANNER_DATA *  Scanner_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    W32STRC_DATA *   W32StrC_NewFromJsonStringA(
+    SCANNER_DATA *  Scanner_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -193,25 +173,10 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        W32StrC_getCrcIEEE(
-        W32STRC_DATA    *this
+    W32STRC_DATA *  Scanner_getW32StrC (
+        SCANNER_DATA    *this
     );
 
-
-    const
-    W32CHR_T *      W32StrC_getData(
-        W32STRC_DATA   *this
-    );
-
-
-    uint32_t        W32StrC_getLength(
-        W32STRC_DATA   *this
-    );
-
-
-    uint32_t        W32StrC_getSize(
-        W32STRC_DATA     *this
-    );
 
 
     
@@ -221,10 +186,12 @@ extern "C" {
 
     /*!
      Advance the index into the string by the offset amount.
+     @param     this    object pointer
+     @param     offset  amount to advance scan by
      @warning   This method uses obj's misc field.
      */
-    void            W32StrC_Advance(
-        W32STRC_DATA    *this,
+    void            Scanner_Advance(
+        SCANNER_DATA    *this,
         int32_t         offset
     );
 
@@ -235,110 +202,65 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code
-        ERESULT eRc = W32StrC_Assign(this,pOther);
+        ERESULT eRc = Scanner_Assign(this,pOther);
      @endcode
      @param     this    object pointer
-     @param     pOther  a pointer to another W32STRC object
+     @param     pOther  a pointer to another SCANNER object
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error
      */
-    ERESULT         W32StrC_Assign (
-        W32STRC_DATA    *this,
-        W32STRC_DATA    *pOther
+    ERESULT         Scanner_Assign (
+        SCANNER_DATA    *this,
+        SCANNER_DATA    *pOther
     );
 
 
     /*!
-     @result
-     ERESULT_SUCCESS_EQUAL if this == other,
-     ERESULT_SUCCESS_LESS_THAN if this < other
-     or ERESULT_SUCCESS_GREATER_THAN if this > other.
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         W32StrC_Compare(
-        W32STRC_DATA    *this,
-        W32STRC_DATA    *pOther
+    ERESULT         Scanner_Compare (
+        SCANNER_DATA     *this,
+        SCANNER_DATA     *pOther
     );
 
 
     /*!
-     @param     pString
-     Pointer to nul-terminated UTF-8 char string
-     @result
-     ERESULT_SUCCESS_EQUAL if this == string,
-     ERESULT_SUCCESS_LESS_THAN if this < string
-     or ERESULT_SUCCESS_GREATER_THAN if this > string.
+     Copy the current object creating a new object.
+     Example:
+     @code
+        Scanner      *pCopy = Scanner_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a SCANNER object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    ERESULT         W32StrC_CompareA(
-        W32STRC_DATA    *this,
-        const
-        char            *pString
+    SCANNER_DATA *  Scanner_Copy (
+        SCANNER_DATA    *this
     );
 
 
-    /*!
-     @param     pString
-     Pointer to nul-terminated wide char string
-     @result
-     ERESULT_SUCCESS_EQUAL if this == string,
-     ERESULT_SUCCESS_LESS_THAN if this < string
-     or ERESULT_SUCCESS_GREATER_THAN if this > string.
-     */
-    ERESULT         W32StrC_CompareW32(
-        W32STRC_DATA    *this,
-        const
-        W32CHR_T        *pString
+    uint32_t        Scanner_Hash(
+        SCANNER_DATA    *this
     );
 
 
-    W32STRC_DATA *  W32StrC_Copy(
-        W32STRC_DATA    *this
-    );
-
-
-    /*!
-     @result        If successful, a NUL-terminated UTF-8 string that
-                    needs to be freed with mem_Free(). Otherwise, NULL.
-     */
-    char *          W32StrC_CStringA(
-        W32STRC_DATA    *this
-    );
-
-
-    W32CHR_T        W32StrC_GetCharW32(
-        W32STRC_DATA    *this,
-        uint32_t        offset              // Relative to 1
-    );
-
-
-    uint32_t        W32StrC_Hash(
-        W32STRC_DATA    *this
-    );
-
-
-    W32STRC_DATA *  W32StrC_Init (
-        W32STRC_DATA    *this
-    );
-
-
-    /*!
-     Create a new string from the left  portion of the current string
-     with len number of characters.
-     @return    If successful, an WStrC object which must be released,
-                 otherwise OBJ_NIL.
-     */
-    W32STRC_DATA *  W32StrC_Left(
-        W32STRC_DATA    *this,
-        uint32_t        len
+    SCANNER_DATA *  Scanner_Init (
+        SCANNER_DATA    *this
     );
 
 
     /*!
      Return the character pointed at by the obj's Misc plus offset.
+     @param     this    object pointer
      @return    If successful, the indexed character, otherwise 0.
      @warning   This method uses obj's misc field.
      */
-    W32CHR_T        W32StrC_LookAhead(
-        W32STRC_DATA    *this,
+    W32CHR_T        Scanner_LookAhead(
+        SCANNER_DATA    *this,
         uint32_t        offset              // Relative to 1
     );
 
@@ -346,11 +268,13 @@ extern "C" {
     /*!
      Match the given character against the current obj's Misc
      index into the string.  If they match, advance the scan.
+     @param     this    object pointer
+     @param     chr     character to be matched
      @return    If they match, return true otherwise false.
      @warning   This method uses obj's misc field.
      */
-    bool            W32StrC_MatchChr(
-        W32STRC_DATA    *this,
+    bool            Scanner_MatchChr(
+        SCANNER_DATA    *this,
         W32CHR_T        chr
     );
 
@@ -358,51 +282,89 @@ extern "C" {
     /*!
      Match the given UTF-8 String against the current obj's Misc
      index into the string.  If they match, it advances the scan.
+     @param     this    object pointer
+     @param     pStrA   string to be matched
      @return    If they match, return true otherwise false.
      @warning   This method uses obj's misc field.
      */
-    bool            W32StrC_MatchStrA(
-        W32STRC_DATA    *this,
+    bool            Scanner_MatchStrA(
+        SCANNER_DATA    *this,
         const
         char            *pStrA
     );
 
 
     /*!
-     Create a new string from a portion of the current string starting
-     at index with len number of characters.
-     @return    If successful, an WStrC object which must be released,
-                 otherwise OBJ_NIL.
+     Reset the scan index.
+     @param     this    object pointer
+     @warning   This method uses obj's misc field.
      */
-    W32STRC_DATA *  W32StrC_Mid(
-        W32STRC_DATA    *this,
-        uint32_t        offset,         /* Relative to 1 */
-        uint32_t        len
+    void            Scanner_Reset(
+        SCANNER_DATA    *this
     );
 
 
     /*!
-     Reset the scan index.
-     @warning   This method uses obj's misc field.
+     Scan a UTF-8 decimal value such as:
+                ('0' ('x' | 'X') [0-9a-fA-F]*)      ** Hexadecimal **
+            |   ('0' [0-7]*)                        ** Octal **
+            |   (('-' | '+' | ) [1-9][0-9]+)        ** Decimal **
+     The value scanned is returned if scan is successful.
+     Nothing is changed if the scan is unsuccessful.
+     @param     this    object pointer
+     @param     pValue      Optional pointer to where value will be returned
+     @return    If successful, true and *pValue contains the amount converted,
+                otherwise false.
      */
-    void            W32StrC_Reset(
-        W32STRC_DATA    *this
+    bool            Scanner_ScanInteger32 (
+        SCANNER_DATA    *this,
+        int32_t         *pValue
     );
 
 
-    W32STRC_DATA *  W32StrC_Right(
-        W32STRC_DATA    *this,
-        uint32_t        len
+    /*!
+     Scan a string from the input which is terminated by white-space, comma or NUL.
+     The string may be qouted with ' or ".  A quoted string may contain \b, \f, \n,
+     or \r which will be properly scanned and translated.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                scanned string, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Scanner_ScanStringToAStr (
+        SCANNER_DATA    *this
     );
 
 
-#ifdef  W32STRC_JSON_SUPPORT
+    /*!
+     Set up an ArgC/ArgV type array given a command line string
+     excluding the program name.
+     @return    If successful, an AStrArray object which must be
+                released containing the Argument Array, otherwise
+                OBJ_NIL if an error occurred.
+     @warning   Remember to release the returned AStrArray object.
+     */
+    ASTRARRAY_DATA * Scanner_ScanStringToAstrArray (
+        SCANNER_DATA    *this
+    );
+
+        /*!
+     Scan White-space.
+     @param     this    object pointer
+     @return    If successful, true, otherwise false.
+     */
+    bool            Scanner_ScanWS (
+        SCANNER_DATA    *this
+    );
+
+
+#ifdef  SCANNER_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = W32StrC_ToJson(this);
+     ASTR_DATA      *pDesc = Scanner_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -410,8 +372,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     W32StrC_ToJson(
-        W32STRC_DATA   *this
+    ASTR_DATA *     Scanner_ToJson (
+        SCANNER_DATA   *this
     );
 #endif
 
@@ -420,7 +382,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = W32StrC_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Scanner_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -428,8 +390,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    W32StrC_ToDebugString (
-        W32STRC_DATA    *this,
+    ASTR_DATA *    Scanner_ToDebugString (
+        SCANNER_DATA     *this,
         int             indent
     );
     
@@ -440,5 +402,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* W32STRC_H */
+#endif	/* SCANNER_H */
 

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'W32StrC'
-//	Generated 01/23/2020 22:22:04
+//	Class Object Metods and Tables for 'Scanner'
+//	Generated 03/04/2020 21:17:29
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			W32STRC_OBJECT_C	    1
-#include        <W32StrC_internal.h>
-#ifdef  W32STRC_SINGLETON
+#define			SCANNER_OBJECT_C	    1
+#include        <Scanner_internal.h>
+#ifdef  SCANNER_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct W32StrC_class_data_s	{
+struct Scanner_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  W32STRC_SINGLETON
+#ifdef  SCANNER_SINGLETON
     volatile
-    W32STRC_DATA       *pSingleton;
+    SCANNER_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct W32StrC_class_data_s	{
 
 
 static
-void *          W32StrCClass_QueryInfo (
+void *          ScannerClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          W32StrCClass_QueryInfo (
 
 static
 const
-OBJ_INFO        W32StrC_Info;            // Forward Reference
+OBJ_INFO        Scanner_Info;            // Forward Reference
 
 
 
 
 static
-bool            W32StrCClass_IsKindOf (
+bool            ScannerClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_W32STRC_CLASS == classID) {
+    if (OBJ_IDENT_SCANNER_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(W32StrC_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Scanner_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            W32StrCClass_IsKindOf (
 
 
 static
-uint16_t		W32StrCClass_WhoAmI (
+uint16_t		ScannerClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_W32STRC_CLASS;
+    return OBJ_IDENT_SCANNER_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		W32StrCClass_WhoAmI (
 
 static
 const
-W32STRC_CLASS_VTBL    class_Vtbl = {
+SCANNER_CLASS_VTBL    class_Vtbl = {
     {
-        &W32StrC_Info,
-        W32StrCClass_IsKindOf,
+        &Scanner_Info,
+        ScannerClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        W32StrC_Class,
-        W32StrCClass_WhoAmI,
-        (P_OBJ_QUERYINFO)W32StrCClass_QueryInfo,
-        NULL                        // W32StrCClass_ToDebugString
+        Scanner_Class,
+        ScannerClass_WhoAmI,
+        (P_OBJ_QUERYINFO)ScannerClass_QueryInfo,
+        NULL                        // ScannerClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ W32STRC_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-W32STRC_CLASS_DATA  W32StrC_ClassObj = {
+SCANNER_CLASS_DATA  Scanner_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(W32STRC_CLASS_DATA),                  // cbSize
+        sizeof(SCANNER_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,17 @@ W32STRC_CLASS_DATA  W32StrC_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  W32STRC_SINGLETON
-W32STRC_DATA *     W32StrC_getSingleton (
+#ifdef  SCANNER_SINGLETON
+SCANNER_DATA *     Scanner_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(W32StrC_ClassObj.pSingleton);
+    return (OBJ_ID)(Scanner_ClassObj.pSingleton);
 }
 
 
-bool            W32StrC_setSingleton (
-    W32STRC_DATA       *pValue
+bool            Scanner_setSingleton (
+    SCANNER_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +192,10 @@ bool            W32StrC_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (W32StrC_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(W32StrC_ClassObj.pSingleton));
+    if (Scanner_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Scanner_ClassObj.pSingleton));
     }
-    W32StrC_ClassObj.pSingleton = pValue;
+    Scanner_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +205,17 @@ bool            W32StrC_setSingleton (
 
 
 
-W32STRC_DATA *     W32StrC_Shared (
+SCANNER_DATA *     Scanner_Shared (
     void
 )
 {
-    W32STRC_DATA       *this = (OBJ_ID)(W32StrC_ClassObj.pSingleton);
+    SCANNER_DATA       *this = (OBJ_ID)(Scanner_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = W32StrC_New( );
-        W32StrC_setSingleton(this);
+        this = Scanner_New( );
+        Scanner_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // W32StrC_ClassObj.pSingleton = OBJ_NIL;
+        // Scanner_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +223,15 @@ W32STRC_DATA *     W32StrC_Shared (
 
 
 
-void            W32StrC_SharedReset (
+void            Scanner_SharedReset (
     void
 )
 {
-    W32STRC_DATA       *this = (OBJ_ID)(W32StrC_ClassObj.pSingleton);
+    SCANNER_DATA       *this = (OBJ_ID)(Scanner_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        W32StrC_ClassObj.pSingleton = OBJ_NIL;
+        Scanner_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +247,13 @@ void            W32StrC_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          W32StrCClass_QueryInfo (
+void *          ScannerClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    W32STRC_CLASS_DATA *this = objId;
+    SCANNER_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +264,7 @@ void *          W32StrCClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(W32STRC_DATA);
+            return (void *)sizeof(SCANNER_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,7 +279,7 @@ void *          W32StrCClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&W32StrC_Info;
+                        return (void *)&Scanner_Info;
                     }
                     break;
                     
@@ -297,24 +297,24 @@ void *          W32StrCClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return W32StrC_New;
+                        return Scanner_New;
                     }
                     break;
                     
-#ifdef  W32STRC_JSON_SUPPORT
+#ifdef  SCANNER_JSON_SUPPORT
 				case 'P':
 					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-						return W32StrC_ParseJsonFields;
+						return Scanner_ParseJsonFields;
 					}
 					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-						return W32StrC_ParseJsonObject;
+						return Scanner_ParseJsonObject;
 					}
 					break;
 #endif
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return W32StrCClass_WhoAmI;
+                        return ScannerClass_WhoAmI;
                     }
                     break;
                     
@@ -334,7 +334,7 @@ void *          W32StrCClass_QueryInfo (
 
 
 static
-bool            W32StrC_IsKindOf (
+bool            Scanner_IsKindOf (
     uint16_t		classID
 )
 {
@@ -342,14 +342,14 @@ bool            W32StrC_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_W32STRC == classID) {
+    if (OBJ_IDENT_SCANNER == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(W32StrC_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Scanner_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -363,25 +363,25 @@ bool            W32StrC_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            W32StrC_Dealloc (
+void            Scanner_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          W32StrC_Class (
+OBJ_ID          Scanner_Class (
     void
 )
 {
-    return (OBJ_ID)&W32StrC_ClassObj;
+    return (OBJ_ID)&Scanner_ClassObj;
 }
 
 
 static
-uint16_t		W32StrC_WhoAmI (
+uint16_t		Scanner_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_W32STRC;
+    return OBJ_IDENT_SCANNER;
 }
 
 
@@ -393,49 +393,48 @@ uint16_t		W32StrC_WhoAmI (
 //===========================================================
 
 const
-W32STRC_VTBL     W32StrC_Vtbl = {
+SCANNER_VTBL     Scanner_Vtbl = {
     {
-        &W32StrC_Info,
-        W32StrC_IsKindOf,
-#ifdef  W32STRC_IS_SINGLETON
+        &Scanner_Info,
+        Scanner_IsKindOf,
+#ifdef  SCANNER_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        W32StrC_Dealloc,
-        W32StrC_Class,
-        W32StrC_WhoAmI,
-        (P_OBJ_QUERYINFO)W32StrC_QueryInfo,
-        (P_OBJ_TOSTRING)W32StrC_ToDebugString,
-        NULL,			// W32StrC_Enable,
-        NULL,			// W32StrC_Disable,
-        (P_OBJ_ASSIGN)W32StrC_Assign,
-        (P_OBJ_COMPARE)W32StrC_Compare,
-        (P_OBJ_PTR)W32StrC_Copy,
-        NULL, 			// (P_OBJ_PTR)W32StrC_DeepCopy,
-        (P_OBJ_HASH)W32StrC_Hash,
+        Scanner_Dealloc,
+        Scanner_Class,
+        Scanner_WhoAmI,
+        (P_OBJ_QUERYINFO)Scanner_QueryInfo,
+        (P_OBJ_TOSTRING)Scanner_ToDebugString,
+        NULL,			// Scanner_Enable,
+        NULL,			// Scanner_Disable,
+        (P_OBJ_ASSIGN)Scanner_Assign,
+        (P_OBJ_COMPARE)Scanner_Compare,
+        (P_OBJ_PTR)Scanner_Copy,
+        NULL, 			// (P_OBJ_PTR)Scanner_DeepCopy,
+        (P_OBJ_HASH)Scanner_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    W32StrC_getData,
-    W32StrC_getLength
-
+    //Scanner_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        W32StrC_Info = {
-    "W32StrC",
-    "Constant Wide String",
+OBJ_INFO        Scanner_Info = {
+    "Scanner",
+    "String Scanner",
+    (OBJ_DATA *)&Scanner_ClassObj,
     (OBJ_DATA *)&W32StrC_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&W32StrC_Vtbl,
-    sizeof(W32STRC_DATA)
+    (OBJ_IUNKNOWN *)&Scanner_Vtbl,
+    sizeof(SCANNER_DATA)
 };
 
 

@@ -447,6 +447,27 @@ extern "C" {
     );
 
 
+    /*!
+     Find a named string value in the JSON Hash Node tree. This is
+     normally used to parse JsonOut_Append_AStr(), JsonOut_Append_AStrA()
+     or JsonOut_Append_AStrW32().
+     @param     this    Object Pointer
+     @param     pSectionA Name of integer value (required)
+     @param     ppStr   Pointer to an AStr pointer to be returned if
+                        ERESULT_SUCCESS is returned and this pointer
+                        is non-null.
+     @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr
+                if ppStr is non-null. Otherwise, an ERESULT_* error code.
+     @warning   The rturned AStr object must be released.
+     */
+    ERESULT         JsonIn_FindAStrNodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        ASTR_DATA       **ppStr
+    );
+
+
     ERESULT         JsonIn_FindFloatNodeInHashA (
         JSONIN_DATA     *this,
         const
@@ -519,7 +540,7 @@ extern "C" {
      normally used to parse JsonOut_Append_String();
      @param     this    Object Pointer
      @param     pSectionA Name of integer value (required)
-     @param     ppStr   Pointer to a string pointer to be returned if
+     @param     ppStr   Pointer to an AStr pointer to be returned if
                         ERESULT_SUCCESS is returned and this pointer
                         is non-null.
      @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr

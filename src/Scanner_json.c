@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   W32StrC_json.c
+ * File:   Scanner_json.c
  *
- *	Generated 03/05/2020 13:19:12
+ *	Generated 03/04/2020 21:17:29
  *
  */
 
@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <W32StrC_internal.h>
+#include    <Scanner_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -78,48 +78,21 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     W32StrC_ParseJsonFields (
+    ERESULT     Scanner_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        W32STRC_DATA     *pObject
+        SCANNER_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         //int64_t         intIn;
-        ASTR_DATA       *pWrk = OBJ_NIL;
+        //ASTR_DATA       *pWrk;
         //uint8_t         *pData;
         //uint32_t        len;
-        uint32_t        crc = 0;
-        uint32_t        len = 0;
-        bool            fRc;
 
-        (void)JsonIn_FindU32NodeInHashA(pParser, "crc", &crc);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "len", &len);
-
-         if (len && pObject) {
-             eRc = JsonIn_FindAStrNodeInHashA(pParser, "data", &pWrk);
-             if (ERESULT_OK(eRc)) {
-                 fRc = W32StrC_CopyFromA(pObject, AStr_getData(pWrk));
-                 if (!fRc) {
-                     W32StrC_FreeLine(pObject);
-                     eRc = ERESULT_INVALID_SYNTAX;
-                     goto Exit00;
-                 } else if (!(len == W32StrC_getLength(pObject))) {
-                     W32StrC_FreeLine(pObject);
-                     eRc = ERESULT_INVALID_SYNTAX;
-                     goto Exit00;
-                 } else if (!(crc == W32StrC_getCrcIEEE(pObject))) {
-                     W32StrC_FreeLine(pObject);
-                     eRc = ERESULT_INVALID_SYNTAX;
-                     goto Exit00;
-                 }
-                 eRc = W32StrC_CopyFromA(pObject, AStr_getData(pWrk));
-                 obj_Release(pWrk);
-                 pWrk = OBJ_NIL;
-             }
-         }
+        eRc = W32StrC_ParseJsonFields(pParser, (W32STRC_DATA *)pObject);
 
         // Return to caller.
-    Exit00:
+    exit00:
         return eRc;
     }
     
@@ -131,18 +104,18 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    W32STRC_DATA * W32StrC_ParseJsonObject (
+    SCANNER_DATA * Scanner_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        W32STRC_DATA   *pObject = OBJ_NIL;
+        SCANNER_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(W32StrC_Class());
+        pInfo = obj_getInfo(Scanner_Class());
         
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -150,12 +123,12 @@ extern "C" {
             goto exit00;
         }
 
-        pObject = W32StrC_New( );
+        pObject = Scanner_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  W32StrC_ParseJsonFields(pParser, pObject);
+        eRc =  Scanner_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -177,13 +150,13 @@ extern "C" {
     //===============================================================
     
 
-    W32STRC_DATA *   W32StrC_NewFromJsonString (
+    SCANNER_DATA *   Scanner_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        W32STRC_DATA   *pObject = OBJ_NIL;
+        SCANNER_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -191,7 +164,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = W32StrC_ParseJsonObject(pParser);
+        pObject = Scanner_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -204,17 +177,17 @@ extern "C" {
     
     
 
-    W32STRC_DATA * W32StrC_NewFromJsonStringA (
+    SCANNER_DATA * Scanner_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        W32STRC_DATA   *pObject = OBJ_NIL;
+        SCANNER_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = W32StrC_NewFromJsonString(pStr);
+            pObject = Scanner_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -230,7 +203,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = W32StrC_ToJson(this);
+     ASTR_DATA      *pDesc = Scanner_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -238,8 +211,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     W32StrC_ToJson (
-        W32STRC_DATA   *this
+    ASTR_DATA *     Scanner_ToJson (
+        SCANNER_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -249,7 +222,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !W32StrC_Validate(this) ) {
+        if( !Scanner_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -263,7 +236,7 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = W32StrC_ToJsonFields(this, pStr);      
+            eRc = Scanner_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -272,19 +245,16 @@ extern "C" {
     }
     
     
-    ERESULT         W32StrC_ToJsonFields (
-        W32STRC_DATA    *this,
+    ERESULT         Scanner_ToJsonFields (
+        SCANNER_DATA    *this,
         ASTR_DATA       *pStr
     )
     {
-        uint32_t        crc = 0;
+        ERESULT         eRc;
 
-        crc = W32StrC_getCrcIEEE(this);
-        JsonOut_Append_u32("crc", crc, pStr);
-        JsonOut_Append_u32("len", this->len, pStr);
-        JsonOut_Append_AStrW32("data", this->pArray, pStr);
+        eRc = W32StrC_ToJsonFields((W32STRC_DATA *)this, pStr);
 
-        return ERESULT_SUCCESS;
+        return eRc;
     }
     
     
