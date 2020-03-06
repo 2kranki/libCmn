@@ -324,7 +324,7 @@ int         test_CmdUtl_CommandString01(
 
         pStr = AStrArray_Get(pArray, 3);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "xx")) );
+        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "xx=")) );
 
         pStr = AStrArray_Get(pArray, 4);
         XCTAssertFalse( (OBJ_NIL == pStr) );

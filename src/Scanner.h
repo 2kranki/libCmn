@@ -173,6 +173,20 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! Property: Separator is an optional seperator which if present
+        will influence how strings are separated. For command line
+        scanning, this should be set to '='.
+     */
+    W32CHR_T        Scanner_getSeperator (
+        SCANNER_DATA    *this
+    );
+
+    bool            Scanner_setSeperator (
+        SCANNER_DATA    *this,
+        W32CHR_T        value
+    );
+
+
     W32STRC_DATA *  Scanner_getW32StrC (
         SCANNER_DATA    *this
     );
@@ -300,6 +314,20 @@ extern "C" {
      @warning   This method uses obj's misc field.
      */
     void            Scanner_Reset(
+        SCANNER_DATA    *this
+    );
+
+
+    /*!
+     Scan a UTF-8 identifier defined by:
+            [a-zA-Z_][0-9a-zA-Z_]*
+     The value scanned is returned if scan is successful.
+     Nothing is changed if the scan is unsuccessful.
+     @param     this    object pointer
+     @return    If successful, an AStr object is returned.
+     @warning   The AStr object must be released!
+     */
+    ASTR_DATA *     Scanner_ScanIdentifierToAStr(
         SCANNER_DATA    *this
     );
 

@@ -272,419 +272,6 @@ Exit00:
 
 
 #ifdef XYZZY
-//---------------------------------------------------------------
-//                    S c a n D e c
-//---------------------------------------------------------------
-
-bool            scanner_ScanDec32(
-    char            **ppStr,            // NUL terminated string pointer
-    uint32_t        *pScannedLen,       // (returned) Scanned Length
-    uint32_t        *pValue             // (returned) Scanned Number
-)
-{
-    bool            fRc = false;
-    char            *pCurChr = NULL;
-    bool            fNegative = false;
-    uint32_t        cLen = 0;
-    uint32_t        cDec = 0;
-    uint32_t        value = 0;
-    W32CHR_T        chr;
-    int             chrLen = 0;
-
-    // Do initialization.
-    if( NULL == ppStr ) {
-        fRc = false;
-        goto Exit90;
-    }
-    pCurChr = *ppStr;
-
-    // Scan off leading white-space.
-    scanner_ScanWhite( &pCurChr, &cLen );
-
-    chrLen = utf8_Utf8ToW32(pCurChr, &chr);
-    if (0 == chrLen) {
-        goto Exit90;
-    }
-
-    if ('0' == chr) {
-        if (('x' == *(pCurChr+1)) || ('X' == *(pCurChr+1))) {
-            pCurChr += 2;
-            cLen += 2;
-            fRc = scanner_ScanHex32(&pCurChr, &cDec, &value);
-            cLen += cDec;
-            goto Exit80;
-        }
-        else {
-            pCurChr += 1;
-            cLen += 1;
-            if (*pCurChr)
-                fRc = scanner_ScanOct32(&pCurChr, &cDec, &value);
-            else                // Stand-alone zero
-                fRc = true;
-            cLen += cDec;
-            goto Exit80;
-        }
-    }
-
-    if( '-' == chr ) {
-        fNegative = true;
-        cLen += chrLen;
-        pCurChr += chrLen;
-    }
-    else if( '+' == chr ) {
-        cLen += chrLen;
-        pCurChr += chrLen;
-    }
-
-    for (;;) {
-        chrLen = utf8_Utf8ToW32(pCurChr, &chr);
-        if (chrLen) {
-            if( ('0' <= chr) && ('9' >= chr) ) {
-                value = (value << 3) + (value << 1) + (chr - '0');
-                ++cDec;
-                cLen += chrLen;
-                pCurChr += chrLen;
-            }
-            else
-                break;
-        }
-        else
-            break;
-    }
-
-Exit80:
-    if (chrLen) {
-        if( ('\0' == chr) || ('\t' == chr) || (',' == chr) || (' ' == chr) ) {
-            if( cDec ) {
-                fRc = true;
-                if( fNegative ) {
-                    value = -value;
-                }
-            }
-        }
-    }
-    else {
-        if ('\0' == *pCurChr) {
-            fRc = true;
-            if( fNegative ) {
-                value = -value;
-            }
-        }
-    }
-
-    // Return to caller.
-Exit90:
-    if( fRc && ppStr ) {
-        *ppStr = pCurChr;
-    }
-    if( fRc && pScannedLen ) {
-        *pScannedLen = cLen;
-    }
-    if( fRc && pValue ) {
-        *pValue = value;
-    }
-    return fRc;
-}
-#endif
-
-
-
-#ifdef XYZZY
-//---------------------------------------------------------------
-//                      S c a n H e x
-//---------------------------------------------------------------
-
-bool            scanner_ScanHex32(
-    char            **ppCmdStr,         // NUL terminated string pointer
-    uint32_t        *pScannedLen,       // (returned) Scanned Length
-    uint32_t        *pValue             // (returned) Scanned Number
-)
-{
-    bool            fRc = false;
-    char            *pCurChr = NULL;
-    uint32_t        cLen = 0;
-    uint32_t        cHex = 0;
-    uint32_t        value = 0;
-    W32CHR_T        chr;
-    int             chrLen = 0;
-
-    // Do initialization.
-    if( NULL == ppCmdStr ) {
-        fRc = false;
-        goto Exit00;
-    }
-    pCurChr = *ppCmdStr;
-
-    // Scan off leading white-space.
-    scanner_ScanWhite( &pCurChr, &cLen );
-
-    // Scan off each parameter.
-    for (;;) {
-        chrLen = utf8_Utf8ToW32(pCurChr, &chr);
-        if (chrLen) {
-            if (ascii_isHexW32(chr)) {
-                if( ('0' <= chr) && ('9' >= chr) ) {
-                    value = (value << 4) + (chr - '0');
-                    ++cHex;
-                }
-                else if( ('a' <= chr) && ('f' >= chr) ) {
-                    value = (value << 4) + (chr - 'a' + 10);
-                    ++cHex;
-                }
-                else if( ('A' <= chr) && ('F' >= chr) ) {
-                    value = (value << 4) + (chr - 'A' + 10);
-                    ++cHex;
-                }
-                cLen += chrLen;
-                pCurChr += chrLen;
-            }
-            else
-                break;
-        }
-        else
-            break;
-    }
-
-
-    // Return to caller.
-    if( cHex ) {
-        fRc = true;
-    }
-Exit00:
-    if( fRc && ppCmdStr ) {
-        *ppCmdStr = pCurChr;
-    }
-    if( fRc && pScannedLen ) {
-        *pScannedLen = cLen;
-    }
-    if( fRc && pValue ) {
-        *pValue = value;
-    }
-    return fRc;
-}
-#endif
-
-
-
-#ifdef XYZZY
-//---------------------------------------------------------------
-//                      S c a n O c t
-//---------------------------------------------------------------
-
-bool            scanner_ScanOct32(
-    char            **ppCmdStr,         // NUL terminated string pointer
-    uint32_t        *pScannedLen,       // (returned) Scanned Length
-    uint32_t        *pValue             // (returned) Scanned Number
-)
-{
-    bool            fRc = false;
-    char            *pCurChr = NULL;
-    uint32_t        cLen = 0;
-    uint32_t        cHex = 0;
-    uint32_t        value = 0;
-    W32CHR_T        chr;
-    int             chrLen = 0;
-
-    // Do initialization.
-    if( NULL == ppCmdStr ) {
-        fRc = false;
-        goto Exit00;
-    }
-    pCurChr = *ppCmdStr;
-
-    // Scan off leading white-space.
-    scanner_ScanWhite( &pCurChr, &cLen );
-
-    // Scan off each parameter.
-    for (;;) {
-        chrLen = utf8_Utf8ToW32(pCurChr, &chr);
-        if (chrLen) {
-            if( ('0' <= chr) && ('7' >= chr) ) {
-                value = (value << 3) + (chr - '0');
-                ++cHex;
-                cLen += chrLen;
-                pCurChr += chrLen;
-            }
-            else
-                break;
-        }
-        else
-            break;
-    }
-
-    // Return to caller.
-    if( cHex ) {
-        fRc = true;
-    }
-Exit00:
-    if( fRc && ppCmdStr ) {
-        *ppCmdStr = pCurChr;
-    }
-    if( fRc && pScannedLen ) {
-        *pScannedLen = cLen;
-    }
-    if( fRc && pValue ) {
-        *pValue = value;
-    }
-    return fRc;
-}
-#endif
-
-
-
-#ifdef XYZZY
-//---------------------------------------------------------------
-//                    S c a n S t r i n g
-//---------------------------------------------------------------
-
-/* CmdStr is scanned one character at a time into the Output
- * buffer supplied. The scan will go until it hits end of line or
- * the end of the string. It will copy at most maxLen characters
- * to the output.
- */
-ASTR_DATA *     scanner_ScanStringToAStr(
-    char            **ppCmdStr,         // NUL terminated string pointer
-    uint32_t        *pScannedLen        // [out] Scanned Length
-    //                                  //      (not including leading whitespace)
-)
-{
-    bool            fRc = false;
-    char            *pCurChr = NULL;
-    uint32_t        cOutput = 0;
-    char            Quote = 0;
-    uint32_t        hexNumber;
-    ASTR_DATA       *pStr = OBJ_NIL;
-    //W32CHR_T        chr;
-    //int             chrLen;
-
-    // Do initialization.
-    if(NULL == ppCmdStr) {
-        return OBJ_NIL;
-    }
-    pCurChr = *ppCmdStr;
-    pStr = AStr_New( );
-    if (OBJ_NIL == pStr) {
-        return OBJ_NIL;
-    }
-
-    // Scan off leading white-space.
-    scanner_ScanWhite(&pCurChr, NULL);
-
-    // Scan the paramter.
-    if( *pCurChr ) {
-        // Handle Quoted Arguments.
-        if( ('"' == *pCurChr) || ('\'' == *pCurChr) ) {
-            Quote = *pCurChr++;
-            while( *pCurChr ) {
-                if( *pCurChr == Quote ) {
-                    if( *(pCurChr+1) == Quote ) {
-                        pCurChr += 2;
-                        AStr_AppendCharA(pStr, Quote);
-                        ++cOutput;
-                    }
-                    else {
-                        break;
-                    }
-                }
-                else if( *pCurChr == '\\' ) {
-                    if( *(pCurChr + 1) == Quote ) {
-                        ++pCurChr;
-                    }
-                    if( *(pCurChr+1) == '0' ) {
-                        pCurChr += 2;
-                        AStr_AppendCharA(pStr, '\0');
-                        ++cOutput;
-                        continue;
-                    }
-                    if( *(pCurChr+1) == 'b' ) {
-                        pCurChr += 2;
-                        AStr_AppendCharA(pStr, '\b');
-                        ++cOutput;
-                        continue;
-                    }
-                    if( *(pCurChr+1) == 'f' ) {
-                        pCurChr += 2;
-                        AStr_AppendCharA(pStr, '\f');
-                        ++cOutput;
-                        continue;
-                    }
-                    if( *(pCurChr+1) == 'n' ) {
-                        pCurChr += 2;
-                        AStr_AppendCharA(pStr, '\n');
-                        ++cOutput;
-                        continue;
-                    }
-                    if( *(pCurChr + 1) == 'r' ) {
-                        pCurChr += 2;
-                        AStr_AppendCharA(pStr, '\r');
-                        ++cOutput;
-                        continue;
-                    }
-                    if( *(pCurChr + 1) == 'x' ) {
-                        pCurChr += 2;
-                        // At this point, we need two more characters of 0..9,a..f,A..F
-                        // to give us our hex character.
-                        if (('\0' == *pCurChr) || ('\0' == *(pCurChr+1))) {
-                            return false;
-                        }
-                        fRc = hex_ScanUint32A(2, pCurChr, &hexNumber);
-                        if (fRc) {
-                            AStr_AppendCharA(pStr, (char)hexNumber);
-                            cOutput++;
-                            pCurChr += 2;
-                        }
-                        else {
-                            return false;
-                        }
-                        continue;
-                    }
-                }
-                else {
-                    AStr_AppendCharA(pStr, *pCurChr);
-                    cOutput++;
-                    pCurChr++;
-                }
-            }
-            if( *pCurChr ) {
-                //                *pCurChr = '\0';
-                pCurChr++;
-            }
-        }
-        // Handle Non-Quoted Arguments.
-        else {
-            while( *pCurChr
-                  && !(('=' == *pCurChr) || (',' == *pCurChr)
-                       || (' ' == *pCurChr) || ('\t' == *pCurChr))
-                  ) {
-                AStr_AppendCharA(pStr, *pCurChr);
-                cOutput++;
-                pCurChr++;
-            }
-            while( *pCurChr
-                        && !(('=' == *pCurChr) || (',' == *pCurChr)
-                        || (' ' == *pCurChr) || ('\t' == *pCurChr)) ) {
-                pCurChr++;
-            }
-        }
-    }
-
-
-    // Return to caller.
-    fRc = true;
-Exit00:
-    if( ppCmdStr ) {
-        *ppCmdStr = pCurChr;
-    }
-    if( pScannedLen ) {
-        *pScannedLen = cOutput;
-    }
-    return pStr;
-}
-#endif
-
-
-
-#ifdef XYZZY
     /*!
      Set up an ArgC/ArgV type array given a command line string
      excluding the program name.
@@ -764,59 +351,6 @@ Exit00:
 
 
 #ifdef XYZZY
-//---------------------------------------------------------------
-//                    S c a n W h i t e
-//---------------------------------------------------------------
-
-bool            scanner_ScanWhite(
-    char            **ppCmdStr,         // NUL terminated string pointer
-    uint32_t        *pScannedLen        // (returned) Scanned Length
-)
-{
-    bool            fRc = 0;
-    char            *pCurChr = NULL;
-    uint32_t        cLen = 0;
-    int             chrLen = 0;
-    W32CHR_T        chr;
-
-    // Do initialization.
-    if( NULL == ppCmdStr ) {
-        fRc = false;
-        goto Exit00;
-    }
-    pCurChr = *ppCmdStr;
-
-    // Scan off leading white-space.
-    for (;;) {
-        chrLen = utf8_Utf8ToW32(pCurChr, &chr);
-        if (chrLen) {
-            if (ascii_isWhiteSpaceW32(chr)) {
-                pCurChr += chrLen;
-                cLen += chrLen;
-            }
-            else
-                break;
-        }
-        else
-            break;
-    }
-
-    // Return to caller.
-    fRc = true;
-Exit00:
-    if( ppCmdStr ) {
-        *ppCmdStr = pCurChr;
-    }
-    if( pScannedLen ) {
-        *pScannedLen = cLen;
-    }
-    return( fRc );
-}
-#endif
-
-
-
-#ifdef XYZZY
 #endif
 
 
@@ -837,13 +371,14 @@ Exit00:
 
 
     bool            Scanner_IsTerminator(
+        SCANNER_DATA    *this,
         W32CHR_T        chr
 
     )
     {
         bool            fRc = false;
 
-        if (('=' ==chr) || Scanner_IsSeparator(chr)) {
+        if (Scanner_IsSeparator(chr) || (this->sep && (this->sep == chr))) {
             fRc = true;
         }
         return fRc;
@@ -942,11 +477,51 @@ Exit00:
     //===============================================================
 
     //---------------------------------------------------------------
+    //                     S e p e r a t o r
+    //---------------------------------------------------------------
+
+    W32CHR_T        Scanner_getSeperator (
+        SCANNER_DATA    *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Scanner_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->sep;
+    }
+
+
+    bool            Scanner_setSeperator (
+        SCANNER_DATA    *this,
+        W32CHR_T        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Scanner_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->sep = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
     uint32_t        Scanner_getSize (
-        SCANNER_DATA       *this
+        SCANNER_DATA    *this
     )
     {
 #ifdef NDEBUG
@@ -1720,6 +1295,71 @@ Exit00:
     
     
     //---------------------------------------------------------------
+    //                    S c a n  S t r i n g
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     Scanner_ScanIdentifierToAStr(
+        SCANNER_DATA    *this
+    )
+    {
+        bool            fRc = false;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        W32CHR_T        chr;
+        uint32_t        len = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        pStr = AStr_New( );
+        if (OBJ_NIL == pStr) {
+            return OBJ_NIL;
+        }
+
+        // Scan off leading white-space.
+        Scanner_ScanWS(this);
+
+        // Scan the paramter.
+        chr = Scanner_LookAhead(this, len+1);
+        if(chr) {
+            if (ascii_isLabelFirstCharW32(chr)) {
+                AStr_AppendCharW32(pStr, chr);
+                len += 1;
+                fRc = true;
+                for (;;) {
+                    chr  = Scanner_LookAhead(this, len+1);
+                    if (ascii_isLabelCharW32(chr)) {
+                        AStr_AppendCharW32(pStr, chr);
+                        len += 1;
+                        fRc = true;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        // Return to caller.
+    Exit00:
+        if (fRc && len) {
+            Scanner_Advance(this, len);
+        }
+        if (!fRc) {
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        return pStr;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                    S c a n  I n t e g e r 32
     //---------------------------------------------------------------
 
@@ -1955,7 +1595,7 @@ Exit00:
                 // Handle Non-Quoted Arguments.
                 for (;;) {
                     chr  = Scanner_LookAhead(this, len+1);
-                    if (Scanner_IsTerminator(chr)) {
+                    if (Scanner_IsSeparator(chr) || ('"' == chr) || ('\'' == chr)) {
                         break;
                     } else {
                         AStr_AppendCharW32(pStr, chr);
@@ -1965,7 +1605,7 @@ Exit00:
                 }
             }
             chr  = Scanner_LookAhead(this, len+1);
-            if (chr && Scanner_IsTerminator(chr)) {
+            if (chr && Scanner_IsTerminator(this, chr)) {
                 len += 1;
             }
         }
@@ -2044,7 +1684,7 @@ Exit00:
 
                     // Pass over terminator.
                     chr  = Scanner_LookAhead(this, 1);
-                    if (Scanner_IsTerminator(chr)) {
+                    if (Scanner_IsSeparator(chr)) {
                         Scanner_Advance(this, 1);
                     }
 

@@ -70,6 +70,7 @@ struct Scanner_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    W32CHR_T        sep;            // Special Seperator/Terminator Character
 
 };
 #pragma pack(pop)

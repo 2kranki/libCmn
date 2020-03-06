@@ -456,6 +456,7 @@ extern "C" {
             //return ERESULT_OUT_OF_MEMORY;
             return OBJ_NIL;
         }
+        Scanner_setSeperator(pScan, '=');
         pArgs = Scanner_ScanStringToAstrArray(pScan);
         obj_Release(pScan);
         pScan = OBJ_NIL;

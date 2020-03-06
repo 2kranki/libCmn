@@ -89,6 +89,7 @@ extern "C" {
         //uint8_t         *pData;
         //uint32_t        len;
 
+        (void)JsonIn_FindI32NodeInHashA(pParser, "sep", &pObject->sep);
         eRc = W32StrC_ParseJsonFields(pParser, (W32STRC_DATA *)pObject);
 
         // Return to caller.
@@ -252,6 +253,7 @@ extern "C" {
     {
         ERESULT         eRc;
 
+        JsonOut_Append_i32("sep", this->sep, pStr);
         eRc = W32StrC_ToJsonFields((W32STRC_DATA *)this, pStr);
 
         return eRc;
