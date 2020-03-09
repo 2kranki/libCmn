@@ -936,8 +936,84 @@ int             test_Scanner_ScanIdentifier01(
 
 
 
+int             test_Scanner_Calc01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SCANNER_DATA    *pObj = OBJ_NIL;
+    char            *pTestString;
+    int32_t         iRc;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pTestString = "1+1";
+    pObj = Scanner_NewA(pTestString);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        iRc = 0;
+        eRc = Scanner_Calc(pObj, &iRc);
+        TINYTEST_TRUE(ERESULT_OK(eRc));
+        fprintf(stderr, "\t%s == %d scan: %d\n",
+                pTestString,
+                iRc,
+                obj_getMisc(pObj)
+        );
+        TINYTEST_TRUE( (2 == iRc) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    pTestString = "2*5+1";
+    pObj = Scanner_NewA(pTestString);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        iRc = 0;
+        eRc = Scanner_Calc(pObj, &iRc);
+        TINYTEST_TRUE(ERESULT_OK(eRc));
+        fprintf(stderr, "\t%s == %d scan: %d\n",
+                pTestString,
+                iRc,
+                obj_getMisc(pObj)
+        );
+        TINYTEST_TRUE( (11 == iRc) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    pTestString = "1+2*5";
+    pObj = Scanner_NewA(pTestString);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        iRc = 0;
+        eRc = Scanner_Calc(pObj, &iRc);
+        TINYTEST_TRUE(ERESULT_OK(eRc));
+        fprintf(stderr, "\t%s == %d scan: %d\n",
+                pTestString,
+                iRc,
+                obj_getMisc(pObj)
+        );
+        TINYTEST_TRUE( (11 == iRc) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_Scanner);
+    TINYTEST_ADD_TEST(test_Scanner_Calc01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Scanner_ScanIdentifier01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Scanner_ScanAstrArray01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Scanner_ScanAstr01,setUp,tearDown);

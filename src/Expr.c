@@ -47,11 +47,11 @@
 
 
 #ifdef NDEBUG
-#   define  LOOKAHEAD(num)  chr = this->pInputLookAhead(this->pObjInput, num);
+#   define  LOOKAHEAD(num)  this->pInputLookAhead(this->pObjInput, num);
 #else
-#   define  LOOKAHEAD(num)  chr = Expr_LookAhead(this, num);
+#   define  LOOKAHEAD(num)  Expr_LookAhead(this, num);
 #endif
-#define     ADVANCE(num)    this->pInputAdvanceChar(this->pObjInput, num);
+#define     ADVANCE(num)    this->pInputAdvance(this->pObjInput, num);
 
 
 
@@ -71,6 +71,8 @@ extern "C" {
 
     /*! Get the next LookAhead Token with optional tracing.
      */
+#ifdef NDEBUG
+#else
     W32CHR_T        Expr_LookAhead(
         EXPR_DATA       *this,
         uint32_t        index
@@ -93,6 +95,7 @@ extern "C" {
 
         return chr;
     }
+#endif
 
 
     bool            Expr_MatchStrA(
@@ -107,7 +110,7 @@ extern "C" {
         bool            fMatch = true;
 
         for (;;) {
-            LOOKAHEAD(index);
+            chr = LOOKAHEAD(index);
             if (chr == '\0') {
                 if (*pStrA == '\0')
                     ;
@@ -150,23 +153,19 @@ extern "C" {
         int32_t         iRc = 0;
         int32_t         iRc2 = 0;
 
-        iRc = Expr_LogicalAnd(this);
+        iRc = Expr_Mult(this);
         for (;;) {
-            LOOKAHEAD(1);
-            switch (chr) {
-                case '+':
+            chr = LOOKAHEAD(1);
+            if (chr == '+') {
                     ADVANCE(1);
-                    iRc2 = Expr_LogicalAnd(this);
+                    iRc2 = Expr_Mult(this);
                     iRc += iRc2;
-                    break;
-                case '-':
+            } else if (chr == '-') {
                     ADVANCE(1);
-                    iRc2 = Expr_LogicalAnd(this);
+                    iRc2 = Expr_Mult(this);
                     iRc -= iRc2;
-                    break;
-                default:
-                    // ERROR: Looking for ... but found <cls>!
-                    break;
+            } else {
+                break;
             }
         }
 
@@ -190,16 +189,13 @@ extern "C" {
 
         iRc = Expr_Eq(this);
         for (;;) {
-            LOOKAHEAD(1);
-            switch (chr) {
-                case PPLEX_OP_AND:
+            chr = LOOKAHEAD(1);
+            if (chr == '&') {
                     ADVANCE(1);
                     iRc2 = Expr_Eq(this);
                     iRc &= iRc2;
-                    break;
-                default:
-                    // ERROR: Looking for ... but found <cls>!
-                    break;
+            } else {
+                break;
             }
         }
 
@@ -219,32 +215,30 @@ extern "C" {
     )
     {
         W32CHR_T        chr;
+        W32CHR_T        chr2;
         int32_t         iRc = 0;
         int32_t         iRc2 = 0;
 
         iRc = Expr_Rel(this);
         for (;;) {
-            LOOKAHEAD(1);
-            switch (chr) {
-                case PPLEX_OP_EQ:
-                    ADVANCE(1);
-                    iRc2 = Expr_Rel(this);
-                    if (iRc == iRc2)
-                        iRc = 1;
-                    else
-                        iRc = 0;
-                    break;
-                case PPLEX_OP_NE:
-                    ADVANCE(1);
-                    iRc2 = Expr_Rel(this);
-                    if (iRc != iRc2)
-                        iRc = 1;
-                    else
-                        iRc = 0;
-                    break;
-                default:
-                    // ERROR: Looking for ... but found <cls>!
-                    break;
+            chr = LOOKAHEAD(1);
+            chr2 = LOOKAHEAD(2);
+            if ((chr == '=') && (chr2 == '=')) {
+                ADVANCE(2);
+                iRc2 = Expr_Rel(this);
+                if (iRc == iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else if ((chr == '!') && (chr2 == '=')) {
+                ADVANCE(2);
+                iRc2 = Expr_Rel(this);
+                if (iRc != iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else {
+                break;
             }
         }
 
@@ -276,24 +270,23 @@ extern "C" {
     )
     {
         W32CHR_T        chr;
+        W32CHR_T        chr2;
         int32_t         iRc = 0;
         int32_t         iRc2 = 0;
 
         iRc = Expr_Or(this);
         for (;;) {
-            LOOKAHEAD(1);
-            switch (chr) {
-                case PPLEX_OP_LOG_AND:
-                    ADVANCE(1);
-                    iRc2 = Expr_Or(this);
-                    if (iRc && iRc2)
-                        iRc = 1;
-                    else
-                        iRc = 0;
-                    break;
-                default:
-                    // ERROR: Looking for ... but found <cls>!
-                    break;
+            chr = LOOKAHEAD(1);
+            chr2 = LOOKAHEAD(2);
+            if ((chr == '&') && (chr2 == '&')) {
+                ADVANCE(2);
+                iRc2 = Expr_Or(this);
+                if (iRc && iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else {
+                break;
             }
         }
 
@@ -312,25 +305,23 @@ extern "C" {
     )
     {
         W32CHR_T        chr;
+        W32CHR_T        chr2;
         int32_t         iRc = 0;
         int32_t         iRc2 = 0;
 
         iRc = Expr_LogicalAnd(this);
         for (;;) {
-            LOOKAHEAD(1);
-            if (chr == '|') {
-                LOOKAHEAD(2);
-                if (chr == '|') {
-                    ADVANCE(2);
-                    iRc2 = Expr_LogicalAnd(this);
-                    if (iRc || iRc2)
-                        iRc = 1;
-                    else
-                        iRc = 0;
-                }
-                else {
-                    break;
-                }
+            chr = LOOKAHEAD(1);
+            chr2 = LOOKAHEAD(2);
+            if ((chr == '|')  && (chr2 == '|')){
+                ADVANCE(2);
+                iRc2 = Expr_LogicalAnd(this);
+                if (iRc || iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else {
+                break;
             }
         }
 
@@ -356,26 +347,21 @@ extern "C" {
 
         iRc = Expr_Primary(this);
         for (;;) {
-            LOOKAHEAD(1);
-            switch (chr) {
-                case '*':
-                    ADVANCE(1);
-                    iRc2 = Expr_Primary(this);
-                    iRc *= iRc2;
-                    break;
-                case '/':
-                    ADVANCE(1);
-                    iRc2 = Expr_Primary(this);
-                    iRc /= iRc2;
-                    break;
-                case '%':
-                    ADVANCE(1);
-                    iRc2 = Expr_Primary(this);
-                    iRc %= iRc2;
-                    break;
-                default:
-                    // ERROR: Looking for ... but found <cls>!
-                    break;
+            chr = LOOKAHEAD(1);
+            if (chr == '*') {
+                ADVANCE(1);
+                iRc2 = Expr_Primary(this);
+                iRc *= iRc2;
+            } else if (chr == '/') {
+                ADVANCE(1);
+                iRc2 = Expr_Primary(this);
+                iRc /= iRc2;
+            } else if (chr == '%') {
+                ADVANCE(1);
+                iRc2 = Expr_Primary(this);
+                iRc %= iRc2;
+            } else {
+                break;
             }
         }
 
@@ -399,16 +385,13 @@ extern "C" {
 
         iRc = Expr_Xor(this);
         for (;;) {
-            LOOKAHEAD(1);
-            switch (chr) {
-                case '|':
-                    ADVANCE(1);
-                    iRc2 = Expr_Xor(this);
-                    iRc |= iRc2;
-                    break;
-                default:
-                    // ERROR: Looking for ... but found <cls>!
-                    break;
+            chr = LOOKAHEAD(1);
+            if (chr == '|') {
+                ADVANCE(1);
+                iRc2 = Expr_Xor(this);
+                iRc |= iRc2;
+            } else {
+                break;
             }
         }
 
@@ -431,18 +414,29 @@ extern "C" {
         int32_t         iRc = 0;
         W32CHR_T        chr;
         //ERESULT         eRc;
+        bool            fRc;
 
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !Expr_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
+        chr = LOOKAHEAD(1);
+        if (chr == '(') {
+            ADVANCE(1);
+            iRc = Expr_Expr(this);
+            chr = LOOKAHEAD(1);
+            if (chr != ')') {
+                fprintf(stderr, "ERROR - Expecting ')' but found %c\n", chr);
+                exit(4);
+            }
+            ADVANCE(1);
+            return iRc;
         }
-#endif
 
-        LOOKAHEAD(1);
+        if (this->pInputScanInteger32) {
+            fRc = this->pInputScanInteger32(this->pObjParse, &iRc);
+            if (fRc) {
+                return iRc;
+            }
+        }
 
+#ifdef XYZZY
         switch (chr) {
             case PPLEX_CONSTANT_FLOAT:
                 // Process number
@@ -450,7 +444,6 @@ extern "C" {
                 return iRc;
                 break;
             case PPLEX_IDENTIFIER:
-#ifdef XYZZY
                 idxList =   cgmrTree_NodeNewUTF8(
                                                  this->pTree,
                                                  "PrimaryExpr",
@@ -473,7 +466,6 @@ extern "C" {
                 }
                 eRc = cgmrTree_NodeLinkChild(this->pTree, idxList, idxNode);
                 BREAK_FAILED(eRc);
-#endif
                 ADVANCE(1);
                 return iRc;
                 break;
@@ -499,6 +491,7 @@ extern "C" {
                 // ERROR - Needed ... but found <cls>!
                 break;
         }
+#endif
 
 #ifdef XYZZY
         idxNode = prsC_Const(this);
@@ -536,48 +529,44 @@ extern "C" {
     )
     {
         W32CHR_T        chr;
+        W32CHR_T        chr2;
         int32_t         iRc = 0;
         int32_t         iRc2 = 0;
 
         iRc = Expr_Shift(this);
         for (;;) {
-            LOOKAHEAD(1);
-            switch (chr) {
-                case PPLEX_OP_GE:
-                    ADVANCE(2);
-                    iRc2 = Expr_Shift(this);
-                    if (iRc >= iRc2)
-                        iRc = 1;
-                    else
-                        iRc = 0;
-                    break;
-                case PPLEX_OP_LE:
-                    ADVANCE(2);
-                    iRc2 = Expr_Shift(this);
-                    if (iRc <= iRc2)
-                        iRc = 1;
-                    else
-                        iRc = 0;
-                    break;
-                case PPLEX_OP_GT:
-                    ADVANCE(1);
-                    iRc2 = Expr_Shift(this);
-                    if (iRc > iRc2)
-                        iRc = 1;
-                    else
-                        iRc = 0;
-                    break;
-                case PPLEX_OP_LT:
-                    ADVANCE(1);
-                    iRc2 = Expr_Shift(this);
-                    if (iRc < iRc2)
-                        iRc = 1;
-                    else
-                        iRc = 0;
-                    break;
-                default:
-                    // ERROR: Looking for ... but found <cls>!
-                    break;
+            chr = LOOKAHEAD(1);
+            chr2 = LOOKAHEAD(2);
+            if ((chr == '>') && (chr2 == '=')) {
+                ADVANCE(2);
+                iRc2 = Expr_Shift(this);
+                if (iRc >= iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else if ((chr == '<') && (chr2 == '=')) {
+                ADVANCE(2);
+                iRc2 = Expr_Shift(this);
+                if (iRc <= iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else if (chr == '>') {
+                ADVANCE(1);
+                iRc2 = Expr_Shift(this);
+                if (iRc > iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else if (chr == '<') {
+                ADVANCE(1);
+                iRc2 = Expr_Shift(this);
+                if (iRc <= iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else {
+                break;
             }
         }
 
@@ -597,26 +586,24 @@ extern "C" {
     )
     {
         W32CHR_T        chr;
+        W32CHR_T        chr2;
         int32_t         iRc = 0;
         int32_t         iRc2 = 0;
 
         iRc = Expr_Add(this);
         for (;;) {
-            LOOKAHEAD(1);
-            switch (chr) {
-                case PPLEX_OP_RIGHT:
-                    ADVANCE(2);
-                    iRc2 = Expr_Add(this);
-                    iRc <<= iRc2;
-                    break;
-                case PPLEX_OP_LEFT:
-                    ADVANCE(2);
-                    iRc2 = Expr_Add(this);
-                    iRc >>= iRc2;
-                    break;
-                default:
-                    // ERROR: Looking for ... but found <cls>!
-                    break;
+            chr = LOOKAHEAD(1);
+            chr2 = LOOKAHEAD(2);
+            if ((chr == '<') && (chr2 == '<')) {
+                ADVANCE(2);
+                iRc2 = Expr_Rel(this);
+                iRc <<= iRc2;
+            } else if ((chr == '>') && (chr2 == '>')) {
+                ADVANCE(2);
+                iRc2 = Expr_Rel(this);
+                iRc >>= iRc2;
+            } else {
+                break;
             }
         }
 
@@ -640,16 +627,13 @@ extern "C" {
 
         iRc = Expr_And(this);
         for (;;) {
-            LOOKAHEAD(1);
-            switch (chr) {
-                case '^':
-                    ADVANCE(1);
-                    iRc2 = Expr_And(this);
-                    iRc ^= iRc2;
-                    break;
-                default:
-                    // ERROR: Looking for ... but found <cls>!
-                    break;
+            chr = LOOKAHEAD(1);
+            if (chr == '^') {
+                ADVANCE(1);
+                iRc2 = Expr_And(this);
+                iRc ^= iRc2;
+            } else {
+                break;
             }
         }
 
@@ -932,6 +916,43 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                         C a l c
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Expr_Calc (
+        EXPR_DATA       *this,
+        int32_t         *pAnswer
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int32_t         ans = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Expr_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        ans = Expr_Expr(this);
+
+        // Return to caller.
+        if (pAnswer)
+            *pAnswer = ans;
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -1072,6 +1093,18 @@ extern "C" {
 #endif
 
         Expr_setLex(this, OBJ_NIL);
+        if (this->pObjFind) {
+            obj_Release(this->pObjFind);
+            this->pObjFind = OBJ_NIL;
+        }
+        if (this->pObjInput) {
+            obj_Release(this->pObjInput);
+            this->pObjInput = OBJ_NIL;
+        }
+        if (this->pObjParse) {
+            obj_Release(this->pObjParse);
+            this->pObjParse = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1436,6 +1469,45 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          S e t u p
+    //---------------------------------------------------------------
+
+    ERESULT     Expr_SetupScanner (
+        EXPR_DATA       *this,
+        SCANNER_DATA    *pScan
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Expr_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        obj_Retain(pScan);
+        obj_Retain(pScan);
+
+        this->pObjInput = pScan;
+        this->pInputAdvance        = (void *)Scanner_Advance;
+        this->pInputLookAhead      = (void *)Scanner_LookAhead;
+
+        this->pObjParse = pScan;
+        this->pInputMatchA         = (void *)Scanner_MatchChr;
+        this->pInputMatchStrA      = (void *)Scanner_MatchStrA;
+        this->pInputScanIdentifier = (void *)Scanner_ScanIdentifierToAStr;
+        this->pInputScanInteger32  = (void *)Scanner_ScanInteger32;
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

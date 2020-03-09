@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Opc360_json.c
+ * File:   Expr_json.c
  *
- *	Generated 02/29/2020 23:01:22
+ *	Generated 03/08/2020 09:35:55
  *
  */
 
@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <Opc360_internal.h>
+#include    <Expr_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -78,9 +78,9 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     Opc360_ParseJsonFields (
+    ERESULT     Expr_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        OPC360_DATA     *pObject
+        EXPR_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -89,7 +89,19 @@ extern "C" {
         //uint8_t         *pData;
         //uint32_t        len;
 
-        eRc = Opcode_ParseJsonFields(pParser, (OPCODE_DATA *)pObject);
+#ifdef XYZZZY 
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
+
+        eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
+        }
+        JsonIn_SubObjectEnd(pParser);
+#endif
 
         // Return to caller.
     exit00:
@@ -104,18 +116,18 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    OPC360_DATA * Opc360_ParseJsonObject (
+    EXPR_DATA * Expr_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        OPC360_DATA   *pObject = OBJ_NIL;
+        EXPR_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(Opc360_Class());
+        pInfo = obj_getInfo(Expr_Class());
         
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -123,12 +135,12 @@ extern "C" {
             goto exit00;
         }
 
-        pObject = Opc360_New( );
+        pObject = Expr_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  Opc360_ParseJsonFields(pParser, pObject);
+        eRc =  Expr_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -150,13 +162,13 @@ extern "C" {
     //===============================================================
     
 
-    OPC360_DATA *   Opc360_NewFromJsonString (
+    EXPR_DATA *   Expr_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        OPC360_DATA   *pObject = OBJ_NIL;
+        EXPR_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -164,7 +176,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = Opc360_ParseJsonObject(pParser);
+        pObject = Expr_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -177,17 +189,17 @@ extern "C" {
     
     
 
-    OPC360_DATA * Opc360_NewFromJsonStringA (
+    EXPR_DATA * Expr_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        OPC360_DATA   *pObject = OBJ_NIL;
+        EXPR_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = Opc360_NewFromJsonString(pStr);
+            pObject = Expr_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -203,7 +215,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Opc360_ToJson(this);
+     ASTR_DATA      *pDesc = Expr_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -211,8 +223,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Opc360_ToJson (
-        OPC360_DATA   *this
+    ASTR_DATA *     Expr_ToJson (
+        EXPR_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -222,7 +234,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Opc360_Validate(this) ) {
+        if( !Expr_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -236,7 +248,7 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = Opc360_ToJsonFields(this, pStr);      
+            eRc = Expr_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -245,16 +257,44 @@ extern "C" {
     }
     
     
-    ERESULT         Opc360_ToJsonFields (
-        OPC360_DATA     *this,
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Expr_ToJsonFields (
+        EXPR_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
-        ERESULT         eRc;
+#ifdef XYZZZY 
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+        ASTR_DATA       *pWrkStr;
+#endif
 
-        eRc = Opcode_ToJsonFields((OPCODE_DATA *)this, pStr);
+#ifdef XYZZZY 
+        JsonOut_Append_i32("fileIndex", this->fileIndex, pStr);
+        JsonOut_Append_i64("offset", this->offset, pStr);
+        JsonOut_Append_u32("lineNo", this->lineNo, pStr);
+        JsonOut_Append_utf8("name", pEntry->pName, pStr);
+        JsonOut_Append_Object("errorStr", this->pErrorStr, pStr);
+        JsonOut_Append_String("data", this->pAStr, pStr);
+        JsonOut_Append_StringA("data", this->pStrA, pStr);
+        JsonOut_Append_StringW32("data", this->pStrW32, pStr);
+#endif
 
-        return eRc;
+        return ERESULT_SUCCESS;
     }
     
     

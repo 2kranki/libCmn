@@ -7,8 +7,7 @@
  * Program
  *			JSON Object Output Support (JsonOut)
  * Purpose
- *			This object provides a standardized way of generating
- *			certain field types for JSON.
+ *			This object provides helper methods for generating JSON.
  *
  * Remarks
  *	1.      None
@@ -188,7 +187,10 @@ extern "C" {
 
     /*!
      Attempt to append a object's json string to an already existing string
-     with a given name if possible.
+     with a given name if possible. The object's QueryInfo is used to find
+     "ToJson" which is used to create the output.  The output generated is
+     a NodeHash of the object under the given NameA. This can be used with
+     inherited objects.
      @param     pNameA  Optional Name for the object (If not present, then
                         just the object hash appended.)
      @param     pObj    non-null object pointer

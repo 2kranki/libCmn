@@ -88,7 +88,7 @@ struct Opc360_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  OPC360_SINGLETON
-    OPC360_DATA *     Opc360_getSingleton (
+    OPC360_DATA *   Opc360_getSingleton (
         void
     );
 

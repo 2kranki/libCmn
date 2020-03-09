@@ -5,6 +5,13 @@
  *
  */
 
+/*
+    See Unicode Miscellaneous Symbols and Arrows
+    0x2B61 - up arrow
+    0x2B63 - down arrow
+    0x2B83 - up and down arrows
+
+ */
  
 /*
  This is free and unencumbered software released into the public domain.

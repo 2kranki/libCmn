@@ -1,8 +1,21 @@
 # vi:nu:et:sts=4 ts=4 sw=4
 
-The following are things that are being throught about. Whether they get done or not
+The following are things that are being thought about. Whether they get done or not
 will depend upon time and resources.
 
+-- TextIn:
+    * Specify a large line buffer size and buffer one line at a time. Read a line at
+        a time (W32).  Change Next() methods to offset within the line.  When the end
+        of line is reached, read the next line.
+    * Add method, Repos(), to reposition based on lines.  
+
+-- Lex:
+    *   Rewrite Lex to support W32Str for accumulation.
+    *   Rewrite Lex to do a non-destructive scan until a complete Lexical token is matched.  
+    This will require a much larger LookAhead queue however unless we change to not
+    tokenize until Lex output. So, input would be straight from the file. Restarting
+    at the line level can be done by combining Sidxe into TextIn (???)
+  
 -- Finish MsgData_ParseJsonObject() and add to JsonIn_ParseObject().
 -- Finish MsgData_ToJson().
 

@@ -283,6 +283,12 @@ void *          MsgDataClass_QueryInfo (
                     }
                     break;
                     
+                case 'S':
+                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                        return (void *)&MsgData_Info.pClassSuperObject;
+                    }
+                    break;
+
                 default:
                     break;
             }
@@ -406,9 +412,9 @@ MSGDATA_VTBL     MsgData_Vtbl = {
         (P_OBJ_TOSTRING)MsgData_ToDebugString,
         NULL,			// MsgData_Enable,
         NULL,			// MsgData_Disable,
-        NULL,			// (P_OBJ_ASSIGN)MsgData_Assign,
+        (P_OBJ_ASSIGN)MsgData_Assign,
         NULL,			// (P_OBJ_COMPARE)MsgData_Compare,
-        NULL, 			// (P_OBJ_PTR)MsgData_Copy,
+        (P_OBJ_PTR)MsgData_Copy,
         NULL, 			// (P_OBJ_PTR)MsgData_DeepCopy,
         NULL 			// (P_OBJ_HASH)MsgData_Hash,
     },

@@ -137,8 +137,28 @@ struct Value_data_s	{
 
 
 #ifdef  VALUE_JSON_SUPPORT
-    VALUE_DATA *       Value_ParseJsonObject (
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    VALUE_DATA *    Value_ParseJsonObject (
         JSONIN_DATA     *pParser
+    );
+
+
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Value_ParseJsonFields(
+        JSONIN_DATA     *pParser,
+        VALUE_DATA      *pObject
     );
 #endif
 
@@ -153,6 +173,12 @@ struct Value_data_s	{
 #ifdef  VALUE_JSON_SUPPORT
     ASTR_DATA *     Value_ToJson (
         VALUE_DATA      *this
+    );
+
+
+    ERESULT         Value_ToJsonFields (
+        VALUE_DATA      *this,
+        ASTR_DATA       *pStr
     );
 #endif
 

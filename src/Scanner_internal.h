@@ -71,6 +71,10 @@ struct Scanner_data_s	{
 
     // Common Data
     W32CHR_T        sep;            // Special Seperator/Terminator Character
+    // Find an Identifier for its value. If not found, return 0.
+    int32_t         (*pFindValueA)(OBJ_ID, const char *);
+    OBJ_ID          pObjFind;
+
 
 };
 #pragma pack(pop)
@@ -115,13 +119,71 @@ struct Scanner_data_s	{
     );
 
 
-    SCANNER_DATA *       Scanner_Copy (
+    SCANNER_DATA *  Scanner_Copy (
         SCANNER_DATA     *this
     );
 
 
     void            Scanner_Dealloc (
         OBJ_ID          objId
+    );
+
+
+    //      >>> Parsing Methods <<<
+    int32_t         Scanner_Add(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_And(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_Cond(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_Eq(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_Expr(
+         SCANNER_DATA    *this
+   );
+
+    int32_t         Scanner_LogicalAnd(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_LogicalOr(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_Mult(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_Number(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_Or(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_Primary(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_Rel(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_Shift(
+        SCANNER_DATA    *this
+    );
+
+    int32_t         Scanner_Xor(
+        SCANNER_DATA    *this
     );
 
 

@@ -2,7 +2,7 @@
 /*
  * File:   MsgData_json.c
  *
- *	Generated 12/31/2019 10:05:08
+ *	Generated 03/06/2020 10:06:10
  *
  */
 
@@ -49,6 +49,7 @@
 #include    <AStr_internal.h>
 #include    <dec.h>
 #include    <JsonIn.h>
+#include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeHash.h>
 #include    <utf8.h>
@@ -70,12 +71,56 @@ extern "C" {
      ****************************************************************/
     
     /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT     MsgData_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        MSGDATA_DATA    *pObject
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        //int64_t         intIn;
+        //ASTR_DATA       *pWrk;
+        //uint8_t         *pData;
+        //uint32_t        len;
+
+        (void)JsonIn_FindU32NodeInHashA(pParser, "origin", &pObject->origin);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "dest", &pObject->dest);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "num32", &pObject->num32);
+
+#ifdef XYZZZY
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
+
+        eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
+        }
+        JsonIn_SubObjectEnd(pParser);
+#endif
+
+        // Return to caller.
+    exit00:
+        return eRc;
+    }
+    
+    
+    
+    /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    MSGDATA_DATA * MsgData_ParseJsonObject(
+    MSGDATA_DATA * MsgData_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
@@ -99,24 +144,7 @@ extern "C" {
             goto exit00;
         }
         
-#ifdef XYZZZY 
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "fileIndex", &intIn);
-        pObject->loc.fileIndex = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "offset", &pObject->loc.offset);
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "lineNo", &intIn);
-        pObject->loc.lineNo = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "colNo", &intIn);
-        pObject->loc.colNo = (uint16_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "severity", &intIn);
-        pObject->severity = (uint16_t)intIn;
-
-        eRc = JsonIn_SubobjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
-        }
-        JsonIn_SubobjectEnd(pParser);
-#endif
+        eRc =  MsgData_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -138,13 +166,13 @@ extern "C" {
     //===============================================================
     
 
-    MSGDATA_DATA *   MsgData_NewFromJsonString(
+    MSGDATA_DATA *   MsgData_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        MSGDATA_DATA    *pObject = OBJ_NIL;
+        MSGDATA_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -165,16 +193,16 @@ extern "C" {
     
     
 
-    MSGDATA_DATA * MsgData_NewFromJsonStringA(
+    MSGDATA_DATA * MsgData_NewFromJsonStringA (
         const
-        char            *pString
+        char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        MSGDATA_DATA    *pObject = OBJ_NIL;
+        MSGDATA_DATA   *pObject = OBJ_NIL;
         
-        if (pString) {
-            pStr = AStr_NewA(pString);
+        if (pStringA) {
+            pStr = AStr_NewA(pStringA);
             pObject = MsgData_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -199,24 +227,14 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     MsgData_ToJson(
+    ASTR_DATA *     MsgData_ToJson (
         MSGDATA_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-#ifdef XYZZZY 
-        void *          (*pQueryInfo)(
-            OBJ_ID          objId,
-            uint32_t        type,
-            void            *pData
-        );
-        ASTR_DATA *     (*pToJson)(
-            OBJ_ID          objId
-        );
-        ASTR_DATA       *pWrkStr;
-#endif
+        ERESULT         eRc;
 
 #ifdef NDEBUG
 #else
@@ -233,46 +251,48 @@ extern "C" {
                               "{ \"objectType\":\"%s\", ",
                               pInfo->pClassName
              );
-            
-            AStr_AppendA(pStr, "}\n");
+     
+            eRc = MsgData_ToJsonFields(this, pStr);      
 
-#ifdef XYZZZY 
-            AStr_AppendPrint(pStr,
-                             "\"fileIndex\":%d, "
-                             "\"offset\":%lld, "
-                             "\"lineNo\":%d, "
-                             "\"colNo\":%d "
-                             "\"severity\":%d ",
-                             this->loc.fileIndex,
-                             this->loc.offset,
-                             this->loc.lineNo,
-                             this->loc.colNo,
-                             this->severity
-            );
-             if (this->pErrorStr) {
-                pQueryInfo = obj_getVtbl(this->pErrorStr)->pQueryInfo;
-                if (pQueryInfo) {
-                    pToJson =   (*pQueryInfo)(
-                                              this->pErrorStr,
-                                              OBJ_QUERYINFO_TYPE_METHOD,
-                                              "ToJson"
-                                              );
-                    if (pToJson) {
-                        pWrkStr = (*pToJson)(this->pErrorStr);
-                        if (pWrkStr) {
-                            AStr_AppendA(pStr, "\t\"errorStr\": ");
-                            AStr_Append(pStr, pWrkStr);
-                            obj_Release(pWrkStr);
-                            pWrkStr = OBJ_NIL;
-                            AStr_AppendA(pStr, "\n");
-                        }
-                    }
-                }
-            }
-#endif
+            AStr_AppendA(pStr, "}\n");
         }
 
         return pStr;
+    }
+    
+    
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         MsgData_ToJsonFields (
+        MSGDATA_DATA     *this,
+        ASTR_DATA       *pStr
+    )
+    {
+#ifdef XYZZZY 
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+        ASTR_DATA       *pWrkStr;
+#endif
+
+        JsonOut_Append_u32("origin", this->origin, pStr);
+        JsonOut_Append_u32("dest", this->dest, pStr);
+        JsonOut_Append_u32("num32", this->num32, pStr);
+        JsonOut_Append_Object("value", this, pStr);
+
+        return ERESULT_SUCCESS;
     }
     
     

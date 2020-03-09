@@ -9,6 +9,8 @@
  * Purpose
  *			This object provides Universal Expression Parser.
  *
+ * Expr: Logical_Or
+
  * Remarks
  *	1.      None
  *
@@ -16,6 +18,73 @@
  *	03/03/2020 Generated
  */
 
+/*                 * * *  Expression Grammar  * * *
+                                                Associativity
+expr        :   Logical_Or
+            ;
+
+Logical_Or  :   Logical_Or "||" Logical_And     # Left to Right
+            |   Logical_And
+            ;
+
+Logical_And :   Logical_And "&&" Bitwise_Or     # Left to Right
+            |   Bitwise_Or
+            ;
+
+Bitwise_Or  :   Bitwise_Or '|' Bitwise_Xor      # Left to Right
+            |   Bitwise_Xor
+            ;
+
+Bitwise_Xor :   Bitwise_Xor '^' Bitwise_And     # Left to Right
+            |   Bitwise_And
+            ;
+
+Bitwise_And :   Bitwise_And '&' Equal           # Left to Right
+            |   Equal
+            ;
+
+Equal       :   Equql "==" Rel                  # Left to Right
+            |   Equal "!=" Rel
+            |   Rel
+            ;
+
+Rel         :   Rel '<' Shift                   # Left to Right
+            |   Rel "<=" Shift
+            |   Rel '>' Shift
+            |   Rel ">=" Shift
+            |   Shift
+            ;
+
+Shift       :   Shift "<<" Add                  # Left to Right
+            |   Shift ">>" Add
+            |   Add
+            ;
+
+ Add        :   Add '+' Mult                    # Left to Right
+            |   Add '-' Mult
+            |   Mult
+            ;
+
+ Mult       :   Mult '*' Unary                  # Left to Right
+            |   Mult '/' Unary
+            |   Mult '%' Unary
+            |   Unary
+            ;
+
+ Unary      :   '!' Prim                        # Right to Left
+            |   '+' Prim
+            |   '-' Prim
+            |   "++" Prim
+            |   "--" Prim
+            |   Prim
+            ;
+
+ Prim       :   integer                         # Left to Right
+            |   symbol
+            |   '(' Expr ')'
+            ;
+
+ */
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -50,6 +119,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Scanner.h>
 
 
 #ifndef         EXPR_H
@@ -163,23 +233,27 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Expr_Disable (
-        EXPR_DATA		*this
+    ERESULT     Expr_Calc (
+        EXPR_DATA	*this,
+        int32_t     *pAnswer
     );
 
 
-    ERESULT     Expr_Enable (
-        EXPR_DATA		*this
-    );
-
-   
     EXPR_DATA *   Expr_Init (
         EXPR_DATA     *this
     );
 
 
-    ERESULT     Expr_IsEnabled (
-        EXPR_DATA		*this
+    /*!
+     Set up a Scanner object as the primary source of data and parsing
+     support.
+     @param     this    object pointer
+     @param     pScan   Scanner object pointer
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_* error.
+     */
+    ERESULT     Expr_SetupScanner (
+        EXPR_DATA		*this,
+        SCANNER_DATA    *pScan
     );
     
  

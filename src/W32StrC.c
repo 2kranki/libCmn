@@ -1292,24 +1292,20 @@ extern "C" {
                 return (void *)W32StrC_Class();
                 break;
                 
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
              case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
@@ -1329,27 +1325,27 @@ extern "C" {
                         }
                         break;
 
-#ifdef  W32STRC_JSON_SUPPORT
                     case 'P':
+#ifdef  W32STRC_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
                             return W32StrC_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
                             return W32StrC_ParseJsonObject;
                         }
-                        break;
 #endif
+                        break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return W32StrC_ToDebugString;
                         }
 #ifdef  W32STRC_JSON_SUPPORT
-                        if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return W32StrC_ToJson;
-                        }
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
                             return W32StrC_ToJsonFields;
+                        }
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return W32StrC_ToJson;
                         }
 #endif
                         break;

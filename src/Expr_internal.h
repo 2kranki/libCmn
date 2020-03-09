@@ -41,9 +41,9 @@
 
 #include        <Expr.h>
 #include        <JsonIn.h>
-#include        <lex.h>
+//#include        <lex.h>
 #include        <Parser_internal.h>
-#include        <pplex.h>
+//#include        <pplex.h>
 #include        <SrcErrors.h>
 #include        <Token.h>
 
@@ -81,9 +81,16 @@ struct Expr_data_s	{
     OBJ_ID          pObjFind;
 
     // Input a Character.
-    void            (*pInputAdvanceChar)(OBJ_ID, int32_t);
+    void            (*pInputAdvance)(OBJ_ID, int32_t);
     int32_t         (*pInputLookAhead)(OBJ_ID, uint32_t);
     OBJ_ID          pObjInput;
+
+    // Parse helpers.
+    bool            (*pInputMatchA)(OBJ_ID, W32CHR_T);
+    bool            (*pInputMatchStrA)(OBJ_ID, const char *);
+    ASTR_DATA *     (*pInputScanIdentifier)(OBJ_ID, const char *);
+    bool            (*pInputScanInteger32)(OBJ_ID, int32_t *);
+    OBJ_ID          pObjParse;
 
 };
 #pragma pack(pop)

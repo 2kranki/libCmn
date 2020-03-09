@@ -2,7 +2,7 @@
 /*
  * File:   Value_json.c
  *
- *	Generated 12/31/2019 15:27:11
+ *	Generated 03/06/2020 15:29:02
  *
  */
 
@@ -47,9 +47,9 @@
 #include    <stdlib.h>
 #include    <string.h>
 #include    <AStr_internal.h>
-#include    <dec_internal.h>
-#include    <hex_internal.h>
+#include    <dec.h>
 #include    <JsonIn.h>
+#include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeHash.h>
 #include    <utf8.h>
@@ -71,24 +71,61 @@ extern "C" {
      ****************************************************************/
     
     /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT     Value_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        VALUE_DATA     *pObject
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        //int64_t         intIn;
+        //ASTR_DATA       *pWrk;
+        //uint8_t         *pData;
+        //uint32_t        len;
+
+#ifdef XYZZZY 
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
+
+        eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
+        }
+        JsonIn_SubObjectEnd(pParser);
+#endif
+
+        // Return to caller.
+    exit00:
+        return eRc;
+    }
+    
+    
+    
+    /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    VALUE_DATA * Value_ParseJsonObject(
+    VALUE_DATA * Value_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        VALUE_DATA      *pObject = OBJ_NIL;
+        VALUE_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
-        int64_t         intIn;
+        //int64_t         intIn;
         //ASTR_DATA       *pWrk;
-        uint16_t        type;
-        int64_t         integer;
-        double          flt;
 
         pInfo = obj_getInfo(Value_Class());
         
@@ -103,98 +140,7 @@ extern "C" {
             goto exit00;
         }
         
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc16", &intIn);
-        pObject->misc16 = (uint32_t)intIn;
-
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "user", &intIn);
-        pObject->user = (uint32_t)intIn;
-
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
-        type = (uint16_t)intIn;
-        pObject->type = type;
-
-        switch (type) {
-
-            case VALUE_TYPE_DOUBLE:          // 64-bit Float
-                eRc = JsonIn_FindFloatNodeInHashA(pParser, "data", &flt);
-                pObject->value.flt = flt;
-                break;
-
-           case VALUE_TYPE_INT8:            // int8_t
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseJsonObject(pParser);
-                pObject->value.i8 = (int8_t)integer;
-                JsonIn_SubObjectEnd(pParser);
-                break;
-
-            case VALUE_TYPE_INT16:           // int16_t
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseJsonObject(pParser);
-                pObject->value.i16 = (int16_t)integer;
-                JsonIn_SubObjectEnd(pParser);
-                break;
-
-            case VALUE_TYPE_INT32:           // int32_t
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseJsonObject(pParser);
-                pObject->value.i32 = (int32_t)integer;
-                JsonIn_SubObjectEnd(pParser);
-                break;
-
-            case VALUE_TYPE_INT64:           // int64_t
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseJsonObject(pParser);
-                pObject->value.i64 = (int64_t)integer;
-                JsonIn_SubObjectEnd(pParser);
-                break;
-
-            case VALUE_TYPE_UINT8:           // int8_t
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseJsonObject(pParser);
-                pObject->value.u8 = (uint8_t)integer;
-                JsonIn_SubObjectEnd(pParser);
-                break;
-
-            case VALUE_TYPE_UINT16:          // int16_t
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseJsonObject(pParser);
-                pObject->value.u16 = (uint16_t)integer;
-                JsonIn_SubObjectEnd(pParser);
-                break;
-
-            case VALUE_TYPE_UINT32:          // int32_t
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseJsonObject(pParser);
-                pObject->value.u32 = (uint32_t)integer;
-                JsonIn_SubObjectEnd(pParser);
-                break;
-
-            case VALUE_TYPE_UINT64:          // int64_t
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseJsonObject(pParser);
-                pObject->value.u64 = (uint64_t)integer;
-                JsonIn_SubObjectEnd(pParser);
-                break;
-
-            case VALUE_TYPE_OBJECT:
-                //TODO:  Use JsonIn_ParseObject();
-                goto exit00;
-                break;
-
-            case VALUE_TYPE_DATA:
-            case VALUE_TYPE_DATA_FREE:
-                pObject->type = VALUE_TYPE_DATA_FREE;
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                pObject->value.data.pData = hex_ParseObject(
-                                                            pParser,
-                                                            &pObject->value.data.length
-                                            );
-                JsonIn_SubObjectEnd(pParser);
-                break;
-
-            default:
-                goto exit00;
-        }
+        eRc =  Value_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -216,7 +162,7 @@ extern "C" {
     //===============================================================
     
 
-    VALUE_DATA *   Value_NewFromJsonString(
+    VALUE_DATA *   Value_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
@@ -243,16 +189,16 @@ extern "C" {
     
     
 
-    VALUE_DATA * Value_NewFromJsonStringA(
+    VALUE_DATA * Value_NewFromJsonStringA (
         const
-        char            *pString
+        char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
         VALUE_DATA   *pObject = OBJ_NIL;
         
-        if (pString) {
-            pStr = AStr_NewA(pString);
+        if (pStringA) {
+            pStr = AStr_NewA(pStringA);
             pObject = Value_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -277,18 +223,14 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Value_ToJson(
+    ASTR_DATA *     Value_ToJson (
         VALUE_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        ASTR_DATA *     (*pToJson)(
-            OBJ_ID          objId
-        );
-        OBJ_IUNKNOWN    *pVtbl;
-        ASTR_DATA       *pWrk;
+        ERESULT         eRc;
 
 #ifdef NDEBUG
 #else
@@ -299,214 +241,51 @@ extern "C" {
 #endif
         pInfo = obj_getInfo(this);
         
-        // We can't convert any object that doesn't support "ToJson".
-        if (this->type == VALUE_TYPE_OBJECT) {
-            if (this->value.pObject) {
-                pVtbl = obj_getVtbl(this->value.pObject);
-                if (pVtbl) {
-                    pToJson =   pVtbl->pQueryInfo(
-                                            this->value.pObject,
-                                            OBJ_QUERYINFO_TYPE_METHOD,
-                                            "ToJson"
-                                );
-                    if (pToJson == NULL) {
-                        return OBJ_NIL;
-                    }
-                }
-                else {
-                    return OBJ_NIL;
-                }
-            }
-            else {
-                return OBJ_NIL;
-            }
-        }
-
         pStr = AStr_New();
         if (pStr) {
              AStr_AppendPrint(pStr,
                               "{ \"objectType\":\"%s\", ",
                               pInfo->pClassName
              );
-            
-           switch (this->type) {
+     
+            eRc = Value_ToJsonFields(this, pStr);      
 
-               case VALUE_TYPE_DOUBLE:
-                   AStr_AppendPrint(
-                                    pStr,
-                                    ", \"type\":%d /*VALUE_TYPE_DOUBLE*/, \"data\":",
-                                    VALUE_TYPE_DOUBLE
-                   );
-                   AStr_AppendPrint(pStr, "%le", this->value.flt);
-                   break;
-
-               case VALUE_TYPE_INT8:
-                   AStr_AppendPrint(
-                                    pStr,
-                                    ", \"type\":%d /*VALUE_TYPE_INT8*/, \"data\":",
-                                    VALUE_TYPE_INT8
-                   );
-                   pWrk = dec_UInt64ToJson(this->value.i8);
-                   if (pWrk) {
-                       AStr_Append(pStr, pWrk);
-                       obj_Release(pWrk);
-                       pWrk = OBJ_NIL;
-                   }
-                   break;
-
-              case VALUE_TYPE_INT16:
-                   AStr_AppendPrint(
-                                    pStr,
-                                    ", \"type\":%d /*VALUE_TYPE_INT16*/, \"data\":",
-                                    VALUE_TYPE_INT16
-                   );
-                   pWrk = dec_UInt64ToJson(this->value.i16);
-                   if (pWrk) {
-                       AStr_Append(pStr, pWrk);
-                       obj_Release(pWrk);
-                       pWrk = OBJ_NIL;
-                   }
-                   break;
-
-               case VALUE_TYPE_INT32:
-                   AStr_AppendPrint(
-                                    pStr,
-                                    ", \"type\":%d /*VALUE_TYPE_INT32*/, \"data\":",
-                                    VALUE_TYPE_INT32
-                   );
-                   pWrk = dec_UInt64ToJson(this->value.i32);
-                   if (pWrk) {
-                       AStr_Append(pStr, pWrk);
-                       obj_Release(pWrk);
-                       pWrk = OBJ_NIL;
-                   }
-                   break;
-
-               case VALUE_TYPE_INT64:
-                   AStr_AppendPrint(
-                                    pStr,
-                                    ", \"type\":%d /*VALUE_TYPE_INT64*/, \"data\":",
-                                    VALUE_TYPE_INT64
-                   );
-                   pWrk = dec_UInt64ToJson(this->value.i64);
-                   if (pWrk) {
-                       AStr_Append(pStr, pWrk);
-                       obj_Release(pWrk);
-                       pWrk = OBJ_NIL;
-                   }
-                   break;
-
-               case VALUE_TYPE_UINT8:
-                   AStr_AppendPrint(
-                                    pStr,
-                                    ", \"type\":%d /*VALUE_TYPE_UINT8*/, \"data\":",
-                                    VALUE_TYPE_UINT8
-                                    );
-                   pWrk = dec_UInt64ToJson(this->value.u8);
-                   if (pWrk) {
-                       AStr_Append(pStr, pWrk);
-                       obj_Release(pWrk);
-                       pWrk = OBJ_NIL;
-                   }
-                   break;
-
-               case VALUE_TYPE_UINT16:
-                   AStr_AppendPrint(
-                                    pStr,
-                                    ", \"type\":%d /*VALUE_TYPE_UINT16*/, \"data\":",
-                                    VALUE_TYPE_UINT16
-                   );
-                   pWrk = dec_UInt64ToJson(this->value.u16);
-                   if (pWrk) {
-                       AStr_Append(pStr, pWrk);
-                       obj_Release(pWrk);
-                       pWrk = OBJ_NIL;
-                   }
-                   break;
-
-               case VALUE_TYPE_UINT32:
-                   AStr_AppendPrint(
-                                    pStr,
-                                    ", \"type\":%d /*VALUE_TYPE_UINT32*/, \"data\":",
-                                    VALUE_TYPE_UINT32
-                   );
-                   pWrk = dec_UInt64ToJson(this->value.u32);
-                   if (pWrk) {
-                       AStr_Append(pStr, pWrk);
-                       obj_Release(pWrk);
-                       pWrk = OBJ_NIL;
-                   }
-                   break;
-
-               case VALUE_TYPE_UINT64:
-                   AStr_AppendPrint(
-                                    pStr,
-                                    ", \"type\":%d /*VALUE_TYPE_UINT64*/, \"data\":",
-                                    VALUE_TYPE_UINT64
-                   );
-                   pWrk = dec_UInt64ToJson(this->value.u64);
-                   if (pWrk) {
-                       AStr_Append(pStr, pWrk);
-                       obj_Release(pWrk);
-                       pWrk = OBJ_NIL;
-                   }
-                   break;
-
-               case VALUE_TYPE_OBJECT:
-                   AStr_AppendPrint(
-                                pStr,
-                                ", \"type\":%d /*VALUE_TYPE_OBJECT*/, \"data\":",
-                                VALUE_TYPE_OBJECT
-                   );
-                   if (this->value.pObject) {
-                       pVtbl = obj_getVtbl(this->value.pObject);
-                       if (pVtbl) {
-                           pToJson =   pVtbl->pQueryInfo(
-                                                       this->value.pObject,
-                                                       OBJ_QUERYINFO_TYPE_METHOD,
-                                                       "ToJson"
-                                       );
-                           if (pToJson) {
-                               pWrk = (*pToJson)(this->value.pObject);
-                               if (pWrk) {
-                                   AStr_Append(pStr, pWrk);
-                                   obj_Release(pWrk);
-                                   pWrk = OBJ_NIL;
-                               }
-                           }
-                       }
-                   }
-                   else {
-                       AStr_AppendA(pStr, "null");
-                   }
-                   break;
-
-               case VALUE_TYPE_DATA:
-               case VALUE_TYPE_DATA_FREE:
-                   AStr_AppendPrint(
-                                pStr,
-                                ", \"type\":%d /*VALUE_TYPE_DATA_FREE*/, \"data\":",
-                                VALUE_TYPE_DATA_FREE
-                   );
-                   pWrk = hex_DataToJSON(this->value.data.length, this->value.data.pData);
-                   AStr_Append(pStr, pWrk);
-                   obj_Release(pWrk);
-                   pWrk = OBJ_NIL;
-                   break;
-
-               default:
-                   obj_Release(pStr);
-                   pStr = OBJ_NIL;
-           }
-            AStr_AppendPrint(
-                             pStr,
-                             ", \"misc16\":%u ",
-                             this->misc16
-            );
             AStr_AppendA(pStr, "}\n");
         }
 
         return pStr;
+    }
+    
+    
+    ERESULT         Value_ToJsonFields (
+        VALUE_DATA     *this,
+        ASTR_DATA       *pStr
+    )
+    {
+#ifdef XYZZZY 
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+        ASTR_DATA       *pWrkStr;
+#endif
+
+#ifdef XYZZZY 
+        JsonOut_Append_i32("fileIndex", this->fileIndex, pStr);
+        JsonOut_Append_i64("offset", this->offset, pStr);
+        JsonOut_Append_u32("lineNo", this->lineNo, pStr);
+        JsonOut_Append_utf8("name", pEntry->pName, pStr);
+        JsonOut_Append_Object("errorStr", this->pErrorStr, pStr);
+        JsonOut_Append_String("data", this->pAStr, pStr);
+        JsonOut_Append_StringA("data", this->pStrA, pStr);
+        JsonOut_Append_StringW32("data", this->pStrW32, pStr);
+#endif
+
+        return ERESULT_SUCCESS;
     }
     
     

@@ -252,6 +252,17 @@ extern "C" {
 
 
     /*!
+     Clear/delete all input objects from the stack.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         TextIns_StackClear (
+        TEXTINS_DATA    *this
+    );
+
+
+    /*!
      Get an input object given its index.
      @param     this    object pointer
      @param     index   path name index (relative to 1)

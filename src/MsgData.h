@@ -232,11 +232,6 @@ extern "C" {
     );
 
 
-    ERESULT         MsgData_IsEnabled (
-        MSGDATA_DATA	*this
-    );
-    
- 
     /*!
      Create a string that describes this object and the objects within it.
      Example:

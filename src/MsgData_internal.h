@@ -74,9 +74,7 @@ struct MsgData_data_s	{
     // Common Data
     uint32_t        origin;         // Origin Number
     uint32_t        dest;           // Destination Number (0 == general broadcast)
-    uint32_t        num32;
-    uint32_t        filler32;
-    ASTR_DATA       *pStr;
+    uint32_t        num32;          // Number which can be used by User
 
 };
 #pragma pack(pop)
@@ -124,6 +122,20 @@ struct MsgData_data_s	{
     MSGDATA_DATA *       MsgData_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+
+
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT     MsgData_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        MSGDATA_DATA    *pObject
+    );
 #endif
 
 
@@ -137,6 +149,21 @@ struct MsgData_data_s	{
 #ifdef  MSGDATA_JSON_SUPPORT
     ASTR_DATA *     MsgData_ToJson (
         MSGDATA_DATA      *this
+    );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         MsgData_ToJsonFields (
+        MSGDATA_DATA     *this,
+        ASTR_DATA       *pStr
     );
 #endif
 

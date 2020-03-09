@@ -283,6 +283,12 @@ void *          W32StrCClass_QueryInfo (
                     }
                     break;
                     
+                case 'S':
+                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                        return (void *)&W32StrC_Info.pClassSuperObject;
+                    }
+                    break;
+                    
                 default:
                     break;
             }
@@ -301,16 +307,27 @@ void *          W32StrCClass_QueryInfo (
                     }
                     break;
                     
-#ifdef  W32STRC_JSON_SUPPORT
 				case 'P':
+#ifdef  W32STRC_JSON_SUPPORT
 					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
 						return W32StrC_ParseJsonFields;
 					}
 					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
 						return W32StrC_ParseJsonObject;
 					}
-					break;
 #endif
+					break;
+
+				case 'T':
+#ifdef  W32STRC_JSON_SUPPORT
+					if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+						return W32StrC_ToJsonFields;
+					}
+					if (str_Compare("ToJson", (char *)pStr) == 0) {
+						return W32StrC_ToJson;
+					}
+#endif
+					break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {

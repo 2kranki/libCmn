@@ -218,6 +218,15 @@ extern "C" {
     
     
     
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
     ERESULT         AStr_ToJsonFields(
         ASTR_DATA       *this,
         ASTR_DATA       *pStr

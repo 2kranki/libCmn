@@ -16,6 +16,17 @@
  *          sub-objects within the HSON tree as well as general
  *          parsing of objects that are unknown to begin with.
  *
+ *          Inherited Objects need to be handled slightly differently
+ *          than independent objects. If on the output side,
+ *          JsonOut_Append_Object() is used with a name. Then the
+ *          best way to parse the input is to use:
+ *                      eRc = JsonIn_SubObjectInHash(pParser, "name");
+ *                      if (ERESULT_OK(eRc)) {
+ *                          eRc = InheritedObject_ParseJsonFields(pParser, pObject);
+ *                          JsonIn_SubObjectEnd();
+ *                      }
+ *          This parses the inherited object back into the object that
+ *          we are parsing.
  *
  * Remarks
  *  1.      The ParseObject() method requires that all classes

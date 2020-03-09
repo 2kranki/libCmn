@@ -283,6 +283,10 @@ void *          ValueClass_QueryInfo (
                     }
                     break;
                     
+                case 'S':
+                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                        return (void *)&Value_Info.pClassSuperObject;
+                    }
                 default:
                     break;
             }
@@ -302,11 +306,27 @@ void *          ValueClass_QueryInfo (
                     break;
                     
                 case 'P':
-                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return Value_ParseJsonObject;
-                    }
+#ifdef  W32STRC_JSON_SUPPORT
+					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+						return Value_ParseJsonFields;
+					}
+					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+						return Value_ParseJsonObject;
+					}
+#endif
                     break;
  
+                case 'T':
+#ifdef  W32STRC_JSON_SUPPORT
+					if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+						return Value_ToJsonFields;
+					}
+					if (str_Compare("ToJson", (char *)pStr) == 0) {
+						return Value_ToJson;
+					}
+#endif
+                    break;
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
                         return ValueClass_WhoAmI;

@@ -57,6 +57,10 @@ extern "C" {
     
 
     
+    #define  LOOKAHEAD(num)  Scanner_LookAhead(this, num);
+    #define  ADVANCE(num)    Scanner_Advance(this, num);
+
+
 
 
  
@@ -64,8 +68,492 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    /*!
+     Add
+        : Add '+' Mult
+        | Add '-' Mult
+        | Mult
+        ;
+     */
+    int32_t         Scanner_Add(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        int32_t         iRc = 0;
+        int32_t         iRc2 = 0;
+
+        iRc = Scanner_Mult(this);
+        for (;;) {
+            chr = LOOKAHEAD(1);
+            if (chr == '+') {
+                    ADVANCE(1);
+                    iRc2 = Scanner_Mult(this);
+                    iRc += iRc2;
+            } else if (chr == '-') {
+                    ADVANCE(1);
+                    iRc2 = Scanner_Mult(this);
+                    iRc -= iRc2;
+            } else {
+                break;
+            }
+        }
+
+        return iRc;
+    }
+
+
+    /*!
+     And
+        : And "&" Eq
+        | Eq
+        ;
+     */
+    int32_t         Scanner_And(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        int32_t         iRc = 0;
+        int32_t         iRc2 = 0;
+
+        iRc = Scanner_Eq(this);
+        for (;;) {
+            chr = LOOKAHEAD(1);
+            if (chr == '&') {
+                    ADVANCE(1);
+                    iRc2 = Scanner_Eq(this);
+                    iRc &= iRc2;
+            } else {
+                break;
+            }
+        }
+
+        return iRc;
+    }
+
+
+    /*!
+     Eq
+        : Eq "==" Rel
+        | Eq "!=" Rel
+        | Rel
+        ;
+     */
+    int32_t         Scanner_Eq(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        W32CHR_T        chr2;
+        int32_t         iRc = 0;
+        int32_t         iRc2 = 0;
+
+        iRc = Scanner_Rel(this);
+        for (;;) {
+            chr = LOOKAHEAD(1);
+            chr2 = LOOKAHEAD(2);
+            if ((chr == '=') && (chr2 == '=')) {
+                ADVANCE(2);
+                iRc2 = Scanner_Rel(this);
+                if (iRc == iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else if ((chr == '!') && (chr2 == '=')) {
+                ADVANCE(2);
+                iRc2 = Scanner_Rel(this);
+                if (iRc != iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else {
+                break;
+            }
+        }
+
+        return iRc;
+    }
+
+
+    /*!
+     Expr
+        : LogicalOr
+        ;
+     */
+    int32_t         Scanner_Expr(
+        SCANNER_DATA    *this
+    )
+    {
+        return Scanner_LogicalOr(this);
+    }
+
+
+    /*!
+     LogicalAnd
+        : LogicalAnd "&&" Or
+        | Or
+        ;
+     */
+    int32_t         Scanner_LogicalAnd(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        W32CHR_T        chr2;
+        int32_t         iRc = 0;
+        int32_t         iRc2 = 0;
+
+        iRc = Scanner_Or(this);
+        for (;;) {
+            chr = LOOKAHEAD(1);
+            chr2 = LOOKAHEAD(2);
+            if ((chr == '&') && (chr2 == '&')) {
+                ADVANCE(2);
+                iRc2 = Scanner_Or(this);
+                if (iRc && iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else {
+                break;
+            }
+        }
+
+        return iRc;
+    }
+
+
+    /*!
+     LogicalOr
+        : LogicalOr "||" LogicalAnd
+        | LogicalAnd
+        ;
+     */
+    int32_t         Scanner_LogicalOr(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        W32CHR_T        chr2;
+        int32_t         iRc = 0;
+        int32_t         iRc2 = 0;
+
+        iRc = Scanner_LogicalAnd(this);
+        for (;;) {
+            chr = LOOKAHEAD(1);
+            chr2 = LOOKAHEAD(2);
+            if ((chr == '|')  && (chr2 == '|')){
+                ADVANCE(2);
+                iRc2 = Scanner_LogicalAnd(this);
+                if (iRc || iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else {
+                break;
+            }
+        }
+
+        return iRc;
+    }
+
+
+    /*!
+     Mult
+        : Mult '*' Primary
+        | Mult '/' Primary
+        | Mult '%' Primary
+        | Primary
+        ;
+     */
+    int32_t         Scanner_Mult(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        int32_t         iRc = 0;
+        int32_t         iRc2 = 0;
+
+        iRc = Scanner_Primary(this);
+        for (;;) {
+            chr = LOOKAHEAD(1);
+            if (chr == '*') {
+                ADVANCE(1);
+                iRc2 = Scanner_Primary(this);
+                iRc *= iRc2;
+            } else if (chr == '/') {
+                ADVANCE(1);
+                iRc2 = Scanner_Primary(this);
+                iRc /= iRc2;
+            } else if (chr == '%') {
+                ADVANCE(1);
+                iRc2 = Scanner_Primary(this);
+                iRc %= iRc2;
+            } else {
+                break;
+            }
+        }
+
+        return iRc;
+    }
+
+
+    /*!
+     Or
+        : Or '|' Xor
+        | Xor
+        ;
+     */
+    int32_t         Scanner_Or(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        int32_t         iRc = 0;
+        int32_t         iRc2 = 0;
+
+        iRc = Scanner_Xor(this);
+        for (;;) {
+            chr = LOOKAHEAD(1);
+            if (chr == '|') {
+                ADVANCE(1);
+                iRc2 = Scanner_Xor(this);
+                iRc |= iRc2;
+            } else {
+                break;
+            }
+        }
+
+        return iRc;
+    }
+
+
+    /*
+     primary
+        : identifier
+        | INTEGER
+        | FLOAT
+        | '(' expr ')'
+        ;
+     */
+    int32_t         Scanner_Primary(
+        SCANNER_DATA    *this
+    )
+    {
+        int32_t         iRc = 0;
+        W32CHR_T        chr;
+        //ERESULT         eRc;
+        bool            fRc;
+
+        chr = LOOKAHEAD(1);
+        if (chr == '(') {
+            ADVANCE(1);
+            iRc = Scanner_Expr(this);
+            chr = LOOKAHEAD(1);
+            if (chr != ')') {
+                fprintf(stderr, "ERROR - Expecting ')' but found %c\n", chr);
+                exit(4);
+            }
+            ADVANCE(1);
+            return iRc;
+        }
+
+        fRc = Scanner_ScanInteger32(this, &iRc);
+        if (fRc) {
+            return iRc;
+        }
+
 #ifdef XYZZY
-    bool            scanner_ParseCmdStr(
+        switch (chr) {
+            case PPLEX_CONSTANT_FLOAT:
+                // Process number
+                ADVANCE(1);
+                return iRc;
+                break;
+            case PPLEX_IDENTIFIER:
+                idxList =   cgmrTree_NodeNewUTF8(
+                                                 this->pTree,
+                                                 "PrimaryExpr",
+                                                 CGMR_NODECLASS_PRIMARY_EXPR,
+                                                 OBJ_NIL
+                            );
+                if (0 == idxList) {
+                    srcErrors_AddFatalA(OBJ_NIL, NULL, "Out of Memory");
+                }
+                TOKEN_DATA          *pTokenNew = Token_Copy(pToken);
+                idxNode =   cgmrTree_NodeNewUTF8(
+                                                 this->pTree,
+                                                 "Id",
+                                                 CGMR_NODECLASS_ID,
+                                                 pTokenNew
+                                                 );
+                obj_Release(pTokenNew);
+                if (0 == idxNode) {
+                    srcErrors_AddFatalA(OBJ_NIL, NULL, "Out of Memory");
+                }
+                eRc = cgmrTree_NodeLinkChild(this->pTree, idxList, idxNode);
+                BREAK_FAILED(eRc);
+                ADVANCE(1);
+                return iRc;
+                break;
+            case PPLEX_CONSTANT_INTEGER:
+                // Process number
+                ADVANCE(1);
+                return iRc;
+                break;
+            case PPLEX_OP_SUB:
+                // Process unary '-'
+                // Look for and process Integer or Float.
+                ADVANCE(1);
+                return iRc;
+                break;
+            case PPLEX_SEP_LPAREN:
+                iRc = Scanner_Expr(this);
+                // Process unary '-'
+                // Look for and process Integer or Float.
+                ADVANCE(1);
+                return iRc;
+                break;
+            default:
+                // ERROR - Needed ... but found <cls>!
+                break;
+        }
+#endif
+
+        return iRc;
+    }
+
+
+    /*!
+     Rel
+        : Rel ">=" Shift
+        | Rel "<=" Shift
+        | Rel '>'  Shift
+        | Rel '<'  Shift
+        | Shift
+        ;
+     */
+    int32_t         Scanner_Rel(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        W32CHR_T        chr2;
+        int32_t         iRc = 0;
+        int32_t         iRc2 = 0;
+
+        iRc = Scanner_Shift(this);
+        for (;;) {
+            chr = LOOKAHEAD(1);
+            chr2 = LOOKAHEAD(2);
+            if ((chr == '>') && (chr2 == '=')) {
+                ADVANCE(2);
+                iRc2 = Scanner_Shift(this);
+                if (iRc >= iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else if ((chr == '<') && (chr2 == '=')) {
+                ADVANCE(2);
+                iRc2 = Scanner_Shift(this);
+                if (iRc <= iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else if (chr == '>') {
+                ADVANCE(1);
+                iRc2 = Scanner_Shift(this);
+                if (iRc > iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else if (chr == '<') {
+                ADVANCE(1);
+                iRc2 = Scanner_Shift(this);
+                if (iRc <= iRc2)
+                    iRc = 1;
+                else
+                    iRc = 0;
+            } else {
+                break;
+            }
+        }
+
+        return iRc;
+    }
+
+
+    /*!
+     Shift
+        : Shift ">>" Add
+        | Shift "<<" Add
+        | Add
+        ;
+     */
+    int32_t         Scanner_Shift(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        W32CHR_T        chr2;
+        int32_t         iRc = 0;
+        int32_t         iRc2 = 0;
+
+        iRc = Scanner_Add(this);
+        for (;;) {
+            chr = LOOKAHEAD(1);
+            chr2 = LOOKAHEAD(2);
+            if ((chr == '<') && (chr2 == '<')) {
+                ADVANCE(2);
+                iRc2 = Scanner_Rel(this);
+                iRc <<= iRc2;
+            } else if ((chr == '>') && (chr2 == '>')) {
+                ADVANCE(2);
+                iRc2 = Scanner_Rel(this);
+                iRc >>= iRc2;
+            } else {
+                break;
+            }
+        }
+
+        return iRc;
+    }
+
+
+    /*!
+     Xor
+        : Xor '^' And
+        | And
+        ;
+     */
+    int32_t         Scanner_Xor(
+        SCANNER_DATA    *this
+    )
+    {
+        W32CHR_T        chr;
+        int32_t         iRc = 0;
+        int32_t         iRc2 = 0;
+
+        iRc = Scanner_And(this);
+        for (;;) {
+            chr = LOOKAHEAD(1);
+            if (chr == '^') {
+                ADVANCE(1);
+                iRc2 = Scanner_And(this);
+                iRc ^= iRc2;
+            } else {
+                break;
+            }
+        }
+
+        return iRc;
+    }
+
+
+
+#ifdef XYZZY
+    bool            Scanner_ParseCmdStr(
         SCANNER_DATA    *cbp,
         char            *pCmdStr,
         uint32_t        *pNumArgs,
@@ -699,6 +1187,45 @@ Exit00:
     
     
     
+    //---------------------------------------------------------------
+    //                         C a l c
+    //---------------------------------------------------------------
+
+    /*!
+     Assume that the scanner string is an expression, parse it and
+     calculate its answer.
+     @param     this    object pointer
+     @param     pAnswer pointer where answer is returned
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Scanner_Calc (
+        SCANNER_DATA    *this,
+        int32_t         *pAnswer
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int32_t         ans = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Scanner_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        ans = Scanner_Expr(this);
+
+        // Return to caller.
+        if (pAnswer)
+            *pAnswer = ans;
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------

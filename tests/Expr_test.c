@@ -201,17 +201,14 @@ int             test_Expr_Test01 (
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT         eRc = ERESULT_SUCCESS;
     EXPR_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
     int32_t         iRc;
     const
     char            *pExpr1A = "1+1";
-    const
-    char            *pExpr2A = "2*5+1";
-    const
-    char            *pExpr3A = "1+2*5";
-    W32STRC_DATA     *pW32 = OBJ_NIL;
+    SCANNER_DATA    *pScan = OBJ_NIL;
+    W32STRC_DATA    *pW32 = OBJ_NIL;
     W32CHR_T        chr;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -238,17 +235,133 @@ int             test_Expr_Test01 (
     chr = W32StrC_LookAhead(pW32, 1);
     TINYTEST_TRUE( (0 == chr) );
 
+    pScan = Scanner_NewA(pExpr1A);
+    TINYTEST_FALSE( (OBJ_NIL == pScan) );
+
     pObj = Expr_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        eRc = Expr_SetupScanner(pObj, pScan);
+        TINYTEST_TRUE(ERESULT_OK(eRc));
+
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_EXPR);
         TINYTEST_TRUE( (fRc) );
-        
+
+        iRc = 0;
+        eRc = Expr_Calc(pObj, &iRc);
+        TINYTEST_TRUE(ERESULT_OK(eRc));
+        TINYTEST_TRUE(iRc == 2);
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+
+    obj_Release(pScan);
+    pScan = OBJ_NIL;
+
+    obj_Release(pW32);
+    pW32 = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_Expr_Test02 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    EXPR_DATA        *pObj = OBJ_NIL;
+    bool            fRc;
+    int32_t         iRc;
+    const
+    char            *pExpr2A = "2*5+1";
+    SCANNER_DATA    *pScan = OBJ_NIL;
+    W32STRC_DATA    *pW32 = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pScan = Scanner_NewA(pExpr2A);
+    TINYTEST_FALSE( (OBJ_NIL == pScan) );
+
+    pObj = Expr_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = Expr_SetupScanner(pObj, pScan);
+        TINYTEST_TRUE(ERESULT_OK(eRc));
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_EXPR);
+        TINYTEST_TRUE( (fRc) );
+
+        iRc = 0;
+        eRc = Expr_Calc(pObj, &iRc);
+        TINYTEST_TRUE(ERESULT_OK(eRc));
+        TINYTEST_TRUE(iRc == 11);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pScan);
+    pScan = OBJ_NIL;
+
+    obj_Release(pW32);
+    pW32 = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_Expr_Test03 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    EXPR_DATA        *pObj = OBJ_NIL;
+    bool            fRc;
+    int32_t         iRc;
+    const
+    char            *pExpr3A = "1+2*5";
+    SCANNER_DATA    *pScan = OBJ_NIL;
+    W32STRC_DATA    *pW32 = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pScan = Scanner_NewA(pExpr3A);
+    TINYTEST_FALSE( (OBJ_NIL == pScan) );
+
+    pObj = Expr_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = Expr_SetupScanner(pObj, pScan);
+        TINYTEST_TRUE(ERESULT_OK(eRc));
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_EXPR);
+        TINYTEST_TRUE( (fRc) );
+
+        iRc = 0;
+        eRc = Expr_Calc(pObj, &iRc);
+        TINYTEST_TRUE(ERESULT_OK(eRc));
+        TINYTEST_TRUE(iRc == 11);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pScan);
+    pScan = OBJ_NIL;
 
     obj_Release(pW32);
     pW32 = OBJ_NIL;
@@ -261,6 +374,8 @@ int             test_Expr_Test01 (
 
 
 TINYTEST_START_SUITE(test_Expr);
+    TINYTEST_ADD_TEST(test_Expr_Test03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Expr_Test02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Expr_Test01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_Expr_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Expr_OpenClose,setUp,tearDown);

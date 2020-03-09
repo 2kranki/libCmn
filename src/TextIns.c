@@ -1117,6 +1117,41 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      S t a c k  P o p
+    //---------------------------------------------------------------
+
+    ERESULT         TextIns_StackClear(
+        TEXTINS_DATA    *this
+    )
+    {
+        TEXTIN_DATA     *pItem = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TextIns_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        if (OBJ_NIL == this->pStack) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+
+        // Pop all elements from the top of the parse stack.
+        while( ObjArray_getSize(this->pStack) ) {
+            pItem = ObjArray_DeleteLast(this->pStack);
+            obj_Release(pItem);
+            pItem = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      S t a c k  G e t
     //---------------------------------------------------------------
 

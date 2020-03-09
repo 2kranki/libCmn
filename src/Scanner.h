@@ -230,6 +230,20 @@ extern "C" {
 
 
     /*!
+     Assume that the scanner string is an expression, parse it and
+     calculate its answer.
+     @param     this    object pointer
+     @param     pAnswer pointer where answer is returned
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Scanner_Calc (
+        SCANNER_DATA    *this,
+        int32_t         *pAnswer
+    );
+
+
+    /*!
      Compare the two provided objects.
      @return    ERESULT_SUCCESS_EQUAL if this == other
                 ERESULT_SUCCESS_LESS_THAN if this < other
