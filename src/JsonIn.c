@@ -1597,6 +1597,39 @@ extern "C" {
     }
 
 
+    ERESULT         JsonIn_FindI8NodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        int8_t          *pInt
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pData;
+        int64_t         num = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "integer", (void **)&pData);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        num = AStr_ToInt64(pData);
+
+        if (pInt) {
+            *pInt = (int8_t)num;
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
     ERESULT         JsonIn_FindI16NodeInHashA (
         JSONIN_DATA     *this,
         const
@@ -1663,11 +1696,11 @@ extern "C" {
     }
 
 
-    ERESULT         JsonIn_FindU8NodeInHashA (
+    ERESULT         JsonIn_FindI64NodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,
-        uint8_t         *pInt
+        int64_t         *pInt
     )
     {
         ERESULT         eRc;
@@ -1688,6 +1721,39 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
         num = AStr_ToInt64(pData);
+
+        if (pInt) {
+            *pInt = (int64_t)num;
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         JsonIn_FindU8NodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        uint8_t         *pInt
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pData;
+        uint64_t        num = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "integer", (void **)&pData);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        num = AStr_ToUint64(pData);
 
         if (pInt) {
             *pInt = (uint8_t)num;
@@ -1705,7 +1771,7 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pData;
-        int64_t         num = 0;
+        uint64_t        num = 0;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1720,7 +1786,7 @@ extern "C" {
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
         }
-        num = AStr_ToInt64(pData);
+        num = AStr_ToUint64(pData);
 
         if (pInt) {
             *pInt = (uint16_t)num;
@@ -1738,7 +1804,7 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pData;
-        int64_t         num = 0;
+        uint64_t        num = 0;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1753,7 +1819,7 @@ extern "C" {
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             return ERESULT_DATA_NOT_FOUND;
         }
-        num = AStr_ToInt64(pData);
+        num = AStr_ToUint64(pData);
 
         if (pInt) {
             *pInt = (uint32_t)num;
@@ -1761,6 +1827,38 @@ extern "C" {
         return ERESULT_SUCCESS;
     }
 
+
+    ERESULT         JsonIn_FindU64NodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        uint64_t        *pInt
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pData;
+        uint64_t        num = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "integer", (void **)&pData);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        num = AStr_ToUint64(pData);
+
+        if (pInt) {
+            *pInt = (uint64_t)num;
+        }
+        return ERESULT_SUCCESS;
+    }
 
 
 
