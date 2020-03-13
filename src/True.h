@@ -1,25 +1,21 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          U12ARRAY Console Transmit Task (u12Array) Header
+//                  True (True) Header
 //****************************************************************
 /*
  * Program
- *			Separate u12Array (u12Array)
+ *			True (True)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate u12Array to run things without complications
- *          of interfering with the main u12Array. A u12Array may be 
- *          called a u12Array on other O/S's.
+ *			This object represents the value, "true", where ever
+ *          it is needed such as in processing json.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal u12Array. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
- *	10/08/2016 Generated
+ *  11/12/2015 Generated
+ *	03/11/2020 Regenerated
  */
 
 
@@ -58,8 +54,15 @@
 #include        <AStr.h>
 
 
-#ifndef         U12ARRAY_H
-#define         U12ARRAY_H
+#ifndef         TRUE_H
+#define         TRUE_H
+
+
+//#define   TRUE_IS_IMMUTABLE     1
+#define   TRUE_JSON_SUPPORT     1
+//#define   TRUE_SINGLETON        1
+
+
 
 
 
@@ -73,16 +76,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct u12Array_data_s	U12ARRAY_DATA;    // Inherits from OBJ.
+    typedef struct True_data_s	TRUE_DATA;            // Inherits from OBJ
+    typedef struct True_class_data_s TRUE_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct u12Array_vtbl_s	{
+    typedef struct True_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in u12Array_object.c.
+        // method names to the vtbl definition in True_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(U12ARRAY_DATA *);
-    } U12ARRAY_VTBL;
+        //bool        (*pIsEnabled)(TRUE_DATA *);
+    } TRUE_VTBL;
+
+    typedef struct True_class_vtbl_s	{
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in True_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(TRUE_DATA *);
+    } TRUE_CLASS_VTBL;
+
 
 
 
@@ -95,36 +109,54 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  TRUE_SINGLETON
+    TRUE_DATA *     True_Shared (
+        void
+    );
+
+    void            True_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to u12Array object if successful, otherwise OBJ_NIL.
+     @return    pointer to True object if successful, otherwise OBJ_NIL.
      */
-    U12ARRAY_DATA *     u12Array_Alloc(
+    TRUE_DATA *     True_Alloc (
         void
     );
     
     
-    U12ARRAY_DATA *     u12Array_New(
+    OBJ_ID          True_Class (
         void
     );
     
     
-    U12ARRAY_DATA *     u12Array_NewFromData(
-        uint32_t            cBuffer,
-        uint8_t             *pBuffer
+    TRUE_DATA *     True_New (
+        void
     );
     
     
+#ifdef  TRUE_JSON_SUPPORT
+    TRUE_DATA *   True_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    TRUE_DATA *   True_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
-
-    ERESULT             u12Array_getLastError(
-        U12ARRAY_DATA		*this
-    );
 
 
 
@@ -139,96 +171,86 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code
-     ERESULT eRc = u12Array__Assign(this,pOther);
+        ERESULT eRc = True_Assign(this,pOther);
      @endcode
-     @param     this    U12ARRAY object pointer
-     @param     pOther  a pointer to another U12ARRAY object
+     @param     this    object pointer
+     @param     pOther  a pointer to another TRUE object
      @return    If successful, ERESULT_SUCCESS otherwise an
-                 ERESULT_* error
+                ERESULT_* error
      */
-    ERESULT         u12Array_Assign(
-        U12ARRAY_DATA   *this,
-        U12ARRAY_DATA   *pOther
+    ERESULT         True_Assign (
+        TRUE_DATA       *this,
+        TRUE_DATA       *pOther
     );
-    
-    
+
+
     /*!
-     Copy the current object creating a new object.
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         True_Compare (
+        TRUE_DATA       *this,
+        TRUE_DATA       *pOther
+    );
+
+   
+     /*!
+      Copy the current object creating a new object.
+      Example:
+      @code
+         True      *pCopy = True_Copy(this);
+      @endcode
+      @param     this    object pointer
+      @return    If successful, a TRUE object which must be
+                 released, otherwise OBJ_NIL.
+      @warning   Remember to release the returned object.
+      */
+     TRUE_DATA *     True_Copy (
+         TRUE_DATA       *this
+    );
+
+
+    TRUE_DATA *     True_Init (
+        TRUE_DATA       *this
+    );
+
+
+#ifdef  TRUE_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
      Example:
      @code
-     u12Array      *pCopy = u12Array_Copy(this);
+     ASTR_DATA      *pDesc = True_ToJson(this);
      @endcode
-     @param     this    U12ARRAY object pointer
-     @return    If successful, a U12ARRAY object which must be released,
-                 otherwise OBJ_NIL.
-     @warning   Remember to release the returned the U12ARRAY object.
-     */
-    U12ARRAY_DATA * u12Array_Copy(
-        U12ARRAY_DATA   *this
-    );
-    
-    
-    /*!
-     Find the first value in the array.
      @param     this    object pointer
-     @param     value   value to search for
-     @return    If successful, the position, otherwise 0xFFFF
-     */
-    uint16_t        u12Array_Find(
-        U12ARRAY_DATA   *this,
-        uint16_t        value
-    );
-    
-    
-    /*!
-     Get the data from the array at the specified location.
-     @param     this    object pointer
-     @param     index   index into the array (relative to 1)
-     @return    If successful, the data, otherwise 0xFFFF
-     */
-    uint16_t        u12Array_Get(
-        U12ARRAY_DATA	*this,
-        uint32_t        index
-    );
-    
-    
-    U12ARRAY_DATA * u12Array_Init(
-        U12ARRAY_DATA   *this
-    );
-
-
-    /*!
-     Put the given data into the array at the specified location.
-     if the array needs to be expanded, '\0' are added as fill.
-     @param     this    object pointer
-     @param     index   index into the array (relative to 1)
-     @param     data    data to be put into the array
-     @return    If successful, ERESULT_SUCCESS. Otherwise, an
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
                 ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
      */
-    ERESULT         u12Array_Put(
-        U12ARRAY_DATA   *this,
-        const
-        uint32_t        index,
-        const
-        uint16_t        data
+    ASTR_DATA *     True_ToJson (
+        TRUE_DATA       *this
     );
-    
- 
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = u12Array_ToDebugString(this,4);
-     @endcode
-     @param     this    U12ARRAY object pointer
+     @code 
+        ASTR_DATA      *pDesc = True_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     u12Array_ToDebugString(
-        U12ARRAY_DATA   *this,
+    ASTR_DATA *     True_ToDebugString (
+        TRUE_DATA       *this,
         int             indent
     );
     
@@ -239,5 +261,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* U12ARRAY_H */
+#endif	/* TRUE_H */
 

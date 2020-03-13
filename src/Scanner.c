@@ -947,7 +947,28 @@ Exit00:
 
         this = Scanner_New( );
         if (this) {
-            fRc = W32StrC_CopyFromW32((W32STRC_DATA *)this, pStrW32);
+            fRc = W32StrC_CopyFromW32((W32STRC_DATA *)this, 0, pStrW32);
+            if (!fRc) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return( this );
+    }
+
+
+    SCANNER_DATA *  Scanner_NewFromW32 (
+        uint32_t        len,
+        const
+        W32CHR_T        *pStrW32
+    )
+    {
+        SCANNER_DATA    *this;
+        bool            fRc;
+
+        this = Scanner_New( );
+        if (this) {
+            fRc = W32StrC_CopyFromW32((W32STRC_DATA *)this, len, pStrW32);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;

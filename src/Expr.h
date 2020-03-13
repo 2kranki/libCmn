@@ -127,7 +127,7 @@ Shift       :   Shift "<<" Add                  # Left to Right
 
 
 //#define   EXPR_IS_IMMUTABLE     1
-//#define   EXPR_JSON_SUPPORT     1
+#define   EXPR_JSON_SUPPORT     1
 //#define   EXPR_SINGLETON        1
 
 

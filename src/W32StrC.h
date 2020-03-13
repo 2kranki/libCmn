@@ -170,6 +170,12 @@ extern "C" {
         W32STR_DATA     *pStr
     );
 
+    W32STRC_DATA *  W32StrC_NewFromW32 (
+        uint32_t        len,
+        const
+        W32CHR_T        *pStrW32
+    );
+
     W32STRC_DATA *  W32StrC_NewW32(
         const
         W32CHR_T        *pStr

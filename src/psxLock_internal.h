@@ -63,7 +63,7 @@ struct psxLock_data_s	{
 #define PSXLOCK_FLAG_LOCKED    OBJ_FLAG_USER1
 
     // Common Data
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOSX32_ENV__) || defined(__MACOS64_ENV__)
     pthread_mutex_t mutex;
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
@@ -83,7 +83,7 @@ struct psxLock_data_s	{
 
     extern
     const
-    PSXLOCK_VTBL         psxLock_Vtbl;
+    PSXLOCK_VTBL    psxLock_Vtbl;
 
 
     // Internal Functions

@@ -162,10 +162,10 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Node.h>
-#include        <false.h>
-#include        <null.h>
+#include        <False.h>
+#include        <Null.h>
 #include        <Path.h>
-#include        <true.h>
+#include        <True.h>
 
 
 #ifndef         HJSON_H

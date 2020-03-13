@@ -133,6 +133,7 @@ struct W32StrC_data_s	{
 
     bool            W32StrC_CopyFromW32(
         W32STRC_DATA    *this,
+        uint32_t        len,
         const
         W32CHR_T        *pStrW32
     );

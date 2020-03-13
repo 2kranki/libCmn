@@ -1,22 +1,21 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Signed 16-Bit Array (I16Array) Header
+//                  Null (Null) Header
 //****************************************************************
 /*
  * Program
- *			Signed 16-Bit Array (I16Array)
+ *			Null (Null)
  * Purpose
- *          This object provides a dynamic array of int16_t data
- *          elements.
+ *          This object represents the value, "null", where ever
+ *          it is needed such as in processing json.
  *
  * Remarks
- *    1.    All offsets or indices are relative to 1, not 0. 0 is
- *          considered before the beginning of the array if used
- *          as an offset otherwise an error.
+ *	1.      None
  *
  * History
- *	02/19/2020 Generated
+ *  11/12/2015 Generated
+ *	03/11/2020 Regenerated
  */
 
 
@@ -55,13 +54,13 @@
 #include        <AStr.h>
 
 
-#ifndef         I16ARRAY_H
-#define         I16ARRAY_H
+#ifndef         NULL_H
+#define         NULL_H
 
 
-//#define   I16ARRAY_IS_IMMUTABLE     1
-#define   I16ARRAY_JSON_SUPPORT     1
-//#define   I16ARRAY_SINGLETON        1
+//#define   NULL_IS_IMMUTABLE     1
+#define   NULL_JSON_SUPPORT     1
+#define   NULL_SINGLETON        1
 
 
 
@@ -77,26 +76,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct I16Array_data_s	I16ARRAY_DATA;            // Inherits from OBJ
-    typedef struct I16Array_class_data_s I16ARRAY_CLASS_DATA;   // Inherits from OBJ
+    typedef struct Null_data_s	NULL_DATA;            // Inherits from OBJ
+    typedef struct Null_class_data_s NULL_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct I16Array_vtbl_s	{
+    typedef struct Null_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in I16Array_object.c.
+        // method names to the vtbl definition in Null_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(I16ARRAY_DATA *);
-    } I16ARRAY_VTBL;
+        //bool        (*pIsEnabled)(NULL_DATA *);
+    } NULL_VTBL;
 
-    typedef struct I16Array_class_vtbl_s	{
+    typedef struct Null_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in I16Array_object.c.
+        // method names to the vtbl definition in Null_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(I16ARRAY_DATA *);
-    } I16ARRAY_CLASS_VTBL;
+        //bool        (*pIsEnabled)(NULL_DATA *);
+    } NULL_CLASS_VTBL;
 
 
 
@@ -110,12 +109,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  I16ARRAY_SINGLETON
-    I16ARRAY_DATA * I16Array_Shared (
+#ifdef  NULL_SINGLETON
+    NULL_DATA *     Null_Shared (
         void
     );
 
-    void            I16Array_SharedReset (
+    void            Null_SharedReset (
         void
     );
 #endif
@@ -125,34 +124,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to I16Array object if successful, otherwise OBJ_NIL.
+     @return    pointer to Null object if successful, otherwise OBJ_NIL.
      */
-    I16ARRAY_DATA * I16Array_Alloc (
+    NULL_DATA *     Null_Alloc (
         void
     );
     
     
-    OBJ_ID          I16Array_Class (
+    OBJ_ID          Null_Class (
         void
     );
     
     
-    I16ARRAY_DATA * I16Array_New (
+    NULL_DATA *     Null_New (
         void
     );
     
     
-    I16ARRAY_DATA * I16Array_NewWithSize (
-        uint32_t        size
-    );
-
-
-#ifdef  I16ARRAY_JSON_SUPPORT
-    I16ARRAY_DATA * I16Array_NewFromJsonString (
+#ifdef  NULL_JSON_SUPPORT
+    NULL_DATA *   Null_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    I16ARRAY_DATA * I16Array_NewFromJsonStringA (
+    NULL_DATA *   Null_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -164,53 +158,12 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            I16Array_setBigEndian(
-        I16ARRAY_DATA   *this,
-        bool            value
-    );
 
 
-    uint32_t        I16Array_getSize(
-        I16ARRAY_DATA    *this
-    );
-
-
-
+    
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
-
-    /*!
-    Append the given number to end of the array.
-    @param     this     object pointer
-    @param     data     the number to be added
-    @return    If successful, ERESULT_SUCCESS otherwise an
-               ERESULT_* error
-    */
-    ERESULT         I16Array_AppendData (
-        I16ARRAY_DATA   *this,
-        int16_t         data
-    );
-
-
-    /*!
-     Append a file of 2-byte binary numbers adjusting for endian-ness
-     using the endian property. The numbers are in binary form (ie 2
-     byte number without separators).
-     Example:
-     @code
-        ERESULT eRc = I16Array_AppendFile(this, true, pFilePath);
-     @endcode
-     @param     this            object pointer
-     @param     pPath           a pointer to another I16ARRAY object
-     @return    If successful, ERESULT_SUCCESS otherwise an
-                ERESULT_* error
-     */
-    ERESULT         I16Array_AppendFile (
-        I16ARRAY_DATA   *this,
-        PATH_DATA       *pPath
-    );
-
 
     /*!
      Assign the contents of this object to the other object (ie
@@ -218,112 +171,64 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code
-        ERESULT eRc = I16Array_Assign(this,pOther);
+        ERESULT eRc = Null_Assign(this,pOther);
      @endcode
      @param     this    object pointer
-     @param     pOther  a pointer to another I16ARRAY object
+     @param     pOther  a pointer to another NULL object
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error
      */
-    ERESULT         I16Array_Assign (
-        I16ARRAY_DATA   *this,
-        I16ARRAY_DATA   *pOther
+    ERESULT     Null_Assign (
+        NULL_DATA    *this,
+        NULL_DATA   *pOther
     );
 
 
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other,
-                otherwise ERESULT_SUCCESS_UNEQUAL
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         I16Array_Compare (
-        I16ARRAY_DATA     *this,
-        I16ARRAY_DATA     *pOther
+    ERESULT         Null_Compare (
+        NULL_DATA       *this,
+        NULL_DATA       *pOther
     );
 
-
+   
     /*!
      Copy the current object creating a new object.
      Example:
      @code
-        I16Array      *pCopy = I16Array_Copy(this);
+        Null      *pCopy = Null_Copy(this);
      @endcode
      @param     this    object pointer
-     @return    If successful, a I16ARRAY object which must be
+     @return    If successful, a NULL object which must be
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    I16ARRAY_DATA * I16Array_Copy (
-        I16ARRAY_DATA   *this
+    NULL_DATA *     Null_Copy (
+        NULL_DATA       *this
     );
 
 
-    uint16_t        I16Array_Delete (
-        I16ARRAY_DATA   *this,
-        uint32_t        index
+    NULL_DATA *   Null_Init (
+        NULL_DATA     *this
     );
 
 
-    uint16_t        I16Array_DeleteFirst (
-        I16ARRAY_DATA   *this
+    ERESULT     Null_IsEnabled (
+        NULL_DATA		*this
     );
-
-
-    uint16_t        I16Array_DeleteLast (
-        I16ARRAY_DATA   *this
-    );
-
-
-    // If an error occurs, Get() returns 0.
-    uint16_t        I16Array_Get (
-        I16ARRAY_DATA   *this,
-        uint32_t        index
-    );
-
-
-    uint16_t        I16Array_GetFirst (
-        I16ARRAY_DATA   *this
-    );
-
-    uint16_t        I16Array_GetLast (
-        I16ARRAY_DATA   *this
-    );
-
-
-    I16ARRAY_DATA * I16Array_Init (
-        I16ARRAY_DATA   *this
-    );
-
-
-    /*!
-    Inserts the data before the index given.
-    @param     this     object pointer
-    @param     index    array index (relative to 1)
-    @param     data     the number to be added
-    @return    If successful, ERESULT_SUCCESS otherwise an
-               ERESULT_* error
-    */
-    ERESULT         I16Array_InsertData (
-        I16ARRAY_DATA   *this,
-        uint32_t        index,
-        int16_t         data
-    );
-
-
-    ERESULT         I16Array_SetData (
-        I16ARRAY_DATA   *this,
-        uint32_t        index,
-        int16_t         data
-    );
-
-
-#ifdef  I16ARRAY_JSON_SUPPORT
+    
+ 
+#ifdef  NULL_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = I16Array_ToJson(this);
+     ASTR_DATA      *pDesc = Null_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -331,8 +236,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     I16Array_ToJson (
-        I16ARRAY_DATA   *this
+    ASTR_DATA *     Null_ToJson (
+        NULL_DATA   *this
     );
 #endif
 
@@ -341,7 +246,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = I16Array_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Null_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -349,23 +254,17 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    I16Array_ToDebugString (
-        I16ARRAY_DATA   *this,
+    ASTR_DATA *    Null_ToDebugString (
+        NULL_DATA     *this,
         int             indent
     );
     
     
-    ERESULT         I16Array_WriteToFile(
-        I16ARRAY_DATA   *this,
-        PATH_DATA       *pPath
-    );
-
-
 
     
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* I16ARRAY_H */
+#endif	/* NULL_H */
 

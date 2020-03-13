@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   I16Array_internal.h
- *	Generated 02/19/2020 09:52:11
+ * File:   Graph16_internal.h
+ *	Generated 03/11/2020 17:37:49
  *
  * Notes:
  *  --	N/A
@@ -39,17 +39,16 @@
 
 
 
-#include        <I16Array.h>
-#include        <array_internal.h>
+#include        <Graph16.h>
+#include        <I16Array_internal.h>
 #include        <JsonIn.h>
+#include        <ObjArray.h>
 
 
-#ifndef I16ARRAY_INTERNAL_H
-#define	I16ARRAY_INTERNAL_H
+#ifndef GRAPH16_INTERNAL_H
+#define	GRAPH16_INTERNAL_H
 
 
-
-#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -65,26 +64,35 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct I16Array_data_s	{
+struct Graph16_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    ARRAY_DATA      super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint8_t         fBigEndian;     // FALSE == little endian, TRUE == Big Endian
-    uint8_t         rsvd8;
-    uint16_t        rsvd16;
+    uint16_t        edgesMax;		// middle edge index
+    uint16_t        edgesUsed;
+    uint16_t        verticesMax;    // max Vertex Index
+    uint16_t        verticesUsed;
+    I16ARRAY_DATA   *pEdges;        // Edge Array of Node Indices
+    //                              // Indexed with +/- edge index
+    I16ARRAY_DATA   *pNext;         // Edge Array of Edge Indices
+    //                              // (Used to index into Edges)
+    //                              // Indexed with +/- edge index
+    I16ARRAY_DATA   *pFirst;        // Vertex Array of Edge Indices
+    //                              // (Used to index into Edges)
+    //                              // Indexed with + vertex index
 
 };
 #pragma pack(pop)
 
     extern
-    struct I16Array_class_data_s  I16Array_ClassObj;
+    struct Graph16_class_data_s  Graph16_ClassObj;
 
     extern
     const
-    I16ARRAY_VTBL         I16Array_Vtbl;
+    GRAPH16_VTBL         Graph16_Vtbl;
 
 
 
@@ -92,13 +100,13 @@ struct I16Array_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  I16ARRAY_SINGLETON
-    I16ARRAY_DATA * I16Array_getSingleton (
+#ifdef  GRAPH16_SINGLETON
+    GRAPH16_DATA *     Graph16_getSingleton (
         void
     );
 
-    bool            I16Array_setSingleton (
-     I16ARRAY_DATA       *pValue
+    bool            Graph16_setSingleton (
+     GRAPH16_DATA       *pValue
 );
 #endif
 
@@ -108,40 +116,35 @@ struct I16Array_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    ARRAY_DATA *    I16Array_getArray (
-        I16ARRAY_DATA   *this
+    OBJ_IUNKNOWN *  Graph16_getSuperVtbl (
+        GRAPH16_DATA     *this
     );
 
 
-    OBJ_IUNKNOWN *  I16Array_getSuperVtbl (
-        I16ARRAY_DATA     *this
+    ERESULT         Graph16_Assign (
+        GRAPH16_DATA    *this,
+        GRAPH16_DATA    *pOther
     );
 
 
-    ERESULT         I16Array_Assign (
-        I16ARRAY_DATA    *this,
-        I16ARRAY_DATA    *pOther
+    GRAPH16_DATA *  Graph16_Copy (
+        GRAPH16_DATA     *this
     );
 
 
-    I16ARRAY_DATA * I16Array_Copy (
-        I16ARRAY_DATA     *this
-    );
-
-
-    void            I16Array_Dealloc (
+    void            Graph16_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  I16ARRAY_JSON_SUPPORT
+#ifdef  GRAPH16_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    I16ARRAY_DATA * I16Array_ParseJsonObject (
+    GRAPH16_DATA *  Graph16_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -155,27 +158,32 @@ struct I16Array_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         I16Array_ParseJsonFields (
+    ERESULT         Graph16_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        I16ARRAY_DATA     *pObject
+        GRAPH16_DATA    *pObject
     );
 #endif
 
 
-    void *          I16Array_QueryInfo (
+    void *          Graph16_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  I16ARRAY_JSON_SUPPORT
+    void            Graph16_RebuildIndex (
+        GRAPH16_DATA    *this
+    );
+
+
+#ifdef  GRAPH16_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = I16Array_ToJson(this);
+     ASTR_DATA      *pDesc = Graph16_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -183,8 +191,8 @@ struct I16Array_data_s	{
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     I16Array_ToJson (
-        I16ARRAY_DATA   *this
+    ASTR_DATA *     Graph16_ToJson (
+        GRAPH16_DATA      *this
     );
 
 
@@ -197,19 +205,23 @@ struct I16Array_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         I16Array_ToJsonFields (
-        I16ARRAY_DATA   *this,
+    ERESULT         Graph16_ToJsonFields (
+        GRAPH16_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
 
 
+    void            Graph16_UpdateIndex (
+        GRAPH16_DATA    *this,
+        int16_t         e
+    );
 
 
 #ifdef NDEBUG
 #else
-    bool			I16Array_Validate (
-        I16ARRAY_DATA       *this
+    bool			Graph16_Validate (
+        GRAPH16_DATA       *this
     );
 #endif
 
@@ -219,5 +231,5 @@ struct I16Array_data_s	{
 }
 #endif
 
-#endif	/* I16ARRAY_INTERNAL_H */
+#endif	/* GRAPH16_INTERNAL_H */
 

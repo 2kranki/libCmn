@@ -320,8 +320,8 @@ extern "C" {
         int32_t         tokenClass;
         NODE_DATA       *pNode = OBJ_NIL;
         FALSE_DATA      *pFalse = OBJ_NIL;
-        NULL_DATA       *pNull = null_New();
-        TRUE_DATA       *pTrue = true_New();
+        NULL_DATA       *pNull = OBJ_NIL;
+        TRUE_DATA       *pTrue = OBJ_NIL;
         SRCLOC_DATA     *pLoc = OBJ_NIL;
 
         // Validate the input parameters.
@@ -343,9 +343,10 @@ extern "C" {
         switch (tokenClass) {
                 
             case LEXJ_KWD_FALSE:
-                pFalse = false_New();
+                pFalse = False_New();
                 pNode = Node_NewWithUTF8ConAndClass(0, "false", pFalse);
                 obj_Release(pFalse);
+                pFalse = OBJ_NIL;
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\tfalse\n");
                 if (pLoc && pNode) {
@@ -356,9 +357,10 @@ extern "C" {
                 break;
                 
             case LEXJ_KWD_NULL:
-                pNull = null_New();
+                pNull = Null_New();
                 pNode = Node_NewWithUTF8ConAndClass(0, "null", pNull);
                 obj_Release(pNull);
+                pNull = OBJ_NIL;
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\tnull\n");
                 if (pLoc && pNode) {
@@ -369,9 +371,10 @@ extern "C" {
                 break;
                 
             case LEXJ_KWD_TRUE:
-                pTrue = true_New();
+                pTrue = True_New();
                 pNode = Node_NewWithUTF8ConAndClass(0, "true", pTrue);
                 obj_Release(pTrue);
+                pTrue = OBJ_NIL;
                 lexj_TokenAdvance(this->pLexJ, 1);
                 TRC_OBJ(this, "\ttrue\n");
                 if (pLoc && pNode) {

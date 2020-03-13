@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   I16Array_internal.h
- *	Generated 02/19/2020 09:52:11
+ * File:   False_internal.h
+ *	Generated 03/11/2020 10:01:47
  *
  * Notes:
  *  --	N/A
@@ -39,17 +39,14 @@
 
 
 
-#include        <I16Array.h>
-#include        <array_internal.h>
+#include        <False.h>
 #include        <JsonIn.h>
 
 
-#ifndef I16ARRAY_INTERNAL_H
-#define	I16ARRAY_INTERNAL_H
+#ifndef FALSE_INTERNAL_H
+#define	FALSE_INTERNAL_H
 
 
-
-#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -65,26 +62,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct I16Array_data_s	{
+struct False_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    ARRAY_DATA      super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint8_t         fBigEndian;     // FALSE == little endian, TRUE == Big Endian
-    uint8_t         rsvd8;
+    uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct I16Array_class_data_s  I16Array_ClassObj;
+    struct False_class_data_s  False_ClassObj;
 
     extern
     const
-    I16ARRAY_VTBL         I16Array_Vtbl;
+    FALSE_VTBL         False_Vtbl;
 
 
 
@@ -92,13 +89,13 @@ struct I16Array_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  I16ARRAY_SINGLETON
-    I16ARRAY_DATA * I16Array_getSingleton (
+#ifdef  FALSE_SINGLETON
+    FALSE_DATA *     False_getSingleton (
         void
     );
 
-    bool            I16Array_setSingleton (
-     I16ARRAY_DATA       *pValue
+    bool            False_setSingleton (
+     FALSE_DATA       *pValue
 );
 #endif
 
@@ -108,40 +105,35 @@ struct I16Array_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    ARRAY_DATA *    I16Array_getArray (
-        I16ARRAY_DATA   *this
+    OBJ_IUNKNOWN *  False_getSuperVtbl (
+        FALSE_DATA     *this
     );
 
 
-    OBJ_IUNKNOWN *  I16Array_getSuperVtbl (
-        I16ARRAY_DATA     *this
+    ERESULT         False_Assign (
+        FALSE_DATA    *this,
+        FALSE_DATA    *pOther
     );
 
 
-    ERESULT         I16Array_Assign (
-        I16ARRAY_DATA    *this,
-        I16ARRAY_DATA    *pOther
+    FALSE_DATA *       False_Copy (
+        FALSE_DATA     *this
     );
 
 
-    I16ARRAY_DATA * I16Array_Copy (
-        I16ARRAY_DATA     *this
-    );
-
-
-    void            I16Array_Dealloc (
+    void            False_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  I16ARRAY_JSON_SUPPORT
+#ifdef  FALSE_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    I16ARRAY_DATA * I16Array_ParseJsonObject (
+    FALSE_DATA *       False_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -155,27 +147,27 @@ struct I16Array_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         I16Array_ParseJsonFields (
+    ERESULT         False_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        I16ARRAY_DATA     *pObject
+        FALSE_DATA     *pObject
     );
 #endif
 
 
-    void *          I16Array_QueryInfo (
+    void *          False_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  I16ARRAY_JSON_SUPPORT
+#ifdef  FALSE_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = I16Array_ToJson(this);
+     ASTR_DATA      *pDesc = False_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -183,8 +175,8 @@ struct I16Array_data_s	{
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     I16Array_ToJson (
-        I16ARRAY_DATA   *this
+    ASTR_DATA *     False_ToJson (
+        FALSE_DATA      *this
     );
 
 
@@ -197,8 +189,8 @@ struct I16Array_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         I16Array_ToJsonFields (
-        I16ARRAY_DATA   *this,
+    ERESULT         False_ToJsonFields (
+        FALSE_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -208,8 +200,8 @@ struct I16Array_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			I16Array_Validate (
-        I16ARRAY_DATA       *this
+    bool			False_Validate (
+        FALSE_DATA       *this
     );
 #endif
 
@@ -219,5 +211,5 @@ struct I16Array_data_s	{
 }
 #endif
 
-#endif	/* I16ARRAY_INTERNAL_H */
+#endif	/* FALSE_INTERNAL_H */
 

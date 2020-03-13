@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 3/11/2020 12:06:00.000)
+# ( 3/13/2020 15:08:02.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -236,6 +236,21 @@ OBJS += $(OBJDIR)/Ebcdic_object.o
 $(OBJDIR)/Ebcdic_object.o: $(SRCDIR)/Ebcdic_object.c $(SRCDIR)/Ebcdic.h $(SRCDIR)/Ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/False.o
+
+$(OBJDIR)/False.o: $(SRCDIR)/False.c $(SRCDIR)/False.h $(SRCDIR)/False_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/False_json.o
+
+$(OBJDIR)/False_json.o: $(SRCDIR)/False_json.c $(SRCDIR)/False.h $(SRCDIR)/False_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/False_object.o
+
+$(OBJDIR)/False_object.o: $(SRCDIR)/False_object.c $(SRCDIR)/False.h $(SRCDIR)/False_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/FileRef.o
 
 $(OBJDIR)/FileRef.o: $(SRCDIR)/FileRef.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
@@ -244,6 +259,21 @@ $(OBJDIR)/FileRef.o: $(SRCDIR)/FileRef.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $
 OBJS += $(OBJDIR)/FileRef_object.o
 
 $(OBJDIR)/FileRef_object.o: $(SRCDIR)/FileRef_object.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Graph16.o
+
+$(OBJDIR)/Graph16.o: $(SRCDIR)/Graph16.c $(SRCDIR)/Graph16.h $(SRCDIR)/Graph16_internal.h $(SRCDIR)/I16Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Graph16_json.o
+
+$(OBJDIR)/Graph16_json.o: $(SRCDIR)/Graph16_json.c $(SRCDIR)/Graph16.h $(SRCDIR)/Graph16_internal.h $(SRCDIR)/I16Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Graph16_object.o
+
+$(OBJDIR)/Graph16_object.o: $(SRCDIR)/Graph16_object.c $(SRCDIR)/Graph16.h $(SRCDIR)/Graph16_internal.h $(SRCDIR)/I16Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/I16Array.o
@@ -304,6 +334,11 @@ $(OBJDIR)/I32Matrix_json.o: $(SRCDIR)/I32Matrix_json.c $(SRCDIR)/I32Matrix.h $(S
 OBJS += $(OBJDIR)/I32Matrix_object.o
 
 $(OBJDIR)/I32Matrix_object.o: $(SRCDIR)/I32Matrix_object.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Matrix.h $(SRCDIR)/I32Matrix_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/IntLock.o
+
+$(OBJDIR)/IntLock.o: $(SRCDIR)/IntLock.c $(SRCDIR)/IntLock.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/JsonIn.o
@@ -489,6 +524,21 @@ $(OBJDIR)/Node_json.o: $(SRCDIR)/Node_json.c $(SRCDIR)/Node.h $(SRCDIR)/Node_int
 OBJS += $(OBJDIR)/Node_object.o
 
 $(OBJDIR)/Node_object.o: $(SRCDIR)/Node_object.c $(SRCDIR)/Name.h $(SRCDIR)/Node.h $(SRCDIR)/NodeBT.h $(SRCDIR)/Node_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Null.o
+
+$(OBJDIR)/Null.o: $(SRCDIR)/Null.c $(SRCDIR)/Null.h $(SRCDIR)/Null_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Null_json.o
+
+$(OBJDIR)/Null_json.o: $(SRCDIR)/Null_json.c $(SRCDIR)/Null.h $(SRCDIR)/Null_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Null_object.o
+
+$(OBJDIR)/Null_object.o: $(SRCDIR)/Null_object.c $(SRCDIR)/Null.h $(SRCDIR)/Null_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/ObjArray.o
@@ -849,6 +899,21 @@ $(OBJDIR)/Token_json.o: $(SRCDIR)/Token_json.c $(SRCDIR)/Token.h $(SRCDIR)/Token
 OBJS += $(OBJDIR)/Token_object.o
 
 $(OBJDIR)/Token_object.o: $(SRCDIR)/Token_object.c $(SRCDIR)/AStrC.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/Token.h $(SRCDIR)/Token_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/True.o
+
+$(OBJDIR)/True.o: $(SRCDIR)/True.c $(SRCDIR)/True.h $(SRCDIR)/True_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/True_json.o
+
+$(OBJDIR)/True_json.o: $(SRCDIR)/True_json.c $(SRCDIR)/True.h $(SRCDIR)/True_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/True_object.o
+
+$(OBJDIR)/True_object.o: $(SRCDIR)/True_object.c $(SRCDIR)/True.h $(SRCDIR)/True_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/U16Array.o
@@ -1216,16 +1281,6 @@ OBJS += $(OBJDIR)/execArray_object.o
 $(OBJDIR)/execArray_object.o: $(SRCDIR)/execArray_object.c $(SRCDIR)/ObjArray.h $(SRCDIR)/execArray.h $(SRCDIR)/execArray_internal.h $(SRCDIR)/ptrArray.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/false.o
-
-$(OBJDIR)/false.o: $(SRCDIR)/false.c $(SRCDIR)/false.h $(SRCDIR)/false_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/false_object.o
-
-$(OBJDIR)/false_object.o: $(SRCDIR)/false_object.c $(SRCDIR)/false.h $(SRCDIR)/false_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/fbsi.o
 
 $(OBJDIR)/fbsi.o: $(SRCDIR)/fbsi.c $(SRCDIR)/fbsi.h $(SRCDIR)/fbsi_internal.h $(SRCDIR)/path.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
@@ -1429,21 +1484,6 @@ $(OBJDIR)/msgBus.o: $(SRCDIR)/msgBus.c $(SRCDIR)/msgBus.h $(SRCDIR)/msgBus_inter
 OBJS += $(OBJDIR)/msgBus_object.o
 
 $(OBJDIR)/msgBus_object.o: $(SRCDIR)/msgBus_object.c $(SRCDIR)/msgBus.h $(SRCDIR)/msgBus_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/null.o
-
-$(OBJDIR)/null.o: $(SRCDIR)/null.c $(SRCDIR)/null.h $(SRCDIR)/null_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/null_json.o
-
-$(OBJDIR)/null_json.o: $(SRCDIR)/null_json.c $(SRCDIR)/null.h $(SRCDIR)/null_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/null_object.o
-
-$(OBJDIR)/null_object.o: $(SRCDIR)/null_object.c $(SRCDIR)/null.h $(SRCDIR)/null_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/number.o
@@ -1781,16 +1821,6 @@ OBJS += $(OBJDIR)/trace_object.o
 $(OBJDIR)/trace_object.o: $(SRCDIR)/trace_object.c $(SRCDIR)/trace.h $(SRCDIR)/trace_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/true.o
-
-$(OBJDIR)/true.o: $(SRCDIR)/true.c $(SRCDIR)/true.h $(SRCDIR)/true_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/true_object.o
-
-$(OBJDIR)/true_object.o: $(SRCDIR)/true_object.c $(SRCDIR)/true.h $(SRCDIR)/true_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/u12Array.o
 
 $(OBJDIR)/u12Array.o: $(SRCDIR)/u12Array.c $(SRCDIR)/array.h $(SRCDIR)/u12Array.h $(SRCDIR)/u12Array_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1973,9 +2003,21 @@ Ebcdic_test: $(TEST_SRC)/Ebcdic_test.c $(SRCDIR)/Ebcdic.h $(SRCDIR)/Ebcdic_inter
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += False_test
+
+False_test: $(TEST_SRC)/False_test.c $(SRCDIR)/False.h $(SRCDIR)/False_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += FileRef_test
 
 FileRef_test: $(TEST_SRC)/FileRef_test.c $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/AStrC.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Graph16_test
+
+Graph16_test: $(TEST_SRC)/Graph16_test.c $(SRCDIR)/Graph16.h $(SRCDIR)/Graph16_internal.h $(SRCDIR)/I16Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2000,6 +2042,12 @@ I32Array_test: $(TEST_SRC)/I32Array_test.c $(SRCDIR)/I32Array.h $(SRCDIR)/I32Arr
 TESTS += I32Matrix_test
 
 I32Matrix_test: $(TEST_SRC)/I32Matrix_test.c $(SRCDIR)/I32Matrix.h $(SRCDIR)/I32Matrix_internal.h $(SRCDIR)/I32Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += IntLock_test
+
+IntLock_test: $(TEST_SRC)/IntLock_test.c $(SRCDIR)/IntLock.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2084,6 +2132,12 @@ NodeTree_test: $(TEST_SRC)/NodeTree_test.c $(SRCDIR)/NodeTree.h $(SRCDIR)/NodeTr
 TESTS += Node_test
 
 Node_test: $(TEST_SRC)/Node_test.c $(SRCDIR)/Node.h $(SRCDIR)/Node_internal.h $(SRCDIR)/Name.h $(SRCDIR)/NodeBT.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Null_test
+
+Null_test: $(TEST_SRC)/Null_test.c $(SRCDIR)/Null.h $(SRCDIR)/Null_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2246,6 +2300,12 @@ TokenList_test: $(TEST_SRC)/TokenList_test.c $(SRCDIR)/TokenList.h $(SRCDIR)/Tok
 TESTS += Token_test
 
 Token_test: $(TEST_SRC)/Token_test.c $(SRCDIR)/Token.h $(SRCDIR)/Token_internal.h $(SRCDIR)/AStrC.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += True_test
+
+True_test: $(TEST_SRC)/True_test.c $(SRCDIR)/True.h $(SRCDIR)/True_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2441,12 +2501,6 @@ execArray_test: $(TEST_SRC)/execArray_test.c $(SRCDIR)/execArray.h $(SRCDIR)/exe
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += false_test
-
-false_test: $(TEST_SRC)/false_test.c $(SRCDIR)/false.h $(SRCDIR)/false_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += fbsi_test
 
 fbsi_test: $(TEST_SRC)/fbsi_test.c $(SRCDIR)/fbsi.h $(SRCDIR)/fbsi_internal.h $(SRCDIR)/path.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
@@ -2553,12 +2607,6 @@ TESTS += msgBus_test
 
 msgBus_test: $(TEST_SRC)/msgBus_test.c $(SRCDIR)/msgBus.h $(SRCDIR)/msgBus_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += null_test
-
-null_test: $(TEST_SRC)/null_test.c $(SRCDIR)/null.h $(SRCDIR)/null_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += number_test
@@ -2744,12 +2792,6 @@ timer_test: $(TEST_SRC)/timer_test.c $(SRCDIR)/timer.h $(SRCDIR)/timer_internal.
 TESTS += trace_test
 
 trace_test: $(TEST_SRC)/trace_test.c $(SRCDIR)/trace.h $(SRCDIR)/trace_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += true_test
-
-true_test: $(TEST_SRC)/true_test.c $(SRCDIR)/true.h $(SRCDIR)/true_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

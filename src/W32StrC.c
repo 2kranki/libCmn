@@ -156,11 +156,11 @@ extern "C" {
 
     bool            W32StrC_CopyFromW32(
         W32STRC_DATA    *this,
+        uint32_t        len,
         const
         W32CHR_T        *pStrW32
     )
     {
-        uint32_t        len;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -172,7 +172,9 @@ extern "C" {
 #endif
 
         W32StrC_FreeLine(this);
-        len = (uint32_t)utf8_StrLenW32(pStrW32);
+        if (0 == len) {
+            len = (uint32_t)utf8_StrLenW32(pStrW32);
+        }
 
         // Create the new string from this one.
         this->pArray = mem_Malloc((len + 1) * sizeof(W32CHR_T));
@@ -313,7 +315,28 @@ extern "C" {
 
         this = W32StrC_New( );
         if (this) {
-            fRc = W32StrC_CopyFromW32(this, pStrW32);
+            fRc = W32StrC_CopyFromW32(this, 0, pStrW32);
+            if (!fRc) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return( this );
+    }
+
+
+    W32STRC_DATA *  W32StrC_NewFromW32 (
+        uint32_t        len,
+        const
+        W32CHR_T        *pStrW32
+    )
+    {
+        W32STRC_DATA    *this;
+        bool            fRc;
+
+        this = W32StrC_New( );
+        if (this) {
+            fRc = W32StrC_CopyFromW32(this, len, pStrW32);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -538,7 +561,7 @@ extern "C" {
         // Create a copy of objects and areas in this object placing
         // them in other.
         if (this->pArray) {
-            W32StrC_CopyFromW32(pOther, this->pArray);
+            W32StrC_CopyFromW32(pOther, 0, this->pArray);
         }
 
         // Copy other data from this object to other.

@@ -73,12 +73,12 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <false.h>
+#include        <False.h>
 #include        <Node.h>
 #include        <NodeHash.h>
-#include        <null.h>
+#include        <Null.h>
 #include        <ObjMethod.h>
-#include        <true.h>
+#include        <True.h>
 
 
 #ifndef         JSONIN_H

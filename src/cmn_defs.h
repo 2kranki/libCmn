@@ -272,8 +272,8 @@ extern "C" {
         OBJ_IDENT_FILEREF_CLASS,
         OBJ_IDENT_GENOBJ,               // Generate an Object
         OBJ_IDENT_GENOBJ_CLASS,
-        OBJ_IDENT_GRAPHNODE,            // Graph Node
-        OBJ_IDENT_GRAPHNODE_CLASS,
+        OBJ_IDENT_GRAPH16,              // 16-Bit Indexed Graph
+        OBJ_IDENT_GRAPH16_CLASS,
         OBJ_IDENT_GREG,                 // Gregorian Date
         OBJ_IDENT_GREG_CLASS,
         OBJ_IDENT_HASH32,               // 32-Bit Key Hash Table
