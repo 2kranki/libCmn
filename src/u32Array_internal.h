@@ -61,6 +61,7 @@ struct u32Array_data_s	{
 #define U32ARRAY_FLAG_BIGENDIAN OBJ_FLAG_USER1
 
     // Common Data
+    void            *pUser;
 
 };
 #pragma pack(pop)

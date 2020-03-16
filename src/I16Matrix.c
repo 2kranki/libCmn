@@ -69,13 +69,13 @@ extern "C" {
     )
     {
 
-        if ((1 <= i) && (i <= this->m)) {
-        }
+        if ((0 < i) && (i <= this->m))
+            ;
         else {
             return false;
         }
-        if ((1 <= j) && (j <= this->n)) {
-        }
+        if ((0 < j) && (j <= this->n))
+            ;
         else {
             return false;
         }
@@ -1085,6 +1085,88 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+
+    I16MATRIX_DATA * I16Matrix_Floyd (
+        I16MATRIX_DATA  *this
+    )
+    {
+        I16MATRIX_DATA  *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        j;
+        uint32_t        k;
+        uint32_t        n;
+        int16_t         value1;
+        int16_t         value2;
+        int16_t         value3;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!I16Matrix_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (this->m && (this->m == this->n))
+            ;
+        else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        n = this->n;
+        pOther = I16Matrix_New( );
+        if (pOther) {
+            eRc = I16Matrix_Setup(pOther, n, n);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+            // Set Empty cells to simulated infinity.
+            for (i=1; i <= n; i++) {
+                for (j=1; j <= n; j++) {
+                    eRc = I16Matrix_Set(pOther, i, j, INT16_MAX);
+                }
+            }
+            // Copy in original matrix.
+            for (i=1; i<= n; i++) {
+                for (j=1; j <= n; j++) {
+                    value1 = I16Matrix_Get(this, i, j);
+                    if (value1)
+                        eRc = I16Matrix_Set(pOther, i, j, value1);
+                }
+            }
+            // Set Identity cells to zero.
+            for (i=1; i <= n; i++) {
+                eRc = I16Matrix_Set(pOther, i, i, 0);
+            }
+            for (k=1; k <= n; k++) {
+                for (i=1; i <= n; i++) {
+                    for (j=1; j <= n; j++) {
+                        value1 =  I16Matrix_Get(pOther, i, k);
+                        value2 =  I16Matrix_Get(pOther, k, j);
+                        value3 = value1 + value2;
+                        if ((value1 < INT16_MAX)
+                            && (value2 < INT16_MAX)
+                            && (value3 < I16Matrix_Get(pOther, i, j))
+                        ) {
+                            eRc = I16Matrix_Set(pOther, i, j, value3);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Return to caller.
+        return pOther;
     }
 
 

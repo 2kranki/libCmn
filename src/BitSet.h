@@ -195,6 +195,13 @@ extern "C" {
     );
 
 
+    /*!
+     Expand the set to be at least "size" bits. Zero any bits added.
+     @param     this    object pointer
+     @param     size    new number of bits
+     @return    If successful, ERESULT_SUCCESS; otherwise an ERESULT_*
+                error.
+     */
     ERESULT         BitSet_Expand (
         BITSET_DATA     *this,
         uint32_t        size

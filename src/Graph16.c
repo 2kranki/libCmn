@@ -3,6 +3,12 @@
  * File:   Graph16.c
  *	Generated 03/11/2020 17:37:49
  *
+ * Todo:
+ *  *       Add Identity relationship.
+ *  *       Add Reflexive-Transitive Closure
+ *  *       Add DFS(vertex)
+ *  *       Add BFS(vertex)
+ *
  */
 
  
@@ -517,11 +523,131 @@ extern "C" {
     
   
 
+    //---------------------------------------------------------------
+    //                     V e r t i c e s
+    //---------------------------------------------------------------
+
+    uint16_t        Graph16_getVerticesMax (
+        GRAPH16_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Graph16_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->verticesMax;
+    }
+
+
+    bool            Graph16_setVerticesMax (
+        GRAPH16_DATA    *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Graph16_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->verticesMax = value;
+
+        return true;
+    }
+
+
+    uint16_t        Graph16_getVerticesUsed (
+        GRAPH16_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Graph16_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->verticesUsed;
+    }
+
+
+    bool            Graph16_setVerticesUsed (
+        GRAPH16_DATA    *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Graph16_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->verticesUsed = value;
+
+        return true;
+    }
+
+
+
 
 
     //===============================================================
     //                          M e t h o d s
     //===============================================================
+
+
+    //---------------------------------------------------------------
+    //                 A d d  I d e n t i t y
+    //---------------------------------------------------------------
+
+    /*!
+     Add the Identity relationship to this graph (ie every vertex has
+     an edge from itself to itself).
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Graph16_AddIdentity (
+        GRAPH16_DATA    *this
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        i;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Graph16_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        for (i=1; i <= this->verticesUsed; i++) {
+            if (!Graph16_EdgeExistVertices(this, i, i)) {
+                Graph16_EdgeSet(this, 0, i, i);
+            }
+        }
+
+        obj_Disable(this);
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
 
 
     //---------------------------------------------------------------
@@ -605,6 +731,63 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                     C l o s u r e
+    //---------------------------------------------------------------
+
+    /*!
+     Calculate the Transitive Closure on the graph.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Graph16_Closure (
+        GRAPH16_DATA    *this
+    )
+    {
+        //ERESULT         eRc;
+        bool            fChanged = true;
+        uint32_t        cAdded = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Graph16_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        while (fChanged) {
+            int16_t         v1;
+            fChanged = false;
+            for (v1=Graph16_VertexFirst(this);
+                 v1;
+                 v1=Graph16_VertexNext(this, v1)) {
+                int16_t         v2;
+                for (v2=Graph16_VertexFromFirst(this,v1);
+                     v2;
+                     v2=Graph16_VertexFromNext(this, v2)) {
+                    int16_t         v3;
+                    for (v3=Graph16_VertexFromFirst(this,v2);
+                         v3;
+                         v3=Graph16_VertexFromNext(this, v3)) {
+                        if (!Graph16_EdgeExistVertices(this, v1, v3)) {
+                            Graph16_EdgeSet(this, 0, v1, v3);
+                            fChanged = true;
+                            cAdded++;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
@@ -1046,7 +1229,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!((index > 0) && (index <= this->edgesMax))) {
+        if (!(index <= this->edgesMax)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -1059,11 +1242,17 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        if (0 == index)
+            index = ++this->edgesUsed;
         if (index > this->edgesUsed)
             this->edgesUsed = index;
 
         EdgeSet(-index, vFrom);
+        if (vFrom > this->verticesUsed)
+            this->verticesUsed = vFrom;
         EdgeSet(index, vTo);
+        if (vTo > this->verticesUsed)
+            this->verticesUsed = vTo;
         // Graph16_UpdateIndex(this, index); <== May not be executed
         //                                       in the proper order.
 

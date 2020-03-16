@@ -342,6 +342,48 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        A l i g n
+    //---------------------------------------------------------------
+
+    uint32_t        Sym_getHash (
+        SYM_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->Hash;
+    }
+
+
+    bool            Sym_setHash (
+        SYM_DATA        *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->Hash = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          N a m e
     //---------------------------------------------------------------
 

@@ -250,11 +250,12 @@ extern "C" {
     /*!
      Expand the array to minimum size provided.  Array expansion is done
      by a power of 2 (ie 2, 4, 8, 16, 32, 64, 128, 256, 512, ...). The
-     added space is zeroed.
+     added space is zeroed. The array is expanded, but the usage count
+     (ie size) is not affected.
      @param     this    Object Pointer
      @param     min     minimum number of array elements needed
      @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-     error.
+                error.
      */
     ERESULT         array_Expand (
         ARRAY_DATA      *this,

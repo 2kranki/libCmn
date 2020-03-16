@@ -53,7 +53,10 @@
 extern "C" {
 #endif
     
-
+    typedef struct BitMatrix_Acyclic_s {
+        uint32_t    depth;
+        uint32_t    marks[0];
+    } BITMATRIX_ACYCLIC;
     
 
 
@@ -61,6 +64,123 @@ extern "C" {
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
+
+    ERESULT         BitMatrix_BFS_Visit(
+        BITMATRIX_DATA  *this,
+        BITSET_DATA     *pMark,
+        uint32_t        i,
+        uint32_t        j,
+        P_ERESULT_EXIT12 pExit,
+        OBJ_ID          pObjExit
+    )
+    {
+        ERESULT         eRc;
+
+        if (j && pExit) {
+            eRc = pExit(pObjExit, this, i, j);
+            if (ERESULT_FAILED(eRc)) {
+                return eRc;
+            }
+        }
+
+        eRc = BitSet_Set(pMark, i, true);
+        // Handle self-reflexive.
+        if (j == 0) {
+            if (BitMatrix_Get(this, i, i)) {
+                eRc = BitMatrix_BFS_Visit(this, pMark, i, j, pExit, pObjExit);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
+        // Handle the other adjacent vertices.
+        for (j=1; j <= this->xSize; j++) {
+            if (BitMatrix_Get(this, i, j)) {
+                if (!BitSet_Get(pMark, j)) {
+                    eRc = BitMatrix_BFS_Visit(this, pMark, i, j, pExit, pObjExit);
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
+                    }
+                }
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    ERESULT         BitMatrix_DFS_Visit(
+        BITMATRIX_DATA  *this,
+        BITSET_DATA     *pMark,
+        uint32_t        vFrom,
+        uint32_t        vTo,
+        P_ERESULT_EXIT12 pExit,
+        OBJ_ID          pObjExit
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        j;
+
+        // Check for and handle Self Reflexive Back Arc which won't be handled
+        // once we set the visited mark.
+        if (vTo == 0) {
+            vTo = vFrom;
+            if (BitMatrix_Get(this, vFrom, vTo)) {
+                eRc = BitMatrix_DFS_Visit(this, pMark, vFrom, vFrom, pExit, pObjExit);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        } else {
+            if (pExit) {
+                eRc = pExit(pObjExit, this, vFrom, vTo);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
+
+        eRc = BitSet_Set(pMark, vTo, true);
+        for (j=1; j <= this->xSize; j++) {
+            if (BitMatrix_Get(this, vFrom, j)) {
+                if (!BitSet_Get(pMark, j)) {
+                    eRc = BitMatrix_DFS_Visit(this, pMark, vFrom, j, pExit, pObjExit);
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
+                    }
+                }
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    ERESULT         BitMatrix_AcyclicTest(
+        BITMATRIX_ACYCLIC
+                        *this,
+        BITMATRIX_DATA  *pMatrix,
+        uint32_t        i,
+        uint32_t        j
+    )
+    {
+
+        if (this->marks[j-1] == 0) {
+            this->depth++;
+            this->marks[i-1] = this->depth;
+        }
+        if (this->marks[i-1] <= this->marks[j-1]) {
+            return ERESULT_DATA_ALREADY_EXISTS;
+        }
+
+        return ERESULT_SUCCESS;
+    }
+
+
 
     /*!
      @param     y       y-axis index (relative to 1)
@@ -551,6 +671,134 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //              D e p t h - F i r s t  S e a r c h
+    //---------------------------------------------------------------
+
+    /*!
+     Depth-First Search works from a start vertex. It then visits
+     each vertex adjacent to the then current vertex recursively
+     until no more vertices can be visited.
+
+     This assumes that this matrix represents a relationship formed
+     by adding edges(vFrom, vTo) to the matrix and that it is a
+     square matrix (ie N X N).
+     .
+     @param     this    object pointer
+     @param     i       vertex/node to search
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BitMatrix_DFS (
+        BITMATRIX_DATA  *this,
+        uint32_t        i,
+        P_ERESULT_EXIT12 pExit, // (pExitObj, this, y)
+        OBJ_ID          pObjExit
+    )
+    {
+        ERESULT         eRc;
+        BITSET_DATA     *pMark = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BitMatrix_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if ((!this->xSize) || (this->xSize != this->ySize)) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+        if ((!i) || (i > this->xSize)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        // Create a zeroed bit set the size of N.
+        pMark = BitSet_New();
+        if (OBJ_NIL == pMark) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        eRc = BitSet_Expand(pMark, this->xSize);
+
+        eRc = BitMatrix_DFS_Visit(this, pMark, i, 0, pExit, pObjExit);
+
+        // Return to caller.
+        if (pMark) {
+            obj_Release(pMark);
+        }
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //              D e p t h - F i r s t  S e a r c h
+    //---------------------------------------------------------------
+
+    /*!
+     Depth-First Search works from a start vertex. It then visits
+     each vertex adjacent to the then current vertex recursively
+     until no more vertices can be visited.
+
+     This assumes that this matrix represents a relationship formed
+     by adding edges(vFrom, vTo) to the matrix and that it is a
+     square matrix (ie N X N).
+     .
+     @param     this    object pointer
+     @param     i       vertex/node to search
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BitMatrix_DFS_All (
+        BITMATRIX_DATA  *this,
+        P_ERESULT_EXIT12 pExit, // (pExitObj, this, y)
+        OBJ_ID          pObjExit
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i;
+        BITSET_DATA     *pMark = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BitMatrix_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if ((!this->xSize) || (this->xSize != this->ySize)) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+
+        // Create a zeroed bit set the size of N.
+        pMark = BitSet_New();
+        if (OBJ_NIL == pMark) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        eRc = BitSet_Expand(pMark, this->xSize);
+
+        for (i=1; i <= this->xSize; i++) {
+            if (!BitSet_Get(pMark, i)) {
+                eRc = BitMatrix_DFS_Visit(this, pMark, i, 0, pExit, pObjExit);
+            }
+        }
+
+        // Return to caller.
+        if (pMark) {
+            obj_Release(pMark);
+        }
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -561,7 +809,7 @@ extern "C" {
                 error code.
      */
     ERESULT         BitMatrix_Disable (
-        BITMATRIX_DATA		*this
+        BITMATRIX_DATA  *this
     )
     {
         //ERESULT         eRc;
@@ -1258,6 +1506,65 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      I s  C y c l i c
+    //---------------------------------------------------------------
+
+    /*!
+     Check the relation for cyclic edges.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BitMatrix_IsCyclic (
+        BITMATRIX_DATA  *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        BITMATRIX_ACYCLIC
+                        *pData = NULL;
+        uint32_t        i;
+        uint32_t        j;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!BitMatrix_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+
+        i = this->xSize * sizeof(uint32_t);
+        i += sizeof(BITMATRIX_ACYCLIC);
+        pData = mem_Calloc(1, i);
+        if (NULL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        for (i=1; i <= this->xSize; i++) {
+            for (j=0; j < this->xSize; j++) {
+                pData->marks[j] = 0;
+            }
+            eRc = BitMatrix_DFS(this, i, (void *)BitMatrix_AcyclicTest, pData);
+            if (ERESULT_FAILED(eRc)) {
+                break;              // Break if cyclic.
+            }
+        }
+        if (ERESULT_OK(eRc))
+            eRc = ERESULT_DATA_OUT_OF_RANGE;
+        else
+            eRc = ERESULT_SUCCESS;
+
+        // Return to caller.
+        if (pData)
+            mem_Free(pData);
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       I s E m p t y
     //---------------------------------------------------------------
     
@@ -1875,7 +2182,7 @@ extern "C" {
         }
         AStr_AppendA(pStr, " ");
         for (x=0; x<(this->xSize/10); ++x) {
-            AStr_AppendA(pStr, "1234567890");
+            AStr_AppendA(pStr, "  123456789012");
         }
         AStr_AppendA(pStr, "\n");
         for (y=1; y<=this->ySize; ++y) {

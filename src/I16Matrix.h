@@ -276,10 +276,23 @@ extern "C" {
 
 
      /*!
+      Calculate the least path weights using an n X n weighted
+      matrix with positive weights.
+      @param     this    object pointer
+      @return    If successful, a I16MATRIX object which must be
+                 released, otherwise OBJ_NIL.
+      @warning   Remember to release the returned object.
+      */
+     I16MATRIX_DATA * I16Matrix_Floyd (
+         I16MATRIX_DATA  *this
+     );
+
+
+     /*!
       Return a matrix element.
       @param     this    object pointer
-      @param     i       0 < i < m
-      @param     j       0 < j < n
+      @param     i       0 < i <= m
+      @param     j       0 < j <= n
       @return    If successful, the matrix element, otherwise 0.
       */
      int16_t        I16Matrix_Get (
@@ -339,8 +352,8 @@ extern "C" {
     /*!
      Replace a matrix element with the given value.
      @param     this    object pointer
-     @param     i       0 < i < m
-     @param     j       0 < j < n
+     @param     i       0 < i <= m
+     @param     j       0 < j <= n
      @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error
                 code
      */

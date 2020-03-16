@@ -224,13 +224,9 @@ extern "C" {
         OBJ_ID          pObj;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
@@ -258,13 +254,9 @@ extern "C" {
         OBJ_ID          pObj;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
@@ -293,13 +285,9 @@ extern "C" {
         OBJ_ID          pObj;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
@@ -327,13 +315,9 @@ extern "C" {
         OBJ_ID          pObj;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
@@ -361,13 +345,9 @@ extern "C" {
         OBJ_ID          pObj;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
@@ -395,13 +375,9 @@ extern "C" {
         OBJ_ID          pObj;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
@@ -429,13 +405,9 @@ extern "C" {
         OBJ_ID          pObj;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
@@ -464,13 +436,9 @@ extern "C" {
         OBJ_ID          pObj;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pObj = Node_getData(pNode);
         if ((OBJ_NIL == pObj) || !obj_IsKindOf(pObj, OBJ_IDENT_NODE)) {
@@ -498,13 +466,9 @@ extern "C" {
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "array"))) {
@@ -527,13 +491,9 @@ extern "C" {
         FALSE_DATA      *pFalse = OBJ_NIL;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "false"))) {
@@ -557,13 +517,9 @@ extern "C" {
         ASTR_DATA       *pStr = OBJ_NIL;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "float"))) {
@@ -586,13 +542,9 @@ extern "C" {
         NODEHASH_DATA   *pHash = OBJ_NIL;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))) {
@@ -615,13 +567,9 @@ extern "C" {
         ASTR_DATA       *pStr = OBJ_NIL;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))) {
@@ -644,13 +592,9 @@ extern "C" {
         NULL_DATA       *pNull = OBJ_NIL;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "null"))) {
@@ -673,13 +617,9 @@ extern "C" {
         ASTR_DATA       *pStr = OBJ_NIL;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "string"))) {
@@ -703,13 +643,9 @@ extern "C" {
         TRUE_DATA       *pTrue = OBJ_NIL;
         NAME_DATA       *pName;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
         if ((OBJ_NIL == pNode) || !obj_IsKindOf(pNode, OBJ_IDENT_NODE)) {
             return OBJ_NIL;
         }
-#endif
 
         pName = Node_getName(pNode);
         if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "true"))) {

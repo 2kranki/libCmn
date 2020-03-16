@@ -13,9 +13,11 @@
  *	1.      All offsets or indices are relative to 1, not 0. 0 is
  *          considered before the beginning of the array if used
  *          as an offset otherwise an error.
+ *  2.      This object uses OBJ_FLAG_USER1.
  *
  * History
  *	08/07/2015 Generated
+ *  03/16/2020 Added Zero() and User property.
  */
 
 
@@ -107,7 +109,11 @@ extern "C" {
         void
     );
     
-    
+    U32ARRAY_DATA * u32Array_NewWithSize(
+        uint32_t        size
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -128,9 +134,21 @@ extern "C" {
         U32ARRAY_DATA    *this
     );
     
-    
+    /*! Property: User Data Pointer
+     This property is completely optional. It is used
+     to link other data to this array.
+     */
+    void *          u32Array_getUser(
+        U32ARRAY_DATA   *this
+    );
 
-    
+    bool            u32Array_setUser(
+        U32ARRAY_DATA   *this,
+        void            *pValue
+    );
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -247,7 +265,17 @@ extern "C" {
     );
     
     
-    
+    /*!
+     Zero the entire array.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         u32Array_Zero(
+        U32ARRAY_DATA   *this
+    );
+
+
     
 #ifdef	__cplusplus
 }

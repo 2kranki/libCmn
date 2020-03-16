@@ -100,12 +100,36 @@ extern "C" {
     }
     
     
-    
+    U32ARRAY_DATA * u32Array_NewWithSize(
+        uint32_t        size
+    )
+    {
+        ERESULT         eRc;
+        U32ARRAY_DATA    *this;
+
+        this = u32Array_New( );
+        if (this) {
+            eRc = array_AppendSpacing((ARRAY_DATA *)this, size);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+
+        return this;
+    }
+
+
+
     
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //                  B i g  E n d i a n
+    //---------------------------------------------------------------
 
     bool            u32Array_setBigEndian(
         U32ARRAY_DATA   *this,
@@ -126,6 +150,10 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          D a t a
+    //---------------------------------------------------------------
+
     uint32_t *      u32Array_getData(
         U32ARRAY_DATA   *this
     )
@@ -142,6 +170,10 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          S i z e
+    //---------------------------------------------------------------
+
     uint32_t        u32Array_getSize(
         U32ARRAY_DATA   *this
     )
@@ -155,6 +187,46 @@ extern "C" {
 #endif
         return array_getSize((ARRAY_DATA *)this);
     }
+
+
+
+    //---------------------------------------------------------------
+    //                          U s e r
+    //---------------------------------------------------------------
+
+    void *          u32Array_getUser(
+        U32ARRAY_DATA   *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !u32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+        return this->pUser;
+    }
+
+
+    bool            u32Array_setUser(
+        U32ARRAY_DATA   *this,
+        void            *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !u32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pUser = pValue;
+
+        return true;
+    }
+
 
 
 
@@ -1034,7 +1106,36 @@ extern "C" {
     
     
     
-    
+    //---------------------------------------------------------------
+    //                         Z e r o
+    //---------------------------------------------------------------
+
+    ERESULT         u32Array_Zero(
+        U32ARRAY_DATA   *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        *pData;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (array_getSize((ARRAY_DATA *)this)) {
+            pData = ((uint32_t *)array_Ptr((ARRAY_DATA *)this, 1));
+            memset(pData, 0, (array_getSize((ARRAY_DATA *)this) * sizeof(uint32_t)));
+        }
+
+        return eRc;
+    }
+
+
+
     
 #ifdef	__cplusplus
 }

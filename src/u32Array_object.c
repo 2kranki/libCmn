@@ -200,7 +200,7 @@ static
 const
 OBJ_INFO        u32Array_Info = {
     "u32Array",
-    "Array of uint32_t",
+    "Dynamic Array of uint32_t",
     (OBJ_DATA *)&u32Array_ClassObj,
     (OBJ_DATA *)&array_ClassObj,
     (OBJ_IUNKNOWN *)&u32Array_Vtbl

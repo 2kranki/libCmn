@@ -1,22 +1,30 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          BITMATRIX Console Transmit Task (BitMatrix) Header
+//           Matrix of Bits (BitMatrix) Header
 //****************************************************************
 /*
  * Program
- *			Separate BitMatrix (BitMatrix)
+ *			Matrix of Bits (BitMatrix)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate BitMatrix to run things without complications
- *          of interfering with the main BitMatrix. A BitMatrix may be 
- *          called a BitMatrix on other O/S's.
+ *			This object provides a Matrix of Bits (ie a matrix with
+ *          each element being one bit). Bit matrices are used most
+ *          often to represent relationships.  In that case, it is
+ *          generally called an Adjacency Matrix and is a relation-
+ *          ship Graph with N vertices.
  *
  * Remarks
- *	1.      None
+ *  1.      A matrix of M X N size has Y rows (height) and X columns
+ *          (width). (i,j) is used to access each element of the matrix.
+ *          Rules, 1 <= i <= Y and 1 <= j <= X, must hold true. If M == N
+ *          then we have a square matrix. Initial matrices are always
+ *          zeroed or nulled. As in mathematics, we assume that the
+ *          upper-left corner is (1,1) and as i increases we are going
+ *          downwards and as j increases we are going towards the right.
  *
  * History
  *	12/18/2019 Generated
+ *  03/15/2020 Added Depth-First Search.
  */
 
 
@@ -218,6 +226,49 @@ extern "C" {
 
 
     /*!
+     Depth-First Search works from a start vertex. It then visits
+     each vertex adjacent to the then current vertex recursively
+     until no more vertices can be visited.
+
+     This assumes that this matrix represents a relationship formed
+     by adding edges(vFrom, vTo) to the matrix and that it is a
+     square matrix (ie N X N).
+     .
+     @param     this    object pointer
+     @param     i       vertex/node to search
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BitMatrix_DFS (
+        BITMATRIX_DATA  *this,
+        uint32_t        i,
+        P_ERESULT_EXIT12 pExit, // (pExitObj, this, i, j)
+        OBJ_ID          pObjExit
+    );
+
+
+    /*!
+     Depth-First Search All searches all vertices in numberical
+     order starting at 1. For each it visits that vertex then visits
+     each vertex adjacent to the then current vertex recursively
+     until no more vertices can be visited.
+
+     This assumes that this matrix represents a relationship formed
+     by adding edges(vFrom, vTo) to the matrix and that it is a
+     square matrix (ie N X N).
+     .
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BitMatrix_DFS_All (
+        BITMATRIX_DATA  *this,
+        P_ERESULT_EXIT12 pExit, // (pExitObj, this, i, j)
+        OBJ_ID          pObjExit
+    );
+
+
+    /*!
      Copy the current object creating a new object.
      Example:
      @code
@@ -379,6 +430,17 @@ extern "C" {
     );
     
     
+    /*!
+     Check the relation for cyclic edges.
+     @param     this    object pointer
+     @return    if true, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BitMatrix_IsCyclic (
+        BITMATRIX_DATA  *this
+    );
+
+
     /*!
      Check the matrix to see if it is empty.
      @param     this    object pointer

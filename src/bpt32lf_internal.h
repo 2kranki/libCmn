@@ -72,7 +72,7 @@ extern "C" {
     
 #pragma pack(push, 1)
     typedef struct  bpt32lf_block_s {
-        uint16_t        blockType;      // BPT32IDX_DATA or BPT32LF_DATA
+        uint16_t        blockType;      // BPT32LF_DATA
         uint16_t        rsvd16;
         uint16_t        dataSize;
         uint16_t        actualSize;     // Actual Data Size rounded up

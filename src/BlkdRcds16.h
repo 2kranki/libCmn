@@ -173,8 +173,38 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*!
+        Property: Begin
+        The beginning record number within the dataset for the first
+        record of this block.
+     */
+    uint32_t        BlkdRcds16_getBegin(
+        BLKDRCDS16_DATA *this
+    );
+
+    bool            BlkdRcds16_setBegin (
+        BLKDRCDS16_DATA *this,
+        uint32_t        value
+    );
+
+
     uint8_t *       BlkdRcds16_getData (
         BLKDRCDS16_DATA *this
+    );
+
+
+    /*!
+        Property: Next
+        The optional record number for the block following this
+        one.
+     */
+    uint32_t        BlkdRcds16_getBegin(
+        BLKDRCDS16_DATA *this
+    );
+
+    bool            BlkdRcds16_setBegin (
+        BLKDRCDS16_DATA *this,
+        uint32_t        value
     );
 
 
@@ -200,7 +230,7 @@ extern "C" {
     );
 
 
-    ERESULT         BlkdRcds16_RecordAdd (
+    ERESULT         BlkdRcds16_RecordAppend (
        BLKDRCDS16_DATA *this,
        uint16_t        size,
        void            *pData,

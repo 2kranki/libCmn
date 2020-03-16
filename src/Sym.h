@@ -245,6 +245,18 @@ extern "C" {
     );
 
 
+    /*! Property: Hash
+     */
+    uint32_t        Sym_getHash (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setHash (
+        SYM_DATA        *this,
+        uint32_t        value
+    );
+
+
     const
     char *          Sym_getNameA (
         SYM_DATA        *this

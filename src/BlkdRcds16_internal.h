@@ -91,6 +91,9 @@ extern "C" {
 //              Bit 0x8000 is available.
         uint16_t        numRecords;
 //              Bit 0x8000 is available.
+        uint32_t        begin;          // Beginning record number within file of the
+        //                              // First Record in this block
+        uint32_t        next;           // Block number of next block
         INDEX_RECORD    index[0];       // Index
     } DATA_BLOCK;
 #pragma pack(pop)

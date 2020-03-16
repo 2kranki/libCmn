@@ -902,8 +902,78 @@ int         test_I16Matrix_ValueCheck01(
 
 
 
+int         test_I16Matrix_Floyd01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    I16MATRIX_DATA  *pObj = OBJ_NIL;
+    I16MATRIX_DATA  *pObj2 = OBJ_NIL;
+    ASTR_DATA       *pStr;
+    int16_t         value = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = I16Matrix_NewSquare(3);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        // Example 6.14, pg 209, "Data Structures and Algorithms", Aho, Hopcroft and
+        // Ullman, Addison-Wesley, 1983
+        eRc = I16Matrix_Set(pObj, 1, 2, 8);
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
+        eRc = I16Matrix_Set(pObj, 1, 3, 5);
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
+        eRc = I16Matrix_Set(pObj, 2, 1, 3);
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
+        eRc = I16Matrix_Set(pObj, 3, 2, 2);
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
+        {
+            ASTR_DATA       *pStr = I16Matrix_ToDebugString(pObj, 4);
+            fprintf(stderr, "Base:\n%s\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        pObj2 = I16Matrix_Floyd(pObj);
+        XCTAssertFalse( (OBJ_NIL == pObj2) );
+        {
+            ASTR_DATA       *pStr = I16Matrix_ToDebugString(pObj2, 4);
+            fprintf(stderr, "Floyd:\n%s\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        value = I16Matrix_Get(pObj2, 1, 2);
+        XCTAssertTrue( (7 == value) );
+        value = I16Matrix_Get(pObj2, 1, 3);
+        XCTAssertTrue( (5 == value) );
+        value = I16Matrix_Get(pObj2, 2, 1);
+        XCTAssertTrue( (3 == value) );
+        value = I16Matrix_Get(pObj2, 2, 3);
+        XCTAssertTrue( (8 == value) );
+        value = I16Matrix_Get(pObj2, 3, 1);
+        XCTAssertTrue( (5 == value) );
+        value = I16Matrix_Get(pObj2, 3, 2);
+        XCTAssertTrue( (2 == value) );
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_I16Matrix);
+    TINYTEST_ADD_TEST(test_I16Matrix_Floyd01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_I16Matrix_ValueCheck01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_I16Matrix_Multiply02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_I16Matrix_Multiply01,setUp,tearDown);

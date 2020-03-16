@@ -8,7 +8,7 @@
  *			B-Plus 32-Bit Tree Leaf Block
  * Purpose
  *			This object provides support for a 32-bit B+ Tree Leaf
- *          block.  A Leaf block consists of an array of nodee where
+ *          block.  A Leaf block consists of an array of nodes where
  *          each node consists of a uint32_t key and fixed sized
  *          data. The size of the data is specified at block creation
  *          time.  The block is normally part of a doubly-linked

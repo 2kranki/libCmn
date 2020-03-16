@@ -182,10 +182,45 @@ extern "C" {
     );
 
 
+    uint16_t        Graph16_getVerticesMax (
+        GRAPH16_DATA     *this
+    );
+
+
+    /*! Property: Vertices Used
+     This is the number of vertices actually used which
+     must be less than or equal to the Vertices Maximum
+     property.  You can set this higher than the actual
+     number used so that those vertices are included in
+     certain calculations.  However, you should never
+     set it to less than that actually used or greater
+     than the Vertices Maximum property.
+     */
+    uint16_t        Graph16_getVerticesUsed (
+        GRAPH16_DATA     *this
+    );
+
+    bool            Graph16_setVerticesUsed (
+        GRAPH16_DATA    *this,
+        uint16_t        value
+    );
+
 
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Add the Identity relationship to this graph (ie every vertex has
+     an edge from itself to itself).
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Graph16_AddIdentity (
+        GRAPH16_DATA    *this
+    );
+
 
     /*!
      Assign the contents of this object to the other object (ie
@@ -203,6 +238,17 @@ extern "C" {
     ERESULT         Graph16_Assign (
         GRAPH16_DATA     *this,
         GRAPH16_DATA     *pOther
+    );
+
+
+    /*!
+     Calculate the Transitive Closure on the graph.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Graph16_Closure (
+        GRAPH16_DATA    *this
     );
 
 
@@ -301,7 +347,8 @@ extern "C" {
 /*!
      Add the given element to the end of the array.
      @param     this    object pointer
-     @param     index   Edge Index
+     @param     index   Edge Index (Relative to 1; if 0, next sequential used
+                        edge number is used)
      @param     from    From Node Index (Relative to 1)
      @param     to      To Node Index (Relative to 1)
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
@@ -457,7 +504,7 @@ extern "C" {
 
 
     /*!
-     VertexFromFirst() and VertexFromNext() let you for-loop through
+     VertexToFirst() and VertexToNext() let you for-loop through
      to/incoming edges of a vertex.
      Example:
      @code

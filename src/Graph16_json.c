@@ -104,7 +104,7 @@ extern "C" {
         if (pObject->edgesUsed) {
             eRc = JsonIn_FindArrayNodeInHashA(pParser, "edges", &pArray);
             if (pArray) {
-                if ((pObject->edgesUsed * 3) == NodeArray_getSize(pArray))
+                if ((pObject->edgesUsed) == NodeArray_getSize(pArray))
                     ;
                 else {
                     fprintf(
@@ -124,7 +124,8 @@ extern "C" {
                 );
                 goto exit00;
             }
-            for (i=0; i<(pObject->edgesUsed * 3); i += 3) {
+            for (i=0; i<(pObject->edgesUsed); i++) {
+                NODEARRAY_DATA  *pEdge = OBJ_NIL;
                 int16_t         e = 0;
                 int16_t         vFrom = 0;
                 int16_t         vTo = 0;
@@ -139,21 +140,32 @@ extern "C" {
                     );
                     goto exit00;
                 }
-                pName = Node_getName(pNode);
-                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))
+                pEdge = JsonIn_CheckNodeForArray(pNode);
+                if (OBJ_NIL == pEdge) {
+                    fprintf(
+                            stderr,
+                            "ERROR - Missing Edge Array, %d!\n",
+                            i+1
+                    );
+                    goto exit00;
+                }
+                if (3 == NodeArray_getSize(pEdge))
                     ;
                 else {
                     fprintf(
                             stderr,
-                            "ERROR - Node name is not valid!\n"
+                            "ERROR - JSON Count, 3, does not match edge array(%d) size, %d!\n",
+                            i+1,
+                            NodeArray_getSize(pEdge)
                     );
                     goto exit00;
                 }
-                pWrk = Node_getData(pNode);
+                pNode = NodeArray_Get(pEdge, 1);
+                pWrk = JsonIn_CheckNodeForInteger(pNode);
                 if (OBJ_NIL == pWrk) {
                     fprintf(
                             stderr,
-                            "ERROR - Node's data is not valid!\n"
+                            "ERROR - Edge's data is not valid!\n"
                     );
                     goto exit00;
                 }
@@ -164,31 +176,12 @@ extern "C" {
                         (uint8_t)AStr_ToInt64(pWrk));
 #endif
                 e = (int16_t)AStr_ToInt64(pWrk);
-                pNode = NodeArray_Get(pArray, i+2);
-                if (OBJ_NIL == pNode) {
-                    fprintf(
-                            stderr,
-                            "ERROR - JSON Count, %d, does not match array size, %d!\n",
-                            pObject->edgesMax,
-                            NodeArray_getSize(pArray)
-                    );
-                    goto exit00;
-                }
-                pName = Node_getName(pNode);
-                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))
-                    ;
-                else {
-                    fprintf(
-                            stderr,
-                            "ERROR - Node name is not valid!\n"
-                    );
-                    goto exit00;
-                }
-                pWrk = Node_getData(pNode);
+                pNode = NodeArray_Get(pEdge, 2);
+                pWrk = JsonIn_CheckNodeForInteger(pNode);
                 if (OBJ_NIL == pWrk) {
                     fprintf(
                             stderr,
-                            "ERROR - Node's data is not valid!\n"
+                            "ERROR - Edge's data is not valid!\n"
                     );
                     goto exit00;
                 }
@@ -199,7 +192,7 @@ extern "C" {
                         (uint8_t)AStr_ToInt64(pWrk));
 #endif
                 vFrom = (int16_t)AStr_ToInt64(pWrk);
-                pNode = NodeArray_Get(pArray, i+3);
+                pNode = NodeArray_Get(pEdge, 3);
                 if (OBJ_NIL == pNode) {
                     fprintf(
                             stderr,
@@ -209,21 +202,11 @@ extern "C" {
                     );
                     goto exit00;
                 }
-                pName = Node_getName(pNode);
-                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))
-                    ;
-                else {
-                    fprintf(
-                            stderr,
-                            "ERROR - Node name is not valid!\n"
-                    );
-                    goto exit00;
-                }
-                pWrk = Node_getData(pNode);
+                pWrk = JsonIn_CheckNodeForInteger(pNode);
                 if (OBJ_NIL == pWrk) {
                     fprintf(
                             stderr,
-                            "ERROR - Node's data is not valid!\n"
+                            "ERROR - Edge's data is not valid!\n"
                     );
                     goto exit00;
                 }
@@ -382,7 +365,7 @@ extern "C" {
         pStr = AStr_New();
         if (pStr) {
              AStr_AppendPrint(pStr,
-                              "{ \"objectType\":\"%s\", ",
+                              "{ \"objectType\":\"%s\",\n",
                               pInfo->pClassName
              );
      
@@ -427,11 +410,11 @@ extern "C" {
         JsonOut_Append_u16("verticesMax", this->verticesMax, pStr);
         JsonOut_Append_u16("verticesUsed", this->verticesUsed, pStr);
 
-        AStr_AppendA(pStr, "\tedges: [\n//\t\t  Edge, From, To\n");
+        AStr_AppendA(pStr, "\tedges: [\n//\t\t  Edge,  From,   To\n");
         for (e=Graph16_EdgeFirst(this); e; e=Graph16_EdgeNext(this, e)) {
             AStr_AppendPrint(
                              pStr,
-                             "\t\t%5d, %5d, %5d,\n",
+                             "\t\t[%5d, %5d, %5d],\n",
                              e,
                              Graph16_EdgeFrom(this, e),
                              Graph16_EdgeTo(this, e)

@@ -31,6 +31,18 @@
 
 
 
+ERESULT         DFS_Visit(
+    OBJ_ID          this,
+    BITMATRIX_DATA  *pMatrix,
+    uint32_t        y
+)
+{
+    fprintf(stderr, "\t\tVisiting %d\n", y);
+
+    return ERESULT_SUCCESS;
+}
+
+
 int             setUp(
     const
     char            *pTestName
@@ -115,7 +127,7 @@ int             test_BitMatrix_Test01(
     char            *pTestName
 )
 {
-    BITMATRIX_DATA    *pObj = OBJ_NIL;
+    BITMATRIX_DATA  *pObj = OBJ_NIL;
     ERESULT         eRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -214,10 +226,23 @@ int             test_BitMatrix_Reflex01(
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         eRc = BitMatrix_Set(pObj, 5, 10, true);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        {
+            ASTR_DATA       *pStr = BitMatrix_ToDebugString(pObj, 4);
+            fprintf(stderr, "Setup:\n%s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
+
+        eRc = BitMatrix_IsCyclic(pObj);
+        TINYTEST_TRUE( (ERESULT_FAILED(eRc)) );
 
         eRc = BitMatrix_ReflectiveTransitiveClosure(pObj);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        
+        {
+            ASTR_DATA       *pStr = BitMatrix_ToDebugString(pObj, 4);
+            fprintf(stderr, "Closure:\n%s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
+
         eRc = BitMatrix_Get(pObj, 1, 1);
         TINYTEST_TRUE( (ERESULT_SUCCESS_TRUE == eRc) );
         eRc = BitMatrix_Get(pObj, 1, 2);
@@ -460,6 +485,24 @@ int             test_BitMatrix_Reflex01(
         TINYTEST_TRUE( (ERESULT_SUCCESS_FALSE == eRc) );
         eRc = BitMatrix_Get(pObj, 11, 11);
         TINYTEST_TRUE( (ERESULT_SUCCESS_TRUE == eRc) );
+
+        fprintf(stderr, "\tDFS Visit(3)\n");
+        eRc = BitMatrix_DFS(pObj, 3, (void *)DFS_Visit, NULL);
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        fprintf(stderr, "\tDFS_All Visit()\n");
+        eRc = BitMatrix_DFS_All(pObj, (void *)DFS_Visit, NULL);
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        eRc = BitMatrix_Set(pObj, 6, 3, true);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        {
+            ASTR_DATA       *pStr = BitMatrix_ToDebugString(pObj, 4);
+            fprintf(stderr, "Add cycle (3,6) (6,3):\n%s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
+        eRc = BitMatrix_IsCyclic(pObj);
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

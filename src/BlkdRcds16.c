@@ -201,6 +201,52 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //               B e g i n n i n g  R e c o r d
+    //---------------------------------------------------------------
+
+    uint32_t        BlkdRcds16_getBegin(
+        BLKDRCDS16_DATA *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !BlkdRcds16_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        if (this->pBlock) {
+        }
+        else {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->pBlock->begin;
+    }
+
+
+    bool            BlkdRcds16_setBegin (
+        BLKDRCDS16_DATA *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pBlock->begin = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       D a t a
     //---------------------------------------------------------------
     
@@ -239,6 +285,52 @@ extern "C" {
     }
     
         
+
+    //---------------------------------------------------------------
+    //                      N e x t  B l o c k
+    //---------------------------------------------------------------
+
+    uint32_t        BlkdRcds16_getNext(
+        BLKDRCDS16_DATA *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !BlkdRcds16_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        if (this->pBlock) {
+        }
+        else {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->pBlock->next;
+    }
+
+
+    bool            BlkdRcds16_setNext (
+        BLKDRCDS16_DATA *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pBlock->next = value;
+
+        return true;
+    }
+
+
 
     //---------------------------------------------------------------
     //                N u m b e r  o f  R e c o r d s
@@ -571,6 +663,39 @@ extern "C" {
    
  
     //---------------------------------------------------------------
+    //                     C o m p r e s s
+    //---------------------------------------------------------------
+
+    /*!
+     Compress the block, moving all records which have gaps between
+     them so that free space is maximized.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BlkdRcds16_Compress (
+        BLKDRCDS16_DATA *this
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     
@@ -786,7 +911,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #ifdef __APPLE__
-        fprintf(stderr, "BlkdRcds16::sizeof(BLKDRCDS16_DATA) = %lu\n", sizeof(BLKDRCDS16_DATA));
+        //fprintf(stderr, "BlkdRcds16::sizeof(BLKDRCDS16_DATA) = %lu\n", sizeof(BLKDRCDS16_DATA));
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(BLKDRCDS16_DATA));
     #endif
@@ -969,10 +1094,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       R e c o r d  A d d
+    //                  R e c o r d  A p p e n d
     //---------------------------------------------------------------
     
-    ERESULT         BlkdRcds16_RecordAdd (
+    ERESULT         BlkdRcds16_RecordAppend (
         BLKDRCDS16_DATA *this,
         uint16_t        rcdSize,
         void            *pData,
@@ -1324,7 +1449,7 @@ extern "C" {
         }
         
         minSize = sizeof(DATA_BLOCK) + sizeof(INDEX_RECORD)
-                + sizeof(DATA_BLOCK) + rsvdSize + 1;
+                + rsvdSize + 1;
         if ((blockSize < minSize) || (blockSize > 32768)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;

@@ -159,7 +159,7 @@ int         test_BlkdRcds16_Test01(
     char            data[16];
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = BlkdRcds16_NewWithSizes(32, 0);
+    pObj = BlkdRcds16_NewWithSizes(40, 0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -172,7 +172,7 @@ int         test_BlkdRcds16_Test01(
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
-        eRc = BlkdRcds16_RecordAdd(pObj, 6, (void *)pWord6, &index);
+        eRc = BlkdRcds16_RecordAppend(pObj, 6, (void *)pWord6, &index);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (1 == index) );
         fprintf(stderr, "*** Just after Add Record 1 ***\n");
@@ -193,7 +193,7 @@ int         test_BlkdRcds16_Test01(
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (6 == size) );
 
-        eRc = BlkdRcds16_RecordAdd(pObj, 4, (void *)pWord4, &index);
+        eRc = BlkdRcds16_RecordAppend(pObj, 4, (void *)pWord4, &index);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (2 == index) );
         fprintf(stderr, "*** Just after Add Record 2 ***\n");
@@ -217,7 +217,7 @@ int         test_BlkdRcds16_Test01(
         XCTAssertTrue( (4 == size) );
         XCTAssertTrue( (0 == strncmp(data, pWord4, size)) );
 
-        eRc = BlkdRcds16_RecordAdd(pObj, 2, (void *)pWord2, &index);
+        eRc = BlkdRcds16_RecordAppend(pObj, 2, (void *)pWord2, &index);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         XCTAssertTrue( (3 == index) );
         fprintf(stderr, "*** Just after Add Record 3 ***\n");
@@ -280,7 +280,8 @@ int         test_BlkdRcds16_Calc(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     size = BlkdRcds16_CalcBlockSize(10, 8, 64);
-    XCTAssertTrue( (562 == size) );
+    fprintf(stderr, "\tSize = %d\n", size);
+    XCTAssertTrue( (570 == size) );
     
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
