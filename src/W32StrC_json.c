@@ -98,7 +98,7 @@ extern "C" {
          if (len && pObject) {
              eRc = JsonIn_FindAStrNodeInHashA(pParser, "data", &pWrk);
              if (ERESULT_OK(eRc)) {
-                 fRc = W32StrC_CopyFromA(pObject, AStr_getData(pWrk));
+                 fRc = W32StrC_SetupA(pObject, AStr_getData(pWrk));
                  if (!fRc) {
                      W32StrC_FreeLine(pObject);
                      eRc = ERESULT_INVALID_SYNTAX;
@@ -112,7 +112,7 @@ extern "C" {
                      eRc = ERESULT_INVALID_SYNTAX;
                      goto Exit00;
                  }
-                 eRc = W32StrC_CopyFromA(pObject, AStr_getData(pWrk));
+                 eRc = W32StrC_SetupA(pObject, AStr_getData(pWrk));
                  obj_Release(pWrk);
                  pWrk = OBJ_NIL;
              }

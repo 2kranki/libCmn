@@ -93,7 +93,7 @@ struct Scanner_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  SCANNER_SINGLETON
-    SCANNER_DATA *     Scanner_getSingleton (
+    SCANNER_DATA *  Scanner_getSingleton (
         void
     );
 

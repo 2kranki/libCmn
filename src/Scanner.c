@@ -926,7 +926,7 @@ Exit00:
 
         this = Scanner_New( );
         if (this) {
-            fRc = W32StrC_CopyFromA((W32STRC_DATA *)this, pStrA);
+            fRc = W32StrC_SetupA((W32STRC_DATA *)this, pStrA);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -947,7 +947,7 @@ Exit00:
 
         this = Scanner_New( );
         if (this) {
-            fRc = W32StrC_CopyFromW32((W32STRC_DATA *)this, 0, pStrW32);
+            fRc = W32StrC_SetupW32((W32STRC_DATA *)this, 0, pStrW32);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -968,7 +968,7 @@ Exit00:
 
         this = Scanner_New( );
         if (this) {
-            fRc = W32StrC_CopyFromW32((W32STRC_DATA *)this, len, pStrW32);
+            fRc = W32StrC_SetupW32((W32STRC_DATA *)this, len, pStrW32);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;

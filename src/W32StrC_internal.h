@@ -124,14 +124,33 @@ struct W32StrC_data_s	{
     );
 
 
-    bool            W32StrC_CopyFromA(
+    /*!
+     Free the current string and create a copy of the supplied
+     UTF-8 String terminated with a NUL character in UTF-32
+     format as the new string.
+     @param     this    object pointer
+     @param     pStrA   a pointer to a UTF-8 String
+     @return    If successful, true; otherwise false.
+     */
+    bool            W32StrC_SetupA(
         W32STRC_DATA    *this,
         const
         char            *pStrA
     );
 
 
-    bool            W32StrC_CopyFromW32(
+    /*!
+     Free the current string and create a copy of the supplied
+     UTF-32 String in UTF-32 format as the new string. If a
+     length is supplied, then only that character count is
+     copied.  Otherwise, it is assumed that the string is
+     terminated with a NUL character (ie '\0').
+     @param     this    object pointer
+     @param     len     string length in characters (0 == look for Terminating NUL)
+     @param     pStrW32 a pointer to a UTF-32 String
+     @return    If successful, true; otherwise false.
+     */
+    bool            W32StrC_SetupW32(
         W32STRC_DATA    *this,
         uint32_t        len,
         const

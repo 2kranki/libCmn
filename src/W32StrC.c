@@ -87,6 +87,7 @@ extern "C" {
             return false;
         }
 #endif
+        W32StrC_FreeLine(this);
 
         // Create the new string from this one.
         pArray = mem_Malloc((len + 1) * sizeof(uint32_t));
@@ -106,10 +107,43 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                        C o p y  F r o m
+    //                      F r e e  L i n e
     //---------------------------------------------------------------
 
-    bool            W32StrC_CopyFromA(
+    bool            W32StrC_FreeLine(
+        W32STRC_DATA    *this
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32StrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (this->pArray) {
+            if (obj_Flag(this, W32STRC_FLAG_MALLOC)) {
+                mem_Free((void *)this->pArray);
+                obj_FlagOff(this, W32STRC_FLAG_MALLOC);
+            }
+            this->pArray = NULL;
+            this->len = 0;
+        }
+
+        // Return to caller.
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S e t u p
+    //---------------------------------------------------------------
+
+    bool            W32StrC_SetupA(
         W32STRC_DATA    *this,
         const
         char            *pStrA
@@ -154,7 +188,7 @@ extern "C" {
     }
 
 
-    bool            W32StrC_CopyFromW32(
+    bool            W32StrC_SetupW32(
         W32STRC_DATA    *this,
         uint32_t        len,
         const
@@ -187,39 +221,6 @@ extern "C" {
         // Move in the data.
         memmove(this->pArray, pStrW32, ((len + 1) * sizeof(W32CHR_T)));
         this->len = len;
-
-        // Return to caller.
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                      F r e e  L i n e
-    //---------------------------------------------------------------
-
-    bool            W32StrC_FreeLine(
-        W32STRC_DATA    *this
-    )
-    {
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !W32StrC_Validate( this ) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        if (this->pArray) {
-            if (obj_Flag(this, W32STRC_FLAG_MALLOC)) {
-                mem_Free((void *)this->pArray);
-                obj_FlagOff(this, W32STRC_FLAG_MALLOC);
-            }
-            this->pArray = NULL;
-            this->len = 0;
-        }
 
         // Return to caller.
         return true;
@@ -279,7 +280,7 @@ extern "C" {
 
         this = W32StrC_New( );
         if (this) {
-            fRc = W32StrC_CopyFromA(this, pStrA);
+            fRc = W32StrC_SetupA(this, pStrA);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -315,7 +316,7 @@ extern "C" {
 
         this = W32StrC_New( );
         if (this) {
-            fRc = W32StrC_CopyFromW32(this, 0, pStrW32);
+            fRc = W32StrC_SetupW32(this, 0, pStrW32);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -336,7 +337,7 @@ extern "C" {
 
         this = W32StrC_New( );
         if (this) {
-            fRc = W32StrC_CopyFromW32(this, len, pStrW32);
+            fRc = W32StrC_SetupW32(this, len, pStrW32);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -561,7 +562,7 @@ extern "C" {
         // Create a copy of objects and areas in this object placing
         // them in other.
         if (this->pArray) {
-            W32StrC_CopyFromW32(pOther, 0, this->pArray);
+            W32StrC_SetupW32(pOther, 0, this->pArray);
         }
 
         // Copy other data from this object to other.
