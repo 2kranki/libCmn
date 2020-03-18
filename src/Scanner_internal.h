@@ -74,6 +74,8 @@ struct Scanner_data_s	{
     // Find an Identifier for its value. If not found, return 0.
     int32_t         (*pFindValueA)(OBJ_ID, const char *);
     OBJ_ID          pObjFind;
+    bool            (*pIsLabelCharW32)(W32CHR_T chr);
+    bool            (*pIsLabel1stCharW32)(W32CHR_T chr);
 
 
 };

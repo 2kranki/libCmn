@@ -1555,15 +1555,9 @@ Exit00:
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Scanner_Vtbl);
-        
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        */
+
+        this->pIsLabelCharW32 = ascii_isLabelCharW32;
+        this->pIsLabel1stCharW32 = ascii_isLabelFirstCharW32;
 
 #ifdef NDEBUG
 #else
@@ -1875,13 +1869,13 @@ Exit00:
         // Scan the paramter.
         chr = Scanner_LookAhead(this, len+1);
         if(chr) {
-            if (ascii_isLabelFirstCharW32(chr)) {
+            if (this->pIsLabel1stCharW32(chr)) {
                 AStr_AppendCharW32(pStr, chr);
                 len += 1;
                 fRc = true;
                 for (;;) {
                     chr  = Scanner_LookAhead(this, len+1);
-                    if (ascii_isLabelCharW32(chr)) {
+                    if (this->pIsLabelCharW32(chr)) {
                         AStr_AppendCharW32(pStr, chr);
                         len += 1;
                         fRc = true;
