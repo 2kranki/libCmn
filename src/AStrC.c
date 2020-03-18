@@ -1123,7 +1123,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        lenChars = utf8_W32ToUtf8Str(len, pStr, 0, NULL);
+        lenChars = utf8_W32StrToUtf8Str(len, pStr, 0, NULL);
         if (lenChars) {
             pStr8 = mem_Malloc(lenChars);
             if (OBJ_NIL == pStr8) {
@@ -1131,7 +1131,7 @@ extern "C" {
                 obj_Release(this);
                 return OBJ_NIL;
             }
-            utf8_W32ToUtf8Str(len, pStr, lenChars, pStr8);
+            utf8_W32StrToUtf8Str(len, pStr, lenChars, pStr8);
             this->pData = pStr8;
             this->len = len;
             obj_FlagOn(this, ASTRC_FLAG_MALLOC);

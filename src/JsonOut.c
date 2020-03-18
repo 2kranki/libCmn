@@ -233,18 +233,18 @@ extern "C" {
     }
 
 
-    void            JsonOut_Append_AStrA (
+    void            JsonOut_Append_StrA (
         const
         char            *pNameA,
         const
-        char            *pObjA,
+        char            *pStrA,
         ASTR_DATA       *pStr
     )
     {
         ASTR_DATA       *pWrk;
 
-        if (pObjA && pStr && pNameA) {
-            pWrk = AStr_NewA(pObjA);
+        if (pStrA && pStr && pNameA) {
+            pWrk = AStr_NewA(pStrA);
             if (pWrk) {
                 JsonOut_Append_AStr(pNameA, pWrk, pStr);
                 obj_Release(pWrk);
@@ -253,7 +253,7 @@ extern "C" {
     }
 
 
-    void            JsonOut_Append_AStrW32 (
+    void            JsonOut_Append_StrW32 (
         const
         char            *pNameA,
         const

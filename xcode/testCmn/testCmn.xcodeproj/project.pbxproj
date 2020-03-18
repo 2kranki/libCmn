@@ -343,7 +343,7 @@
 		C4D4632F2419925600AF453D /* Expr_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4632A2419925400AF453D /* Expr_json.c */; };
 		C4D463302419925600AF453D /* Graph16.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4632B2419925400AF453D /* Graph16.c */; };
 		C4D46337241BD60B00AF453D /* IntLock.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D46336241BD60A00AF453D /* IntLock.c */; };
-		C4D4634F2421E6B500AF453D /* Scanner_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4634E2421E6B500AF453D /* Scanner_test.c */; };
+		C4D463612422A6A300AF453D /* utf8_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D463602422A6A300AF453D /* utf8_test.c */; };
 		C4E02E8821FA0E4C003DA92E /* memOSX_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E02E8321FA0E49003DA92E /* memOSX_object.c */; };
 		C4E02E8A21FA0E4C003DA92E /* memOSX.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E02E8721FA0E4B003DA92E /* memOSX.c */; };
 		C4E137A223B900C30095EABE /* SrcErrors_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E137A123B900C30095EABE /* SrcErrors_json.c */; };
@@ -1046,7 +1046,7 @@
 		C4D4632C2419925500AF453D /* Graph16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Graph16.h; sourceTree = "<group>"; };
 		C4D46335241BD60900AF453D /* IntLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntLock.h; sourceTree = "<group>"; };
 		C4D46336241BD60A00AF453D /* IntLock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IntLock.c; sourceTree = "<group>"; };
-		C4D4634E2421E6B500AF453D /* Scanner_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Scanner_test.c; sourceTree = "<group>"; };
+		C4D463602422A6A300AF453D /* utf8_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8_test.c; sourceTree = "<group>"; };
 		C4E02E8321FA0E49003DA92E /* memOSX_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memOSX_object.c; sourceTree = "<group>"; };
 		C4E02E8421FA0E49003DA92E /* memOSX_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memOSX_internal.h; sourceTree = "<group>"; };
 		C4E02E8521FA0E4A003DA92E /* memOSX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memOSX.h; sourceTree = "<group>"; };
@@ -1169,7 +1169,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C4D4634E2421E6B500AF453D /* Scanner_test.c */,
+				C4D463602422A6A300AF453D /* utf8_test.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -2028,7 +2028,6 @@
 				C4B75F4A23FC4E1300701E77 /* U16Matrix.c in Sources */,
 				C4359BDB1FC9C48400CA858E /* scanhex32.c in Sources */,
 				C4B75F7D2400613400701E77 /* ObjCb.c in Sources */,
-				C4D4634F2421E6B500AF453D /* Scanner_test.c in Sources */,
 				C4E1383223BE91570095EABE /* Token.c in Sources */,
 				C4E137C923BAEBBB0095EABE /* JsonIn_object.c in Sources */,
 				C41D590620F24D77009F2F0E /* bptLeaf_object.c in Sources */,
@@ -2354,6 +2353,7 @@
 				C47048BF2121394D0026E795 /* u32Matrix_object.c in Sources */,
 				C406601F2184DE8A004CF223 /* disks.c in Sources */,
 				C4EBE2DD23C95883008E9EE8 /* NodeTree_object.c in Sources */,
+				C4D463612422A6A300AF453D /* utf8_test.c in Sources */,
 				C43599A21FC9C36800CA858E /* array.c in Sources */,
 				C42C552923CB73A500AA762C /* NodeLink.c in Sources */,
 			);

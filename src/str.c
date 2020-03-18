@@ -604,6 +604,45 @@ bool            str_Copy(
 }
 
 
+bool            str_CopyAConvertW32(
+    W32CHR_T        *pszOutW32,     /* Output Buffer Pointer */
+    int             outLen,         /* Output Buffer Length */
+    const
+    char            *pszInA          /* Input String Pointer */
+)
+{
+    int             i;
+    bool            fRc = true;
+    W32CHR_T        chr;
+
+    // Do initialization.
+    if( outLen > 0 )
+        ;
+    else
+        return false;
+    if( NULL == pszInA )
+        return false;
+    if( NULL == pszOutW32 )
+        return false;
+
+    // Copy the String.
+    for( i=0; (*pszInA && (i < outLen-1)); i++ ) {
+        chr = utf8_Utf8ToW32_Scan(&pszInA);
+        *pszOutW32++ = chr;
+    }
+    if( *pszInA )
+        fRc = false;
+
+    //    Zero-fill the remainder of the output string.
+    for( ; (i < outLen); i++ ) {
+        *pszOutW32++ = '\0';
+    }
+
+    // Return to caller.
+    return( fRc );
+}
+
+
 bool            str_CopyFill(
     char            *pszOut,        /* Output Buffer Pointer */
     int             outLen,         /* Output Buffer Length */

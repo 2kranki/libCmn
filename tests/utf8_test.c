@@ -331,7 +331,9 @@ int         test_utf8_StrW32_01(
 )
 {
     int32_t     len = 0;
-    
+    W32CHR_T    strW32[9];
+    char        strA[25];
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     len = utf8_StrLenA(string1A);
@@ -344,7 +346,28 @@ int         test_utf8_StrW32_01(
     XCTAssertTrue( (0 > len) );
     len = utf8_StrCmpAW32((const char *)string3A, (const int32_t *)string1W32);
     XCTAssertTrue( (0 < len) );
-    
+
+    len = utf8_W32StrToUtf8Str(0, string1W32, 0, NULL);
+    XCTAssertTrue( (len == 5) );
+    len = utf8_W32StrToUtf8Str(0, string1W32, 25, strA);
+    XCTAssertTrue( (len == 4) );
+    len = utf8_StrCmpAW32((const char *)strA, (const int32_t *)string1W32);
+    XCTAssertTrue( (0 == len) );
+
+    len = utf8_Utf8StrToW32Str(0, strA, 0, NULL);
+    XCTAssertTrue( (5 == len) );
+    len = utf8_Utf8StrToW32Str(0, strA, 9, strW32);
+    XCTAssertTrue( (4 == len) );
+    len = utf8_StrCmpAW32((const char *)strA, (const int32_t *)strW32);
+    XCTAssertTrue( (0 == len) );
+
+    strA[0] = '\0';
+    len = utf8_Utf8StrToW32Str(0, strA, 0, NULL);
+    XCTAssertTrue( (1 == len) );
+    strW32[0] = '\0';
+    len = utf8_W32StrToUtf8Str(0, strW32, 0, NULL);
+    XCTAssertTrue( (1 == len) );
+
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }

@@ -281,7 +281,7 @@ extern "C" {
      */
     W32CHR_T *      utf8_ChrConToW32Str(
         const
-        char            *pSrc
+        char            *pSrcA
     );
 
 
@@ -306,9 +306,33 @@ extern "C" {
         uint32_t        lenStr,         // Input String Length (if zero,
         //                              // we use NUL-terminator to stop)
         const
-        char            *pStr,          // Input String pointer
+        char            *pStrA,         // Input String pointer
         uint32_t        lenDest,        // in bytes including NUL
         char            *pDest
+    );
+
+
+    /*!
+     Convert the UTF-8 input string to a NUL-terminated UTF-32 string
+     or calculates the size of the area needed to do the conversion.
+     @param     lenStrA length of input string excluding NUL-terminator
+                        (0 == calculate string length)
+     @param     pStrA   UTF-8 String Pointer
+     @param     lenDest length of output string including NUL-terminator
+                        (Optional if pDestW32 is NULL)
+     @param     pDest   UTF-32 String Pointer
+                        (if NULL, just return length needed)
+     @return    If successful, length of the string used in pDest excluding
+                NUL-terminator or the calculated length needed which includes
+                a NUL-terminator; otherwise, -1.
+     */
+    int32_t         utf8_Utf8StrToW32Str(
+        uint32_t        lenStrA,        // Input String Length (if zero,
+        //                              // we use NUL-terminator to stop)
+        const
+        char            *pStrA,         // Input String pointer
+        uint32_t        lenDest,        // in bytes including NUL
+        W32CHR_T        *pDest
     );
 
 
@@ -354,18 +378,25 @@ extern "C" {
 
     
     /*!
-     utf8_W32ToUtf8Str() converts an input string to a character
-     constant string and returns the size of the new string 
-     excluding the NUL-terminator. If pDest is NULL, we cal-
-     culate the size of area needed including NUL-terminator 
-     and return that.
+     Convert the UTF-32 input string to a NUL-terminated UTF-8
+     string or calculates the length needed to do the conversion.
+     @param     lenStr  length of input string excluding NUL-terminator
+                        (0 == calculate string length)
+     @param     pStrW32 UTF-32 String Pointer
+     @param     lenDest length of output string including NUL-terminator
+                        (Optional if pDest is NULL)
+     @param     pDest   UTF-8 String Pointer
+                        (if NULL, just return length needed)
+     @return    If successful, length of the string used in pDest excluding
+                NUL-terminator or the calculated length needed which includes
+                a NUL-terminator; otherwise, -1.
      */
-    uint32_t         utf8_W32ToUtf8Str(
+    int32_t         utf8_W32StrToUtf8Str(
         uint32_t        lenStr,       // Input String Length (if zero,
                                       // we use NUL-terminator to stop)
         const
-        W32CHR_T        *pStr,        // Input String pointer
-        uint32_t        lenDest,      // In bytes including NUL
+        W32CHR_T        *pStrW32,     // Input String pointer
+        uint32_t        lenDest,      // output area size including NUL
         char            *pDest
     );
     
@@ -387,7 +418,7 @@ extern "C" {
     NUL-terminator. If pDest is NULL, we calculate the size of
     area needed including NUL-terminator and return that.
      */
-    uint32_t         utf8_W32ToUtf8Str(
+    int32_t         utf8_W32StrToUtf8Str(
         uint32_t        lenStr,       // Input String Length (if zero,
                                       // we use NUL-terminator to stop)
         const

@@ -282,7 +282,7 @@ extern "C" {
         crc = W32StrC_getCrcIEEE(this);
         JsonOut_Append_u32("crc", crc, pStr);
         JsonOut_Append_u32("len", this->len, pStr);
-        JsonOut_Append_AStrW32("data", this->pArray, pStr);
+        JsonOut_Append_StrW32("data", this->pArray, pStr);
 
         return ERESULT_SUCCESS;
     }

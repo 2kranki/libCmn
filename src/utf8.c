@@ -603,6 +603,65 @@ extern "C" {
     
     
     
+    int32_t         utf8_Utf8StrToW32Str(
+        uint32_t        lenStrA,        // Input String Length (if zero,
+        //                              // we use NUL-terminator to stop)
+        const
+        char            *pStrA,         // Input String pointer
+        uint32_t        lenDest,        // in bytes including NUL
+        W32CHR_T        *pDest
+    )
+    {
+        uint32_t        lenUsed = 0;    // In bytes exluding NUL
+        int32_t         lenChr;
+        W32CHR_T        chr;
+
+        if (0 == lenStrA) {
+            lenStrA = utf8_StrLenA(pStrA);
+        }
+
+        while (lenStrA && *pStrA) {
+            lenChr = utf8_Utf8ToW32(pStrA, NULL);
+            if (lenChr < 0) {
+                if (pDest && (lenDest > 0)) {
+                    while (lenDest-- > 0) {
+                        *pDest++ = '\0';
+                    }
+                }
+                return -1;
+            }
+            if (pDest) {
+                if (lenChr <= (lenDest -1)) {
+                    utf8_Utf8ToW32(pStrA, pDest);
+                    pStrA += lenChr;
+                    pDest++;
+                    lenDest--;
+                    lenUsed++;
+                }
+                else
+                    break;
+            }
+            else {
+                lenUsed++;
+            }
+            --lenStrA;
+        }
+        if (lenUsed >= 0) {
+            if (pDest && (lenDest > 0)) {
+                while (lenDest-- > 0) {
+                    *pDest++ = '\0';
+                }
+            }
+            else {
+                ++lenUsed;      // bump for NUL-terminator
+            }
+        }
+
+        return lenUsed;
+    }
+
+
+
     uint32_t         utf8_Utf8ToChrConStr(
         uint32_t        lenStr,         // Input String Length (if zero,
         //                              // we use NUL-terminator to stop)
@@ -1088,7 +1147,7 @@ extern "C" {
     
 
 
-    uint32_t         utf8_W32ToUtf8Str(
+    int32_t         utf8_W32StrToUtf8Str(
         uint32_t        lenStr,         // Input String Length (if zero,
                                         // we use NUL-terminator to stop)
         const
@@ -1101,13 +1160,21 @@ extern "C" {
         uint32_t        lenChr;
 
         if (0 == lenStr) {
-            lenStr = -1;
+            lenStr = utf8_StrLenW32(pStr);
         }
         
         while (lenStr && *pStr) {
             lenChr = utf8_W32ToUtf8(*pStr, NULL);
+            if (lenChr < 0) {
+                if (pDest && (lenDest > 0)) {
+                    while (lenDest-- > 0) {
+                        *pDest++ = '\0';
+                    }
+                }
+                return -1;
+            }
             if (pDest) {
-                if (lenChr <= lenDest) {
+                if (lenChr <= (lenDest - 1)) {
                     lenUsed += utf8_W32ToUtf8(*pStr, pDest);
                     pDest += lenChr;
                     lenDest -= lenChr;
@@ -1121,13 +1188,17 @@ extern "C" {
             ++pStr;
             --lenStr;
         }
-        if (pDest && lenDest) {
-            *pDest = '\0';
+        if (lenUsed >= 0) {
+            if (pDest && (lenDest > 0)) {
+                while (lenDest--) {
+                    *pDest++ = '\0';
+                }
+            }
+            else {
+                ++lenUsed;      // bump for NUL-terminator
+            }
         }
-        else {
-            ++lenUsed;      // bump for NUL-terminator
-        }
-        
+
         return lenUsed;
     }
     

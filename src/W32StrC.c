@@ -64,49 +64,6 @@ extern "C" {
     ****************************************************************/
 
     //---------------------------------------------------------------
-    //                        C o p y  D a t a
-    //---------------------------------------------------------------
-
-    bool            W32StrC_CopyData(
-        W32STRC_DATA    *this,
-        W32CHR_T        *pData,
-        uint32_t        len
-    )
-    {
-        W32CHR_T        *pArray;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !W32StrC_Validate( this ) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-        if (len == 0) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        W32StrC_FreeLine(this);
-
-        // Create the new string from this one.
-        pArray = mem_Malloc((len + 1) * sizeof(uint32_t));
-        if (NULL == pArray) {
-            DEBUG_BREAK();
-            return false;
-        }
-        memmove(pArray, pData, (len * sizeof(uint32_t)));
-        pArray[len] = 0;
-        this->pArray = pArray;
-        this->len = len;
-
-        // Return to caller.
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                      F r e e  L i n e
     //---------------------------------------------------------------
 
@@ -151,7 +108,7 @@ extern "C" {
     {
         uint32_t        i;
         W32CHR_T        *pInsert;
-        uint32_t        chr;
+        W32CHR_T        chr;
         uint32_t        len;
 
         // Do initialization.

@@ -610,7 +610,7 @@ extern "C" {
         }
         
         hash = str_HashW32(pStr, &strLen);
-        utf8StrLen = utf8_W32ToUtf8Str( (uint32_t)strLen, pStr, 0, NULL);
+        utf8StrLen = utf8_W32StrToUtf8Str( (uint32_t)strLen, pStr, 0, NULL);
         nodeSize = Node_SizeNeeded(utf8StrLen-1);
         
         // Add a Heap block if necessary.
@@ -638,7 +638,7 @@ extern "C" {
         pNode->hash = hash;
         pNode->max = nodeSize - sizeof(SZTBL_NODE);
         pNode->len = utf8StrLen - 1;
-        i = utf8_W32ToUtf8Str( (uint32_t)strLen, pStr, utf8StrLen, (char *)(pNode->data));
+        i = utf8_W32StrToUtf8Str( (uint32_t)strLen, pStr, utf8StrLen, (char *)(pNode->data));
         eRc = ptrArray_AppendData(this->pPtrArray, pNode, &index);
         if (ERESULT_HAS_FAILED(eRc)) {
             return 0;

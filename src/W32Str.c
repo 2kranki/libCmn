@@ -1369,7 +1369,7 @@ extern "C" {
 #endif
         lenStr = W32Str_getLength(this);
         
-        lenA =  utf8_W32ToUtf8Str(
+        lenA =  utf8_W32StrToUtf8Str(
                             lenStr,
                             array_Ptr((ARRAY_DATA *)this, 1),
                             0,
@@ -1377,7 +1377,7 @@ extern "C" {
                 );
         pszStr = (char *)mem_Malloc(lenA);
         if (pszStr) {
-            i =     utf8_W32ToUtf8Str(
+            i =     utf8_W32StrToUtf8Str(
                                      lenStr,
                                      array_Ptr((ARRAY_DATA *)this, 1),
                                      lenA,

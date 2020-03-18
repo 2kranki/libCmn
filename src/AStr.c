@@ -766,11 +766,11 @@ extern "C" {
         }
 #endif
       
-        lenChars = utf8_W32ToUtf8Str(len, pStr, 0, NULL);
+        lenChars = utf8_W32StrToUtf8Str(len, pStr, 0, NULL);
         if (lenChars) {
             pStr8 = mem_Malloc(lenChars);
             if (pStr8) {
-                lenChars = utf8_W32ToUtf8Str(len, pStr, lenChars, pStr8);
+                lenChars = utf8_W32StrToUtf8Str(len, pStr, lenChars, pStr8);
                 if (lenChars) {
                     eRc =   array_InsertData(
                                     this->pData,
@@ -2483,10 +2483,10 @@ extern "C" {
 #endif
         off = utf8_StrOffset(AStr_getData(this), offset);
         
-        len = utf8_W32ToUtf8Str(0,pStr,0,NULL);
+        len = utf8_W32StrToUtf8Str(0,pStr,0,NULL);
         pChrs = mem_Malloc(len);
         if (pChrs) {
-            len = utf8_W32ToUtf8Str(0,pStr,len,pChrs);
+            len = utf8_W32StrToUtf8Str(0,pStr,len,pChrs);
             eRc = array_InsertData(
                                 this->pData,
                                 off,

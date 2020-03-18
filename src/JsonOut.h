@@ -127,7 +127,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  JSONOUT_SINGLETON
-    JSONOUT_DATA *     JsonOut_Shared (
+    JSONOUT_DATA *  JsonOut_Shared (
         void
     );
 
@@ -225,14 +225,14 @@ extern "C" {
      an already existing AStr with a given name if possible.
      This is normally parsed with JsonIn_FindAStrNodeInHashA()
      @param     pNameA  Name for the object
-     @param     pObjA   non-null UTF-8 string pointer
+     @param     pStrA   non-NULL UTF-8 string pointer
      @param     pStr    string to be added on to
      */
-    void            JsonOut_Append_AStrA (
+    void            JsonOut_Append_StrA (
         const
         char            *pNameA,
         const
-        char            *pObjA,
+        char            *pStrA,
         ASTR_DATA       *pStr
     );
 
@@ -242,14 +242,14 @@ extern "C" {
      an already existing AStr with a given name if possible.
      This is normally parsed with JsonIn_FindAStrNodeInHashA()
      @param     pNameA  Name for the object
-     @param     pObjW32 non-null UTF-32 string pointer
+     @param     pStrW32 non-NULL UTF-32 string pointer
      @param     pStr    string to be added on to
      */
-    void            JsonOut_Append_AStrW32 (
+    void            JsonOut_Append_StrW32 (
         const
         char            *pNameA,
         const
-        W32CHR_T        *pObjW32,
+        W32CHR_T        *pStrW32,
         ASTR_DATA       *pStr
     );
 
