@@ -133,7 +133,7 @@ extern "C" {
         this = Sym_New( );
         if (this) {
             Sym_setNameA(this, pNameA);
-            Sym_getEntry(this)->Cls = cls;
+            Sym_getEntry(this)->cls = cls;
         }
 
         return this;
@@ -165,7 +165,7 @@ extern "C" {
         }
 #endif
 
-        return (Sym_getEntry(this)->Flags & SYM_ABS) ? true : false;
+        return Sym_getEntry(this)->fAbs ? true : false;
     }
 
 
@@ -183,9 +183,9 @@ extern "C" {
 #endif
 
         if (value) {
-            Sym_getEntry(this)->Flags |= SYM_ABS;
+            Sym_getEntry(this)->fAbs = 1;
         } else {
-            Sym_getEntry(this)->Flags &= ~SYM_ABS;
+            Sym_getEntry(this)->fAbs = 0;
         }
 
         return true;
@@ -211,7 +211,7 @@ extern "C" {
         }
 #endif
 
-        return Sym_getEntry(this)->Align;
+        return Sym_getEntry(this)->align;
     }
 
 
@@ -228,7 +228,7 @@ extern "C" {
         }
 #endif
 
-        Sym_getEntry(this)->Align = value;
+        Sym_getEntry(this)->align = value;
 
         return true;
     }
@@ -253,7 +253,7 @@ extern "C" {
         }
 #endif
 
-        return Sym_getEntry(this)->Cls;
+        return Sym_getEntry(this)->cls;
     }
 
 
@@ -270,7 +270,7 @@ extern "C" {
         }
 #endif
 
-        Sym_getEntry(this)->Cls = value;
+        Sym_getEntry(this)->cls = value;
 
         return true;
     }
@@ -295,7 +295,7 @@ extern "C" {
         }
 #endif
 
-        return Sym_getEntry(this)->Dup;
+        return Sym_getEntry(this)->dup;
     }
 
 
@@ -312,7 +312,7 @@ extern "C" {
         }
 #endif
 
-        Sym_getEntry(this)->Dup = value;
+        Sym_getEntry(this)->dup = value;
 
         return true;
     }
@@ -341,8 +341,32 @@ extern "C" {
     }
 
 
+
     //---------------------------------------------------------------
-    //                        A l i g n
+    //                        E x t r a
+    //---------------------------------------------------------------
+
+    uint8_t *       Sym_getExtra (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return (uint8_t *)Sym_getEntry(this)->extra;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        H a s h
     //---------------------------------------------------------------
 
     uint32_t        Sym_getHash (
@@ -359,7 +383,7 @@ extern "C" {
         }
 #endif
 
-        return Sym_getEntry(this)->Hash;
+        return Sym_getEntry(this)->hash;
     }
 
 
@@ -376,7 +400,7 @@ extern "C" {
         }
 #endif
 
-        Sym_getEntry(this)->Hash = value;
+        Sym_getEntry(this)->hash = value;
 
         return true;
     }
@@ -402,7 +426,7 @@ extern "C" {
         }
 #endif
 
-        return Sym_getEntry(this)->Name;
+        return Sym_getEntry(this)->name;
     }
 
 
@@ -426,7 +450,7 @@ extern "C" {
         }
 #endif
 
-        str_Copy((char *)Sym_getEntry(this)->Name, SYM_ENTRY_NAME_MAX, pValue);
+        str_Copy((char *)Sym_getEntry(this)->name, sizeof(Sym_getEntry(this)->name), pValue);
         len = utf8_StrLenA(pValue);
         //FIXME: Sym_getEntry(this)->cName = len;
 
@@ -454,7 +478,7 @@ extern "C" {
 #endif
 
         //return this->priority;
-        return (Sym_getEntry(this)->Flags & SYM_REL) ? true : false;
+        return Sym_getEntry(this)->fRel ? true : false;
     }
 
 
@@ -472,9 +496,9 @@ extern "C" {
 #endif
 
         if (value) {
-            Sym_getEntry(this)->Flags |= SYM_REL;
+            Sym_getEntry(this)->fRel = 1;
         } else {
-            Sym_getEntry(this)->Flags &= ~SYM_REL;
+            Sym_getEntry(this)->fRel = 0;
         }
 
         return true;
@@ -500,7 +524,7 @@ extern "C" {
         }
 #endif
 
-        return Sym_getEntry(this)->Scale;
+        return Sym_getEntry(this)->scale;
     }
 
 
@@ -517,7 +541,49 @@ extern "C" {
         }
 #endif
 
-        Sym_getEntry(this)->Scale = value;
+        Sym_getEntry(this)->scale = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      S e c t i o n
+    //---------------------------------------------------------------
+
+    uint32_t        Sym_getSection (
+        SYM_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->section;
+    }
+
+
+    bool            Sym_setSection (
+        SYM_DATA        *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->section = value;
 
         return true;
     }
@@ -570,6 +636,48 @@ extern "C" {
   
 
     //---------------------------------------------------------------
+    //                        T o k e n
+    //---------------------------------------------------------------
+
+    uint32_t        Sym_getToken (
+        SYM_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->token;
+    }
+
+
+    bool            Sym_setToken (
+        SYM_DATA        *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->token = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          T y p e
     //---------------------------------------------------------------
 
@@ -587,7 +695,7 @@ extern "C" {
         }
 #endif
 
-        return Sym_getEntry(this)->Type;
+        return Sym_getEntry(this)->type;
     }
 
 
@@ -604,7 +712,7 @@ extern "C" {
         }
 #endif
 
-        Sym_getEntry(this)->Type = value;
+        Sym_getEntry(this)->type = value;
 
         return true;
     }
@@ -629,7 +737,7 @@ extern "C" {
         }
 #endif
 
-        return Sym_getEntry(this)->Value;
+        return Sym_getEntry(this)->value;
     }
 
 
@@ -646,7 +754,7 @@ extern "C" {
         }
 #endif
 
-        Sym_getEntry(this)->Value = value;
+        Sym_getEntry(this)->value = value;
 
         return true;
     }
@@ -679,10 +787,10 @@ extern "C" {
      */
     ERESULT         Sym_Assign (
         SYM_DATA		*this,
-        SYM_DATA     *pOther
+        SYM_DATA        *pOther
     )
     {
-        ERESULT     eRc;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -751,8 +859,8 @@ extern "C" {
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
     ERESULT         Sym_Compare (
-        SYM_DATA     *this,
-        SYM_DATA     *pOther
+        SYM_DATA        *this,
+        SYM_DATA        *pOther
     )
     {
         int             i = 0;
@@ -776,9 +884,9 @@ extern "C" {
         }
 #endif
 
-        i = this->entry.Cls - pOther->entry.Cls;
+        i = this->entry.cls - pOther->entry.cls;
         if (0 == i) {
-            i = strcmp(this->entry.Name, pOther->entry.Name);
+            i = strcmp(this->entry.name, pOther->entry.name);
             if (0 == i) {
                 return ERESULT_SUCCESS_EQUAL;
             }
@@ -1297,7 +1405,7 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-        len = utf8_Utf8ToChrConStr(0, this->entry.Name, sizeof(NameA), NameA);
+        len = utf8_Utf8ToChrConStr(0, this->entry.name, sizeof(NameA), NameA);
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
@@ -1305,35 +1413,35 @@ extern "C" {
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
-        AStr_AppendPrint(pStr, "Class:%d,\n", this->entry.Cls);
+        AStr_AppendPrint(pStr, "Class:%d,\n", this->entry.cls);
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
-        AStr_AppendPrint(pStr, "Type:%d,\n", this->entry.Type);
+        AStr_AppendPrint(pStr, "Type:%d,\n", this->entry.type);
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
-        AStr_AppendPrint(pStr, "Prim:%d,\n", this->entry.Prim);
+        AStr_AppendPrint(pStr, "Prim:%d,\n", this->entry.prim);
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
-        AStr_AppendPrint(pStr, "Len:%d,\n", this->entry.Len);
+        AStr_AppendPrint(pStr, "Len:%d,\n", this->entry.len);
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
-        AStr_AppendPrint(pStr, "Dup:%d,\n", this->entry.Dup);
+        AStr_AppendPrint(pStr, "Dup:%d,\n", this->entry.dup);
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
-        AStr_AppendPrint(pStr, "Align:%d,\n", this->entry.Align);
+        AStr_AppendPrint(pStr, "Align:%d,\n", this->entry.align);
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
-        AStr_AppendPrint(pStr, "Scale:%d,\n", this->entry.Scale);
+        AStr_AppendPrint(pStr, "Scale:%d,\n", this->entry.scale);
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
-        AStr_AppendPrint(pStr, "Value:%d,\n", this->entry.Value);
+        AStr_AppendPrint(pStr, "Value:%d,\n", this->entry.value);
 
 #ifdef  XYZZY
         if (this->pData) {

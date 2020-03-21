@@ -187,31 +187,31 @@ int         test_str_CopyFill01(
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
-    fRc = str_CopyFill( test, sizeof(test), "abc", 3, ' ' );
+    fRc = str_CopyFillA( test, sizeof(test), "abc", 3, ' ' );
     XCTAssertTrue( (fRc) );
     //                     01234567
     i = str_Compare(test, "abc    ");
     XCTAssertTrue( (0 == i) );
     
-    fRc = str_CopyFill( test, sizeof(test), "abc", 5, ' ' );
+    fRc = str_CopyFillA( test, sizeof(test), "abc", 5, ' ' );
     XCTAssertTrue( (fRc) );
     //                     01234567
     i = str_Compare(test, "abc    ");
     XCTAssertTrue( (0 == i) );
 
-    fRc = str_CopyFill( test, sizeof(test), "abc", 2, ' ' );
+    fRc = str_CopyFillA( test, sizeof(test), "abc", 2, ' ' );
     XCTAssertTrue( (!fRc) );
     //                     01234567
     i = str_Compare(test, "ab     ");
     XCTAssertTrue( (0 == i) );
 
-    fRc = str_CopyFill( test, sizeof(test), "", 0, ' ' );
+    fRc = str_CopyFillA( test, sizeof(test), "", 0, ' ' );
     XCTAssertTrue( (fRc) );
     //                     01234567
     i = str_Compare(test, "       ");
     XCTAssertTrue( (0 == i) );
     
-    fRc = str_CopyFill( test, sizeof(test), NULL, 0, ' ' );
+    fRc = str_CopyFillA( test, sizeof(test), NULL, 0, ' ' );
     XCTAssertTrue( (fRc) );
     //                     01234567
     i = str_Compare(test, "       ");

@@ -1020,7 +1020,6 @@ extern "C" {
         OBJHASH_NODE    *pNext;
         uint32_t        i;
         OBJ_ID          pReturn = OBJ_NIL;
-        uint32_t        zero = 0;
 
         // Do initialization.
 #ifdef NDEBUG

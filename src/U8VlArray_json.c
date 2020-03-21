@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Sym_json.c
+ * File:   U8VlArray_json.c
  *
- *	Generated 02/22/2020 20:18:12
+ *	Generated 03/20/2020 11:56:58
  *
  */
 
@@ -42,12 +42,13 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <Sym_internal.h>
+#include    <U8VlArray_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
 #include    <AStr_internal.h>
 #include    <dec.h>
+#include    <hex_internal.h>
 #include    <JsonIn.h>
 #include    <JsonOut.h>
 #include    <Node.h>
@@ -78,35 +79,46 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     Sym_ParseJsonFields (
+    ERESULT     U8VlArray_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SYM_DATA     *pObject
+        U8VLARRAY_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         //int64_t         intIn;
-        ASTR_DATA       *pWrk = OBJ_NIL;
+        //ASTR_DATA       *pWrk;
+        //uint8_t         *pData;
+        uint32_t        len = 0;
+        uint16_t        max = 0;
 
-        eRc = JsonIn_FindStringNodeInHashA(pParser, "name", &pWrk);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Failed to find Name!\n\n\n");
-            exit(EXIT_FAILURE);
+        (void)JsonIn_FindU16NodeInHashA(pParser, "max", &max);
+        eRc = JsonIn_SubObjectInHash(pParser, "data");
+        if (ERESULT_OK(eRc)) {
+            pObject->pData = hex_ParseObject(pParser, &len);
+            JsonIn_SubObjectEnd(pParser);
+            if (pObject->pData) {
+                if (len == max) {
+                    obj_FlagOn(pObject, U8VLARRAY_FLAG_ALLOC);
+                } else {
+                    mem_Free(pObject->pData);
+                    pObject->pData = NULL;
+                }
+            }
         }
-        if (AStr_getLength(pWrk) > sizeof(pObject->entry.name)-1) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Name was too big!\n\n\n");
-            exit(EXIT_FAILURE);
+
+#ifdef XYZZZY
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
+
+        eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
         }
-        Sym_setNameA(pObject, AStr_getData(pWrk));
-        (void)JsonIn_FindI32NodeInHashA(pParser, "class",   &pObject->entry.cls);
-        (void)JsonIn_FindI32NodeInHashA(pParser, "type",    &pObject->entry.type);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "prim",    &pObject->entry.prim);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "len",     &pObject->entry.len);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "dup",     &pObject->entry.dup);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "align",   &pObject->entry.align);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "scale",   &pObject->entry.scale);
-        (void)JsonIn_FindI32NodeInHashA(pParser, "value",   &pObject->entry.value);
+        JsonIn_SubObjectEnd(pParser);
+#endif
 
         // Return to caller.
     exit00:
@@ -121,18 +133,18 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SYM_DATA * Sym_ParseJsonObject (
+    U8VLARRAY_DATA * U8VlArray_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        SYM_DATA   *pObject = OBJ_NIL;
+        U8VLARRAY_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(Sym_Class());
+        pInfo = obj_getInfo(U8VlArray_Class());
         
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -140,12 +152,12 @@ extern "C" {
             goto exit00;
         }
 
-        pObject = Sym_New( );
+        pObject = U8VlArray_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  Sym_ParseJsonFields(pParser, pObject);
+        eRc =  U8VlArray_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -167,13 +179,13 @@ extern "C" {
     //===============================================================
     
 
-    SYM_DATA *   Sym_NewFromJsonString (
+    U8VLARRAY_DATA *   U8VlArray_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        SYM_DATA   *pObject = OBJ_NIL;
+        U8VLARRAY_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -181,7 +193,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = Sym_ParseJsonObject(pParser);
+        pObject = U8VlArray_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -194,17 +206,17 @@ extern "C" {
     
     
 
-    SYM_DATA * Sym_NewFromJsonStringA (
+    U8VLARRAY_DATA * U8VlArray_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        SYM_DATA   *pObject = OBJ_NIL;
+        U8VLARRAY_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = Sym_NewFromJsonString(pStr);
+            pObject = U8VlArray_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -220,7 +232,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Sym_ToJson(this);
+     ASTR_DATA      *pDesc = U8VlArray_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -228,8 +240,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Sym_ToJson (
-        SYM_DATA   *this
+    ASTR_DATA *     U8VlArray_ToJson (
+        U8VLARRAY_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -239,7 +251,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Sym_Validate(this) ) {
+        if( !U8VlArray_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -249,11 +261,11 @@ extern "C" {
         pStr = AStr_New();
         if (pStr) {
              AStr_AppendPrint(pStr,
-                              "{ \"objectType\":\"%s\", ",
+                              "{ \"objectType\":\"%s\",\n",
                               pInfo->pClassName
              );
      
-            eRc = Sym_ToJsonFields(this, pStr);      
+            eRc = U8VlArray_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -262,8 +274,17 @@ extern "C" {
     }
     
     
-    ERESULT         Sym_ToJsonFields (
-        SYM_DATA        *this,
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         U8VlArray_ToJsonFields (
+        U8VLARRAY_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
@@ -278,19 +299,31 @@ extern "C" {
         );
         ASTR_DATA       *pWrkStr;
 #endif
-        char            NameA[256];
-        uint32_t        len;
 
-        len = utf8_Utf8ToChrConStr(0, this->entry.name, sizeof(NameA), NameA);
-        AStr_AppendPrint(pStr, "\tname:\"%s\",\n", NameA);
-        (void)JsonOut_Append_i32("class",   this->entry.cls, pStr);
-        (void)JsonOut_Append_i32("type",    this->entry.type, pStr);
-        (void)JsonOut_Append_u16("prim",    this->entry.prim, pStr);
-        (void)JsonOut_Append_u16("len",     this->entry.len, pStr);
-        (void)JsonOut_Append_u16("dup",     this->entry.dup, pStr);
-        (void)JsonOut_Append_u16("align",   this->entry.align, pStr);
-        (void)JsonOut_Append_u16("scale",   this->entry.scale, pStr);
-        (void)JsonOut_Append_i32("value",   this->entry.value, pStr);
+        if (this->pData) {
+            ASTR_DATA       *pWrk;
+            JsonOut_Append_u16("max", this->pData[0], pStr);
+            JsonOut_Append_u16("len", this->pData[1], pStr);
+            pWrk = hex_DataToJSON(this->pData[0], this->pData);
+            if (pWrk) {
+                AStr_AppendA(pStr, "\t\"data\":");
+                AStr_Append(pStr, pWrk);
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+
+            }
+        }
+
+#ifdef XYZZZY
+        JsonOut_Append_i32("fileIndex", this->fileIndex, pStr);
+        JsonOut_Append_i64("offset", this->offset, pStr);
+        JsonOut_Append_u32("lineNo", this->lineNo, pStr);
+        JsonOut_Append_utf8("name", pEntry->pName, pStr);
+        JsonOut_Append_Object("errorStr", this->pErrorStr, pStr);
+        JsonOut_Append_String("data", this->pAStr, pStr);
+        JsonOut_Append_StringA("data", this->pStrA, pStr);
+        JsonOut_Append_StringW32("data", this->pStrW32, pStr);
+#endif
 
         return ERESULT_SUCCESS;
     }

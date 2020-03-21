@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 3/13/2020 15:08:02.000)
+# ( 3/21/2020  2:58:30.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -1866,6 +1866,21 @@ OBJS += $(OBJDIR)/u8Array_object.o
 $(OBJDIR)/u8Array_object.o: $(SRCDIR)/u8Array_object.c $(SRCDIR)/u8Array.h $(SRCDIR)/u8Array_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/u8VlArray.o
+
+$(OBJDIR)/u8VlArray.o: $(SRCDIR)/u8VlArray.c $(SRCDIR)/u8VlArray.h $(SRCDIR)/u8VlArray_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/u8VlArray_json.o
+
+$(OBJDIR)/u8VlArray_json.o: $(SRCDIR)/u8VlArray_json.c $(SRCDIR)/u8VlArray.h $(SRCDIR)/u8VlArray_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/u8VlArray_object.o
+
+$(OBJDIR)/u8VlArray_object.o: $(SRCDIR)/u8VlArray_object.c $(SRCDIR)/u8VlArray.h $(SRCDIR)/u8VlArray_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/uint128.o
 
 $(OBJDIR)/uint128.o: $(SRCDIR)/uint128.c $(SRCDIR)/uint128.h $(SRCDIR)/uint128_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2816,6 +2831,12 @@ u32Matrix_test: $(TEST_SRC)/u32Matrix_test.c $(SRCDIR)/u32Matrix.h $(SRCDIR)/u32
 TESTS += u8Array_test
 
 u8Array_test: $(TEST_SRC)/u8Array_test.c $(SRCDIR)/u8Array.h $(SRCDIR)/u8Array_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += u8VlArray_test
+
+u8VlArray_test: $(TEST_SRC)/u8VlArray_test.c $(SRCDIR)/u8VlArray.h $(SRCDIR)/u8VlArray_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

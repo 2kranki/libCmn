@@ -384,7 +384,7 @@ extern "C" {
     
     
     /*!
-     Zeroes the data in the array and adjust array size if needed.
+     Zero the specified data in the array and adjust array size if needed.
      @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error.
      */

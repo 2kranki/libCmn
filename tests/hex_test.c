@@ -109,7 +109,7 @@ int         test_hex_JSON01(
     char        *pOutput =  "{\"objectType\":\"hex\", "
                             "\"len\":8, "
                             "\"crc\":2292869279, "
-                            "\"data\":\"\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\""
+                            "\"data\":\"0001020304050607\""
                             "}\n";
     uint32_t    length = 0;
     uint8_t     *pData2 = NULL;

@@ -85,6 +85,12 @@ struct hex_data_s	{
     );
 
     
+    int             hex_DigitToIntA(
+        const
+        char            chr
+    );
+
+
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object

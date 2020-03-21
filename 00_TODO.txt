@@ -3,6 +3,12 @@
 The following are things that are being thought about. Whether they get done or not
 will depend upon time and resources.
 
+-- eresult:
+    *   Look into having it support errno and using errno for its current value.
+        * MacOS
+        * Linux
+        * Win32/Win64
+
 -- TextIn:
     * Specify a large line buffer size and buffer one line at a time. Read a line at
         a time (W32).  Change Next() methods to offset within the line.  When the end

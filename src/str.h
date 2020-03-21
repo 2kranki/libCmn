@@ -209,13 +209,22 @@ bool            str_Copy(
  *    TRUE                =    Successful Completion
  *    FALSE               =    Output Field Overflow or Invalid Parameters
  */
-bool            str_CopyFill(
+bool            str_CopyFillA(
     char            *pszOut,        /* Output Buffer Pointer */
     int             outLen,         /* Output Buffer Length */
     const
     char            *pszIn,         /* Input String Pointer */
     int             inLen,          /* Input Buffer Length */
     char            fillChar
+);
+
+bool            str_CopyFillW32(
+    W32CHR_T        *pszOut,        /* Output Buffer Pointer */
+    int             outLen,         /* Output Buffer Length */
+    const
+    W32CHR_T        *pszIn,         /* Input String Pointer */
+    int             inLen,          /* Input Buffer Length */
+    W32CHR_T        fillChar
 );
 
 

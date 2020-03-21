@@ -538,6 +538,8 @@ extern "C" {
         OBJ_IDENT_U32MATRIX_CLASS,
         OBJ_IDENT_U8ARRAY,
         OBJ_IDENT_U8ARRAY_CLASS,
+        OBJ_IDENT_U8VLARRAY,            // uint8_t variable length array
+        OBJ_IDENT_U8VLARRAY_CLASS,
         OBJ_IDENT_UINT128,
         OBJ_IDENT_UINT128_CLASS,
         OBJ_IDENT_UTF8,

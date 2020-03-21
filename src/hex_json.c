@@ -61,7 +61,10 @@ extern "C" {
     
     
     
-    
+    static
+    const
+    char            *pHexChr = "0123456789ABCDEF";
+
     
     
     /****************************************************************
@@ -120,7 +123,8 @@ extern "C" {
             pChr = AStr_getData(pWrk);
             pOut = pData;
             for (i=0; ((i < length) && *pChr); ++i) {
-                ch = utf8_ChrConToW32_Scan(&pChr);
+                ch  = hex_DigitToIntA(*pChr++) << 4;
+                ch |= hex_DigitToIntA(*pChr++);
                 *pOut++ = ch & 0xFF;
             }
         }
@@ -253,8 +257,7 @@ extern "C" {
         AStr_AppendA(pStr, ", \"data\":\"");
         pChr = pData;
         for (i=0; i<length; ++i) {
-            utf8_W32ToChrCon(*pChr++, chrs);
-            AStr_AppendA(pStr, chrs);
+            AStr_AppendHex8(pStr, *pChr++);
         }
         AStr_AppendA(pStr, "\"");
         

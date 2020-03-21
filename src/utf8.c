@@ -614,7 +614,6 @@ extern "C" {
     {
         uint32_t        lenUsed = 0;    // In bytes exluding NUL
         int32_t         lenChr;
-        W32CHR_T        chr;
 
         if (0 == lenStrA) {
             lenStrA = utf8_StrLenA(pStrA);

@@ -104,28 +104,30 @@ extern "C" {
 
 #pragma pack(push, 1)
     typedef struct sym_entry_s {
-        uint16_t        Flags;
-        #define SYM_ABS     0x8000              // Absolute value
-        #define SYM_REL     0x4000              // Relocatable value
+        char            name[65];           // NUL-terminated name
         // Note: Abs or Rel may not be valid in initial passes.
-        uint32_t        Hash;               // Hash Code for name
-#define SYM_ENTRY_NAME_MAX  64
-        char            Name[64];           // NUL-terminated name
-        uint32_t        Token;              // unique token for name
-        int32_t         Cls;                // User Defined Class
-        int32_t         Type;               // See SYM_TYPE
-        uint16_t        Prim;               // See SYM_PRIMITIVE;
-        uint16_t        Len;                // Data Length in Bytes
-        uint16_t        Dup;                // Duplication Factor
-        uint16_t        Align;              // Required Storage Alignment
+        uint8_t         fAbs;               // Absolute value
+        uint8_t         fRel;               // Relocatable value
+        uint8_t         rsvd8;
+        uint32_t        hash;               // Hash Code for name
+        uint32_t        token;              // unique token for name
+        int32_t         cls;                // User Defined Class
+        int32_t         type;               // See SYM_TYPE
+        uint32_t        section;            // Section/Struct Identifier (0 == none)
+        uint16_t        prim;               // See SYM_PRIMITIVE;
+        uint16_t        len;                // Data Length in Bytes
+        uint16_t        dup;                // Duplication Factor
+        uint16_t        align;              // Required Storage Alignment
         //                                  //  0 == None (same as 1)
         //                                  //  1 == Byte Boundary
         //                                  //  2 == 16 Bit Boundary
         //                                  //  4 == 32 Bit Boundary
         //                                  //  8 == 64 Bit Boundary
         //                                  // 16 == 128 Bit Boundary
-        uint16_t        Scale;
-        int32_t         Value;
+        uint16_t        scale;              // Binary or Decimal Shift Amount
+        uint16_t        rsvd16;
+        int32_t         value;
+        char            extra[64];          // Used as needed
     } SYM_ENTRY;
 #pragma pack(pop)
 
@@ -245,6 +247,14 @@ extern "C" {
     );
 
 
+    /*! Property: Extra Data
+     64 byte data that can be used as needed
+     */
+    uint8_t *       Sym_getExtra (
+        SYM_DATA        *this
+    );
+
+
     /*! Property: Hash
      */
     uint32_t        Sym_getHash (
@@ -284,6 +294,30 @@ extern "C" {
     bool            Sym_setScale (
         SYM_DATA        *this,
         uint16_t        value
+    );
+
+
+    /*! Property: Section
+     */
+    uint32_t        Sym_getSection (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setSection (
+        SYM_DATA        *this,
+        uint32_t        value
+    );
+
+
+    /*! Property: Token
+     */
+    uint32_t        Sym_getToken (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setToken (
+        SYM_DATA        *this,
+        uint32_t        value
     );
 
 

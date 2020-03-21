@@ -643,7 +643,7 @@ bool            str_CopyAConvertW32(
 }
 
 
-bool            str_CopyFill(
+bool            str_CopyFillA(
     char            *pszOut,        /* Output Buffer Pointer */
     int             outLen,         /* Output Buffer Length */
     const
@@ -677,6 +677,48 @@ bool            str_CopyFill(
         *pszOut++ = fillChar;
     }
     
+    // Add trailing NUL terminator.
+    *pszOut++ = '\0';
+
+    // Return to caller.
+    return fRc;
+}
+
+
+bool            str_CopyFillW32(
+    W32CHR_T        *pszOut,        /* Output Buffer Pointer */
+    int             outLen,         /* Output Buffer Length */
+    const
+    W32CHR_T        *pszIn,         /* Input String Pointer */
+    int             inLen,          /* Input Buffer Length */
+    W32CHR_T        fillChar
+)
+{
+    int             i = 0;
+    bool            fRc = true;
+
+    // Do initialization.
+    if( outLen > 0 )
+        ;
+    else
+        return false;
+    if( NULL == pszOut )
+        return false;
+
+    // Copy the String.
+    if (pszIn) {
+        for( i=0; (*pszIn && inLen-- && (i < (outLen - 1))); i++ ) {
+            *pszOut++ = *pszIn++;
+        }
+        if( *pszIn )
+            fRc = false;
+    }
+
+    //  Fill the remainder of the output string.
+    for( ; (i < (outLen - 1)); i++ ) {
+        *pszOut++ = fillChar;
+    }
+
     // Add trailing NUL terminator.
     *pszOut++ = '\0';
 

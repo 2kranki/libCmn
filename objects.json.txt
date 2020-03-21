@@ -162,6 +162,7 @@
         {name:"TRegex32"},
         {name:"True", json:true},
         {name:"u8Array", json:true},
+        {name:"u8VlArray", json:true},
         {name:"u12Array", deps:["array.h"]},
         {name:"U16Array", deps:["array.h"], json:true},
         {name:"U16Matrix", deps:["U16Array.h"], json:true},

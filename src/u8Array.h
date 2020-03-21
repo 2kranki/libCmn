@@ -16,6 +16,7 @@
  *	1.      All offsets or indices are relative to 1, not 0. 0 is
  *          considered before the beginning of the array if used
  *          as an offset otherwise an error.
+ *  2.      Warning: This object uses OBJ_FLAG_USER1 internally.
  *
  * History
  *	08/07/2015 Generated

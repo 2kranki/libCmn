@@ -138,7 +138,6 @@ extern "C" {
         INTLOCK_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(INTLOCK_DATA);
         //ERESULT         eRc;
 #if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
