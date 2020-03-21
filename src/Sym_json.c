@@ -103,10 +103,13 @@ extern "C" {
             exit(EXIT_FAILURE);
         }
         Sym_setNameA(pObject, AStr_getData(pWrk));
-        (void)JsonIn_FindI32NodeInHashA(pParser, "class",   &pObject->entry.cls);
-        (void)JsonIn_FindI32NodeInHashA(pParser, "type",    &pObject->entry.type);
+        (void)JsonIn_FindU8NodeInHashA(pParser,  "fAbs",    &pObject->entry.fAbs);
+        (void)JsonIn_FindU8NodeInHashA(pParser,  "fRel",    &pObject->entry.fRel);
         (void)JsonIn_FindU32NodeInHashA(pParser, "hash",    &pObject->entry.hash);
         (void)JsonIn_FindU32NodeInHashA(pParser, "token",   &pObject->entry.token);
+        (void)JsonIn_FindI32NodeInHashA(pParser, "cls",     &pObject->entry.cls);
+        (void)JsonIn_FindI32NodeInHashA(pParser, "type",    &pObject->entry.type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "section", &pObject->entry.section);
         (void)JsonIn_FindU16NodeInHashA(pParser, "prim",    &pObject->entry.prim);
         (void)JsonIn_FindU16NodeInHashA(pParser, "len",     &pObject->entry.len);
         (void)JsonIn_FindU16NodeInHashA(pParser, "dup",     &pObject->entry.dup);
@@ -300,10 +303,13 @@ extern "C" {
 
         len = utf8_Utf8ToChrConStr(0, this->entry.name, sizeof(NameA), NameA);
         AStr_AppendPrint(pStr, "\tname:\"%s\",\n", NameA);
-        (void)JsonOut_Append_i32("class",   this->entry.cls, pStr);
-        (void)JsonOut_Append_i32("type",    this->entry.type, pStr);
+        (void)JsonOut_Append_u8("fAbs",     this->entry.fAbs, pStr);
+        (void)JsonOut_Append_u8("fRel",     this->entry.fRel, pStr);
         (void)JsonOut_Append_u32("hash",    this->entry.hash, pStr);
         (void)JsonOut_Append_u32("token",   this->entry.token, pStr);
+        (void)JsonOut_Append_i32("cls",     this->entry.cls, pStr);
+        (void)JsonOut_Append_i32("type",    this->entry.type, pStr);
+        (void)JsonOut_Append_u32("section", this->entry.section, pStr);
         (void)JsonOut_Append_u16("prim",    this->entry.prim, pStr);
         (void)JsonOut_Append_u16("len",     this->entry.len, pStr);
         (void)JsonOut_Append_u16("dup",     this->entry.dup, pStr);

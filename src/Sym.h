@@ -268,9 +268,33 @@ extern "C" {
     );
 
 
+    /*! Property: Length
+     */
+    uint16_t        Sym_getLen (
+        SYM_DATA     *this
+    );
+
+    bool            Sym_setLen (
+        SYM_DATA        *this,
+        uint16_t        value
+    );
+
+
     const
     char *          Sym_getNameA (
         SYM_DATA        *this
+    );
+
+
+    /*! Property: Primary
+     */
+    uint16_t        Sym_getPrim (
+        SYM_DATA     *this
+    );
+
+    bool            Sym_setPrim (
+        SYM_DATA        *this,
+        uint16_t        value
     );
 
 

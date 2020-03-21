@@ -408,6 +408,48 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          L e n
+    //---------------------------------------------------------------
+
+    uint16_t        Sym_getLen (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->len;
+    }
+
+
+    bool            Sym_setLen (
+        SYM_DATA        *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->len = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          N a m e
     //---------------------------------------------------------------
 
@@ -453,6 +495,48 @@ extern "C" {
         str_Copy((char *)Sym_getEntry(this)->name, sizeof(Sym_getEntry(this)->name), pValue);
         len = utf8_StrLenA(pValue);
         //FIXME: Sym_getEntry(this)->cName = len;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          P r i m
+    //---------------------------------------------------------------
+
+    uint16_t        Sym_getPrim (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->prim;
+    }
+
+
+    bool            Sym_setPrim (
+        SYM_DATA        *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->prim = value;
 
         return true;
     }

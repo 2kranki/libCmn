@@ -90,7 +90,7 @@ extern "C" {
         uint16_t        max = 0;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         NODE_DATA       *pNode;
-        NAME_DATA       *pName;
+        //NAME_DATA       *pName;
         uint32_t        i;
 
         (void)JsonIn_FindU16NodeInHashA(pParser, "edgesMax", &max);
