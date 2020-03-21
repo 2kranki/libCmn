@@ -22,7 +22,13 @@
  *          first two bytes.
  *
  * Remarks
- *  2.      Warning: This object uses OBJ_FLAG_USER1 internally.
+ *  1.      Warning: This object uses OBJ_FLAG_USER1 internally.
+ *  2.      If you want to simulate a tree using this array, you
+ *          can surround children with '(' and ')' entries. Each
+ *          would take two bytes only (ie length of 2 and 1 byte
+ *          for the character).  The best is if each entry has
+ *          the second byte of the entry simulating some sort of
+ *          node type. This is one way of doing it.
  *
  * History
  *	03/20/2020 Generated

@@ -127,7 +127,7 @@ extern "C" {
         uint16_t        scale;              // Binary or Decimal Shift Amount
         uint16_t        rsvd16;
         int32_t         value;
-        char            extra[64];          // Used as needed
+        uint8_t         extra[64];          // Used as needed
     } SYM_ENTRY;
 #pragma pack(pop)
 
@@ -248,7 +248,8 @@ extern "C" {
 
 
     /*! Property: Extra Data
-     64 byte data that can be used as needed
+     64 byte data that can be used as needed, it
+     is initialized for use by U8VlArray optionally.
      */
     uint8_t *       Sym_getExtra (
         SYM_DATA        *this

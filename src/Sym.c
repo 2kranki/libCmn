@@ -1145,7 +1145,11 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Sym_Vtbl);
-        
+
+        // Set up Extra to be used by U8VlArray.
+        this->entry.extra[0] = sizeof(this->entry.extra);
+        this->entry.extra[1] = 2;
+
         /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {

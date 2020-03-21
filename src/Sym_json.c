@@ -48,6 +48,7 @@
 #include    <string.h>
 #include    <AStr_internal.h>
 #include    <dec.h>
+#include    <hex_internal.h>
 #include    <JsonIn.h>
 #include    <JsonOut.h>
 #include    <Node.h>
@@ -86,6 +87,9 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         //int64_t         intIn;
         ASTR_DATA       *pWrk = OBJ_NIL;
+        uint32_t        len = 0;
+        //uint16_t        max = 0;
+        uint8_t         *pData;
 
         eRc = JsonIn_FindStringNodeInHashA(pParser, "name", &pWrk);
         if (ERESULT_FAILED(eRc)) {
@@ -101,12 +105,24 @@ extern "C" {
         Sym_setNameA(pObject, AStr_getData(pWrk));
         (void)JsonIn_FindI32NodeInHashA(pParser, "class",   &pObject->entry.cls);
         (void)JsonIn_FindI32NodeInHashA(pParser, "type",    &pObject->entry.type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "hash",    &pObject->entry.hash);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "token",   &pObject->entry.token);
         (void)JsonIn_FindU16NodeInHashA(pParser, "prim",    &pObject->entry.prim);
         (void)JsonIn_FindU16NodeInHashA(pParser, "len",     &pObject->entry.len);
         (void)JsonIn_FindU16NodeInHashA(pParser, "dup",     &pObject->entry.dup);
         (void)JsonIn_FindU16NodeInHashA(pParser, "align",   &pObject->entry.align);
         (void)JsonIn_FindU16NodeInHashA(pParser, "scale",   &pObject->entry.scale);
         (void)JsonIn_FindI32NodeInHashA(pParser, "value",   &pObject->entry.value);
+        eRc = JsonIn_SubObjectInHash(pParser, "extra");
+        if (ERESULT_OK(eRc)) {
+            pData = hex_ParseObject(pParser, &len);
+            JsonIn_SubObjectEnd(pParser);
+            if (pData) {
+                memmove(pObject->entry.extra, pData, sizeof(pObject->entry.extra));
+                mem_Free(pData);
+                pData = NULL;
+            }
+        }
 
         // Return to caller.
     exit00:
@@ -280,17 +296,28 @@ extern "C" {
 #endif
         char            NameA[256];
         uint32_t        len;
+        ASTR_DATA       *pWrk;
 
         len = utf8_Utf8ToChrConStr(0, this->entry.name, sizeof(NameA), NameA);
         AStr_AppendPrint(pStr, "\tname:\"%s\",\n", NameA);
         (void)JsonOut_Append_i32("class",   this->entry.cls, pStr);
         (void)JsonOut_Append_i32("type",    this->entry.type, pStr);
+        (void)JsonOut_Append_u32("hash",    this->entry.hash, pStr);
+        (void)JsonOut_Append_u32("token",   this->entry.token, pStr);
         (void)JsonOut_Append_u16("prim",    this->entry.prim, pStr);
         (void)JsonOut_Append_u16("len",     this->entry.len, pStr);
         (void)JsonOut_Append_u16("dup",     this->entry.dup, pStr);
         (void)JsonOut_Append_u16("align",   this->entry.align, pStr);
         (void)JsonOut_Append_u16("scale",   this->entry.scale, pStr);
         (void)JsonOut_Append_i32("value",   this->entry.value, pStr);
+        pWrk = hex_DataToJSON(sizeof(this->entry.extra), this->entry.extra);
+        if (pWrk) {
+            AStr_AppendA(pStr, "\t\"extra\":");
+            AStr_Append(pStr, pWrk);
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+
+        }
 
         return ERESULT_SUCCESS;
     }
