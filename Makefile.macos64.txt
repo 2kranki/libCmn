@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 3/21/2020  2:58:30.000)
+# ( 3/22/2020  4:13:34.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -649,21 +649,6 @@ $(OBJDIR)/ObjVLink_json.o: $(SRCDIR)/ObjVLink_json.c $(SRCDIR)/ObjVLink.h $(SRCD
 OBJS += $(OBJDIR)/ObjVLink_object.o
 
 $(OBJDIR)/ObjVLink_object.o: $(SRCDIR)/ObjVLink_object.c $(SRCDIR)/ObjVLink.h $(SRCDIR)/ObjVLink_internal.h $(SRCDIR)/i32Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/Opc360.o
-
-$(OBJDIR)/Opc360.o: $(SRCDIR)/Opc360.c $(SRCDIR)/Opc360.h $(SRCDIR)/Opc360_internal.h $(SRCDIR)/Opcode.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/Opc360_json.o
-
-$(OBJDIR)/Opc360_json.o: $(SRCDIR)/Opc360_json.c $(SRCDIR)/Opc360.h $(SRCDIR)/Opc360_internal.h $(SRCDIR)/Opcode.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/Opc360_object.o
-
-$(OBJDIR)/Opc360_object.o: $(SRCDIR)/Opc360_object.c $(SRCDIR)/Opc360.h $(SRCDIR)/Opc360_internal.h $(SRCDIR)/Opcode.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Opcode.o
@@ -2201,12 +2186,6 @@ ObjMethod_test: $(TEST_SRC)/ObjMethod_test.c $(SRCDIR)/ObjMethod.h $(SRCDIR)/Obj
 TESTS += ObjVLink_test
 
 ObjVLink_test: $(TEST_SRC)/ObjVLink_test.c $(SRCDIR)/ObjVLink.h $(SRCDIR)/ObjVLink_internal.h $(SRCDIR)/i32Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += Opc360_test
-
-Opc360_test: $(TEST_SRC)/Opc360_test.c $(SRCDIR)/Opc360.h $(SRCDIR)/Opc360_internal.h $(SRCDIR)/Opcode.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

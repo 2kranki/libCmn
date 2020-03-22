@@ -390,8 +390,6 @@ extern "C" {
         OBJ_IDENT_OBJREGISTRY_CLASS,
         OBJ_IDENT_OBJVLINK,             // Object with Variable number of Integer Links
         OBJ_IDENT_OBJVLINK_CLASS,
-        OBJ_IDENT_OPC360,               // IBM 360 Opcode Table Entry
-        OBJ_IDENT_OPC360_CLASS,
         OBJ_IDENT_OPCODE,               // Universal Opcode Table Entry
         OBJ_IDENT_OPCODE_CLASS,
         OBJ_IDENT_OPCODES,              // Universal Opcode Table

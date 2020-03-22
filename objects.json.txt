@@ -111,7 +111,6 @@
         {name:"objMatrix"},
         {name:"ObjMethod", json:true},
         {name:"ObjVLink", deps:["i32Array.h"], json:true},
-        {name:"Opc360", "deps":["Opcode.h"], json:true},
         {name:"Opcode", json:true},
         {name:"Opcodes", "deps":["szBT.h", "Opcode.h"], json:true},
         {name:"Parser"},
