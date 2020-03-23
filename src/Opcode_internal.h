@@ -82,6 +82,11 @@ struct Opcode_data_s	{
     char *          (*pTypeDesc) (uint16_t);
     uint16_t        (*pTypeValue) (const char *);
 
+    ERESULT         (*pExec)(OBJ_ID, OBJ_ID);
+    OBJ_ID          pObjExec;
+    ERESULT         (*pPrs)(OBJ_ID, OBJ_ID);
+    OBJ_ID          pObjPrs;
+
 };
 #pragma pack(pop)
 
@@ -113,6 +118,12 @@ struct Opcode_data_s	{
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
+
+    bool            Opcode_setEntry (
+        OPCODE_DATA     *this,
+        OPCODE_ENTRY    *pEntry
+    );
+
 
     bool            Opcode_setNameA (
         OPCODE_DATA     *this,

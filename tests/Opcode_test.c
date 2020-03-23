@@ -313,6 +313,12 @@ int             test_Opcode_JsonIn01 (
             obj_Release(pWrk);
         }
 
+        pWrk = Opcode_ToInitString(pObj);
+        if (pWrk) {
+            fprintf(stderr, "\tToInit:\n%s\n\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+        }
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }

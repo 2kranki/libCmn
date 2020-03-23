@@ -104,26 +104,26 @@ extern "C" {
     // Note:    No pointers are allowed in this structure. Also, this
     //          structure size must be a multiple of 4.
     typedef struct    Opcode_Entry_s {
-#define OPCODE_ENTRY_NAME_MAX 9
+#define OPCODE_ENTRY_NAME_MAX 9             // Name Length w/ trailing NUL
         const
         char            Name[OPCODE_ENTRY_NAME_MAX];
+        uint8_t         iLen;               // Full Instruction Length including operands
         uint8_t         cCode;              // Operation Code Length
-#define OPCODE_ENTRY_CCODE_MAX 8
+#define OPCODE_ENTRY_CCODE_MAX 8            // Entry Length w/o trailing NUL
         uint8_t         iCode[OPCODE_ENTRY_CCODE_MAX]; // Operation Code
         uint8_t         iMask[OPCODE_ENTRY_CCODE_MAX];
-        uint8_t         iLen;               // Full Instruction Length including operands
+        int16_t         iType;              //
+        uint8_t         rsvd8;
         uint8_t         cCondCodes;         // Operation Code Length
-#define OPCODE_ENTRY_CCONDCODE_MAX 8
-#define OPCODE_ENTRY_SZCONDCODE_MAX 11
+#define OPCODE_ENTRY_CCONDCODE_MAX 8        // Maximum number of condition codes
+#define OPCODE_ENTRY_SZCONDCODE_MAX 11      // Condition Code Length w/ trailing NUL
         const
         char            szCondCodes[OPCODE_ENTRY_CCONDCODE_MAX][OPCODE_ENTRY_SZCONDCODE_MAX];
-        uint8_t         rsvd8[2];
-        int16_t         iType;              //
         uint16_t        iFeatures;
-#define OPCODE_ENTRY_IFEATURES_MAX 16
+#define OPCODE_ENTRY_IFEATURES_MAX 16       // Number of Features allowed (1 per bit)
         uint16_t        rsvd16;
         uint32_t        iInterrupts;
-#define OPCODE_ENTRY_IINTERRUPTS_MAX 32
+#define OPCODE_ENTRY_IINTERRUPTS_MAX 32     // Number of Interrupts allowed (1 per bit)
     }   OPCODE_ENTRY;
 
 
@@ -199,6 +199,17 @@ extern "C" {
     );
 
 
+    /*! Property: Execute Method
+     Set up a method and optional object to be called via the
+     Exec() method below.
+     */
+    bool            Opcode_setExec (
+        OPCODE_DATA     *this,
+        ERESULT         (*pExec)(OBJ_ID, OBJ_ID),
+        OBJ_ID          pObjExec
+    );
+
+
     /*! Property: Opcode Length including all parameters
      */
     uint8_t         Opcode_getLen (
@@ -218,7 +229,19 @@ extern "C" {
         OPCODE_DATA     *this
     );
 
-    
+
+    /*! Property: Parse Method
+     Set up a method and optional object to be called via the
+     Parse() method below.
+     */
+    bool            Opcode_setPrs (
+        OPCODE_DATA     *this,
+        ERESULT         (*pPrs)(OBJ_ID, OBJ_ID),
+        OBJ_ID          pObjPrs
+    );
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -270,8 +293,46 @@ extern "C" {
     );
 
    
+    /*!
+     Execute the method attached to this opcode. See Execute Property.
+     @param     this        object pointer
+     @param     pOperand    Operand object pointer (optional)
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Opcode_Exec (
+        OPCODE_DATA     *this,
+        OBJ_ID          pOperand
+    );
+
+
     OPCODE_DATA *   Opcode_Init (
         OPCODE_DATA     *this
+    );
+
+
+    /*!
+     Execute the parse method attached to this opcode. See Parse Property.
+     @param     this        object pointer
+     @param     pOperand    Operand object pointer (optional)
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Opcode_Parse (
+        OPCODE_DATA     *this,
+        OBJ_ID          pOperand
+    );
+
+
+    /*!
+     Create a string that when compiled will initialize for this opcode.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                initialization, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Opcode_ToInitString (
+        OPCODE_DATA      *this
     );
 
 

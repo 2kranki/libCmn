@@ -158,6 +158,51 @@ extern "C" {
         return &this->entry;
     }
 
+    bool            Opcode_setEntry (
+        OPCODE_DATA     *this,
+        OPCODE_ENTRY    *pEntry
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        memmove(&this->entry, pEntry, sizeof(OPCODE_ENTRY));
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        E x e c
+    //---------------------------------------------------------------
+
+    bool            Opcode_setExec (
+        OPCODE_DATA     *this,
+        ERESULT         (*pExec)(OBJ_ID, OBJ_ID),
+        OBJ_ID          pObjExec
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pExec = pExec;
+        this->pObjExec = pObjExec;
+
+        return true;
+    }
+
+
 
     //---------------------------------------------------------------
     //                        L e n g t h
@@ -697,6 +742,43 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      E x e c u t e
+    //---------------------------------------------------------------
+
+    /*!
+     Execute the method attached to this opcode.
+     @param     this        object pointer
+     @param     pOperand    Operand object pointer (optional)
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Opcode_Exec (
+        OPCODE_DATA     *this,
+        OBJ_ID          pOperand
+    )
+    {
+        ERESULT         eRc = ERESULT_INVALID_FUNCTION;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pExec) {
+            eRc = this->pExec(this->pObjExec, pOperand);
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -792,6 +874,36 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      P a r s e
+    //---------------------------------------------------------------
+
+    ERESULT         Opcode_Parse (
+        OPCODE_DATA     *this,
+        OBJ_ID          pOperand
+    )
+    {
+        ERESULT         eRc = ERESULT_INVALID_FUNCTION;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pPrs) {
+            eRc = this->pPrs(this->pObjPrs, pOperand);
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -936,6 +1048,78 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                       T o  I n i t S t r i n g
+    //---------------------------------------------------------------
+
+    /*!
+     Create a string that when compiled will initialize for this opcode.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                initialization, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Opcode_ToInitString (
+        OPCODE_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        uint32_t        i;
+        //uint32_t        j;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        eRc = AStr_AppendA(pStr, "\t{\n");
+        eRc = AStr_AppendPrint(pStr, "\t\t\"%s\",\n", this->entry.Name);
+        eRc = AStr_AppendPrint(pStr, "\t\t%d,\n", this->entry.iLen);
+        eRc = AStr_AppendPrint(pStr, "\t\t%d,\n", this->entry.cCode);
+        eRc = AStr_AppendA(pStr, "\t\t{");
+        for (i=0; i<this->entry.cCode-1; i++) {
+            eRc = AStr_AppendPrint(pStr, "0x%02X,", this->entry.iCode[i]);
+        }
+        eRc = AStr_AppendPrint(pStr, "0x%02X},\n", this->entry.iCode[i]);
+        eRc = AStr_AppendA(pStr, "\t\t{");
+        for (i=0; i<this->entry.cCode-1; i++) {
+            eRc = AStr_AppendPrint(pStr, "0x%02X,", this->entry.iMask[i]);
+        }
+        eRc = AStr_AppendPrint(pStr, "0x%02X},\n", this->entry.iMask[i]);
+        eRc = AStr_AppendPrint(pStr, "\t\t%u,\n", this->entry.iType);
+        eRc = AStr_AppendA(pStr, "\t\t0,\n");       // resvd8
+        eRc = AStr_AppendPrint(pStr, "\t\t%d,\n", this->entry.cCondCodes);
+        if (this->entry.cCondCodes) {
+            AStr_AppendA(pStr, "\t\t{");
+            for (i=0; i<this->entry.cCondCodes-1; i++) {
+                AStr_AppendPrint(pStr, "\"%s\", ", this->entry.szCondCodes[i]);
+            }
+            AStr_AppendPrint(pStr, "\"%s\"},\n", this->entry.szCondCodes[i]);
+        } else {
+            AStr_AppendA(pStr, "\t\t{\"\"},\n");
+        }
+        eRc = AStr_AppendPrint(pStr, "\t\t%u,\n", this->entry.iFeatures);
+        eRc = AStr_AppendA(pStr, "\t\t0,\n");       // resvd16
+        eRc = AStr_AppendPrint(pStr, "\t\t%u\n", this->entry.iInterrupts);
+
+        eRc =   AStr_AppendA(pStr, " \t},\n");
+
+        return pStr;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
