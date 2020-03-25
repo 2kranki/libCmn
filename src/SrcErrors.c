@@ -274,11 +274,11 @@ extern "C" {
         
         
     //---------------------------------------------------------------
-    //                          P r i o r i t y
+    //                          P a t h s
     //---------------------------------------------------------------
     
-    uint16_t        SrcErrors_getPriority (
-        SRCERRORS_DATA     *this
+    OBJARRAY_DATA * SrcErrors_getPaths (
+        SRCERRORS_DATA  *this
     )
     {
 
@@ -292,13 +292,13 @@ extern "C" {
 #endif
 
         //return this->priority;
-        return 0;
+        return this->pPaths;
     }
 
 
-    bool            SrcErrors_setPriority (
-        SRCERRORS_DATA     *this,
-        uint16_t        value
+    bool            SrcErrors_setPaths (
+        SRCERRORS_DATA  *this,
+        OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -309,7 +309,11 @@ extern "C" {
         }
 #endif
 
-        //this->priority = value;
+        obj_Retain(pValue);
+        if (this->pPaths) {
+            obj_Release(this->pPaths);
+        }
+        this->pPaths = pValue;
 
         return true;
     }
@@ -931,6 +935,7 @@ extern "C" {
 #endif
 
         SrcErrors_setFatalExit(this, OBJ_NIL);
+        SrcErrors_setPaths(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1116,14 +1121,12 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&SrcErrors_Vtbl);
         
-        /*
-        this->pArray = ObjArray_New( );
-        if (OBJ_NIL == this->pArray) {
+        this->pPaths = ObjArray_New( );
+        if (OBJ_NIL == this->pPaths) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
 
     #ifdef NDEBUG
     #else

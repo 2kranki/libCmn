@@ -62,16 +62,17 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            BlkdRcds16_task_body (
-        void            *pData
+    void            BlkdRcds16_FreeBlock (
+        BLKDRCDS16_DATA *this
     )
     {
-        //BLKDRCDS16_DATA  *this = pData;
-        
+        if ( obj_Flag(this, BLKDRCDS16_FLAG_ALLOC) && this->pBlock) {
+            mem_Free(this->pBlock);
+            this->pBlock = NULL;
+            obj_FlagOff(this, BLKDRCDS16_FLAG_ALLOC);
+        }
     }
-#endif
 
 
 
@@ -101,7 +102,7 @@ extern "C" {
 
 
 
-    uint16_t        BlkdRcds16_CalcBlockSize(
+    uint16_t        BlkdRcds16_CalcFromRecordSize(
         uint16_t        rsvdSize,
         uint16_t        numRecords,
         uint16_t        recordSize              // Average Record Size
@@ -133,7 +134,7 @@ extern "C" {
     
     
     
-    uint16_t        BlkdRcds16_CalcDataSize(
+    uint16_t        BlkdRcds16_CalcFromBlockSize(
         uint16_t        blockSize,
         uint16_t        rsvdSize
     )
@@ -173,7 +174,7 @@ extern "C" {
     }
 
 
-    BLKDRCDS16_DATA * BlkdRcds16_NewWithSizes (
+    BLKDRCDS16_DATA * BlkdRcds16_NewWithBlockSize (
         uint16_t        blockSize,
         uint16_t        rsvdSize
     )
@@ -183,7 +184,7 @@ extern "C" {
         
         this = BlkdRcds16_New( );
         if (this) {
-            eRc = BlkdRcds16_SetupDataBlock(this, blockSize, rsvdSize);
+            eRc = BlkdRcds16_SetupWithBlockSize(this, blockSize, rsvdSize, NULL);
             if (ERESULT_FAILED(eRc)) {
                 obj_Release(this);
                 return OBJ_NIL;
@@ -771,12 +772,8 @@ extern "C" {
 #endif
 
         BlkdRcds16_setStr(this, OBJ_NIL);
+        BlkdRcds16_FreeBlock(this);
 
-        if (this->pBlock) {
-            mem_Free(this->pBlock);
-            this->pBlock = NULL;
-        }
-        
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -1419,13 +1416,14 @@ extern "C" {
         
         
     //---------------------------------------------------------------
-    //                  S e t u p  D a t a  B l o c k
+    //             S e t u p  W i t h  B l o c k  S i z e
     //---------------------------------------------------------------
     
-    ERESULT         BlkdRcds16_SetupDataBlock (
+    ERESULT         BlkdRcds16_SetupWithBlockSize (
         BLKDRCDS16_DATA *this,
         uint16_t        blockSize,
-        uint16_t        rsvdSize
+        uint16_t        rsvdSize,
+        void            *pBlock
     )
     {
         uint16_t        minSize;
@@ -1438,10 +1436,8 @@ extern "C" {
                 }
         #endif
         
-        if (this->pBlock) {
-            mem_Free(this->pBlock);
-            this->pBlock = NULL;
-        }
+        BlkdRcds16_FreeBlock(this);
+        
         this->blockSize = blockSize;
         this->rsvdSize = rsvdSize;
         if (0 == blockSize) {
@@ -1454,8 +1450,15 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        
-        this->pBlock = mem_Malloc(blockSize);
+
+        if (NULL == pBlock) {
+            this->pBlock = mem_Malloc(blockSize);
+            if (this->pBlock) {
+                obj_FlagOn(this, BLKDRCDS16_FLAG_ALLOC);
+            }
+        } else {
+            this->pBlock = pBlock;
+        }
         if (this->pBlock) {
         }
         else {

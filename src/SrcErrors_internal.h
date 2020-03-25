@@ -75,6 +75,7 @@ struct SrcErrors_data_s	{
     bool            fFatal;         // One or more fatal errors occurred
     bool            fExitOnFatal;
     uint16_t        rsvd16;
+    OBJARRAY_DATA   *pPaths;        // Path Table
     
     OBJMETHOD_DATA  *pFatalExit;
 

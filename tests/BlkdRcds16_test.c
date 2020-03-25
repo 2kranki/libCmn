@@ -159,7 +159,7 @@ int         test_BlkdRcds16_Test01(
     char            data[16];
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = BlkdRcds16_NewWithSizes(40, 0);
+    pObj = BlkdRcds16_NewWithBlockSize(40, 0);
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
@@ -279,7 +279,7 @@ int         test_BlkdRcds16_Calc(
     uint16_t        size = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    size = BlkdRcds16_CalcBlockSize(10, 8, 64);
+    size = BlkdRcds16_CalcFromRecordSize(10, 8, 64);
     fprintf(stderr, "\tSize = %d\n", size);
     XCTAssertTrue( (570 == size) );
     

@@ -12,7 +12,7 @@
  *			the line level.
  *
  * Remarks
- *	1.      None
+ *	1.      This object uses OBJ_FLAG_USER1 internally.
  *
  * History
  *	01/21/2020 Regenerated

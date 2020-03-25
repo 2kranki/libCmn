@@ -17,9 +17,10 @@
  *          any use. Just specify the amount at open time.
  *
  * Remarks
- *    1.          Records are numbered starting with 1.  If
- *                zero is returned for a record index, it should be
- *                considered an error.
+ *    1.    Records are numbered starting with 1.  If zero is
+ *          returned for a record index, it should be considered
+ *          an error.
+ *    2.    This object uses OBJ_FLAG_USER1 internally.
  *
  * References:
  *  *      "Data Structures and Algorithms", Alfred V. Aho et al,
@@ -146,13 +147,19 @@ extern "C" {
     );
     
     
-    uint16_t        BlkdRcds16_CalcBlockSize(
+    uint16_t        BlkdRcds16_CalcFromRecordSize(
         uint16_t        rsvdSize,
         uint16_t        numRecords,
         uint16_t        recordSize              // Average Record Size
     );
     
     
+    uint16_t        BlkdRcds16_CalcFromBlockSize(
+        uint16_t        blockSize,
+        uint16_t        rsvdSize
+    );
+
+
     OBJ_ID          BlkdRcds16_Class (
         void
     );
@@ -162,7 +169,7 @@ extern "C" {
         void
     );
     
-    BLKDRCDS16_DATA * BlkdRcds16_NewWithSizes (
+    BLKDRCDS16_DATA * BlkdRcds16_NewWithBlockSize (
         uint16_t        blockSize,
         uint16_t        rsvdSize
     );
@@ -281,10 +288,22 @@ extern "C" {
     );
 
 
-    ERESULT         BlkdRcds16_SetupDataBlock (
+    /*!
+    Replace the current block if any with a new one as requested.
+    @param     this         BLKDRCDS16 object pointer
+    @param     blockSize    siae of data block required, 0 == Free current block and
+                            return without allocating a new one.
+    @param     rsvdSize     size of the supplied data area (can be 0)
+    @param     pBlock       Optional pointer to the data area. If NULL, a new buffer
+                            is allocated of the appropriate size. If provided, the
+                            buffer must be at least CalcFromBlockSize() bytes.
+    @return    If successful, ERESULT_SUCCESS. An ERESULT_* error code.
+    */
+    ERESULT         BlkdRcds16_SetupWithBlockSize (
         BLKDRCDS16_DATA *this,
         uint16_t        blockSize,
-        uint16_t        rsvdSize
+        uint16_t        rsvdSize,
+        void            *pBlock
     );
 
 
