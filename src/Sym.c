@@ -165,7 +165,7 @@ extern "C" {
         }
 #endif
 
-        return Sym_getEntry(this)->fAbs ? true : false;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_ABS) ? true : false;
     }
 
 
@@ -183,9 +183,9 @@ extern "C" {
 #endif
 
         if (value) {
-            Sym_getEntry(this)->fAbs = 1;
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_ABS;
         } else {
-            Sym_getEntry(this)->fAbs = 0;
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_ABS;
         }
 
         return true;
@@ -361,6 +361,617 @@ extern "C" {
 #endif
 
         return (uint8_t *)Sym_getEntry(this)->extra;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 1
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg1 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_UNUSED1) ? true : false;
+    }
+
+
+    bool            Sym_setFlg1 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_UNUSED1;
+        } else {
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_UNUSED1;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 2
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg2 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_UNUSED2) ? true : false;
+    }
+
+
+    bool            Sym_setFlg2 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_UNUSED2;
+        } else {
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_UNUSED2;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 3
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg3 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_UNUSED3) ? true : false;
+    }
+
+
+    bool            Sym_setFlg3 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_UNUSED3;
+        } else {
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_UNUSED3;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 4
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg4 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_UNUSED4) ? true : false;
+    }
+
+
+    bool            Sym_setFlg4 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_UNUSED4;
+        } else {
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_UNUSED4;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 5
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg5 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_UNUSED5) ? true : false;
+    }
+
+
+    bool            Sym_setFlg5 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_UNUSED5;
+        } else {
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_UNUSED5;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 6
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg6 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs2 & SYM_FLGS1_UNUSED6) ? true : false;
+    }
+
+
+    bool            Sym_setFlg6 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs2 |= SYM_FLGS1_UNUSED6;
+        } else {
+            Sym_getEntry(this)->fFlgs2 &= ~SYM_FLGS1_UNUSED6;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 7
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg7 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs2 & SYM_FLGS1_UNUSED7) ? true : false;
+    }
+
+
+    bool            Sym_setFlg7 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs2 |= SYM_FLGS1_UNUSED7;
+        } else {
+            Sym_getEntry(this)->fFlgs2 &= ~SYM_FLGS1_UNUSED7;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 8
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg8 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs2 & SYM_FLGS1_UNUSED8) ? true : false;
+    }
+
+
+    bool            Sym_setFlg8 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs2 |= SYM_FLGS1_UNUSED8;
+        } else {
+            Sym_getEntry(this)->fFlgs2 &= ~SYM_FLGS1_UNUSED8;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 9
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg9 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs2 & SYM_FLGS1_UNUSED9) ? true : false;
+    }
+
+
+    bool            Sym_setFlg9 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs2 |= SYM_FLGS1_UNUSED9;
+        } else {
+            Sym_getEntry(this)->fFlgs2 &= ~SYM_FLGS1_UNUSED9;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 1 0
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg10 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs2 & SYM_FLGS1_UNUSED10) ? true : false;
+    }
+
+
+    bool            Sym_setFlg10 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs2 |= SYM_FLGS1_UNUSED10;
+        } else {
+            Sym_getEntry(this)->fFlgs2 &= ~SYM_FLGS1_UNUSED10;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 1 1
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg11 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs2 & SYM_FLGS1_UNUSED11) ? true : false;
+    }
+
+
+    bool            Sym_setFlg11 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs2 |= SYM_FLGS1_UNUSED11;
+        } else {
+            Sym_getEntry(this)->fFlgs2 &= ~SYM_FLGS1_UNUSED11;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 1 2
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg12 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs2 & SYM_FLGS1_UNUSED12) ? true : false;
+    }
+
+
+    bool            Sym_setFlg12 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs2 |= SYM_FLGS1_UNUSED12;
+        } else {
+            Sym_getEntry(this)->fFlgs2 &= ~SYM_FLGS1_UNUSED12;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    U n u s e d  F l a g 1 3
+    //---------------------------------------------------------------
+
+    bool            Sym_getFlg13 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return (Sym_getEntry(this)->fFlgs2 & SYM_FLGS1_UNUSED13) ? true : false;
+    }
+
+
+    bool            Sym_setFlg13 (
+        SYM_DATA        *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (value) {
+            Sym_getEntry(this)->fFlgs2 |= SYM_FLGS1_UNUSED13;
+        } else {
+            Sym_getEntry(this)->fFlgs2 &= ~SYM_FLGS1_UNUSED13;
+        }
+
+        return true;
     }
 
 
@@ -544,6 +1155,48 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          R e c o r d
+    //---------------------------------------------------------------
+
+    uint32_t         Sym_getRecord (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->record;
+    }
+
+
+    bool            Sym_setRecord (
+        SYM_DATA        *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->record = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     R e l o c a t a b l e
     //---------------------------------------------------------------
 
@@ -562,7 +1215,7 @@ extern "C" {
 #endif
 
         //return this->priority;
-        return Sym_getEntry(this)->fRel ? true : false;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_REL) ? true : false;
     }
 
 
@@ -580,9 +1233,9 @@ extern "C" {
 #endif
 
         if (value) {
-            Sym_getEntry(this)->fRel = 1;
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_REL;
         } else {
-            Sym_getEntry(this)->fRel = 0;
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_REL;
         }
 
         return true;
@@ -1257,8 +1910,14 @@ extern "C" {
                 "Sym::sizeof(SYM_DATA) = %lu\n", 
                 sizeof(SYM_DATA)
         );
+        fprintf(
+                stderr,
+                "Sym::sizeof(SYM_ENTRY) = %lu\n",
+                sizeof(SYM_ENTRY)
+        );
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(SYM_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(SYM_ENTRY));
 #endif
 
         return this;

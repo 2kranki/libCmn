@@ -7,10 +7,8 @@
  * Program
  *			String Scanner (Scanner)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate Scanner to run things without complications
- *          of interfering with the main Scanner. A Scanner may be 
- *          called a Scanner on other O/S's.
+ *			This object provides a generic scanner which is based
+ *          on a builtin static W32StrC.
  *
  * Remarks
  *  1.      OBJ_FLAG_USER1 is used by this object.
@@ -173,7 +171,12 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    /*! Property: Separator is an optional seperator which if present
+    uint32_t        Scanner_getOffset (
+        SCANNER_DATA    *this
+    );
+
+
+    /*! @property Separator is an optional seperator which if present
         will influence how strings are separated. For command line
         scanning, this should be set to '='.
      */
@@ -284,6 +287,7 @@ extern "C" {
     /*!
      Return the character pointed at by the obj's Misc plus offset.
      @param     this    object pointer
+     @param     offset  offset of lookahead (relative to 1)
      @return    If successful, the indexed character, otherwise 0.
      @warning   This method uses obj's misc field.
      */
@@ -390,8 +394,8 @@ extern "C" {
         SCANNER_DATA    *this
     );
 
-        /*!
-     Scan White-space.
+    /*!
+     Scan White-space moving the scan point past the white-space.
      @param     this    object pointer
      @return    If successful, true, otherwise false.
      */

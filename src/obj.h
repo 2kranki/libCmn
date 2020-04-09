@@ -536,7 +536,6 @@ extern	"C" {
      * the objects in IsKindOf() which should represent the object
      * inheritance chain.
      * Returns:
-     *		TRUE == Match, otherwise FALSE
      */
     bool            obj_IsKindOf(
         OBJ_ID          objId,

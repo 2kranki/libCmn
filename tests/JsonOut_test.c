@@ -265,8 +265,58 @@ int             test_JsonOut_Array01 (
 
 
 
+int             test_JsonOut_Array02 (
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    JSONOUT_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    int16_t         x[9] = {0,1,2,3,4,5,6,7,8};
+    const
+    char            *x_out =   "\t\"x\":{\n"
+                                    "\t\ttype:I16Array,\n"
+                                    "\t\tsize:9,\n"
+                                    "\t\tdata:[\n"
+                                        "\t\t\t0,1,2,3,4,5,6,7,\n"
+                                        "\t\t\t8\n"
+                                    "\t\t]\n"
+                                "\t},\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pStr = AStr_New();
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+
+    JsonOut_Append_i16_array("x", 9, x, pStr);
+    fprintf(stderr, "i16_array:\n%s\n", AStr_getData(pStr));
+    TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,x_out)) );
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+
+    pObj = JsonOut_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_JSONOUT);
+        TINYTEST_TRUE( (fRc) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_JsonOut);
+    TINYTEST_ADD_TEST(test_JsonOut_Array02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonOut_Array01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonOut_Test01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_JsonOut_Copy01,setUp,tearDown);

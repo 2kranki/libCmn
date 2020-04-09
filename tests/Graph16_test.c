@@ -282,7 +282,7 @@ int             test_Graph16_Test01 (
         TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         pStr = Graph16_ToDebugString(pObj, 0);
         if (pStr) {
-            fprintf(stderr, "After expand(12):\n%s\n", AStr_getData(pStr));
+            fprintf(stderr, "After expand to 12:\n%s\n", AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }

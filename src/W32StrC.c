@@ -132,13 +132,14 @@ extern "C" {
         obj_FlagOn(this, W32STRC_FLAG_MALLOC);
 
         // Move in the data.
-        pInsert = this->pArray;
+        pInsert = (W32CHR_T *)this->pArray;
         for (i=0; i<len; ++i) {
             chr = utf8_Utf8ToW32_Scan(&pStrA);
             *pInsert++ = chr;
         }
         *pInsert = '\0';
         this->len = len;
+        W32StrC_Reset(this);
 
         // Return to caller.
         return true;
@@ -176,8 +177,41 @@ extern "C" {
         obj_FlagOn(this, W32STRC_FLAG_MALLOC);
 
         // Move in the data.
-        memmove(this->pArray, pStrW32, ((len + 1) * sizeof(W32CHR_T)));
+        memmove((W32CHR_T *)this->pArray, pStrW32, ((len + 1) * sizeof(W32CHR_T)));
         this->len = len;
+        W32StrC_Reset(this);
+
+        // Return to caller.
+        return true;
+    }
+
+
+
+    bool            W32StrC_SetupW32Con(
+        W32STRC_DATA    *this,
+        uint32_t        len,
+        const
+        W32CHR_T        *pStrW32
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32StrC_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        W32StrC_FreeLine(this);
+        if (0 == len) {
+            len = (uint32_t)utf8_StrLenW32(pStrW32);
+        }
+
+        this->pArray = pStrW32;
+        this->len = len;
+        W32StrC_Reset(this);
 
         // Return to caller.
         return true;

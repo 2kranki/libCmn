@@ -11,13 +11,21 @@
   <component name="ChangeListManager">
     <list default="true" id="dcbae2a0-8874-4a9a-8e44-82d9738ed537" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/genMake/src/NodeBase.c" beforeDir="false" afterPath="$PROJECT_DIR$/programs/genMake/src/NodeBase.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/AStr.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/AStr.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/AStr.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/AStr.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/eResult.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/eResult.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_AStr.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_AStr.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Compiler.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Compiler.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Expr_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Expr_internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Scanner.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scanner.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Scanner.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scanner.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Sym.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Sym.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Sym.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Sym.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Sym_json.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Sym_json.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Sym_object.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Sym_object.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/W32StrC.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/W32StrC.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/W32StrC_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/W32StrC_internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/obj.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/obj.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/BlkdRcds16_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/BlkdRcds16_test.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Scanner_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Scanner_test.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xcode/testCmn/testCmn.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/xcode/testCmn/testCmn.xcodeproj/project.pbxproj" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,27 +38,70 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1StvHIKXd1Sm1t1sT6GjayqSNzE" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="js.buildTools.grunt.grunt-cli.package" value="" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.make" />
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
+  <component name="RunManager" selected="Makefile.Test">
+    <configuration name="Install" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
+      <makefile filename="$PROJECT_DIR$/Makefile.macos64.txt" target="install" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration name="Test All" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
+      <makefile filename="$PROJECT_DIR$/Makefile.macos64.txt" target="test" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration name="Test" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
+      <makefile filename="$PROJECT_DIR$/Makefile.macos64.txt" target="AStr_test" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration name="all" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
+      <makefile filename="$PROJECT_DIR$/Makefile.macos64.txt" target="all" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="js.build_tools.grunt">
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Makefile.Install" />
+      <item itemvalue="Makefile.Test All" />
+      <item itemvalue="Makefile.Test" />
+      <item itemvalue="Makefile.all" />
+    </list>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
       <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
       </list>
     </option>
   </component>
@@ -67,6 +118,9 @@
       <workItem from="1572395618103" duration="3486000" />
       <workItem from="1572880864506" duration="1118000" />
       <workItem from="1572891069247" duration="2200000" />
+      <workItem from="1586009645228" duration="1460000" />
+      <workItem from="1586022162035" duration="801000" />
+      <workItem from="1586132500529" duration="145000" />
     </task>
     <servers />
   </component>
@@ -85,5 +139,43 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="562" y="277" key="#all" timestamp="1586022199678">
+      <screen x="26" y="23" width="1654" height="1027" />
+    </state>
+    <state x="562" y="277" key="#all/26.23.1654.1027@26.23.1654.1027" timestamp="1586022199678" />
+    <state x="107" y="163" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586022587502">
+      <screen x="26" y="23" width="1654" height="1027" />
+    </state>
+    <state x="107" y="163" key="#com.intellij.execution.impl.EditConfigurationsDialog/26.23.1654.1027@26.23.1654.1027" timestamp="1586022587502" />
+    <state x="519" y="259" key="#com.intellij.featureStatistics.actions.ShowFeatureUsageStatisticsDialog" timestamp="1586018564615">
+      <screen x="26" y="23" width="1654" height="1027" />
+    </state>
+    <state x="519" y="259" key="#com.intellij.featureStatistics.actions.ShowFeatureUsageStatisticsDialog/26.23.1654.1027@26.23.1654.1027" timestamp="1586018564615" />
+    <state width="1358" height="267" key="GridCell.Tab.0.bottom" timestamp="1586029563093">
+      <screen x="26" y="23" width="1654" height="1027" />
+    </state>
+    <state width="1358" height="267" key="GridCell.Tab.0.bottom/26.23.1654.1027@26.23.1654.1027" timestamp="1586029563093" />
+    <state width="1358" height="267" key="GridCell.Tab.0.center" timestamp="1586029563093">
+      <screen x="26" y="23" width="1654" height="1027" />
+    </state>
+    <state width="1358" height="267" key="GridCell.Tab.0.center/26.23.1654.1027@26.23.1654.1027" timestamp="1586029563093" />
+    <state width="1358" height="267" key="GridCell.Tab.0.left" timestamp="1586029563092">
+      <screen x="26" y="23" width="1654" height="1027" />
+    </state>
+    <state width="1358" height="267" key="GridCell.Tab.0.left/26.23.1654.1027@26.23.1654.1027" timestamp="1586029563092" />
+    <state width="1358" height="267" key="GridCell.Tab.0.right" timestamp="1586029563093">
+      <screen x="26" y="23" width="1654" height="1027" />
+    </state>
+    <state width="1358" height="267" key="GridCell.Tab.0.right/26.23.1654.1027@26.23.1654.1027" timestamp="1586029563093" />
+    <state x="72" y="171" key="SettingsEditor" timestamp="1586018508066">
+      <screen x="26" y="23" width="1654" height="1027" />
+    </state>
+    <state x="72" y="171" key="SettingsEditor/26.23.1654.1027@26.23.1654.1027" timestamp="1586018508066" />
+    <state x="533" y="369" key="com.intellij.ide.util.TipDialog" timestamp="1586132510623">
+      <screen x="28" y="23" width="1652" height="1027" />
+    </state>
+    <state x="533" y="369" key="com.intellij.ide.util.TipDialog/28.23.1652.1027@28.23.1652.1027" timestamp="1586132510623" />
   </component>
 </project>

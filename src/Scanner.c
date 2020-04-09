@@ -986,6 +986,26 @@ Exit00:
     //===============================================================
 
     //---------------------------------------------------------------
+    //                     S c a n  O f f s e t
+    //---------------------------------------------------------------
+
+    uint32_t        Scanner_getOffset (
+        SCANNER_DATA    *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Scanner_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return obj_getMisc(this);
+    }
+
+
+    //---------------------------------------------------------------
     //                     S e p e r a t o r
     //---------------------------------------------------------------
 
@@ -1121,7 +1141,6 @@ Exit00:
 #endif
 
         W32StrC_Advance((W32STRC_DATA *)this, offset);
-
 
     }
 
@@ -1836,6 +1855,32 @@ Exit00:
     
     
     
+    //---------------------------------------------------------------
+    //                          R e s e t
+    //---------------------------------------------------------------
+
+        void            Scanner_Reset (
+            SCANNER_DATA    *this
+        )
+        {
+            //ERESULT         eRc;
+
+            // Do initialization.
+    #ifdef NDEBUG
+    #else
+            if (!Scanner_Validate(this)) {
+                DEBUG_BREAK();
+                // return ERESULT_INVALID_OBJECT;
+                return;
+            }
+    #endif
+
+            W32StrC_Reset((W32STRC_DATA *)this);
+
+        }
+
+
+
     //---------------------------------------------------------------
     //                    S c a n  S t r i n g
     //---------------------------------------------------------------

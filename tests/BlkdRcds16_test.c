@@ -279,10 +279,14 @@ int         test_BlkdRcds16_Calc(
     uint16_t        size = 0;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
+
     size = BlkdRcds16_CalcFromRecordSize(10, 8, 64);
     fprintf(stderr, "\tSize = %d\n", size);
     XCTAssertTrue( (570 == size) );
-    
+
+    size = BlkdRcds16_CalcFromBlockSize(1024, 0);
+    fprintf(stderr, "\tSize = %d\n", size);
+    XCTAssertTrue( (1008 == size) );
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;

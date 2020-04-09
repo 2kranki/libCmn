@@ -103,8 +103,8 @@ extern "C" {
             exit(EXIT_FAILURE);
         }
         Sym_setNameA(pObject, AStr_getData(pWrk));
-        (void)JsonIn_FindU8NodeInHashA(pParser,  "fAbs",    &pObject->entry.fAbs);
-        (void)JsonIn_FindU8NodeInHashA(pParser,  "fRel",    &pObject->entry.fRel);
+        (void)JsonIn_FindU8NodeInHashA(pParser,  "fFlgs1",  &pObject->entry.fFlgs1);
+        (void)JsonIn_FindU8NodeInHashA(pParser,  "fFlgs2",  &pObject->entry.fFlgs2);
         (void)JsonIn_FindU32NodeInHashA(pParser, "hash",    &pObject->entry.hash);
         (void)JsonIn_FindU32NodeInHashA(pParser, "token",   &pObject->entry.token);
         (void)JsonIn_FindI32NodeInHashA(pParser, "cls",     &pObject->entry.cls);
@@ -114,6 +114,7 @@ extern "C" {
         (void)JsonIn_FindU16NodeInHashA(pParser, "len",     &pObject->entry.len);
         (void)JsonIn_FindU16NodeInHashA(pParser, "dup",     &pObject->entry.dup);
         (void)JsonIn_FindU16NodeInHashA(pParser, "align",   &pObject->entry.align);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "record",  &pObject->entry.record);
         (void)JsonIn_FindU16NodeInHashA(pParser, "scale",   &pObject->entry.scale);
         (void)JsonIn_FindI32NodeInHashA(pParser, "value",   &pObject->entry.value);
         eRc = JsonIn_SubObjectInHash(pParser, "extra");
@@ -303,8 +304,8 @@ extern "C" {
 
         len = utf8_Utf8ToChrConStr(0, this->entry.name, sizeof(NameA), NameA);
         AStr_AppendPrint(pStr, "\tname:\"%s\",\n", NameA);
-        (void)JsonOut_Append_u8("fAbs",     this->entry.fAbs, pStr);
-        (void)JsonOut_Append_u8("fRel",     this->entry.fRel, pStr);
+        (void)JsonOut_Append_u8("fFlgs1",   this->entry.fFlgs1, pStr);
+        (void)JsonOut_Append_u8("fFlgs2",   this->entry.fFlgs2, pStr);
         (void)JsonOut_Append_u32("hash",    this->entry.hash, pStr);
         (void)JsonOut_Append_u32("token",   this->entry.token, pStr);
         (void)JsonOut_Append_i32("cls",     this->entry.cls, pStr);
@@ -314,6 +315,7 @@ extern "C" {
         (void)JsonOut_Append_u16("len",     this->entry.len, pStr);
         (void)JsonOut_Append_u16("dup",     this->entry.dup, pStr);
         (void)JsonOut_Append_u16("align",   this->entry.align, pStr);
+        (void)JsonOut_Append_u32("record",  this->entry.record, pStr);
         (void)JsonOut_Append_u16("scale",   this->entry.scale, pStr);
         (void)JsonOut_Append_i32("value",   this->entry.value, pStr);
         pWrk = hex_DataToJSON(sizeof(this->entry.extra), this->entry.extra);

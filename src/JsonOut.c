@@ -115,6 +115,42 @@ extern "C" {
     }
 
 
+    void            JsonOut_Append_i16_array (
+        const
+        char            *pNameA,
+        uint16_t        num,            // Number of entries
+        const
+        int16_t         *pNum,          // First Entry Pointer
+        ASTR_DATA       *pStr
+    )
+    {
+        uint32_t        i;
+
+        if (num && pStr && pNameA) {
+            AStr_AppendPrint(pStr,
+                             "\t\"%s\":{\n"
+                             "\t\ttype:I16Array,\n"
+                             "\t\tsize:%d,\n"
+                             "\t\tdata:[\n\t\t\t",
+                             pNameA,
+                             num
+            );
+            for (i=0; i<(num - 1); i++,pNum++) {
+                AStr_AppendPrint(pStr, "%d,", *pNum);
+                if ((i > 0) && (0== (i % 8))) {
+                    AStr_AppendPrint(pStr, "\n\t\t\t");
+                }
+            }
+            if ((i > 0) && (0== (i % 8))) {
+                AStr_AppendPrint(pStr, "\n\t\t\t");
+            }
+            AStr_AppendPrint(pStr, "%d\n\t\t]\n", *pNum);
+            AStr_AppendPrint(pStr, "\t},\n");
+        }
+    }
+
+
+
     void            JsonOut_Append_i32 (
         const
         char            *pNameA,
@@ -141,7 +177,7 @@ extern "C" {
         if (num && pStr && pNameA) {
             AStr_AppendPrint(pStr, "\t\"%s\":[\n\t\t", pNameA);
             for (i=0; i<(num - 1); i++,pNum++) {
-                AStr_AppendPrint(pStr, "%u, ", *pNum);
+                AStr_AppendPrint(pStr, "%d, ", *pNum);
                 if ((i > 0) && (0== (i % 8))) {
                     AStr_AppendPrint(pStr, "\n\t\t");
                 }
@@ -149,7 +185,7 @@ extern "C" {
             if ((i > 0) && (0== (i % 8))) {
                 AStr_AppendPrint(pStr, "\n\t\t");
             }
-            AStr_AppendPrint(pStr, "%u\n", *pNum);
+            AStr_AppendPrint(pStr, "%d\n", *pNum);
             AStr_AppendPrint(pStr, "\t],\n");
         }
     }

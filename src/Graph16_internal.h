@@ -51,7 +51,6 @@
 
 
 
-
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -75,12 +74,12 @@ struct Graph16_data_s	{
     uint16_t        edgesUsed;
     uint16_t        verticesMax;    // max Vertex Index
     uint16_t        verticesUsed;
-    I16ARRAY_DATA   *pEdges;        // Edge Array of Node Indices
+    int16_t         *pEdges;        // Edge Array of Node Indices
     //                              // Indexed with +/- edge index
-    I16ARRAY_DATA   *pNext;         // Edge Array of Edge Indices
+    int16_t         *pNext;         // Edge Array of Edge Indices
     //                              // (Used to index into Edges)
     //                              // Indexed with +/- edge index
-    I16ARRAY_DATA   *pFirst;        // Vertex Array of Edge Indices
+    int16_t         *pFirst;        // Vertex Array of Edge Indices
     //                              // (Used to index into Edges)
     //                              // Indexed with + vertex index
 

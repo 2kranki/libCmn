@@ -74,6 +74,7 @@ struct W32StrC_data_s	{
 
     // Common Data
     uint32_t        len;        // Number of chars excluding trailing NUL
+    const
     W32CHR_T        *pArray;
 
 };
@@ -151,6 +152,27 @@ struct W32StrC_data_s	{
      @return    If successful, true; otherwise false.
      */
     bool            W32StrC_SetupW32(
+        W32STRC_DATA    *this,
+        uint32_t        len,
+        const
+        W32CHR_T        *pStrW32
+    );
+
+
+    /*!
+     Free the current string and set up to use the supplied
+     UTF-32 constant String in UTF-32 format as the new string.
+     If a length is supplied, then only that character count is
+     copied.  Otherwise, it is assumed that the string is
+     terminated with a NUL character (ie '\0').
+     @param     this    object pointer
+     @param     len     string length in characters (0 == look for Terminating NUL)
+     @param     pStrW32 a pointer to a UTF-32 String
+     @return    If successful, true; otherwise false.
+     @warning   The supplied constant string must not be altereed
+                while this object uses it.
+     */
+    bool            W32StrC_SetupW32Con(
         W32STRC_DATA    *this,
         uint32_t        len,
         const

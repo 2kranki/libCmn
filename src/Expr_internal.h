@@ -135,7 +135,7 @@ struct Expr_data_s	{
     );
 
 
-    EXPR_DATA *       Expr_Copy (
+    EXPR_DATA *     Expr_Copy (
         EXPR_DATA     *this
     );
 
@@ -210,7 +210,7 @@ struct Expr_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    EXPR_DATA *       Expr_ParseJsonObject (
+    EXPR_DATA *     Expr_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -226,7 +226,7 @@ struct Expr_data_s	{
      */
     ERESULT         Expr_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        EXPR_DATA     *pObject
+        EXPR_DATA       *pObject
     );
 #endif
 

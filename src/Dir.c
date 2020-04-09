@@ -90,6 +90,7 @@ extern "C" {
 
 
 
+#ifdef XYZZY
     static
     bool            scan_rm(
         void            *pObj,
@@ -102,6 +103,7 @@ extern "C" {
 
         return true;
     }
+#endif
 
 
 

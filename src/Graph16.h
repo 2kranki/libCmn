@@ -7,15 +7,17 @@
  * Program
  *			Graph with 16-Bit Indices (Graph16)
  * Purpose
- *			This object provides an Adjacency List Graph using
- *          signed 16-bit indices.  It is assumed that the user
- *          will provide vertex and edge indices with data for
- *          those stored else where. This graph simply contains
- *          the relationship not the vertices or edges themselves.
+ *			This object provides an Adjacency List Directed Graph
+ *          using signed 16-bit indices. However, the indices can
+ *          only be positive numbers (1-32767). It is assumed that
+ *          the user will provide vertex and edge indices with
+ *          data for those stored else where. This graph simply
+ *          contains the relationship not the vertices or edges
+ *          themselves.
  *
  * Remarks
  *	1.      After executing Graph16_EdgeSet(), Graph16_RebuildIndex()
- *          needs to be run so that the indices are up to date.
+ *          needs to be run so that the indices are up-to-date.
  *
  * References
  *  1.      "A Versatile Data Structure for Edge-oriented Graph Algorithms",
@@ -24,6 +26,8 @@
  *
  * History
  *	03/11/2020 Generated
+ *  04/08/2020 Removed use of I16Array for the 3 internal arrays replacing
+ *              them with int16_t arrays making things a little faster.
  */
 
 
@@ -409,6 +413,19 @@ extern "C" {
     );
 
 
+    /*!
+    Rebuild the internal edge idex.
+    @param      this    object pointer
+    @warning    Upon successful completion of this Graph16_EdgeSet, this method
+                must be run to update the internal indices. This can wait
+               until a group of EdgeSet's without intervening calls to other
+               methods.
+    */
+    void            Graph16_RebuildIndex (
+        GRAPH16_DATA    *this
+    );
+
+
 #ifdef  GRAPH16_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
@@ -427,11 +444,6 @@ extern "C" {
         GRAPH16_DATA   *this
     );
 #endif
-
-
-    void            Graph16_RebuildIndex (
-        GRAPH16_DATA    *this
-    );
 
 
     /*!

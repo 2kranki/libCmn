@@ -1384,8 +1384,11 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        fprintf(stderr, "Compiler::sizeof(COMPILER_DATA) = %lu\n", sizeof(COMPILER_DATA));
+#ifdef XYZZY
+        fprintf(stderr, "Compiler::sizeof(COMPILER_DATA) = %lu\n",
+                sizeof(COMPILER_DATA));
+        fprintf(stderr, "Compiler::sizeof(COMPILER_DATA) % 4 = %lu\n",
+                sizeof(COMPILER_DATA) % 4);
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(COMPILER_DATA));
     #endif

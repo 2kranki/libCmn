@@ -106,14 +106,32 @@ extern "C" {
     typedef struct sym_entry_s {
         char            name[65];           // NUL-terminated name
         // Note: Abs or Rel may not be valid in initial passes.
-        uint8_t         fAbs;               // Absolute value
-        uint8_t         fRel;               // Relocatable value
-        uint8_t         rsvd8;
+        uint8_t         fFlgs1;             // Flags
+        #define SYM_FLGS1_ABS       0x80        // Absolute Address
+        #define SYM_FLGS1_ACT       0x40        // Active Entry
+        #define SYM_FLGS1_REL       0x20        // Relocatable Address
+        #define SYM_FLGS1_UNUSED1   0x10        // Unused Flag
+        #define SYM_FLGS1_UNUSED2   0x08        // Unused Flag
+        #define SYM_FLGS1_UNUSED3   0x04        // Unused Flag
+        #define SYM_FLGS1_UNUSED4   0x02        // Unused Flag
+        #define SYM_FLGS1_UNUSED5   0x01        // Unused Flag
+        uint8_t         fFlgs2;             // Flags
+        #define SYM_FLGS1_UNUSED6   0x10        // Unused Flag
+        #define SYM_FLGS1_UNUSED7   0x10        // Unused Flag
+        #define SYM_FLGS1_UNUSED8   0x10        // Unused Flag
+        #define SYM_FLGS1_UNUSED9   0x10        // Unused Flag
+        #define SYM_FLGS1_UNUSED10  0x08        // Unused Flag
+        #define SYM_FLGS1_UNUSED11  0x04        // Unused Flag
+        #define SYM_FLGS1_UNUSED12  0x02        // Unused Flag
+        #define SYM_FLGS1_UNUSED13  0x01        // Unused Flag
+        int8_t          unused8;
         uint32_t        hash;               // Hash Code for name
         uint32_t        token;              // unique token for name
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
         uint32_t        section;            // Section/Struct Identifier (0 == none)
+        int32_t         value;
+        uint32_t        record;             // Input Record Number
         uint16_t        prim;               // See SYM_PRIMITIVE;
         uint16_t        len;                // Data Length in Bytes
         uint16_t        dup;                // Duplication Factor
@@ -125,9 +143,7 @@ extern "C" {
         //                                  //  8 == 64 Bit Boundary
         //                                  // 16 == 128 Bit Boundary
         uint16_t        scale;              // Binary or Decimal Shift Amount
-        uint16_t        rsvd16;
-        int32_t         value;
-        uint8_t         extra[64];          // Used as needed
+        uint8_t         extra[66];          // Used as needed
     } SYM_ENTRY;
 #pragma pack(pop)
 
@@ -256,6 +272,150 @@ extern "C" {
     );
 
 
+    /*! Property: Unused Flag1
+     */
+    bool            Sym_getFlg1 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg1 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag2
+     */
+    bool            Sym_getFlg2 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg2 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag3
+     */
+    bool            Sym_getFlg3 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg3 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag4
+     */
+    bool            Sym_getFlg4 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg4 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag5
+     */
+    bool            Sym_getFlg5 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg5 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag6
+     */
+    bool            Sym_getFlg6 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg6 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag7
+     */
+    bool            Sym_getFlg7 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg7 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag8
+     */
+    bool            Sym_getFlg8 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg8 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag9
+     */
+    bool            Sym_getFlg9 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg9 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag10
+     */
+    bool            Sym_getFlg10 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg10 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag11
+     */
+    bool            Sym_getFlg11 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg11 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Unused Flag12
+     */
+    bool            Sym_getFlg12 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setFlg12 (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
     /*! Property: Hash
      */
     uint32_t        Sym_getHash (
@@ -295,6 +455,19 @@ extern "C" {
     bool            Sym_setPrim (
         SYM_DATA        *this,
         uint16_t        value
+    );
+
+
+    /*! Property: Inpu Record Numer where symbol
+     is defined.
+     */
+    uint32_t        Sym_getRecord (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setRecord (
+        SYM_DATA        *this,
+        uint32_t        value
     );
 
 

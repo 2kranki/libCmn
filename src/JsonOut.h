@@ -160,6 +160,26 @@ extern "C" {
         ASTR_DATA       *pStr
     );
 
+    /*!
+     Append an int16_t array which generates without whitespace:
+        "&name":["size":&num,data:[&pNum]],
+     where '&' represents the substitution.
+     This is normally parsed with JsonIn_FindI16ArrayNodeInHashA()
+     @param     pNameA  Name for the object
+     @param     num     size of the array
+     @param     pNum    Array pointer
+     @param     pStr    string to be added on to
+     */
+    void            JsonOut_Append_i16_array (
+        const
+        char            *pNameA,
+        uint16_t        num,            // Number of entries
+        const
+        int16_t         *pNum,          // First Entry Pointer
+        ASTR_DATA       *pStr
+    );
+
+
     void            JsonOut_Append_i32 (
         const
         char            *pNameA,

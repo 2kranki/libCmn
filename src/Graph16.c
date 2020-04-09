@@ -60,15 +60,12 @@ extern "C" {
 #endif
     
 
-#define EdgeGet(index) I16Array_Get(this->pEdges, (this->edgesMax + index + 1))
-#define EdgeSet(index,value) I16Array_SetData(this->pEdges, \
-                                (this->edgesMax + index + 1), value)
-#define FirstGet(index) I16Array_Get(this->pFirst, (index + 1))
-#define FirstSet(index,value) I16Array_SetData(this->pFirst, \
-                                (index + 1), value)
-#define NextGet(index) I16Array_Get(this->pNext, (this->edgesMax + index + 1))
-#define NextSet(index,value) I16Array_SetData(this->pNext, \
-                                (this->edgesMax + index + 1), value)
+#   define EdgeGet(index)        this->pEdges[this->edgesMax + index]
+#   define EdgeSet(index,value)  this->pEdges[this->edgesMax + index] = value
+#   define FirstGet(index)       this->pFirst[index]
+#   define FirstSet(index,value) this->pFirst[index] = value
+#   define NextGet(index)        this->pNext[this->edgesMax + index]
+#   define NextSet(index,value)  this->pNext[this->edgesMax + index] = value
 
 
  
@@ -172,16 +169,6 @@ extern "C" {
             NextSet(-e, e2);
             FirstSet(v, -e);
         }
-#ifdef XYZZY
-        {
-            ASTR_DATA       *pStr = Graph16_ToDebugString(this, 0);
-            if (pStr) {
-                fprintf(stderr, "UpdateIndex(%d):\n%s\n", e, AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
-#endif
 
         // Return to caller.
     }
@@ -262,52 +249,6 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                         E d g e s
-    //---------------------------------------------------------------
-
-    I16ARRAY_DATA * Graph16_getEdges (
-        GRAPH16_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Graph16_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pEdges;
-    }
-
-
-    bool            Graph16_setEdges (
-        GRAPH16_DATA    *this,
-        I16ARRAY_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Graph16_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pEdges) {
-            obj_Release(this->pEdges);
-        }
-        this->pEdges = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                          E d g e
     //---------------------------------------------------------------
     
@@ -380,98 +321,6 @@ extern "C" {
 #endif
 
         this->edgesUsed = value;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                         F i r s t
-    //---------------------------------------------------------------
-
-    I16ARRAY_DATA * Graph16_getFirst (
-        GRAPH16_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Graph16_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pFirst;
-    }
-
-
-    bool            Graph16_setFirst (
-        GRAPH16_DATA    *this,
-        I16ARRAY_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Graph16_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pFirst) {
-            obj_Release(this->pFirst);
-        }
-        this->pFirst = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                         N e x t
-    //---------------------------------------------------------------
-
-    I16ARRAY_DATA * Graph16_getNext (
-        GRAPH16_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Graph16_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pNext;
-    }
-
-
-    bool            Graph16_setNext (
-        GRAPH16_DATA    *this,
-        I16ARRAY_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Graph16_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pNext) {
-            obj_Release(this->pNext);
-        }
-        this->pNext = pValue;
 
         return true;
     }
@@ -668,12 +517,12 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         Graph16_Assign (
-        GRAPH16_DATA		*this,
-        GRAPH16_DATA     *pOther
+        GRAPH16_DATA	*this,
+        GRAPH16_DATA    *pOther
     )
     {
-        ERESULT     eRc;
-        
+        ERESULT         eRc;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -699,23 +548,43 @@ extern "C" {
 
         // Release objects and areas in other object.
         if (pOther->pEdges) {
-            obj_Release(pOther->pEdges);
-            pOther->pEdges = OBJ_NIL;
+            mem_Free(pOther->pEdges);
+            pOther->pEdges = NULL;
         }
+        if (pOther->pNext) {
+            mem_Free(pOther->pNext);
+            pOther->pNext = NULL;
+        }
+        if (pOther->pFirst) {
+            mem_Free(pOther->pFirst);
+            pOther->pFirst = NULL;
+        }
+        pOther->edgesMax = 0;
+        pOther->edgesUsed = 0;
+        pOther->verticesMax = 0;
+        pOther->verticesUsed = 0;
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-        if (this->pEdges) {
-            if (obj_getVtbl(this->pEdges)->pCopy) {
-                pOther->pEdges = obj_getVtbl(this->pEdges)->pCopy(this->pEdges);
-            }
-            else {
-                obj_Retain(this->pEdges);
-                pOther->pEdges = this->pEdges;
-            }
-        }
 
         // Copy other data from this object to other.
+        eRc = Graph16_ExpandEdges(pOther, this->edgesMax);
+        eRc = Graph16_ExpandVertices(pOther, this->verticesMax);
+        memcpy(
+               pOther->pEdges,
+               this->pEdges,
+               (Graph16_MaxToActual(this->edgesMax) * sizeof(int16_t))
+        );
+        memcpy(
+               pOther->pNext,
+               this->pNext,
+               (Graph16_MaxToActual(this->edgesMax) * sizeof(int16_t))
+        );
+        memcpy(
+               pOther->pFirst,
+               this->pFirst,
+               (this->edgesMax * sizeof(int16_t))
+        );
         pOther->edgesMax = this->edgesMax;
         pOther->edgesUsed = this->edgesUsed;
         pOther->verticesMax = this->verticesMax;
@@ -928,9 +797,18 @@ extern "C" {
         }
 #endif
 
-        Graph16_setEdges(this, OBJ_NIL);
-        Graph16_setNext(this, OBJ_NIL);
-        Graph16_setFirst(this, OBJ_NIL);
+        if (this->pEdges) {
+            mem_Free(this->pEdges);
+            this->pEdges = NULL;
+        }
+        if (this->pNext) {
+            mem_Free(this->pNext);
+            this->pNext = NULL;
+        }
+        if (this->pFirst) {
+            mem_Free(this->pFirst);
+            this->pFirst = NULL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1050,8 +928,8 @@ extern "C" {
         }
 #endif
 
-        from = I16Array_Get(this->pEdges, (this->edgesMax - index + 1));
-        to = I16Array_Get(this->pEdges, (this->edgesMax + index + 1));
+        from = EdgeGet(-index);
+        to = EdgeGet(index);
         if (from && to) {
             eRc = ERESULT_SUCCESS;
         }
@@ -1345,7 +1223,7 @@ extern "C" {
     {
         //ERESULT         eRc;
         uint16_t        oldMax = this->edgesMax;
-        I16ARRAY_DATA   *pArray = OBJ_NIL;
+        int16_t         *pArray = NULL;
         uint32_t        diff;
 
         // Do initialization.
@@ -1355,7 +1233,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if ((max > this->edgesMax) && (max < 32760))
+        if ((max > this->edgesMax) && (max <= 32767))
             ;
         else {
             return ERESULT_INVALID_PARAMETER;
@@ -1363,47 +1241,51 @@ extern "C" {
 #endif
 
         // Create a new array.
-        pArray = I16Array_NewWithSize(Graph16_MaxToActual(max));
-        if (OBJ_NIL == pArray) {
+        pArray = mem_Calloc(Graph16_MaxToActual(max), sizeof(int16_t));
+        if (NULL == pArray) {
             return ERESULT_OUT_OF_MEMORY;
         }
-        array_setSize(I16Array_getArray(pArray), Graph16_MaxToActual(max));
 
         // copy in old data if present.
         if (oldMax) {
             diff = (Graph16_MaxToActual(max) - Graph16_MaxToActual(oldMax)) >> 1;
-            diff *= array_getElemSize(I16Array_getArray(this->pEdges));
-            memcpy(array_getData(I16Array_getArray(pArray)) + diff,
-                   array_getData(I16Array_getArray(this->pEdges)),
-                   (Graph16_MaxToActual(oldMax) *
-                        array_getElemSize(I16Array_getArray(this->pEdges)))
+            //diff *= sizeof(int16_t);
+            memcpy(
+                   (pArray + diff),
+                   this->pEdges,
+                   (Graph16_MaxToActual(oldMax) * sizeof(int16_t))
             );
         }
 
         // Replace array with new one.
-        obj_Release(this->pEdges);
+        if (this->pEdges) {
+            mem_Free(this->pEdges);
+            //this->pEdges = NULL;
+        }
         this->pEdges = pArray;
         this->edgesMax = max;
 
-        pArray = I16Array_NewWithSize(Graph16_MaxToActual(max));
-        if (OBJ_NIL == pArray) {
+        pArray = mem_Calloc(Graph16_MaxToActual(max), sizeof(int16_t));
+        if (NULL == pArray) {
             return ERESULT_OUT_OF_MEMORY;
         }
-        array_setSize(I16Array_getArray(pArray), Graph16_MaxToActual(max));
 
         // copy in old data if present.
         if (oldMax) {
             diff = (Graph16_MaxToActual(max) - Graph16_MaxToActual(oldMax)) >> 1;
-            diff *= array_getElemSize(I16Array_getArray(this->pNext));
-            memcpy(array_getData(I16Array_getArray(pArray)) + diff,
-                   array_getData(I16Array_getArray(this->pNext)),
-                   (Graph16_MaxToActual(oldMax) *
-                        array_getElemSize(I16Array_getArray(this->pNext)))
+            //diff *= sizeof(int16_t);
+            memcpy(
+                   (pArray + diff),
+                   this->pNext,
+                   (Graph16_MaxToActual(oldMax) * sizeof(int16_t))
             );
         }
 
         // Replace array with new one.
-        obj_Release(this->pNext);
+        if (this->pNext) {
+            mem_Free(this->pNext);
+            //this->pNext = NULL;
+        }
         this->pNext = pArray;
 
         // Return to caller.
@@ -1430,7 +1312,7 @@ extern "C" {
     {
         //ERESULT         eRc;
         uint16_t        oldMax = this->verticesMax;
-        I16ARRAY_DATA   *pArray = OBJ_NIL;
+        int16_t         *pArray = NULL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1447,23 +1329,25 @@ extern "C" {
 #endif
 
         // Create a new array.
-        pArray = I16Array_NewWithSize(max + 1);
-        if (OBJ_NIL == pArray) {
+        pArray = mem_Calloc((max + 1), sizeof(int16_t));
+        if (NULL == pArray) {
             return ERESULT_OUT_OF_MEMORY;
         }
-        array_setSize(I16Array_getArray(pArray), max + 1);
 
         // copy in old data if present.
         if (oldMax) {
-            memcpy(array_getData(I16Array_getArray(pArray)),
-                   array_getData(I16Array_getArray(this->pFirst)),
-                   ((oldMax + 1) *
-                        array_getElemSize(I16Array_getArray(this->pFirst)))
+            memcpy(
+                   pArray,
+                   this->pFirst,
+                   ((oldMax +1) * sizeof(int16_t))
             );
         }
 
         // Replace array with new one.
-        obj_Release(this->pFirst);
+        if (this->pFirst) {
+            mem_Free(this->pFirst);
+            //this->pNext = NULL;
+        }
         this->pFirst = pArray;
         this->verticesMax = max;
 
@@ -1731,12 +1615,13 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        //uint32_t        i;
-        //uint32_t        j;
-        
+        int             j;
+        int             jMax;
+        int16_t         *pData;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1778,54 +1663,108 @@ extern "C" {
             );
 
         if (this->pEdges) {
+            pData = this->pEdges;
+            jMax = this->edgesMax;
             if (indent) {
                 AStr_AppendCharRepeatA(pStr, indent, ' ');
             }
             AStr_AppendA(pStr, "Edge Array:\n");
-            if (((OBJ_DATA *)(this->pEdges))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pEdges))->pVtbl->pToDebugString(
-                                                    this->pEdges,
-                                                    indent+4
-                            );
-                if (pWrkStr) {
-                    AStr_Append(pStr, pWrkStr);
-                    obj_Release(pWrkStr);
-                }
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent, ' ');
             }
+            AStr_AppendA(pStr, "\t[");
+            for (j=0; j<(jMax-1); ++j) {
+                if ((j % 8) == 0) {
+                    if (j != 0) {
+                        AStr_AppendA(pStr, "\n");
+                    }
+                    if (indent) {
+                        AStr_AppendCharRepeatA(pStr, indent, ' ');
+                    }
+                    AStr_AppendA(pStr, "\t");
+                }
+                AStr_AppendPrint(pStr, "%d,", *pData++);
+            }
+            if ((j % 8) == 0) {
+                if (j != 0) {
+                    AStr_AppendA(pStr, "\n");
+                }
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent, ' ');
+                }
+                AStr_AppendA(pStr, "\t");
+            }
+            AStr_AppendPrint(pStr, "%d]\n", *pData);
         }
 
         if (this->pNext) {
+            pData = this->pNext;
+            jMax = this->edgesMax;
             if (indent) {
                 AStr_AppendCharRepeatA(pStr, indent, ' ');
             }
             AStr_AppendA(pStr, "Next Array:\n");
-            if (((OBJ_DATA *)(this->pNext))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pNext))->pVtbl->pToDebugString(
-                                                    this->pNext,
-                                                    indent+4
-                            );
-                if (pWrkStr) {
-                    AStr_Append(pStr, pWrkStr);
-                    obj_Release(pWrkStr);
-                }
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent, ' ');
             }
+            AStr_AppendA(pStr, "\t[");
+            for (j=0; j<(jMax-1); ++j) {
+                if ((j % 8) == 0) {
+                    if (j != 0) {
+                        AStr_AppendA(pStr, "\n");
+                    }
+                    if (indent) {
+                        AStr_AppendCharRepeatA(pStr, indent, ' ');
+                    }
+                    AStr_AppendA(pStr, "\t");
+                }
+                AStr_AppendPrint(pStr, "%d,", *pData++);
+            }
+            if ((j % 8) == 0) {
+                if (j != 0) {
+                    AStr_AppendA(pStr, "\n");
+                }
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent, ' ');
+                }
+                AStr_AppendA(pStr, "\t");
+            }
+            AStr_AppendPrint(pStr, "%d]\n", *pData);
         }
 
         if (this->pFirst) {
+            pData = this->pFirst;
+            jMax = this->verticesMax;
             if (indent) {
                 AStr_AppendCharRepeatA(pStr, indent, ' ');
             }
             AStr_AppendA(pStr, "First Array:\n");
-            if (((OBJ_DATA *)(this->pFirst))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pFirst))->pVtbl->pToDebugString(
-                                                    this->pFirst,
-                                                    indent+4
-                            );
-                if (pWrkStr) {
-                    AStr_Append(pStr, pWrkStr);
-                    obj_Release(pWrkStr);
-                }
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent, ' ');
             }
+            AStr_AppendA(pStr, "\t[");
+            for (j=0; j<(jMax-1); ++j) {
+                if ((j % 8) == 0) {
+                    if (j != 0) {
+                        AStr_AppendA(pStr, "\n");
+                    }
+                    if (indent) {
+                        AStr_AppendCharRepeatA(pStr, indent, ' ');
+                    }
+                    AStr_AppendA(pStr, "\t");
+                }
+                AStr_AppendPrint(pStr, "%d,", *pData++);
+            }
+            if ((j % 8) == 0) {
+                if (j != 0) {
+                    AStr_AppendA(pStr, "\n");
+                }
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent, ' ');
+                }
+                AStr_AppendA(pStr, "\t");
+            }
+            AStr_AppendPrint(pStr, "%d]\n", *pData);
         }
 
         if (indent) {

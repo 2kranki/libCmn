@@ -60,10 +60,12 @@ extern "C" {
 #endif
     
     
-    
+
+#ifdef XYZZY
     static
     const
     char            *pHexChr = "0123456789ABCDEF";
+#endif
 
     
     
@@ -237,7 +239,7 @@ extern "C" {
         const
         OBJ_INFO        *pInfo;
         uint8_t         *pChr;
-        char            chrs[12];
+        //char            chrs[12];
         CRC_DATA        *pCrc = OBJ_NIL;
         uint32_t        crc;
         
