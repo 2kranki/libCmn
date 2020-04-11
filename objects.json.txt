@@ -63,7 +63,6 @@
         {name:"fileio", deps:["path.h"]},
         {name:"FileRef" deps:["AStrC.h","path.h"]},
         {name:"genObj"},
-        {name:"Graph16", deps:["I16Array.h"], json:true},
         {name:"greg"},
         {name:"hash32"},
         {name:"hex", json:true},

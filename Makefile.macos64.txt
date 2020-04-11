@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 3/22/2020  4:13:34.000)
+# ( 4/11/2020 13:36:54.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -259,21 +259,6 @@ $(OBJDIR)/FileRef.o: $(SRCDIR)/FileRef.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $
 OBJS += $(OBJDIR)/FileRef_object.o
 
 $(OBJDIR)/FileRef_object.o: $(SRCDIR)/FileRef_object.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/Graph16.o
-
-$(OBJDIR)/Graph16.o: $(SRCDIR)/Graph16.c $(SRCDIR)/Graph16.h $(SRCDIR)/Graph16_internal.h $(SRCDIR)/I16Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/Graph16_json.o
-
-$(OBJDIR)/Graph16_json.o: $(SRCDIR)/Graph16_json.c $(SRCDIR)/Graph16.h $(SRCDIR)/Graph16_internal.h $(SRCDIR)/I16Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/Graph16_object.o
-
-$(OBJDIR)/Graph16_object.o: $(SRCDIR)/Graph16_object.c $(SRCDIR)/Graph16.h $(SRCDIR)/Graph16_internal.h $(SRCDIR)/I16Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/I16Array.o
@@ -2012,12 +1997,6 @@ False_test: $(TEST_SRC)/False_test.c $(SRCDIR)/False.h $(SRCDIR)/False_internal.
 TESTS += FileRef_test
 
 FileRef_test: $(TEST_SRC)/FileRef_test.c $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/AStrC.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += Graph16_test
-
-Graph16_test: $(TEST_SRC)/Graph16_test.c $(SRCDIR)/Graph16.h $(SRCDIR)/Graph16_internal.h $(SRCDIR)/I16Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

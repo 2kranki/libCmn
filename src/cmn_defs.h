@@ -1,3 +1,5 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+
 /* 
  * File:   cmn_defs.h
  *
@@ -272,8 +274,6 @@ extern "C" {
         OBJ_IDENT_FILEREF_CLASS,
         OBJ_IDENT_GENOBJ,               // Generate an Object
         OBJ_IDENT_GENOBJ_CLASS,
-        OBJ_IDENT_GRAPH16,              // 16-Bit Indexed Graph
-        OBJ_IDENT_GRAPH16_CLASS,
         OBJ_IDENT_GREG,                 // Gregorian Date
         OBJ_IDENT_GREG_CLASS,
         OBJ_IDENT_HASH32,               // 32-Bit Key Hash Table
@@ -562,13 +562,14 @@ extern "C" {
         OBJ_IDENT_CAN_ENTRIES=OBJ_IDENT_OTHER_LIBS,                 // 128 Objects
         OBJ_IDENT_COMPILER_ENTRIES=OBJ_IDENT_CAN_ENTRIES+256,       // 128 Objects
         OBJ_IDENT_DISK_ENTRIES=OBJ_IDENT_COMPILER_ENTRIES+256,      //  64 Objects
-        OBJ_IDENT_J1939_ENTRIES=OBJ_IDENT_DISK_ENTRIES+128,         //  64 Objects
+        OBJ_IDENT_EMU_ENTRIES=OBJ_IDENT_DISK_ENTRIES+256,           // 128 Objects
+        OBJ_IDENT_GRAPH_ENTRIES=OBJ_IDENT_EMU_ENTRIES+32,           //  16 Objects
+        OBJ_IDENT_J1939_ENTRIES=OBJ_IDENT_GRAPH_ENTRIES+128,        //  64 Objects
         OBJ_IDENT_LL1_ENTRIES=OBJ_IDENT_J1939_ENTRIES+128,          //  64 Objects
-        OBJ_IDENT_OS_ENTRIES=OBJ_IDENT_J1939_ENTRIES+128,           // 128 Objects
+        OBJ_IDENT_OS_ENTRIES=OBJ_IDENT_LL1_ENTRIES+128,             // 128 Objects
         OBJ_IDENT_PARSERS_ENTRIES=OBJ_IDENT_OS_ENTRIES+128,         //  64 Objects
         OBJ_IDENT_PIC32_ENTRIES=OBJ_IDENT_PARSERS_ENTRIES+128,      //  64 Objects
-        OBJ_IDENT_EMU_ENTRIES=OBJ_IDENT_PIC32_ENTRIES+256,          //  32 Objects
-        OBJ_IDENT_TBL_ENTRIES=OBJ_IDENT_EMU_ENTRIES+128,            //  16 Objects
+        OBJ_IDENT_TBL_ENTRIES=OBJ_IDENT_PIC32_ENTRIES+32,           //  16 Objects
         OBJ_IDENT_TERM_ENTRIES=OBJ_IDENT_TBL_ENTRIES+64,            //  32 Objects
         OBJ_IDENT_USER_ENTRIES=16384
     } OBJ_IDENTS;
