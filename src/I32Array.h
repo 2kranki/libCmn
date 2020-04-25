@@ -274,6 +274,11 @@ extern "C" {
     );
 
 
+    ERESULT         I32Array_SortAscending(
+        I32ARRAY_DATA   *this
+    );
+
+
 #ifdef  I32ARRAY_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in

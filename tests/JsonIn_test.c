@@ -409,7 +409,7 @@ int             test_JsonIn_I16Array01(
         "\t},\n"
     "}\n";
     uint32_t        i;
-    int16_t         size = 0;
+    uint16_t        size = 0;
     int16_t         array[9];
 
     fprintf(stderr, "Performing: %s\n", pTestName);

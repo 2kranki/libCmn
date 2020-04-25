@@ -1604,7 +1604,7 @@ extern "C" {
         char            *pSectionA,
         uint16_t        max,
         int16_t         *pArray,
-        int16_t         *pSize
+        uint16_t        *pSize
     )
     {
         ERESULT         eRc;
@@ -1733,6 +1733,113 @@ extern "C" {
 
         if (pInt) {
             *pInt = (int32_t)num;
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         JsonIn_FindI32ArrayNodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        uint32_t        max,
+        int32_t         *pArray,
+        uint32_t        *pSize
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pData;
+        uint32_t        i;
+        uint32_t        size = 0;
+        NODEARRAY_DATA  *pNodeArray;
+        NODE_DATA       *pNode;
+        NAME_DATA       *pName;
+        ASTR_DATA       *pStr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = JsonIn_SubObjectInHash(this, pSectionA);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        eRc = JsonIn_FindStringNodeInHashA(this, "type", &pData);
+        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
+            eRc = ERESULT_DATA_NOT_FOUND;
+            goto eom;
+        }
+        eRc = AStr_CompareA(pData,"I32Array");
+        if (eRc != ERESULT_SUCCESS_EQUAL) {
+            eRc = ERESULT_DATA_NOT_FOUND;
+            goto eom;
+        }
+
+        eRc = JsonIn_FindU32NodeInHashA(this, "size", &size);
+        if (ERESULT_FAILED(eRc) || (size == 0) || (size > max)) {
+            eRc = ERESULT_DATA_OUT_OF_RANGE;
+            goto eom;
+        }
+        TRC_OBJ(this,  "\t\t...size: %u\n", size);
+
+        if (size) {
+            eRc = JsonIn_FindArrayNodeInHashA(this, "data", &pNodeArray);
+            if (pArray) {
+                if (size == NodeArray_getSize(pNodeArray))
+                    ;
+                else {
+                    eRc = ERESULT_DATA_OUT_OF_RANGE;
+                    goto eom;
+                }
+            }
+            else {
+                eRc = ERESULT_DATA_NOT_FOUND;
+                goto eom;
+            }
+
+            for(i=0; i<size; i++) {
+                //fprintf(stderr, "\t\tLooking for Node(%d)\n", i+1);
+                pNode = NodeArray_Get(pNodeArray, i+1);
+                if (OBJ_NIL == pNode) {
+                    eRc = ERESULT_DATA_NOT_FOUND;
+                    goto eom;
+                }
+                pName = Node_getName(pNode);
+                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))
+                    ;
+                else {
+                    eRc = ERESULT_DATA_NOT_FOUND;
+                    goto eom;
+                }
+                pStr = Node_getData(pNode);
+                if (OBJ_NIL == pStr) {
+                    eRc = ERESULT_DATA_NOT_FOUND;
+                    goto eom;
+                }
+                TRC_OBJ(this,  "\t\t...found[%d] - %s -- %d\n",
+                        i,
+                        AStr_getData(pStr),
+                        (int32_t)AStr_ToInt64(pStr)
+                );
+                pArray[i] = (int32_t)AStr_ToInt64(pStr);
+            }
+        }
+
+        // Return to caller.
+    eom:
+        eRc = JsonIn_SubObjectEnd(this);
+        if (pSize) {
+            if (ERESULT_OK(eRc)) {
+                *pSize = size;
+            } else {
+                *pSize = 0;
+            }
         }
         return ERESULT_SUCCESS;
     }

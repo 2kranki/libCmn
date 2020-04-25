@@ -1139,6 +1139,70 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          S o r t
+    //---------------------------------------------------------------
+
+    ERESULT         I32Array_SortAscending(
+        I32ARRAY_DATA   *this
+    )
+    {
+        uint32_t        i;
+        uint32_t        j;
+        uint32_t        size = array_getSize((ARRAY_DATA *)this);
+        int32_t         *pJ0;
+        int32_t         *pJ1;
+        int32_t         wrk;
+
+        /*      Insertion Sort from Wikipedia
+         *
+         *  for i = 1 to length(A)
+         *      j = i
+         *      while j > 0 and A[j-1] > A[j]
+         *          swap A[j] and A[j-1]
+         *          j = j - 1
+         *      end while
+         *  end for
+         *
+         *  NOTE:   indexing is relative to zero.
+         *          adjust as necessary.
+         */
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !I32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (size < 2) {
+            return ERESULT_SUCCESS;
+        }
+
+        for (i=1; i<size; ++i) {
+            j = i;
+            while (j > 0) {
+                pJ0 = (int32_t *)array_Ptr((ARRAY_DATA *)this, j);
+                pJ1 = (int32_t *)array_Ptr((ARRAY_DATA *)this, j+1);
+                if (*pJ0 > *pJ1)
+                    ;
+                else
+                    break;
+                wrk = *pJ0;
+                *pJ0 = *pJ1;
+                *pJ1 = wrk;
+                j = j - 1;
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     

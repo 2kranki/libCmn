@@ -523,7 +523,7 @@ extern "C" {
         char            *pSectionA,
         uint16_t        max,
         int16_t         *pArray,
-        int16_t         *pSize
+        uint16_t        *pSize
     );
 
     ERESULT         JsonIn_FindI32NodeInHashA (
@@ -531,6 +531,15 @@ extern "C" {
         const
         char            *pSectionA,
         int32_t         *pInt
+    );
+
+    ERESULT         JsonIn_FindI32ArrayNodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        uint32_t        max,
+        int32_t         *pArray,
+        uint32_t        *pSize
     );
 
     ERESULT         JsonIn_FindI64NodeInHashA (
