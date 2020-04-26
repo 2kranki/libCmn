@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   NodeClass.c
- *	Generated 12/18/2019 23:30:16
+ *	Generated 04/26/2020 17:31:47
  *
  */
 
@@ -221,12 +221,10 @@ extern "C" {
         }
 #endif
 
-#ifdef  PROPERTY_STR_OWNED
         obj_Retain(pValue);
         if (this->pStr) {
             obj_Release(this->pStr);
         }
-#endif
         this->pStr = pValue;
         
         return true;
@@ -301,6 +299,16 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -429,6 +437,10 @@ extern "C" {
         }
 #endif
         
+#ifdef NODECLASS_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
         pOther = NodeClass_New( );
         if (pOther) {
             eRc = NodeClass_Assign(this, pOther);
@@ -437,9 +449,9 @@ extern "C" {
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -454,6 +466,7 @@ extern "C" {
     )
     {
         NODECLASS_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -487,6 +500,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        NodeClass      *pDeepCopy = NodeClass_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a NODECLASS object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    NODECLASS_DATA *     NodeClass_DeepyCopy (
+        NODECLASS_DATA       *this
+    )
+    {
+        NODECLASS_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = NodeClass_New( );
+        if (pOther) {
+            eRc = NodeClass_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -500,23 +559,23 @@ extern "C" {
         NODECLASS_DATA		*this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeClass_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -535,23 +594,23 @@ extern "C" {
         NODECLASS_DATA		*this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeClass_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -581,14 +640,14 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODECLASS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeClass_Vtbl);
         
@@ -601,18 +660,23 @@ extern "C" {
         }
         */
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeClass_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        fprintf(stderr, "NodeClass::sizeof(NODECLASS_DATA) = %lu\n", sizeof(NODECLASS_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "NodeClass::sizeof(NODECLASS_DATA) = %lu\n", 
+                sizeof(NODECLASS_DATA)
+        );
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODECLASS_DATA));
-    #endif
+#endif
 
         return this;
     }
@@ -648,21 +712,6 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //                P a r s e  J s o n  O b j e c t
-    //---------------------------------------------------------------
-    
-#ifdef  NODECLASS_JSON_SUPPORT
-     NODECLASS_DATA * NodeClass_ParseJsonObject (
-         JSONIN_DATA     *pParser
-    )
-    {
-        return OBJ_NIL;
-    }
-#endif
-        
-        
-        
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -712,33 +761,29 @@ extern "C" {
         
         switch (type) {
                 
-        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODECLASS_DATA);
-            break;
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(NODECLASS_DATA);
+                break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
                 return (void *)NodeClass_Class();
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -757,11 +802,25 @@ extern "C" {
                         }
                         break;
 
+                    case 'P':
+#ifdef  NODECLASS_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return NodeClass_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return NodeClass_ParseJsonObject;
+                        }
+#endif
+                        break;
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return NodeClass_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODECLASS_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return NodeClass_ToJsonFields;
+                        }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return NodeClass_ToJson;
                         }
@@ -776,7 +835,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == NodeClass_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODECLASS_JSON_SUPPORT
                 if (pData == NodeClass_ToJson)
                     return "ToJson";
 #endif
@@ -788,47 +847,6 @@ extern "C" {
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-#ifdef  NODECLASS_JSON_SUPPORT
-     ASTR_DATA *     NodeClass_ToJson (
-        NODECLASS_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!NodeClass_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-#endif
     
     
     
@@ -854,11 +872,12 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -895,8 +914,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -920,8 +941,8 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
     bool            NodeClass_Validate (
         NODECLASS_DATA      *this
     )
@@ -953,7 +974,7 @@ extern "C" {
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     

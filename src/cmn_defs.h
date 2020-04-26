@@ -466,6 +466,12 @@ extern "C" {
         OBJ_IDENT_SIDX_CLASS,
         OBJ_IDENT_SIDXE,                // Simple Integer Index with extended info
         OBJ_IDENT_SIDXE_CLASS,
+        OBJ_IDENT_SQLCOL,               // SQL Column 
+        OBJ_IDENT_SQLCOL_CLASS,
+        OBJ_IDENT_SQLCOLDEF,            // SQL Column Definition
+        OBJ_IDENT_SQLCOLDEF_CLASS,
+        OBJ_IDENT_SQLROWDEF,            // SQL Row Definition
+        OBJ_IDENT_SQLROWDEF_CLASS,
         OBJ_IDENT_SRC,
         OBJ_IDENT_SRC_CLASS,
         OBJ_IDENT_SRCERROR,             // Source Error Message

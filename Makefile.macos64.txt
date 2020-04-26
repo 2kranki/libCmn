@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 4/11/2020 13:36:54.000)
+# ( 4/26/2020 21:22:00.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -716,6 +716,51 @@ OBJS += $(OBJDIR)/Scanner_object.o
 $(OBJDIR)/Scanner_object.o: $(SRCDIR)/Scanner_object.c $(SRCDIR)/Scanner.h $(SRCDIR)/Scanner_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/SqlCol.o
+
+$(OBJDIR)/SqlCol.o: $(SRCDIR)/SqlCol.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlColDef.o
+
+$(OBJDIR)/SqlColDef.o: $(SRCDIR)/SqlColDef.c $(SRCDIR)/SqlColDef.h $(SRCDIR)/SqlColDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlColDef_json.o
+
+$(OBJDIR)/SqlColDef_json.o: $(SRCDIR)/SqlColDef_json.c $(SRCDIR)/SqlColDef.h $(SRCDIR)/SqlColDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlColDef_object.o
+
+$(OBJDIR)/SqlColDef_object.o: $(SRCDIR)/SqlColDef_object.c $(SRCDIR)/SqlColDef.h $(SRCDIR)/SqlColDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlCol_json.o
+
+$(OBJDIR)/SqlCol_json.o: $(SRCDIR)/SqlCol_json.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlCol_object.o
+
+$(OBJDIR)/SqlCol_object.o: $(SRCDIR)/SqlCol_object.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlRowDef.o
+
+$(OBJDIR)/SqlRowDef.o: $(SRCDIR)/SqlRowDef.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlRowDef_json.o
+
+$(OBJDIR)/SqlRowDef_json.o: $(SRCDIR)/SqlRowDef_json.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlRowDef_object.o
+
+$(OBJDIR)/SqlRowDef_object.o: $(SRCDIR)/SqlRowDef_object.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/SrcError.o
 
 $(OBJDIR)/SrcError.o: $(SRCDIR)/SrcError.c $(SRCDIR)/AStr.h $(SRCDIR)/SrcError.h $(SRCDIR)/SrcError_internal.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
@@ -1033,12 +1078,12 @@ $(OBJDIR)/block32_object.o: $(SRCDIR)/block32_object.c $(SRCDIR)/block32.h $(SRC
 
 OBJS += $(OBJDIR)/bpt32.o
 
-$(OBJDIR)/bpt32.o: $(SRCDIR)/bpt32.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/bpt32.o: $(SRCDIR)/bpt32.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/bpt32_object.o
 
-$(OBJDIR)/bpt32_object.o: $(SRCDIR)/bpt32_object.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/bpt32_object.o: $(SRCDIR)/bpt32_object.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/bpt32idx.o
@@ -1876,16 +1921,6 @@ OBJS += $(OBJDIR)/utf8_object.o
 $(OBJDIR)/utf8_object.o: $(SRCDIR)/utf8_object.c $(SRCDIR)/utf8.h $(SRCDIR)/utf8_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/visitor.o
-
-$(OBJDIR)/visitor.o: $(SRCDIR)/visitor.c $(SRCDIR)/visitor.h $(SRCDIR)/visitor_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/visitor_object.o
-
-$(OBJDIR)/visitor_object.o: $(SRCDIR)/visitor_object.c $(SRCDIR)/visitor.h $(SRCDIR)/visitor_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 TESTS += AStrArray_test
 
 AStrArray_test: $(TEST_SRC)/AStrArray_test.c $(SRCDIR)/AStrArray.h $(SRCDIR)/AStrArray_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
@@ -2204,6 +2239,24 @@ Scanner_test: $(TEST_SRC)/Scanner_test.c $(SRCDIR)/Scanner.h $(SRCDIR)/Scanner_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += SqlColDef_test
+
+SqlColDef_test: $(TEST_SRC)/SqlColDef_test.c $(SRCDIR)/SqlColDef.h $(SRCDIR)/SqlColDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += SqlCol_test
+
+SqlCol_test: $(TEST_SRC)/SqlCol_test.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += SqlRowDef_test
+
+SqlRowDef_test: $(TEST_SRC)/SqlRowDef_test.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += SrcError_test
 
 SrcError_test: $(TEST_SRC)/SrcError_test.c $(SRCDIR)/SrcError.h $(SRCDIR)/SrcError_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
@@ -2356,7 +2409,7 @@ block32_test: $(TEST_SRC)/block32_test.c $(SRCDIR)/block32.h $(SRCDIR)/block32_i
 
 TESTS += bpt32_test
 
-bpt32_test: $(TEST_SRC)/bpt32_test.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/cmn_defs.h 
+bpt32_test: $(TEST_SRC)/bpt32_test.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2807,12 +2860,6 @@ uint128_test: $(TEST_SRC)/uint128_test.c $(SRCDIR)/uint128.h $(SRCDIR)/uint128_i
 TESTS += utf8_test
 
 utf8_test: $(TEST_SRC)/utf8_test.c $(SRCDIR)/utf8.h $(SRCDIR)/utf8_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += visitor_test
-
-visitor_test: $(TEST_SRC)/visitor_test.c $(SRCDIR)/visitor.h $(SRCDIR)/visitor_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

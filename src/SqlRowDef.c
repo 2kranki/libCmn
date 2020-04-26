@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   visitor.c
- *	Generated 02/03/2018 14:29:56
+ * File:   SqlRowDef.c
+ *	Generated 04/26/2020 11:52:40
  *
  */
 
@@ -41,7 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <visitor_internal.h>
+#include        <SqlRowDef_internal.h>
+#include        <trace.h>
+
+
+
 
 
 
@@ -60,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            visitor_task_body(
+    void            SqlRowDef_task_body (
         void            *pData
     )
     {
-        //VISITOR_DATA  *this = pData;
+        //SQLROWDEF_DATA  *this = pData;
         
     }
 #endif
@@ -80,15 +84,16 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    VISITOR_DATA *  visitor_Alloc(
+    SQLROWDEF_DATA *     SqlRowDef_Alloc (
+        void
     )
     {
-        VISITOR_DATA    *this;
-        uint32_t        cbSize = sizeof(VISITOR_DATA);
+        SQLROWDEF_DATA       *this;
+        uint32_t        cbSize = sizeof(SQLROWDEF_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -96,14 +101,15 @@ extern "C" {
 
 
 
-    VISITOR_DATA *     visitor_New(
+    SQLROWDEF_DATA *     SqlRowDef_New (
+        void
     )
     {
-        VISITOR_DATA       *this;
+        SQLROWDEF_DATA       *this;
         
-        this = visitor_Alloc( );
+        this = SqlRowDef_Alloc( );
         if (this) {
-            this = visitor_Init(this);
+            this = SqlRowDef_Init(this);
         } 
         return this;
     }
@@ -117,80 +123,36 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         visitor_getLastError(
-        VISITOR_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !visitor_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            visitor_setLastError(
-        VISITOR_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !visitor_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        visitor_getPriority(
-        VISITOR_DATA     *this
+    uint16_t        SqlRowDef_getPriority (
+        SQLROWDEF_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        visitor_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
 
 
-    bool            visitor_setPriority(
-        VISITOR_DATA     *this,
+    bool            SqlRowDef_setPriority (
+        SQLROWDEF_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -198,7 +160,6 @@ extern "C" {
 
         //this->priority = value;
 
-        visitor_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -208,19 +169,18 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        visitor_getSize(
-        VISITOR_DATA       *this
+    uint32_t        SqlRowDef_getSize (
+        SQLROWDEF_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        visitor_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -230,33 +190,32 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * visitor_getStr(
-        VISITOR_DATA     *this
+    ASTR_DATA * SqlRowDef_getStr (
+        SQLROWDEF_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        visitor_setLastError(this, ERESULT_SUCCESS);
         return this->pStr;
     }
     
     
-    bool        visitor_setStr(
-        VISITOR_DATA     *this,
+    bool        SqlRowDef_setStr (
+        SQLROWDEF_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -268,7 +227,6 @@ extern "C" {
         }
         this->pStr = pValue;
         
-        visitor_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -278,22 +236,21 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  visitor_getSuperVtbl(
-        VISITOR_DATA     *this
+    OBJ_IUNKNOWN *  SqlRowDef_getSuperVtbl (
+        SQLROWDEF_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         
-        visitor_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -316,31 +273,42 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = visitor__Assign(this,pOther);
+        ERESULT eRc = SqlRowDef_Assign(this,pOther);
      @endcode 
-     @param     this    VISITOR object pointer
-     @param     pOther  a pointer to another VISITOR object
+     @param     this    object pointer
+     @param     pOther  a pointer to another SQLROWDEF object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         visitor_Assign(
-        VISITOR_DATA		*this,
-        VISITOR_DATA      *pOther
+    ERESULT         SqlRowDef_Assign (
+        SQLROWDEF_DATA		*this,
+        SQLROWDEF_DATA     *pOther
     )
     {
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !visitor_Validate(pOther) ) {
+        if (!SqlRowDef_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -369,15 +337,75 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        visitor_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        visitor_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return visitor_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
     
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    ERESULT_SUCCESS_EQUAL if this == other
+                ERESULT_SUCCESS_LESS_THAN if this < other
+                ERESULT_SUCCESS_GREATER_THAN if this > other
+     */
+    ERESULT         SqlRowDef_Compare (
+        SQLROWDEF_DATA     *this,
+        SQLROWDEF_DATA     *pOther
+    )
+    {
+        int             i = 0;
+        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!SqlRowDef_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!SqlRowDef_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+#ifdef  xyzzy        
+        if (this->token == pOther->token) {
+            this->eRc = eRc;
+            return eRc;
+        }
+        
+        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
+        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
+        i = strcmp(pStr1, pStr2);
+#endif
+
+        
+        if (i < 0) {
+            eRc = ERESULT_SUCCESS_LESS_THAN;
+        }
+        if (i > 0) {
+            eRc = ERESULT_SUCCESS_GREATER_THAN;
+        }
+        
+        return eRc;
+    }
+    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -386,41 +414,44 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        visitor      *pCopy = visitor_Copy(this);
+        SqlRowDef      *pCopy = SqlRowDef_Copy(this);
      @endcode 
-     @param     this    VISITOR object pointer
-     @return    If successful, a VISITOR object which must be released,
-                otherwise OBJ_NIL.
-     @warning  Remember to release the returned the VISITOR object.
+     @param     this    object pointer
+     @return    If successful, a SQLROWDEF object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    VISITOR_DATA *     visitor_Copy(
-        VISITOR_DATA       *this
+    SQLROWDEF_DATA *     SqlRowDef_Copy (
+        SQLROWDEF_DATA       *this
     )
     {
-        VISITOR_DATA       *pOther = OBJ_NIL;
+        SQLROWDEF_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = visitor_New( );
+#ifdef SQLROWDEF_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = SqlRowDef_New( );
         if (pOther) {
-            eRc = visitor_Assign(this, pOther);
+            eRc = SqlRowDef_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
-        visitor_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -430,11 +461,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            visitor_Dealloc(
+    void            SqlRowDef_Dealloc (
         OBJ_ID          objId
     )
     {
-        VISITOR_DATA   *this = objId;
+        SQLROWDEF_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -442,7 +474,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -450,11 +482,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((VISITOR_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((SQLROWDEF_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        visitor_setStr(this, OBJ_NIL);
+        SqlRowDef_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -468,30 +500,82 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        SqlRowDef      *pDeepCopy = SqlRowDef_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a SQLROWDEF object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    SQLROWDEF_DATA *     SqlRowDef_DeepyCopy (
+        SQLROWDEF_DATA       *this
+    )
+    {
+        SQLROWDEF_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SqlRowDef_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = SqlRowDef_New( );
+        if (pOther) {
+            eRc = SqlRowDef_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         visitor_Disable(
-        VISITOR_DATA		*this
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SqlRowDef_Disable (
+        SQLROWDEF_DATA		*this
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !visitor_Validate(this) ) {
+#ifdef NDEBUG
+#else
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        visitor_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -500,27 +584,33 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         visitor_Enable(
-        VISITOR_DATA		*this
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SqlRowDef_Enable (
+        SQLROWDEF_DATA		*this
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !visitor_Validate(this) ) {
+#ifdef NDEBUG
+#else
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        visitor_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -529,11 +619,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    VISITOR_DATA *   visitor_Init(
-        VISITOR_DATA       *this
+    SQLROWDEF_DATA *   SqlRowDef_Init (
+        SQLROWDEF_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(VISITOR_DATA);
+        uint32_t        cbSize = sizeof(SQLROWDEF_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -549,36 +640,43 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_VISITOR);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SQLROWDEF);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_VISITOR);         // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&visitor_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SqlRowDef_Vtbl);
         
-        visitor_setLastError(this, ERESULT_GENERAL_FAILURE);
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = ObjArray_New( );
-
-    #ifdef NDEBUG
-    #else
-        if( !visitor_Validate(this) ) {
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        fprintf(stderr, "visitor::offsetof(eRc) = %lu\n", offsetof(VISITOR_DATA,eRc));
-        fprintf(stderr, "visitor::sizeof(VISITOR_DATA) = %lu\n", sizeof(VISITOR_DATA));
+        */
+
+#ifdef NDEBUG
+#else
+        if (!SqlRowDef_Validate(this)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "SqlRowDef::sizeof(SQLROWDEF_DATA) = %lu\n", 
+                sizeof(SQLROWDEF_DATA)
+        );
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(VISITOR_DATA));
-    #endif
+        BREAK_NOT_BOUNDARY4(sizeof(SQLROWDEF_DATA));
+#endif
 
         return this;
     }
@@ -589,27 +687,26 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         visitor_IsEnabled(
-        VISITOR_DATA		*this
+    ERESULT         SqlRowDef_IsEnabled (
+        SQLROWDEF_DATA		*this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            visitor_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        visitor_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -626,14 +723,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = visitor_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = SqlRowDef_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "visitor", prefix,
+                        the object name, "SqlRowDef", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -641,13 +738,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          visitor_QueryInfo(
+    void *          SqlRowDef_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        VISITOR_DATA     *this = objId;
+        SQLROWDEF_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -656,7 +753,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -664,29 +761,29 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)visitor_Class();
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(SQLROWDEF_DATA);
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)SqlRowDef_Class();
+                break;
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -695,23 +792,39 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return visitor_Disable;
+                            return SqlRowDef_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return visitor_Enable;
+                            return SqlRowDef_Enable;
                         }
+                        break;
+
+                    case 'P':
+#ifdef  SQLROWDEF_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return SqlRowDef_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return SqlRowDef_ParseJsonObject;
+                        }
+#endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return visitor_ToDebugString;
+                            return SqlRowDef_ToDebugString;
+                        }
+#ifdef  SQLROWDEF_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return SqlRowDef_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return visitor_ToJSON;
+                            return SqlRowDef_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -720,10 +833,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == visitor_ToDebugString)
+                if (pData == SqlRowDef_ToDebugString)
                     return "ToDebugString";
-                if (pData == visitor_ToJSON)
+#ifdef  SQLROWDEF_JSON_SUPPORT
+                if (pData == SqlRowDef_ToJson)
                     return "ToJson";
+#endif
                 break;
                 
             default:
@@ -743,48 +858,53 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = visitor_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SqlRowDef_ToDebugString(this,4);
      @endcode 
-     @param     this    VISITOR object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     visitor_ToDebugString(
-        VISITOR_DATA      *this,
+    ASTR_DATA *     SqlRowDef_ToDebugString (
+        SQLROWDEF_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !visitor_Validate(this) ) {
+        if (!SqlRowDef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
-        pInfo = visitor_Vtbl.iVtbl.pInfo;
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    visitor_getSize(this)
+                    SqlRowDef_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -794,8 +914,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -810,41 +932,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        visitor_setLastError(this, ERESULT_SUCCESS);
-        return pStr;
-    }
-    
-    
-    
-    ASTR_DATA *     visitor_ToJSON(
-        VISITOR_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !visitor_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        visitor_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -854,17 +941,17 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            visitor_Validate(
-        VISITOR_DATA      *this
+#ifdef NDEBUG
+#else
+    bool            SqlRowDef_Validate (
+        SQLROWDEF_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_VISITOR) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_SQLROWDEF))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -880,16 +967,14 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(VISITOR_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+        if (!(obj_getSize(this) >= sizeof(SQLROWDEF_DATA))) {
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
-    #endif
+#endif
 
 
     

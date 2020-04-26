@@ -260,6 +260,14 @@ extern "C" {
     );
 
 
+    /*!
+     Inserts the data before the index given.
+     @param     this    object pointer
+     @param     index   index into array (0 < index <= array_size)
+     @param     data    data to insert
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+    */
     ERESULT         I32Array_InsertData(
         I32ARRAY_DATA   *this,
         uint32_t        index,

@@ -425,7 +425,7 @@ static
 const
 OBJ_INFO        TRegex32_Info = {
     "TRegex32",
-    "Tiny Regex - int32_t",
+    "32-bit Tiny Regex",
     (OBJ_DATA *)&TRegex32_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&TRegex32_Vtbl,

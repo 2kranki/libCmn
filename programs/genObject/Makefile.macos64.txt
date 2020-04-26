@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/19/2019 14:01:55.000)
+# ( 4/26/2020 22:54:07.000)
 
 PGMNAM=genObject
 SYS=macos64
@@ -64,26 +64,6 @@ OBJS += $(OBJDIR)/Main_object.o
 $(OBJDIR)/Main_object.o: $(SRCDIR)/Main_object.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/NodeBase.o
-
-$(OBJDIR)/NodeBase.o: $(SRCDIR)/NodeBase.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeBase_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/NodeBase_object.o
-
-$(OBJDIR)/NodeBase_object.o: $(SRCDIR)/NodeBase_object.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeBase_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/NodeBody.o
-
-$(OBJDIR)/NodeBody.o: $(SRCDIR)/NodeBody.c $(SRCDIR)/NodeBody.h $(SRCDIR)/NodeBody_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/NodeBody_object.o
-
-$(OBJDIR)/NodeBody_object.o: $(SRCDIR)/NodeBody_object.c $(SRCDIR)/NodeBody.h $(SRCDIR)/NodeBody_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/NodeClass.o
 
 $(OBJDIR)/NodeClass.o: $(SRCDIR)/NodeClass.c $(SRCDIR)/NodeClass.h $(SRCDIR)/NodeClass_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
@@ -92,16 +72,6 @@ $(OBJDIR)/NodeClass.o: $(SRCDIR)/NodeClass.c $(SRCDIR)/NodeClass.h $(SRCDIR)/Nod
 OBJS += $(OBJDIR)/NodeClass_object.o
 
 $(OBJDIR)/NodeClass_object.o: $(SRCDIR)/NodeClass_object.c $(SRCDIR)/NodeClass.h $(SRCDIR)/NodeClass_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/NodeField.o
-
-$(OBJDIR)/NodeField.o: $(SRCDIR)/NodeField.c $(SRCDIR)/NodeField.h $(SRCDIR)/NodeField_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/NodeField_object.o
-
-$(OBJDIR)/NodeField_object.o: $(SRCDIR)/NodeField_object.c $(SRCDIR)/NodeField.h $(SRCDIR)/NodeField_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeProp.o
@@ -126,27 +96,9 @@ Main_test: $(TEST_SRC)/Main_test.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += NodeBase_test
-
-NodeBase_test: $(TEST_SRC)/NodeBase_test.c $(SRCDIR)/NodeBase.h $(SRCDIR)/NodeBase_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += NodeBody_test
-
-NodeBody_test: $(TEST_SRC)/NodeBody_test.c $(SRCDIR)/NodeBody.h $(SRCDIR)/NodeBody_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += NodeClass_test
 
 NodeClass_test: $(TEST_SRC)/NodeClass_test.c $(SRCDIR)/NodeClass.h $(SRCDIR)/NodeClass_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += NodeField_test
-
-NodeField_test: $(TEST_SRC)/NodeField_test.c $(SRCDIR)/NodeField.h $(SRCDIR)/NodeField_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

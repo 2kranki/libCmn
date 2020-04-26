@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   NodeProp_internal.h
- *	Generated 12/18/2019 23:31:17
+ *	Generated 04/26/2020 17:31:56
  *
  * Notes:
  *  --	N/A
@@ -48,8 +48,6 @@
 
 
 
-#define     PROPERTY_STR_OWNED 1
-
 
 
 #ifdef	__cplusplus
@@ -72,8 +70,14 @@ struct NodeProp_data_s	{
 
     // Common Data
     uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    uint8_t         fObj;           // True == Object
+    uint8_t         rsvd8;
+    ASTR_DATA       *pExternal;     // Optional External Property Name
+    ASTR_DATA       *pInit;         // Optional Initialization
+    ASTR_DATA       *pInternal;     // Optional Internal Property Name
+    ASTR_DATA       *pLong;         // Long Description
+    ASTR_DATA       *pName;         // Property Name
+    ASTR_DATA       *pShort;        // Short Description
 
 };
 #pragma pack(pop)
@@ -112,14 +116,46 @@ struct NodeProp_data_s	{
     );
 
 
+    ERESULT         NodeProp_Assign (
+        NODEPROP_DATA    *this,
+        NODEPROP_DATA    *pOther
+    );
+
+
+    NODEPROP_DATA *       NodeProp_Copy (
+        NODEPROP_DATA     *this
+    );
+
+
     void            NodeProp_Dealloc (
         OBJ_ID          objId
     );
 
 
 #ifdef  NODEPROP_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
     NODEPROP_DATA *       NodeProp_ParseJsonObject (
         JSONIN_DATA     *pParser
+    );
+
+
+    /*!
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeProp_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        NODEPROP_DATA     *pObject
     );
 #endif
 
@@ -131,9 +167,36 @@ struct NodeProp_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODEPROP_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = NodeProp_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
     ASTR_DATA *     NodeProp_ToJson (
         NODEPROP_DATA      *this
+    );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeProp_ToJsonFields (
+        NODEPROP_DATA     *this,
+        ASTR_DATA       *pStr
     );
 #endif
 

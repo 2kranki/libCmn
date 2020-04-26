@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODEFIELD Console Transmit Task (NodeField) Header
+//                  Separate SqlRowDef (SqlRowDef) Header
 //****************************************************************
 /*
  * Program
- *			Separate NodeField (NodeField)
+ *			Separate SqlRowDef (SqlRowDef)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate NodeField to run things without complications
- *          of interfering with the main NodeField. A NodeField may be 
- *          called a NodeField on other O/S's.
+ *          a separate SqlRowDef to run things without complications
+ *          of interfering with the main SqlRowDef. A SqlRowDef may be 
+ *          called a SqlRowDef on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	12/18/2019 Generated
+ *	04/26/2020 Generated
  */
 
 
@@ -51,16 +51,17 @@
 
 
 
-#include        <genObject.h>
+#include        <cmn_defs.h>
 #include        <AStr.h>
 
 
-#ifndef         NODEFIELD_H
-#define         NODEFIELD_H
+#ifndef         SQLROWDEF_H
+#define         SQLROWDEF_H
 
 
-//#define   NODEFIELD_JSON_SUPPORT 1
-//#define   NODEFIELD_SINGLETON    1
+//#define   SQLROWDEF_IS_IMMUTABLE     1
+//#define   SQLROWDEF_JSON_SUPPORT     1
+//#define   SQLROWDEF_SINGLETON        1
 
 
 
@@ -76,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct NodeField_data_s	NODEFIELD_DATA;            // Inherits from OBJ
-    typedef struct NodeField_class_data_s NODEFIELD_CLASS_DATA;   // Inherits from OBJ
+    typedef struct SqlRowDef_data_s	SQLROWDEF_DATA;            // Inherits from OBJ
+    typedef struct SqlRowDef_class_data_s SQLROWDEF_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct NodeField_vtbl_s	{
+    typedef struct SqlRowDef_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in NodeField_object.c.
+        // method names to the vtbl definition in SqlRowDef_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODEFIELD_DATA *);
-    } NODEFIELD_VTBL;
+        //bool        (*pIsEnabled)(SQLROWDEF_DATA *);
+    } SQLROWDEF_VTBL;
 
-    typedef struct NodeField_class_vtbl_s	{
+    typedef struct SqlRowDef_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in NodeField_object.c.
+        // method names to the vtbl definition in SqlRowDef_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(NODEFIELD_DATA *);
-    } NODEFIELD_CLASS_VTBL;
+        //bool        (*pIsEnabled)(SQLROWDEF_DATA *);
+    } SQLROWDEF_CLASS_VTBL;
 
 
 
@@ -109,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  NODEFIELD_SINGLETON
-    NODEFIELD_DATA *     NodeField_Shared (
+#ifdef  SQLROWDEF_SINGLETON
+    SQLROWDEF_DATA *     SqlRowDef_Shared (
         void
     );
 
-    bool            NodeField_SharedReset (
+    void            SqlRowDef_SharedReset (
         void
     );
 #endif
@@ -124,23 +125,35 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to NodeField object if successful, otherwise OBJ_NIL.
+     @return    pointer to SqlRowDef object if successful, otherwise OBJ_NIL.
      */
-    NODEFIELD_DATA *     NodeField_Alloc (
+    SQLROWDEF_DATA *     SqlRowDef_Alloc (
         void
     );
     
     
-    OBJ_ID          NodeField_Class (
+    OBJ_ID          SqlRowDef_Class (
         void
     );
     
     
-    NODEFIELD_DATA *     NodeField_New (
+    SQLROWDEF_DATA *     SqlRowDef_New (
         void
     );
     
     
+#ifdef  SQLROWDEF_JSON_SUPPORT
+    SQLROWDEF_DATA *   SqlRowDef_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    SQLROWDEF_DATA *   SqlRowDef_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -153,31 +166,50 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     NodeField_Disable (
-        NODEFIELD_DATA		*this
+    ERESULT     SqlRowDef_Disable (
+        SQLROWDEF_DATA		*this
     );
 
 
-    ERESULT     NodeField_Enable (
-        NODEFIELD_DATA		*this
+    ERESULT     SqlRowDef_Enable (
+        SQLROWDEF_DATA		*this
     );
 
    
-    NODEFIELD_DATA *   NodeField_Init (
-        NODEFIELD_DATA     *this
+    SQLROWDEF_DATA *   SqlRowDef_Init (
+        SQLROWDEF_DATA     *this
     );
 
 
-    ERESULT     NodeField_IsEnabled (
-        NODEFIELD_DATA		*this
+    ERESULT     SqlRowDef_IsEnabled (
+        SQLROWDEF_DATA		*this
     );
     
  
+#ifdef  SQLROWDEF_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = SqlRowDef_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SqlRowDef_ToJson (
+        SQLROWDEF_DATA   *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = NodeField_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SqlRowDef_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -185,8 +217,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    NodeField_ToDebugString (
-        NODEFIELD_DATA     *this,
+    ASTR_DATA *     SqlRowDef_ToDebugString (
+        SQLROWDEF_DATA     *this,
         int             indent
     );
     
@@ -197,5 +229,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* NODEFIELD_H */
+#endif	/* SQLROWDEF_H */
 

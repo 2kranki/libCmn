@@ -401,7 +401,7 @@ static
 const
 OBJ_INFO        bpt32idx_Info = {
     "bpt32idx",
-    "B-Plus 32-Bit Tree Index Node",
+    "B-Plus 32-Bit Tree Index Block",
     (OBJ_DATA *)&bpt32idx_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&bpt32idx_Vtbl,

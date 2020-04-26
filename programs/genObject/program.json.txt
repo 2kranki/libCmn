@@ -8,10 +8,7 @@
     "objects":[
         {name:"Dict"},
         {name:"Main"},
-        {name:"NodeBase"},
-        {name:"NodeBody"},
-        {name:"NodeClass"},
-        {name:"NodeField"},
-        {name:"NodeProp"},
+        {name:"NodeClass", desc:"Class Definition"},
+        {name:"NodeProp", desc:"Class Property Definition"},
     ],
 }

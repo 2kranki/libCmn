@@ -51,7 +51,7 @@
 
 
 
-#include        <genObject.h>
+#include        <genObject_defs.h>
 #include        <AStr.h>
 
 

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   NodeBody.c
- *	Generated 12/18/2019 23:33:03
+ * File:   SqlColDef.c
+ *	Generated 04/26/2020 11:52:28
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <NodeBody_internal.h>
+#include        <SqlColDef_internal.h>
 #include        <trace.h>
 
 
@@ -64,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            NodeBody_task_body (
+    void            SqlColDef_task_body (
         void            *pData
     )
     {
-        //NODEBODY_DATA  *this = pData;
+        //SQLCOLDEF_DATA  *this = pData;
         
     }
 #endif
@@ -84,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    NODEBODY_DATA *     NodeBody_Alloc (
+    SQLCOLDEF_DATA *     SqlColDef_Alloc (
         void
     )
     {
-        NODEBODY_DATA       *this;
-        uint32_t        cbSize = sizeof(NODEBODY_DATA);
+        SQLCOLDEF_DATA       *this;
+        uint32_t        cbSize = sizeof(SQLCOLDEF_DATA);
         
         // Do initialization.
         
@@ -101,15 +101,15 @@ extern "C" {
 
 
 
-    NODEBODY_DATA *     NodeBody_New (
+    SQLCOLDEF_DATA *     SqlColDef_New (
         void
     )
     {
-        NODEBODY_DATA       *this;
+        SQLCOLDEF_DATA       *this;
         
-        this = NodeBody_Alloc( );
+        this = SqlColDef_Alloc( );
         if (this) {
-            this = NodeBody_Init(this);
+            this = SqlColDef_Init(this);
         } 
         return this;
     }
@@ -126,15 +126,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        NodeBody_getPriority (
-        NODEBODY_DATA     *this
+    uint16_t        SqlColDef_getPriority (
+        SQLCOLDEF_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -145,14 +145,14 @@ extern "C" {
     }
 
 
-    bool            NodeBody_setPriority (
-        NODEBODY_DATA     *this,
+    bool            SqlColDef_setPriority (
+        SQLCOLDEF_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -169,13 +169,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        NodeBody_getSize (
-        NODEBODY_DATA       *this
+    uint32_t        SqlColDef_getSize (
+        SQLCOLDEF_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -190,15 +190,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * NodeBody_getStr (
-        NODEBODY_DATA     *this
+    ASTR_DATA * SqlColDef_getStr (
+        SQLCOLDEF_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -208,25 +208,23 @@ extern "C" {
     }
     
     
-    bool        NodeBody_setStr (
-        NODEBODY_DATA     *this,
+    bool        SqlColDef_setStr (
+        SQLCOLDEF_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-#ifdef  PROPERTY_STR_OWNED
         obj_Retain(pValue);
         if (this->pStr) {
             obj_Release(this->pStr);
         }
-#endif
         this->pStr = pValue;
         
         return true;
@@ -238,15 +236,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  NodeBody_getSuperVtbl (
-        NODEBODY_DATA     *this
+    OBJ_IUNKNOWN *  SqlColDef_getSuperVtbl (
+        SQLCOLDEF_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -275,16 +273,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = NodeBody_Assign(this,pOther);
+        ERESULT eRc = SqlColDef_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another NODEBODY object
+     @param     pOther  a pointer to another SQLCOLDEF object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         NodeBody_Assign (
-        NODEBODY_DATA		*this,
-        NODEBODY_DATA     *pOther
+    ERESULT         SqlColDef_Assign (
+        SQLCOLDEF_DATA		*this,
+        SQLCOLDEF_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -292,15 +290,25 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!NodeBody_Validate(pOther)) {
+        if (!SqlColDef_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -348,9 +356,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         NodeBody_Compare (
-        NODEBODY_DATA     *this,
-        NODEBODY_DATA     *pOther
+    ERESULT         SqlColDef_Compare (
+        SQLCOLDEF_DATA     *this,
+        SQLCOLDEF_DATA     *pOther
     )
     {
         int             i = 0;
@@ -364,11 +372,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!NodeBody_Validate(pOther)) {
+        if (!SqlColDef_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -406,40 +414,44 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        NodeBody      *pCopy = NodeBody_Copy(this);
+        SqlColDef      *pCopy = SqlColDef_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a NODEBODY object which must be 
+     @return    If successful, a SQLCOLDEF object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    NODEBODY_DATA *     NodeBody_Copy (
-        NODEBODY_DATA       *this
+    SQLCOLDEF_DATA *     SqlColDef_Copy (
+        SQLCOLDEF_DATA       *this
     )
     {
-        NODEBODY_DATA       *pOther = OBJ_NIL;
+        SQLCOLDEF_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = NodeBody_New( );
+#ifdef SQLCOLDEF_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = SqlColDef_New( );
         if (pOther) {
-            eRc = NodeBody_Assign(this, pOther);
+            eRc = SqlColDef_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -449,11 +461,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            NodeBody_Dealloc (
+    void            SqlColDef_Dealloc (
         OBJ_ID          objId
     )
     {
-        NODEBODY_DATA   *this = objId;
+        SQLCOLDEF_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -461,7 +474,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -469,11 +482,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((NODEBODY_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((SQLCOLDEF_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        NodeBody_setStr(this, OBJ_NIL);
+        SqlColDef_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -487,6 +500,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        SqlColDef      *pDeepCopy = SqlColDef_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a SQLCOLDEF object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    SQLCOLDEF_DATA *     SqlColDef_DeepyCopy (
+        SQLCOLDEF_DATA       *this
+    )
+    {
+        SQLCOLDEF_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SqlColDef_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = SqlColDef_New( );
+        if (pOther) {
+            eRc = SqlColDef_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -496,27 +555,27 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeBody_Disable (
-        NODEBODY_DATA		*this
+    ERESULT         SqlColDef_Disable (
+        SQLCOLDEF_DATA		*this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!NodeBody_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -531,27 +590,27 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeBody_Enable (
-        NODEBODY_DATA		*this
+    ERESULT         SqlColDef_Enable (
+        SQLCOLDEF_DATA		*this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!NodeBody_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -560,11 +619,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    NODEBODY_DATA *   NodeBody_Init (
-        NODEBODY_DATA       *this
+    SQLCOLDEF_DATA *   SqlColDef_Init (
+        SQLCOLDEF_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(NODEBODY_DATA);
+        uint32_t        cbSize = sizeof(SQLCOLDEF_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -581,16 +640,16 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEBODY);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SQLCOLDEF);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeBody_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SqlColDef_Vtbl);
         
         /*
         this->pArray = objArray_New( );
@@ -601,18 +660,23 @@ extern "C" {
         }
         */
 
-    #ifdef NDEBUG
-    #else
-        if (!NodeBody_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        fprintf(stderr, "NodeBody::sizeof(NODEBODY_DATA) = %lu\n", sizeof(NODEBODY_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "SqlColDef::sizeof(SQLCOLDEF_DATA) = %lu\n", 
+                sizeof(SQLCOLDEF_DATA)
+        );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(NODEBODY_DATA));
-    #endif
+        BREAK_NOT_BOUNDARY4(sizeof(SQLCOLDEF_DATA));
+#endif
 
         return this;
     }
@@ -623,8 +687,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         NodeBody_IsEnabled (
-        NODEBODY_DATA		*this
+    ERESULT         SqlColDef_IsEnabled (
+        SQLCOLDEF_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -632,7 +696,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -649,21 +713,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                P a r s e  J s o n  O b j e c t
-    //---------------------------------------------------------------
-    
-#ifdef  NODEBODY_JSON_SUPPORT
-     NODEBODY_DATA * NodeBody_ParseJsonObject (
-         JSONIN_DATA     *pParser
-    )
-    {
-        return OBJ_NIL;
-    }
-#endif
-        
-        
-        
-    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -674,14 +723,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = NodeBody_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = SqlColDef_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "NodeBody", prefix,
+                        the object name, "SqlColDef", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -689,13 +738,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          NodeBody_QueryInfo (
+    void *          SqlColDef_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        NODEBODY_DATA     *this = objId;
+        SQLCOLDEF_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -704,7 +753,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -712,33 +761,29 @@ extern "C" {
         
         switch (type) {
                 
-        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODEBODY_DATA);
-            break;
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(SQLCOLDEF_DATA);
+                break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)NodeBody_Class();
+                return (void *)SqlColDef_Class();
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -747,23 +792,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return NodeBody_Disable;
+                            return SqlColDef_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return NodeBody_Enable;
+                            return SqlColDef_Enable;
                         }
+                        break;
+
+                    case 'P':
+#ifdef  SQLCOLDEF_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return SqlColDef_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return SqlColDef_ParseJsonObject;
+                        }
+#endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return NodeBody_ToDebugString;
+                            return SqlColDef_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  SQLCOLDEF_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return SqlColDef_ToJsonFields;
+                        }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return NodeBody_ToJson;
+                            return SqlColDef_ToJson;
                         }
 #endif
                         break;
@@ -774,10 +833,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == NodeBody_ToDebugString)
+                if (pData == SqlColDef_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
-                if (pData == NodeBody_ToJson)
+#ifdef  SQLCOLDEF_JSON_SUPPORT
+                if (pData == SqlColDef_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -792,47 +851,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-#ifdef  NODEBODY_JSON_SUPPORT
-     ASTR_DATA *     NodeBody_ToJson (
-        NODEBODY_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!NodeBody_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-#endif
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -840,7 +858,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = NodeBody_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SqlColDef_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -848,22 +866,23 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NodeBody_ToDebugString (
-        NODEBODY_DATA      *this,
+    ASTR_DATA *     SqlColDef_ToDebugString (
+        SQLCOLDEF_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!NodeBody_Validate(this)) {
+        if (!SqlColDef_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -884,7 +903,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    NodeBody_getSize(this),
+                    SqlColDef_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -895,8 +914,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -920,17 +941,17 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            NodeBody_Validate (
-        NODEBODY_DATA      *this
+#ifdef NDEBUG
+#else
+    bool            SqlColDef_Validate (
+        SQLCOLDEF_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_NODEBODY))
+            if (obj_IsKindOf(this, OBJ_IDENT_SQLCOLDEF))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -946,14 +967,14 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(NODEBODY_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(SQLCOLDEF_DATA))) {
             return false;
         }
 
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     

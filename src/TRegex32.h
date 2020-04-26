@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Tiny REGEX 32-bit (TRegex32) Header
+//          32-bit Tiny REGEX (TRegex32) Header
 //****************************************************************
 /*
  * Program
- *			Tiny REGEX 32-bit (TRegex32)
+ *			32-bit Tiny REGEX (TRegex32)
  * Purpose
  *          This object provides a version of Rob Pike's recursive
  *          regex code. Primary, it checks to see if the regex pat-

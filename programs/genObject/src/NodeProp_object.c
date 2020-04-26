@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'NodeProp'
-//	Generated 12/18/2019 23:31:17
+//	Generated 04/26/2020 17:31:56
 
 
 /*
@@ -163,6 +163,11 @@ NODEPROP_CLASS_DATA  NodeProp_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  NODEPROP_SINGLETON
+extern
+const
+NODEPROP_VTBL       NodeProp_VtblShared;
+
+
 NODEPROP_DATA *     NodeProp_getSingleton (
     void
 )
@@ -213,6 +218,7 @@ NODEPROP_DATA *     NodeProp_Shared (
     
     if (NULL == this) {
         this = NodeProp_New( );
+        obj_setVtbl(this, (void *)&NodeProp_VtblShared);
         NodeProp_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
         // NodeProp_ClassObj.pSingleton = OBJ_NIL;
@@ -230,6 +236,7 @@ void            NodeProp_SharedReset (
     NODEPROP_DATA       *this = (OBJ_ID)(NodeProp_ClassObj.pSingleton);
     
     if (this) {
+        obj_setVtbl(this, (void *)&NodeProp_Vtbl);
         obj_Release(this);
         NodeProp_ClassObj.pSingleton = OBJ_NIL;
     }
@@ -272,14 +279,18 @@ void *          NodePropClass_QueryInfo (
             break;
             
         // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
                         return (void *)&NodeProp_Info;
+                    }
+                    break;
+                    
+                case 'S':
+                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                        return (void *)&NodeProp_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -301,12 +312,28 @@ void *          NodePropClass_QueryInfo (
                     }
                     break;
                     
-                case 'P':
-                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return NodeProp_ParseJsonObject;
-                    }
-                    break;
- 
+				case 'P':
+#ifdef  NODEPROP_JSON_SUPPORT
+					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+						return NodeProp_ParseJsonFields;
+					}
+					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+						return NodeProp_ParseJsonObject;
+					}
+#endif
+					break;
+
+				case 'T':
+#ifdef  NODEPROP_JSON_SUPPORT
+					if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+						return NodeProp_ToJsonFields;
+					}
+					if (str_Compare("ToJson", (char *)pStr) == 0) {
+						return NodeProp_ToJson;
+					}
+#endif
+					break;
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
                         return NodePropClass_WhoAmI;
@@ -387,18 +414,52 @@ uint16_t		NodeProp_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
+#ifdef  NODEPROP_SINGLETON
+// A Shared object ignores Retain() and Release() except for
+// initialization and termination. So, there must be an
+// independent VTbl from the normal which does support Retain()
+// and Release().
+const
+NODEPROP_VTBL     NodeProp_VtblShared = {
+    {
+        &NodeProp_Info,
+        NodeProp_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        NodeProp_Dealloc,
+        NodeProp_Class,
+        NodeProp_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeProp_QueryInfo,
+        (P_OBJ_TOSTRING)NodeProp_ToDebugString,
+        NULL,			// NodeProp_Enable,
+        NULL,			// NodeProp_Disable,
+        NULL,			// (P_OBJ_ASSIGN)NodeProp_Assign,
+        NULL,			// (P_OBJ_COMPARE)NodeProp_Compare,
+        NULL, 			// (P_OBJ_PTR)NodeProp_Copy,
+        NULL, 			// (P_OBJ_PTR)NodeProp_DeepCopy,
+        NULL 			// (P_OBJ_HASH)NodeProp_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //NodeProp_IsEnabled,
+ 
+};
+#endif
+
+
+// This VTbl supports Retain() and Release() which is
+// used by objects other than the Shared object. These
+// objects can still be shared among other objects. It
+// just that they are deleted when their usage count
+// goes to zero.
 const
 NODEPROP_VTBL     NodeProp_Vtbl = {
     {
         &NodeProp_Info,
         NodeProp_IsKindOf,
-#ifdef  NODEPROP_IS_SINGLETON
-        obj_RetainNull,
-        obj_ReleaseNull,
-#else
         obj_RetainStandard,
         obj_ReleaseStandard,
-#endif
         NodeProp_Dealloc,
         NodeProp_Class,
         NodeProp_WhoAmI,
@@ -425,7 +486,7 @@ static
 const
 OBJ_INFO        NodeProp_Info = {
     "NodeProp",
-    "NodeProp",	// <-- Fill in description
+    "Class Property Definition",
     (OBJ_DATA *)&NodeProp_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&NodeProp_Vtbl,

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          NODEPROP Console Transmit Task (NodeProp) Header
+//                  Separate NodeProp (NodeProp) Header
 //****************************************************************
 /*
  * Program
@@ -16,7 +16,7 @@
  *	1.      None
  *
  * History
- *	12/18/2019 Generated
+ *	04/26/2020 Generated
  */
 
 
@@ -51,7 +51,7 @@
 
 
 
-#include        <genObject.h>
+#include        <genObject_defs.h>
 #include        <AStr.h>
 
 
@@ -59,8 +59,9 @@
 #define         NODEPROP_H
 
 
-//#define   NODEPROP_JSON_SUPPORT 1
-//#define   NODEPROP_SINGLETON    1
+//#define   NODEPROP_IS_IMMUTABLE     1
+#define   NODEPROP_JSON_SUPPORT     1
+//#define   NODEPROP_SINGLETON        1
 
 
 
@@ -98,6 +99,28 @@ extern "C" {
     } NODEPROP_CLASS_VTBL;
 
 
+    typedef enum NodeProp_Type_e {
+        NODEPROP_TYPE_UNKNOWN=0,
+        NODEPROP_TYPE_ASTR,                 // AStr Object
+        NODEPROP_TYPE_FLAG8,
+        NODEPROP_TYPE_FLAG16,
+        NODEPROP_TYPE_FLAG32,
+        NODEPROP_TYPE_INT8,
+        NODEPROP_TYPE_INT16,
+        NODEPROP_TYPE_INT32,
+        NODEPROP_TYPE_INT64,
+        NODEPROP_TYPE_UINT8,
+        NODEPROP_TYPE_UINT16,
+        NODEPROP_TYPE_UINT32,
+        NODEPROP_TYPE_UINT64,
+    } NODEPROP_TYPE;
+
+    typedef enum NodeProp_Vis_e {
+        NODEPROP_VIS_UNKNOWN=0,
+        NODEPROP_VIS_PUBLIC,
+        NODEPROP_VIS_READ_ONLY,
+        NODEPROP_VIS_NONE
+    } NODEPROP_VIS;
 
 
     /****************************************************************
@@ -114,7 +137,7 @@ extern "C" {
         void
     );
 
-    bool            NodeProp_SharedReset (
+    void            NodeProp_SharedReset (
         void
     );
 #endif
@@ -141,6 +164,18 @@ extern "C" {
     );
     
     
+#ifdef  NODEPROP_JSON_SUPPORT
+    NODEPROP_DATA *   NodeProp_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    NODEPROP_DATA *   NodeProp_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -173,6 +208,25 @@ extern "C" {
     );
     
  
+#ifdef  NODEPROP_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = NodeProp_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     NodeProp_ToJson (
+        NODEPROP_DATA   *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -185,7 +239,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    NodeProp_ToDebugString (
+    ASTR_DATA *     NodeProp_ToDebugString (
         NODEPROP_DATA     *this,
         int             indent
     );

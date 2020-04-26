@@ -401,7 +401,7 @@ static
 const
 OBJ_INFO        bpt32lf_Info = {
     "bpt32lf",
-    "B-Plus 32-Bit Tree Leaf Node",
+    "B-Plus 32-Bit Tree Leaf Block",
     (OBJ_DATA *)&bpt32lf_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&bpt32lf_Vtbl,

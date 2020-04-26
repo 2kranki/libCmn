@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 04/26/2020 17:31:56
+ *	Generated 04/25/2020 18:28:59
  */
 
 
@@ -25,8 +25,8 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <NodeProp_internal.h>
-#ifdef  NODEPROP_JSON_SUPPORT
+#include    <SqlCol_internal.h>
+#ifdef  SQLCOL_JSON_SUPPORT
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
@@ -55,7 +55,7 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  NODEPROP_JSON_SUPPORT
+#ifdef  SQLCOL_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
@@ -82,25 +82,25 @@ int             tearDown (
 
 
 
-int             test_NodeProp_OpenClose (
+int             test_SqlCol_OpenClose (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    NODEPROP_DATA	    *pObj = OBJ_NIL;
+    SQLCOL_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = NodeProp_Alloc( );
+    pObj = SqlCol_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = NodeProp_Init( pObj );
+    pObj = SqlCol_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_NODEPROP);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLCOL);
         TINYTEST_TRUE( (fRc) );
         
         // Test something.
@@ -116,38 +116,38 @@ int             test_NodeProp_OpenClose (
 
 
 
-int             test_NodeProp_Copy01 (
+int             test_SqlCol_Copy01 (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    NODEPROP_DATA	    *pObj1 = OBJ_NIL;
-    NODEPROP_DATA	    *pObj2 = OBJ_NIL;
+    SQLCOL_DATA	    *pObj1 = OBJ_NIL;
+    SQLCOL_DATA	    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(NODEPROP_JSON_SUPPORT) && defined(XYZZY)
+#if defined(SQLCOL_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = NodeProp_New( );
+    pObj1 = SqlCol_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_NODEPROP);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_SQLCOL);
         TINYTEST_TRUE( (fRc) );
         
         // Test assign.
-        pObj2 = NodeProp_New();
+        pObj2 = SqlCol_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        eRc = NodeProp_Assign(pObj1, pObj2);
+        eRc = SqlCol_Assign(pObj1, pObj2);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NODEPROP);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLCOL);
         TINYTEST_TRUE( (fRc) );
-        //eRc = NodeProp_Compare(pObj1, pObj2);
+        //eRc = SqlCol_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -155,12 +155,12 @@ int             test_NodeProp_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = NodeProp_Copy(pObj1);
+        pObj2 = SqlCol_Copy(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NODEPROP);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLCOL);
         TINYTEST_TRUE( (fRc) );
-        //eRc = NodeProp_Compare(pObj1, pObj2);
+        //eRc = SqlCol_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -168,17 +168,17 @@ int             test_NodeProp_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(NODEPROP_JSON_SUPPORT) && defined(XYZZY)
-        pStr = NodeProp_ToJson(pObj1);
+#if defined(SQLCOL_JSON_SUPPORT) && defined(XYZZY)
+        pStr = SqlCol_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = NodeProp_NewFromJsonString(pStr);
+        pObj2 = SqlCol_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NODEPROP);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLCOL);
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = NodeProp_Compare(pObj1, pObj2);
+        //eRc = SqlCol_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
@@ -195,28 +195,28 @@ int             test_NodeProp_Copy01 (
 
 
 
-int             test_NodeProp_Test01 (
+int             test_SqlCol_Test01 (
     const
     char            *pTestName
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    NODEPROP_DATA	    *pObj = OBJ_NIL;
+    SQLCOL_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = NodeProp_New( );
+    pObj = SqlCol_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_NODEPROP);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLCOL);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         
         {
-            ASTR_DATA       *pStr = NodeProp_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = SqlCol_ToDebugString(pObj, 0);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -235,13 +235,13 @@ int             test_NodeProp_Test01 (
 
 
 
-TINYTEST_START_SUITE(test_NodeProp);
-    TINYTEST_ADD_TEST(test_NodeProp_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_NodeProp_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_NodeProp_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_SqlCol);
+    TINYTEST_ADD_TEST(test_SqlCol_Test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_SqlCol_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SqlCol_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_NodeProp);
+TINYTEST_MAIN_SINGLE_SUITE(test_SqlCol);
 
 
 

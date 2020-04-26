@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'NodeBody'
-//	Generated 12/18/2019 23:33:03
+//	Class Object Metods and Tables for 'SqlRowDef'
+//	Generated 04/26/2020 11:52:40
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			NODEBODY_OBJECT_C	    1
-#include        <NodeBody_internal.h>
-#ifdef  NODEBODY_SINGLETON
+#define			SQLROWDEF_OBJECT_C	    1
+#include        <SqlRowDef_internal.h>
+#ifdef  SQLROWDEF_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct NodeBody_class_data_s	{
+struct SqlRowDef_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  NODEBODY_SINGLETON
+#ifdef  SQLROWDEF_SINGLETON
     volatile
-    NODEBODY_DATA       *pSingleton;
+    SQLROWDEF_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct NodeBody_class_data_s	{
 
 
 static
-void *          NodeBodyClass_QueryInfo (
+void *          SqlRowDefClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          NodeBodyClass_QueryInfo (
 
 static
 const
-OBJ_INFO        NodeBody_Info;            // Forward Reference
+OBJ_INFO        SqlRowDef_Info;            // Forward Reference
 
 
 
 
 static
-bool            NodeBodyClass_IsKindOf (
+bool            SqlRowDefClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_NODEBODY_CLASS == classID) {
+    if (OBJ_IDENT_SQLROWDEF_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(NodeBody_Class())->pClassSuperObject;
+    pObj = obj_getInfo(SqlRowDef_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            NodeBodyClass_IsKindOf (
 
 
 static
-uint16_t		NodeBodyClass_WhoAmI (
+uint16_t		SqlRowDefClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEBODY_CLASS;
+    return OBJ_IDENT_SQLROWDEF_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		NodeBodyClass_WhoAmI (
 
 static
 const
-NODEBODY_CLASS_VTBL    class_Vtbl = {
+SQLROWDEF_CLASS_VTBL    class_Vtbl = {
     {
-        &NodeBody_Info,
-        NodeBodyClass_IsKindOf,
+        &SqlRowDef_Info,
+        SqlRowDefClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        NodeBody_Class,
-        NodeBodyClass_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeBodyClass_QueryInfo,
-        NULL                        // NodeBodyClass_ToDebugString
+        SqlRowDef_Class,
+        SqlRowDefClass_WhoAmI,
+        (P_OBJ_QUERYINFO)SqlRowDefClass_QueryInfo,
+        NULL                        // SqlRowDefClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ NODEBODY_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NODEBODY_CLASS_DATA  NodeBody_ClassObj = {
+SQLROWDEF_CLASS_DATA  SqlRowDef_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(NODEBODY_CLASS_DATA),                  // cbSize
+        sizeof(SQLROWDEF_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,22 @@ NODEBODY_CLASS_DATA  NodeBody_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  NODEBODY_SINGLETON
-NODEBODY_DATA *     NodeBody_getSingleton (
+#ifdef  SQLROWDEF_SINGLETON
+extern
+const
+SQLROWDEF_VTBL       SqlRowDef_VtblShared;
+
+
+SQLROWDEF_DATA *     SqlRowDef_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(NodeBody_ClassObj.pSingleton);
+    return (OBJ_ID)(SqlRowDef_ClassObj.pSingleton);
 }
 
 
-bool            NodeBody_setSingleton (
-    NODEBODY_DATA       *pValue
+bool            SqlRowDef_setSingleton (
+    SQLROWDEF_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +197,10 @@ bool            NodeBody_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (NodeBody_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(NodeBody_ClassObj.pSingleton));
+    if (SqlRowDef_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(SqlRowDef_ClassObj.pSingleton));
     }
-    NodeBody_ClassObj.pSingleton = pValue;
+    SqlRowDef_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +210,18 @@ bool            NodeBody_setSingleton (
 
 
 
-NODEBODY_DATA *     NodeBody_Shared (
+SQLROWDEF_DATA *     SqlRowDef_Shared (
     void
 )
 {
-    NODEBODY_DATA       *this = (OBJ_ID)(NodeBody_ClassObj.pSingleton);
+    SQLROWDEF_DATA       *this = (OBJ_ID)(SqlRowDef_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = NodeBody_New( );
-        NodeBody_setSingleton(this);
+        this = SqlRowDef_New( );
+        obj_setVtbl(this, (void *)&SqlRowDef_VtblShared);
+        SqlRowDef_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // NodeBody_ClassObj.pSingleton = OBJ_NIL;
+        // SqlRowDef_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +229,16 @@ NODEBODY_DATA *     NodeBody_Shared (
 
 
 
-void            NodeBody_SharedReset (
+void            SqlRowDef_SharedReset (
     void
 )
 {
-    NODEBODY_DATA       *this = (OBJ_ID)(NodeBody_ClassObj.pSingleton);
+    SQLROWDEF_DATA       *this = (OBJ_ID)(SqlRowDef_ClassObj.pSingleton);
     
     if (this) {
+        obj_setVtbl(this, (void *)&SqlRowDef_Vtbl);
         obj_Release(this);
-        NodeBody_ClassObj.pSingleton = OBJ_NIL;
+        SqlRowDef_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +254,13 @@ void            NodeBody_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          NodeBodyClass_QueryInfo (
+void *          SqlRowDefClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODEBODY_CLASS_DATA *this = objId;
+    SQLROWDEF_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +271,7 @@ void *          NodeBodyClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODEBODY_DATA);
+            return (void *)sizeof(SQLROWDEF_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -272,14 +279,18 @@ void *          NodeBodyClass_QueryInfo (
             break;
             
         // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&NodeBody_Info;
+                        return (void *)&SqlRowDef_Info;
+                    }
+                    break;
+                    
+                case 'S':
+                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                        return (void *)&SqlRowDef_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -297,19 +308,35 @@ void *          NodeBodyClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return NodeBody_New;
+                        return SqlRowDef_New;
                     }
                     break;
                     
-                case 'P':
-                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return NodeBody_ParseJsonObject;
-                    }
-                    break;
- 
+				case 'P':
+#ifdef  SQLROWDEF_JSON_SUPPORT
+					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+						return SqlRowDef_ParseJsonFields;
+					}
+					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+						return SqlRowDef_ParseJsonObject;
+					}
+#endif
+					break;
+
+				case 'T':
+#ifdef  SQLROWDEF_JSON_SUPPORT
+					if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+						return SqlRowDef_ToJsonFields;
+					}
+					if (str_Compare("ToJson", (char *)pStr) == 0) {
+						return SqlRowDef_ToJson;
+					}
+#endif
+					break;
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return NodeBodyClass_WhoAmI;
+                        return SqlRowDefClass_WhoAmI;
                     }
                     break;
                     
@@ -329,7 +356,7 @@ void *          NodeBodyClass_QueryInfo (
 
 
 static
-bool            NodeBody_IsKindOf (
+bool            SqlRowDef_IsKindOf (
     uint16_t		classID
 )
 {
@@ -337,14 +364,14 @@ bool            NodeBody_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_NODEBODY == classID) {
+    if (OBJ_IDENT_SQLROWDEF == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(NodeBody_Class())->pClassSuperObject;
+    pObj = obj_getInfo(SqlRowDef_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -358,25 +385,25 @@ bool            NodeBody_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            NodeBody_Dealloc (
+void            SqlRowDef_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          NodeBody_Class (
+OBJ_ID          SqlRowDef_Class (
     void
 )
 {
-    return (OBJ_ID)&NodeBody_ClassObj;
+    return (OBJ_ID)&SqlRowDef_ClassObj;
 }
 
 
 static
-uint16_t		NodeBody_WhoAmI (
+uint16_t		SqlRowDef_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEBODY;
+    return OBJ_IDENT_SQLROWDEF;
 }
 
 
@@ -387,35 +414,69 @@ uint16_t		NodeBody_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
+#ifdef  SQLROWDEF_SINGLETON
+// A Shared object ignores Retain() and Release() except for
+// initialization and termination. So, there must be an
+// independent VTbl from the normal which does support Retain()
+// and Release().
 const
-NODEBODY_VTBL     NodeBody_Vtbl = {
+SQLROWDEF_VTBL     SqlRowDef_VtblShared = {
     {
-        &NodeBody_Info,
-        NodeBody_IsKindOf,
-#ifdef  NODEBODY_IS_SINGLETON
+        &SqlRowDef_Info,
+        SqlRowDef_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-#else
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-#endif
-        NodeBody_Dealloc,
-        NodeBody_Class,
-        NodeBody_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeBody_QueryInfo,
-        (P_OBJ_TOSTRING)NodeBody_ToDebugString,
-        NULL,			// NodeBody_Enable,
-        NULL,			// NodeBody_Disable,
-        NULL,			// (P_OBJ_ASSIGN)NodeBody_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodeBody_Compare,
-        NULL, 			// (P_OBJ_PTR)NodeBody_Copy,
-        NULL, 			// (P_OBJ_PTR)NodeBody_DeepCopy,
-        NULL 			// (P_OBJ_HASH)NodeBody_Hash,
+        SqlRowDef_Dealloc,
+        SqlRowDef_Class,
+        SqlRowDef_WhoAmI,
+        (P_OBJ_QUERYINFO)SqlRowDef_QueryInfo,
+        (P_OBJ_TOSTRING)SqlRowDef_ToDebugString,
+        NULL,			// SqlRowDef_Enable,
+        NULL,			// SqlRowDef_Disable,
+        NULL,			// (P_OBJ_ASSIGN)SqlRowDef_Assign,
+        NULL,			// (P_OBJ_COMPARE)SqlRowDef_Compare,
+        NULL, 			// (P_OBJ_PTR)SqlRowDef_Copy,
+        NULL, 			// (P_OBJ_PTR)SqlRowDef_DeepCopy,
+        NULL 			// (P_OBJ_HASH)SqlRowDef_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //NodeBody_IsEnabled,
+    //SqlRowDef_IsEnabled,
+ 
+};
+#endif
+
+
+// This VTbl supports Retain() and Release() which is
+// used by objects other than the Shared object. These
+// objects can still be shared among other objects. It
+// just that they are deleted when their usage count
+// goes to zero.
+const
+SQLROWDEF_VTBL     SqlRowDef_Vtbl = {
+    {
+        &SqlRowDef_Info,
+        SqlRowDef_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        SqlRowDef_Dealloc,
+        SqlRowDef_Class,
+        SqlRowDef_WhoAmI,
+        (P_OBJ_QUERYINFO)SqlRowDef_QueryInfo,
+        (P_OBJ_TOSTRING)SqlRowDef_ToDebugString,
+        NULL,			// SqlRowDef_Enable,
+        NULL,			// SqlRowDef_Disable,
+        NULL,			// (P_OBJ_ASSIGN)SqlRowDef_Assign,
+        NULL,			// (P_OBJ_COMPARE)SqlRowDef_Compare,
+        NULL, 			// (P_OBJ_PTR)SqlRowDef_Copy,
+        NULL, 			// (P_OBJ_PTR)SqlRowDef_DeepCopy,
+        NULL 			// (P_OBJ_HASH)SqlRowDef_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //SqlRowDef_IsEnabled,
  
 };
 
@@ -423,14 +484,17 @@ NODEBODY_VTBL     NodeBody_Vtbl = {
 
 static
 const
-OBJ_INFO        NodeBody_Info = {
-    "NodeBody",
-    "NodeBody",	// <-- Fill in description
-    (OBJ_DATA *)&NodeBody_ClassObj,
+OBJ_INFO        SqlRowDef_Info = {
+    "SqlRowDef",
+    "Separate SqlRowDef",
+    (OBJ_DATA *)&SqlRowDef_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&NodeBody_Vtbl,
-    sizeof(NODEBODY_DATA)
+    (OBJ_IUNKNOWN *)&SqlRowDef_Vtbl,
+    sizeof(SQLROWDEF_DATA)
 };
+#warning -- adjust super class object in Info above 
+//			if object inherits from another class
+//			Also, update description
 
 
 

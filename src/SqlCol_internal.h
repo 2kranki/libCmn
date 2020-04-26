@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   NodeClass_internal.h
- *	Generated 04/26/2020 17:31:47
+ * File:   SqlCol_internal.h
+ *	Generated 04/25/2020 18:28:59
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <NodeClass.h>
+#include        <SqlCol.h>
 #include        <JsonIn.h>
 
 
-#ifndef NODECLASS_INTERNAL_H
-#define	NODECLASS_INTERNAL_H
+#ifndef SQLCOL_INTERNAL_H
+#define	SQLCOL_INTERNAL_H
 
 
 
@@ -62,26 +62,36 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct NodeClass_data_s	{
+struct SqlCol_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
+    uint8_t         type;
+    uint8_t         decimalPlaces;
+    uint8_t         seq;
+    uint8_t         rsvd8;
+    uint16_t        keySeq;
     uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    uint32_t        flags;
+    int32_t         length;
+    int32_t         lengthMin;
+    ASTR_DATA       *pName;
+    ASTR_DATA       *pCheckExpr;
+    ASTR_DATA       *pDesc;
+    ASTR_DATA       *pDefVal;
 
 };
 #pragma pack(pop)
 
     extern
-    struct NodeClass_class_data_s  NodeClass_ClassObj;
+    struct SqlCol_class_data_s  SqlCol_ClassObj;
 
     extern
     const
-    NODECLASS_VTBL         NodeClass_Vtbl;
+    SQLCOL_VTBL         SqlCol_Vtbl;
 
 
 
@@ -89,13 +99,13 @@ struct NodeClass_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NODECLASS_SINGLETON
-    NODECLASS_DATA *     NodeClass_getSingleton (
+#ifdef  SQLCOL_SINGLETON
+    SQLCOL_DATA *     SqlCol_getSingleton (
         void
     );
 
-    bool            NodeClass_setSingleton (
-     NODECLASS_DATA       *pValue
+    bool            SqlCol_setSingleton (
+     SQLCOL_DATA       *pValue
 );
 #endif
 
@@ -105,35 +115,35 @@ struct NodeClass_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  NodeClass_getSuperVtbl (
-        NODECLASS_DATA     *this
+    OBJ_IUNKNOWN *  SqlCol_getSuperVtbl (
+        SQLCOL_DATA     *this
     );
 
 
-    ERESULT         NodeClass_Assign (
-        NODECLASS_DATA    *this,
-        NODECLASS_DATA    *pOther
+    ERESULT         SqlCol_Assign (
+        SQLCOL_DATA    *this,
+        SQLCOL_DATA    *pOther
     );
 
 
-    NODECLASS_DATA *       NodeClass_Copy (
-        NODECLASS_DATA     *this
+    SQLCOL_DATA *   SqlCol_Copy (
+        SQLCOL_DATA     *this
     );
 
 
-    void            NodeClass_Dealloc (
+    void            SqlCol_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  NODECLASS_JSON_SUPPORT
+#ifdef  SQLCOL_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NODECLASS_DATA *       NodeClass_ParseJsonObject (
+    SQLCOL_DATA *       SqlCol_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -147,35 +157,35 @@ struct NodeClass_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeClass_ParseJsonFields (
+    ERESULT         SqlCol_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        NODECLASS_DATA     *pObject
+        SQLCOL_DATA     *pObject
     );
 #endif
 
 
-    void *          NodeClass_QueryInfo (
+    void *          SqlCol_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  NODECLASS_JSON_SUPPORT
+#ifdef  SQLCOL_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = NodeClass_ToJson(this);
+     ASTR_DATA      *pDesc = SqlCol_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NodeClass_ToJson (
-        NODECLASS_DATA      *this
+    ASTR_DATA *     SqlCol_ToJson (
+        SQLCOL_DATA      *this
     );
 
 
@@ -188,8 +198,8 @@ struct NodeClass_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeClass_ToJsonFields (
-        NODECLASS_DATA     *this,
+    ERESULT         SqlCol_ToJsonFields (
+        SQLCOL_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -199,8 +209,8 @@ struct NodeClass_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			NodeClass_Validate (
-        NODECLASS_DATA       *this
+    bool			SqlCol_Validate (
+        SQLCOL_DATA       *this
     );
 #endif
 
@@ -210,5 +220,5 @@ struct NodeClass_data_s	{
 }
 #endif
 
-#endif	/* NODECLASS_INTERNAL_H */
+#endif	/* SQLCOL_INTERNAL_H */
 

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   NodeProp.c
- *	Generated 12/18/2019 23:31:17
+ *	Generated 04/26/2020 17:31:56
  *
  */
 
@@ -123,6 +123,236 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                          E x t e r n a l
+    //---------------------------------------------------------------
+
+    ASTR_DATA * NodeProp_getExternal (
+        NODEPROP_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pExternal;
+    }
+
+
+    bool        NodeProp_setExternal (
+        NODEPROP_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pExternal) {
+            obj_Release(this->pExternal);
+        }
+        this->pExternal = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          I n i t
+    //---------------------------------------------------------------
+
+    ASTR_DATA * NodeProp_getInit (
+        NODEPROP_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pInit;
+    }
+
+
+    bool        NodeProp_setInit (
+        NODEPROP_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pInit) {
+            obj_Release(this->pInit);
+        }
+        this->pInit = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       I n t e r n a l
+    //---------------------------------------------------------------
+
+    ASTR_DATA * NodeProp_getInternal (
+        NODEPROP_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pInternal;
+    }
+
+
+    bool        NodeProp_setInternal (
+        NODEPROP_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pInternal) {
+            obj_Release(this->pInternal);
+        }
+        this->pInternal = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         L o n g
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeProp_getLong (
+        NODEPROP_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pLong;
+    }
+
+
+    bool            NodeProp_setLong (
+        NODEPROP_DATA   *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pLong) {
+            obj_Release(this->pLong);
+        }
+        this->pLong = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                            N a m e
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeProp_getName (
+        NODEPROP_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pName;
+    }
+
+
+    bool        NodeProp_setName (
+        NODEPROP_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pName) {
+            obj_Release(this->pName);
+        }
+        this->pName = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -187,10 +417,10 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
+    //                            S h o r t
     //---------------------------------------------------------------
     
-    ASTR_DATA * NodeProp_getStr (
+    ASTR_DATA * NodeProp_getShort (
         NODEPROP_DATA     *this
     )
     {
@@ -204,11 +434,11 @@ extern "C" {
         }
 #endif
         
-        return this->pStr;
+        return this->pShort;
     }
     
     
-    bool        NodeProp_setStr (
+    bool        NodeProp_setShort (
         NODEPROP_DATA     *this,
         ASTR_DATA   *pValue
     )
@@ -221,13 +451,11 @@ extern "C" {
         }
 #endif
 
-#ifdef  PROPERTY_STR_OWNED
         obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
+        if (this->pShort) {
+            obj_Release(this->pShort);
         }
-#endif
-        this->pStr = pValue;
+        this->pShort = pValue;
         
         return true;
     }
@@ -301,6 +529,16 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -429,6 +667,10 @@ extern "C" {
         }
 #endif
         
+#ifdef NODEPROP_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
         pOther = NodeProp_New( );
         if (pOther) {
             eRc = NodeProp_Assign(this, pOther);
@@ -437,9 +679,9 @@ extern "C" {
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -454,6 +696,7 @@ extern "C" {
     )
     {
         NODEPROP_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -473,7 +716,12 @@ extern "C" {
         }
 #endif
 
-        NodeProp_setStr(this, OBJ_NIL);
+        NodeProp_setExternal(this, OBJ_NIL);
+        NodeProp_setInit(this, OBJ_NIL);
+        NodeProp_setInternal(this, OBJ_NIL);
+        NodeProp_setLong(this, OBJ_NIL);
+        NodeProp_setName(this, OBJ_NIL);
+        NodeProp_setShort(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -486,6 +734,52 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        NodeProp      *pDeepCopy = NodeProp_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a NODEPROP object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    NODEPROP_DATA *     NodeProp_DeepyCopy (
+        NODEPROP_DATA       *this
+    )
+    {
+        NODEPROP_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = NodeProp_New( );
+        if (pOther) {
+            eRc = NodeProp_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -500,23 +794,23 @@ extern "C" {
         NODEPROP_DATA		*this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeProp_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -535,23 +829,23 @@ extern "C" {
         NODEPROP_DATA		*this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeProp_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -581,14 +875,14 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODEPROP);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeProp_Vtbl);
         
@@ -601,18 +895,23 @@ extern "C" {
         }
         */
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!NodeProp_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        fprintf(stderr, "NodeProp::sizeof(NODEPROP_DATA) = %lu\n", sizeof(NODEPROP_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "NodeProp::sizeof(NODEPROP_DATA) = %lu\n", 
+                sizeof(NODEPROP_DATA)
+        );
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(NODEPROP_DATA));
-    #endif
+#endif
 
         return this;
     }
@@ -648,21 +947,6 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //                P a r s e  J s o n  O b j e c t
-    //---------------------------------------------------------------
-    
-#ifdef  NODEPROP_JSON_SUPPORT
-     NODEPROP_DATA * NodeProp_ParseJsonObject (
-         JSONIN_DATA     *pParser
-    )
-    {
-        return OBJ_NIL;
-    }
-#endif
-        
-        
-        
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -712,33 +996,29 @@ extern "C" {
         
         switch (type) {
                 
-        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODEPROP_DATA);
-            break;
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(NODEPROP_DATA);
+                break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
                 return (void *)NodeProp_Class();
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -757,11 +1037,25 @@ extern "C" {
                         }
                         break;
 
+                    case 'P':
+#ifdef  NODEPROP_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return NodeProp_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return NodeProp_ParseJsonObject;
+                        }
+#endif
+                        break;
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return NodeProp_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODEPROP_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return NodeProp_ToJsonFields;
+                        }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return NodeProp_ToJson;
                         }
@@ -776,7 +1070,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == NodeProp_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  NODEPROP_JSON_SUPPORT
                 if (pData == NodeProp_ToJson)
                     return "ToJson";
 #endif
@@ -788,47 +1082,6 @@ extern "C" {
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-#ifdef  NODEPROP_JSON_SUPPORT
-     ASTR_DATA *     NodeProp_ToJson (
-        NODEPROP_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!NodeProp_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-#endif
     
     
     
@@ -854,11 +1107,12 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -895,8 +1149,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -920,8 +1176,8 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
     bool            NodeProp_Validate (
         NODEPROP_DATA      *this
     )
@@ -953,7 +1209,7 @@ extern "C" {
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     
