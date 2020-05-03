@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   Main_internal.h
- *	Generated 12/19/2019 08:55:05
+ *	Generated 04/28/2020 23:01:38
  *
  * Notes:
  *  --	N/A
@@ -40,15 +40,15 @@
 
 
 #include        <Main.h>
+#include        <Appl_internal.h>
 #include        <JsonIn.h>
+#include        <TextOut.h>
 
 
 #ifndef MAIN_INTERNAL_H
 #define	MAIN_INTERNAL_H
 
 
-
-#define     PROPERTY_STR_OWNED 1
 
 
 
@@ -67,13 +67,19 @@ extern "C" {
 struct Main_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    APPL_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
+    DICT_DATA       *pDict;
+    PATH_DATA       *pFilePath;
+    ASTR_DATA       *pOut;
+    PATH_DATA       *pOutputPath;
+    TEXTOUT_DATA    *pOutput;
+    SRCPARSE_DATA   *pParser;
 
 };
 #pragma pack(pop)
@@ -112,17 +118,116 @@ struct Main_data_s	{
     );
 
 
-    void            Main_Dealloc (
+    ERESULT         Main_Assign (
+        MAIN_DATA    *this,
+        MAIN_DATA    *pOther
+    );
+
+
+    PATH_DATA *     Main_CheckInputPath (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    );
+
+    PATH_DATA *     Main_CreateOutputPath (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr,
+        const
+        char            *pOsNameA
+    );
+
+    MAIN_DATA *    Main_Copy (
+        MAIN_DATA       *this
+    );
+
+
+    void          Main_Dealloc (
         OBJ_ID          objId
     );
 
 
+    ERESULT         Main_ParseArgsDefault (
+        MAIN_DATA        *this
+    );
+
+    int             Main_ParseArgsLong (
+        MAIN_DATA       *this,
+        int             *pArgC,
+        const
+        char            ***pppArgV
+    );
+
+    int             Main_ParseArgsShort (
+        MAIN_DATA       *this,
+        int             *pArgC,
+        const
+        char            ***pppArgV
+    );
+
+/*!
+ Parse the given file into a JSON Node structure and
+ perform some cursory checks on the structure.
+ @param     this    object pointer
+ @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+ error code.
+ */
+ERESULT         Main_ParseInputFile (
+    MAIN_DATA       *this,
+    PATH_DATA       *pPath
+);
+
+/*!
+ Parse the given string into a JSON Node structure and
+ perform some cursory checks on the structure.
+ @param     this    object pointer
+ @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+ error code.
+ */
+ERESULT         Main_ParseInputStr (
+    MAIN_DATA       *this,
+    const
+    char            *pStr
+);
+
 #ifdef  MAIN_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
     MAIN_DATA *       Main_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+
+
+    /*!
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Main_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        MAIN_DATA     *pObject
+    );
 #endif
 
+
+    /*!
+     Process each command line argument, parsing the HJSON file and
+     generating the Makefile.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         Main_ProcessArg (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    );
 
     void *          Main_QueryInfo (
         OBJ_ID          objId,
@@ -131,11 +236,65 @@ struct Main_data_s	{
     );
 
 
-#ifdef  SRCREF_JSON_SUPPORT
+    ERESULT         Main_SetupTextOutAStr (
+        MAIN_DATA        *this
+    );
+
+
+#ifdef  MAIN_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Main_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
     ASTR_DATA *     Main_ToJson (
         MAIN_DATA      *this
     );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Main_ToJsonFields (
+        MAIN_DATA     *this,
+        ASTR_DATA       *pStr
+    );
 #endif
+
+
+    ERESULT         Main_UsageDesc (
+        MAIN_DATA       *this,
+        FILE            *pOutput,
+        PATH_DATA       *pProgramPath
+    );
+
+
+    ERESULT         Main_UsageProgLine (
+        MAIN_DATA       *this,
+        FILE            *pOutput,
+        PATH_DATA       *pProgramPath,
+        const
+        char            *pNameA
+    );
+
+
+    ERESULT         Main_UsageOptions (
+        MAIN_DATA       *this,
+        FILE            *pOutput
+    );
 
 
 

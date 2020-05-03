@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 04/28/2020 23:01:38
+ *	Generated 04/26/2020 19:33:02
  */
 
 
@@ -25,8 +25,8 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <Main_internal.h>
-#ifdef  MAIN_JSON_SUPPORT
+#include    <Visitor_internal.h>
+#ifdef  VISITOR_JSON_SUPPORT
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
@@ -55,7 +55,7 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  MAIN_JSON_SUPPORT
+#ifdef  VISITOR_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
@@ -82,25 +82,25 @@ int             tearDown (
 
 
 
-int             test_Main_OpenClose (
+int             test_Visitor_OpenClose (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    MAIN_DATA	    *pObj = OBJ_NIL;
+    VISITOR_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Main_Alloc( );
+    pObj = Visitor_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = Main_Init( pObj );
+    pObj = Visitor_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_MAIN);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_VISITOR);
         TINYTEST_TRUE( (fRc) );
         
         // Test something.
@@ -116,38 +116,38 @@ int             test_Main_OpenClose (
 
 
 
-int             test_Main_Copy01 (
+int             test_Visitor_Copy01 (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    MAIN_DATA	    *pObj1 = OBJ_NIL;
-    MAIN_DATA	    *pObj2 = OBJ_NIL;
+    VISITOR_DATA	    *pObj1 = OBJ_NIL;
+    VISITOR_DATA	    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(MAIN_JSON_SUPPORT) && defined(XYZZY)
+#if defined(VISITOR_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = Main_New( );
+    pObj1 = Visitor_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_MAIN);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_VISITOR);
         TINYTEST_TRUE( (fRc) );
         
         // Test assign.
-        pObj2 = Main_New();
+        pObj2 = Visitor_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        eRc = Main_Assign(pObj1, pObj2);
+        eRc = Visitor_Assign(pObj1, pObj2);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_MAIN);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_VISITOR);
         TINYTEST_TRUE( (fRc) );
-        //eRc = Main_Compare(pObj1, pObj2);
+        //eRc = Visitor_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -155,12 +155,12 @@ int             test_Main_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = Main_Copy(pObj1);
+        pObj2 = Visitor_Copy(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_MAIN);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_VISITOR);
         TINYTEST_TRUE( (fRc) );
-        //eRc = Main_Compare(pObj1, pObj2);
+        //eRc = Visitor_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -168,17 +168,17 @@ int             test_Main_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(MAIN_JSON_SUPPORT) && defined(XYZZY)
-        pStr = Main_ToJson(pObj1);
+#if defined(VISITOR_JSON_SUPPORT) && defined(XYZZY)
+        pStr = Visitor_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = Main_NewFromJsonString(pStr);
+        pObj2 = Visitor_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_MAIN);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_VISITOR);
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = Main_Compare(pObj1, pObj2);
+        //eRc = Visitor_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
@@ -195,28 +195,28 @@ int             test_Main_Copy01 (
 
 
 
-int             test_Main_Test01 (
+int             test_Visitor_Test01 (
     const
     char            *pTestName
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    MAIN_DATA	    *pObj = OBJ_NIL;
+    VISITOR_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Main_New( );
+    pObj = Visitor_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_MAIN);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_VISITOR);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         
         {
-            ASTR_DATA       *pStr = Main_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = Visitor_ToDebugString(pObj, 0);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -235,13 +235,13 @@ int             test_Main_Test01 (
 
 
 
-TINYTEST_START_SUITE(test_Main);
-    TINYTEST_ADD_TEST(test_Main_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_Main_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Main_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_Visitor);
+    TINYTEST_ADD_TEST(test_Visitor_Test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_Visitor_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Visitor_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_Main);
+TINYTEST_MAIN_SINGLE_SUITE(test_Visitor);
 
 
 

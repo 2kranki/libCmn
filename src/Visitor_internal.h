@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   NodeClass_internal.h
- *	Generated 04/26/2020 17:31:47
+ * File:   Visitor_internal.h
+ *	Generated 04/26/2020 19:33:02
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <NodeClass.h>
+#include        <Visitor.h>
 #include        <JsonIn.h>
 
 
-#ifndef NODECLASS_INTERNAL_H
-#define	NODECLASS_INTERNAL_H
+#ifndef VISITOR_INTERNAL_H
+#define	VISITOR_INTERNAL_H
 
 
 
@@ -62,30 +62,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct NodeClass_data_s	{
+struct Visitor_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint8_t         fImmutable;
-    uint8_t         fJson;
-    uint8_t         fSingleton;
-    uint8_t         rsvd8;
-    ASTR_DATA       *pName;
-    ASTR_DATA       *pSuper;
-    OBJARRAY_DATA   *pProps;
+    uint16_t        size;		    // maximum number of elements
+    uint16_t        rsvd16;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct NodeClass_class_data_s  NodeClass_ClassObj;
+    struct Visitor_class_data_s  Visitor_ClassObj;
 
     extern
     const
-    NODECLASS_VTBL         NodeClass_Vtbl;
+    VISITOR_VTBL         Visitor_Vtbl;
 
 
 
@@ -93,13 +89,13 @@ struct NodeClass_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NODECLASS_SINGLETON
-    NODECLASS_DATA *     NodeClass_getSingleton (
+#ifdef  VISITOR_SINGLETON
+    VISITOR_DATA *     Visitor_getSingleton (
         void
     );
 
-    bool            NodeClass_setSingleton (
-     NODECLASS_DATA       *pValue
+    bool            Visitor_setSingleton (
+     VISITOR_DATA       *pValue
 );
 #endif
 
@@ -109,35 +105,35 @@ struct NodeClass_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  NodeClass_getSuperVtbl (
-        NODECLASS_DATA     *this
+    OBJ_IUNKNOWN *  Visitor_getSuperVtbl (
+        VISITOR_DATA     *this
     );
 
 
-    ERESULT         NodeClass_Assign (
-        NODECLASS_DATA    *this,
-        NODECLASS_DATA    *pOther
+    ERESULT         Visitor_Assign (
+        VISITOR_DATA    *this,
+        VISITOR_DATA    *pOther
     );
 
 
-    NODECLASS_DATA *       NodeClass_Copy (
-        NODECLASS_DATA     *this
+    VISITOR_DATA *       Visitor_Copy (
+        VISITOR_DATA     *this
     );
 
 
-    void            NodeClass_Dealloc (
+    void            Visitor_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  NODECLASS_JSON_SUPPORT
+#ifdef  VISITOR_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NODECLASS_DATA *       NodeClass_ParseJsonObject (
+    VISITOR_DATA *       Visitor_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -151,35 +147,35 @@ struct NodeClass_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeClass_ParseJsonFields (
+    ERESULT         Visitor_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        NODECLASS_DATA     *pObject
+        VISITOR_DATA     *pObject
     );
 #endif
 
 
-    void *          NodeClass_QueryInfo (
+    void *          Visitor_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  NODECLASS_JSON_SUPPORT
+#ifdef  VISITOR_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = NodeClass_ToJson(this);
+     ASTR_DATA      *pDesc = Visitor_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NodeClass_ToJson (
-        NODECLASS_DATA      *this
+    ASTR_DATA *     Visitor_ToJson (
+        VISITOR_DATA      *this
     );
 
 
@@ -192,8 +188,8 @@ struct NodeClass_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeClass_ToJsonFields (
-        NODECLASS_DATA     *this,
+    ERESULT         Visitor_ToJsonFields (
+        VISITOR_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -203,8 +199,8 @@ struct NodeClass_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			NodeClass_Validate (
-        NODECLASS_DATA       *this
+    bool			Visitor_Validate (
+        VISITOR_DATA       *this
     );
 #endif
 
@@ -214,5 +210,5 @@ struct NodeClass_data_s	{
 }
 #endif
 
-#endif	/* NODECLASS_INTERNAL_H */
+#endif	/* VISITOR_INTERNAL_H */
 

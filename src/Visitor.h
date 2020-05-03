@@ -1,16 +1,16 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Separate SqlRowDef (SqlRowDef) Header
+//                  Separate Visitor (Visitor) Header
 //****************************************************************
 /*
  * Program
- *			Separate SqlRowDef (SqlRowDef)
+ *			Separate Visitor (Visitor)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate SqlRowDef to run things without complications
- *          of interfering with the main SqlRowDef. A SqlRowDef may be 
- *          called a SqlRowDef on other O/S's.
+ *          a separate Visitor to run things without complications
+ *          of interfering with the main Visitor. A Visitor may be 
+ *          called a Visitor on other O/S's.
  *
  * Remarks
  *	1.      None
@@ -55,13 +55,13 @@
 #include        <AStr.h>
 
 
-#ifndef         SQLROWDEF_H
-#define         SQLROWDEF_H
+#ifndef         VISITOR_H
+#define         VISITOR_H
 
 
-//#define   SQLROWDEF_IS_IMMUTABLE     1
-#define   SQLROWDEF_JSON_SUPPORT     1
-//#define   SQLROWDEF_SINGLETON        1
+//#define   VISITOR_IS_IMMUTABLE     1
+//#define   VISITOR_JSON_SUPPORT     1
+//#define   VISITOR_SINGLETON        1
 
 
 
@@ -77,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct SqlRowDef_data_s	SQLROWDEF_DATA;            // Inherits from OBJ
-    typedef struct SqlRowDef_class_data_s SQLROWDEF_CLASS_DATA;   // Inherits from OBJ
+    typedef struct Visitor_data_s	VISITOR_DATA;            // Inherits from OBJ
+    typedef struct Visitor_class_data_s VISITOR_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct SqlRowDef_vtbl_s	{
+    typedef struct Visitor_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in SqlRowDef_object.c.
+        // method names to the vtbl definition in Visitor_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SQLROWDEF_DATA *);
-    } SQLROWDEF_VTBL;
+        //bool        (*pIsEnabled)(VISITOR_DATA *);
+    } VISITOR_VTBL;
 
-    typedef struct SqlRowDef_class_vtbl_s	{
+    typedef struct Visitor_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in SqlRowDef_object.c.
+        // method names to the vtbl definition in Visitor_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SQLROWDEF_DATA *);
-    } SQLROWDEF_CLASS_VTBL;
+        //bool        (*pIsEnabled)(VISITOR_DATA *);
+    } VISITOR_CLASS_VTBL;
 
 
 
@@ -110,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  SQLROWDEF_SINGLETON
-    SQLROWDEF_DATA *     SqlRowDef_Shared (
+#ifdef  VISITOR_SINGLETON
+    VISITOR_DATA *     Visitor_Shared (
         void
     );
 
-    void            SqlRowDef_SharedReset (
+    void            Visitor_SharedReset (
         void
     );
 #endif
@@ -125,29 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to SqlRowDef object if successful, otherwise OBJ_NIL.
+     @return    pointer to Visitor object if successful, otherwise OBJ_NIL.
      */
-    SQLROWDEF_DATA *     SqlRowDef_Alloc (
+    VISITOR_DATA *     Visitor_Alloc (
         void
     );
     
     
-    OBJ_ID          SqlRowDef_Class (
+    OBJ_ID          Visitor_Class (
         void
     );
     
     
-    SQLROWDEF_DATA *     SqlRowDef_New (
+    VISITOR_DATA *     Visitor_New (
         void
     );
     
     
-#ifdef  SQLROWDEF_JSON_SUPPORT
-    SQLROWDEF_DATA *   SqlRowDef_NewFromJsonString (
+#ifdef  VISITOR_JSON_SUPPORT
+    VISITOR_DATA *   Visitor_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    SQLROWDEF_DATA *   SqlRowDef_NewFromJsonStringA (
+    VISITOR_DATA *   Visitor_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -166,41 +166,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     SqlRowDef_Disable (
-        SQLROWDEF_DATA		*this
+    ERESULT     Visitor_Disable (
+        VISITOR_DATA		*this
     );
 
 
-    ERESULT     SqlRowDef_Enable (
-        SQLROWDEF_DATA		*this
+    ERESULT     Visitor_Enable (
+        VISITOR_DATA		*this
     );
 
    
-    SQLROWDEF_DATA *   SqlRowDef_Init (
-        SQLROWDEF_DATA     *this
+    VISITOR_DATA *   Visitor_Init (
+        VISITOR_DATA     *this
     );
 
 
-    ERESULT     SqlRowDef_IsEnabled (
-        SQLROWDEF_DATA		*this
+    ERESULT     Visitor_IsEnabled (
+        VISITOR_DATA		*this
     );
     
  
-#ifdef  SQLROWDEF_JSON_SUPPORT
+#ifdef  VISITOR_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SqlRowDef_ToJson(this);
+     ASTR_DATA      *pDesc = Visitor_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlRowDef_ToJson (
-        SQLROWDEF_DATA   *this
+    ASTR_DATA *     Visitor_ToJson (
+        VISITOR_DATA   *this
     );
 #endif
 
@@ -209,7 +209,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = SqlRowDef_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Visitor_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -217,8 +217,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlRowDef_ToDebugString (
-        SQLROWDEF_DATA     *this,
+    ASTR_DATA *     Visitor_ToDebugString (
+        VISITOR_DATA     *this,
         int             indent
     );
     
@@ -229,5 +229,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* SQLROWDEF_H */
+#endif	/* VISITOR_H */
 

@@ -114,7 +114,6 @@
         {name:"Opcodes", "deps":["szBT.h", "Opcode.h"], json:true},
         {name:"Parser"},
         {name:"Path", deps:["AStr.h"], json:true},
-        {name:"plist", deps:["ObjArray.h"]},
         {name:"prt"},
         {name:"pplex",  deps:["lex.h","Token.h"]},
         {name:"pplex1", deps:["lex.h","Token.h"]},

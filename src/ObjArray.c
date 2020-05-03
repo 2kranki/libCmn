@@ -1338,11 +1338,25 @@ extern "C" {
                         }
                         break;
 
+                    case 'P':
+#ifdef  OBJARRAY_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return ObjArray_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return ObjArray_ParseJsonObject;
+                        }
+#endif
+                        break;
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return ObjArray_ToDebugString;
                         }
 #ifdef  OBJARRAY_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return ObjArray_ToJsonFields;
+                        }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return ObjArray_ToJson;
                         }

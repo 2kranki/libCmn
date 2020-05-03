@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 4/26/2020 21:22:00.000)
+# ( 5/ 3/2020 15:29:52.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -976,6 +976,16 @@ OBJS += $(OBJDIR)/Value_object.o
 $(OBJDIR)/Value_object.o: $(SRCDIR)/Value_object.c $(SRCDIR)/Value.h $(SRCDIR)/Value_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/Visitor.o
+
+$(OBJDIR)/Visitor.o: $(SRCDIR)/Visitor.c $(SRCDIR)/Visitor.h $(SRCDIR)/Visitor_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Visitor_object.o
+
+$(OBJDIR)/Visitor_object.o: $(SRCDIR)/Visitor_object.c $(SRCDIR)/Visitor.h $(SRCDIR)/Visitor_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/W32Str.o
 
 $(OBJDIR)/W32Str.o: $(SRCDIR)/W32Str.c $(SRCDIR)/W32Str.h $(SRCDIR)/W32Str_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1529,16 +1539,6 @@ $(OBJDIR)/objMatrix.o: $(SRCDIR)/objMatrix.c $(SRCDIR)/objMatrix.h $(SRCDIR)/obj
 OBJS += $(OBJDIR)/objMatrix_object.o
 
 $(OBJDIR)/objMatrix_object.o: $(SRCDIR)/objMatrix_object.c $(SRCDIR)/objMatrix.h $(SRCDIR)/objMatrix_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/plist.o
-
-$(OBJDIR)/plist.o: $(SRCDIR)/plist.c $(SRCDIR)/ObjArray.h $(SRCDIR)/plist.h $(SRCDIR)/plist_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/plist_object.o
-
-$(OBJDIR)/plist_object.o: $(SRCDIR)/plist_object.c $(SRCDIR)/ObjArray.h $(SRCDIR)/plist.h $(SRCDIR)/plist_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/pplex.o
@@ -2353,6 +2353,12 @@ Value_test: $(TEST_SRC)/Value_test.c $(SRCDIR)/Value.h $(SRCDIR)/Value_internal.
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += Visitor_test
+
+Visitor_test: $(TEST_SRC)/Visitor_test.c $(SRCDIR)/Visitor.h $(SRCDIR)/Visitor_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += W32StrC_test
 
 W32StrC_test: $(TEST_SRC)/W32StrC_test.c $(SRCDIR)/W32StrC.h $(SRCDIR)/W32StrC_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2644,12 +2650,6 @@ number_test: $(TEST_SRC)/number_test.c $(SRCDIR)/number.h $(SRCDIR)/number_inter
 TESTS += objMatrix_test
 
 objMatrix_test: $(TEST_SRC)/objMatrix_test.c $(SRCDIR)/objMatrix.h $(SRCDIR)/objMatrix_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += plist_test
-
-plist_test: $(TEST_SRC)/plist_test.c $(SRCDIR)/plist.h $(SRCDIR)/plist_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

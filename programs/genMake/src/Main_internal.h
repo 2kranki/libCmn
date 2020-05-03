@@ -159,7 +159,8 @@ struct Main_data_s	{
         const
         char            ***pppArgV
     );
-    
+
+
     /*!
      Parse the given file into a JSON Node structure and
      perform some cursory checks on the structure.
@@ -184,7 +185,8 @@ struct Main_data_s	{
         const
         char            *pStr
     );
-    
+
+
     ERESULT         Main_ProcessInit (
         MAIN_DATA       *this
     );
@@ -200,7 +202,8 @@ struct Main_data_s	{
         MAIN_DATA       *this,
         ASTR_DATA       *pStr
     );
-    
+
+
     void *          Main_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,

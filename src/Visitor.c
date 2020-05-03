@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   SqlColDef.c
- *	Generated 04/26/2020 11:52:28
+ * File:   Visitor.c
+ *	Generated 04/26/2020 19:33:02
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <SqlColDef_internal.h>
+#include        <Visitor_internal.h>
 #include        <trace.h>
 
 
@@ -64,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            SqlColDef_task_body (
+    void            Visitor_task_body (
         void            *pData
     )
     {
-        //SQLCOLDEF_DATA  *this = pData;
+        //VISITOR_DATA  *this = pData;
         
     }
 #endif
@@ -84,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SQLCOLDEF_DATA *     SqlColDef_Alloc (
+    VISITOR_DATA *     Visitor_Alloc (
         void
     )
     {
-        SQLCOLDEF_DATA       *this;
-        uint32_t        cbSize = sizeof(SQLCOLDEF_DATA);
+        VISITOR_DATA       *this;
+        uint32_t        cbSize = sizeof(VISITOR_DATA);
         
         // Do initialization.
         
@@ -101,15 +101,15 @@ extern "C" {
 
 
 
-    SQLCOLDEF_DATA *     SqlColDef_New (
+    VISITOR_DATA *     Visitor_New (
         void
     )
     {
-        SQLCOLDEF_DATA       *this;
+        VISITOR_DATA       *this;
         
-        this = SqlColDef_Alloc( );
+        this = Visitor_Alloc( );
         if (this) {
-            this = SqlColDef_Init(this);
+            this = Visitor_Init(this);
         } 
         return this;
     }
@@ -123,64 +123,18 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                         N a m e
-    //---------------------------------------------------------------
-
-    ASTR_DATA *     SqlColDef_getName (
-        SQLCOLDEF_DATA  *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!SqlColDef_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pName;
-    }
-
-
-    bool            SqlColDef_setName (
-        SQLCOLDEF_DATA  *this,
-        ASTR_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!SqlColDef_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pName) {
-            obj_Release(this->pName);
-        }
-        this->pName = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        SqlColDef_getPriority (
-        SQLCOLDEF_DATA     *this
+    uint16_t        Visitor_getPriority (
+        VISITOR_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -191,14 +145,14 @@ extern "C" {
     }
 
 
-    bool            SqlColDef_setPriority (
-        SQLCOLDEF_DATA     *this,
+    bool            Visitor_setPriority (
+        VISITOR_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -215,13 +169,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        SqlColDef_getSize (
-        SQLCOLDEF_DATA       *this
+    uint32_t        Visitor_getSize (
+        VISITOR_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -233,18 +187,64 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA * Visitor_getStr (
+        VISITOR_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Visitor_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool        Visitor_setStr (
+        VISITOR_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Visitor_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  SqlColDef_getSuperVtbl (
-        SQLCOLDEF_DATA     *this
+    OBJ_IUNKNOWN *  Visitor_getSuperVtbl (
+        VISITOR_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -273,16 +273,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = SqlColDef_Assign(this,pOther);
+        ERESULT eRc = Visitor_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another SQLCOLDEF object
+     @param     pOther  a pointer to another VISITOR object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         SqlColDef_Assign (
-        SQLCOLDEF_DATA		*this,
-        SQLCOLDEF_DATA     *pOther
+    ERESULT         Visitor_Assign (
+        VISITOR_DATA		*this,
+        VISITOR_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -290,11 +290,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!SqlColDef_Validate(pOther)) {
+        if (!Visitor_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -356,9 +356,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         SqlColDef_Compare (
-        SQLCOLDEF_DATA     *this,
-        SQLCOLDEF_DATA     *pOther
+    ERESULT         Visitor_Compare (
+        VISITOR_DATA     *this,
+        VISITOR_DATA     *pOther
     )
     {
         int             i = 0;
@@ -372,11 +372,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!SqlColDef_Validate(pOther)) {
+        if (!Visitor_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -414,36 +414,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        SqlColDef      *pCopy = SqlColDef_Copy(this);
+        Visitor      *pCopy = Visitor_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a SQLCOLDEF object which must be 
+     @return    If successful, a VISITOR object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SQLCOLDEF_DATA *     SqlColDef_Copy (
-        SQLCOLDEF_DATA       *this
+    VISITOR_DATA *     Visitor_Copy (
+        VISITOR_DATA       *this
     )
     {
-        SQLCOLDEF_DATA       *pOther = OBJ_NIL;
+        VISITOR_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef SQLCOLDEF_IS_IMMUTABLE
+#ifdef VISITOR_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = SqlColDef_New( );
+        pOther = Visitor_New( );
         if (pOther) {
-            eRc = SqlColDef_Assign(this, pOther);
+            eRc = Visitor_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -461,11 +461,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            SqlColDef_Dealloc (
+    void            Visitor_Dealloc (
         OBJ_ID          objId
     )
     {
-        SQLCOLDEF_DATA   *this = objId;
+        VISITOR_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -474,7 +474,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -482,11 +482,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((SQLCOLDEF_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((VISITOR_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        SqlColDef_setName(this, OBJ_NIL);
+        Visitor_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -507,32 +507,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        SqlColDef      *pDeepCopy = SqlColDef_Copy(this);
+        Visitor      *pDeepCopy = Visitor_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a SQLCOLDEF object which must be 
+     @return    If successful, a VISITOR object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SQLCOLDEF_DATA *     SqlColDef_DeepyCopy (
-        SQLCOLDEF_DATA       *this
+    VISITOR_DATA *     Visitor_DeepyCopy (
+        VISITOR_DATA       *this
     )
     {
-        SQLCOLDEF_DATA       *pOther = OBJ_NIL;
+        VISITOR_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = SqlColDef_New( );
+        pOther = Visitor_New( );
         if (pOther) {
-            eRc = SqlColDef_Assign(this, pOther);
+            eRc = Visitor_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -555,8 +555,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SqlColDef_Disable (
-        SQLCOLDEF_DATA		*this
+    ERESULT         Visitor_Disable (
+        VISITOR_DATA		*this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -564,7 +564,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -590,8 +590,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SqlColDef_Enable (
-        SQLCOLDEF_DATA		*this
+    ERESULT         Visitor_Enable (
+        VISITOR_DATA		*this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -599,7 +599,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -619,11 +619,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    SQLCOLDEF_DATA *   SqlColDef_Init (
-        SQLCOLDEF_DATA       *this
+    VISITOR_DATA *   Visitor_Init (
+        VISITOR_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(SQLCOLDEF_DATA);
+        uint32_t        cbSize = sizeof(VISITOR_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -641,7 +641,7 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SQLCOLDEF);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_VISITOR);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -649,7 +649,7 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SqlColDef_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Visitor_Vtbl);
         
         /*
         this->pArray = objArray_New( );
@@ -662,7 +662,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -671,11 +671,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "SqlColDef::sizeof(SQLCOLDEF_DATA) = %lu\n", 
-                sizeof(SQLCOLDEF_DATA)
+                "Visitor::sizeof(VISITOR_DATA) = %lu\n", 
+                sizeof(VISITOR_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(SQLCOLDEF_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(VISITOR_DATA));
 #endif
 
         return this;
@@ -687,8 +687,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         SqlColDef_IsEnabled (
-        SQLCOLDEF_DATA		*this
+    ERESULT         Visitor_IsEnabled (
+        VISITOR_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -696,7 +696,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -723,14 +723,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = SqlColDef_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Visitor_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "SqlColDef", prefix,
+                        the object name, "Visitor", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -738,13 +738,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          SqlColDef_QueryInfo (
+    void *          Visitor_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SQLCOLDEF_DATA     *this = objId;
+        VISITOR_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -753,7 +753,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -762,11 +762,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(SQLCOLDEF_DATA);
+                return (void *)sizeof(VISITOR_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)SqlColDef_Class();
+                return (void *)Visitor_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -792,37 +792,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return SqlColDef_Disable;
+                            return Visitor_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return SqlColDef_Enable;
+                            return Visitor_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  SQLCOLDEF_JSON_SUPPORT
+#ifdef  VISITOR_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return SqlColDef_ParseJsonFields;
+                            return Visitor_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return SqlColDef_ParseJsonObject;
+                            return Visitor_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return SqlColDef_ToDebugString;
+                            return Visitor_ToDebugString;
                         }
-#ifdef  SQLCOLDEF_JSON_SUPPORT
+#ifdef  VISITOR_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return SqlColDef_ToJsonFields;
+                            return Visitor_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return SqlColDef_ToJson;
+                            return Visitor_ToJson;
                         }
 #endif
                         break;
@@ -833,10 +833,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == SqlColDef_ToDebugString)
+                if (pData == Visitor_ToDebugString)
                     return "ToDebugString";
-#ifdef  SQLCOLDEF_JSON_SUPPORT
-                if (pData == SqlColDef_ToJson)
+#ifdef  VISITOR_JSON_SUPPORT
+                if (pData == Visitor_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -858,7 +858,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = SqlColDef_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Visitor_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -866,8 +866,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlColDef_ToDebugString (
-        SQLCOLDEF_DATA      *this,
+    ASTR_DATA *     Visitor_ToDebugString (
+        VISITOR_DATA      *this,
         int             indent
     )
     {
@@ -882,7 +882,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlColDef_Validate(this)) {
+        if (!Visitor_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -903,7 +903,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    SqlColDef_getSize(this),
+                    Visitor_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -943,15 +943,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            SqlColDef_Validate (
-        SQLCOLDEF_DATA      *this
+    bool            Visitor_Validate (
+        VISITOR_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_SQLCOLDEF))
+            if (obj_IsKindOf(this, OBJ_IDENT_VISITOR))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -967,7 +967,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(SQLCOLDEF_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(VISITOR_DATA))) {
             return false;
         }
 

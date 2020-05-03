@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   Main.c
- *	Generated 12/19/2019 08:55:05
+ *	Generated 04/28/2020 23:01:38
  *
  */
 
@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <Main_internal.h>
+#include        <SrcErrors.h>
 #include        <trace.h>
 
 
@@ -54,7 +55,95 @@ extern "C" {
 #endif
     
 
-    
+    static
+    CMDUTL_OPTION       pPgmOptions[] = {
+        {
+            "backup",
+            'n',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_INCR,
+            0, //FIXME: offsetof(MAIN_DATA, fBackup),
+            NULL,
+            "Backup output file if it exists"
+        },
+        {
+            "file",
+            'f',
+            CMDUTL_ARG_OPTION_REQUIRED,
+            CMDUTL_TYPE_PATH,
+            offsetof(MAIN_DATA, pFilePath),
+            NULL,
+            "Input File Path"
+        },
+        {
+            "libInclude",
+            'I',
+            CMDUTL_ARG_OPTION_REQUIRED,
+            CMDUTL_TYPE_PATH,
+            0,
+            NULL, //FIXME: (void *)Main_ArgLibInclude,
+            "Library Include Base Path"
+        },
+        {
+            "macos32",
+            'X',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_EXEC,
+            0,
+            NULL, //FIXME: (void *)Main_ArgMacos32,
+            "Generate MacOS Makefile (default)"
+        },
+        {
+            "macos64",
+            'X',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_EXEC,
+            0,
+            NULL, //FIXME: (void *)Main_ArgMacos64,
+            "Generate MacOS Makefile (default)"
+        },
+        {
+            "win32",
+            'S',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_EXEC,
+            0,
+            NULL, //FIXME: (void *)Main_ArgMsc32,
+            "Generate Win32 Makefile"
+        },
+        {
+            "win64",
+            'M',
+            CMDUTL_ARG_OPTION_NONE,
+            CMDUTL_TYPE_EXEC,
+            0,
+            NULL, //FIXME: (void *)Main_ArgMsc64,
+            "Generate Win64 Makefile"
+        },
+        {
+            "out",
+            'o',
+            CMDUTL_ARG_OPTION_REQUIRED,
+            CMDUTL_TYPE_PATH,
+            offsetof(MAIN_DATA, pOutputPath),
+            NULL,
+            "Output File Path"
+        },
+        {
+            "dirtmp",
+            't',
+            CMDUTL_ARG_OPTION_REQUIRED,
+            CMDUTL_TYPE_PATH,
+            offsetof(MAIN_DATA, pOutputPath),
+            NULL,
+            "Temporary Directory Base Path"
+        },
+        {0}
+    };
+
+
+
+
 
 
  
@@ -121,6 +210,144 @@ extern "C" {
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //                  D i c t i o n a r y
+    //---------------------------------------------------------------
+
+    DICT_DATA *     Main_getDict (
+        MAIN_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pDict;
+    }
+
+
+    bool            Main_setDict (
+        MAIN_DATA       *this,
+        DICT_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pDict) {
+            obj_Release(this->pDict);
+        }
+        this->pDict = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  F i l e  P a t h
+    //---------------------------------------------------------------
+
+    PATH_DATA *     Main_getFilePath (
+        MAIN_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pFilePath;
+    }
+
+
+    bool            Main_setFilePath (
+        MAIN_DATA       *this,
+        PATH_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pFilePath) {
+            obj_Release(this->pFilePath);
+        }
+        this->pFilePath = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      P a r s e r
+    //---------------------------------------------------------------
+
+    SRCPARSE_DATA * Main_getParser (
+        MAIN_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pParser;
+    }
+
+
+    bool            Main_setParser (
+        MAIN_DATA       *this,
+        SRCPARSE_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pParser) {
+            obj_Release(this->pParser);
+        }
+        this->pParser = pValue;
+
+        return true;
+    }
+
+
 
     //---------------------------------------------------------------
     //                          P r i o r i t y
@@ -221,12 +448,10 @@ extern "C" {
         }
 #endif
 
-#ifdef  PROPERTY_STR_OWNED
         obj_Retain(pValue);
         if (this->pStr) {
             obj_Release(this->pStr);
         }
-#endif
         this->pStr = pValue;
         
         return true;
@@ -302,6 +527,16 @@ extern "C" {
         }
 #endif
 
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
+
         // Release objects and areas in other object.
 #ifdef  XYZZY
         if (pOther->pArray) {
@@ -325,8 +560,7 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        //pOther->x     = this->x; 
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -338,6 +572,90 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //               C r e a t e  I n p u t  P a t h
+    //---------------------------------------------------------------
+
+    PATH_DATA *     Main_CheckInputPath (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pDrive = OBJ_NIL;
+        PATH_DATA       *pDir = OBJ_NIL;
+        PATH_DATA       *pFileName = OBJ_NIL;
+        PATH_DATA       *pArgDir = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        TRC_OBJ(this, "Main_CreateOutputPath(%s)\n", pStr ? AStr_getData(pStr) : "");
+
+        pPath = Path_NewFromAStr(pStr);
+        Appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pPath),
+                    "FATAL - Failed to create path \"from\" \n"
+        );
+        eRc = Path_Clean(pPath);
+        Appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - File, %s, does not exist or is not a file!\n",
+                    Path_getData(pPath)
+        );
+        eRc = Path_IsFile(pPath);
+        Appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - File, %s, does not exist or is not a file!\n",
+                    Path_getData(pPath)
+        );
+        eRc = Path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
+        Appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - Unable to extract directory from File, %s!\n",
+                    Path_getData(pPath)
+        );
+        pArgDir = Path_NewFromDriveDirFilename(pDrive, pDir, OBJ_NIL);
+        Appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pArgDir),
+                    "FATAL - Unable to extract directory from File, %s!\n",
+                    Path_getData(pPath)
+        );
+        eRc = Dict_AddA(Main_getDict(this), srcDirID, (void *)pArgDir);
+
+        eRc = Dict_AddA(Main_getDict(this), srcFileID, Path_getData(pPath));
+        if (ERESULT_FAILED(eRc) ) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Failed to add 'srcFile' to Dictionary\n");
+            exit(EXIT_FAILURE);
+        }
+
+        // Return to caller.
+        obj_Release(pArgDir);
+        pArgDir = OBJ_NIL;
+        obj_Release(pDrive);
+        pDrive = OBJ_NIL;
+        obj_Release(pDir);
+        pDrive = OBJ_NIL;
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+        return pPath;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
@@ -429,6 +747,10 @@ extern "C" {
         }
 #endif
         
+#ifdef MAIN_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
         pOther = Main_New( );
         if (pOther) {
             eRc = Main_Assign(this, pOther);
@@ -437,9 +759,9 @@ extern "C" {
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -454,6 +776,7 @@ extern "C" {
     )
     {
         MAIN_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -473,6 +796,7 @@ extern "C" {
         }
 #endif
 
+        Main_setParser(this, OBJ_NIL);
         Main_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -487,6 +811,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        Main      *pDeepCopy = Main_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a MAIN object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    MAIN_DATA *     Main_DeepyCopy (
+        MAIN_DATA       *this
+    )
+    {
+        MAIN_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Main_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = Main_New( );
+        if (pOther) {
+            eRc = Main_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -500,23 +870,23 @@ extern "C" {
         MAIN_DATA		*this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -535,23 +905,84 @@ extern "C" {
         MAIN_DATA		*this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!Main_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          E x e c
+    //---------------------------------------------------------------
+
+    int             Main_Exec (
+        MAIN_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        bool            fRc;
+        int             iRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        char            *pChrStr;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+
+        eRc = Main_ParseArgsDefault(this);
+        if (ERESULT_FAILED(eRc)) {
+            Appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly set defaults!");
+            exit(8);
+        }
+
+        for (;;) {
+
+            fRc = Appl_IsMore((APPL_DATA *)this);
+            if (!fRc) {
+                break;
+            }
+
+            eRc = Appl_ProcessOptions((APPL_DATA *)this);
+            if (ERESULT_FAILED(eRc)) {
+                Appl_Usage((APPL_DATA *)this, "ERROR - Failed to properly parse command line!");
+                exit(8);
+            }
+
+            pChrStr = Appl_NextArg((APPL_DATA *)this);
+            if (NULL == pChrStr) {
+                break;
+            }
+            pStr = AStr_NewA(pChrStr);
+            iRc = Main_ProcessArg(this, pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+            if (iRc) {
+                return iRc;
+            }
+        }
+
+        // Return to caller.
+        return 0;
     }
 
 
@@ -581,14 +1012,14 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MAIN);
+        this = (OBJ_ID)Appl_Init((APPL_DATA *)this);        // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MAIN);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Main_Vtbl);
         
@@ -601,18 +1032,23 @@ extern "C" {
         }
         */
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!Main_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        fprintf(stderr, "Main::sizeof(MAIN_DATA) = %lu\n", sizeof(MAIN_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "Main::sizeof(MAIN_DATA) = %lu\n", 
+                sizeof(MAIN_DATA)
+        );
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(MAIN_DATA));
-    #endif
+#endif
 
         return this;
     }
@@ -649,20 +1085,397 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                P a r s e  J s o n  O b j e c t
+    //              P a r s e  A r g s  D e f a u l t
     //---------------------------------------------------------------
-    
-#ifdef  MAIN_JSON_SUPPORT
-     MAIN_DATA * Main_ParseJsonObject (
-         JSONIN_DATA     *pParser
+
+    ERESULT         Main_ParseArgsDefault (
+        MAIN_DATA        *this
     )
     {
-        return OBJ_NIL;
-    }
+        //ERESULT         eRc;
+        //ASTR_DATA       *pOS = OBJ_NIL;
+        //ASTR_DATA       *pArch = OBJ_NIL;
+        ASTR_DATA       *pStr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
 #endif
-        
-        
-        
+
+#ifdef XYZZY
+        if (pOS) {
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, osTypeID, pOS);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pOS);
+            pOS = OBJ_NIL;
+        }
+        if (pArch) {
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, osArchID, pArch);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osArchID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pArch);
+            pArch = OBJ_NIL;
+        }
+        eRc = Main_DefaultsMacos64(this);
+
+        pStr = AStr_NewA("d");
+        if (pStr) {
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, makeTypeID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", makeTypeID);
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
+        pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        pStr = AStr_NewA("C:/PROGRAMS");
+#endif
+        if (pStr) {
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, libBaseID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        libBaseID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
+        pStr = AStr_NewA("$(HOME)/Support/bin");
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        pStr = AStr_NewA("C:/PROGRAMS");
+#endif
+        if (pStr) {
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, pgmBaseID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        pgmBaseID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        pStr = AStr_NewA("./src");
+        if (pStr) {
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, srcDirID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        srcDirID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+#if defined(__MACOSX_ENV__)
+        pStr = AStr_NewA("${TMPDIR}");
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        pStr = AStr_NewA("${TMP}");
+#endif
+        if (pStr) {
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, tmpDirID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        tmpDirID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        pStr = AStr_NewA("./tests");
+        if (pStr) {
+            eRc = NodeHash_AddA(Dict_getNodeHash(Main_getDict(this)), 0, tstSrcID, pStr);
+            if (ERESULT_FAILED(eRc) ) {
+                fprintf(
+                        stderr,
+                        "FATAL - Failed to add '%s' to Dictionary\n",
+                        tstSrcID
+                        );
+                exit(EXIT_FAILURE);
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+#endif
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+    //---------------------------------------------------------------
+    //              P a r s e  I n p u t  F i l e
+    //---------------------------------------------------------------
+
+    ERESULT         Main_ParseInputFile (
+        MAIN_DATA       *this,
+        PATH_DATA       *pPath
+    )
+    {
+        SRCPARSE_DATA   *pParser;
+        ERESULT_DATA    *pErr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        pParser = SrcParse_New();
+        if (OBJ_NIL == pParser) {
+            fprintf(stderr, "Error - Out of Memory - Creating Source Parser!\n\n\n");
+            exit(12);
+        }
+
+        pErr = SrcParse_ParseJsonFile(pParser, pPath);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+            exit(12);
+        }
+        SrcErrors_Print(SrcErrors_Shared(), stderr);
+        SrcErrors_ExitOnFatal(OBJ_NIL);
+
+        pErr = SrcParse_ParseNodes(pParser);
+        SrcErrors_Print(SrcErrors_Shared(), stderr);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+            exit(12);
+        }
+        SrcErrors_ExitOnFatal(OBJ_NIL);
+
+        Main_setParser(this, pParser);
+        obj_Release(pParser);
+        pParser = OBJ_NIL;
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         Main_ParseInputStr (
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        SRCPARSE_DATA   *pParser;
+        ERESULT_DATA    *pErr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pStrA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        pParser = SrcParse_New();
+        if (OBJ_NIL == pParser) {
+            fprintf(stderr, "Error - Out of Memory - Creating Source Parser!\n\n\n");
+            exit(12);
+        }
+
+        pErr = SrcParse_ParseJsonStr(pParser, pStrA);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+            exit(12);
+        }
+        SrcErrors_ExitOnFatal(OBJ_NIL);
+
+        pErr = SrcParse_ParseNodes(pParser);
+        if (pErr) {
+            eResult_Fprint(pErr, stderr);
+            exit(12);
+        }
+
+        Main_setParser(this, pParser);
+        obj_Release(pParser);
+        pParser = OBJ_NIL;
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //              P r o c e s s  A r g s
+    //---------------------------------------------------------------
+
+    ERESULT         Main_ProcessInit (
+        MAIN_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    /*!
+     Process each command line argument, parsing the JSON file and
+     generating the Makefile.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Main_ProcessArg (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        PATH_DATA       *pPath = OBJ_NIL;
+        PATH_DATA       *pFileName = OBJ_NIL;
+        PATH_DATA       *pMakepath = OBJ_NIL;
+        ASTR_DATA       *pWrk;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        TRC_OBJ(this, "Main_ProcessArg(%s)\n", pStr ? AStr_getData(pStr) : "");
+        //FIXME: eRc = Main_SetupOsArch(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+        eRc = Main_SetupTextOutAStr(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        if (!Appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\tProcessing - %s...\n", AStr_getData(pStr));
+        }
+
+        pPath = Main_CheckInputPath(this, pStr);
+        Appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pPath),
+                    "FATAL - Failed to create path \"from\" \n"
+        );
+
+        eRc = Main_ParseInputFile(this, pPath);
+        Appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - Failed to parse input: %s",
+                    Path_getData(pPath)
+        );
+        if (!Appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\tParsed input: %s...\n", Path_getData(pPath));
+        }
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+
+        //FIXME: pMakepath = Main_CreateOutputPath(this, pStr, this->pOsName);
+        Appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pMakepath),
+                    "FATAL - Failed to create path \"from\" \n"
+        );
+
+        // Generate the Makefile.
+        //FIXME: eRc = Main_GenMakefile(this);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Generate Makefile failed! \n");
+            exit(EXIT_FAILURE);
+        }
+
+        if (!Appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\tCreating - %s...\n", Path_getData(pMakepath));
+        }
+
+        pWrk = Main_getStr(this);
+        if (OBJ_NIL == pWrk) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Failed to find output! \n");
+            exit(EXIT_FAILURE);
+        }
+
+        eRc = AStr_ToUtf8File(pWrk, pMakepath);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Failed to write output! \n");
+            exit(EXIT_FAILURE);
+        }
+
+        if (!Appl_getQuiet((APPL_DATA *)this)) {
+            fprintf(stderr, "\t\t%s created.\n", Path_getData(pMakepath));
+        }
+
+        // Return to caller.
+        obj_Release(pMakepath);
+        pMakepath = OBJ_NIL;
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -712,33 +1525,29 @@ extern "C" {
         
         switch (type) {
                 
-        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(MAIN_DATA);
-            break;
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(MAIN_DATA);
+                break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
                 return (void *)Main_Class();
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -757,11 +1566,25 @@ extern "C" {
                         }
                         break;
 
+                    case 'P':
+#ifdef  MAIN_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return Main_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return Main_ParseJsonObject;
+                        }
+#endif
+                        break;
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return Main_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  MAIN_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return Main_ToJsonFields;
+                        }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return Main_ToJson;
                         }
@@ -776,7 +1599,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == Main_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  MAIN_JSON_SUPPORT
                 if (pData == Main_ToJson)
                     return "ToJson";
 #endif
@@ -792,46 +1615,68 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       T o  J S O N
+    //                  S e t u p  F r o m  A r g V
     //---------------------------------------------------------------
-    
-#ifdef  MAIN_JSON_SUPPORT
-     ASTR_DATA *     Main_ToJson (
-        MAIN_DATA      *this
+
+    ERESULT         Main_SetupFromArgV (
+        MAIN_DATA       *this,
+        uint16_t        cArgs,
+        char            *ppArgV[],
+        char            **ppEnv
     )
     {
         ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
+
+        // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Main_Validate(this)) {
+        if( !Main_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
+
+        eRc = Appl_SetupFromArgV((APPL_DATA *)this, cArgs, ppArgV, ppEnv, pPgmOptions);
+
+        // Return to caller.
+        return eRc;
     }
+
+
+
+    //---------------------------------------------------------------
+    //             S e t u p  T e x t O u t
+    //---------------------------------------------------------------
+
+    ERESULT         Main_SetupTextOutAStr (
+        MAIN_DATA        *this
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (this->pOutput) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
 #endif
-    
-    
-    
+
+        this->pOutput = TextOut_NewAStr( );
+        if (OBJ_NIL == this->pOutput) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -854,11 +1699,12 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -895,8 +1741,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -917,11 +1765,116 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                  U s a g e  H e l p
+    //---------------------------------------------------------------
+
+    /*!
+     Print the program description with a trailing '\n' and leading "  ".
+     @param     this        Object Pointer
+     @param     pOutput     File to write to
+     @param     pPgmPath    Program's Path
+     @return    ERESULT_SUCCESS if successful, otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Main_UsageDesc (
+        MAIN_DATA       *this,
+        FILE            *pOutput,
+        PATH_DATA       *pPgmPath
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        fprintf(
+                pOutput,
+                "  Generate a make or nmake file for the object system created\n"
+                "  in libCmn given an input json file.\n"
+        );
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+    // Note: --debug(-d), --force(-f), --help(-?,-h), --verbose(-v) are already
+    //      taken care of in appl_Usage().
+    ERESULT         Main_UsageOptions (
+        MAIN_DATA       *this,
+        FILE            *pOutput
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        fprintf(pOutput, "  --clp              Set type to Command Line Program\n");
+        fprintf(pOutput, "                     (Default is Library)\n");
+        fprintf(pOutput, "  --macos32          Generate MacOS 32-bit nmake file (default)\n");
+        fprintf(pOutput, "  --macos64          Generate MacOS 64-bit nmake file (default)\n");
+        fprintf(pOutput, "  --win32            Generate MSC Win32 nmake file\n");
+        fprintf(pOutput, "  --win64            Generate MSC Win64 nmake file\n");
+        fprintf(pOutput, "  (--out | -o) path  Output the generated data to <path>\n");
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+    /*!
+     Print the program usage line with a trailing '\n' and leading "  ".
+     @param     this        Object Pointer
+     @param     pOutput     File to write to
+     @param     pPgmPath    Program's Path
+     @param     pNameA      Program's name
+     @return    ERESULT_SUCCESS if successful, otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         Main_UsageProgLine (
+        MAIN_DATA       *this,
+        FILE            *pOutput,
+        PATH_DATA       *pPgmPath,
+        const
+        char            *pNameA
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        fprintf(pOutput, "  %s [options] input_path\n", pNameA);
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
     bool            Main_Validate (
         MAIN_DATA      *this
     )
@@ -953,7 +1906,7 @@ extern "C" {
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     

@@ -78,7 +78,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Name.h>
-//#include        <visitor.h>
+#include        <Visitor.h>
 
 
 #ifndef         NODE_H

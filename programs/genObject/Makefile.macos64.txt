@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 4/26/2020 22:54:07.000)
+# ( 5/ 2/2020 13:41:28.000)
 
 PGMNAM=genObject
 SYS=macos64
@@ -46,65 +46,91 @@ TESTS =
 
 OBJS += $(OBJDIR)/Dict.o
 
-$(OBJDIR)/Dict.o: $(SRCDIR)/Dict.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+$(OBJDIR)/Dict.o: $(SRCDIR)/Dict.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Dict_object.o
 
-$(OBJDIR)/Dict_object.o: $(SRCDIR)/Dict_object.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+$(OBJDIR)/Dict_object.o: $(SRCDIR)/Dict_object.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Main.o
 
-$(OBJDIR)/Main.o: $(SRCDIR)/Main.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+$(OBJDIR)/Main.o: $(SRCDIR)/Main.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Main_object.o
 
-$(OBJDIR)/Main_object.o: $(SRCDIR)/Main_object.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+$(OBJDIR)/Main_object.o: $(SRCDIR)/Main_object.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeClass.o
 
-$(OBJDIR)/NodeClass.o: $(SRCDIR)/NodeClass.c $(SRCDIR)/NodeClass.h $(SRCDIR)/NodeClass_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+$(OBJDIR)/NodeClass.o: $(SRCDIR)/NodeClass.c $(SRCDIR)/NodeClass.h $(SRCDIR)/NodeClass_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NodeClass_json.o
+
+$(OBJDIR)/NodeClass_json.o: $(SRCDIR)/NodeClass_json.c $(SRCDIR)/NodeClass.h $(SRCDIR)/NodeClass_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeClass_object.o
 
-$(OBJDIR)/NodeClass_object.o: $(SRCDIR)/NodeClass_object.c $(SRCDIR)/NodeClass.h $(SRCDIR)/NodeClass_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+$(OBJDIR)/NodeClass_object.o: $(SRCDIR)/NodeClass_object.c $(SRCDIR)/NodeClass.h $(SRCDIR)/NodeClass_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeProp.o
 
-$(OBJDIR)/NodeProp.o: $(SRCDIR)/NodeProp.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+$(OBJDIR)/NodeProp.o: $(SRCDIR)/NodeProp.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NodeProp_json.o
+
+$(OBJDIR)/NodeProp_json.o: $(SRCDIR)/NodeProp_json.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/NodeProp_object.o
 
-$(OBJDIR)/NodeProp_object.o: $(SRCDIR)/NodeProp_object.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+$(OBJDIR)/NodeProp_object.o: $(SRCDIR)/NodeProp_object.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SrcParse.o
+
+$(OBJDIR)/SrcParse.o: $(SRCDIR)/SrcParse.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SrcParse_object.o
+
+$(OBJDIR)/SrcParse_object.o: $(SRCDIR)/SrcParse_object.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 TESTS += Dict_test
 
-Dict_test: $(TEST_SRC)/Dict_test.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+Dict_test: $(TEST_SRC)/Dict_test.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += Main_test
 
-Main_test: $(TEST_SRC)/Main_test.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+Main_test: $(TEST_SRC)/Main_test.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodeClass_test
 
-NodeClass_test: $(TEST_SRC)/NodeClass_test.c $(SRCDIR)/NodeClass.h $(SRCDIR)/NodeClass_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+NodeClass_test: $(TEST_SRC)/NodeClass_test.c $(SRCDIR)/NodeClass.h $(SRCDIR)/NodeClass_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += NodeProp_test
 
-NodeProp_test: $(TEST_SRC)/NodeProp_test.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject.h $(LIBCMN_BASE)/include/cmn_defs.h 
+NodeProp_test: $(TEST_SRC)/NodeProp_test.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += SrcParse_test
+
+SrcParse_test: $(TEST_SRC)/SrcParse_test.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

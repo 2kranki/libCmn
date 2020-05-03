@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'NodeProp'
-//	Generated 04/26/2020 17:31:56
+//	Class Object Metods and Tables for 'Visitor'
+//	Generated 04/26/2020 19:33:02
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			NODEPROP_OBJECT_C	    1
-#include        <NodeProp_internal.h>
-#ifdef  NODEPROP_SINGLETON
+#define			VISITOR_OBJECT_C	    1
+#include        <Visitor_internal.h>
+#ifdef  VISITOR_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct NodeProp_class_data_s	{
+struct Visitor_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  NODEPROP_SINGLETON
+#ifdef  VISITOR_SINGLETON
     volatile
-    NODEPROP_DATA       *pSingleton;
+    VISITOR_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct NodeProp_class_data_s	{
 
 
 static
-void *          NodePropClass_QueryInfo (
+void *          VisitorClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          NodePropClass_QueryInfo (
 
 static
 const
-OBJ_INFO        NodeProp_Info;            // Forward Reference
+OBJ_INFO        Visitor_Info;            // Forward Reference
 
 
 
 
 static
-bool            NodePropClass_IsKindOf (
+bool            VisitorClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_NODEPROP_CLASS == classID) {
+    if (OBJ_IDENT_VISITOR_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(NodeProp_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Visitor_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            NodePropClass_IsKindOf (
 
 
 static
-uint16_t		NodePropClass_WhoAmI (
+uint16_t		VisitorClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEPROP_CLASS;
+    return OBJ_IDENT_VISITOR_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		NodePropClass_WhoAmI (
 
 static
 const
-NODEPROP_CLASS_VTBL    class_Vtbl = {
+VISITOR_CLASS_VTBL    class_Vtbl = {
     {
-        &NodeProp_Info,
-        NodePropClass_IsKindOf,
+        &Visitor_Info,
+        VisitorClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        NodeProp_Class,
-        NodePropClass_WhoAmI,
-        (P_OBJ_QUERYINFO)NodePropClass_QueryInfo,
-        NULL                        // NodePropClass_ToDebugString
+        Visitor_Class,
+        VisitorClass_WhoAmI,
+        (P_OBJ_QUERYINFO)VisitorClass_QueryInfo,
+        NULL                        // VisitorClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ NODEPROP_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NODEPROP_CLASS_DATA  NodeProp_ClassObj = {
+VISITOR_CLASS_DATA  Visitor_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(NODEPROP_CLASS_DATA),                  // cbSize
+        sizeof(VISITOR_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,22 +162,22 @@ NODEPROP_CLASS_DATA  NodeProp_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  NODEPROP_SINGLETON
+#ifdef  VISITOR_SINGLETON
 extern
 const
-NODEPROP_VTBL       NodeProp_VtblShared;
+VISITOR_VTBL       Visitor_VtblShared;
 
 
-NODEPROP_DATA *     NodeProp_getSingleton (
+VISITOR_DATA *     Visitor_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(NodeProp_ClassObj.pSingleton);
+    return (OBJ_ID)(Visitor_ClassObj.pSingleton);
 }
 
 
-bool            NodeProp_setSingleton (
-    NODEPROP_DATA       *pValue
+bool            Visitor_setSingleton (
+    VISITOR_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -197,10 +197,10 @@ bool            NodeProp_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (NodeProp_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(NodeProp_ClassObj.pSingleton));
+    if (Visitor_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Visitor_ClassObj.pSingleton));
     }
-    NodeProp_ClassObj.pSingleton = pValue;
+    Visitor_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -210,18 +210,18 @@ bool            NodeProp_setSingleton (
 
 
 
-NODEPROP_DATA *     NodeProp_Shared (
+VISITOR_DATA *     Visitor_Shared (
     void
 )
 {
-    NODEPROP_DATA       *this = (OBJ_ID)(NodeProp_ClassObj.pSingleton);
+    VISITOR_DATA       *this = (OBJ_ID)(Visitor_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = NodeProp_New( );
-        obj_setVtbl(this, (void *)&NodeProp_VtblShared);
-        NodeProp_setSingleton(this);
+        this = Visitor_New( );
+        obj_setVtbl(this, (void *)&Visitor_VtblShared);
+        Visitor_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // NodeProp_ClassObj.pSingleton = OBJ_NIL;
+        // Visitor_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -229,16 +229,16 @@ NODEPROP_DATA *     NodeProp_Shared (
 
 
 
-void            NodeProp_SharedReset (
+void            Visitor_SharedReset (
     void
 )
 {
-    NODEPROP_DATA       *this = (OBJ_ID)(NodeProp_ClassObj.pSingleton);
+    VISITOR_DATA       *this = (OBJ_ID)(Visitor_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&NodeProp_Vtbl);
+        obj_setVtbl(this, (void *)&Visitor_Vtbl);
         obj_Release(this);
-        NodeProp_ClassObj.pSingleton = OBJ_NIL;
+        Visitor_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -254,13 +254,13 @@ void            NodeProp_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          NodePropClass_QueryInfo (
+void *          VisitorClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODEPROP_CLASS_DATA *this = objId;
+    VISITOR_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -271,7 +271,7 @@ void *          NodePropClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODEPROP_DATA);
+            return (void *)sizeof(VISITOR_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -284,13 +284,13 @@ void *          NodePropClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&NodeProp_Info;
+                        return (void *)&Visitor_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&NodeProp_Info.pClassSuperObject;
+                        return (void *)&Visitor_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -308,35 +308,35 @@ void *          NodePropClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return NodeProp_New;
+                        return Visitor_New;
                     }
                     break;
                     
 				case 'P':
-#ifdef  NODEPROP_JSON_SUPPORT
+#ifdef  VISITOR_JSON_SUPPORT
 					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-						return NodeProp_ParseJsonFields;
+						return Visitor_ParseJsonFields;
 					}
 					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-						return NodeProp_ParseJsonObject;
+						return Visitor_ParseJsonObject;
 					}
 #endif
 					break;
 
 				case 'T':
-#ifdef  NODEPROP_JSON_SUPPORT
+#ifdef  VISITOR_JSON_SUPPORT
 					if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-						return NodeProp_ToJsonFields;
+						return Visitor_ToJsonFields;
 					}
 					if (str_Compare("ToJson", (char *)pStr) == 0) {
-						return NodeProp_ToJson;
+						return Visitor_ToJson;
 					}
 #endif
 					break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return NodePropClass_WhoAmI;
+                        return VisitorClass_WhoAmI;
                     }
                     break;
                     
@@ -356,7 +356,7 @@ void *          NodePropClass_QueryInfo (
 
 
 static
-bool            NodeProp_IsKindOf (
+bool            Visitor_IsKindOf (
     uint16_t		classID
 )
 {
@@ -364,14 +364,14 @@ bool            NodeProp_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_NODEPROP == classID) {
+    if (OBJ_IDENT_VISITOR == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(NodeProp_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Visitor_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -385,25 +385,25 @@ bool            NodeProp_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            NodeProp_Dealloc (
+void            Visitor_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          NodeProp_Class (
+OBJ_ID          Visitor_Class (
     void
 )
 {
-    return (OBJ_ID)&NodeProp_ClassObj;
+    return (OBJ_ID)&Visitor_ClassObj;
 }
 
 
 static
-uint16_t		NodeProp_WhoAmI (
+uint16_t		Visitor_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEPROP;
+    return OBJ_IDENT_VISITOR;
 }
 
 
@@ -414,35 +414,35 @@ uint16_t		NodeProp_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  NODEPROP_SINGLETON
+#ifdef  VISITOR_SINGLETON
 // A Shared object ignores Retain() and Release() except for
 // initialization and termination. So, there must be an
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-NODEPROP_VTBL     NodeProp_VtblShared = {
+VISITOR_VTBL     Visitor_VtblShared = {
     {
-        &NodeProp_Info,
-        NodeProp_IsKindOf,
+        &Visitor_Info,
+        Visitor_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        NodeProp_Dealloc,
-        NodeProp_Class,
-        NodeProp_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeProp_QueryInfo,
-        (P_OBJ_TOSTRING)NodeProp_ToDebugString,
-        NULL,			// NodeProp_Enable,
-        NULL,			// NodeProp_Disable,
-        NULL,			// (P_OBJ_ASSIGN)NodeProp_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodeProp_Compare,
-        NULL, 			// (P_OBJ_PTR)NodeProp_Copy,
-        NULL, 			// (P_OBJ_PTR)NodeProp_DeepCopy,
-        NULL 			// (P_OBJ_HASH)NodeProp_Hash,
+        Visitor_Dealloc,
+        Visitor_Class,
+        Visitor_WhoAmI,
+        (P_OBJ_QUERYINFO)Visitor_QueryInfo,
+        (P_OBJ_TOSTRING)Visitor_ToDebugString,
+        NULL,			// Visitor_Enable,
+        NULL,			// Visitor_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Visitor_Assign,
+        NULL,			// (P_OBJ_COMPARE)Visitor_Compare,
+        NULL, 			// (P_OBJ_PTR)Visitor_Copy,
+        NULL, 			// (P_OBJ_PTR)Visitor_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Visitor_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //NodeProp_IsEnabled,
+    //Visitor_IsEnabled,
  
 };
 #endif
@@ -454,29 +454,29 @@ NODEPROP_VTBL     NodeProp_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-NODEPROP_VTBL     NodeProp_Vtbl = {
+VISITOR_VTBL     Visitor_Vtbl = {
     {
-        &NodeProp_Info,
-        NodeProp_IsKindOf,
+        &Visitor_Info,
+        Visitor_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        NodeProp_Dealloc,
-        NodeProp_Class,
-        NodeProp_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeProp_QueryInfo,
-        (P_OBJ_TOSTRING)NodeProp_ToDebugString,
-        NULL,			// NodeProp_Enable,
-        NULL,			// NodeProp_Disable,
-        (P_OBJ_ASSIGN)NodeProp_Assign,
-        (P_OBJ_COMPARE)NodeProp_Compare,
-        (P_OBJ_PTR)NodeProp_Copy,
-        NULL, 			// (P_OBJ_PTR)NodeProp_DeepCopy,
-        NULL 			// (P_OBJ_HASH)NodeProp_Hash,
+        Visitor_Dealloc,
+        Visitor_Class,
+        Visitor_WhoAmI,
+        (P_OBJ_QUERYINFO)Visitor_QueryInfo,
+        (P_OBJ_TOSTRING)Visitor_ToDebugString,
+        NULL,			// Visitor_Enable,
+        NULL,			// Visitor_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Visitor_Assign,
+        NULL,			// (P_OBJ_COMPARE)Visitor_Compare,
+        NULL, 			// (P_OBJ_PTR)Visitor_Copy,
+        NULL, 			// (P_OBJ_PTR)Visitor_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Visitor_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //NodeProp_IsEnabled,
+    //Visitor_IsEnabled,
  
 };
 
@@ -484,13 +484,13 @@ NODEPROP_VTBL     NodeProp_Vtbl = {
 
 static
 const
-OBJ_INFO        NodeProp_Info = {
-    "NodeProp",
-    "Class Property Definition",
-    (OBJ_DATA *)&NodeProp_ClassObj,
+OBJ_INFO        Visitor_Info = {
+    "Visitor",
+    "Separate Visitor",
+    (OBJ_DATA *)&Visitor_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&NodeProp_Vtbl,
-    sizeof(NODEPROP_DATA)
+    (OBJ_IUNKNOWN *)&Visitor_Vtbl,
+    sizeof(VISITOR_DATA)
 };
 
 

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'NodeProp'
-//	Generated 04/26/2020 17:31:56
+//	Class Object Metods and Tables for 'srcParse'
+//	Generated 08/19/2019 01:17:17
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			NODEPROP_OBJECT_C	    1
-#include        <NodeProp_internal.h>
-#ifdef  NODEPROP_SINGLETON
+#define			SRCPARSE_OBJECT_C	    1
+#include        <SrcParse_internal.h>
+#ifdef  SRCPARSE_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct NodeProp_class_data_s	{
+struct SrcParse_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  NODEPROP_SINGLETON
+#ifdef  SRCPARSE_SINGLETON
     volatile
-    NODEPROP_DATA       *pSingleton;
+    SRCPARSE_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct NodeProp_class_data_s	{
 
 
 static
-void *          NodePropClass_QueryInfo (
+void *          SrcParseClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,42 +78,32 @@ void *          NodePropClass_QueryInfo (
 
 static
 const
-OBJ_INFO        NodeProp_Info;            // Forward Reference
+OBJ_INFO        SrcParse_Info;            // Forward Reference
 
 
 
 
 static
-bool            NodePropClass_IsKindOf (
+bool            SrcParseClass_IsKindOf (
     uint16_t		classID
 )
 {
-    OBJ_DATA        *pObj;
-    
-    if (OBJ_IDENT_NODEPROP_CLASS == classID) {
+    if (OBJ_IDENT_SRCPARSE_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
-    
-    pObj = obj_getInfo(NodeProp_Class())->pClassSuperObject;
-    if (pObj == obj_BaseClass())
-        ;
-    else {
-        return obj_getVtbl(pObj)->pIsKindOf(classID);
-    }
-    
     return false;
 }
 
 
 static
-uint16_t		NodePropClass_WhoAmI (
+uint16_t		SrcParseClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEPROP_CLASS;
+    return OBJ_IDENT_SRCPARSE_CLASS;
 }
 
 
@@ -125,17 +115,17 @@ uint16_t		NodePropClass_WhoAmI (
 
 static
 const
-NODEPROP_CLASS_VTBL    class_Vtbl = {
+SRCPARSE_CLASS_VTBL    class_Vtbl = {
     {
-        &NodeProp_Info,
-        NodePropClass_IsKindOf,
+        &SrcParse_Info,
+        SrcParseClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        NodeProp_Class,
-        NodePropClass_WhoAmI,
-        (P_OBJ_QUERYINFO)NodePropClass_QueryInfo,
-        NULL                        // NodePropClass_ToDebugString
+        SrcParse_Class,
+        SrcParseClass_WhoAmI,
+        (P_OBJ_QUERYINFO)SrcParseClass_QueryInfo,
+        NULL                        // srcParseClass_ToDebugString
     },
 };
 
@@ -145,10 +135,10 @@ NODEPROP_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-NODEPROP_CLASS_DATA  NodeProp_ClassObj = {
+SRCPARSE_CLASS_DATA  SrcParse_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(NODEPROP_CLASS_DATA),                  // cbSize
+        sizeof(SRCPARSE_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,22 +152,17 @@ NODEPROP_CLASS_DATA  NodeProp_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  NODEPROP_SINGLETON
-extern
-const
-NODEPROP_VTBL       NodeProp_VtblShared;
-
-
-NODEPROP_DATA *     NodeProp_getSingleton (
+#ifdef  SRCPARSE_SINGLETON
+SRCPARSE_DATA *     SrcParse_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(NodeProp_ClassObj.pSingleton);
+    return (OBJ_ID)(SrcParse_ClassObj.pSingleton);
 }
 
 
-bool            NodeProp_setSingleton (
-    NODEPROP_DATA       *pValue
+bool            SrcParse_setSingleton (
+    SRCPARSE_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -197,10 +182,10 @@ bool            NodeProp_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (NodeProp_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(NodeProp_ClassObj.pSingleton));
+    if (SrcParse_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(SrcParse_ClassObj.pSingleton));
     }
-    NodeProp_ClassObj.pSingleton = pValue;
+    SrcParse_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -210,18 +195,17 @@ bool            NodeProp_setSingleton (
 
 
 
-NODEPROP_DATA *     NodeProp_Shared (
+SRCPARSE_DATA *     SrcParse_Shared (
     void
 )
 {
-    NODEPROP_DATA       *this = (OBJ_ID)(NodeProp_ClassObj.pSingleton);
+    SRCPARSE_DATA       *this = (OBJ_ID)(SrcParse_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = NodeProp_New( );
-        obj_setVtbl(this, (void *)&NodeProp_VtblShared);
-        NodeProp_setSingleton(this);
+        this = SrcParse_New( );
+        SrcParse_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // NodeProp_ClassObj.pSingleton = OBJ_NIL;
+        // SrcParse_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -229,16 +213,15 @@ NODEPROP_DATA *     NodeProp_Shared (
 
 
 
-void            NodeProp_SharedReset (
+void            SrcParse_SharedReset (
     void
 )
 {
-    NODEPROP_DATA       *this = (OBJ_ID)(NodeProp_ClassObj.pSingleton);
+    SRCPARSE_DATA       *this = (OBJ_ID)(SrcParse_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&NodeProp_Vtbl);
         obj_Release(this);
-        NodeProp_ClassObj.pSingleton = OBJ_NIL;
+        SrcParse_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -254,13 +237,13 @@ void            NodeProp_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          NodePropClass_QueryInfo (
+void *          SrcParseClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODEPROP_CLASS_DATA *this = objId;
+    SRCPARSE_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -271,7 +254,7 @@ void *          NodePropClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODEPROP_DATA);
+            return (void *)sizeof(SRCPARSE_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,18 +262,14 @@ void *          NodePropClass_QueryInfo (
             break;
             
         // Query for an address to specific data within the object.  
+        // This should be used very sparingly since it breaks the 
+        // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&NodeProp_Info;
-                    }
-                    break;
-                    
-                case 'S':
-                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&NodeProp_Info.pClassSuperObject;
+                        return (void *)&SrcParse_Info;
                     }
                     break;
                     
@@ -308,35 +287,13 @@ void *          NodePropClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return NodeProp_New;
+                        return SrcParse_New;
                     }
                     break;
                     
-				case 'P':
-#ifdef  NODEPROP_JSON_SUPPORT
-					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-						return NodeProp_ParseJsonFields;
-					}
-					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-						return NodeProp_ParseJsonObject;
-					}
-#endif
-					break;
-
-				case 'T':
-#ifdef  NODEPROP_JSON_SUPPORT
-					if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-						return NodeProp_ToJsonFields;
-					}
-					if (str_Compare("ToJson", (char *)pStr) == 0) {
-						return NodeProp_ToJson;
-					}
-#endif
-					break;
-
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return NodePropClass_WhoAmI;
+                        return SrcParseClass_WhoAmI;
                     }
                     break;
                     
@@ -356,54 +313,41 @@ void *          NodePropClass_QueryInfo (
 
 
 static
-bool            NodeProp_IsKindOf (
+bool            SrcParse_IsKindOf (
     uint16_t		classID
 )
 {
-    OBJ_DATA        *pObj;
-    const
-    OBJ_INFO        *pInfo;
-
-    if (OBJ_IDENT_NODEPROP == classID) {
+    if (OBJ_IDENT_SRCPARSE == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
-
-    pObj = obj_getInfo(NodeProp_Class())->pClassSuperObject;
-    if (pObj == obj_BaseClass())
-        ;
-    else {
-        pInfo = obj_getInfo(pObj);
-        return pInfo->pDefaultVtbls->pIsKindOf(classID);
-    }
-    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            NodeProp_Dealloc (
+void            SrcParse_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          NodeProp_Class (
+OBJ_ID          SrcParse_Class (
     void
 )
 {
-    return (OBJ_ID)&NodeProp_ClassObj;
+    return (OBJ_ID)&SrcParse_ClassObj;
 }
 
 
 static
-uint16_t		NodeProp_WhoAmI (
+uint16_t		SrcParse_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODEPROP;
+    return OBJ_IDENT_SRCPARSE;
 }
 
 
@@ -414,69 +358,35 @@ uint16_t		NodeProp_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  NODEPROP_SINGLETON
-// A Shared object ignores Retain() and Release() except for
-// initialization and termination. So, there must be an
-// independent VTbl from the normal which does support Retain()
-// and Release().
 const
-NODEPROP_VTBL     NodeProp_VtblShared = {
+SRCPARSE_VTBL     SrcParse_Vtbl = {
     {
-        &NodeProp_Info,
-        NodeProp_IsKindOf,
+        &SrcParse_Info,
+        SrcParse_IsKindOf,
+#ifdef  SRCPARSE_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
-        NodeProp_Dealloc,
-        NodeProp_Class,
-        NodeProp_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeProp_QueryInfo,
-        (P_OBJ_TOSTRING)NodeProp_ToDebugString,
-        NULL,			// NodeProp_Enable,
-        NULL,			// NodeProp_Disable,
-        NULL,			// (P_OBJ_ASSIGN)NodeProp_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodeProp_Compare,
-        NULL, 			// (P_OBJ_PTR)NodeProp_Copy,
-        NULL, 			// (P_OBJ_PTR)NodeProp_DeepCopy,
-        NULL 			// (P_OBJ_HASH)NodeProp_Hash,
-    },
-    // Put other object method names below this.
-    // Properties:
-    // Methods:
-    //NodeProp_IsEnabled,
- 
-};
-#endif
-
-
-// This VTbl supports Retain() and Release() which is
-// used by objects other than the Shared object. These
-// objects can still be shared among other objects. It
-// just that they are deleted when their usage count
-// goes to zero.
-const
-NODEPROP_VTBL     NodeProp_Vtbl = {
-    {
-        &NodeProp_Info,
-        NodeProp_IsKindOf,
+#else
         obj_RetainStandard,
         obj_ReleaseStandard,
-        NodeProp_Dealloc,
-        NodeProp_Class,
-        NodeProp_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeProp_QueryInfo,
-        (P_OBJ_TOSTRING)NodeProp_ToDebugString,
-        NULL,			// NodeProp_Enable,
-        NULL,			// NodeProp_Disable,
-        (P_OBJ_ASSIGN)NodeProp_Assign,
-        (P_OBJ_COMPARE)NodeProp_Compare,
-        (P_OBJ_PTR)NodeProp_Copy,
-        NULL, 			// (P_OBJ_PTR)NodeProp_DeepCopy,
-        NULL 			// (P_OBJ_HASH)NodeProp_Hash,
+#endif
+        SrcParse_Dealloc,
+        SrcParse_Class,
+        SrcParse_WhoAmI,
+        (P_OBJ_QUERYINFO)SrcParse_QueryInfo,
+        (P_OBJ_TOSTRING)SrcParse_ToDebugString,
+        NULL,			// SrcParse_Enable,
+        NULL,			// SrcParse_Disable,
+        NULL,			// (P_OBJ_ASSIGN)SrcParse_Assign,
+        NULL,			// (P_OBJ_COMPARE)SrcParse_Compare,
+        NULL, 			// (P_OBJ_PTR)SrcParse_Copy,
+        NULL, 			// (P_OBJ_PTR)SrcParse_DeepCopy,
+        NULL 			// (P_OBJ_HASH)SrcParse_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //NodeProp_IsEnabled,
+    //SrcParse_IsEnabled,
  
 };
 
@@ -484,13 +394,13 @@ NODEPROP_VTBL     NodeProp_Vtbl = {
 
 static
 const
-OBJ_INFO        NodeProp_Info = {
-    "NodeProp",
-    "Class Property Definition",
-    (OBJ_DATA *)&NodeProp_ClassObj,
+OBJ_INFO        SrcParse_Info = {
+    "SrcParse",
+    "Parse the JSON Source creating internal node tree",	
+    (OBJ_DATA *)&SrcParse_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&NodeProp_Vtbl,
-    sizeof(NODEPROP_DATA)
+    (OBJ_IUNKNOWN *)&SrcParse_Vtbl,
+    sizeof(SRCPARSE_DATA)
 };
 
 

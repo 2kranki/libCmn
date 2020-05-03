@@ -2070,6 +2070,34 @@ extern "C" {
 
 
 
+    ERESULT         JsonIn_FindTrueNodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA
+    )
+    {
+        ERESULT         eRc;
+        OBJ_ID          pData;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "true", (void **)&pData);
+        if (ERESULT_OK(eRc) && (pData)) {
+            return ERESULT_SUCCESS;
+        }
+
+        return ERESULT_DATA_NOT_FOUND;
+    }
+
+
+
     ERESULT         JsonIn_FindUtf8NodeInHashA (
         JSONIN_DATA     *this,
         const

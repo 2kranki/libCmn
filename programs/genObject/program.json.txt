@@ -1,14 +1,17 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+
 {
     program:{
         name:"genObject",
         deps:["Cmn"],
-        hdrs:["genObject.h"]
+        hdrs:["genObject_defs.h"]
         main:"mainProgram.c"
     },
     "objects":[
         {name:"Dict"},
         {name:"Main"},
-        {name:"NodeClass", desc:"Class Definition"},
-        {name:"NodeProp", desc:"Class Property Definition"},
+        {name:"NodeClass", json:true, desc:"Class Definition"},
+        {name:"NodeProp", json:true, desc:"Class Property Definition"},
+        {name:"SrcParse" desc:"JSON Source File Parser"},
     ],
 }

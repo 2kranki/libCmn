@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          MAIN Console Transmit Task (Main) Header
+//                  Main (Main) Header
 //****************************************************************
 /*
  * Program
- *			Separate Main (Main)
+ *			Main (Main)
  * Purpose
  *			This object provides a standardized way of handling
  *          a separate Main to run things without complications
@@ -16,7 +16,7 @@
  *	1.      None
  *
  * History
- *	12/19/2019 Generated
+ *	04/28/2020 Generated
  */
 
 
@@ -53,14 +53,18 @@
 
 #include        <genObject_defs.h>
 #include        <AStr.h>
+#include        <Dict.h>
+#include        <NodeClass.h>
+#include        <SrcParse.h>
 
 
 #ifndef         MAIN_H
 #define         MAIN_H
 
 
-//#define   MAIN_JSON_SUPPORT 1
-//#define   MAIN_SINGLETON    1
+//#define   MAIN_IS_IMMUTABLE     1
+//#define   MAIN_JSON_SUPPORT     1
+#define   MAIN_SINGLETON        1
 
 
 
@@ -114,7 +118,7 @@ extern "C" {
         void
     );
 
-    bool            Main_SharedReset (
+    void            Main_SharedReset (
         void
     );
 #endif
@@ -141,6 +145,18 @@ extern "C" {
     );
     
     
+#ifdef  MAIN_JSON_SUPPORT
+    MAIN_DATA *   Main_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    MAIN_DATA *   Main_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -153,26 +169,68 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Main_Disable (
-        MAIN_DATA		*this
+    int             Main_Exec(
+        MAIN_DATA       *this
     );
 
 
-    ERESULT     Main_Enable (
-        MAIN_DATA		*this
-    );
-
-   
-    MAIN_DATA *   Main_Init (
-        MAIN_DATA     *this
+    MAIN_DATA *     Main_Init (
+        MAIN_DATA       *this
     );
 
 
-    ERESULT     Main_IsEnabled (
-        MAIN_DATA		*this
+    /*!
+     Parse the given input file resetting any prior parse data and
+     building the appropriate node tables from the JSON. The parser
+     and its tables will be saved internally for later phases of
+     the generation process.
+     @param     this        object pointer
+     @param     pPath       JSON Input File Path
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         Main_ParseInputFile(
+        MAIN_DATA       *this,
+        PATH_DATA       *pPath
     );
-    
- 
+
+
+    /*!
+     Set up to parse the given input resetting any prior parse data.
+     @param     this        object pointer
+     @param     cArgs       number of charater strings in ppArgs
+     @param     ppArgV      pointer to a charater string array
+     @param     ppEnv       pointer to a charater string array
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+     an ERESULT_* error code
+     */
+    ERESULT         Main_SetupFromArgV(
+        MAIN_DATA       *this,
+        uint16_t        cArgs,
+        char            *ppArgV[],
+        char            **ppEnv
+    );
+
+
+#ifdef  MAIN_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Main_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Main_ToJson (
+        MAIN_DATA   *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -185,7 +243,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    Main_ToDebugString (
+    ASTR_DATA *     Main_ToDebugString (
         MAIN_DATA     *this,
         int             indent
     );

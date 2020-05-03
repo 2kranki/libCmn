@@ -69,15 +69,16 @@ struct NodeProp_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
+    uint16_t        rsvd16;
     uint8_t         fObj;           // True == Object
-    uint8_t         rsvd8;
+    uint8_t         vis;            // See NODEPROP_VIS
     ASTR_DATA       *pExternal;     // Optional External Property Name
     ASTR_DATA       *pInit;         // Optional Initialization
     ASTR_DATA       *pInternal;     // Optional Internal Property Name
-    ASTR_DATA       *pLong;         // Long Description
+    ASTR_DATA       *pLong;         // Optional Long Description
     ASTR_DATA       *pName;         // Property Name
     ASTR_DATA       *pShort;        // Short Description
+    ASTR_DATA       *pTypeDef;      // Type Definition
 
 };
 #pragma pack(pop)
@@ -112,7 +113,7 @@ struct NodeProp_data_s	{
     //---------------------------------------------------------------
 
     OBJ_IUNKNOWN *  NodeProp_getSuperVtbl (
-        NODEPROP_DATA     *this
+        NODEPROP_DATA   *this
     );
 
 
@@ -122,8 +123,8 @@ struct NodeProp_data_s	{
     );
 
 
-    NODEPROP_DATA *       NodeProp_Copy (
-        NODEPROP_DATA     *this
+    NODEPROP_DATA *  NodeProp_Copy (
+        NODEPROP_DATA    *this
     );
 
 
@@ -139,7 +140,7 @@ struct NodeProp_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NODEPROP_DATA *       NodeProp_ParseJsonObject (
+    NODEPROP_DATA * NodeProp_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -155,7 +156,7 @@ struct NodeProp_data_s	{
      */
     ERESULT         NodeProp_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        NODEPROP_DATA     *pObject
+        NODEPROP_DATA   *pObject
     );
 #endif
 
@@ -195,10 +196,22 @@ struct NodeProp_data_s	{
                 error code.
      */
     ERESULT         NodeProp_ToJsonFields (
-        NODEPROP_DATA     *this,
+        NODEPROP_DATA   *this,
         ASTR_DATA       *pStr
     );
 #endif
+
+
+    uint16_t        NodeProp_TypeDefFromExternal (
+        const
+        char            *pStrA
+    );
+
+
+    const
+    char *          NodeProp_TypeDefToExternal (
+        uint16_t        num
+    );
 
 
 

@@ -94,8 +94,34 @@ extern "C" {
         //ASTR_DATA       *pWrk;
         //uint8_t         *pData;
         //uint32_t        len;
+        ASTR_DATA       *pStr = OBJ_NIL;
 
-#ifdef XYZZZY 
+        (void)JsonIn_FindStringNodeInHashA(pParser, "external", &pObject->pExternal);
+        obj_Retain(pObject->pExternal);
+        (void)JsonIn_FindStringNodeInHashA(pParser, "init", &pObject->pInit);
+        obj_Retain(pObject->pInit);
+        (void)JsonIn_FindStringNodeInHashA(pParser, "internal", &pObject->pInternal);
+        obj_Retain(pObject->pInternal);
+        (void)JsonIn_FindStringNodeInHashA(pParser, "long", &pObject->pLong);
+        obj_Retain(pObject->pLong);
+        (void)JsonIn_FindStringNodeInHashA(pParser, "name", &pObject->pName);
+        obj_Retain(pObject->pName);
+        (void)JsonIn_FindStringNodeInHashA(pParser, "short", &pObject->pShort);
+        obj_Retain(pObject->pShort);
+        (void)JsonIn_FindStringNodeInHashA(pParser, "typedef", &pObject->pTypeDef);
+        obj_Retain(pObject->pTypeDef);
+        (void)JsonIn_FindU8NodeInHashA(pParser, "object", &pObject->fObj);
+        (void)JsonIn_FindStringNodeInHashA(pParser, "vis", &pStr);
+        if (pStr) {
+            if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "PUBLIC")) {
+                pObject->vis = NODEPROP_VIS_PUBLIC;
+            }
+            else if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "READ_ONLY")) {
+                pObject->vis = NODEPROP_VIS_READ_ONLY;
+            }
+        }
+
+#ifdef XYZZZY
         (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
         (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
         (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
@@ -290,13 +316,40 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
 
-#ifdef XYZZZY 
+        if (this->pExternal) {
+            JsonOut_Append_StrA("external", AStr_getData(this->pExternal), pStr);
+        }
+        if (this->pInit) {
+            JsonOut_Append_StrA("init", AStr_getData(this->pInit), pStr);
+        }
+        if (this->pInternal) {
+            JsonOut_Append_StrA("internal", AStr_getData(this->pInternal), pStr);
+        }
+        if (this->pLong) {
+            JsonOut_Append_StrA("long", AStr_getData(this->pLong), pStr);
+        }
+        JsonOut_Append_StrA("name", AStr_getData(this->pName), pStr);
+        if (this->pShort) {
+            JsonOut_Append_StrA("short", AStr_getData(this->pShort), pStr);
+        }
+        JsonOut_Append_u8("object", this->fObj, pStr);
+        JsonOut_Append_StrA("typedef", AStr_getData(this->pTypeDef), pStr);
+        switch (this->vis) {
+            case NODEPROP_VIS_PUBLIC:
+                JsonOut_Append_StrA("vis", "PUBLIC", pStr);
+                break;
+            case NODEPROP_VIS_READ_ONLY:
+                JsonOut_Append_StrA("vis", "READ_ONLY", pStr);
+                break;
+        }
+
+#ifdef XYZZZY
         JsonOut_Append_i32("x", this->x, pStr);
         JsonOut_Append_i64("t", this->t, pStr);
         JsonOut_Append_u32("o", this->o, pStr);
         JsonOut_Append_utf8("n", pEntry->pN, pStr);
         JsonOut_Append_Object("e", this->pE, pStr);
-        JsonOut_Append_String("d", this->pAStr, pStr);
+        JsonOut_Append_AStr("d", this->pAStr, pStr);
         JsonOut_Append_StringA("d", this->pStrA, pStr);
         JsonOut_Append_StringW32("d", this->pStrW32, pStr);
 #endif

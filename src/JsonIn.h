@@ -606,6 +606,20 @@ extern "C" {
 
 
     /*!
+     Find a named value in the JSON Hash Node tree and return ERESULT_SUCCESS
+     if its value is true.
+     @param     this    Object Pointer
+     @param     pSectionA Name of integer value (required)
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error code.
+     */
+    ERESULT         JsonIn_FindTrueNodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA
+    );
+
+
+    /*!
      Find a named UTF-8 string value in the JSON Hash Node tree. This is
      normally used to parse JsonOut_Append_utf8().
      @param     this    Object Pointer

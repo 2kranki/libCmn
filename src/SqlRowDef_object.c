@@ -486,15 +486,12 @@ static
 const
 OBJ_INFO        SqlRowDef_Info = {
     "SqlRowDef",
-    "Separate SqlRowDef",
+    "SQL Row Definition",
     (OBJ_DATA *)&SqlRowDef_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&SqlRowDef_Vtbl,
     sizeof(SQLROWDEF_DATA)
 };
-#warning -- adjust super class object in Info above 
-//			if object inherits from another class
-//			Also, update description
 
 
 

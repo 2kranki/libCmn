@@ -54,7 +54,36 @@ extern "C" {
 #endif
     
 
-    
+    typedef struct Type_Def_s {
+        uint16_t        num;
+        const
+        char            *pEnum;
+        const
+        char            *pExternal;
+    } TYPE_DEF;
+
+#ifdef XYZZY
+    static
+    TYPE_DEF        typeDefs[] = {
+        {NODEPROP_TYPE_ASTR,    "NODEPROP_TYPE_ASTR",   "ASTR"},
+        {NODEPROP_TYPE_FLAG8,   "NODEPROP_TYPE_FLAG8",  "FLAG8"},
+        {NODEPROP_TYPE_FLAG16,  "NODEPROP_TYPE_FLAG16", "FLAG16"},
+        {NODEPROP_TYPE_FLAG32,  "NODEPROP_TYPE_FLAG8",  "FLAG32"},
+        {NODEPROP_TYPE_INT8,    "NODEPROP_TYPE_INT8",   "INT8"},
+        {NODEPROP_TYPE_INT16,   "NODEPROP_TYPE_INT16",  "INT16"},
+        {NODEPROP_TYPE_INT32,   "NODEPROP_TYPE_INT32",  "INT32"},
+        {NODEPROP_TYPE_INT64,   "NODEPROP_TYPE_INT64",  "INT64"},
+        {NODEPROP_TYPE_OBJECT,  "NODEPROP_TYPE_OBJECT", "OBJECT"},
+        {NODEPROP_TYPE_UINT8,   "NODEPROP_TYPE_UINT8",  "UINT8"},
+        {NODEPROP_TYPE_UINT16,  "NODEPROP_TYPE_UINT16", "UINT16"},
+        {NODEPROP_TYPE_UINT32,  "NODEPROP_TYPE_UINT32", "UINT32"},
+        {NODEPROP_TYPE_UINT64,  "NODEPROP_TYPE_UINT64", "UINT64"},
+    };
+    static
+    const
+    uint32_t        cTypeDefs = sizeof(typeDefs) / sizeof(TYPE_DEF);
+#endif
+
 
 
  
@@ -63,15 +92,44 @@ extern "C" {
     ****************************************************************/
 
 #ifdef XYZZY
-    static
-    void            NodeProp_task_body (
-        void            *pData
+    uint16_t        NodeProp_TypeDefFromExternal (
+        const
+        char            *pStrA
     )
     {
-        //NODEPROP_DATA  *this = pData;
-        
+        uint32_t            i;
+
+        if (pStrA) {
+            for (i=0; i<cTypeDefs; i++) {
+                if (0 == strcmp(pStrA, typeDefs[i].pExternal)) {
+                    return typeDefs[i].num;
+                }
+            }
+        }
+        return 0;
+    }
+
+
+    const
+    char *          NodeProp_TypeDefToExternal (
+        uint16_t        num
+    )
+    {
+        uint32_t        i;
+
+        if (num) {
+            for (i=0; i<cTypeDefs; i++) {
+                if (num == typeDefs[i].num) {
+                    return typeDefs[i].pExternal;
+                }
+            }
+        }
+        return 0;
     }
 #endif
+
+
+
 
 
 
@@ -126,8 +184,8 @@ extern "C" {
     //                          E x t e r n a l
     //---------------------------------------------------------------
 
-    ASTR_DATA * NodeProp_getExternal (
-        NODEPROP_DATA     *this
+    ASTR_DATA *     NodeProp_getExternal (
+        NODEPROP_DATA   *this
     )
     {
 
@@ -144,9 +202,9 @@ extern "C" {
     }
 
 
-    bool        NodeProp_setExternal (
-        NODEPROP_DATA     *this,
-        ASTR_DATA   *pValue
+    bool            NodeProp_setExternal (
+        NODEPROP_DATA   *this,
+        ASTR_DATA       *pValue
     )
     {
 #ifdef NDEBUG
@@ -486,7 +544,53 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                 T y p e  D e f i n i t i o n
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeProp_getTypeDef (
+        NODEPROP_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pTypeDef;
+    }
+
+
+    bool            NodeProp_setTypeDef (
+        NODEPROP_DATA   *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pTypeDef) {
+            obj_Release(this->pTypeDef);
+        }
+        this->pTypeDef = pValue;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -541,36 +645,86 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
-        }
-#endif
+        NodeProp_setExternal(pOther, OBJ_NIL);
+        NodeProp_setInit(pOther, OBJ_NIL);
+        NodeProp_setInternal(pOther, OBJ_NIL);
+        NodeProp_setLong(pOther, OBJ_NIL);
+        NodeProp_setName(pOther, OBJ_NIL);
+        NodeProp_setShort(pOther, OBJ_NIL);
+        NodeProp_setTypeDef(pOther, OBJ_NIL);
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
+        if (this->pExternal) {
+            if (obj_getVtbl(this->pExternal)->pCopy) {
+                pOther->pExternal = obj_getVtbl(this->pExternal)->pCopy(this->pExternal);
             }
             else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
+                obj_Retain(this->pExternal);
+                pOther->pExternal = this->pExternal;
             }
         }
-#endif
+        if (this->pInit) {
+            if (obj_getVtbl(this->pInit)->pCopy) {
+                pOther->pInit = obj_getVtbl(this->pInit)->pCopy(this->pInit);
+            }
+            else {
+                obj_Retain(this->pInit);
+                pOther->pInit = this->pInit;
+            }
+        }
+        if (this->pInternal) {
+            if (obj_getVtbl(this->pInternal)->pCopy) {
+                pOther->pInternal = obj_getVtbl(this->pInternal)->pCopy(this->pInternal);
+            }
+            else {
+                obj_Retain(this->pInternal);
+                pOther->pInternal = this->pInternal;
+            }
+        }
+        if (this->pLong) {
+            if (obj_getVtbl(this->pLong)->pCopy) {
+                pOther->pLong = obj_getVtbl(this->pLong)->pCopy(this->pLong);
+            }
+            else {
+                obj_Retain(this->pLong);
+                pOther->pLong = this->pLong;
+            }
+        }
+        if (this->pName) {
+            if (obj_getVtbl(this->pName)->pCopy) {
+                pOther->pName = obj_getVtbl(this->pName)->pCopy(this->pName);
+            }
+            else {
+                obj_Retain(this->pName);
+                pOther->pName = this->pName;
+            }
+        }
+        if (this->pShort) {
+            if (obj_getVtbl(this->pShort)->pCopy) {
+                pOther->pShort = obj_getVtbl(this->pShort)->pCopy(this->pShort);
+            }
+            else {
+                obj_Retain(this->pShort);
+                pOther->pShort = this->pShort;
+            }
+        }
+        if (this->pTypeDef) {
+            if (obj_getVtbl(this->pTypeDef)->pCopy) {
+                pOther->pTypeDef = obj_getVtbl(this->pTypeDef)->pCopy(this->pTypeDef);
+            }
+            else {
+                obj_Retain(this->pTypeDef);
+                pOther->pTypeDef = this->pTypeDef;
+            }
+        }
 
         // Copy other data from this object to other.
+        pOther->fObj = this->fObj;
         
-        //goto eom;
-
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -612,25 +766,8 @@ extern "C" {
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
+        eRc = AStr_Compare(this->pName, pOther->pName);
 
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
         return eRc;
     }
     
@@ -722,6 +859,7 @@ extern "C" {
         NodeProp_setLong(this, OBJ_NIL);
         NodeProp_setName(this, OBJ_NIL);
         NodeProp_setShort(this, OBJ_NIL);
+        NodeProp_setTypeDef(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -846,6 +984,619 @@ extern "C" {
         
         // Return to caller.
         return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    G e n e r a t e
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeProp_GenCode (
+        NODEPROP_DATA   *this,
+        const
+        char            *pClass,
+        const
+        char            *pClassUC
+    )
+    {
+        //ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        //ASTR_DATA       *pWrkStr;
+        //uint32_t        i;
+        //uint32_t        j;
+        int32_t         spcs = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return pStr;
+        }
+
+        // Generate Documentation
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        AStr_AppendA(pStr, "//");
+        AStr_AppendCharRepeatA(pStr, 62, '-');
+        AStr_AppendA(pStr, "\n");
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        if (this->pExternal) {
+            pWrk = AStr_ToUpperName(this->pExternal);
+        } else {
+            pWrk = AStr_ToUpperName(this->pName);
+        }
+        if (this->pShort) {
+            AStr_AppendA(pStr, "//");
+            spcs = 62 - (AStr_getLength(pWrk) + AStr_getLength(this->pShort) + 3);
+            spcs >>= 1;
+            if (spcs < 1)
+                spcs = 1;
+            AStr_AppendCharRepeatA(pStr, spcs, ' ');
+            AStr_AppendPrint(pStr,
+                             "%s - %s\n",
+                             AStr_getData(pWrk),
+                             AStr_getData(this->pShort)
+            );
+        } else {
+            AStr_AppendA(pStr, "//");
+            spcs = 62 - (AStr_getLength(pWrk) + 3);
+            spcs >>= 1;
+            if (spcs < 1)
+                spcs = 1;
+            AStr_AppendCharRepeatA(pStr, spcs, ' ');
+            AStr_AppendPrint(pStr,
+                             "%s",
+                             AStr_getData(pWrk)
+            );
+        }
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        AStr_AppendA(pStr, "//");
+        AStr_AppendCharRepeatA(pStr, 62, '-');
+        AStr_AppendA(pStr, "\n\n");
+
+        // Generate Get Method
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        if (this->fObj
+            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            AStr_AppendPrint(pStr,
+                             "%s *",
+                             AStr_getData(this->pTypeDef)
+            );
+            spcs = 16 - (AStr_getLength(this->pTypeDef) + 2);
+        } else {
+            AStr_AppendPrint(pStr,
+                             "%s",
+                             AStr_getData(this->pTypeDef)
+            );
+            spcs = 16 - AStr_getLength(this->pTypeDef);
+        }
+        if (spcs < 1)
+            spcs = 1;
+        AStr_AppendCharRepeatA(pStr, spcs, ' ');
+        if (this->pExternal) {
+            pWrk = AStr_ToUpperName(this->pExternal);
+        } else {
+            pWrk = AStr_ToUpperName(this->pName);
+        }
+        AStr_AppendPrint(pStr,
+                         "%s_get%s (\n",
+                         pClass,
+                         AStr_getData(pWrk)
+        );
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        AStr_AppendPrint(pStr, "%s", pClassUC);
+        spcs = 16 - (int32_t)strlen(pClassUC);
+        if (spcs < 1)
+            spcs = 1;
+        AStr_AppendCharRepeatA(pStr, spcs, ' ');
+        AStr_AppendA(pStr, "*this\n");
+        AStr_AppendA(pStr, "    )\n");
+        AStr_AppendA(pStr, "    {\n\n");
+        AStr_AppendA(pStr, "#ifdef NDEBUG\n#else\n");
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        AStr_AppendPrint(pStr, "if (%s_Validate(this)) {\n", pClass);
+        AStr_AppendCharRepeatA(pStr, 12, ' ');
+        AStr_AppendA(pStr, "DEBUG_BREAK();\n");
+        AStr_AppendCharRepeatA(pStr, 12, ' ');
+        if (this->fObj)
+            AStr_AppendA(pStr, "return OBJ_NIL;\n");
+        else
+            AStr_AppendA(pStr, "return 0;\n");
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        AStr_AppendA(pStr, "}\n");
+        AStr_AppendA(pStr, "#end\n\n");
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        if (this->pInternal)
+            AStr_AppendPrint(pStr, "return this->%s\n", AStr_getData(this->pInternal));
+        else
+            AStr_AppendPrint(pStr, "return this->%s\n", AStr_getData(this->pName));
+        AStr_AppendA(pStr, "    }\n\n");
+
+        // Generate Set Method
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        AStr_AppendA(pStr, "bool");
+        spcs = 16 - 4;
+        if (spcs < 1)
+            spcs = 1;
+        AStr_AppendCharRepeatA(pStr, spcs, ' ');
+        if (this->pExternal) {
+            pWrk = AStr_ToUpperName(this->pExternal);
+        } else {
+            pWrk = AStr_ToUpperName(this->pName);
+        }
+        AStr_AppendPrint(pStr,
+                         "%s_set%s (\n",
+                         pClass,
+                         AStr_getData(pWrk)
+        );
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        AStr_AppendPrint(pStr, "%s", pClassUC);
+        spcs = 16 - (int32_t)strlen(pClassUC);
+        if (spcs < 1)
+            spcs = 1;
+        AStr_AppendCharRepeatA(pStr, spcs, ' ');
+        AStr_AppendA(pStr, "*this,\n");
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        spcs = 16 - AStr_getLength(this->pTypeDef);
+        if (spcs < 1)
+            spcs = 1;
+        if (this->fObj
+            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
+            AStr_AppendCharRepeatA(pStr, spcs, ' ');
+            AStr_AppendA(pStr, "*pValue,\n");
+        } else {
+            AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
+            AStr_AppendCharRepeatA(pStr, spcs, ' ');
+            AStr_AppendA(pStr, "value\n");
+        }
+        AStr_AppendA(pStr, "    )\n");
+        AStr_AppendA(pStr, "    {\n\n");
+        AStr_AppendA(pStr, "#ifdef NDEBUG\n#else\n");
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        AStr_AppendPrint(pStr, "if (%s_Validate(this)) {\n", pClass);
+        AStr_AppendCharRepeatA(pStr, 12, ' ');
+        AStr_AppendA(pStr, "DEBUG_BREAK();\n");
+        AStr_AppendCharRepeatA(pStr, 12, ' ');
+        AStr_AppendA(pStr, "return false;\n");
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        AStr_AppendA(pStr, "}\n");
+        AStr_AppendA(pStr, "#end\n\n");
+        if (this->fObj) {
+            AStr_AppendCharRepeatA(pStr, 8, ' ');
+            AStr_AppendA(pStr, "obj_Retain(pValue);\n");
+            AStr_AppendCharRepeatA(pStr, 8, ' ');
+            if (this->pInternal) {
+                AStr_AppendPrint(pStr,
+                                 "if (this->%s) {\n",
+                                 AStr_getData(this->pInternal)
+                );
+                AStr_AppendCharRepeatA(pStr, 12, ' ');
+                AStr_AppendPrint(pStr,
+                                 "obj_Release(this->%s);\n",
+                                 AStr_getData(this->pInternal)
+                );
+            } else {
+                AStr_AppendPrint(pStr,
+                                 "if (this->%s) {\n",
+                                 AStr_getData(this->pName)
+                );
+                AStr_AppendCharRepeatA(pStr, 12, ' ');
+                AStr_AppendPrint(pStr,
+                                 "obj_Release(this->%s);\n",
+                                 AStr_getData(this->pName)
+                );
+            }
+            AStr_AppendCharRepeatA(pStr, 8, ' ');
+            AStr_AppendA(pStr, "}\n");
+            AStr_AppendCharRepeatA(pStr, 8, ' ');
+            if (this->pInternal) {
+                AStr_AppendPrint(pStr,
+                                 "this->%s = pValue;\n",
+                                 AStr_getData(this->pInternal)
+                );
+            } else {
+                AStr_AppendPrint(pStr,
+                                 "this->%s = pValue;\n",
+                                 AStr_getData(this->pName)
+                );
+            }
+        } else {
+            AStr_AppendCharRepeatA(pStr, 8, ' ');
+            if (this->pInternal) {
+                AStr_AppendPrint(pStr,
+                                 "this->%s = value;\n",
+                                 AStr_getData(this->pInternal)
+                );
+            } else {
+                AStr_AppendPrint(pStr,
+                                 "this->%s = value;\n",
+                                 AStr_getData(this->pName)
+                );
+            }
+        }
+
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        AStr_AppendA(pStr, "return true;\n");
+        AStr_AppendA(pStr, "    }\n\n");
+
+        // Generate WS
+        AStr_AppendA(pStr, "\n");
+
+        return pStr;
+    }
+
+
+    ASTR_DATA *     NodeProp_GenHdrDefn (
+        NODEPROP_DATA   *this,
+        const
+        char            *pClass,
+        const
+        char            *pClassUC
+    )
+    {
+        //ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        //ASTR_DATA       *pWrkStr;
+        //uint32_t        i;
+        //uint32_t        j;
+        int32_t         spcs = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        if ((this->vis == NODEPROP_VIS_PUBLIC) || (this->vis == NODEPROP_VIS_READ_ONLY)) {
+            pStr = AStr_New();
+        }
+        if (OBJ_NIL == pStr) {
+            return pStr;
+        }
+
+        // Generate Documentation
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        if (this->pExternal) {
+            pWrk = AStr_ToUpperName(this->pExternal);
+        } else {
+            pWrk = AStr_ToUpperName(this->pName);
+        }
+        if (this->pShort) {
+            AStr_AppendPrint(pStr,
+                             "/*! @property %s - %s\n",
+                             AStr_getData(pWrk),
+                             AStr_getData(this->pShort)
+            );
+        } else {
+            AStr_AppendPrint(pStr,
+                             "/*! @property %s\n",
+                             AStr_getData(pWrk)
+            );
+        }
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+        AStr_AppendCharRepeatA(pStr, 5, ' ');
+        AStr_AppendA(pStr, "*/\n");
+
+        // Generate Get Method
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        if (this->fObj
+            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            AStr_AppendPrint(pStr,
+                             "%s *",
+                             AStr_getData(this->pTypeDef)
+            );
+            spcs = 16 - (AStr_getLength(this->pTypeDef) + 2);
+        } else {
+            AStr_AppendPrint(pStr,
+                             "%s",
+                             AStr_getData(this->pTypeDef)
+            );
+            spcs = 16 - AStr_getLength(this->pTypeDef);
+        }
+        if (spcs < 1)
+            spcs = 1;
+        AStr_AppendCharRepeatA(pStr, spcs, ' ');
+        if (this->pExternal) {
+            pWrk = AStr_ToUpperName(this->pExternal);
+        } else {
+            pWrk = AStr_ToUpperName(this->pName);
+        }
+        AStr_AppendPrint(pStr,
+                         "%s_get%s (\n",
+                         pClass,
+                         AStr_getData(pWrk)
+        );
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        AStr_AppendPrint(pStr, "%s", pClassUC);
+        spcs = 16 - (int32_t)strlen(pClassUC);
+        if (spcs < 1)
+            spcs = 1;
+        AStr_AppendCharRepeatA(pStr, spcs, ' ');
+        AStr_AppendA(pStr, "*this\n");
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        AStr_AppendA(pStr, ");\n\n");
+
+        // Generate Set Method
+        if (this->vis == NODEPROP_VIS_PUBLIC) {
+            AStr_AppendCharRepeatA(pStr, 4, ' ');
+            AStr_AppendA(pStr, "bool");
+            spcs = 16 - 4;
+            if (spcs < 1)
+                spcs = 1;
+            AStr_AppendCharRepeatA(pStr, spcs, ' ');
+            if (this->pExternal) {
+                pWrk = AStr_ToUpperName(this->pExternal);
+            } else {
+                pWrk = AStr_ToUpperName(this->pName);
+            }
+            AStr_AppendPrint(pStr,
+                             "%s_set%s (\n",
+                             pClass,
+                             AStr_getData(pWrk)
+            );
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+            AStr_AppendCharRepeatA(pStr, 8, ' ');
+            AStr_AppendPrint(pStr, "%s", pClassUC);
+            spcs = 16 - (int32_t)strlen(pClassUC);
+            if (spcs < 1)
+                spcs = 1;
+            AStr_AppendCharRepeatA(pStr, spcs, ' ');
+            AStr_AppendA(pStr, "*this,\n");
+            AStr_AppendCharRepeatA(pStr, 8, ' ');
+            spcs = 16 - AStr_getLength(this->pTypeDef);
+            if (spcs < 1)
+                spcs = 1;
+            if (this->fObj
+                && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+                AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
+                AStr_AppendCharRepeatA(pStr, spcs, ' ');
+                AStr_AppendA(pStr, "*pValue,\n");
+            } else {
+                AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
+                AStr_AppendCharRepeatA(pStr, spcs, ' ');
+                AStr_AppendA(pStr, "value\n");
+            }
+            AStr_AppendCharRepeatA(pStr, 4, ' ');
+            AStr_AppendA(pStr, ");\n\n");
+        }
+
+        // Generate WS
+        AStr_AppendA(pStr, "\n");
+
+        return pStr;
+    }
+
+
+    ASTR_DATA *     NodeProp_GenIntDefn (
+        NODEPROP_DATA   *this,
+        const
+        char            *pClass,
+        const
+        char            *pClassUC
+    )
+    {
+        //ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        //ASTR_DATA       *pWrkStr;
+        //uint32_t        i;
+        //uint32_t        j;
+        int32_t         spcs = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return pStr;
+        }
+
+        // Generate Documentation
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        if (this->pExternal) {
+            pWrk = AStr_ToUpperName(this->pExternal);
+        } else {
+            pWrk = AStr_ToUpperName(this->pName);
+        }
+        if (this->pShort) {
+            AStr_AppendPrint(pStr,
+                             "/*! @property %s - %s\n",
+                             AStr_getData(pWrk),
+                             AStr_getData(this->pShort)
+            );
+        } else {
+            AStr_AppendPrint(pStr,
+                             "/*! @property %s\n",
+                             AStr_getData(pWrk)
+            );
+        }
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+        AStr_AppendCharRepeatA(pStr, 5, ' ');
+        AStr_AppendA(pStr, "*/\n");
+
+        // Generate Get Method
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        if (this->fObj
+            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            AStr_AppendPrint(pStr,
+                             "%s *",
+                             AStr_getData(this->pTypeDef)
+            );
+            spcs = 16 - (AStr_getLength(this->pTypeDef) + 2);
+        } else {
+            AStr_AppendPrint(pStr,
+                             "%s",
+                             AStr_getData(this->pTypeDef)
+            );
+            spcs = 16 - AStr_getLength(this->pTypeDef);
+        }
+        if (spcs < 1)
+            spcs = 1;
+        AStr_AppendCharRepeatA(pStr, spcs, ' ');
+        if (this->pExternal) {
+            pWrk = AStr_ToUpperName(this->pExternal);
+        } else {
+            pWrk = AStr_ToUpperName(this->pName);
+        }
+        AStr_AppendPrint(pStr,
+                         "%s_get%s (\n",
+                         pClass,
+                         AStr_getData(pWrk)
+        );
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        AStr_AppendPrint(pStr, "%s", pClassUC);
+        spcs = 16 - (int32_t)strlen(pClassUC);
+        if (spcs < 1)
+            spcs = 1;
+        AStr_AppendCharRepeatA(pStr, spcs, ' ');
+        AStr_AppendA(pStr, "*this\n");
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        AStr_AppendA(pStr, ");\n\n");
+
+        // Generate Set Method
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        AStr_AppendA(pStr, "bool");
+        spcs = 16 - 4;
+        if (spcs < 1)
+            spcs = 1;
+        AStr_AppendCharRepeatA(pStr, spcs, ' ');
+        if (this->pExternal) {
+            pWrk = AStr_ToUpperName(this->pExternal);
+        } else {
+            pWrk = AStr_ToUpperName(this->pName);
+        }
+        AStr_AppendPrint(pStr,
+                         "%s_set%s (\n",
+                         pClass,
+                         AStr_getData(pWrk)
+        );
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        AStr_AppendPrint(pStr, "%s", pClassUC);
+        spcs = 16 - (int32_t)strlen(pClassUC);
+        if (spcs < 1)
+            spcs = 1;
+        AStr_AppendCharRepeatA(pStr, spcs, ' ');
+        AStr_AppendA(pStr, "*this,\n");
+        AStr_AppendCharRepeatA(pStr, 8, ' ');
+        spcs = 16 - AStr_getLength(this->pTypeDef);
+        if (spcs < 1)
+            spcs = 1;
+        if (this->fObj
+            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
+            AStr_AppendCharRepeatA(pStr, spcs, ' ');
+            AStr_AppendA(pStr, "*pValue,\n");
+        } else {
+            AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
+            AStr_AppendCharRepeatA(pStr, spcs, ' ');
+            AStr_AppendA(pStr, "value\n");
+        }
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        AStr_AppendA(pStr, ");\n\n");
+
+        // Generate WS
+        AStr_AppendA(pStr, "\n");
+
+        return pStr;
+    }
+
+
+    ASTR_DATA *     NodeProp_GenIntVar (
+        NODEPROP_DATA   *this,
+        const
+        char            *pClass,
+        const
+        char            *pClassUC
+    )
+    {
+        //ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        //ASTR_DATA       *pWrkStr;
+        //uint32_t        i;
+        //uint32_t        j;
+        int32_t         spcs = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeProp_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return pStr;
+        }
+
+        AStr_AppendCharRepeatA(pStr, 4, ' ');
+        if (this->fObj
+            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
+            spcs = 16 - AStr_getLength(this->pTypeDef);
+            if (spcs < 1)
+                spcs = 1;
+            AStr_AppendCharRepeatA(pStr, spcs, ' ');
+            if (this->pInternal) {
+                pWrk = this->pInternal;
+            } else {
+                pWrk = this->pName;
+            }
+            AStr_AppendPrint(pStr, "*%s;\n", AStr_getData(pWrk));
+        } else {
+            AStr_AppendPrint(pStr,
+                             "%s",
+                             AStr_getData(this->pTypeDef)
+            );
+            spcs = 16 - AStr_getLength(this->pTypeDef);
+            if (spcs < 1)
+                spcs = 1;
+            AStr_AppendCharRepeatA(pStr, spcs, ' ');
+            if (this->pInternal) {
+                pWrk = this->pInternal;
+            } else {
+                pWrk = this->pName;
+            }
+            AStr_AppendPrint(pStr, "%s;\n", AStr_getData(pWrk));
+        }
+
+        return pStr;
     }
 
 

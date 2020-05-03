@@ -210,11 +210,11 @@ extern "C" {
     
     
 #ifdef  EXPR_JSON_SUPPORT
-    EXPR_DATA *   Expr_NewFromJsonString (
+    EXPR_DATA *     Expr_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    EXPR_DATA *   Expr_NewFromJsonStringA (
+    EXPR_DATA *     Expr_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -233,14 +233,14 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Expr_Calc (
-        EXPR_DATA	*this,
-        int32_t     *pAnswer
+    ERESULT         Expr_Calc (
+        EXPR_DATA	    *this,
+        int32_t         *pAnswer
     );
 
 
-    EXPR_DATA *   Expr_Init (
-        EXPR_DATA     *this
+    EXPR_DATA *     Expr_Init (
+        EXPR_DATA       *this
     );
 
 
@@ -251,7 +251,7 @@ extern "C" {
      @param     pScan   Scanner object pointer
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_* error.
      */
-    ERESULT     Expr_SetupScanner (
+    ERESULT         Expr_SetupScanner (
         EXPR_DATA		*this,
         SCANNER_DATA    *pScan
     );

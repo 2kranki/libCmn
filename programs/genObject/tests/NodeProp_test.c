@@ -88,7 +88,7 @@ int             test_NodeProp_OpenClose (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    NODEPROP_DATA	    *pObj = OBJ_NIL;
+    NODEPROP_DATA	*pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -102,7 +102,7 @@ int             test_NodeProp_OpenClose (
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_NODEPROP);
         TINYTEST_TRUE( (fRc) );
-        
+
         // Test something.
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
@@ -122,10 +122,10 @@ int             test_NodeProp_Copy01 (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    NODEPROP_DATA	    *pObj1 = OBJ_NIL;
-    NODEPROP_DATA	    *pObj2 = OBJ_NIL;
+    NODEPROP_DATA	*pObj1 = OBJ_NIL;
+    NODEPROP_DATA	*pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(NODEPROP_JSON_SUPPORT) && defined(XYZZY)
+#if defined(NODEPROP_JSON_SUPPORT)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
    
@@ -138,7 +138,14 @@ int             test_NodeProp_Copy01 (
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_NODEPROP);
         TINYTEST_TRUE( (fRc) );
-        
+        pObj1->pName = AStr_NewA("name");
+        pObj1->pExternal = AStr_NewA("xyzzy");
+        pObj1->pInternal = AStr_NewA("pName");
+        pObj1->pShort = AStr_NewA("Name Description");
+        pObj1->pTypeDef = AStr_NewA("OBJ_ID");
+        pObj1->vis = NODEPROP_VIS_PUBLIC;
+        pObj1->fObj = 'T';
+
         // Test assign.
         pObj2 = NodeProp_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
@@ -168,7 +175,7 @@ int             test_NodeProp_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(NODEPROP_JSON_SUPPORT) && defined(XYZZY)
+#if defined(NODEPROP_JSON_SUPPORT)
         pStr = NodeProp_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
@@ -201,8 +208,9 @@ int             test_NodeProp_Test01 (
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    NODEPROP_DATA	    *pObj = OBJ_NIL;
+    NODEPROP_DATA   *pObj = OBJ_NIL;
     bool            fRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -210,7 +218,14 @@ int             test_NodeProp_Test01 (
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);       
+        pObj->pName = AStr_NewA("Name");
+        pObj->pInternal = AStr_NewA("pName");
+        pObj->pShort = AStr_NewA("Name Description");
+        pObj->pTypeDef = AStr_NewA("ASTR_DATA");
+        pObj->vis = NODEPROP_VIS_PUBLIC;
+        pObj->fObj = 'T';
+
+        //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_NODEPROP);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
@@ -224,6 +239,183 @@ int             test_NodeProp_Test01 (
             }
         }
 
+        fprintf(stderr, "         1         2         3\n");
+        fprintf(stderr, "123456789012345678901234567890\n");
+        pStr = NodeProp_GenHdrDefn(pObj, "Class", "CLASS_DATA");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "Header:\n%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        fprintf(stderr, "         1         2         3\n");
+        fprintf(stderr, "123456789012345678901234567890\n");
+        pStr = NodeProp_GenCode(pObj, "Class", "CLASS_DATA");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "Header:\n%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        fprintf(stderr, "         1         2         3\n");
+        fprintf(stderr, "123456789012345678901234567890\n");
+        pObj->vis = NODEPROP_VIS_READ_ONLY;
+        pStr = NodeProp_GenIntVar(pObj, "Class", "CLASS_DATA");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "Header:\n%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_NodeProp_Test02 (
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    NODEPROP_DATA   *pObj = OBJ_NIL;
+    bool            fRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = NodeProp_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pObj->pName = AStr_NewA("name");
+        pObj->pExternal = AStr_NewA("xyzzy");
+        pObj->pInternal = AStr_NewA("pName");
+        pObj->pShort = AStr_NewA("Name Description");
+        pObj->pTypeDef = AStr_NewA("OBJ_ID");
+        pObj->vis = NODEPROP_VIS_PUBLIC;
+        pObj->fObj = 'T';
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_NODEPROP);
+        TINYTEST_TRUE( (fRc) );
+        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        {
+            ASTR_DATA       *pStr = NodeProp_ToDebugString(pObj, 0);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        fprintf(stderr, "         1         2         3\n");
+        fprintf(stderr, "123456789012345678901234567890\n");
+        pStr = NodeProp_GenHdrDefn(pObj, "Class", "CLASS_DATA");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "Header:\n%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        fprintf(stderr, "         1         2         3\n");
+        fprintf(stderr, "123456789012345678901234567890\n");
+        pStr = NodeProp_GenCode(pObj, "Class", "CLASS_DATA");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "Header:\n%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        fprintf(stderr, "         1         2         3\n");
+        fprintf(stderr, "123456789012345678901234567890\n");
+        pObj->vis = NODEPROP_VIS_READ_ONLY;
+        pStr = NodeProp_GenIntVar(pObj, "Class", "CLASS_DATA");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "Header:\n%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_NodeProp_Test03 (
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    NODEPROP_DATA   *pObj = OBJ_NIL;
+    bool            fRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = NodeProp_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pObj->pName = AStr_NewA("name");
+        pObj->pShort = AStr_NewA("Name Description");
+        pObj->pTypeDef = AStr_NewA("int32_t");
+        pObj->vis = NODEPROP_VIS_PUBLIC;
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_NODEPROP);
+        TINYTEST_TRUE( (fRc) );
+        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        {
+            ASTR_DATA       *pStr = NodeProp_ToDebugString(pObj, 0);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        fprintf(stderr, "         1         2         3\n");
+        fprintf(stderr, "123456789012345678901234567890\n");
+        pStr = NodeProp_GenHdrDefn(pObj, "Class", "CLASS_DATA");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "Header:\n%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        fprintf(stderr, "         1         2         3\n");
+        fprintf(stderr, "123456789012345678901234567890\n");
+        pObj->vis = NODEPROP_VIS_READ_ONLY;
+        pStr = NodeProp_GenHdrDefn(pObj, "Class", "CLASS_DATA");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "Header:\n%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        fprintf(stderr, "         1         2         3\n");
+        fprintf(stderr, "123456789012345678901234567890\n");
+        pStr = NodeProp_GenCode(pObj, "Class", "CLASS_DATA");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "Header:\n%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        fprintf(stderr, "         1         2         3\n");
+        fprintf(stderr, "123456789012345678901234567890\n");
+        pObj->vis = NODEPROP_VIS_READ_ONLY;
+        pStr = NodeProp_GenIntVar(pObj, "Class", "CLASS_DATA");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "Header:\n%s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -236,8 +428,10 @@ int             test_NodeProp_Test01 (
 
 
 TINYTEST_START_SUITE(test_NodeProp);
+    TINYTEST_ADD_TEST(test_NodeProp_Test03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_NodeProp_Test02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_NodeProp_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_NodeProp_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_NodeProp_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_NodeProp_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

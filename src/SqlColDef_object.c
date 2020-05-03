@@ -486,15 +486,12 @@ static
 const
 OBJ_INFO        SqlColDef_Info = {
     "SqlColDef",
-    "Separate SqlColDef",
+    "SQL Column Definition",
     (OBJ_DATA *)&SqlColDef_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&SqlColDef_Vtbl,
     sizeof(SQLCOLDEF_DATA)
 };
-#warning -- adjust super class object in Info above 
-//			if object inherits from another class
-//			Also, update description
 
 
 

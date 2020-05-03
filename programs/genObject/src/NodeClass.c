@@ -123,6 +123,138 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                     I m m u t a b l e
+    //---------------------------------------------------------------
+
+    bool            NodeClass_getImmutable (
+        NODECLASS_DATA  *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return this->fImmutable ? true : false;
+    }
+
+
+    bool            NodeClass_setImmutable (
+        NODECLASS_DATA  *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->fImmutable = value ? 'T' : 0;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      J s o n
+    //---------------------------------------------------------------
+
+    bool            NodeClass_getJson (
+        NODECLASS_DATA  *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return this->fJson ? true : false;
+    }
+
+
+    bool            NodeClass_setJson (
+        NODECLASS_DATA  *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->fJson = value ? 'T' : 0;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       N a m e
+    //---------------------------------------------------------------
+
+    ASTR_DATA * NodeClass_getName (
+        NODECLASS_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pName;
+    }
+
+
+    bool        NodeClass_setName (
+        NODECLASS_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pName) {
+            obj_Release(this->pName);
+        }
+        this->pName = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -166,6 +298,95 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      P r o p s
+    //---------------------------------------------------------------
+
+    OBJARRAY_DATA * NodeClass_getProps (
+        NODECLASS_DATA  *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pProps;
+    }
+
+
+    bool            NodeClass_setProps (
+        NODECLASS_DATA  *this,
+        OBJARRAY_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pProps) {
+            obj_Release(this->pProps);
+        }
+        this->pProps = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      S i n g l e t o n
+    //---------------------------------------------------------------
+
+    bool            NodeClass_getSingleton (
+        NODECLASS_DATA  *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return this->fSingleton ? true : false;
+    }
+
+
+    bool            NodeClass_setSingleton (
+        NODECLASS_DATA  *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->fSingleton = value ? 'T' : 0;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -187,14 +408,14 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
+    //                          S u p e r
     //---------------------------------------------------------------
     
-    ASTR_DATA * NodeClass_getStr (
+    ASTR_DATA * NodeClass_getSuper (
         NODECLASS_DATA     *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -203,12 +424,12 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
-        return this->pStr;
+
+        return this->pSuper;
     }
-    
-    
-    bool        NodeClass_setStr (
+
+
+    bool        NodeClass_setSuper (
         NODECLASS_DATA     *this,
         ASTR_DATA   *pValue
     )
@@ -222,20 +443,16 @@ extern "C" {
 #endif
 
         obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
+        if (this->pSuper) {
+            obj_Release(this->pSuper);
         }
-        this->pStr = pValue;
-        
+        this->pSuper = pValue;
+
         return true;
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                          S u p e r
-    //---------------------------------------------------------------
-    
+
+
+
     OBJ_IUNKNOWN *  NodeClass_getSuperVtbl (
         NODECLASS_DATA     *this
     )
@@ -311,36 +528,44 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
+        if (pOther->pName) {
+            obj_Release(pOther->pName);
+            pOther->pName = OBJ_NIL;
         }
-#endif
+        if (pOther->pProps) {
+            obj_Release(pOther->pProps);
+            pOther->pProps = OBJ_NIL;
+        }
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
+        if (this->pName) {
+            if (obj_getVtbl(this->pName)->pCopy) {
+                pOther->pName = obj_getVtbl(this->pName)->pCopy(this->pName);
             }
             else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
+                obj_Retain(this->pName);
+                pOther->pName = this->pName;
             }
         }
-#endif
+        if (this->pProps) {
+            if (obj_getVtbl(this->pProps)->pCopy) {
+                pOther->pProps = obj_getVtbl(this->pProps)->pCopy(this->pProps);
+            }
+            else {
+                obj_Retain(this->pProps);
+                pOther->pProps = this->pProps;
+            }
+        }
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        pOther->fImmutable = this->fImmutable;
+        pOther->fJson      = this->fJson;
+        pOther->fSingleton = this->fSingleton;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -486,7 +711,9 @@ extern "C" {
         }
 #endif
 
-        NodeClass_setStr(this, OBJ_NIL);
+        NodeClass_setName(this, OBJ_NIL);
+        NodeClass_setProps(this, OBJ_NIL);
+        NodeClass_setSuper(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -651,14 +878,12 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeClass_Vtbl);
         
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
+        this->pProps = ObjArray_New( );
+        if (OBJ_NIL == this->pProps) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
 
 #ifdef NDEBUG
 #else

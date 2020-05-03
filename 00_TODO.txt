@@ -119,6 +119,9 @@ will depend upon time and resources.
 --  FAT16
     --  finish when needed
 
+--  PList
+    --  See doc/plist.h
+
 --  Posix
     --  psxThread
         --  Add Thread Local Storage, szKey with void *pData. Maybe 1k for it. String size

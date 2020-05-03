@@ -1,0 +1,42 @@
+# vi:nu:et:sts=4 ts=4 sw=4
+
+
+class 	        :	"class" className ['(' superName ')'] '{' *fields '}'
+	            ;
+
+interface       :   "interface" interfaceName '{' *fields '}'
+                ;
+
+className       :   name
+                ;
+
+interfaceName   :   name
+                ;
+
+superName       :   name
+                ;
+
+name            :   [a..zA..Z_]	[a..zA..Z0..9_]*
+                ;
+
+fields          :   name ['*' ['*']] type vis ';'
+                ;
+
+type            :   'int8_t'
+                |   'uint8_t'
+                |   'int16_t'
+                |   'uint16_t'
+                |   'int32_t'
+                |   'uint32_t'
+                |   'int64_t'
+                |   'uint64_t'
+                |   'char'
+                |   'W32CHR_T'
+                |   '*' ['*'] className
+                ;
+
+vis             :   "public"
+                |   "read_only"
+                ;
+
+method          :   name '(' parms ')' ['*'] type ';'

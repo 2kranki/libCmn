@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
 //	Class Object Metods and Tables for 'Main'
-//	Generated 12/19/2019 08:55:05
+//	Generated 04/28/2020 23:01:38
 
 
 /*
@@ -163,6 +163,11 @@ MAIN_CLASS_DATA  Main_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  MAIN_SINGLETON
+extern
+const
+MAIN_VTBL       Main_VtblShared;
+
+
 MAIN_DATA *     Main_getSingleton (
     void
 )
@@ -213,6 +218,7 @@ MAIN_DATA *     Main_Shared (
     
     if (NULL == this) {
         this = Main_New( );
+        obj_setVtbl(this, (void *)&Main_VtblShared);
         Main_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
         // Main_ClassObj.pSingleton = OBJ_NIL;
@@ -230,6 +236,7 @@ void            Main_SharedReset (
     MAIN_DATA       *this = (OBJ_ID)(Main_ClassObj.pSingleton);
     
     if (this) {
+        obj_setVtbl(this, (void *)&Main_Vtbl);
         obj_Release(this);
         Main_ClassObj.pSingleton = OBJ_NIL;
     }
@@ -272,14 +279,18 @@ void *          MainClass_QueryInfo (
             break;
             
         // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
                         return (void *)&Main_Info;
+                    }
+                    break;
+                    
+                case 'S':
+                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                        return (void *)&Main_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -301,12 +312,28 @@ void *          MainClass_QueryInfo (
                     }
                     break;
                     
-                case 'P':
-                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return Main_ParseJsonObject;
-                    }
-                    break;
- 
+				case 'P':
+#ifdef  MAIN_JSON_SUPPORT
+					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+						return Main_ParseJsonFields;
+					}
+					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+						return Main_ParseJsonObject;
+					}
+#endif
+					break;
+
+				case 'T':
+#ifdef  MAIN_JSON_SUPPORT
+					if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+						return Main_ToJsonFields;
+					}
+					if (str_Compare("ToJson", (char *)pStr) == 0) {
+						return Main_ToJson;
+					}
+#endif
+					break;
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
                         return MainClass_WhoAmI;
@@ -387,18 +414,52 @@ uint16_t		Main_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
+#ifdef  MAIN_SINGLETON
+// A Shared object ignores Retain() and Release() except for
+// initialization and termination. So, there must be an
+// independent VTbl from the normal which does support Retain()
+// and Release().
+const
+MAIN_VTBL     Main_VtblShared = {
+    {
+        &Main_Info,
+        Main_IsKindOf,
+        obj_RetainNull,
+        obj_ReleaseNull,
+        Main_Dealloc,
+        Main_Class,
+        Main_WhoAmI,
+        (P_OBJ_QUERYINFO)Main_QueryInfo,
+        (P_OBJ_TOSTRING)Main_ToDebugString,
+        NULL,			// Main_Enable,
+        NULL,			// Main_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Main_Assign,
+        NULL,			// (P_OBJ_COMPARE)Main_Compare,
+        NULL, 			// (P_OBJ_PTR)Main_Copy,
+        NULL, 			// (P_OBJ_PTR)Main_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Main_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //Main_IsEnabled,
+ 
+};
+#endif
+
+
+// This VTbl supports Retain() and Release() which is
+// used by objects other than the Shared object. These
+// objects can still be shared among other objects. It
+// just that they are deleted when their usage count
+// goes to zero.
 const
 MAIN_VTBL     Main_Vtbl = {
     {
         &Main_Info,
         Main_IsKindOf,
-#ifdef  MAIN_IS_SINGLETON
-        obj_RetainNull,
-        obj_ReleaseNull,
-#else
         obj_RetainStandard,
         obj_ReleaseStandard,
-#endif
         Main_Dealloc,
         Main_Class,
         Main_WhoAmI,
@@ -425,9 +486,9 @@ static
 const
 OBJ_INFO        Main_Info = {
     "Main",
-    "Main",	// <-- Fill in description
+    "Main",
     (OBJ_DATA *)&Main_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&Appl_ClassObj,
     (OBJ_IUNKNOWN *)&Main_Vtbl,
     sizeof(MAIN_DATA)
 };

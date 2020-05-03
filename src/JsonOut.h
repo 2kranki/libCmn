@@ -153,6 +153,14 @@ extern "C" {
     );
     
     
+    void            JsonOut_Append_bool (
+        const
+        char            *pNameA,
+        bool            flag,
+        ASTR_DATA       *pStr
+    );
+
+
     void            JsonOut_Append_i16 (
         const
         char            *pNameA,
