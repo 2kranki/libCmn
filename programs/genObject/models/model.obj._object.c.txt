@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'Dict'
-//	Generated 12/19/2019 08:52:09
+//	Class Object Metods and Tables for '${LNAME}'
+//	Generated ${DATE} ${TIME}
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			DICT_OBJECT_C	    1
-#include        <Dict_internal.h>
-#ifdef  DICT_SINGLETON
+#define			${UNAME}_OBJECT_C	    1
+#include        <${LNAME}_internal.h>
+#ifdef  ${UNAME}_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct Dict_class_data_s	{
+struct ${LNAME}_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  DICT_SINGLETON
+#ifdef  ${UNAME}_SINGLETON
     volatile
-    DICT_DATA       *pSingleton;
+    ${UNAME}_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct Dict_class_data_s	{
 
 
 static
-void *          DictClass_QueryInfo (
+void *          ${LNAME}Class_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          DictClass_QueryInfo (
 
 static
 const
-OBJ_INFO        Dict_Info;            // Forward Reference
+OBJ_INFO        ${LNAME}_Info;            // Forward Reference
 
 
 
 
 static
-bool            DictClass_IsKindOf (
+bool            ${LNAME}Class_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_DICT_CLASS == classID) {
+    if (OBJ_IDENT_${UNAME}_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(Dict_Class())->pClassSuperObject;
+    pObj = obj_getInfo(${LNAME}_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            DictClass_IsKindOf (
 
 
 static
-uint16_t		DictClass_WhoAmI (
+uint16_t		${LNAME}Class_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_DICT_CLASS;
+    return OBJ_IDENT_${UNAME}_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		DictClass_WhoAmI (
 
 static
 const
-DICT_CLASS_VTBL    class_Vtbl = {
+${UNAME}_CLASS_VTBL    class_Vtbl = {
     {
-        &Dict_Info,
-        DictClass_IsKindOf,
+        &${LNAME}_Info,
+        ${LNAME}Class_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        Dict_Class,
-        DictClass_WhoAmI,
-        (P_OBJ_QUERYINFO)DictClass_QueryInfo,
-        NULL                        // DictClass_ToDebugString
+        ${LNAME}_Class,
+        ${LNAME}Class_WhoAmI,
+        (P_OBJ_QUERYINFO)${LNAME}Class_QueryInfo,
+        NULL                        // ${LNAME}Class_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ DICT_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-DICT_CLASS_DATA  Dict_ClassObj = {
+${UNAME}_CLASS_DATA  ${LNAME}_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(DICT_CLASS_DATA),                  // cbSize
+        sizeof(${UNAME}_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,22 @@ DICT_CLASS_DATA  Dict_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  DICT_SINGLETON
-DICT_DATA *     Dict_getSingleton (
+#ifdef  ${UNAME}_SINGLETON
+extern
+const
+${UNAME}_VTBL       ${LNAME}_VtblShared;
+
+
+${UNAME}_DATA *     ${LNAME}_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(Dict_ClassObj.pSingleton);
+    return (OBJ_ID)(${LNAME}_ClassObj.pSingleton);
 }
 
 
-bool            Dict_setSingleton (
-    DICT_DATA       *pValue
+bool            ${LNAME}_setSingleton (
+    ${UNAME}_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +197,10 @@ bool            Dict_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (Dict_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(Dict_ClassObj.pSingleton));
+    if (${LNAME}_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(${LNAME}_ClassObj.pSingleton));
     }
-    Dict_ClassObj.pSingleton = pValue;
+    ${LNAME}_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +210,18 @@ bool            Dict_setSingleton (
 
 
 
-DICT_DATA *     Dict_Shared (
+${UNAME}_DATA *     ${LNAME}_Shared (
     void
 )
 {
-    DICT_DATA       *this = (OBJ_ID)(Dict_ClassObj.pSingleton);
+    ${UNAME}_DATA       *this = (OBJ_ID)(${LNAME}_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = Dict_New( );
-        Dict_setSingleton(this);
+        this = ${LNAME}_New( );
+        obj_setVtbl(this, (void *)&${LNAME}_VtblShared);
+        ${LNAME}_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // Dict_ClassObj.pSingleton = OBJ_NIL;
+        // ${LNAME}_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +229,16 @@ DICT_DATA *     Dict_Shared (
 
 
 
-void            Dict_SharedReset (
+void            ${LNAME}_SharedReset (
     void
 )
 {
-    DICT_DATA       *this = (OBJ_ID)(Dict_ClassObj.pSingleton);
+    ${UNAME}_DATA       *this = (OBJ_ID)(${LNAME}_ClassObj.pSingleton);
     
     if (this) {
+        obj_setVtbl(this, (void *)&${LNAME}_Vtbl);
         obj_Release(this);
-        Dict_ClassObj.pSingleton = OBJ_NIL;
+        ${LNAME}_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +254,13 @@ void            Dict_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          DictClass_QueryInfo (
+void *          ${LNAME}Class_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    DICT_CLASS_DATA *this = objId;
+    ${UNAME}_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +271,7 @@ void *          DictClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(DICT_DATA);
+            return (void *)sizeof(${UNAME}_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -272,14 +279,18 @@ void *          DictClass_QueryInfo (
             break;
             
         // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&Dict_Info;
+                        return (void *)&${LNAME}_Info;
+                    }
+                    break;
+                    
+                case 'S':
+                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                        return (void *)&${LNAME}_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -297,19 +308,35 @@ void *          DictClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return Dict_New;
+                        return ${LNAME}_New;
                     }
                     break;
                     
-                case 'P':
-                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return Dict_ParseJsonObject;
-                    }
-                    break;
- 
+				case 'P':
+#ifdef  ${UNAME}_JSON_SUPPORT
+					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+						return ${LNAME}_ParseJsonFields;
+					}
+					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+						return ${LNAME}_ParseJsonObject;
+					}
+#endif
+					break;
+
+				case 'T':
+#ifdef  ${UNAME}_JSON_SUPPORT
+					if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+						return ${LNAME}_ToJsonFields;
+					}
+					if (str_Compare("ToJson", (char *)pStr) == 0) {
+						return ${LNAME}_ToJson;
+					}
+#endif
+					break;
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return DictClass_WhoAmI;
+                        return ${LNAME}Class_WhoAmI;
                     }
                     break;
                     
@@ -329,7 +356,7 @@ void *          DictClass_QueryInfo (
 
 
 static
-bool            Dict_IsKindOf (
+bool            ${LNAME}_IsKindOf (
     uint16_t		classID
 )
 {
@@ -337,14 +364,14 @@ bool            Dict_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_DICT == classID) {
+    if (OBJ_IDENT_${UNAME} == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(Dict_Class())->pClassSuperObject;
+    pObj = obj_getInfo(${LNAME}_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -358,25 +385,25 @@ bool            Dict_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            Dict_Dealloc (
+void            ${LNAME}_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          Dict_Class (
+OBJ_ID          ${LNAME}_Class (
     void
 )
 {
-    return (OBJ_ID)&Dict_ClassObj;
+    return (OBJ_ID)&${LNAME}_ClassObj;
 }
 
 
 static
-uint16_t		Dict_WhoAmI (
+uint16_t		${LNAME}_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_DICT;
+    return OBJ_IDENT_${UNAME};
 }
 
 
@@ -387,35 +414,69 @@ uint16_t		Dict_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
+#ifdef  ${UNAME}_SINGLETON
+// A Shared object ignores Retain() and Release() except for
+// initialization and termination. So, there must be an
+// independent VTbl from the normal which does support Retain()
+// and Release().
 const
-DICT_VTBL     Dict_Vtbl = {
+${UNAME}_VTBL     ${LNAME}_VtblShared = {
     {
-        &Dict_Info,
-        Dict_IsKindOf,
-#ifdef  DICT_IS_SINGLETON
+        &${LNAME}_Info,
+        ${LNAME}_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-#else
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-#endif
-        Dict_Dealloc,
-        Dict_Class,
-        Dict_WhoAmI,
-        (P_OBJ_QUERYINFO)Dict_QueryInfo,
-        (P_OBJ_TOSTRING)Dict_ToDebugString,
-        NULL,			// Dict_Enable,
-        NULL,			// Dict_Disable,
-        NULL,			// (P_OBJ_ASSIGN)Dict_Assign,
-        NULL,			// (P_OBJ_COMPARE)Dict_Compare,
-        NULL, 			// (P_OBJ_PTR)Dict_Copy,
-        NULL, 			// (P_OBJ_PTR)Dict_DeepCopy,
-        NULL 			// (P_OBJ_HASH)Dict_Hash,
+        ${LNAME}_Dealloc,
+        ${LNAME}_Class,
+        ${LNAME}_WhoAmI,
+        (P_OBJ_QUERYINFO)${LNAME}_QueryInfo,
+        (P_OBJ_TOSTRING)${LNAME}_ToDebugString,
+        NULL,			// ${LNAME}_Enable,
+        NULL,			// ${LNAME}_Disable,
+        NULL,			// (P_OBJ_ASSIGN)${LNAME}_Assign,
+        NULL,			// (P_OBJ_COMPARE)${LNAME}_Compare,
+        NULL, 			// (P_OBJ_PTR)${LNAME}_Copy,
+        NULL, 			// (P_OBJ_PTR)${LNAME}_DeepCopy,
+        NULL 			// (P_OBJ_HASH)${LNAME}_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Dict_IsEnabled,
+    //${LNAME}_IsEnabled,
+ 
+};
+#endif
+
+
+// This VTbl supports Retain() and Release() which is
+// used by objects other than the Shared object. These
+// objects can still be shared among other objects. It
+// just that they are deleted when their usage count
+// goes to zero.
+const
+${UNAME}_VTBL     ${LNAME}_Vtbl = {
+    {
+        &${LNAME}_Info,
+        ${LNAME}_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        ${LNAME}_Dealloc,
+        ${LNAME}_Class,
+        ${LNAME}_WhoAmI,
+        (P_OBJ_QUERYINFO)${LNAME}_QueryInfo,
+        (P_OBJ_TOSTRING)${LNAME}_ToDebugString,
+        NULL,			// ${LNAME}_Enable,
+        NULL,			// ${LNAME}_Disable,
+        NULL,			// (P_OBJ_ASSIGN)${LNAME}_Assign,
+        NULL,			// (P_OBJ_COMPARE)${LNAME}_Compare,
+        NULL, 			// (P_OBJ_PTR)${LNAME}_Copy,
+        NULL, 			// (P_OBJ_PTR)${LNAME}_DeepCopy,
+        NULL 			// (P_OBJ_HASH)${LNAME}_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //${LNAME}_IsEnabled,
  
 };
 
@@ -423,14 +484,17 @@ DICT_VTBL     Dict_Vtbl = {
 
 static
 const
-OBJ_INFO        Dict_Info = {
-    "Dict",
-    "Program Dictionary",
-    (OBJ_DATA *)&Dict_ClassObj,
-    (OBJ_DATA *)&NodeHash_ClassObj,
-    (OBJ_IUNKNOWN *)&Dict_Vtbl,
-    sizeof(DICT_DATA)
+OBJ_INFO        ${LNAME}_Info = {
+    "${LNAME}",
+    "${LNAME}",
+    (OBJ_DATA *)&${LNAME}_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_IUNKNOWN *)&${LNAME}_Vtbl,
+    sizeof(${UNAME}_DATA)
 };
+#warning -- adjust super class object in Info above 
+//			if object inherits from another class
+//			Also, update description
 
 
 

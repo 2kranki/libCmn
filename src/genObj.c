@@ -1014,6 +1014,85 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //          G e n e r a t e  M e t h o d  H e a d e r
+    //---------------------------------------------------------------
+
+    ERESULT         genObj_GenMethodHeader(
+        GENOBJ_DATA     *this,
+        ASTR_DATA       *pTitle,
+        ASTR_DATA       **ppStr             // (in/out)
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        int32_t         i;
+        W32CHR_T        chr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !genObj_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == ppStr) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        if (pTitle && (AStr_getSize(pTitle) > 0)) {
+            pStr = AStr_New();
+            if (OBJ_NIL == pStr) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+            for (i=0; i<AStr_getSize(pTitle); i++) {
+                chr = AStr_CharGetW32(pTitle, i+1);
+                if (i == 0) {
+                    chr = ascii_toUpperW32(chr);
+                } else {
+                    if (ascii_isUpperW32(chr)) {
+                        AStr_AppendA(pStr, " ");
+                    }
+                }
+                AStr_AppendCharW32(pStr, chr);
+                AStr_AppendA(pStr, " ");
+            }
+            if (pStr && (AStr_getSize(pStr) > 0)) {
+                i = 62 - AStr_getSize(pStr);
+                if (i > 1) {
+                    i >>= 1;
+                    AStr_CharInsertW32Repeat(pStr, 1, i, ' ');
+                }
+            }
+        }
+
+        if (OBJ_NIL == *ppStr) {
+            *ppStr = AStr_New();
+        }
+
+        AStr_AppendCharRepeatA(*ppStr, 4, ' ');
+        AStr_AppendA(*ppStr, "//");
+        AStr_AppendCharRepeatA(*ppStr, 62, '-');
+        AStr_AppendA(*ppStr, "\n");
+        AStr_AppendA(*ppStr, "//");
+        if (pStr && (AStr_getSize(pStr) > 0)) {
+            AStr_Append(*ppStr, pStr);
+        }
+        AStr_AppendA(*ppStr, "\n");
+        AStr_AppendCharRepeatA(*ppStr, 4, ' ');
+        AStr_AppendA(*ppStr, "//");
+        AStr_AppendCharRepeatA(*ppStr, 62, '-');
+        AStr_AppendA(*ppStr, "\n\n");
+
+        // Return to caller.
+        if (pStr) {
+            obj_Release(pStr);
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //          G e n e r a t e  G e t t e r  S e t t e r
     //---------------------------------------------------------------
     

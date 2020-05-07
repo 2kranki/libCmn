@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 5/ 2/2020 13:41:28.000)
+# ( 5/ 5/2020 20:35:26.000)
 
 PGMNAM=genObject
 SYS=macos64
@@ -44,14 +44,14 @@ OBJS =
 TESTS =
 
 
-OBJS += $(OBJDIR)/Dict.o
+OBJS += $(OBJDIR)/Gen.o
 
-$(OBJDIR)/Dict.o: $(SRCDIR)/Dict.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+$(OBJDIR)/Gen.o: $(SRCDIR)/Gen.c $(SRCDIR)/Gen.h $(SRCDIR)/Gen_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/Dict_object.o
+OBJS += $(OBJDIR)/Gen_object.o
 
-$(OBJDIR)/Dict_object.o: $(SRCDIR)/Dict_object.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+$(OBJDIR)/Gen_object.o: $(SRCDIR)/Gen_object.c $(SRCDIR)/Gen.h $(SRCDIR)/Gen_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Main.o
@@ -104,9 +104,9 @@ OBJS += $(OBJDIR)/SrcParse_object.o
 $(OBJDIR)/SrcParse_object.o: $(SRCDIR)/SrcParse_object.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-TESTS += Dict_test
+TESTS += Gen_test
 
-Dict_test: $(TEST_SRC)/Dict_test.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+Gen_test: $(TEST_SRC)/Gen_test.c $(SRCDIR)/Gen.h $(SRCDIR)/Gen_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

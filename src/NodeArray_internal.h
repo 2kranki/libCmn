@@ -93,7 +93,7 @@ struct NodeArray_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  NODEARRAY_SINGLETON
-    NODEARRAY_DATA *     NodeArray_getSingleton (
+    NODEARRAY_DATA * NodeArray_getSingleton (
         void
     );
 

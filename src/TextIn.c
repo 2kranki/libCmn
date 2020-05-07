@@ -1220,6 +1220,80 @@ extern "C" {
     }
 
 
+    ERESULT         TextIn_GetLineAStr (
+        TEXTIN_DATA     *this,
+        ASTR_DATA       **ppStr,
+        SRCLOC          *pLoc
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        W32CHR_T        chr;
+        int             len = 0;
+        SRCLOC          loc = {0};
+        bool            fMore = true;
+        bool            fLoc = false;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == ppStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        while (fMore) {
+            chr = TextIn_NextChar(this);
+            switch (chr) {
+                case '\n':
+                    fMore = false;
+                    break;
+                case '\r':
+                    break;
+                case ASCII_CPM_EOF:
+                case EOF:
+                    eRc = ERESULT_EOF_ERROR;
+                    fMore = false;
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                    break;
+                default:
+                    if (!fLoc) {
+                        loc = this->curChr.loc;
+                        fLoc = true;
+                    }
+                    eRc = AStr_AppendCharW32(pStr, chr);
+                    len++;
+                    if (this->upperLimit && (len >= this->upperLimit)) {
+                        fMore = false;
+                        (void)TextIn_SkipToEOL(this);
+                    }
+                    break;
+            }
+        }
+
+        // Return to caller.
+        if (pLoc) {
+            *pLoc = loc;
+        }
+        if (ppStr) {
+            *ppStr = pStr;
+        } else {
+            obj_Release(pStr);
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
     ERESULT         TextIn_GetLineW32 (
         TEXTIN_DATA     *this,
         int             size,

@@ -105,8 +105,8 @@ extern "C" {
         OBJ_GENOBJECT_IDENT_BASE=OBJ_IDENT_USER_ENTRIES,
         OBJ_IDENT_DICT,
         OBJ_IDENT_DICT_CLASS,
-        OBJ_IDENT_GENBASE,
-        OBJ_IDENT_GENBASE_CLASS,
+        OBJ_IDENT_GEN,
+        OBJ_IDENT_GEN_CLASS,
         //OBJ_IDENT_MAIN,                   // Defined in cmn_defs
         //OBJ_IDENT_MAIN_CLASS
         OBJ_IDENT_NODEBASE,

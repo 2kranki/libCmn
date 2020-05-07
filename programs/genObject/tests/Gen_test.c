@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated $C/$D/$Y $H:$M:$S
+ *	Generated 05/05/2020 09:59:00
  */
 
 
@@ -25,8 +25,8 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <$P_internal.h>
-#ifdef  $Q_JSON_SUPPORT
+#include    <Gen_internal.h>
+#ifdef  GEN_JSON_SUPPORT
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
@@ -55,7 +55,7 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  $Q_JSON_SUPPORT
+#ifdef  GEN_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
@@ -82,25 +82,25 @@ int             tearDown (
 
 
 
-int             test_$P_OpenClose (
+int             test_Gen_OpenClose (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    $Q_DATA	    *pObj = OBJ_NIL;
+    GEN_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = $P_Alloc( );
+    pObj = Gen_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = $P_Init( pObj );
+    pObj = Gen_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_$Q);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
         TINYTEST_TRUE( (fRc) );
         
         // Test something.
@@ -116,38 +116,38 @@ int             test_$P_OpenClose (
 
 
 
-int             test_$P_Copy01 (
+int             test_Gen_Copy01 (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    $Q_DATA	    *pObj1 = OBJ_NIL;
-    $Q_DATA	    *pObj2 = OBJ_NIL;
+    GEN_DATA	    *pObj1 = OBJ_NIL;
+    GEN_DATA	    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined($Q_JSON_SUPPORT) && defined(XYZZY)
+#if defined(GEN_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = $P_New( );
+    pObj1 = Gen_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_$Q);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_GEN);
         TINYTEST_TRUE( (fRc) );
         
         // Test assign.
-        pObj2 = $P_New();
+        pObj2 = Gen_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        eRc = $P_Assign(pObj1, pObj2);
+        eRc = Gen_Assign(pObj1, pObj2);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_$Q);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_GEN);
         TINYTEST_TRUE( (fRc) );
-        //eRc = $P_Compare(pObj1, pObj2);
+        //eRc = Gen_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -155,12 +155,12 @@ int             test_$P_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = $P_Copy(pObj1);
+        pObj2 = Gen_Copy(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_$Q);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_GEN);
         TINYTEST_TRUE( (fRc) );
-        //eRc = $P_Compare(pObj1, pObj2);
+        //eRc = Gen_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -168,17 +168,17 @@ int             test_$P_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined($Q_JSON_SUPPORT) && defined(XYZZY)
-        pStr = $P_ToJson(pObj1);
+#if defined(GEN_JSON_SUPPORT) && defined(XYZZY)
+        pStr = Gen_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = $P_NewFromJsonString(pStr);
+        pObj2 = Gen_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_$Q);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_GEN);
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = $P_Compare(pObj1, pObj2);
+        //eRc = Gen_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
@@ -195,28 +195,39 @@ int             test_$P_Copy01 (
 
 
 
-int             test_$P_Test01 (
+int             test_Gen_Test01 (
     const
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
-    $Q_DATA	    *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    GEN_DATA	    *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTR_DATA       *pStr2 = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = $P_New( );
+    pObj = Gen_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_$Q);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
         TINYTEST_TRUE( (fRc) );
-        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-        
+        pStr = AStr_NewA("Object Data");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        eRc = Gen_AddUpdateA(pObj, mem_StrDup(OBJECT_NAME), pStr);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pStr2 = Gen_FindA(pObj, OBJECT_NAME);
+        TINYTEST_FALSE( (OBJ_NIL == pStr2) );
+        fRc = obj_IsKindOf(pStr2, OBJ_IDENT_ASTR);
+        TINYTEST_TRUE( (fRc) );
+        eRc = AStr_CompareA(pStr2, "Object Data");
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+
         {
-            ASTR_DATA       *pStr = $P_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = Gen_ToDebugString(pObj, 0);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -235,13 +246,13 @@ int             test_$P_Test01 (
 
 
 
-TINYTEST_START_SUITE(test_$P);
-    TINYTEST_ADD_TEST(test_$P_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_$P_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_$P_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_Gen);
+    TINYTEST_ADD_TEST(test_Gen_Test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_Gen_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Gen_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_$P);
+TINYTEST_MAIN_SINGLE_SUITE(test_Gen);
 
 
 

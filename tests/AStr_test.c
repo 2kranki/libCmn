@@ -1226,7 +1226,7 @@ int         test_AStr_ExpandVars01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = AStr_ExpandVars(pObj, OBJ_NIL);
+        eRc = AStr_ExpandVars(pObj, NULL, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (len == AStr_getLength((ASTR_DATA *)pObj)) );
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
@@ -1269,7 +1269,7 @@ int         test_AStr_ExpandVars02(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = AStr_ExpandVars(pObj, OBJ_NIL);
+        eRc = AStr_ExpandVars(pObj, NULL, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
         XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_Compare((ASTR_DATA *)pObj, pStr)) );

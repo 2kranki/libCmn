@@ -256,6 +256,14 @@ extern "C" {
     );
 
 
+    void            eResult_ErrorFatalOnBool(
+        bool            fRc,
+        const
+        char            *fmt,
+        ...
+    );
+
+
     ERESULT_DATA *  eResult_New(
         void
     );

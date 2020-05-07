@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Main (Main) Header
+//                  Generate a File (Gen) Header
 //****************************************************************
 /*
  * Program
- *			Main (Main)
+ *			Generate a File (Gen)
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate Main to run things without complications
- *          of interfering with the main Main. A Main may be 
- *          called a Main on other O/S's.
+ *          a separate Gen to run things without complications
+ *          of interfering with the main Gen. A Gen may be 
+ *          called a Gen on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	04/28/2020 Generated
+ *	05/05/2020 Generated
  */
 
 
@@ -53,19 +53,18 @@
 
 #include        <genObject_defs.h>
 #include        <AStr.h>
-#include        <NodeClass.h>
-#include        <SrcParse.h>
 
 
-#ifndef         MAIN_H
-#define         MAIN_H
+#ifndef         GEN_H
+#define         GEN_H
 
 
-//#define   MAIN_IS_IMMUTABLE     1
-//#define   MAIN_JSON_SUPPORT     1
-#define   MAIN_SINGLETON        1
+//#define   GEN_IS_IMMUTABLE     1
+//#define   GEN_JSON_SUPPORT     1
+//#define   GEN_SINGLETON        1
 
-
+#define OBJECT_NAME         "LNAME"
+#define OBJECT_NAME_UPPER   "UNAME"
 
 
 
@@ -79,26 +78,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Main_data_s	MAIN_DATA;            // Inherits from OBJ
-    typedef struct Main_class_data_s MAIN_CLASS_DATA;   // Inherits from OBJ
+    typedef struct Gen_data_s	GEN_DATA;            // Inherits from OBJ
+    typedef struct Gen_class_data_s GEN_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Main_vtbl_s	{
+    typedef struct Gen_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Main_object.c.
+        // method names to the vtbl definition in Gen_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(MAIN_DATA *);
-    } MAIN_VTBL;
+        //bool        (*pIsEnabled)(GEN_DATA *);
+    } GEN_VTBL;
 
-    typedef struct Main_class_vtbl_s	{
+    typedef struct Gen_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Main_object.c.
+        // method names to the vtbl definition in Gen_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(MAIN_DATA *);
-    } MAIN_CLASS_VTBL;
+        //bool        (*pIsEnabled)(GEN_DATA *);
+    } GEN_CLASS_VTBL;
 
 
 
@@ -112,12 +111,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  MAIN_SINGLETON
-    MAIN_DATA *     Main_Shared (
+#ifdef  GEN_SINGLETON
+    GEN_DATA *      Gen_Shared (
         void
     );
 
-    void            Main_SharedReset (
+    void            Gen_SharedReset (
         void
     );
 #endif
@@ -127,29 +126,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Main object if successful, otherwise OBJ_NIL.
+     @return    pointer to Gen object if successful, otherwise OBJ_NIL.
      */
-    MAIN_DATA *     Main_Alloc (
+    GEN_DATA *      Gen_Alloc (
         void
     );
     
     
-    OBJ_ID          Main_Class (
+    OBJ_ID          Gen_Class (
         void
     );
     
     
-    MAIN_DATA *     Main_New (
+    GEN_DATA *      Gen_New (
         void
     );
     
     
-#ifdef  MAIN_JSON_SUPPORT
-    MAIN_DATA *   Main_NewFromJsonString (
+#ifdef  GEN_JSON_SUPPORT
+    GEN_DATA *      Gen_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    MAIN_DATA *   Main_NewFromJsonStringA (
+    GEN_DATA *      Gen_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -168,64 +167,57 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    int             Main_Exec(
-        MAIN_DATA       *this
+    ERESULT         Gen_AddUpdateA(
+        GEN_DATA        *this,
+        const
+        char            *pNameA,
+        ASTR_DATA       *pData
     );
 
 
-    MAIN_DATA *     Main_Init (
-        MAIN_DATA       *this
-    );
-
-
-    /*!
-     Parse the given input file resetting any prior parse data and
-     building the appropriate node tables from the JSON. The parser
-     and its tables will be saved internally for later phases of
-     the generation process.
-     @param     this        object pointer
-     @param     pPath       JSON Input File Path
-     @return    If successful, ERESULT_SUCCESS.  Otherwise,
-                an ERESULT_* error code
-     */
-    ERESULT         Main_ParseInputFile(
-        MAIN_DATA       *this,
-        PATH_DATA       *pPath
+    ASTR_DATA *     Gen_FindA (
+        GEN_DATA		*this,
+        const
+        char            *pNameA
     );
 
 
     /*!
-     Set up to parse the given input resetting any prior parse data.
-     @param     this        object pointer
-     @param     cArgs       number of charater strings in ppArgs
-     @param     ppArgV      pointer to a charater string array
-     @param     ppEnv       pointer to a charater string array
-     @return    If successful, ERESULT_SUCCESS.  Otherwise,
-     an ERESULT_* error code
+     Expand the variables (of the form ${...}) in the model file creating
+     the output file.
+     @param     this    object pointer
+     @param     pModel  Model File Path to be expanded
+     @param     pOutput Output File Path
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
      */
-    ERESULT         Main_SetupFromArgV(
-        MAIN_DATA       *this,
-        uint16_t        cArgs,
-        char            *ppArgV[],
-        char            **ppEnv
+    ERESULT         Gen_ExpandFile (
+        GEN_DATA		*this,
+        PATH_DATA       *pModel,
+        PATH_DATA       *pOutput
+    );
+
+   
+    GEN_DATA *      Gen_Init (
+        GEN_DATA        *this
     );
 
 
-#ifdef  MAIN_JSON_SUPPORT
+#ifdef  GEN_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Main_ToJson(this);
+     ASTR_DATA      *pDesc = Gen_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Main_ToJson (
-        MAIN_DATA   *this
+    ASTR_DATA *     Gen_ToJson (
+        GEN_DATA        *this
     );
 #endif
 
@@ -234,7 +226,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Main_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Gen_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -242,8 +234,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Main_ToDebugString (
-        MAIN_DATA     *this,
+    ASTR_DATA *     Gen_ToDebugString (
+        GEN_DATA        *this,
         int             indent
     );
     
@@ -254,5 +246,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* MAIN_H */
+#endif	/* GEN_H */
 

@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 5/ 3/2020 15:29:52.000)
+# ( 5/ 7/2020  2:07:39.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -689,16 +689,6 @@ $(OBJDIR)/Path_json.o: $(SRCDIR)/Path_json.c $(SRCDIR)/Path.h $(SRCDIR)/Path_int
 OBJS += $(OBJDIR)/Path_object.o
 
 $(OBJDIR)/Path_object.o: $(SRCDIR)/Path_object.c $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/SRecords.o
-
-$(OBJDIR)/SRecords.o: $(SRCDIR)/SRecords.c $(SRCDIR)/SRecords.h $(SRCDIR)/SRecords_internal.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/SRecords_object.o
-
-$(OBJDIR)/SRecords_object.o: $(SRCDIR)/SRecords_object.c $(SRCDIR)/SRecords.h $(SRCDIR)/SRecords_internal.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Scanner.o
@@ -2224,12 +2214,6 @@ Parser_test: $(TEST_SRC)/Parser_test.c $(SRCDIR)/Parser.h $(SRCDIR)/Parser_inter
 TESTS += Path_test
 
 Path_test: $(TEST_SRC)/Path_test.c $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += SRecords_test
-
-SRecords_test: $(TEST_SRC)/SRecords_test.c $(SRCDIR)/SRecords.h $(SRCDIR)/SRecords_internal.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

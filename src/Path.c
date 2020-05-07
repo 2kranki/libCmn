@@ -357,6 +357,116 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                          P a t h
+    //---------------------------------------------------------------
+
+    ERESULT         Path_CleanAStr(
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i;
+        int32_t         chr1;
+        int32_t         chr2;
+        int32_t         chr3;
+        char            *pszHome;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(pStr) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (0 == AStr_getLength(pStr)) {
+            return ERESULT_SUCCESS;
+        }
+
+        if ((AStr_getLength(pStr)) >= 1) {
+            chr1 = AStr_CharGetW32(pStr, 1);
+            if( chr1 == '~' ) {
+                pszHome = getenv("HOME");
+                if (pszHome && (str_LengthA(pszHome) > 1)) {
+                    eRc = AStr_Remove(pStr, 1, 1);
+                    if (ERESULT_IS_SUCCESSFUL(eRc)) {
+                        AStr_InsertA(pStr, 1, pszHome);
+                    }
+                }
+                else {
+                    pszHome = getenv("HOMEDRIVE");
+                    if (pszHome && (str_LengthA(pszHome) > 1)) {
+                        const
+                        char            *pszPath;
+                        pszPath = getenv("HOMEDRIVE");
+                    }
+
+                }
+            }
+        }
+
+        for (i=0; i<AStr_getLength(pStr); ++i) {
+            if ((AStr_getLength(pStr) - i) >= 2) {
+                chr1 = AStr_CharGetW32(pStr, i+1);
+                chr2 = AStr_CharGetW32(pStr, i+2);
+                if( (chr1 == '/') && (chr2 == '/') ) {
+                    eRc = AStr_Remove(pStr, (i + 1), 1 );
+                    if (ERESULT_HAS_FAILED(eRc)) {
+                        ;
+                    }
+                    continue;
+                }
+            }
+            if ((AStr_getLength(pStr) - i) >= 3) {
+                chr1 = AStr_CharGetW32(pStr, i+1);
+                chr2 = AStr_CharGetW32(pStr, i+2);
+                chr3 = AStr_CharGetW32(pStr, i+3);
+                if( (chr1 == '/') && (chr2 == '.') && (chr3 == '/') ) {
+                    eRc = AStr_Remove(pStr, (i + 1), 2 );
+                    if (ERESULT_HAS_FAILED(eRc)) {
+                        ;
+                    }
+                    continue;
+                }
+            }
+        }
+
+        i = AStr_getLength(pStr);
+        if (i >= 3) {
+            chr1 = AStr_CharGetW32(pStr, i-2);
+            chr2 = AStr_CharGetW32(pStr, i-1);
+            chr3 = AStr_CharGetW32(pStr, i);
+            if( (chr1 == '/') && (chr2 == '.') && (chr3 == '/') ) {
+                eRc = AStr_Remove(pStr, (i - 2), 2 );
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    ;
+                }
+            }
+        }
+
+        for (;;) {
+            i = AStr_getLength(pStr);
+            chr1 = AStr_CharGetW32(pStr, i);
+            if ((chr1 == '/') && (i > 1)) {
+                eRc = AStr_Remove(pStr, i, 1 );
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    ;
+                }
+            }
+            else
+                break;
+        }
+
+        eRc = AStr_ExpandVars(pStr, NULL, OBJ_NIL);
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
 
 
     //===============================================================
@@ -416,7 +526,7 @@ extern "C" {
         }
 #endif
 
-        return 0;
+        return AStr_getSize(Path_getAStr(this));
     }
 
 
@@ -804,17 +914,6 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        uint32_t        i;
-#ifdef FUTURE_OPTION
-        uint32_t        j;
-#endif
-        int32_t         chr1;
-        int32_t         chr2;
-        int32_t         chr3;
-        char            *pszHome;
-#ifdef FUTURE_OPTION
-        bool            fMore = true;
-#endif
 
         // Do initialization.
 #ifdef NDEBUG
@@ -825,88 +924,10 @@ extern "C" {
         }
 #endif
 
-        if (0 == AStr_getLength((ASTR_DATA *)this)) {
-            return ERESULT_SUCCESS;
-        }
-
-        if ((AStr_getLength((ASTR_DATA *)this)) >= 1) {
-            chr1 = AStr_CharGetW32((ASTR_DATA *)this, 1);
-            if( chr1 == '~' ) {
-                pszHome = getenv("HOME");
-                if (pszHome && (str_LengthA(pszHome) > 1)) {
-                    eRc = AStr_Remove((ASTR_DATA *)this, 1, 1);
-                    if (ERESULT_IS_SUCCESSFUL(eRc)) {
-                        AStr_InsertA((ASTR_DATA *)this, 1, pszHome);
-                    }
-                }
-                else {
-                    pszHome = getenv("HOMEDRIVE");
-                    if (pszHome && (str_LengthA(pszHome) > 1)) {
-                        const
-                        char            *pszPath;
-                        pszPath = getenv("HOMEDRIVE");
-                    }
-
-                }
-            }
-        }
-
-        for (i=0; i<AStr_getLength((ASTR_DATA *)this); ++i) {
-            if ((AStr_getLength((ASTR_DATA *)this) - i) >= 2) {
-                chr1 = AStr_CharGetW32((ASTR_DATA *)this, i+1);
-                chr2 = AStr_CharGetW32((ASTR_DATA *)this, i+2);
-                if( (chr1 == '/') && (chr2 == '/') ) {
-                    eRc = AStr_Remove((ASTR_DATA *)this, (i + 1), 1 );
-                    if (ERESULT_HAS_FAILED(eRc)) {
-                        ;
-                    }
-                    continue;
-                }
-            }
-            if ((AStr_getLength((ASTR_DATA *)this) - i) >= 3) {
-                chr1 = AStr_CharGetW32((ASTR_DATA *)this, i+1);
-                chr2 = AStr_CharGetW32((ASTR_DATA *)this, i+2);
-                chr3 = AStr_CharGetW32((ASTR_DATA *)this, i+3);
-                if( (chr1 == '/') && (chr2 == '.') && (chr3 == '/') ) {
-                    eRc = AStr_Remove((ASTR_DATA *)this, (i + 1), 2 );
-                    if (ERESULT_HAS_FAILED(eRc)) {
-                        ;
-                    }
-                    continue;
-                }
-            }
-        }
-
-        i = AStr_getLength((ASTR_DATA *)this);
-        if (i >= 3) {
-            chr1 = AStr_CharGetW32((ASTR_DATA *)this, i-2);
-            chr2 = AStr_CharGetW32((ASTR_DATA *)this, i-1);
-            chr3 = AStr_CharGetW32((ASTR_DATA *)this, i);
-            if( (chr1 == '/') && (chr2 == '.') && (chr3 == '/') ) {
-                eRc = AStr_Remove((ASTR_DATA *)this, (i - 2), 2 );
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    ;
-                }
-            }
-        }
-
-        for (;;) {
-            i = AStr_getLength((ASTR_DATA *)this);
-            chr1 = AStr_CharGetW32((ASTR_DATA *)this, i);
-            if ((chr1 == '/') && (i > 1)) {
-                eRc = AStr_Remove((ASTR_DATA *)this, i, 1 );
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    ;
-                }
-            }
-            else
-                break;
-        }
-
-        eRc = Path_ExpandVars(this, OBJ_NIL);
+        eRc = Path_CleanAStr(Path_getAStr(this));
 
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -1399,7 +1420,9 @@ extern "C" {
 
     ERESULT         Path_ExpandVars(
         PATH_DATA       *this,
-        OBJ_ID          pHash
+        const
+        char *          (*pFindA)(OBJ_ID, const char *pName),
+        OBJ_ID          pFindObj
     )
     {
         ERESULT         eRc;
@@ -1413,7 +1436,7 @@ extern "C" {
         }
 #endif
 
-        eRc = AStr_ExpandVars((ASTR_DATA *)this, pHash);
+        eRc = AStr_ExpandVars((ASTR_DATA *)this, pFindA, pFindObj);
 
         // Return to caller.
         return eRc;
@@ -2131,6 +2154,81 @@ extern "C" {
 
             // Return to caller.
             return ERESULT_SUCCESS;
+        }
+
+
+
+        //---------------------------------------------------------------
+        //                          S p l i t
+        //---------------------------------------------------------------
+
+        ERESULT         Path_Split(
+            PATH_DATA        *this,
+            ASTR_DATA       **ppDrive,
+            ASTR_DATA       **ppDir,
+            ASTR_DATA       **ppFileName,
+            ASTR_DATA       **ppExt
+        )
+        {
+            ERESULT         eRc;
+            PATH_DATA       *pDir = OBJ_NIL;
+            PATH_DATA       *pFileName = OBJ_NIL;
+            ASTR_DATA       *pDrive = OBJ_NIL;
+            ASTR_DATA       *pDir2 = OBJ_NIL;
+            ASTR_DATA       *pFileName2 = OBJ_NIL;
+            ASTR_DATA       *pExt = OBJ_NIL;
+
+            // Do initialization.
+    #ifdef NDEBUG
+    #else
+            if( !Path_Validate(this) ) {
+                DEBUG_BREAK();
+                return ERESULT_INVALID_OBJECT;
+            }
+    #endif
+
+            eRc = Path_SplitPath(this, ppDrive, &pDir, &pFileName);
+            if (ERESULT_FAILED(eRc)) {
+                goto eom;
+            }
+            eRc = Path_SplitFile(pFileName, ppFileName, ppExt);
+            if (ERESULT_FAILED(eRc)) {
+                goto eom;
+            }
+            if (pDir) {
+                pDir2 = AStr_Copy(Path_getAStr(pDir));
+            }
+
+            // Return to caller.
+        eom:
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pDrive);
+                obj_Release(pDir);
+                obj_Release(pFileName);
+                obj_Release(pDir2);
+                obj_Release(pFileName2);
+                obj_Release(pExt);
+            } else {
+                if (ppDrive)
+                    *ppDrive = pDrive;
+                else
+                    obj_Release(pDrive);
+                if (ppDir)
+                    *ppDir = pDir2;
+                else
+                    obj_Release(pDir2);
+                if (ppFileName)
+                    *ppFileName = pFileName2;
+                else
+                    obj_Release(pFileName2);
+                if (ppExt)
+                    *ppExt = pExt;
+                else
+                    obj_Release(pExt);
+                obj_Release(pDir);
+                obj_Release(pFileName);
+            }
+            return eRc;
         }
 
 

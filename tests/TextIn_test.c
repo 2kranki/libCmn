@@ -464,8 +464,66 @@ int             test_TextIn_GetLine03(
 
 
 
+int             test_TextIn_GetLine04(
+    const
+    char            *pTestName
+)
+{
+    TEXTIN_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTR_DATA       *pLine = OBJ_NIL;
+    ERESULT         eRc;
+    SRCLOC          loc = {0};
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pStr = AStr_NewA("abc\n\ndef\n");
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+    pObj = TextIn_NewFromAStr(OBJ_NIL, pStr, 1, 4);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pLine) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pLine, "abc")) );
+        obj_Release(pLine);
+        pLine = OBJ_NIL;
+
+        eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pLine) );
+        TINYTEST_TRUE( (0 == AStr_getSize(pLine)) );
+        obj_Release(pLine);
+        pLine = OBJ_NIL;
+
+        eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pLine) );
+        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pLine, "def")) );
+        obj_Release(pLine);
+        pLine = OBJ_NIL;
+
+        eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
+        TINYTEST_FALSE( (eRc == ERESULT_EOF_ERROR) );
+        TINYTEST_TRUE( (OBJ_NIL == pLine) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_TextIn);
+    TINYTEST_ADD_TEST(test_TextIn_GetLine04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TextIn_GetLine03,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_TextIn_GetLine02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TextIn_GetLine01,setUp,tearDown);

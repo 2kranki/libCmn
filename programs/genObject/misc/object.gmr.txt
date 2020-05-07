@@ -32,7 +32,7 @@ type            :   'int8_t'
                 |   'uint64_t'
                 |   'char'
                 |   'W32CHR_T'
-                |   '*' ['*'] className
+                |   className
                 ;
 
 vis             :   "public"

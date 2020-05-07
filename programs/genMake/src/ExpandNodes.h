@@ -119,11 +119,11 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  EXPANDNODES_SINGLETON
-    EXPANDNODES_DATA *     ExpandNodes_Shared (
+    EXPANDNODES_DATA *  ExpandNodes_Shared (
         void
     );
 
-    bool            ExpandNodes_SharedReset (
+    bool                ExpandNodes_SharedReset (
         void
     );
 #endif

@@ -8,7 +8,7 @@
         main:"mainProgram.c"
     },
     "objects":[
-        {name:"Dict"},
+        {name:"Gen", desc:"Generate a file"},
         {name:"Main"},
         {name:"NodeClass", json:true, desc:"Class Definition"},
         {name:"NodeProp", json:true, desc:"Class Property Definition"},

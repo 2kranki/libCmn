@@ -2034,21 +2034,11 @@ extern "C" {
     //                  E x p a n d  V a r i a b l e s
     //---------------------------------------------------------------
     
-    /*!
-     Substitute hash values or environment variables into the current string
-     using a BASH-like syntax with the hash value having the highest priority.
-     Variable names should have the syntax of:
-     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
-     Substitutions are not rescanned after insertion.
-     @param     this    object pointer
-     @param     pHash   optional node hash pointer where the node's data is a
-     path or astr kind object.
-     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
-     is returned.
-     */
     ERESULT         AStr_ExpandVars(
         ASTR_DATA       *this,
-        OBJ_ID          pHash
+        const
+        char *          (*pFindA)(OBJ_ID, const char *pName),
+        OBJ_ID          pFindObj
     )
     {
         ERESULT         eRc;
@@ -2061,23 +2051,13 @@ extern "C" {
         ASTR_DATA       *pName = OBJ_NIL;
         const
         char            *pEnvVar = NULL;
-        NODE_DATA       *pNode = OBJ_NIL;
-        OBJ_ID          pData;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
-        }
-        if (pHash) {
-            if(obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH))
-                ;
-            else {
-                DEBUG_BREAK();
-                return ERESULT_INVALID_PARAMETER;
-            }
         }
 #endif
         
@@ -2106,26 +2086,10 @@ extern "C" {
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_OUT_OF_MEMORY;
                     }
-                    if (pHash) {
-                        pNode = NodeHash_FindA(pHash, 0, AStr_getData(pName));
-                        if (pNode) {
-                            pData = Node_getData(pNode);
-                            if (obj_IsKindOf(this, OBJ_IDENT_ASTR)
-                                || obj_IsKindOf(this, OBJ_IDENT_PATH)) {
-                                pEnvVar = AStr_getData((ASTR_DATA *)pData);
-                            }
-                            else if (obj_IsKindOf(this, OBJ_IDENT_ASTRC)) {
-                                pEnvVar = AStrC_getData((ASTRC_DATA *)pData);
-                            }
-                            if (OBJ_NIL == pEnvVar) {
-                                pEnvVar = getenv(AStr_getData(pName));
-                                if (NULL == pEnvVar) {
-                                    obj_Release(pName);
-                                    return ERESULT_DATA_NOT_FOUND;
-                                }
-                            }
-                        }
-                    } else {
+                    if (pFindA) {
+                        pEnvVar = pFindA(pFindObj, AStr_getData(pName));
+                    }
+                    if (NULL == pEnvVar) {
                         pEnvVar = getenv(AStr_getData(pName));
                         if (NULL == pEnvVar) {
                             obj_Release(pName);

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   ${LNAME}.c
- *	Generated ${DATE} ${TIME}
+ * File:   Gen.c
+ *	Generated 05/05/2020 09:59:00
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <${LNAME}_internal.h>
+#include        <Gen_internal.h>
 #include        <trace.h>
 
 
@@ -62,16 +62,20 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            ${LNAME}_task_body (
+    ERESULT         DictDeleteExit(
+        OBJ_ID          this,
+        void            *pKey,
         void            *pData
     )
     {
-        //${UNAME}_DATA  *this = pData;
-        
+        if (pKey)
+            mem_Free(pKey);
+        if (pData)
+            obj_Release(pData);
+
+        return ERESULT_SUCCESS;
     }
-#endif
 
 
 
@@ -84,12 +88,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    ${UNAME}_DATA *     ${LNAME}_Alloc (
+    GEN_DATA *     Gen_Alloc (
         void
     )
     {
-        ${UNAME}_DATA       *this;
-        uint32_t        cbSize = sizeof(${UNAME}_DATA);
+        GEN_DATA       *this;
+        uint32_t        cbSize = sizeof(GEN_DATA);
         
         // Do initialization.
         
@@ -101,15 +105,15 @@ extern "C" {
 
 
 
-    ${UNAME}_DATA *     ${LNAME}_New (
+    GEN_DATA *     Gen_New (
         void
     )
     {
-        ${UNAME}_DATA       *this;
+        GEN_DATA       *this;
         
-        this = ${LNAME}_Alloc( );
+        this = Gen_Alloc( );
         if (this) {
-            this = ${LNAME}_Init(this);
+            this = Gen_Init(this);
         } 
         return this;
     }
@@ -123,18 +127,64 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          P r i o r i t y
+    //                      D i c t i o n a r y
     //---------------------------------------------------------------
-    
-    uint16_t        ${LNAME}_getPriority (
-        ${UNAME}_DATA     *this
+
+    SZBT_DATA *     Gen_getDict (
+        GEN_DATA        *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pDict;
+    }
+
+
+    bool            Gen_setDict (
+        GEN_DATA        *this,
+        SZBT_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pDict) {
+            obj_Release(this->pDict);
+        }
+        this->pDict = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        Gen_getPriority (
+        GEN_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -145,14 +195,14 @@ extern "C" {
     }
 
 
-    bool            ${LNAME}_setPriority (
-        ${UNAME}_DATA     *this,
+    bool            Gen_setPriority (
+        GEN_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -169,13 +219,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        ${LNAME}_getSize (
-        ${UNAME}_DATA       *this
+    uint32_t        Gen_getSize (
+        GEN_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -187,64 +237,18 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * ${LNAME}_getStr (
-        ${UNAME}_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!${LNAME}_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        ${LNAME}_setStr (
-        ${UNAME}_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!${LNAME}_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  ${LNAME}_getSuperVtbl (
-        ${UNAME}_DATA     *this
+    OBJ_IUNKNOWN *  Gen_getSuperVtbl (
+        GEN_DATA        *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -264,6 +268,54 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          A d d
+    //---------------------------------------------------------------
+
+    ERESULT         Gen_AddUpdateA(
+        GEN_DATA        *this,
+        const
+        char            *pNameA,
+        ASTR_DATA       *pData
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (OBJ_NIL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        if (OBJ_NIL == this->pDict) {
+            this->pDict = szBT_New();
+            if (OBJ_NIL == this->pDict) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+            szBT_setDeleteExit(this->pDict, DictDeleteExit, OBJ_NIL);
+        }
+
+        eRc = szBT_AddUpdateA(this->pDict, pNameA, pData);
+
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -273,16 +325,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = ${LNAME}_Assign(this,pOther);
+        ERESULT eRc = Gen_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another ${UNAME} object
+     @param     pOther  a pointer to another GEN object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         ${LNAME}_Assign (
-        ${UNAME}_DATA		*this,
-        ${UNAME}_DATA     *pOther
+    ERESULT         Gen_Assign (
+        GEN_DATA		*this,
+        GEN_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -290,11 +342,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!${LNAME}_Validate(pOther)) {
+        if (!Gen_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -355,9 +407,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         ${LNAME}_Compare (
-        ${UNAME}_DATA     *this,
-        ${UNAME}_DATA     *pOther
+    ERESULT         Gen_Compare (
+        GEN_DATA     *this,
+        GEN_DATA     *pOther
     )
     {
         int             i = 0;
@@ -371,11 +423,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!${LNAME}_Validate(pOther)) {
+        if (!Gen_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -413,36 +465,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ${LNAME}      *pCopy = ${LNAME}_Copy(this);
+        Gen      *pCopy = Gen_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ${UNAME} object which must be 
+     @return    If successful, a GEN object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ${UNAME}_DATA *     ${LNAME}_Copy (
-        ${UNAME}_DATA       *this
+    GEN_DATA *     Gen_Copy (
+        GEN_DATA       *this
     )
     {
-        ${UNAME}_DATA       *pOther = OBJ_NIL;
+        GEN_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef ${UNAME}_IS_IMMUTABLE
+#ifdef GEN_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = ${LNAME}_New( );
+        pOther = Gen_New( );
         if (pOther) {
-            eRc = ${LNAME}_Assign(this, pOther);
+            eRc = Gen_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -457,14 +509,180 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //               C r e a t e  O u t p u t  P a t h
+    //---------------------------------------------------------------
+
+    PATH_DATA *     Gen_CreateOutputFileName (
+        GEN_DATA        *this,
+        PATH_DATA       *pModel,
+        const
+        char            *pObjectNameA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pDrive = OBJ_NIL;
+        PATH_DATA       *pDir = OBJ_NIL;
+        PATH_DATA       *pFileName = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Gen_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if ((OBJ_NIL == pModel) || (Path_getSize(pModel) < 15)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+        if (NULL == pObjectNameA) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+
+        eRc = Path_SplitPath(pModel, &pDrive, &pDir, &pFileName);
+        eResult_ErrorFatalOn(
+                        eRc,
+                        "Failed to create path \"%s\" \n",
+                        Path_getData(pModel)
+        );
+        obj_Release(pDrive);
+        pDrive = OBJ_NIL;
+        obj_Release(pDir);
+        pDir = OBJ_NIL;
+        eRc = AStr_CompareLeftA(Path_getAStr(pFileName), "model.obj.");
+        eResult_ErrorFatalOnBool(
+                        (eRc != ERESULT_SUCCESS_EQUAL),
+                        "Model Path is not \"model.obj.X.txt, %s!\n",
+                        Path_getData(pModel)
+        );
+        eRc = AStr_CompareRightA(Path_getAStr(pFileName), ".txt");
+        eResult_ErrorFatalOnBool(
+                        (eRc != ERESULT_SUCCESS_EQUAL),
+                        "Model Path is not \"model.obj.X.txt, %s!\n",
+                        Path_getData(pModel)
+        );
+
+        eRc =   AStr_Mid(
+                       Path_getAStr(pFileName),
+                       11,
+                       (Path_getSize(pFileName) - 14),
+                       &pStr
+                );
+        eResult_ErrorFatalOn(
+                        eRc,
+                        "Model Path is not \"model.obj.X.txt, %s!\n",
+                        Path_getData(pModel)
+        );
+        eRc = AStr_InsertA(pStr, 1, pObjectNameA);
+        eResult_ErrorFatalOn(
+                        eRc,
+                        "Failed to build output filename for %s!\n",
+                        Path_getData(pModel)
+        );
+        //fprintf(stderr, "pStr: %s\n", AStr_getData(pStr));
+
+        //eRc = Path_MatchPath(pPath, pOutDrv, pOutDir, pFileName);
+#ifdef XYZZY
+        pPath = Path_NewFromAStr(pStr);
+        Appl_ErrorFatalOnBool(
+                    (OBJ_NIL == pPath),
+                    "FATAL - Failed to create path \"from\" \n"
+        );
+        eRc = Path_Clean(pPath);
+        Appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - File, %s, does not exist or is not a file!\n",
+                    Path_getData(pPath)
+        );
+        eRc = Path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
+        Appl_ErrorFatalOnEresult(
+                    eRc,
+                    "FATAL - Unable to extract directory from File, %s!\n",
+                    Path_getData(pPath)
+        );
+
+        // Create the output file path if given.
+        pMakefile = Path_NewA("Makefile.");
+        if (OBJ_NIL == pMakefile) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL - Unable to create Makefile name!\n"
+                    );
+            exit(EXIT_FAILURE);
+        }
+        eRc = Path_AppendA(pMakefile, this->pOsName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(
+                    stderr,
+                    "FATAL - Unable to create Makefile name!\n"
+                    );
+            exit(EXIT_FAILURE);
+        }
+        eRc = Path_AppendA(pMakefile, ".txt");
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(
+                    stderr,
+                    "FATAL - Unable to create Makefile name!\n"
+                    );
+            exit(EXIT_FAILURE);
+        }
+        pMakepath = Path_NewFromDriveDirFilename(pDrive, pDir, pMakefile);
+        if (OBJ_NIL == pMakefile) {
+            DEBUG_BREAK();
+            fprintf(
+                    stderr,
+                    "FATAL - Unable to create Makepath!\n"
+                    );
+            exit(EXIT_FAILURE);
+        }
+        eRc = Path_ExpandVars(pMakepath, this->pDict);
+        if (ERESULT_FAILED(eRc) ) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Failed to expand Makepath\n");
+            exit(EXIT_FAILURE);
+        }
+        eRc = Path_IsFile(pMakepath);
+        if (!ERESULT_FAILED(eRc) && this->fBackup) {
+            eRc = Path_VersionedRename(pMakepath);
+            if (ERESULT_FAILED(eRc) ) {
+                DEBUG_BREAK();
+                fprintf(stderr, "FATAL - Failed to back up old Makefile\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+#endif
+
+        // Return to caller.
+        obj_Release(pDrive);
+        pDrive = OBJ_NIL;
+        obj_Release(pDir);
+        pDrive = OBJ_NIL;
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        return pPath;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            ${LNAME}_Dealloc (
+    void            Gen_Dealloc (
         OBJ_ID          objId
     )
     {
-        ${UNAME}_DATA   *this = objId;
+        GEN_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -473,7 +691,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -481,11 +699,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((${UNAME}_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((GEN_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        ${LNAME}_setStr(this, OBJ_NIL);
+        Gen_setDict(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -506,32 +724,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ${LNAME}      *pDeepCopy = ${LNAME}_Copy(this);
+        Gen      *pDeepCopy = Gen_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ${UNAME} object which must be 
+     @return    If successful, a GEN object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ${UNAME}_DATA *     ${LNAME}_DeepyCopy (
-        ${UNAME}_DATA       *this
+    GEN_DATA *     Gen_DeepyCopy (
+        GEN_DATA       *this
     )
     {
-        ${UNAME}_DATA       *pOther = OBJ_NIL;
+        GEN_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = ${LNAME}_New( );
+        pOther = Gen_New( );
         if (pOther) {
-            eRc = ${LNAME}_Assign(this, pOther);
+            eRc = Gen_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -554,8 +772,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ${LNAME}_Disable (
-        ${UNAME}_DATA		*this
+    ERESULT         Gen_Disable (
+        GEN_DATA		*this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -563,7 +781,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -589,8 +807,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ${LNAME}_Enable (
-        ${UNAME}_DATA		*this
+    ERESULT         Gen_Enable (
+        GEN_DATA		*this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -598,7 +816,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -615,14 +833,77 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                    E x p a n d  F i l e
+    //---------------------------------------------------------------
+
+    ERESULT         Gen_ExpandFile (
+        GEN_DATA        *this,
+        PATH_DATA       *pModel,
+        PATH_DATA       *pOutput
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        obj_Enable(this);
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          F i n d
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     Gen_FindA(
+        GEN_DATA        *this,
+        const
+        char            *pNameA
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return pStr;
+        }
+#endif
+
+        pStr = szBT_FindA(this->pDict, pNameA);
+
+
+        // Return to caller.
+        return pStr;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    ${UNAME}_DATA *   ${LNAME}_Init (
-        ${UNAME}_DATA       *this
+    GEN_DATA *   Gen_Init (
+        GEN_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(${UNAME}_DATA);
+        uint32_t        cbSize = sizeof(GEN_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -640,7 +921,7 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_${UNAME});
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_GEN);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -648,7 +929,7 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&${LNAME}_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Gen_Vtbl);
         
         /*
         this->pArray = objArray_New( );
@@ -661,7 +942,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -670,11 +951,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "${LNAME}::sizeof(${UNAME}_DATA) = %lu\n", 
-                sizeof(${UNAME}_DATA)
+                "Gen::sizeof(GEN_DATA) = %lu\n", 
+                sizeof(GEN_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(${UNAME}_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(GEN_DATA));
 #endif
 
         return this;
@@ -686,8 +967,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         ${LNAME}_IsEnabled (
-        ${UNAME}_DATA		*this
+    ERESULT         Gen_IsEnabled (
+        GEN_DATA		*this
     )
     {
         //ERESULT         eRc;
@@ -695,7 +976,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -722,14 +1003,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = ${LNAME}_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Gen_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "${LNAME}", prefix,
+                        the object name, "Gen", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -737,13 +1018,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          ${LNAME}_QueryInfo (
+    void *          Gen_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        ${UNAME}_DATA     *this = objId;
+        GEN_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -752,7 +1033,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -761,11 +1042,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(${UNAME}_DATA);
+                return (void *)sizeof(GEN_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)${LNAME}_Class();
+                return (void *)Gen_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -791,37 +1072,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return ${LNAME}_Disable;
+                            return Gen_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return ${LNAME}_Enable;
+                            return Gen_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  ${UNAME}_JSON_SUPPORT
+#ifdef  GEN_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return ${LNAME}_ParseJsonFields;
+                            return Gen_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return ${LNAME}_ParseJsonObject;
+                            return Gen_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return ${LNAME}_ToDebugString;
+                            return Gen_ToDebugString;
                         }
-#ifdef  ${UNAME}_JSON_SUPPORT
+#ifdef  GEN_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return ${LNAME}_ToJsonFields;
+                            return Gen_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return ${LNAME}_ToJson;
+                            return Gen_ToJson;
                         }
 #endif
                         break;
@@ -832,10 +1113,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == ${LNAME}_ToDebugString)
+                if (pData == Gen_ToDebugString)
                     return "ToDebugString";
-#ifdef  ${UNAME}_JSON_SUPPORT
-                if (pData == ${LNAME}_ToJson)
+#ifdef  GEN_JSON_SUPPORT
+                if (pData == Gen_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -857,7 +1138,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = ${LNAME}_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Gen_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -865,8 +1146,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ${LNAME}_ToDebugString (
-        ${UNAME}_DATA      *this,
+    ASTR_DATA *     Gen_ToDebugString (
+        GEN_DATA      *this,
         int             indent
     )
     {
@@ -881,7 +1162,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!Gen_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -902,7 +1183,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    ${LNAME}_getSize(this),
+                    Gen_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -942,15 +1223,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            ${LNAME}_Validate (
-        ${UNAME}_DATA      *this
+    bool            Gen_Validate (
+        GEN_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_${UNAME}))
+            if (obj_IsKindOf(this, OBJ_IDENT_GEN))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -966,7 +1247,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(${UNAME}_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(GEN_DATA))) {
             return false;
         }
 

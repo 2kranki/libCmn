@@ -44,6 +44,16 @@
 #include        <Main_internal.h>
 #include        <SrcErrors.h>
 #include        <trace.h>
+#include        <stdbool.h>
+#include        <stddef.h>
+#include        <stdint.h>
+#include        <stdio.h>
+#include        <stdlib.h>
+#include        <strings.h>
+#include        <pwd.h>
+#include        <sys/time.h>
+#include        <unistd.h>
+#include        <sys/types.h>
 
 
 
@@ -160,6 +170,35 @@ extern "C" {
         //MAIN_DATA  *this = pData;
         
     }
+
+
+
+    int             SetDefaultMacros(
+        MAIN_DATA       *this
+    )
+    {
+        char            *s;
+        long            clock;
+        struct tm       *now;
+        char            str1[1025];
+        char            str2[1025];
+        bool            fRc;
+        int             tabSize = 4;
+
+        // Set up the internal C stuff.  The "name" entry will be set later.
+        //pMacro->token = '$';
+
+        (void) time (&clock);
+        now = localtime (&clock);
+        (void)sprintf(str1, "%2.2d/%2.2d/%2.2d", now->tm_mon+1, now->tm_mday, now->tm_hour);
+        fRc = szHash_Add(pMacro->pHash, "DATE", str_Duplicate(str1));
+        (void)sprintf(str1, "%2.2d:%2.2d:%2.2d", now->tm_hour, now->tm_min, now->tm_sec);
+        fRc = szHash_Add(pMacro->pHash, "TIME", str_Duplicate(str1));
+
+
+        return (0);
+    }
+
 #endif
 
 
@@ -212,10 +251,10 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                  D i c t i o n a r y
+    //                      G e n e r a t e
     //---------------------------------------------------------------
 
-    DICT_DATA *     Main_getDict (
+    GEN_DATA *      Main_getGen (
         MAIN_DATA       *this
     )
     {
@@ -229,13 +268,13 @@ extern "C" {
         }
 #endif
 
-        return this->pDict;
+        return this->pGen;
     }
 
 
-    bool            Main_setDict (
+    bool            Main_setGen (
         MAIN_DATA       *this,
-        DICT_DATA       *pValue
+        GEN_DATA        *pValue
     )
     {
 #ifdef NDEBUG
@@ -247,10 +286,10 @@ extern "C" {
 #endif
 
         obj_Retain(pValue);
-        if (this->pDict) {
-            obj_Release(this->pDict);
+        if (this->pGen) {
+            obj_Release(this->pGen);
         }
-        this->pDict = pValue;
+        this->pGen = pValue;
 
         return true;
     }
@@ -633,9 +672,9 @@ extern "C" {
                     "FATAL - Unable to extract directory from File, %s!\n",
                     Path_getData(pPath)
         );
-        eRc = Dict_AddA(Main_getDict(this), srcDirID, (void *)pArgDir);
+        //FIXME: eRc = Dict_AddA(Main_getDict(this), srcDirID, (void *)pArgDir);
 
-        eRc = Dict_AddA(Main_getDict(this), srcFileID, Path_getData(pPath));
+       //FIXME:  eRc = Dict_AddA(Main_getDict(this), srcFileID, Path_getData(pPath));
         if (ERESULT_FAILED(eRc) ) {
             DEBUG_BREAK();
             fprintf(stderr, "FATAL - Failed to add 'srcFile' to Dictionary\n");
@@ -796,6 +835,7 @@ extern "C" {
         }
 #endif
 
+        Main_setGen(this, OBJ_NIL);
         Main_setParser(this, OBJ_NIL);
         Main_setStr(this, OBJ_NIL);
 

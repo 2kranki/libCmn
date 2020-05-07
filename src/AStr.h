@@ -531,15 +531,17 @@ extern "C" {
      Variable names should have the syntax of:
             '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
      Substitutions are not rescanned after insertion.
-     @param     this    object pointer
-     @param     pHash   optional node hash pointer where the node's data is a
-                        path or astr/astrc kind object.
+     @param     this        object pointer
+     @param     pFindA      optional method to find the variable by name
+     @param     pFindObj    Object for FindA
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
                 is returned.
      */
     ERESULT         AStr_ExpandVars(
         ASTR_DATA       *this,
-        OBJ_ID          pHash
+        const
+        char *          (*pFindA)(OBJ_ID, const char *pName),
+        OBJ_ID          pFindObj
     );
 
 

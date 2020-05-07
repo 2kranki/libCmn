@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   $P_json.c
+ * File:   ${LNAME}_json.c
  *
- *	Generated $C/$D/$Y $H:$M:$S
+ *	Generated ${DATE} ${TIME}
  *
  */
 
@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <$P_internal.h>
+#include    <${LNAME}_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -79,9 +79,9 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     $P_ParseJsonFields (
+    ERESULT     ${LNAME}_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        $Q_DATA     *pObject
+        ${UNAME}_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -122,18 +122,18 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    $Q_DATA * $P_ParseJsonObject (
+    ${UNAME}_DATA * ${LNAME}_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        $Q_DATA   *pObject = OBJ_NIL;
+        ${UNAME}_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo($P_Class());
+        pInfo = obj_getInfo(${LNAME}_Class());
         
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
@@ -141,12 +141,12 @@ extern "C" {
             goto exit00;
         }
 
-        pObject = $P_New( );
+        pObject = ${LNAME}_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  $P_ParseJsonFields(pParser, pObject);
+        eRc =  ${LNAME}_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -168,13 +168,13 @@ extern "C" {
     //===============================================================
     
 
-    $Q_DATA *   $P_NewFromJsonString (
+    ${UNAME}_DATA *   ${LNAME}_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        $Q_DATA   *pObject = OBJ_NIL;
+        ${UNAME}_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -183,7 +183,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = $P_ParseJsonObject(pParser);
+        pObject = ${LNAME}_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -196,17 +196,17 @@ extern "C" {
     
     
 
-    $Q_DATA * $P_NewFromJsonStringA (
+    ${UNAME}_DATA * ${LNAME}_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        $Q_DATA   *pObject = OBJ_NIL;
+        ${UNAME}_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = $P_NewFromJsonString(pStr);
+            pObject = ${LNAME}_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -222,7 +222,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = $P_ToJson(this);
+     ASTR_DATA      *pDesc = ${LNAME}_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -230,8 +230,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     $P_ToJson (
-        $Q_DATA   *this
+    ASTR_DATA *     ${LNAME}_ToJson (
+        ${UNAME}_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -241,7 +241,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !$P_Validate(this) ) {
+        if( !${LNAME}_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -255,7 +255,7 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = $P_ToJsonFields(this, pStr);      
+            eRc = ${LNAME}_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -273,8 +273,8 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         $P_ToJsonFields (
-        $Q_DATA     *this,
+    ERESULT         ${LNAME}_ToJsonFields (
+        ${UNAME}_DATA     *this,
         ASTR_DATA       *pStr
     )
     {

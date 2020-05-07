@@ -207,6 +207,17 @@ extern "C" {
 #endif
 
 
+    /*!
+     Clean up an AStr that represents a Path by removing "//", "/./" or "/../"
+     combinations and replacing a leading '~' with the $HOME or $HOMEDRIVE Environ-
+     ment variable.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error.
+     */
+    ERESULT         Path_CleanAStr(
+        ASTR_DATA       *pStr
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -223,6 +234,9 @@ extern "C" {
     );
 
 
+    uint32_t        Path_getSize (
+        PATH_DATA       *this
+    );
 
 
     
@@ -408,14 +422,16 @@ extern "C" {
      '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
      Substitutions are not rescanned after insertion.
      @param     this    object pointer
-     @param     pHash   optional node hash pointer where the node's data is a
-                        path or astr object(s).
+     @param     pFindA      optional method to find the variable by name
+     @param     pFindObj    Object for FindA
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
      is returned.
      */
     ERESULT         Path_ExpandVars (
         PATH_DATA       *this,
-        OBJ_ID          pHash
+        const
+        char *          (*pFindA)(OBJ_ID, const char *pName),
+        OBJ_ID          pFindObj
     );
 
 
@@ -462,6 +478,35 @@ extern "C" {
     );
 
 
+    /*!
+     Split the Path into its 3 basic components of the drive, directory and
+     FileName.  If a scan from the left of ':' fails, then no drive is
+     assumed and OBJ_NIL is returned for the drive.  A scan from right to
+     left for a trailing '/' is searched to find the end of the directory
+     portion of the Path.  It also denotes the beginning of the file name.
+     So, if the Path consists of optionally the drive and the directory
+     portions, it must end in a '/' to be properly parsed.
+     @param     this        object pointer
+     @param     pDrive      pointer to ASTR object pointer which will contain
+                            the drive if it exists in the Path.  The drive
+                            returned is without its ':' separator.
+     @param     pDir        pointer to an AStr object pointer which will contain
+                            directory portion of the Path.
+     @param     pFileName   optional pointer to an AStr object pointer where the
+                            leading file Path will be returned if present.
+     @param     pFileExt    optional pointer to an AStr object pointer where the
+                            trailing file extension will be returned if present.
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
+     */
+    ERESULT         Path_Make (
+        PATH_DATA        *this,
+        ASTR_DATA       *pDrive,
+        ASTR_DATA       *pDir,
+        ASTR_DATA       *pFileName,
+        ASTR_DATA       *pFileExt
+    );
+
+
     ERESULT         Path_MakeFile (
         PATH_DATA       *this,
         ASTR_DATA       *pFileName,
@@ -489,6 +534,35 @@ extern "C" {
         PATH_DATA       *this,
         const
         char            *pPattern
+    );
+
+
+    /*!
+     Split the Path into its 3 basic components of the drive, directory and
+     FileName.  If a scan from the left of ':' fails, then no drive is
+     assumed and OBJ_NIL is returned for the drive.  A scan from right to
+     left for a trailing '/' is searched to find the end of the directory
+     portion of the Path.  It also denotes the beginning of the file name.
+     So, if the Path consists of optionally the drive and the directory
+     portions, it must end in a '/' to be properly parsed.
+     @param     this        object pointer
+     @param     ppDrive     pointer to ASTR object pointer which will contain
+                            the drive if it exists in the Path.  The drive
+                            returned is without its ':' separator.
+     @param     ppDir       pointer to an AStr object pointer which will contain
+                            directory portion of the Path.
+     @param     ppFileName  optional pointer to an AStr object pointer where the
+                            leading file Path will be returned if present.
+     @param     ppFileExt   optional pointer to an AStr object pointer where the
+                            trailing file extension will be returned if present.
+     @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
+     */
+    ERESULT         Path_Split (
+        PATH_DATA        *this,
+        ASTR_DATA       **ppDrive,
+        ASTR_DATA       **ppDir,
+        ASTR_DATA       **ppFileName,
+        ASTR_DATA       **ppFileExt
     );
 
 

@@ -325,10 +325,18 @@ extern "C" {
         JsonOut_Append_u16("misc1", Node_getMisc1(this), pStr);
         JsonOut_Append_u16("misc2", Node_getMisc2(this), pStr);
         JsonOut_Append_Object("name", this->pName, pStr);
-        JsonOut_Append_Object("data", this->pData, pStr);
-        JsonOut_Append_Object("other", this->pOther, pStr);
-        JsonOut_Append_Object("extra", this->pExtra, pStr);
-        JsonOut_Append_Object("properties", this->pProperties, pStr);
+        if (this->pData) {
+            JsonOut_Append_Object("data", this->pData, pStr);
+        }
+        if (this->pOther) {
+            JsonOut_Append_Object("other", this->pOther, pStr);
+        }
+        if (this->pExtra) {
+            JsonOut_Append_Object("extra", this->pExtra, pStr);
+        }
+        if (this->pProperties) {
+            JsonOut_Append_Object("properties", this->pProperties, pStr);
+        }
 
         return ERESULT_SUCCESS;
     }

@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  $P ($P) Header
+//                  ${LNAME} (${LNAME}) Header
 //****************************************************************
 /*
  * Program
- *			$P ($P)
+ *			${LNAME} (${LNAME})
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate $P to run things without complications
- *          of interfering with the main $P. A $P may be 
- *          called a $P on other O/S's.
+ *          a separate ${LNAME} to run things without complications
+ *          of interfering with the main ${LNAME}. A ${LNAME} may be 
+ *          called a ${LNAME} on other O/S's.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	$C/$D/$Y Generated
+ *	${DATE} Generated
  */
 
 
@@ -55,13 +55,13 @@
 #include        <AStr.h>
 
 
-#ifndef         $Q_H
-#define         $Q_H
+#ifndef         ${UNAME}_H
+#define         ${UNAME}_H
 
 
-//#define   $Q_IS_IMMUTABLE     1
-//#define   $Q_JSON_SUPPORT     1
-//#define   $Q_SINGLETON        1
+//#define   ${UNAME}_IS_IMMUTABLE     1
+//#define   ${UNAME}_JSON_SUPPORT     1
+//#define   ${UNAME}_SINGLETON        1
 
 
 
@@ -77,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct $P_data_s	$Q_DATA;            // Inherits from OBJ
-    typedef struct $P_class_data_s $Q_CLASS_DATA;   // Inherits from OBJ
+    typedef struct ${LNAME}_data_s	${UNAME}_DATA;            // Inherits from OBJ
+    typedef struct ${LNAME}_class_data_s ${UNAME}_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct $P_vtbl_s	{
+    typedef struct ${LNAME}_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in $P_object.c.
+        // method names to the vtbl definition in ${LNAME}_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)($Q_DATA *);
-    } $Q_VTBL;
+        //bool        (*pIsEnabled)(${UNAME}_DATA *);
+    } ${UNAME}_VTBL;
 
-    typedef struct $P_class_vtbl_s	{
+    typedef struct ${LNAME}_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in $P_object.c.
+        // method names to the vtbl definition in ${LNAME}_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)($Q_DATA *);
-    } $Q_CLASS_VTBL;
+        //bool        (*pIsEnabled)(${UNAME}_DATA *);
+    } ${UNAME}_CLASS_VTBL;
 
 
 
@@ -110,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  $Q_SINGLETON
-    $Q_DATA *     $P_Shared (
+#ifdef  ${UNAME}_SINGLETON
+    ${UNAME}_DATA *     ${LNAME}_Shared (
         void
     );
 
-    void            $P_SharedReset (
+    void            ${LNAME}_SharedReset (
         void
     );
 #endif
@@ -125,29 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to $P object if successful, otherwise OBJ_NIL.
+     @return    pointer to ${LNAME} object if successful, otherwise OBJ_NIL.
      */
-    $Q_DATA *     $P_Alloc (
+    ${UNAME}_DATA *     ${LNAME}_Alloc (
         void
     );
     
     
-    OBJ_ID          $P_Class (
+    OBJ_ID          ${LNAME}_Class (
         void
     );
     
     
-    $Q_DATA *     $P_New (
+    ${UNAME}_DATA *     ${LNAME}_New (
         void
     );
     
     
-#ifdef  $Q_JSON_SUPPORT
-    $Q_DATA *   $P_NewFromJsonString (
+#ifdef  ${UNAME}_JSON_SUPPORT
+    ${UNAME}_DATA *   ${LNAME}_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    $Q_DATA *   $P_NewFromJsonStringA (
+    ${UNAME}_DATA *   ${LNAME}_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -166,41 +166,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     $P_Disable (
-        $Q_DATA		*this
+    ERESULT     ${LNAME}_Disable (
+        ${UNAME}_DATA		*this
     );
 
 
-    ERESULT     $P_Enable (
-        $Q_DATA		*this
+    ERESULT     ${LNAME}_Enable (
+        ${UNAME}_DATA		*this
     );
 
    
-    $Q_DATA *   $P_Init (
-        $Q_DATA     *this
+    ${UNAME}_DATA *   ${LNAME}_Init (
+        ${UNAME}_DATA     *this
     );
 
 
-    ERESULT     $P_IsEnabled (
-        $Q_DATA		*this
+    ERESULT     ${LNAME}_IsEnabled (
+        ${UNAME}_DATA		*this
     );
     
  
-#ifdef  $Q_JSON_SUPPORT
+#ifdef  ${UNAME}_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = $P_ToJson(this);
+     ASTR_DATA      *pDesc = ${LNAME}_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     $P_ToJson (
-        $Q_DATA   *this
+    ASTR_DATA *     ${LNAME}_ToJson (
+        ${UNAME}_DATA   *this
     );
 #endif
 
@@ -209,7 +209,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = $P_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = ${LNAME}_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -217,8 +217,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     $P_ToDebugString (
-        $Q_DATA     *this,
+    ASTR_DATA *     ${LNAME}_ToDebugString (
+        ${UNAME}_DATA     *this,
         int             indent
     );
     
@@ -229,5 +229,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* $Q_H */
+#endif	/* ${UNAME}_H */
 

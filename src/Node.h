@@ -497,9 +497,9 @@ extern "C" {
      Create a new Node Array from the data for this Node if that
      data is a Node Array or a Node Hash.
      @result    If successful, a new NodeArray that contains the
-     contents of the Data property's Node array or
-     Node hash. Otherwise, OBJ_NIL and the Last Error
-     property contains an ERESULT_* error.
+                contents of the Data property's Node array or
+                Node hash. Otherwise, OBJ_NIL and the Last Error
+                property contains an ERESULT_* error.
      @warning   Remember to release the returned object.
      */
     NODEARRAY_DATA * Node_JsonDataToArray(

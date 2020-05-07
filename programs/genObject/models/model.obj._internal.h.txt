@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   $P_internal.h
- *	Generated $C/$D/$Y $H:$M:$S
+ * File:   ${LNAME}_internal.h
+ *	Generated ${DATE} ${TIME}
  *
  * Notes:
  *  --	N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <$P.h>
+#include        <${LNAME}.h>
 #include        <JsonIn.h>
 
 
-#ifndef $Q_INTERNAL_H
-#define	$Q_INTERNAL_H
+#ifndef ${UNAME}_INTERNAL_H
+#define	${UNAME}_INTERNAL_H
 
 
 
@@ -62,7 +62,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct $P_data_s	{
+struct ${LNAME}_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -77,11 +77,11 @@ struct $P_data_s	{
 #pragma pack(pop)
 
     extern
-    struct $P_class_data_s  $P_ClassObj;
+    struct ${LNAME}_class_data_s  ${LNAME}_ClassObj;
 
     extern
     const
-    $Q_VTBL         $P_Vtbl;
+    ${UNAME}_VTBL         ${LNAME}_Vtbl;
 
 
 
@@ -89,13 +89,13 @@ struct $P_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  $Q_SINGLETON
-    $Q_DATA *     $P_getSingleton (
+#ifdef  ${UNAME}_SINGLETON
+    ${UNAME}_DATA *     ${LNAME}_getSingleton (
         void
     );
 
-    bool            $P_setSingleton (
-     $Q_DATA       *pValue
+    bool            ${LNAME}_setSingleton (
+     ${UNAME}_DATA       *pValue
 );
 #endif
 
@@ -105,35 +105,35 @@ struct $P_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  $P_getSuperVtbl (
-        $Q_DATA     *this
+    OBJ_IUNKNOWN *  ${LNAME}_getSuperVtbl (
+        ${UNAME}_DATA     *this
     );
 
 
-    ERESULT         $P_Assign (
-        $Q_DATA    *this,
-        $Q_DATA    *pOther
+    ERESULT         ${LNAME}_Assign (
+        ${UNAME}_DATA    *this,
+        ${UNAME}_DATA    *pOther
     );
 
 
-    $Q_DATA *       $P_Copy (
-        $Q_DATA     *this
+    ${UNAME}_DATA *       ${LNAME}_Copy (
+        ${UNAME}_DATA     *this
     );
 
 
-    void            $P_Dealloc (
+    void            ${LNAME}_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  $Q_JSON_SUPPORT
+#ifdef  ${UNAME}_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    $Q_DATA *       $P_ParseJsonObject (
+    ${UNAME}_DATA *       ${LNAME}_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -147,35 +147,35 @@ struct $P_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         $P_ParseJsonFields (
+    ERESULT         ${LNAME}_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        $Q_DATA     *pObject
+        ${UNAME}_DATA     *pObject
     );
 #endif
 
 
-    void *          $P_QueryInfo (
+    void *          ${LNAME}_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  $Q_JSON_SUPPORT
+#ifdef  ${UNAME}_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = $P_ToJson(this);
+     ASTR_DATA      *pDesc = ${LNAME}_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     $P_ToJson (
-        $Q_DATA      *this
+    ASTR_DATA *     ${LNAME}_ToJson (
+        ${UNAME}_DATA      *this
     );
 
 
@@ -188,8 +188,8 @@ struct $P_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         $P_ToJsonFields (
-        $Q_DATA     *this,
+    ERESULT         ${LNAME}_ToJsonFields (
+        ${UNAME}_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -199,8 +199,8 @@ struct $P_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			$P_Validate (
-        $Q_DATA       *this
+    bool			${LNAME}_Validate (
+        ${UNAME}_DATA       *this
     );
 #endif
 
@@ -210,5 +210,5 @@ struct $P_data_s	{
 }
 #endif
 
-#endif	/* $Q_INTERNAL_H */
+#endif	/* ${UNAME}_INTERNAL_H */
 

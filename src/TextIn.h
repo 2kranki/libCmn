@@ -282,6 +282,12 @@ extern "C" {
         SRCLOC          *pLoc
     );
 
+    ERESULT         TextIn_GetLineAStr (
+        TEXTIN_DATA     *this,
+        ASTR_DATA       **ppStr,
+        SRCLOC          *pLoc
+    );
+
     ERESULT         TextIn_GetLineW32 (
         TEXTIN_DATA     *this,
         int             size,

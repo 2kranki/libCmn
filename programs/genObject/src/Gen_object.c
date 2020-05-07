@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for '$P'
-//	Generated $C/$D/$Y $H:$M:$S
+//	Class Object Metods and Tables for 'Gen'
+//	Generated 05/05/2020 09:59:00
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			$Q_OBJECT_C	    1
-#include        <$P_internal.h>
-#ifdef  $Q_SINGLETON
+#define			GEN_OBJECT_C	    1
+#include        <Gen_internal.h>
+#ifdef  GEN_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct $P_class_data_s	{
+struct Gen_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  $Q_SINGLETON
+#ifdef  GEN_SINGLETON
     volatile
-    $Q_DATA       *pSingleton;
+    GEN_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct $P_class_data_s	{
 
 
 static
-void *          $PClass_QueryInfo (
+void *          GenClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          $PClass_QueryInfo (
 
 static
 const
-OBJ_INFO        $P_Info;            // Forward Reference
+OBJ_INFO        Gen_Info;            // Forward Reference
 
 
 
 
 static
-bool            $PClass_IsKindOf (
+bool            GenClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_$Q_CLASS == classID) {
+    if (OBJ_IDENT_GEN_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo($P_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Gen_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            $PClass_IsKindOf (
 
 
 static
-uint16_t		$PClass_WhoAmI (
+uint16_t		GenClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_$Q_CLASS;
+    return OBJ_IDENT_GEN_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		$PClass_WhoAmI (
 
 static
 const
-$Q_CLASS_VTBL    class_Vtbl = {
+GEN_CLASS_VTBL    class_Vtbl = {
     {
-        &$P_Info,
-        $PClass_IsKindOf,
+        &Gen_Info,
+        GenClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        $P_Class,
-        $PClass_WhoAmI,
-        (P_OBJ_QUERYINFO)$PClass_QueryInfo,
-        NULL                        // $PClass_ToDebugString
+        Gen_Class,
+        GenClass_WhoAmI,
+        (P_OBJ_QUERYINFO)GenClass_QueryInfo,
+        NULL                        // GenClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ $Q_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-$Q_CLASS_DATA  $P_ClassObj = {
+GEN_CLASS_DATA  Gen_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof($Q_CLASS_DATA),                  // cbSize
+        sizeof(GEN_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,22 +162,22 @@ $Q_CLASS_DATA  $P_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  $Q_SINGLETON
+#ifdef  GEN_SINGLETON
 extern
 const
-$Q_VTBL       $P_VtblShared;
+GEN_VTBL       Gen_VtblShared;
 
 
-$Q_DATA *     $P_getSingleton (
+GEN_DATA *     Gen_getSingleton (
     void
 )
 {
-    return (OBJ_ID)($P_ClassObj.pSingleton);
+    return (OBJ_ID)(Gen_ClassObj.pSingleton);
 }
 
 
-bool            $P_setSingleton (
-    $Q_DATA       *pValue
+bool            Gen_setSingleton (
+    GEN_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -197,10 +197,10 @@ bool            $P_setSingleton (
     }
     
     obj_Retain(pValue);
-    if ($P_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)($P_ClassObj.pSingleton));
+    if (Gen_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Gen_ClassObj.pSingleton));
     }
-    $P_ClassObj.pSingleton = pValue;
+    Gen_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -210,18 +210,18 @@ bool            $P_setSingleton (
 
 
 
-$Q_DATA *     $P_Shared (
+GEN_DATA *     Gen_Shared (
     void
 )
 {
-    $Q_DATA       *this = (OBJ_ID)($P_ClassObj.pSingleton);
+    GEN_DATA       *this = (OBJ_ID)(Gen_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = $P_New( );
-        obj_setVtbl(this, (void *)&$P_VtblShared);
-        $P_setSingleton(this);
+        this = Gen_New( );
+        obj_setVtbl(this, (void *)&Gen_VtblShared);
+        Gen_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // $P_ClassObj.pSingleton = OBJ_NIL;
+        // Gen_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -229,16 +229,16 @@ $Q_DATA *     $P_Shared (
 
 
 
-void            $P_SharedReset (
+void            Gen_SharedReset (
     void
 )
 {
-    $Q_DATA       *this = (OBJ_ID)($P_ClassObj.pSingleton);
+    GEN_DATA       *this = (OBJ_ID)(Gen_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&$P_Vtbl);
+        obj_setVtbl(this, (void *)&Gen_Vtbl);
         obj_Release(this);
-        $P_ClassObj.pSingleton = OBJ_NIL;
+        Gen_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -254,13 +254,13 @@ void            $P_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          $PClass_QueryInfo (
+void *          GenClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    $Q_CLASS_DATA *this = objId;
+    GEN_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -271,7 +271,7 @@ void *          $PClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof($Q_DATA);
+            return (void *)sizeof(GEN_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -284,13 +284,13 @@ void *          $PClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&$P_Info;
+                        return (void *)&Gen_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&$P_Info.pClassSuperObject;
+                        return (void *)&Gen_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -308,35 +308,35 @@ void *          $PClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return $P_New;
+                        return Gen_New;
                     }
                     break;
                     
 				case 'P':
-#ifdef  $Q_JSON_SUPPORT
+#ifdef  GEN_JSON_SUPPORT
 					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-						return $P_ParseJsonFields;
+						return Gen_ParseJsonFields;
 					}
 					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-						return $P_ParseJsonObject;
+						return Gen_ParseJsonObject;
 					}
 #endif
 					break;
 
 				case 'T':
-#ifdef  $Q_JSON_SUPPORT
+#ifdef  GEN_JSON_SUPPORT
 					if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-						return $P_ToJsonFields;
+						return Gen_ToJsonFields;
 					}
 					if (str_Compare("ToJson", (char *)pStr) == 0) {
-						return $P_ToJson;
+						return Gen_ToJson;
 					}
 #endif
 					break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return $PClass_WhoAmI;
+                        return GenClass_WhoAmI;
                     }
                     break;
                     
@@ -356,7 +356,7 @@ void *          $PClass_QueryInfo (
 
 
 static
-bool            $P_IsKindOf (
+bool            Gen_IsKindOf (
     uint16_t		classID
 )
 {
@@ -364,14 +364,14 @@ bool            $P_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_$Q == classID) {
+    if (OBJ_IDENT_GEN == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo($P_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Gen_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -385,25 +385,25 @@ bool            $P_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            $P_Dealloc (
+void            Gen_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          $P_Class (
+OBJ_ID          Gen_Class (
     void
 )
 {
-    return (OBJ_ID)&$P_ClassObj;
+    return (OBJ_ID)&Gen_ClassObj;
 }
 
 
 static
-uint16_t		$P_WhoAmI (
+uint16_t		Gen_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_$Q;
+    return OBJ_IDENT_GEN;
 }
 
 
@@ -414,35 +414,35 @@ uint16_t		$P_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  $Q_SINGLETON
+#ifdef  GEN_SINGLETON
 // A Shared object ignores Retain() and Release() except for
 // initialization and termination. So, there must be an
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-$Q_VTBL     $P_VtblShared = {
+GEN_VTBL     Gen_VtblShared = {
     {
-        &$P_Info,
-        $P_IsKindOf,
+        &Gen_Info,
+        Gen_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        $P_Dealloc,
-        $P_Class,
-        $P_WhoAmI,
-        (P_OBJ_QUERYINFO)$P_QueryInfo,
-        (P_OBJ_TOSTRING)$P_ToDebugString,
-        NULL,			// $P_Enable,
-        NULL,			// $P_Disable,
-        NULL,			// (P_OBJ_ASSIGN)$P_Assign,
-        NULL,			// (P_OBJ_COMPARE)$P_Compare,
-        NULL, 			// (P_OBJ_PTR)$P_Copy,
-        NULL, 			// (P_OBJ_PTR)$P_DeepCopy,
-        NULL 			// (P_OBJ_HASH)$P_Hash,
+        Gen_Dealloc,
+        Gen_Class,
+        Gen_WhoAmI,
+        (P_OBJ_QUERYINFO)Gen_QueryInfo,
+        (P_OBJ_TOSTRING)Gen_ToDebugString,
+        NULL,			// Gen_Enable,
+        NULL,			// Gen_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Gen_Assign,
+        NULL,			// (P_OBJ_COMPARE)Gen_Compare,
+        NULL, 			// (P_OBJ_PTR)Gen_Copy,
+        NULL, 			// (P_OBJ_PTR)Gen_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Gen_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //$P_IsEnabled,
+    //Gen_IsEnabled,
  
 };
 #endif
@@ -454,29 +454,29 @@ $Q_VTBL     $P_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-$Q_VTBL     $P_Vtbl = {
+GEN_VTBL     Gen_Vtbl = {
     {
-        &$P_Info,
-        $P_IsKindOf,
+        &Gen_Info,
+        Gen_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        $P_Dealloc,
-        $P_Class,
-        $P_WhoAmI,
-        (P_OBJ_QUERYINFO)$P_QueryInfo,
-        (P_OBJ_TOSTRING)$P_ToDebugString,
-        NULL,			// $P_Enable,
-        NULL,			// $P_Disable,
-        NULL,			// (P_OBJ_ASSIGN)$P_Assign,
-        NULL,			// (P_OBJ_COMPARE)$P_Compare,
-        NULL, 			// (P_OBJ_PTR)$P_Copy,
-        NULL, 			// (P_OBJ_PTR)$P_DeepCopy,
-        NULL 			// (P_OBJ_HASH)$P_Hash,
+        Gen_Dealloc,
+        Gen_Class,
+        Gen_WhoAmI,
+        (P_OBJ_QUERYINFO)Gen_QueryInfo,
+        (P_OBJ_TOSTRING)Gen_ToDebugString,
+        NULL,			// Gen_Enable,
+        NULL,			// Gen_Disable,
+        NULL,			// (P_OBJ_ASSIGN)Gen_Assign,
+        NULL,			// (P_OBJ_COMPARE)Gen_Compare,
+        NULL, 			// (P_OBJ_PTR)Gen_Copy,
+        NULL, 			// (P_OBJ_PTR)Gen_DeepCopy,
+        NULL 			// (P_OBJ_HASH)Gen_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //$P_IsEnabled,
+    //Gen_IsEnabled,
  
 };
 
@@ -484,17 +484,14 @@ $Q_VTBL     $P_Vtbl = {
 
 static
 const
-OBJ_INFO        $P_Info = {
-    "$P",
-    "$P",
-    (OBJ_DATA *)&$P_ClassObj,
+OBJ_INFO        Gen_Info = {
+    "Gen",
+    "Generate a File",
+    (OBJ_DATA *)&Gen_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&$P_Vtbl,
-    sizeof($Q_DATA)
+    (OBJ_IUNKNOWN *)&Gen_Vtbl,
+    sizeof(GEN_DATA)
 };
-#warning -- adjust super class object in Info above 
-//			if object inherits from another class
-//			Also, update description
 
 
 

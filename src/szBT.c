@@ -898,6 +898,10 @@ extern "C" {
         }
 #endif
 
+        // Not needed since all the data is stored in Blocks object
+        // whisch will free it.
+        //szBT_DeleteAll(this);
+
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.

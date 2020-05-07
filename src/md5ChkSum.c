@@ -770,7 +770,6 @@ extern "C" {
         
         // Return to caller.
     eom:
-        md5ChkSum_setLastError(this, eRc);
         return eRc;
     }
     

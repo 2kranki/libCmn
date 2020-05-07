@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Main_internal.h
- *	Generated 04/28/2020 23:01:38
+ * File:   Gen_internal.h
+ *	Generated 05/05/2020 09:59:00
  *
  * Notes:
  *  --	N/A
@@ -39,15 +39,13 @@
 
 
 
-#include        <Main.h>
-#include        <Appl_internal.h>
 #include        <Gen.h>
 #include        <JsonIn.h>
-#include        <TextOut.h>
+#include        <szBT.h>
 
 
-#ifndef MAIN_INTERNAL_H
-#define	MAIN_INTERNAL_H
+#ifndef GEN_INTERNAL_H
+#define	GEN_INTERNAL_H
 
 
 
@@ -65,32 +63,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Main_data_s	{
+struct Gen_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    APPL_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
-    PATH_DATA       *pFilePath;
-    GEN_DATA        *pGen;
-    ASTR_DATA       *pOut;
-    PATH_DATA       *pOutputPath;
-    TEXTOUT_DATA    *pOutput;
-    SRCPARSE_DATA   *pParser;
+    SZBT_DATA       *pDict;
 
 };
 #pragma pack(pop)
 
     extern
-    struct Main_class_data_s  Main_ClassObj;
+    struct Gen_class_data_s  Gen_ClassObj;
 
     extern
     const
-    MAIN_VTBL         Main_Vtbl;
+    GEN_VTBL         Gen_Vtbl;
 
 
 
@@ -98,14 +90,14 @@ struct Main_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  MAIN_SINGLETON
-    MAIN_DATA *     Main_getSingleton (
+#ifdef  GEN_SINGLETON
+    GEN_DATA *      Gen_getSingleton (
         void
     );
 
-    bool            Main_setSingleton (
-     MAIN_DATA       *pValue
-);
+    bool            Gen_setSingleton (
+        GEN_DATA        *pValue
+    );
 #endif
 
 
@@ -114,90 +106,35 @@ struct Main_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  Main_getSuperVtbl (
-        MAIN_DATA     *this
+    OBJ_IUNKNOWN *  Gen_getSuperVtbl (
+        GEN_DATA        *this
     );
 
 
-    ERESULT         Main_Assign (
-        MAIN_DATA    *this,
-        MAIN_DATA    *pOther
+    ERESULT         Gen_Assign (
+        GEN_DATA        *this,
+        GEN_DATA        *pOther
     );
 
 
-    PATH_DATA *     Main_CheckInputPath (
-        MAIN_DATA       *this,
-        ASTR_DATA       *pStr
-    );
-
-    PATH_DATA *     Main_CreateOutputPath (
-        MAIN_DATA       *this,
-        ASTR_DATA       *pStr,
-        const
-        char            *pOsNameA
-    );
-
-    MAIN_DATA *    Main_Copy (
-        MAIN_DATA       *this
+    GEN_DATA *       Gen_Copy (
+        GEN_DATA        *this
     );
 
 
-    void          Main_Dealloc (
+    void            Gen_Dealloc (
         OBJ_ID          objId
     );
 
 
-    ERESULT         Main_ParseArgsDefault (
-        MAIN_DATA        *this
-    );
-
-    int             Main_ParseArgsLong (
-        MAIN_DATA       *this,
-        int             *pArgC,
-        const
-        char            ***pppArgV
-    );
-
-    int             Main_ParseArgsShort (
-        MAIN_DATA       *this,
-        int             *pArgC,
-        const
-        char            ***pppArgV
-    );
-
-/*!
- Parse the given file into a JSON Node structure and
- perform some cursory checks on the structure.
- @param     this    object pointer
- @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
- error code.
- */
-ERESULT         Main_ParseInputFile (
-    MAIN_DATA       *this,
-    PATH_DATA       *pPath
-);
-
-/*!
- Parse the given string into a JSON Node structure and
- perform some cursory checks on the structure.
- @param     this    object pointer
- @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
- error code.
- */
-ERESULT         Main_ParseInputStr (
-    MAIN_DATA       *this,
-    const
-    char            *pStr
-);
-
-#ifdef  MAIN_JSON_SUPPORT
+#ifdef  GEN_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    MAIN_DATA *       Main_ParseJsonObject (
+    GEN_DATA *      Gen_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -211,52 +148,35 @@ ERESULT         Main_ParseInputStr (
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Main_ParseJsonFields (
+    ERESULT         Gen_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        MAIN_DATA       *pObject
+        GEN_DATA        *pObject
     );
 #endif
 
 
-    /*!
-     Process each command line argument, parsing the HJSON file and
-     generating the Makefile.
-     @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT         Main_ProcessArg (
-        MAIN_DATA       *this,
-        ASTR_DATA       *pStr
-    );
-
-    void *          Main_QueryInfo (
+    void *          Gen_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ERESULT         Main_SetupTextOutAStr (
-        MAIN_DATA        *this
-    );
-
-
-#ifdef  MAIN_JSON_SUPPORT
+#ifdef  GEN_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Main_ToJson(this);
+     ASTR_DATA      *pDesc = Gen_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Main_ToJson (
-        MAIN_DATA      *this
+    ASTR_DATA *     Gen_ToJson (
+        GEN_DATA        *this
     );
 
 
@@ -269,41 +189,19 @@ ERESULT         Main_ParseInputStr (
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Main_ToJsonFields (
-        MAIN_DATA     *this,
+    ERESULT         Gen_ToJsonFields (
+        GEN_DATA        *this,
         ASTR_DATA       *pStr
     );
 #endif
-
-
-    ERESULT         Main_UsageDesc (
-        MAIN_DATA       *this,
-        FILE            *pOutput,
-        PATH_DATA       *pProgramPath
-    );
-
-
-    ERESULT         Main_UsageProgLine (
-        MAIN_DATA       *this,
-        FILE            *pOutput,
-        PATH_DATA       *pProgramPath,
-        const
-        char            *pNameA
-    );
-
-
-    ERESULT         Main_UsageOptions (
-        MAIN_DATA       *this,
-        FILE            *pOutput
-    );
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			Main_Validate (
-        MAIN_DATA       *this
+    bool			Gen_Validate (
+        GEN_DATA        *this
     );
 #endif
 
@@ -313,5 +211,5 @@ ERESULT         Main_ParseInputStr (
 }
 #endif
 
-#endif	/* MAIN_INTERNAL_H */
+#endif	/* GEN_INTERNAL_H */
 

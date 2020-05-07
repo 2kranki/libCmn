@@ -402,6 +402,27 @@ void            eResult_ErrorFatalOn(
     
     
     
+    void            eResult_ErrorFatalOnBool(
+        bool            fRc,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+
+        if (!fRc) {
+            va_start( argsp, fmt );
+            fprintf( stderr, "Fatal Error:  " );
+            vfprintf( stderr, fmt, argsp );
+            va_end( argsp );
+            fprintf( stderr, "\n\n\n" );
+            exit( 100 );
+        }
+    }
+
+
+
 
     
 

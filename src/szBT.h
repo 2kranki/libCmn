@@ -11,6 +11,11 @@
  *          by a NUL-Terminated UTF-8 string. No data or keys are
  *          stored within the tree, only pointers are stored.
  *
+ *          If the data is an object or the key is not a constant,
+ *          then the user of this object needs to implement the
+ *          deletion exit so that the object is released or the
+ *          key is freed.
+ *
  * Remarks
  *	1.      None
  *
