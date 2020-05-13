@@ -59,9 +59,9 @@
 #define         ${UNAME}_H
 
 
-//#define   ${UNAME}_IS_IMMUTABLE     1
-//#define   ${UNAME}_JSON_SUPPORT     1
-//#define   ${UNAME}_SINGLETON        1
+${DEF_IMMUTABLE}
+${DEF_JSON}
+${DEF_SINGLETON}
 
 
 

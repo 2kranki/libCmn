@@ -257,6 +257,21 @@ extern "C" {
     );
 
 
+    /*!
+     @return:   return the number of Unicode characters in
+                the path, not the actual size of the path in
+                memory.  -1 indicates an error occurred.
+     */
+    uint32_t        Path_getLength(
+        PATH_DATA      *this
+    );
+
+
+    /*!
+     @return:   return the number of Unicode characters in
+                the path, not the actual size of the path in
+                memory.  -1 indicates an error occurred.
+     */
     uint32_t        Path_getSize (
         PATH_DATA       *this
     );
