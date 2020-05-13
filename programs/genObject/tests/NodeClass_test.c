@@ -200,10 +200,11 @@ int             test_NodeClass_Test01 (
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
-    NODECLASS_DATA	    *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    NODECLASS_DATA	*pObj = OBJ_NIL;
     bool            fRc;
-   
+    ASTR_DATA       *pStr = OBJ_NIL;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = NodeClass_New( );
@@ -214,15 +215,14 @@ int             test_NodeClass_Test01 (
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_NODECLASS);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        pObj->pName = AStr_NewA("Test01");
+        pObj->fJson = 1;
         
-        {
-            ASTR_DATA       *pStr = NodeClass_ToDebugString(pObj, 0);
-            if (pStr) {
-                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
+        pStr = NodeClass_ToJson(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

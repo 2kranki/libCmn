@@ -2075,14 +2075,13 @@ extern "C" {
             else {
                 chr = AStr_CharGetW32(this, i+1);
                 if (chr == '{') {
-                    i += 2;
-                    j = i;
+                    j = i + 2;
                     eRc = AStr_CharFindNextW32(this, &j, '}');
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_PARSE_ERROR;
                     }
-                    len = j - i;
-                    eRc = AStr_Mid(this, i, len, &pName);
+                    len = j - (i + 2);
+                    eRc = AStr_Mid(this, i+2, len, &pName);
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_OUT_OF_MEMORY;
                     }
@@ -2098,11 +2097,11 @@ extern "C" {
                     }
                     obj_Release(pName);
                     pName = OBJ_NIL;
-                    eRc = AStr_Remove(this, i-2, len+3);
+                    eRc = AStr_Remove(this, i, len+3);
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_OUT_OF_MEMORY;
                     }
-                    eRc = AStr_InsertA(this, i-2, pEnvVar);
+                    eRc = AStr_InsertA(this, i, pEnvVar);
                     if (ERESULT_FAILED(eRc)) {
                         return ERESULT_OUT_OF_MEMORY;
                     }

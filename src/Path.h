@@ -159,6 +159,29 @@ extern "C" {
     );
 
 
+    /*! Create a new path from the supplied components. You should pass NULL for
+     any optional component that you don't want to supply. If the necessary seperators
+     are missing from the supplied components, they will be added.
+     @param     pDriveA     optional drive with or without the trailing seperator,
+                            ':'
+     @param     pDirA       optional directory with or without the trailing
+                            seperator, '/'
+     @param     pFileNameA  required filename with or without a file extension.
+     @param     pExtA       optional file extension with or without the leading '.'
+     @return    If successful, a new path object, otherwise OBJ_NIL.
+     */
+    PATH_DATA *     Path_NewFromComponentsA(
+        const
+        char            *pDriveA,
+        const
+        char            *pDirA,
+        const
+        char            *pFileNameA,
+        const
+        char            *pExtA
+    );
+
+
     PATH_DATA *     Path_NewFromCurrentDirectory (
         void
     );

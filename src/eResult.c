@@ -411,7 +411,7 @@ void            eResult_ErrorFatalOn(
     {
         va_list         argsp;
 
-        if (!fRc) {
+        if (fRc) {
             va_start( argsp, fmt );
             fprintf( stderr, "Fatal Error:  " );
             vfprintf( stderr, fmt, argsp );

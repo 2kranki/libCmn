@@ -20,7 +20,9 @@
 		C4EF2A61245A7FBA0074544A /* SrcParse_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EF2A5D245A7FB80074544A /* SrcParse_object.c */; };
 		C4EF2A6A2461AE5F0074544A /* Gen.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EF2A662461AE5C0074544A /* Gen.c */; };
 		C4EF2A6C24620ECA0074544A /* Gen_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EF2A6B24620ECA0074544A /* Gen_object.c */; };
-		C4EF2A7024637DC60074544A /* Gen_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EF2A6F24637DC60074544A /* Gen_test.c */; };
+		C4EF2A7D246842740074544A /* Dict.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EF2A79246842720074544A /* Dict.c */; };
+		C4EF2A7E246842740074544A /* Dict_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EF2A7A246842730074544A /* Dict_object.c */; };
+		C4EF2A98246C89EB0074544A /* Main_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EF2A97246C89EA0074544A /* Main_test.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,7 +63,11 @@
 		C4EF2A672461AE5E0074544A /* Gen_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen_internal.h; sourceTree = "<group>"; };
 		C4EF2A692461AE5E0074544A /* Gen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen.h; sourceTree = "<group>"; };
 		C4EF2A6B24620ECA0074544A /* Gen_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Gen_object.c; sourceTree = "<group>"; };
-		C4EF2A6F24637DC60074544A /* Gen_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Gen_test.c; sourceTree = "<group>"; };
+		C4EF2A79246842720074544A /* Dict.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Dict.c; sourceTree = "<group>"; };
+		C4EF2A7A246842730074544A /* Dict_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Dict_object.c; sourceTree = "<group>"; };
+		C4EF2A7B246842730074544A /* Dict.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dict.h; sourceTree = "<group>"; };
+		C4EF2A7C246842730074544A /* Dict_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dict_internal.h; sourceTree = "<group>"; };
+		C4EF2A97246C89EA0074544A /* Main_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Main_test.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,7 +103,7 @@
 		C459805A21B1DE0F001B8375 /* test_genObject */ = {
 			isa = PBXGroup;
 			children = (
-				C4EF2A6F24637DC60074544A /* Gen_test.c */,
+				C4EF2A97246C89EA0074544A /* Main_test.c */,
 			);
 			name = test_genObject;
 			path = ../../tests;
@@ -107,6 +113,10 @@
 			isa = PBXGroup;
 			children = (
 				C459808821B1EABC001B8375 /* genObject_defs.h */,
+				C4EF2A7C246842730074544A /* Dict_internal.h */,
+				C4EF2A7A246842730074544A /* Dict_object.c */,
+				C4EF2A79246842720074544A /* Dict.c */,
+				C4EF2A7B246842730074544A /* Dict.h */,
 				C4EF2A672461AE5E0074544A /* Gen_internal.h */,
 				C4EF2A6B24620ECA0074544A /* Gen_object.c */,
 				C4EF2A662461AE5C0074544A /* Gen.c */,
@@ -202,15 +212,17 @@
 				C47CB62D23ABB950005C90C1 /* Main_object.c in Sources */,
 				C4EF2A6C24620ECA0074544A /* Gen_object.c in Sources */,
 				C4EF2A4E2456364A0074544A /* NodeProp.c in Sources */,
+				C4EF2A98246C89EB0074544A /* Main_test.c in Sources */,
 				C4EF2A512456364A0074544A /* NodeClass_json.c in Sources */,
+				C4EF2A7E246842740074544A /* Dict_object.c in Sources */,
 				C4EF2A502456364A0074544A /* NodeClass_object.c in Sources */,
 				C4EF2A6A2461AE5F0074544A /* Gen.c in Sources */,
 				C4EF2A60245A7FBA0074544A /* SrcParse.c in Sources */,
-				C4EF2A7024637DC60074544A /* Gen_test.c in Sources */,
 				C4EF2A522456364A0074544A /* NodeProp_object.c in Sources */,
 				C4EF2A532456364A0074544A /* NodeProp_json.c in Sources */,
 				C4EF2A61245A7FBA0074544A /* SrcParse_object.c in Sources */,
 				C47CB62C23ABB950005C90C1 /* Main.c in Sources */,
+				C4EF2A7D246842740074544A /* Dict.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

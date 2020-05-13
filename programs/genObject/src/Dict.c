@@ -293,31 +293,6 @@ extern "C" {
     //                  A d d  /  A d d U p d a t e
     //---------------------------------------------------------------
     
-    ERESULT         Dict_Add (
-        DICT_DATA       *this,
-        const
-        char            *pName,
-        OBJ_ID          pData
-    )
-    {
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Dict_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        
-        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pName, (void *)pData);
-        
-        // Return to caller.
-        return eRc;
-    }
-    
-    
     ERESULT         Dict_AddA (
         DICT_DATA       *this,
         const
@@ -356,10 +331,35 @@ extern "C" {
     }
     
     
+    ERESULT         Dict_AddAStr (
+        DICT_DATA       *this,
+        const
+        char            *pNameA,
+        ASTR_DATA       *pData
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Dict_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pNameA, (void *)pData);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
     ERESULT         Dict_AddUpdate (
         DICT_DATA       *this,
         const
-        char            *pName,
+        char            *pNameA,
         OBJ_ID          pData
     )
     {
@@ -374,10 +374,10 @@ extern "C" {
         }
 #endif
         
-        if (NodeHash_FindA(Dict_getNodeHash(this), 0, pName)) {
-            eRc = NodeHash_DeleteA(Dict_getNodeHash(this), 0, pName);
+        if (NodeHash_FindA(Dict_getNodeHash(this), 0, pNameA)) {
+            eRc = NodeHash_DeleteA(Dict_getNodeHash(this), 0, pNameA);
         }
-        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pName, (void *)pData);
+        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pNameA, (void *)pData);
         
         // Return to caller.
         return eRc;
@@ -387,9 +387,9 @@ extern "C" {
     ERESULT         Dict_AddUpdateA (
         DICT_DATA        *this,
         const
-        char            *pName,
+        char            *pNameA,
         const
-        char            *pData
+        char            *pDataA
     )
     {
         ERESULT         eRc;
@@ -404,15 +404,15 @@ extern "C" {
         }
 #endif
         
-        pStr = AStr_NewA(pData);
+        pStr = AStr_NewA(pDataA);
         if (OBJ_NIL == pStr) {
             return ERESULT_OUT_OF_MEMORY;
         }
         
-        if (NodeHash_FindA(Dict_getNodeHash(this), 0, pName)) {
-            eRc = NodeHash_DeleteA(Dict_getNodeHash(this), 0, pName);
+        if (NodeHash_FindA(Dict_getNodeHash(this), 0, pNameA)) {
+            eRc = NodeHash_DeleteA(Dict_getNodeHash(this), 0, pNameA);
         }
-        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pName, pStr);
+        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pNameA, pStr);
         
         // Return to caller.
         obj_Release(pStr);
@@ -644,513 +644,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      D e f a u l t s
-    //---------------------------------------------------------------
-
-    /*!
-     Set the default values for most variables.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Dict_DefaultsCommon (
-        DICT_DATA        *this
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!Dict_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-    #endif
-        
-        pStr = AStr_NewA("mainProgram.c");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, mainID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", mainID);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        pStr = AStr_NewA("d");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, makeTypeID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", makeTypeID);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        pStr = AStr_NewA("OBJDIR");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, objDirVarID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        objDirVarID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-
-        pStr = AStr_NewA("OBJS");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, objsVarID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        objsVarID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-
-        pStr = AStr_NewA("./src");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, srcDirID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        srcDirID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        pStr = AStr_NewA("SRCDIR");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, srcDirVarID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        srcDirVarID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-
-        pStr = AStr_NewA("TEST_BIN");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, tstBinVarID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        tstBinVarID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-                
-        pStr = AStr_NewA("./tests");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, tstSrcID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        tstSrcID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-                
-        pStr = AStr_NewA("TEST_SRC");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, tstSrcVarID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        tstSrcVarID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-                
-        pStr = AStr_NewA("TESTS");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, testsVarID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        testsVarID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    /*!
-     Set the default values for most variables.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Dict_DefaultsMacos64 (
-        DICT_DATA        *this
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pOS = OBJ_NIL;
-        ASTR_DATA       *pArch = OBJ_NIL;
-        ASTR_DATA       *pStr;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!Dict_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-    #endif
-        
-        pOS = AStr_NewA("macos64");
-        pArch = AStr_NewA("x86_64");
-
-        if (pOS) {
-            eRc = Dict_AddUpdate(this, osTypeID, pOS);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pOS);
-            pOS = OBJ_NIL;
-        }
-        
-        if (pArch) {
-            eRc = Dict_AddUpdate(this, osArchID, pArch);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osArchID);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pArch);
-            pArch = OBJ_NIL;
-        }
-
-        pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, libBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        libBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        pStr = AStr_NewA("$(HOME)/Support/bin");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, pgmBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        pgmBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        pStr = AStr_NewA("${TMPDIR}");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, tmpDirID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        tmpDirID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        eRc = Dict_DefaultsCommon(this);
-        
-        // Return to caller.
-        return eRc;
-    }
-
-
-    /*!
-     Set the default values for most variables.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Dict_DefaultsWin64 (
-        DICT_DATA        *this
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pOS = OBJ_NIL;
-        ASTR_DATA       *pArch = OBJ_NIL;
-        ASTR_DATA       *pStr;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!Dict_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-    #endif
-        
-        pOS = AStr_NewA("win64");
-        pArch = AStr_NewA("x86_64");
-
-        if (pOS) {
-            eRc = Dict_AddUpdate(this, osTypeID, pOS);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pOS);
-            pOS = OBJ_NIL;
-        }
-        
-        if (pArch) {
-            eRc = Dict_AddUpdate(this, osArchID, pArch);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osArchID);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pArch);
-            pArch = OBJ_NIL;
-        }
-
-        pStr = AStr_NewA("C:/PROGRAMS");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, libBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        libBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        pStr = AStr_NewA("C:/PROGRAMS");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, pgmBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        pgmBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        pStr = AStr_NewA("${TMP}");
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, tmpDirID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        tmpDirID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        eRc = Dict_DefaultsCommon(this);
-        
-        // Return to caller.
-        return eRc;
-    }
-
-
-    /*!
-     Set the default values for most variables.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Dict_Defaults (
-        DICT_DATA        *this
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pOS = OBJ_NIL;
-        ASTR_DATA       *pArch = OBJ_NIL;
-        ASTR_DATA       *pStr;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!Dict_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-    #endif
-        
-#if defined(__MACOS32_ENV__)
-        pOS = AStr_NewA("macos32");
-        pArch = AStr_NewA("x86");
-#endif
-#if defined(__MACOS64_ENV__) || defined(__MACOSX_ENV__)
-        pOS = AStr_NewA("macos64");
-        pArch = AStr_NewA("x86_64");
-#endif
-#if defined(__WIN32_ENV__)
-        pOS = AStr_NewA("win32");
-        pArch = AStr_NewA("x86");
-#endif
-#if defined(__WIN64_ENV__)
-        pOS = AStr_NewA("win64");
-        pArch = AStr_NewA("x86_64");
-#endif
-
-        if (pOS) {
-            eRc = Dict_AddUpdate(this, osTypeID, pOS);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osTypeID);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pOS);
-            pOS = OBJ_NIL;
-        }
-        
-        if (pArch) {
-            eRc = Dict_AddUpdate(this, osArchID, pArch);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to add '%s' to Dictionary\n", osArchID);
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pArch);
-            pArch = OBJ_NIL;
-        }
-
-#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__) || defined(__MACOSX_ENV__)
-        pStr = AStr_NewA("$(HOME)/Support/lib/$(SYS)");
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        pStr = AStr_NewA("C:/PROGRAMS");
-#endif
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, libBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        libBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__) || defined(__MACOSX_ENV__)
-        pStr = AStr_NewA("$(HOME)/Support/bin");
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        pStr = AStr_NewA("C:/PROGRAMS");
-#endif
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, pgmBaseID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        pgmBaseID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__) || defined(__MACOSX_ENV__)
-        pStr = AStr_NewA("${TMPDIR}");
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        pStr = AStr_NewA("${TMP}");
-#endif
-        if (pStr) {
-            eRc = Dict_AddUpdate(this, tmpDirID, pStr);
-            if (ERESULT_FAILED(eRc) ) {
-                fprintf(
-                        stderr,
-                        "FATAL - Failed to add '%s' to Dictionary\n",
-                        tmpDirID
-                        );
-                exit(EXIT_FAILURE);
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-        
-        eRc = Dict_DefaultsCommon(this);
-        
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -1372,6 +865,55 @@ extern "C" {
     }
     
     
+    //---------------------------------------------------------------
+    //                          F i n d
+    //---------------------------------------------------------------
+
+    /*!
+     Get the dictionary value for a given name.
+     @param     this    object pointer
+     @param     pNameA  pointer to UTF-8 Name string
+     @return    if successful, pointer to data string.  Otherwise, NULL.
+     */
+    ASTR_DATA *     Dict_FindA (
+        DICT_DATA       *this,
+        const
+        char            *pNameA
+    )
+    {
+        NODE_DATA       *pNode = OBJ_NIL;
+        ASTR_DATA       *pData = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Dict_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return NULL;
+        }
+#endif
+
+        pNode = NodeHash_FindA(Dict_getNodeHash(this), 0, pNameA);
+        if (pNode) {
+            pData = Node_getData(pNode);
+            if (OBJ_NIL == pData)
+                ;
+            else  {
+                if (obj_IsKindOf(pData, OBJ_IDENT_ASTR)) {
+                    ;
+                } else {
+                    pData = OBJ_NIL;
+                }
+            }
+        }
+
+        // Return to caller.
+        return pData;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          G e t
     //---------------------------------------------------------------

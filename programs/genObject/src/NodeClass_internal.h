@@ -72,7 +72,7 @@ struct NodeClass_data_s	{
     uint8_t         fImmutable;
     uint8_t         fJson;
     uint8_t         fSingleton;
-    uint8_t         rsvd8;
+    uint8_t         fTest;
     ASTR_DATA       *pName;
     ASTR_DATA       *pSuper;
     OBJARRAY_DATA   *pProps;

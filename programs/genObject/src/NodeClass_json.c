@@ -101,27 +101,16 @@ extern "C" {
         obj_Retain(pObject->pSuper);
         eRc = JsonIn_FindTrueNodeInHashA(pParser, "immutable");
         if (ERESULT_OK(eRc))
-            pObject->fImmutable = 'T';
+            pObject->fImmutable = 1;
         eRc = JsonIn_FindTrueNodeInHashA(pParser, "json");
         if (ERESULT_OK(eRc))
-            pObject->fJson = 'T';
+            pObject->fJson = 1;
         eRc = JsonIn_FindTrueNodeInHashA(pParser, "singleton");
         if (ERESULT_OK(eRc))
-            pObject->fSingleton = 'T';
-
-#ifdef XYZZZY
-        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
-        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
-
-        eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
-        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
-        }
-        JsonIn_SubObjectEnd(pParser);
-#endif
+            pObject->fSingleton = 1;
+        eRc = JsonIn_FindTrueNodeInHashA(pParser, "test");
+        if (ERESULT_OK(eRc))
+            pObject->fTest = 1;
 
         // Return to caller.
     exit00:
@@ -304,9 +293,9 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
 
-        JsonOut_Append_StrA("name", AStr_getData(this->pName), pStr);
+        AStr_AppendPrint(pStr, "\tname:\"%s\"\n", AStr_getData(this->pName));
         if (this->pSuper) {
-            JsonOut_Append_StrA("super", AStr_getData(this->pSuper), pStr);
+            AStr_AppendPrint(pStr, "\tsuper:\"%s\"\n", AStr_getData(this->pSuper));
         }
         if (this->fImmutable)
             JsonOut_Append_bool("immutable", this->fImmutable, pStr);
@@ -314,17 +303,7 @@ extern "C" {
             JsonOut_Append_bool("json", this->fJson, pStr);
         if (this->fSingleton)
             JsonOut_Append_bool("singleton", this->fSingleton, pStr);
-
-#ifdef XYZZZY
-        JsonOut_Append_i32("x", this->x, pStr);
-        JsonOut_Append_i64("t", this->t, pStr);
-        JsonOut_Append_u32("o", this->o, pStr);
-        JsonOut_Append_utf8("n", pEntry->pN, pStr);
-        JsonOut_Append_Object("e", this->pE, pStr);
-        JsonOut_Append_String("d", this->pAStr, pStr);
-        JsonOut_Append_StringA("d", this->pStrA, pStr);
-        JsonOut_Append_StringW32("d", this->pStrW32, pStr);
-#endif
+        JsonOut_Append_bool("test", this->fTest, pStr);
 
         return ERESULT_SUCCESS;
     }

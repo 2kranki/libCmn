@@ -41,7 +41,8 @@
 
 #include        <Gen.h>
 #include        <JsonIn.h>
-#include        <szBT.h>
+#include        <TextIn.h>
+#include        <TextOut.h>
 
 
 #ifndef GEN_INTERNAL_H
@@ -72,7 +73,11 @@ struct Gen_data_s	{
     // Common Data
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
-    SZBT_DATA       *pDict;
+    DICT_DATA       *pDict;
+    const
+    char            *pModelDrvDir;
+    const
+    char            *pOutputDrvDir;
 
 };
 #pragma pack(pop)
@@ -122,8 +127,28 @@ struct Gen_data_s	{
     );
 
 
+    PATH_DATA *     Gen_CreateModelPath (
+        GEN_DATA        *this,
+        ASTR_DATA       *pModelFileName
+    );
+
+
+    PATH_DATA *     Gen_CreateOutputPath (
+        GEN_DATA        *this,
+        ASTR_DATA       *pModelFileName
+    );
+
+
     void            Gen_Dealloc (
         OBJ_ID          objId
+    );
+
+
+    ERESULT         Gen_ExpandData (
+        GEN_DATA        *this,
+        TEXTIN_DATA     *pInput,
+        TEXTOUT_DATA    *pOutput,
+        uint32_t        *pCnt
     );
 
 

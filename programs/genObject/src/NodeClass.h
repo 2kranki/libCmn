@@ -53,6 +53,7 @@
 
 #include        <genObject_defs.h>
 #include        <AStr.h>
+#include        <Dict.h>
 #include        <NodeProp.h>
 #include        <ObjArray.h>
 
@@ -201,7 +202,17 @@ extern "C" {
     );
 
 
-    
+    bool            NodeClass_getTest (
+        NODECLASS_DATA  *this
+    );
+
+    bool            NodeClass_setTest (
+        NODECLASS_DATA  *this,
+        bool            value
+    );
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -236,11 +247,23 @@ extern "C" {
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    NODECLASS_DATA *    NodeClass_Copy (
-        NODECLASS_DATA      *this
+    NODECLASS_DATA * NodeClass_Copy (
+        NODECLASS_DATA  *this
     );
 
    
+    /*!
+     Create the Dictionary entries for this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeClass_CreateDictEntries (
+        NODECLASS_DATA  *this,
+        DICT_DATA       *pDict
+    );
+
+
     NODECLASS_DATA * NodeClass_Init (
         NODECLASS_DATA  *this
     );

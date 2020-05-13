@@ -26,10 +26,8 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <Main_internal.h>
-#ifdef  MAIN_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
@@ -55,11 +53,9 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  MAIN_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
-#endif
-    trace_SharedReset( ); 
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -234,8 +230,136 @@ int             test_Main_Test01 (
 
 
 
+int             test_Main_ParseArg01 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    MAIN_DATA       *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    bool            fRc;
+    const
+    char            *pTestFileA =
+                    "~/git/libCmn/programs/genObject/tests/files/object01.json.txt";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Main_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_MAIN);
+        TINYTEST_TRUE( (fRc) );
+        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        pPath = Path_NewA("/Users/bob/Support/x/Test01.h");
+        if (pPath) {
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        pPath = Path_NewA("/Users/bob/Support/x/Test01.c");
+        if (pPath) {
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        pPath = Path_NewA("/Users/bob/Support/x/Test01_internal.h");
+        if (pPath) {
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        pPath = Path_NewA("/Users/bob/Support/x/Test01_json.c");
+        if (pPath) {
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        pPath = Path_NewA("/Users/bob/Support/x/Test01_object.c");
+        if (pPath) {
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        pPath = Path_NewA("/Users/bob/Support/x/Test01_test.c");
+        if (pPath) {
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+
+        pStr = AStr_NewA(pTestFileA);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        eRc = Main_ProcessArg(pObj, pStr);
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        pPath = Path_NewA("/Users/bob/Support/x/Test01.h");
+        if (pPath) {
+            eRc = Path_IsFile(pPath);
+            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        pPath = Path_NewA("/Users/bob/Support/x/Test01.c");
+        if (pPath) {
+            eRc = Path_IsFile(pPath);
+            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        pPath = Path_NewA("/Users/bob/Support/x/Test01_internal.h");
+        if (pPath) {
+            eRc = Path_IsFile(pPath);
+            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        pPath = Path_NewA("/Users/bob/Support/x/Test01_json.c");
+        if (pPath) {
+            eRc = Path_IsFile(pPath);
+            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        pPath = Path_NewA("/Users/bob/Support/x/Test01_object.c");
+        if (pPath) {
+            eRc = Path_IsFile(pPath);
+            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        pPath = Path_NewA("/Users/bob/Support/x/Test01_test.c");
+        if (pPath) {
+            eRc = Path_IsFile(pPath);
+            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_Main);
+    TINYTEST_ADD_TEST(test_Main_ParseArg01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_Test01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_Main_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_OpenClose,setUp,tearDown);

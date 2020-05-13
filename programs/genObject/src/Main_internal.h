@@ -72,15 +72,15 @@ struct Main_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;		    // maximum number of elements
-    uint16_t        rsvd16;
     ASTR_DATA       *pStr;
-    PATH_DATA       *pFilePath;
+    //PATH_DATA       *pFilePath;     // JSON Input File Path
     GEN_DATA        *pGen;
     ASTR_DATA       *pOut;
     PATH_DATA       *pOutputPath;
-    TEXTOUT_DATA    *pOutput;
-    SRCPARSE_DATA   *pParser;
+    NODECLASS_DATA  *pClass;
+    DICT_DATA       *pDict;
+    uint16_t        fBackup;
+    uint16_t        fJson;
 
 };
 #pragma pack(pop)
@@ -234,11 +234,6 @@ ERESULT         Main_ParseInputStr (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
-    );
-
-
-    ERESULT         Main_SetupTextOutAStr (
-        MAIN_DATA        *this
     );
 
 

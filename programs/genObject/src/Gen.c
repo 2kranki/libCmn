@@ -55,6 +55,42 @@ extern "C" {
     
 
     
+    static
+    const
+    char        *pModelFileNames[] = {
+        "model.obj._internal.h.txt",
+        "model.obj._object.c.txt",
+        "model.obj.h.txt",
+        "model.obj.c.txt",
+        NULL
+    };
+    static
+    const
+    char        *pModelJsonFileName = "model.obj._json.c.txt";
+    static
+    const
+    char        *pModelTestFileName = "model.obj._test.c.txt";
+
+
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
+    static
+    const
+    char        *pModelDrvDir = "~/Support/genObject/";
+    static
+    const
+    char        *pOutputDrvDir = "~/Support/x/";
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    //TODO: Change to fit
+    static
+    const
+    char        *pModelDrvDir = "~/Support/genObject/";
+    static
+    const
+    char        *pOutputDrvDir = "~/Support/x/";
+#endif
+
+
 
 
  
@@ -63,19 +99,20 @@ extern "C" {
     ****************************************************************/
 
     static
-    ERESULT         DictDeleteExit(
-        OBJ_ID          this,
-        void            *pKey,
-        void            *pData
+    const
+    char *          Gen_FindExpandA(
+        GEN_DATA        *this,
+        const
+        char            *pNameA
     )
     {
-        if (pKey)
-            mem_Free(pKey);
-        if (pData)
-            obj_Release(pData);
+        const
+        char            *pStrA = NULL;
 
-        return ERESULT_SUCCESS;
+        pStrA = Dict_GetA(this->pDict, pNameA);
+        return pStrA;
     }
+
 
 
 
@@ -130,7 +167,7 @@ extern "C" {
     //                      D i c t i o n a r y
     //---------------------------------------------------------------
 
-    SZBT_DATA *     Gen_getDict (
+    DICT_DATA *     Gen_getDict (
         GEN_DATA        *this
     )
     {
@@ -150,7 +187,7 @@ extern "C" {
 
     bool            Gen_setDict (
         GEN_DATA        *this,
-        SZBT_DATA       *pValue
+        DICT_DATA       *pValue
     )
     {
 #ifdef NDEBUG
@@ -166,6 +203,94 @@ extern "C" {
             obj_Release(this->pDict);
         }
         this->pDict = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  M o d e l  D r v  D i r
+    //---------------------------------------------------------------
+
+    const
+    char *          Gen_getModelDrvDir (
+        GEN_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->pModelDrvDir;
+    }
+
+
+    bool            Gen_setModelDrvDir (
+        GEN_DATA        *this,
+        const
+        char            *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pModelDrvDir = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  O u t p u t  D r v  D i r
+    //---------------------------------------------------------------
+
+    const
+    char *          Gen_getOutputDrvDir (
+        GEN_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->pOutputDrvDir;
+    }
+
+
+    bool            Gen_setOutputDrvDir (
+        GEN_DATA        *this,
+        const
+        char            *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pOutputDrvDir = pValue;
 
         return true;
     }
@@ -265,54 +390,6 @@ extern "C" {
     //===============================================================
     //                          M e t h o d s
     //===============================================================
-
-
-    //---------------------------------------------------------------
-    //                          A d d
-    //---------------------------------------------------------------
-
-    ERESULT         Gen_AddUpdateA(
-        GEN_DATA        *this,
-        const
-        char            *pNameA,
-        ASTR_DATA       *pData
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Gen_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (NULL == pNameA) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-        if (OBJ_NIL == pData) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-        if (OBJ_NIL == this->pDict) {
-            this->pDict = szBT_New();
-            if (OBJ_NIL == this->pDict) {
-                DEBUG_BREAK();
-                return ERESULT_OUT_OF_MEMORY;
-            }
-            szBT_setDeleteExit(this->pDict, DictDeleteExit, OBJ_NIL);
-        }
-
-        eRc = szBT_AddUpdateA(this->pDict, pNameA, pData);
-
-
-        // Return to caller.
-        return eRc;
-    }
-
 
 
     //---------------------------------------------------------------
@@ -509,22 +586,19 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //               C r e a t e  O u t p u t  P a t h
+    //               C r e a t e  M o d e l  P a t h
     //---------------------------------------------------------------
 
-    PATH_DATA *     Gen_CreateOutputFileName (
+    PATH_DATA *     Gen_CreateModelPath (
         GEN_DATA        *this,
-        PATH_DATA       *pModel,
-        const
-        char            *pObjectNameA
+        ASTR_DATA       *pModelFileName
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        const
+        char            *pModelDriveA = OBJ_NIL;
+        const
+        char            *pModelDirA = OBJ_NIL;
         PATH_DATA       *pPath = OBJ_NIL;
-        ASTR_DATA       *pDrive = OBJ_NIL;
-        PATH_DATA       *pDir = OBJ_NIL;
-        PATH_DATA       *pFileName = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -534,141 +608,176 @@ extern "C" {
             //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
-        if ((OBJ_NIL == pModel) || (Path_getSize(pModel) < 15)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_PARAMETER;
-            return OBJ_NIL;
-        }
-        if (NULL == pObjectNameA) {
+        if ((OBJ_NIL == pModelFileName) || (AStr_getSize(pModelFileName) < 15)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return OBJ_NIL;
         }
 #endif
+        pModelDriveA = Dict_GetA(this->pDict, MODEL_DRIVE);
+        pModelDirA   = Dict_GetA(this->pDict, MODEL_DIR);
 
-        eRc = Path_SplitPath(pModel, &pDrive, &pDir, &pFileName);
-        eResult_ErrorFatalOn(
-                        eRc,
-                        "Failed to create path \"%s\" \n",
-                        Path_getData(pModel)
+        pPath = Path_NewFromComponentsA(
+                        pModelDriveA,
+                        pModelDirA,
+                        AStr_getData(pModelFileName),
+                        NULL
+                );
+
+        // Return to caller.
+        return pPath;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //            C r e a t e  O b j e c t  F i l e s
+    //---------------------------------------------------------------
+
+    ERESULT         Gen_CreateObjectFIles (
+        GEN_DATA        *this,
+        NODECLASS_DATA  *pClass,
+        bool            fVerbose
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        i;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        for (i=0; pModelFileNames[i]; i++) {
+            ASTR_DATA       *pStr = OBJ_NIL;
+            pStr = AStr_NewA(pModelFileNames[i]);
+            if (pStr) {
+                eRc = Gen_ExpandFile(this, pStr, fVerbose);
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+                if (ERESULT_FAILED(eRc))
+                    break;
+            }
+        }
+
+        if (ERESULT_OK(eRc)) {
+            ASTR_DATA       *pStr = OBJ_NIL;
+            if (NodeClass_getJson(pClass)) {
+                pStr = AStr_NewA(pModelJsonFileName);
+                if (pStr) {
+                    eRc = Gen_ExpandFile(this, pStr, fVerbose);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+        }
+
+        if (ERESULT_OK(eRc)) {
+            ASTR_DATA       *pStr = OBJ_NIL;
+            if (NodeClass_getTest(pClass)) {
+                pStr = AStr_NewA(pModelTestFileName);
+                if (pStr) {
+                    eRc = Gen_ExpandFile(this, pStr, fVerbose);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //               C r e a t e  O u t p u t  P a t h
+    //---------------------------------------------------------------
+
+    PATH_DATA *     Gen_CreateOutputPath (
+        GEN_DATA        *this,
+        ASTR_DATA       *pModelFileName
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pObjName = OBJ_NIL;
+        const
+        char            *pOutputDriveA = OBJ_NIL;
+        const
+        char            *pOutputDirA = OBJ_NIL;
+        PATH_DATA       *pPath = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Gen_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if ((OBJ_NIL == pModelFileName) || (AStr_getSize(pModelFileName) < 15)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+        pObjName = Dict_FindA(this->pDict, OBJECT_NAME);
+        eResult_ErrorFatalOnBool(
+                        (OBJ_NIL == pObjName),
+                        "Object Name is missing!\n"
         );
-        obj_Release(pDrive);
-        pDrive = OBJ_NIL;
-        obj_Release(pDir);
-        pDir = OBJ_NIL;
-        eRc = AStr_CompareLeftA(Path_getAStr(pFileName), "model.obj.");
+        pOutputDriveA = Dict_GetA(this->pDict, OUTPUT_DRIVE);
+        pOutputDirA   = Dict_GetA(this->pDict, OUTPUT_DIR);
+
+        eRc = AStr_CompareLeftA(pModelFileName, "model.obj");
         eResult_ErrorFatalOnBool(
                         (eRc != ERESULT_SUCCESS_EQUAL),
                         "Model Path is not \"model.obj.X.txt, %s!\n",
-                        Path_getData(pModel)
+                        AStr_getData(pModelFileName)
         );
-        eRc = AStr_CompareRightA(Path_getAStr(pFileName), ".txt");
+        eRc = AStr_CompareRightA(pModelFileName, ".txt");
         eResult_ErrorFatalOnBool(
                         (eRc != ERESULT_SUCCESS_EQUAL),
                         "Model Path is not \"model.obj.X.txt, %s!\n",
-                        Path_getData(pModel)
+                        AStr_getData(pModelFileName)
         );
 
         eRc =   AStr_Mid(
-                       Path_getAStr(pFileName),
+                       pModelFileName,
                        11,
-                       (Path_getSize(pFileName) - 14),
+                       (AStr_getSize(pModelFileName) - 14),
                        &pStr
                 );
-        eResult_ErrorFatalOn(
-                        eRc,
+        eResult_ErrorFatalOnBool(
+                        (ERESULT_FAILED(eRc) || (pStr == OBJ_NIL)),
                         "Model Path is not \"model.obj.X.txt, %s!\n",
-                        Path_getData(pModel)
+                        AStr_getData(pModelFileName)
         );
-        eRc = AStr_InsertA(pStr, 1, pObjectNameA);
+        if ('_' != AStr_CharGetW32(pStr, 1)) {
+            eRc = AStr_InsertA(pStr, 1, ".");
+        }
+        eRc = AStr_InsertA(pStr, 1, AStr_getData(pObjName));
         eResult_ErrorFatalOn(
                         eRc,
                         "Failed to build output filename for %s!\n",
-                        Path_getData(pModel)
-        );
-        //fprintf(stderr, "pStr: %s\n", AStr_getData(pStr));
-
-        //eRc = Path_MatchPath(pPath, pOutDrv, pOutDir, pFileName);
-#ifdef XYZZY
-        pPath = Path_NewFromAStr(pStr);
-        Appl_ErrorFatalOnBool(
-                    (OBJ_NIL == pPath),
-                    "FATAL - Failed to create path \"from\" \n"
-        );
-        eRc = Path_Clean(pPath);
-        Appl_ErrorFatalOnEresult(
-                    eRc,
-                    "FATAL - File, %s, does not exist or is not a file!\n",
-                    Path_getData(pPath)
-        );
-        eRc = Path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
-        Appl_ErrorFatalOnEresult(
-                    eRc,
-                    "FATAL - Unable to extract directory from File, %s!\n",
-                    Path_getData(pPath)
+                        AStr_getData(pModelFileName)
         );
 
-        // Create the output file path if given.
-        pMakefile = Path_NewA("Makefile.");
-        if (OBJ_NIL == pMakefile) {
-            DEBUG_BREAK();
-            fprintf(
-                    stderr,
-                    "FATAL - Unable to create Makefile name!\n"
-                    );
-            exit(EXIT_FAILURE);
-        }
-        eRc = Path_AppendA(pMakefile, this->pOsName);
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(
-                    stderr,
-                    "FATAL - Unable to create Makefile name!\n"
-                    );
-            exit(EXIT_FAILURE);
-        }
-        eRc = Path_AppendA(pMakefile, ".txt");
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(
-                    stderr,
-                    "FATAL - Unable to create Makefile name!\n"
-                    );
-            exit(EXIT_FAILURE);
-        }
-        pMakepath = Path_NewFromDriveDirFilename(pDrive, pDir, pMakefile);
-        if (OBJ_NIL == pMakefile) {
-            DEBUG_BREAK();
-            fprintf(
-                    stderr,
-                    "FATAL - Unable to create Makepath!\n"
-                    );
-            exit(EXIT_FAILURE);
-        }
-        eRc = Path_ExpandVars(pMakepath, this->pDict);
-        if (ERESULT_FAILED(eRc) ) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Failed to expand Makepath\n");
-            exit(EXIT_FAILURE);
-        }
-        eRc = Path_IsFile(pMakepath);
-        if (!ERESULT_FAILED(eRc) && this->fBackup) {
-            eRc = Path_VersionedRename(pMakepath);
-            if (ERESULT_FAILED(eRc) ) {
-                DEBUG_BREAK();
-                fprintf(stderr, "FATAL - Failed to back up old Makefile\n");
-                exit(EXIT_FAILURE);
-            }
-        }
-#endif
+        pPath = Path_NewFromComponentsA(
+                        pOutputDriveA,
+                        pOutputDirA,
+                        AStr_getData(pStr),
+                        NULL
+                );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
 
         // Return to caller.
-        obj_Release(pDrive);
-        pDrive = OBJ_NIL;
-        obj_Release(pDir);
-        pDrive = OBJ_NIL;
-        obj_Release(pFileName);
-        pFileName = OBJ_NIL;
-        obj_Release(pPath);
-        pPath = OBJ_NIL;
         return pPath;
     }
 
@@ -833,16 +942,87 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                    E x p a n d  F i l e
+    //                          E x p a n d
     //---------------------------------------------------------------
 
-    ERESULT         Gen_ExpandFile (
+    ERESULT         Gen_ExpandData (
         GEN_DATA        *this,
-        PATH_DATA       *pModel,
-        PATH_DATA       *pOutput
+        TEXTIN_DATA     *pInput,
+        TEXTOUT_DATA    *pOutput,
+        uint32_t        *pCnt
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pLine = OBJ_NIL;
+        SRCLOC          loc = {0};
+        uint32_t        cnt = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pInput) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (OBJ_NIL == pOutput) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        while (true) {
+            eRc = TextIn_GetLineAStr(pInput, &pLine, &loc);
+            if (ERESULT_FAILED(eRc)) {
+                if (ERESULT_EOF_ERROR == eRc)
+                    eRc = ERESULT_SUCCESS;
+                break;
+            } else {
+                if (OBJ_NIL != pLine) {
+                    eRc = AStr_ExpandVars(pLine, (void *)Gen_FindExpandA, this);
+                    if ((OBJ_NIL != pLine) && (AStr_getSize(pLine) != 0)) {
+                        eRc = TextOut_PutAStr(pOutput, pLine);
+                        if (ERESULT_FAILED(eRc)) {
+                            obj_Release(pLine);
+                            pLine = OBJ_NIL;
+                            break;
+                        }
+                    }
+                    eRc = TextOut_Putc(pOutput, '\n');
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pLine);
+                        pLine = OBJ_NIL;
+                        break;
+                    }
+                    obj_Release(pLine);
+                    pLine = OBJ_NIL;
+                    cnt++;
+                }
+            }
+        }
+
+        // Return to caller.
+        if (pCnt)
+            *pCnt = cnt;
+        return eRc;
+    }
+
+
+    ERESULT         Gen_ExpandFile (
+        GEN_DATA        *this,
+        ASTR_DATA       *pModel,
+        bool            fVerbose
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        PATH_DATA       *pModelPath = OBJ_NIL;
+        PATH_DATA       *pOutputPath = OBJ_NIL;
+        TEXTIN_DATA     *pInput = OBJ_NIL;
+        TEXTOUT_DATA    *pOutput = OBJ_NIL;
+        uint32_t        cnt = 0;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -852,45 +1032,55 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+        pModelPath = Gen_CreateModelPath(this, pModel);
+        eResult_ErrorFatalOnBool(
+                        (OBJ_NIL == pModelPath),
+                        "Could not generate Model Path from %s!\n",
+                        AStr_getData(pModel)
+        );
+        pOutputPath = Gen_CreateOutputPath(this, pModel);
+        eResult_ErrorFatalOnBool(
+                        (OBJ_NIL == pModelPath),
+                        "Could not generate Output Path from %s!\n",
+                        AStr_getData(pModel)
+        );
 
-        obj_Enable(this);
+        pInput = TextIn_NewFromPath(pModelPath, 1, 4);
+        eResult_ErrorFatalOnBool(
+                        (OBJ_NIL == pInput),
+                        "Could not open input file, %s!\n",
+                        Path_getData(pModelPath)
+        );
+        pOutput = TextOut_NewFromPath(pOutputPath);
+        eResult_ErrorFatalOnBool(
+                        (OBJ_NIL == pOutput),
+                        "Could not open input file, %s!\n",
+                        Path_getData(pOutputPath)
+        );
+        if (fVerbose) {
+            fprintf(stderr,
+                    "\t\t%s -> %s\n",
+                    Path_getData(pModelPath),
+                    Path_getData(pOutputPath)
+            );
+        }
+        cnt = 0;
+        eRc = Gen_ExpandData(this, pInput, pOutput, &cnt);
+        if (fVerbose) {
+            fprintf(stderr, "\t\t%d lines\n", cnt);
+        }
 
-        // Put code here...
+        obj_Release(pInput);
+        pInput = OBJ_NIL;
+        obj_Release(pOutput);
+        pOutput = OBJ_NIL;
+        obj_Release(pModelPath);
+        pModelPath = OBJ_NIL;
+        obj_Release(pOutputPath);
+        pOutputPath = OBJ_NIL;
 
         // Return to caller.
         return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          F i n d
-    //---------------------------------------------------------------
-
-    ASTR_DATA *     Gen_FindA(
-        GEN_DATA        *this,
-        const
-        char            *pNameA
-    )
-    {
-        //ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pStr = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Gen_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return pStr;
-        }
-#endif
-
-        pStr = szBT_FindA(this->pDict, pNameA);
-
-
-        // Return to caller.
-        return pStr;
     }
 
 
@@ -930,7 +1120,9 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Gen_Vtbl);
-        
+
+        this->pModelDrvDir  = pModelDrvDir;
+        this->pOutputDrvDir = pOutputDrvDir;
         /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {
@@ -1130,6 +1322,111 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //              P a r s e  A r g s  D e f a u l t
+    //---------------------------------------------------------------
+
+    /*! Set default values for arguments just prior to them being parsed.
+     This is called by Appl_SetupFromArgV() and Appl_SetupFromStr().
+     Parsed arguments may replace any value set here.
+     @return    If successful, then ERESULT_SUCESS. Otherwise, an ERESULT_*
+                error. Note: this is ignored in Appl.
+     */
+    ERESULT         Gen_SetDefaults (
+        GEN_DATA        *this
+    )
+    {
+        ERESULT         eRc;
+        //ASTR_DATA       *pOS = OBJ_NIL;
+        //ASTR_DATA       *pArch = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pStr2 = OBJ_NIL;
+        PATH_DATA       *pPath = OBJ_NIL;
+        long            clock;
+        struct tm       *now;
+        char            str[32];
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Gen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Set up DATE and TIME.
+        (void) time (&clock);
+        now = localtime (&clock);
+        snprintf(
+                       str,
+                       sizeof(str),
+                       "%2.2d/%2.2d/%2.2d",
+                       now->tm_mon+1,
+                       now->tm_mday,
+                       now->tm_hour
+        );
+        pStr = AStr_NewA(str);
+        if (pStr) {
+            eRc = Dict_AddAStr(this->pDict, GEN_DATE, pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        snprintf(
+                 str,
+                 sizeof(str),
+                 "%2.2d:%2.2d:%2.2d",
+                 now->tm_hour,
+                 now->tm_min,
+                 now->tm_sec
+        );
+        pStr = AStr_NewA(str);
+        if (pStr) {
+            eRc = Dict_AddAStr(this->pDict, GEN_TIME, pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        pPath = Path_NewA(this->pModelDrvDir);
+        if (pPath) {
+            eRc = Path_Split(pPath, &pStr, &pStr2, OBJ_NIL, OBJ_NIL);
+            if (pStr) {
+                eRc = Dict_AddAStr(this->pDict, MODEL_DRIVE, pStr);
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+            if (pStr2) {
+                eRc = Dict_AddAStr(this->pDict, MODEL_DIR, pStr2);
+                obj_Release(pStr2);
+                pStr2 = OBJ_NIL;
+            }
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+
+        pPath = Path_NewA(this->pOutputDrvDir);
+        if (pPath) {
+            eRc = Path_Split(pPath, &pStr, &pStr2, OBJ_NIL, OBJ_NIL);
+            if (pStr) {
+                eRc = Dict_AddAStr(this->pDict, OUTPUT_DRIVE, pStr);
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+            if (pStr2) {
+                eRc = Dict_AddAStr(this->pDict, OUTPUT_DIR, pStr2);
+                obj_Release(pStr2);
+                pStr2 = OBJ_NIL;
+            }
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

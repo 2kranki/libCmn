@@ -1183,8 +1183,12 @@ extern "C" {
                     break;
                 case ASCII_CPM_EOF:
                 case EOF:
-                    eRc = ERESULT_EOF_ERROR;
                     fMore = false;
+                    if (len == 0) {
+                        eRc = ERESULT_EOF_ERROR;
+                    } else {
+                        eRc = ERESULT_SUCCESS;
+                    }
                     break;
                 default:
                     if (!fLoc) {
@@ -1216,7 +1220,7 @@ extern "C" {
         if (pLoc) {
             *pLoc = loc;
         }
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -1261,10 +1265,14 @@ extern "C" {
                     break;
                 case ASCII_CPM_EOF:
                 case EOF:
-                    eRc = ERESULT_EOF_ERROR;
                     fMore = false;
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
+                    if (AStr_getSize(pStr) == 0) {
+                        eRc = ERESULT_EOF_ERROR;
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    } else {
+                        eRc = ERESULT_SUCCESS;
+                    }
                     break;
                 default:
                     if (!fLoc) {
@@ -1290,7 +1298,7 @@ extern "C" {
         } else {
             obj_Release(pStr);
         }
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 

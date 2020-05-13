@@ -843,6 +843,51 @@ int         test_Path_SplitPath08(
 
 
 
+int         test_Path_SplitPath09(
+    const
+    char        *pTestName
+)
+{
+    PATH_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    ASTR_DATA   *pDrive = OBJ_NIL;
+    PATH_DATA   *pPath = OBJ_NIL;
+    PATH_DATA   *pFileName = OBJ_NIL;
+    ASTR_DATA   *pFileN = OBJ_NIL;
+    ASTR_DATA   *pFileE = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = Path_NewA("/tmp/x/");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = Path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+
+        XCTAssertTrue( (NULL == pDrive) );
+
+        XCTAssertFalse( (NULL == pPath) );
+        XCTAssertTrue( (6 == AStr_getLength((ASTR_DATA *)pPath)) );
+        XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/tmp/x")) );
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+
+        XCTAssertTrue( (NULL == pFileName) );
+
+        XCTAssertTrue( (NULL == pFileN) );
+
+        XCTAssertTrue( (NULL == pFileE) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_Path_SplitFile01(
     const
     char        *pTestName
@@ -1303,6 +1348,7 @@ TINYTEST_START_SUITE(test_Path);
     TINYTEST_ADD_TEST(test_Path_CleanDir01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_SplitFile02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_SplitFile01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Path_SplitPath09,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_SplitPath08,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_SplitPath07,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_SplitPath06,setUp,tearDown);

@@ -529,8 +529,8 @@ extern "C" {
      Substitute hash values or environment variables into the current string
      using a BASH-like syntax with the hash value having the highest priority.
      Variable names should have the syntax of:
-            '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
-     Substitutions are not rescanned after insertion.
+            '$' '{' [a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are rescanned after insertion.
      @param     this        object pointer
      @param     pFindA      optional method to find the variable by name
      @param     pFindObj    Object for FindA
@@ -540,7 +540,7 @@ extern "C" {
     ERESULT         AStr_ExpandVars(
         ASTR_DATA       *this,
         const
-        char *          (*pFindA)(OBJ_ID, const char *pName),
+        char *          (*pFindA)(OBJ_ID, const char *pNameA),
         OBJ_ID          pFindObj
     );
 

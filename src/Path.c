@@ -240,6 +240,61 @@ extern "C" {
 
 
 
+    PATH_DATA *     Path_NewFromComponentsA(
+        const
+        char            *pDriveA,
+        const
+        char            *pDirA,
+        const
+        char            *pFileNameA,
+        const
+        char            *pExtA
+    )
+    {
+        PATH_DATA       *this =  OBJ_NIL;
+        ASTR_DATA       *pThis =  OBJ_NIL;
+        ERESULT         eRc;
+
+        // Do initialization.
+        if (NULL == pFileNameA) {
+            return this;
+        }
+        this = Path_New( );
+        if (OBJ_NIL == this) {
+            return this;
+        }
+        pThis = Path_getAStr(this);
+
+        if (NULL != pDriveA) {
+            eRc = AStr_AppendA(pThis, pDriveA);
+            if (ERESULT_SUCCESS_EQUAL != AStr_CompareRightA(pThis, ":")) {
+                eRc = AStr_AppendA(pThis, ":");
+            }
+        }
+
+        if (NULL != pDirA) {
+            eRc = AStr_AppendA(pThis, pDirA);
+            if (ERESULT_SUCCESS_EQUAL != AStr_CompareRightA(pThis, "/")) {
+                eRc = AStr_AppendA(pThis, "/");
+            }
+        }
+
+        eRc = AStr_AppendA(pThis, pFileNameA);
+
+        if (NULL != pExtA) {
+            if (*pExtA != '.') {
+                eRc = AStr_AppendA(pThis, ".");
+            }
+            eRc = AStr_AppendA(pThis, pExtA);
+        }
+
+        // Return to caller.
+        Path_Clean(this);
+        return this;
+    }
+
+
+
     PATH_DATA *     Path_NewFromDriveDirFilename(
         ASTR_DATA       *pDrive,
         PATH_DATA       *pDir,
@@ -2071,6 +2126,83 @@ extern "C" {
     
     
         //---------------------------------------------------------------
+        //                          S p l i t
+        //---------------------------------------------------------------
+
+        ERESULT         Path_Split(
+            PATH_DATA        *this,
+            ASTR_DATA       **ppDrive,
+            ASTR_DATA       **ppDir,
+            ASTR_DATA       **ppFileName,
+            ASTR_DATA       **ppExt
+        )
+        {
+            ERESULT         eRc;
+            PATH_DATA       *pDir = OBJ_NIL;
+            PATH_DATA       *pFileName = OBJ_NIL;
+            ASTR_DATA       *pDrive = OBJ_NIL;
+            ASTR_DATA       *pDir2 = OBJ_NIL;
+            ASTR_DATA       *pFileName2 = OBJ_NIL;
+            ASTR_DATA       *pExt = OBJ_NIL;
+
+            // Do initialization.
+    #ifdef NDEBUG
+    #else
+            if( !Path_Validate(this) ) {
+                DEBUG_BREAK();
+                return ERESULT_INVALID_OBJECT;
+            }
+    #endif
+
+            eRc = Path_SplitPath(this, ppDrive, &pDir, &pFileName);
+            if (ERESULT_FAILED(eRc)) {
+                goto eom;
+            }
+            if (pFileName) {
+                eRc = Path_SplitFile(pFileName, ppFileName, ppExt);
+                if (ERESULT_FAILED(eRc)) {
+                    goto eom;
+                }
+            }
+            if (pDir) {
+                pDir2 = AStr_Copy(Path_getAStr(pDir));
+            }
+
+            // Return to caller.
+        eom:
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pDrive);
+                obj_Release(pDir);
+                obj_Release(pFileName);
+                obj_Release(pDir2);
+                obj_Release(pFileName2);
+                obj_Release(pExt);
+            } else {
+                if (ppDrive)
+                    *ppDrive = pDrive;
+                else
+                    obj_Release(pDrive);
+                if (ppDir)
+                    *ppDir = pDir2;
+                else
+                    obj_Release(pDir2);
+                if (ppFileName)
+                    *ppFileName = pFileName2;
+                else
+                    obj_Release(pFileName2);
+                if (ppExt)
+                    *ppExt = pExt;
+                else
+                    obj_Release(pExt);
+                obj_Release(pDir);
+                obj_Release(pFileName);
+            }
+            return eRc;
+        }
+
+
+
+        //---------------------------------------------------------------
         //                     S p l i t  F i l e
         //---------------------------------------------------------------
 
@@ -2154,81 +2286,6 @@ extern "C" {
 
             // Return to caller.
             return ERESULT_SUCCESS;
-        }
-
-
-
-        //---------------------------------------------------------------
-        //                          S p l i t
-        //---------------------------------------------------------------
-
-        ERESULT         Path_Split(
-            PATH_DATA        *this,
-            ASTR_DATA       **ppDrive,
-            ASTR_DATA       **ppDir,
-            ASTR_DATA       **ppFileName,
-            ASTR_DATA       **ppExt
-        )
-        {
-            ERESULT         eRc;
-            PATH_DATA       *pDir = OBJ_NIL;
-            PATH_DATA       *pFileName = OBJ_NIL;
-            ASTR_DATA       *pDrive = OBJ_NIL;
-            ASTR_DATA       *pDir2 = OBJ_NIL;
-            ASTR_DATA       *pFileName2 = OBJ_NIL;
-            ASTR_DATA       *pExt = OBJ_NIL;
-
-            // Do initialization.
-    #ifdef NDEBUG
-    #else
-            if( !Path_Validate(this) ) {
-                DEBUG_BREAK();
-                return ERESULT_INVALID_OBJECT;
-            }
-    #endif
-
-            eRc = Path_SplitPath(this, ppDrive, &pDir, &pFileName);
-            if (ERESULT_FAILED(eRc)) {
-                goto eom;
-            }
-            eRc = Path_SplitFile(pFileName, ppFileName, ppExt);
-            if (ERESULT_FAILED(eRc)) {
-                goto eom;
-            }
-            if (pDir) {
-                pDir2 = AStr_Copy(Path_getAStr(pDir));
-            }
-
-            // Return to caller.
-        eom:
-            if (ERESULT_FAILED(eRc)) {
-                obj_Release(pDrive);
-                obj_Release(pDir);
-                obj_Release(pFileName);
-                obj_Release(pDir2);
-                obj_Release(pFileName2);
-                obj_Release(pExt);
-            } else {
-                if (ppDrive)
-                    *ppDrive = pDrive;
-                else
-                    obj_Release(pDrive);
-                if (ppDir)
-                    *ppDir = pDir2;
-                else
-                    obj_Release(pDir2);
-                if (ppFileName)
-                    *ppFileName = pFileName2;
-                else
-                    obj_Release(pFileName2);
-                if (ppExt)
-                    *ppExt = pExt;
-                else
-                    obj_Release(pExt);
-                obj_Release(pDir);
-                obj_Release(pFileName);
-            }
-            return eRc;
         }
 
 

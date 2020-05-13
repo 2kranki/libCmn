@@ -60,35 +60,6 @@
 //#define   DICT_SINGLETON    1
 
 
-/*
-                            Global Dictionary Keys
- 
- */
- 
-#define libBaseID       "libBase"       /* Library Directory Base Directory */
-//#define libDepsID       "libDeps"       /* Library Dependencies */
-#define mainID          "main"          /* if program, main routine file name */
-#define makeTypeID      "makeType"      /* "d" for debug, "r" for release */
-//#define namePrefixID    "namePrefix"    /* normally "" or "lib" */
-//#define nameID          "name"          /* program or library base name */
-#define objDirVarID     "objDirVar"     /*  Object Base Directory */
-#define objsVarID       "objsVar"        /*  Object Output Accum Variable Name */
-#define osArchID        "osArch"        /* "x86", "x86_64" */
-#define osTypeID        "osType"        /* "macos32", "macos64", "win32" or "win64" */
-#define pgmBaseID       "pgmBase"       /* Program output Base Directory */
-#define resultTypeID    "resultType"    /* "pgm" or "lib" */
-#define srcDirID        "srcDir"        /* Source File Base Drive and Directory */
-#define srcDirVarID     "srcDirVar"        /* Makefile Source File Directory Variable */
-//#define srcDepsID       "srcDeps"       /* Source Dependencies */
-#define srcFileID       "srcFile"       /* Source JSON File Path*/
-#define tmpDirID        "tmpDir"        /* Temporary File Base Directory */
-#define tstBinVarID     "tstBinVar"     /* Test Binary Output Directory */
-#define tstSrcID        "tstSrc"        /* Test Source Directory */
-#define tstSrcVarID     "tstSrcVar"     /* Test Source Directory */
-#define testsVarID      "testsVar"      /* Test Output Accum Variable Name */
-
-
-
 
 
 
@@ -188,7 +159,7 @@ extern "C" {
     ERESULT         Dict_Add(
         DICT_DATA       *this,
         const
-        char            *pName,
+        char            *pNameA,
         OBJ_ID          pData
     );
 
@@ -196,16 +167,16 @@ extern "C" {
     ERESULT         Dict_AddA(
         DICT_DATA       *this,
         const
-        char            *pName,
+        char            *pNameA,
         const
-        char            *pData
+        char            *pDataA
     );
 
 
     ERESULT         Dict_AddUpdate(
         DICT_DATA       *this,
         const
-        char            *pName,
+        char            *pNameA,
         OBJ_ID          pData
     );
 
@@ -213,7 +184,7 @@ extern "C" {
     ERESULT         Dict_AddUpdateA(
         DICT_DATA       *this,
         const
-        char            *pName,
+        char            *pNameA,
         const
         char            *pData
     );

@@ -1344,11 +1344,11 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrk = OBJ_NIL;
+        //ASTR_DATA       *pWrk = OBJ_NIL;
         //NODEOBJ_DATA    *pObj = OBJ_NIL;
         //NODERTN_DATA    *pRtn = OBJ_NIL;
-        uint32_t        i;
-        uint32_t        iMax;
+        //uint32_t        i;
+        //uint32_t        iMax;
         
         // Do initialization.
 #ifdef NDEBUG

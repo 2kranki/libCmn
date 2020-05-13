@@ -354,7 +354,7 @@ int             test_TextIn_GetLine01(
         TINYTEST_TRUE( (0 == strcmp(buffer, "def")) );
 
         eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
-        TINYTEST_FALSE( (eRc == ERESULT_EOF_ERROR) );
+        TINYTEST_TRUE( (eRc == ERESULT_EOF_ERROR) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -449,7 +449,7 @@ int             test_TextIn_GetLine03(
         TINYTEST_TRUE( (0 == strcmp(buffer, "de")) );
 
         eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
-        TINYTEST_FALSE( (eRc == ERESULT_EOF_ERROR) );
+        TINYTEST_TRUE( (eRc == ERESULT_EOF_ERROR) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -505,7 +505,7 @@ int             test_TextIn_GetLine04(
         pLine = OBJ_NIL;
 
         eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
-        TINYTEST_FALSE( (eRc == ERESULT_EOF_ERROR) );
+        TINYTEST_TRUE( (ERESULT_EOF_ERROR == eRc) );
         TINYTEST_TRUE( (OBJ_NIL == pLine) );
 
         obj_Release(pObj);
@@ -521,8 +521,118 @@ int             test_TextIn_GetLine04(
 
 
 
+int             test_TextIn_GetLine05(
+    const
+    char            *pTestName
+)
+{
+    TEXTIN_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTR_DATA       *pLine = OBJ_NIL;
+    ERESULT         eRc;
+    SRCLOC          loc = {0};
+    const
+    char            *pFileA =
+                    "~/git/libCmn/programs/genObject/tests/files/object01.json.txt";
+    PATH_DATA       *pPath = OBJ_NIL;
+    uint32_t        cnt = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = Path_NewA(pFileA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    pObj = TextIn_NewFromPath(pPath, 1, 4);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        for (;;) {
+            eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            TINYTEST_FALSE( (OBJ_NIL == pLine) );
+            //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pLine, "abc")) );
+            cnt++;
+            obj_Release(pLine);
+            pLine = OBJ_NIL;
+        }
+        TINYTEST_TRUE( (ERESULT_EOF_ERROR == eRc) );
+        TINYTEST_TRUE( (OBJ_NIL == pLine) );
+        fprintf(stderr, "\tRead %d lines.\n", cnt);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_TextIn_GetLine06(
+    const
+    char            *pTestName
+)
+{
+    TEXTIN_DATA     *pObj = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTR_DATA       *pLine = OBJ_NIL;
+    ERESULT         eRc;
+    SRCLOC          loc = {0};
+    const
+    char            *pFileA =
+                    "~/git/Support/genObject/model.obj._internal.h.txt";
+    PATH_DATA       *pPath = OBJ_NIL;
+    uint32_t        cnt = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = Path_NewA(pFileA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    pObj = TextIn_NewFromPath(pPath, 1, 4);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        for (;;) {
+            eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            TINYTEST_FALSE( (OBJ_NIL == pLine) );
+            //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pLine, "abc")) );
+            cnt++;
+            obj_Release(pLine);
+            pLine = OBJ_NIL;
+        }
+        TINYTEST_TRUE( (ERESULT_EOF_ERROR == eRc) );
+        TINYTEST_TRUE( (OBJ_NIL == pLine) );
+        fprintf(stderr, "\tRead %d lines.\n", cnt);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_TextIn);
+    TINYTEST_ADD_TEST(test_TextIn_GetLine06,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_TextIn_GetLine05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TextIn_GetLine04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TextIn_GetLine03,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_TextIn_GetLine02,setUp,tearDown);

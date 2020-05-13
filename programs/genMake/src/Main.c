@@ -1892,7 +1892,13 @@ extern "C" {
     //---------------------------------------------------------------
     //              P a r s e  A r g s  D e f a u l t
     //---------------------------------------------------------------
-    
+
+    /*! Set default values for arguments just prior to them being parsed.
+     This is called by Appl_SetupFromArgV() and Appl_SetupFromStr().
+     Parsed arguments may replace any value set here.
+@return    If successful, then ERESULT_SUCESS. Otherwise, an ERESULT_*
+                error. Note: this is ignored in Appl.
+     */
     ERESULT         Main_ParseArgsDefault (
         MAIN_DATA        *this
     )

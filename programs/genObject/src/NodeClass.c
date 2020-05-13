@@ -158,7 +158,7 @@ extern "C" {
         }
 #endif
 
-        this->fImmutable = value ? 'T' : 0;
+        this->fImmutable = value ? 1 : 0;
 
         return true;
     }
@@ -201,7 +201,7 @@ extern "C" {
         }
 #endif
 
-        this->fJson = value ? 'T' : 0;
+        this->fJson = value ? 1 : 0;
 
         return true;
     }
@@ -379,7 +379,7 @@ extern "C" {
         }
 #endif
 
-        this->fSingleton = value ? 'T' : 0;
+        this->fSingleton = value ? 1 : 0;
 
         return true;
     }
@@ -473,7 +473,50 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                      J s o n
+    //---------------------------------------------------------------
+
+    bool            NodeClass_getTest (
+        NODECLASS_DATA  *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return this->fTest ? true : false;
+    }
+
+
+    bool            NodeClass_setTest (
+        NODECLASS_DATA  *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->fTest = value ? 1 : 0;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -683,6 +726,94 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //              C r e a t e  D i c t  E n t r i e s
+    //---------------------------------------------------------------
+
+    /*!
+     Create the Dictionary entries for this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeClass_CreateDictEntries (
+        NODECLASS_DATA  *this,
+        DICT_DATA       *pDict
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->fImmutable) {
+            eRc = Dict_AddA(
+                            pDict,
+                            DEFINE_IMMUTABLE,
+                            "#define   ${UNAME}_IS_IMMUTABLE       1"
+                    );
+        } else {
+            eRc = Dict_AddA(
+                            pDict,
+                            DEFINE_IMMUTABLE,
+                            "//#define   ${UNAME}_IS_IMMUTABLE     1"
+                    );
+        }
+        if (this->fJson) {
+            eRc = Dict_AddA(
+                            pDict,
+                            DEFINE_JSON,
+                            "#define   ${UNAME}_JSON_SUPPORT       1"
+                    );
+        } else {
+            eRc = Dict_AddA(
+                            pDict,
+                            DEFINE_JSON,
+                            "//#define   ${UNAME}_JSON_SUPPORT     1"
+                    );
+        }
+        if (this->fSingleton) {
+            eRc = Dict_AddA(
+                            pDict,
+                            DEFINE_SINGLETON,
+                            "#define   ${UNAME}_SINGLETON          1"
+                    );
+        } else {
+            eRc = Dict_AddA(
+                            pDict,
+                            DEFINE_SINGLETON,
+                            "//#define   ${UNAME}_SINGLETON        1"
+                    );
+        }
+        if (this->pName) {
+            ASTR_DATA           *pStr;
+            eRc = Dict_AddAStr(
+                            pDict,
+                            OBJECT_NAME,
+                            this->pName
+                    );
+            pStr = AStr_ToUpper(this->pName);
+            eRc = Dict_AddAStr(
+                            pDict,
+                            OBJECT_NAME_UPPER,
+                            pStr
+                    );
+            obj_Release(pStr);
+        }
+
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
@@ -884,6 +1015,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+        this->fTest = 1;
 
 #ifdef NDEBUG
 #else

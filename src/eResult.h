@@ -248,6 +248,9 @@ extern "C" {
     );
     
 
+    /*! Issue an error message and terminate the program if the
+        given ERESULT is in an error state.  Otherwise, just return.
+     */
     void            eResult_ErrorFatalOn(
         ERESULT         eRc,
         const
@@ -256,6 +259,9 @@ extern "C" {
     );
 
 
+    /*! Issue an error message and terminate the program if the
+        given bool is true.  Otherwise, just return.
+     */
     void            eResult_ErrorFatalOnBool(
         bool            fRc,
         const

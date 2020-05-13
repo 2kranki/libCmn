@@ -53,6 +53,8 @@
 
 #include        <genObject_defs.h>
 #include        <AStr.h>
+#include        <Dict.h>
+#include        <NodeClass.h>
 
 
 #ifndef         GEN_H
@@ -62,10 +64,6 @@
 //#define   GEN_IS_IMMUTABLE     1
 //#define   GEN_JSON_SUPPORT     1
 //#define   GEN_SINGLETON        1
-
-#define OBJECT_NAME         "LNAME"
-#define OBJECT_NAME_UPPER   "UNAME"
-
 
 
 #ifdef	__cplusplus
@@ -160,25 +158,57 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    DICT_DATA *     Gen_getDict (
+        GEN_DATA        *this
+    );
+
+    bool            Gen_setDict (
+        GEN_DATA        *this,
+        DICT_DATA       *pValue
+    );
 
 
-    
+    const
+    char *          Gen_getModelDrvDir (
+        GEN_DATA        *this
+    );
+
+    bool            Gen_setModelDrvDir (
+        GEN_DATA        *this,
+        const
+        char            *pValue
+    );
+
+
+    const
+    char *          Gen_getOutputDrvDir (
+        GEN_DATA        *this
+    );
+
+    bool            Gen_setOutputDrvDir (
+        GEN_DATA        *this,
+        const
+        char            *pValue
+    );
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         Gen_AddUpdateA(
+    /*!
+    Create the object files.
+    @param     this    object pointer
+    @param     pClass  Class Node Object pointer
+    @param     fVerbose true == display file generation information
+    @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+             error code.
+    */
+    ERESULT         Gen_CreateObjectFIles (
         GEN_DATA        *this,
-        const
-        char            *pNameA,
-        ASTR_DATA       *pData
-    );
-
-
-    ASTR_DATA *     Gen_FindA (
-        GEN_DATA		*this,
-        const
-        char            *pNameA
+        NODECLASS_DATA  *pClass,
+        bool            fVerbose
     );
 
 
@@ -186,19 +216,29 @@ extern "C" {
      Expand the variables (of the form ${...}) in the model file creating
      the output file.
      @param     this    object pointer
-     @param     pModel  Model File Path to be expanded
-     @param     pOutput Output File Path
+     @param     pModel  Model File Path to be expanded,
+     @param     fVerbose true == display file generation information
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
     ERESULT         Gen_ExpandFile (
         GEN_DATA		*this,
-        PATH_DATA       *pModel,
-        PATH_DATA       *pOutput
+        ASTR_DATA       *pModel,
+        bool            fVerbose
     );
 
    
     GEN_DATA *      Gen_Init (
+        GEN_DATA        *this
+    );
+
+
+    /*! Set default values for arguments just prior to them being parsed.
+     Parsed arguments may replace any value set here.
+     @return    If successful, then ERESULT_SUCESS. Otherwise, an ERESULT_*
+                error. Note: this is ignored in Appl.
+     */
+    ERESULT         Gen_SetDefaults (
         GEN_DATA        *this
     );
 

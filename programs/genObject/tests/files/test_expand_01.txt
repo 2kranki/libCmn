@@ -1,0 +1,4 @@
+LNAME:${LNAME} UNAME:${UNAME}
+${UNAME} ${LNAME} ${UNAME}
+${XX} ${UNAME} ${XX}
+

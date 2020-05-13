@@ -745,7 +745,7 @@ extern "C" {
         NODEPROP_DATA     *pOther
     )
     {
-        int             i = 0;
+        //int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
 #ifdef  xyzzy        
         const

@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Main (Main) Header
+//              Program Dictionary (Dict) Header
 //****************************************************************
 /*
  * Program
- *			Main (Main)
+ *			Program Dictionary (Dict)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate Main to run things without complications
- *          of interfering with the main Main. A Main may be 
- *          called a Main on other O/S's.
+ *			This object provides a Dictionary of Data needed by the
+ *          program.  The Dictionary index is constant character
+ *          strings whereas the data associated with the index is
+ *          an AStr.
  *
  * Remarks
  *	1.      None
  *
  * History
- *	04/28/2020 Generated
+ *	11/23/2019 Generated
  */
 
 
@@ -53,17 +53,14 @@
 
 #include        <genObject_defs.h>
 #include        <AStr.h>
-#include        <Dict.h>
-#include        <NodeClass.h>
 
 
-#ifndef         MAIN_H
-#define         MAIN_H
+#ifndef         DICT_H
+#define         DICT_H
 
 
-//#define   MAIN_IS_IMMUTABLE     1
-//#define   MAIN_JSON_SUPPORT     1
-#define   MAIN_SINGLETON        1
+//#define   DICT_SINGLETON    1
+
 
 
 
@@ -79,26 +76,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Main_data_s	MAIN_DATA;            // Inherits from OBJ
-    typedef struct Main_class_data_s MAIN_CLASS_DATA;   // Inherits from OBJ
+    typedef struct Dict_data_s	DICT_DATA;            // Inherits from OBJ
+    typedef struct Dict_class_data_s DICT_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Main_vtbl_s	{
+    typedef struct Dict_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Main_object.c.
+        // method names to the vtbl definition in Dict_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(MAIN_DATA *);
-    } MAIN_VTBL;
+        //bool        (*pIsEnabled)(DICT_DATA *);
+    } DICT_VTBL;
 
-    typedef struct Main_class_vtbl_s	{
+    typedef struct Dict_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Main_object.c.
+        // method names to the vtbl definition in Dict_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(MAIN_DATA *);
-    } MAIN_CLASS_VTBL;
+        //bool        (*pIsEnabled)(DICT_DATA *);
+    } DICT_CLASS_VTBL;
 
 
 
@@ -112,12 +109,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  MAIN_SINGLETON
-    MAIN_DATA *     Main_Shared (
+#ifdef  DICT_SINGLETON
+    DICT_DATA *     Dict_Shared (
         void
     );
 
-    void            Main_SharedReset (
+    bool            Dict_SharedReset (
         void
     );
 #endif
@@ -127,39 +124,32 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Main object if successful, otherwise OBJ_NIL.
+     @return    pointer to Dict object if successful, otherwise OBJ_NIL.
      */
-    MAIN_DATA *     Main_Alloc (
+    DICT_DATA *     Dict_Alloc (
         void
     );
     
     
-    OBJ_ID          Main_Class (
+    OBJ_ID          Dict_Class (
         void
     );
     
     
-    MAIN_DATA *     Main_New (
+    DICT_DATA *     Dict_New (
         void
     );
     
     
-#ifdef  MAIN_JSON_SUPPORT
-    MAIN_DATA *   Main_NewFromJsonString (
-        ASTR_DATA       *pString
-    );
-
-    MAIN_DATA *   Main_NewFromJsonStringA (
-        const
-        char            *pStringA
-    );
-#endif
-
-
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    NODEHASH_DATA * Dict_getNodeHash (
+        DICT_DATA     *this
+    );
+
 
 
 
@@ -168,82 +158,111 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    int             Main_Exec(
-        MAIN_DATA       *this
+    ERESULT         Dict_Add(
+        DICT_DATA       *this,
+        const
+        char            *pNameA,
+        OBJ_ID          pData
     );
 
 
-    MAIN_DATA *     Main_Init (
-        MAIN_DATA       *this
+    ERESULT         Dict_AddA(
+        DICT_DATA       *this,
+        const
+        char            *pNameA,
+        const
+        char            *pDataA
+    );
+
+
+    ERESULT         Dict_AddAStr(
+        DICT_DATA       *this,
+        const
+        char            *pNameA,
+        ASTR_DATA       *pData
+    );
+
+
+    ERESULT         Dict_AddUpdate(
+        DICT_DATA       *this,
+        const
+        char            *pNameA,
+        OBJ_ID          pData
+    );
+
+
+    ERESULT         Dict_AddUpdateA(
+        DICT_DATA       *this,
+        const
+        char            *pNameA,
+        const
+        char            *pData
     );
 
 
     /*!
-     Parse the given input file resetting any prior parse data and
-     building the appropriate node tables from the JSON. The parser
-     and its tables will be saved internally for later phases of
-     the generation process.
-     @param     this        object pointer
-     @param     pPath       JSON Input File Path
-     @return    If successful, ERESULT_SUCCESS.  Otherwise,
-                an ERESULT_* error code
-     */
-    ERESULT         Main_ParseInputFile(
-        MAIN_DATA       *this,
-        PATH_DATA       *pPath
-    );
-
-
-    /*!
-     Set up to parse the given input resetting any prior parse data.
-     @param     this        object pointer
-     @param     cArgs       number of charater strings in ppArgs
-     @param     ppArgV      pointer to a charater string array
-     @param     ppEnv       pointer to a charater string array
-     @return    If successful, ERESULT_SUCCESS.  Otherwise,
-     an ERESULT_* error code
-     */
-    ERESULT         Main_SetupFromArgV(
-        MAIN_DATA       *this,
-        uint16_t        cArgs,
-        char            *ppArgV[],
-        char            **ppEnv
-    );
-
-
-#ifdef  MAIN_JSON_SUPPORT
-    /*!
-     Create a string that describes this object and the objects within it in
-     HJSON formt. (See hjson object for details.)
-     Example:
-     @code
-     ASTR_DATA      *pDesc = Main_ToJson(this);
-     @endcode
+     Substitute environment variables into the current string using a BASH-like
+     syntax.  Variable names should have the syntax of:
+     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     Substitutions are not rescanned after insertion.
      @param     this    object pointer
-     @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
+     @param     pStr    String to be expanded in-place
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+     is returned.
      */
-    ASTR_DATA *     Main_ToJson (
-        MAIN_DATA   *this
+    ERESULT         Dict_Expand(
+        DICT_DATA       *this,
+        ASTR_DATA       *pStr
     );
-#endif
+
+   
+    /*!
+     Get the dictionary value for a given name.
+     @param     this    object pointer
+     @param     pNameA  pointer to UTF-8 Name string
+     @return    if successful, AStr Object pointer.  Otherwise, OBJ_NIL.
+     */
+    ASTR_DATA *     Dict_FindA (
+        DICT_DATA       *this,
+        const
+        char            *pNameA
+    );
+
+
+    /*!
+     Get the dictionary value for a given name. If it is not found,
+     try to return the environment variable with the same name.
+     @param     this    object pointer
+     @param     pNameA  pointer to UTF-8 Name string
+     @return    if successful, pointer to UTF-8 data string.  Otherwise, NULL.
+     */
+    const
+    char *          Dict_GetA (
+        DICT_DATA       *this,
+        const
+        char            *pNameA
+    );
+
+
+    DICT_DATA *     Dict_Init (
+        DICT_DATA       *this
+    );
 
 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Main_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Dict_ToDebugString(this,4);
      @endcode 
-     @param     this    object pointer
+     @param     this    DICT object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Main_ToDebugString (
-        MAIN_DATA     *this,
+    ASTR_DATA *     Dict_ToDebugString (
+        DICT_DATA       *this,
         int             indent
     );
     
@@ -254,5 +273,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* MAIN_H */
+#endif	/* DICT_H */
 
