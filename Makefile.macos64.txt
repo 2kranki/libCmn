@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 5/13/2020 22:54:15.000)
+# ( 5/14/2020  2:39:24.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -689,6 +689,16 @@ $(OBJDIR)/Path_json.o: $(SRCDIR)/Path_json.c $(SRCDIR)/Path.h $(SRCDIR)/Path_int
 OBJS += $(OBJDIR)/Path_object.o
 
 $(OBJDIR)/Path_object.o: $(SRCDIR)/Path_object.c $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/PsxExec.o
+
+$(OBJDIR)/PsxExec.o: $(SRCDIR)/PsxExec.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/PsxExec_object.o
+
+$(OBJDIR)/PsxExec_object.o: $(SRCDIR)/PsxExec_object.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Scanner.o
@@ -1591,16 +1601,6 @@ OBJS += $(OBJDIR)/psxCond_object.o
 $(OBJDIR)/psxCond_object.o: $(SRCDIR)/psxCond_object.c $(SRCDIR)/psxCond.h $(SRCDIR)/psxCond_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/psxExec.o
-
-$(OBJDIR)/psxExec.o: $(SRCDIR)/psxExec.c $(SRCDIR)/psxExec.h $(SRCDIR)/psxExec_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/psxExec_object.o
-
-$(OBJDIR)/psxExec_object.o: $(SRCDIR)/psxExec_object.c $(SRCDIR)/psxExec.h $(SRCDIR)/psxExec_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/psxLock.o
 
 $(OBJDIR)/psxLock.o: $(SRCDIR)/psxLock.c $(SRCDIR)/psxLock.h $(SRCDIR)/psxLock_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2217,6 +2217,12 @@ Path_test: $(TEST_SRC)/Path_test.c $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += PsxExec_test
+
+PsxExec_test: $(TEST_SRC)/PsxExec_test.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += Scanner_test
 
 Scanner_test: $(TEST_SRC)/Scanner_test.c $(SRCDIR)/Scanner.h $(SRCDIR)/Scanner_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2670,12 +2676,6 @@ prt_test: $(TEST_SRC)/prt_test.c $(SRCDIR)/prt.h $(SRCDIR)/prt_internal.h $(SRCD
 TESTS += psxCond_test
 
 psxCond_test: $(TEST_SRC)/psxCond_test.c $(SRCDIR)/psxCond.h $(SRCDIR)/psxCond_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += psxExec_test
-
-psxExec_test: $(TEST_SRC)/psxExec_test.c $(SRCDIR)/psxExec.h $(SRCDIR)/psxExec_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

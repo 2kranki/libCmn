@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   psxExec.c
- *	Generated 06/14/2018 08:13:54
+ * File:   PsxExec.c
+ *  Generated 05/13/21 21:59:46
  *
  */
 
@@ -41,12 +41,15 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <psxExec_internal.h>
+#include        <PsxExec_internal.h>
 #include        <trace.h>
 
 
 
-#ifdef	__cplusplus
+
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -61,7 +64,7 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            psxExec_task_body(
+    void            PsxExec_task_body (
         void            *pData
     )
     {
@@ -81,92 +84,116 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    PSXEXEC_DATA *  psxExec_Alloc(
+    PSXEXEC_DATA *     PsxExec_Alloc (
         void
     )
     {
-        PSXEXEC_DATA    *this;
+        PSXEXEC_DATA       *this;
         uint32_t        cbSize = sizeof(PSXEXEC_DATA);
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
-
+         this = obj_Alloc( cbSize );
+        
         // Return to caller.
         return this;
     }
 
 
 
-    PSXEXEC_DATA *     psxExec_New(
+    PSXEXEC_DATA *     PsxExec_New (
         void
     )
     {
         PSXEXEC_DATA       *this;
         
-        this = psxExec_Alloc( );
+        this = PsxExec_Alloc( );
         if (this) {
-            this = psxExec_Init(this);
+            this = PsxExec_Init(this);
         } 
         return this;
     }
 
 
 
-    
+    int             PsxExec_System(
+        ASTR_DATA       *pCommand
+    )
+    {
+        //ERESULT         eRc;
+        int             iRc = EOF;
+
+        // Do initialization.
+
+        iRc = system(AStr_getData(pCommand));
+
+        // Return to caller.
+        return iRc;
+    }
+
+
+    int             PsxExec_SystemWithOutput(
+        ASTR_DATA       *pCommand,
+        ASTR_DATA       **ppOutput
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pOutput = OBJ_NIL;
+        int             iRc = EOF;
+        FILE            *pPipeOut = NULL;
+        uint8_t         output[256];
+
+        // Do initialization.
+        if (ppOutput) {
+            *ppOutput = OBJ_NIL;
+        }
+        pOutput = AStr_New( );
+        if (OBJ_NIL == pOutput) {
+            DEBUG_BREAK();
+            return iRc;
+        }
+
+        pPipeOut = popen(AStr_getData(pCommand), "r");
+        if (NULL == pPipeOut) {
+            DEBUG_BREAK();
+            obj_Release(pOutput);
+            pOutput = OBJ_NIL;
+            return iRc;
+        }
+
+        for (;;) {
+            if (NULL == fgets((char *)output, sizeof(output), pPipeOut)) {
+                break;
+            }
+            eRc = AStr_AppendA(pOutput, (char *)output);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+        }
+
+        iRc = pclose(pPipeOut);
+        pPipeOut = NULL;
+
+        // Return to caller.
+        if (ppOutput) {
+            *ppOutput = pOutput;
+        }
+        return iRc;
+    }
+
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         psxExec_getLastError(
-        PSXEXEC_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !psxExec_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
-
-
-    bool            psxExec_setLastError(
-        PSXEXEC_DATA     *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !psxExec_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
-
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        psxExec_getPriority(
+    uint16_t        PsxExec_getPriority (
         PSXEXEC_DATA     *this
     )
     {
@@ -174,26 +201,25 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        psxExec_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
 
 
-    bool            psxExec_setPriority(
+    bool            PsxExec_setPriority (
         PSXEXEC_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -201,7 +227,6 @@ extern "C" {
 
         //this->priority = value;
 
-        psxExec_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
@@ -211,19 +236,18 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        psxExec_getSize(
+    uint32_t        PsxExec_getSize (
         PSXEXEC_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        psxExec_setLastError(this, ERESULT_SUCCESS);
         return 0;
     }
 
@@ -233,7 +257,7 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * psxExec_getStr(
+    ASTR_DATA * PsxExec_getStr (
         PSXEXEC_DATA     *this
     )
     {
@@ -241,25 +265,24 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        psxExec_setLastError(this, ERESULT_SUCCESS);
         return this->pStr;
     }
     
     
-    bool        psxExec_setStr(
+    bool        PsxExec_setStr (
         PSXEXEC_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -271,7 +294,6 @@ extern "C" {
         }
         this->pStr = pValue;
         
-        psxExec_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
     
@@ -281,7 +303,7 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  psxExec_getSuperVtbl(
+    OBJ_IUNKNOWN *  PsxExec_getSuperVtbl (
         PSXEXEC_DATA     *this
     )
     {
@@ -289,14 +311,13 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         
-        psxExec_setLastError(this, ERESULT_SUCCESS);
         return this->pSuperVtbl;
     }
     
@@ -319,31 +340,42 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = psxExec__Assign(this,pOther);
+        ERESULT eRc = PsxExec_Assign(this,pOther);
      @endcode 
-     @param     this    PSXEXEC object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another PSXEXEC object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         psxExec_Assign(
-        PSXEXEC_DATA		*this,
-        PSXEXEC_DATA      *pOther
+    ERESULT         PsxExec_Assign (
+        PSXEXEC_DATA       *this,
+        PSXEXEC_DATA     *pOther
     )
     {
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !psxExec_Validate(pOther) ) {
+        if (!PsxExec_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -368,15 +400,14 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        //pOther->x     = this->x; 
 
         // Return to caller.
-        psxExec_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        psxExec_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return psxExec_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
@@ -391,7 +422,7 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         psxExec_Compare(
+    ERESULT         PsxExec_Compare (
         PSXEXEC_DATA     *this,
         PSXEXEC_DATA     *pOther
     )
@@ -407,11 +438,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !psxExec_Validate(pOther) ) {
+        if (!PsxExec_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -436,11 +467,11 @@ extern "C" {
             eRc = ERESULT_SUCCESS_GREATER_THAN;
         }
         
-        this->eRc = eRc;
         return eRc;
     }
     
-    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -449,14 +480,14 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        psxExec      *pCopy = psxExec_Copy(this);
+        PsxExec      *pCopy = PsxExec_Copy(this);
      @endcode 
-     @param     this    PSXEXEC object pointer
-     @return    If successful, a PSXEXEC object which must be released,
-                otherwise OBJ_NIL.
-     @warning  Remember to release the returned the PSXEXEC object.
+     @param     this    object pointer
+     @return    If successful, a PSXEXEC object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    PSXEXEC_DATA *     psxExec_Copy(
+    PSXEXEC_DATA *     PsxExec_Copy (
         PSXEXEC_DATA       *this
     )
     {
@@ -466,24 +497,27 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = psxExec_New( );
+#ifdef PSXEXEC_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = PsxExec_New( );
         if (pOther) {
-            eRc = psxExec_Assign(this, pOther);
+            eRc = PsxExec_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
-        this->eRc = ERESULT_SUCCESS;
         return pOther;
     }
     
@@ -493,11 +527,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            psxExec_Dealloc(
+    void            PsxExec_Dealloc (
         OBJ_ID          objId
     )
     {
         PSXEXEC_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -505,7 +540,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -517,7 +552,7 @@ extern "C" {
         }
 #endif
 
-        psxExec_setStr(this, OBJ_NIL);
+        PsxExec_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -531,30 +566,82 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        PsxExec      *pDeepCopy = PsxExec_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a PSXEXEC object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    PSXEXEC_DATA *     PsxExec_DeepyCopy (
+        PSXEXEC_DATA       *this
+    )
+    {
+        PSXEXEC_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!PsxExec_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = PsxExec_New( );
+        if (pOther) {
+            eRc = PsxExec_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         psxExec_Disable(
-        PSXEXEC_DATA		*this
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         PsxExec_Disable (
+        PSXEXEC_DATA       *this
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !psxExec_Validate(this) ) {
+#ifdef NDEBUG
+#else
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        psxExec_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -563,27 +650,33 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         psxExec_Enable(
-        PSXEXEC_DATA		*this
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         PsxExec_Enable (
+        PSXEXEC_DATA       *this
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !psxExec_Validate(this) ) {
+#ifdef NDEBUG
+#else
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        psxExec_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -592,11 +685,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    PSXEXEC_DATA *   psxExec_Init(
+    PSXEXEC_DATA *   PsxExec_Init (
         PSXEXEC_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(PSXEXEC_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -612,36 +706,43 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_PSXEXEC);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_PSXEXEC);         // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&psxExec_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&PsxExec_Vtbl);
         
-        psxExec_setLastError(this, ERESULT_GENERAL_FAILURE);
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = ObjArray_New( );
-
-    #ifdef NDEBUG
-    #else
-        if( !psxExec_Validate(this) ) {
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        //fprintf(stderr, "psxExec::offsetof(eRc) = %lu\n", offsetof(PSXEXEC_DATA,eRc));
-        //fprintf(stderr, "psxExec::sizeof(PSXEXEC_DATA) = %lu\n", sizeof(PSXEXEC_DATA));
+        */
+
+#ifdef NDEBUG
+#else
+        if (!PsxExec_Validate(this)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "PsxExec::sizeof(PSXEXEC_DATA) = %lu\n", 
+                sizeof(PSXEXEC_DATA)
+        );
 #endif
-        BREAK_NOT_BOUNDARY4(&this->eRc);
         BREAK_NOT_BOUNDARY4(sizeof(PSXEXEC_DATA));
-    #endif
+#endif
 
         return this;
     }
@@ -652,27 +753,26 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         psxExec_IsEnabled(
-        PSXEXEC_DATA		*this
+    ERESULT         PsxExec_IsEnabled (
+        PSXEXEC_DATA       *this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            psxExec_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        psxExec_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -689,14 +789,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = psxExec_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = PsxExec_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "psxExec", prefix,
+                        the object name, "PsxExec", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -704,7 +804,7 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          psxExec_QueryInfo(
+    void *          PsxExec_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -719,7 +819,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -727,29 +827,29 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)psxExec_Class();
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(PSXEXEC_DATA);
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)PsxExec_Class();
+                break;
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -758,23 +858,39 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return psxExec_Disable;
+                            return PsxExec_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return psxExec_Enable;
+                            return PsxExec_Enable;
                         }
+                        break;
+
+                    case 'P':
+#ifdef  PSXEXEC_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return PsxExec_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return PsxExec_ParseJsonObject;
+                        }
+#endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return psxExec_ToDebugString;
+                            return PsxExec_ToDebugString;
+                        }
+#ifdef  PSXEXEC_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return PsxExec_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return psxExec_ToJSON;
+                            return PsxExec_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -783,10 +899,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == psxExec_ToDebugString)
+                if (pData == PsxExec_ToDebugString)
                     return "ToDebugString";
-                if (pData == psxExec_ToJSON)
+#ifdef  PSXEXEC_JSON_SUPPORT
+                if (pData == PsxExec_ToJson)
                     return "ToJson";
+#endif
                 break;
                 
             default:
@@ -799,73 +917,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          S y s t e m
-    //---------------------------------------------------------------
-    
-    int             psxExec_SystemWithOutput(
-        PSXEXEC_DATA    *this,
-        ASTR_DATA       *pCommand,
-        ASTR_DATA       **ppOutput
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pOutput = OBJ_NIL;
-        int             iRc = EOF;
-        FILE            *pPipeOut = NULL;
-        char            output[133];
-        
-        // Do initialization.
-        if (ppOutput) {
-            *ppOutput = OBJ_NIL;
-        }
-#ifdef NDEBUG
-#else
-        if( !psxExec_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return iRc;
-        }
-#endif
-        pOutput = AStr_New( );
-        if (OBJ_NIL == pOutput) {
-            DEBUG_BREAK();
-            psxExec_setLastError(this, ERESULT_OUT_OF_MEMORY);
-            return iRc;
-        }
-        
-        pPipeOut = popen(AStr_getData(pCommand), "r");
-        if (NULL == pPipeOut) {
-            DEBUG_BREAK();
-            psxExec_setLastError(this, ERESULT_OPEN_ERROR);
-            obj_Release(pOutput);
-            pOutput = OBJ_NIL;
-            return iRc;
-        }
-        
-        for (;;) {
-            if (NULL == fgets(output, 133, pPipeOut)) {
-                break;
-            }
-            eRc = AStr_AppendA(pOutput, output);
-            if (ERESULT_FAILED(eRc)) {
-                break;
-            }
-        }
-        
-        iRc = pclose(pPipeOut);
-        pPipeOut = NULL;
-        
-        // Return to caller.
-        psxExec_setLastError(this, ERESULT_SUCCESS);
-        if (ppOutput) {
-            *ppOutput = pOutput;
-        }
-        return iRc;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -873,32 +924,31 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = psxExec_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = PsxExec_ToDebugString(this,4);
      @endcode 
-     @param     this    PSXEXEC object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     psxExec_ToDebugString(
+    ASTR_DATA *     PsxExec_ToDebugString (
         PSXEXEC_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !psxExec_Validate(this) ) {
+        if (!PsxExec_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -906,15 +956,21 @@ extern "C" {
               
         pInfo = obj_getInfo(this);
         pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    psxExec_getSize(this)
+                    PsxExec_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -924,8 +980,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -940,41 +998,6 @@ extern "C" {
                     pInfo->pClassName
                 );
         
-        psxExec_setLastError(this, ERESULT_SUCCESS);
-        return pStr;
-    }
-    
-    
-    
-    ASTR_DATA *     psxExec_ToJSON(
-        PSXEXEC_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !psxExec_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        psxExec_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -984,17 +1007,17 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            psxExec_Validate(
+#ifdef NDEBUG
+#else
+    bool            PsxExec_Validate (
         PSXEXEC_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_PSXEXEC) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_PSXEXEC))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1010,22 +1033,20 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(PSXEXEC_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+        if (!(obj_getSize(this) >= sizeof(PSXEXEC_DATA))) {
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
-    #endif
+#endif
 
 
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

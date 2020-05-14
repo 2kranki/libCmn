@@ -1,20 +1,21 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Posix Task Execution (psxExec) Header
+//     Execute Posix Shell Command (PsxExec) Header
 //****************************************************************
 /*
  * Program
- *			Posix Task Execution (psxExec)
+ *          Execute Posix Shell Command (PsxExec)
  * Purpose
- *			This object provides a standardized way of executing
- *          separate tasks (ie scipts, programs, etc.)
+ *          This object provides a standardized way of executing
+ *          separate Posix tasks (ie scipts, programs, etc.)
  *
  * Remarks
- *	1.      None
+ *  1.      None
  *
  * History
- *	06/14/2018 Generated
+ *  06/14/2018 Generated
+ *  05/13/2020 Regenerated
  */
 
 
@@ -57,8 +58,15 @@
 #define         PSXEXEC_H
 
 
+//#define   PSXEXEC_IS_IMMUTABLE     1
+//#define   PSXEXEC_JSON_SUPPORT     1
+//#define   PSXEXEC_SINGLETON        1
 
-#ifdef	__cplusplus
+
+
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -68,21 +76,32 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct psxExec_data_s	PSXEXEC_DATA;    // Inherits from OBJ.
+    typedef struct PsxExec_data_s  PSXEXEC_DATA;            // Inherits from OBJ
+    typedef struct PsxExec_class_data_s PSXEXEC_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct psxExec_vtbl_s	{
+    typedef struct PsxExec_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in psxExec_object.c.
+        // method names to the vtbl definition in PsxExec_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(PSXEXEC_DATA *);
     } PSXEXEC_VTBL;
 
+    typedef struct PsxExec_class_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in PsxExec_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(PSXEXEC_DATA *);
+    } PSXEXEC_CLASS_VTBL;
+
+
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -90,66 +109,62 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  PSXEXEC_SINGLETON
+    PSXEXEC_DATA *  PsxExec_Shared (
+        void
+    );
+
+    void            PsxExec_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to psxExec object if successful, otherwise OBJ_NIL.
+     @return    pointer to PsxExec object if successful, otherwise OBJ_NIL.
      */
-    PSXEXEC_DATA *  psxExec_Alloc(
+    PSXEXEC_DATA *  PsxExec_Alloc (
         void
     );
     
     
-    OBJ_ID          psxExec_Class(
+    OBJ_ID          PsxExec_Class (
         void
     );
     
     
-    PSXEXEC_DATA *  psxExec_New(
+    PSXEXEC_DATA *  PsxExec_New (
         void
     );
     
     
-
-    //---------------------------------------------------------------
-    //                      *** Properties ***
-    //---------------------------------------------------------------
-
-    ERESULT     psxExec_getLastError(
-        PSXEXEC_DATA		*this
+#ifdef  PSXEXEC_JSON_SUPPORT
+    PSXEXEC_DATA *  PsxExec_NewFromJsonString (
+        ASTR_DATA       *pString
     );
 
-
-
-    
-    //---------------------------------------------------------------
-    //                      *** Methods ***
-    //---------------------------------------------------------------
-
-    ERESULT     psxExec_Disable(
-        PSXEXEC_DATA		*this
+    PSXEXEC_DATA *  PsxExec_NewFromJsonStringA (
+        const
+        char            *pStringA
     );
+#endif
 
 
-    ERESULT     psxExec_Enable(
-        PSXEXEC_DATA		*this
-    );
-
-   
-    PSXEXEC_DATA *   psxExec_Init(
-        PSXEXEC_DATA     *this
-    );
-
-
-    ERESULT     psxExec_IsEnabled(
-        PSXEXEC_DATA		*this
-    );
-    
- 
     /*!
-     Execute a command returning the output of that commannd.
-     @param     this        object pointer
+     Execute a posix shell command.
+     @param     pCommand    command to be executed
+     @return    If successful, the comand's return code.
+     */
+    int             PsxExec_System(
+        ASTR_DATA       *pCommand
+    );
+
+
+    /*!
+     Execute a posix shell command returning the output of that commannd.
      @param     pCommand    command to be executed
      @param     ppOutput    Pointer to ASTR pointer to be returned if
                             successful command completion
@@ -158,36 +173,71 @@ extern "C" {
                 Otherwise EOF and ppOutput set to OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    int             psxExec_SystemWithOutput(
-        PSXEXEC_DATA    *this,
+    int             PsxExec_SystemWithOutput(
         ASTR_DATA       *pCommand,
         ASTR_DATA       **ppOutput
     );
+
+
+
+    //---------------------------------------------------------------
+    //                      *** Properties ***
+    //---------------------------------------------------------------
+
+
+
     
-    
+    //---------------------------------------------------------------
+    //                      *** Methods ***
+    //---------------------------------------------------------------
+
+    PSXEXEC_DATA *  PsxExec_Init (
+        PSXEXEC_DATA    *this
+    );
+
+
+#ifdef  PSXEXEC_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = PsxExec_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     PsxExec_ToJson (
+        PSXEXEC_DATA   *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = psxExec_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = PsxExec_ToDebugString(this,4);
      @endcode 
-     @param     this    PSXEXEC object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    psxExec_ToDebugString(
-        PSXEXEC_DATA     *this,
+    ASTR_DATA *     PsxExec_ToDebugString (
+        PSXEXEC_DATA    *this,
         int             indent
     );
     
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* PSXEXEC_H */
+#endif  /* PSXEXEC_H */
 

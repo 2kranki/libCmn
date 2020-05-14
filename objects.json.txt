@@ -120,7 +120,7 @@
         {name:"pplex2", deps:["lex.h","Token.h"]},
         {name:"pplex3", deps:["lex.h","Token.h"]},
         {name:"psxCond"},
-        {name:"psxExec"},
+        {name:"PsxExec", desc:"Execute Batch Tasks"},
         {name:"psxLock"},
         {name:"psxMutex"},
         {name:"psxSem"},
