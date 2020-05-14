@@ -71,6 +71,16 @@ ERESULT         Main_SetOutputLL1(
     const
     char            *pStrA
 );
+ERESULT         Main_SetOutputObj(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
+ERESULT         Main_SetOutputTbl(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
 
 
 
@@ -136,6 +146,15 @@ extern "C" {
             "Model Drive+Directory Path"
         },
         {
+            "obj",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_SetOutputObj,
+            "Output to libObj"
+        },
+        {
             "outdir",
             'o',
             CMDUTL_ARG_OPTION_REQUIRED,
@@ -143,6 +162,15 @@ extern "C" {
             offsetof(MAIN_DATA, pOutputPath),
             NULL,
             "Output Drive+Directory Path"
+        },
+        {
+            "tbl",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_SetOutputTbl,
+            "Output to libTbl"
         },
         {0}
     };
@@ -203,6 +231,44 @@ extern "C" {
         // Do initialization.
 
         Gen_setOutputDrvDir(this->pGen, "~/git/libLL1/src");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutputObj(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDir(this->pGen, "~/git/libObj/src");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutputTbl(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDir(this->pGen, "~/git/libTbl/src");
 
         // Put code here...
 

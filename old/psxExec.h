@@ -96,7 +96,7 @@ extern "C" {
      released.
      @return    pointer to psxExec object if successful, otherwise OBJ_NIL.
      */
-    PSXEXEC_DATA *     psxExec_Alloc(
+    PSXEXEC_DATA *  psxExec_Alloc(
         void
     );
     
@@ -106,7 +106,7 @@ extern "C" {
     );
     
     
-    PSXEXEC_DATA *     psxExec_New(
+    PSXEXEC_DATA *  psxExec_New(
         void
     );
     
