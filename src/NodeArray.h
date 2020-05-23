@@ -359,6 +359,23 @@ extern "C" {
     );
 
 
+    /*!
+     Reverse the order of the array.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeArray_Reverse (
+        NODEARRAY_DATA  *this
+    );
+
+
+    /*!
+     Sort the array using the Compare() method of the node.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
     ERESULT         NodeArray_SortAscending (
         NODEARRAY_DATA    *this
     );

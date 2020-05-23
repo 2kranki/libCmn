@@ -80,6 +80,7 @@ struct NodeTree_data_s	{
     NODELINK_DATA   *pOpen;
     NODELINK_DATA   *pClose;
     OBJ_ID          pNodeArrayClass;
+    OBJ_ID          pOther;
 
 };
 #pragma pack(pop)

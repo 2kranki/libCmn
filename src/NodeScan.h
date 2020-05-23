@@ -9,7 +9,8 @@
  * Purpose
  *          This object supports scanning a NodeTree that was con-
  *          verted to a NodeArray with up/down members. See
- *          nodeTree_ToLinearizationPost or nodeTree_ToLinearizationPre.
+ *          nodeTree_ToLinearizationPost() or
+ *          nodeTree_ToLinearizationPre().
  *
  * Remarks
  *	1.      None

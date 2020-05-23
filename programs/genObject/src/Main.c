@@ -76,7 +76,17 @@ ERESULT         Main_SetOutputObj(
     const
     char            *pStrA
 );
+ERESULT         Main_SetOutputPrs(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
 ERESULT         Main_SetOutputTbl(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
+ERESULT         Main_SetOutputVid(
     MAIN_DATA       *this,
     const
     char            *pStrA
@@ -119,15 +129,6 @@ extern "C" {
             "Output to libEmu"
         },
         {
-            "json",
-            'j',
-            CMDUTL_ARG_OPTION_NONE,
-            CMDUTL_TYPE_BOOL,
-            offsetof(MAIN_DATA, fJson),
-            NULL,
-            "Generate MacOS Makefile (default)"
-        },
-        {
             "ll1",
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
@@ -164,6 +165,15 @@ extern "C" {
             "Output Drive+Directory Path"
         },
         {
+            "prs",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_SetOutputPrs,
+            "Output to libPrs"
+        },
+        {
             "tbl",
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
@@ -171,6 +181,15 @@ extern "C" {
             0,
             (void *)Main_SetOutputTbl,
             "Output to libTbl"
+        },
+        {
+            "vid",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_SetOutputVid,
+            "Output to libVid"
         },
         {0}
     };
@@ -192,7 +211,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libCmn/src");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libCmn/src/");
 
         // Put code here...
 
@@ -211,7 +230,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libEmu/src");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libEmu/src/");
 
         // Put code here...
 
@@ -230,7 +249,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libLL1/src");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libLL1/src/");
 
         // Put code here...
 
@@ -249,7 +268,26 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libObj/src");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libObj/src/");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutputPrs(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDir(this->pGen, "~/git/libPrs/src/");
 
         // Put code here...
 
@@ -268,7 +306,26 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libTbl/src");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libTbl/src/");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutputVid(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDir(this->pGen, "~/git/libVid/src/");
 
         // Put code here...
 
@@ -1125,6 +1182,14 @@ extern "C" {
         }
         Gen_setDict(this->pGen, this->pDict);
 
+        Appl_setUsage(
+                          (APPL_DATA *)this,
+                          this,
+                          (void *)Main_UsageDesc,
+                          (void *)Main_UsageProgLine,
+                          (void *)Main_UsageOptions
+        );
+        ((APPL_DATA *)this)->iVerbose++;
 #ifdef NDEBUG
 #else
         if (!Main_Validate(this)) {
@@ -1610,8 +1675,7 @@ extern "C" {
 
         fprintf(
                 pOutput,
-                "  Generate a make or nmake file for the object system created\n"
-                "  in libCmn given an input json file.\n"
+                "  Generate an object given an input json file which defines it.\n"
         );
 
         // Return to caller.
@@ -1626,6 +1690,8 @@ extern "C" {
         FILE            *pOutput
     )
     {
+        uint32_t        i = 0;
+        CMDUTL_OPTION   *pPgmOption = pPgmOptions;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1636,13 +1702,21 @@ extern "C" {
         }
 #endif
 
-        fprintf(pOutput, "  --clp              Set type to Command Line Program\n");
-        fprintf(pOutput, "                     (Default is Library)\n");
-        fprintf(pOutput, "  --macos32          Generate MacOS 32-bit nmake file (default)\n");
-        fprintf(pOutput, "  --macos64          Generate MacOS 64-bit nmake file (default)\n");
-        fprintf(pOutput, "  --win32            Generate MSC Win32 nmake file\n");
-        fprintf(pOutput, "  --win64            Generate MSC Win64 nmake file\n");
-        fprintf(pOutput, "  (--out | -o) path  Output the generated data to <path>\n");
+        for (i=0; pPgmOptions[i].pLongName || pPgmOptions[i].shortName; i++) {
+            char            shortOpt[3] = "";
+            char            longOpt[20] = "";
+            if (pPgmOptions[i].shortName) {
+                shortOpt[0] = '-';
+                shortOpt[1] = pPgmOptions[i].shortName;
+                shortOpt[2] = '\0';
+            }
+            if (pPgmOptions[i].pLongName) {
+                longOpt[0] = '-';
+                longOpt[1] = '-';
+                strcpy(longOpt+2, pPgmOptions[i].pLongName);
+            }
+            fprintf(pOutput, "  %-3s %-20s %s\n", shortOpt, longOpt, pPgmOptions[i].pDesc);
+        }
 
         // Return to caller.
         return ERESULT_SUCCESS;

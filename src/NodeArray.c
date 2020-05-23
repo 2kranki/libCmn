@@ -1434,6 +1434,49 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                         R e v e r s e
+    //---------------------------------------------------------------
+
+    /*!
+     Reverse the order of the array.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeArray_Reverse (
+        NODEARRAY_DATA  *this
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        iHalf;
+        uint32_t        iMax;
+        OBJ_ID          pNode;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeArray_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+
+        iMax = NodeArray_Count(this);
+        iHalf = iMax >> 1;
+        for (i=0; i<iHalf; i++) {
+            pNode = ObjArray_Get(this->pArray, i+1);
+            eRc = ObjArray_Put(this->pArray, i+1, ObjArray_Get(this->pArray, iMax-i+1));
+            eRc = ObjArray_Put(this->pArray, iMax-i+1, pNode);
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                         S o r t
     //---------------------------------------------------------------
 

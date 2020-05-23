@@ -111,7 +111,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  VISITOR_SINGLETON
-    VISITOR_DATA *     Visitor_Shared (
+    VISITOR_DATA *  Visitor_Shared (
         void
     );
 
@@ -127,7 +127,7 @@ extern "C" {
      released.
      @return    pointer to Visitor object if successful, otherwise OBJ_NIL.
      */
-    VISITOR_DATA *     Visitor_Alloc (
+    VISITOR_DATA *  Visitor_Alloc (
         void
     );
     
@@ -137,17 +137,17 @@ extern "C" {
     );
     
     
-    VISITOR_DATA *     Visitor_New (
+    VISITOR_DATA *  Visitor_New (
         void
     );
     
     
 #ifdef  VISITOR_JSON_SUPPORT
-    VISITOR_DATA *   Visitor_NewFromJsonString (
+    VISITOR_DATA *  Visitor_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    VISITOR_DATA *   Visitor_NewFromJsonStringA (
+    VISITOR_DATA *  Visitor_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -166,23 +166,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Visitor_Disable (
-        VISITOR_DATA		*this
+    ERESULT         Visitor_Disable (
+        VISITOR_DATA	*this
     );
 
 
-    ERESULT     Visitor_Enable (
-        VISITOR_DATA		*this
+    ERESULT         Visitor_Enable (
+        VISITOR_DATA	*this
     );
 
    
-    VISITOR_DATA *   Visitor_Init (
-        VISITOR_DATA     *this
+    VISITOR_DATA *  Visitor_Init (
+        VISITOR_DATA    *this
     );
 
 
-    ERESULT     Visitor_IsEnabled (
-        VISITOR_DATA		*this
+    ERESULT         Visitor_IsEnabled (
+        VISITOR_DATA	*this
     );
     
  
@@ -200,7 +200,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     Visitor_ToJson (
-        VISITOR_DATA   *this
+        VISITOR_DATA    *this
     );
 #endif
 
@@ -218,7 +218,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     Visitor_ToDebugString (
-        VISITOR_DATA     *this,
+        VISITOR_DATA    *this,
         int             indent
     );
     

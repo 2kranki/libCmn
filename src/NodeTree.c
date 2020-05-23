@@ -80,7 +80,7 @@ extern "C" {
     ****************************************************************/
 
     ERESULT         NodeTree_PrintNode (
-        NODETREE_DATA    *this,
+        NODETREE_DATA   *this,
         uint32_t        index,
         uint16_t        indent
     )
@@ -98,7 +98,7 @@ extern "C" {
 #else
         if (!NodeTree_Validate(this)) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
@@ -127,15 +127,15 @@ extern "C" {
         }
 
         // Return to caller.
-        return true;
+        return ERESULT_SUCCESS;
     }
 
 
 
     ERESULT         NodeTree_UpDownNodePost(
-        NODETREE_DATA    *this,
+        NODETREE_DATA   *this,
         uint32_t        index,              // Current Node
-        NODEARRAY_DATA    *pArray
+        NODEARRAY_DATA  *pArray
     )
     {
         NODELINK_DATA   *pNode;
@@ -147,7 +147,7 @@ extern "C" {
 #else
         if( !NodeTree_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
@@ -634,6 +634,52 @@ extern "C" {
             obj_Release(this->pOpen);
         }
         this->pOpen = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          O t h e r
+    //---------------------------------------------------------------
+
+    OBJ_ID          NodeTree_getOther(
+        NODETREE_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !NodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pOther;
+    }
+
+
+    bool            NodeTree_setOther(
+        NODETREE_DATA   *this,
+        OBJ_ID          pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !NodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pOther) {
+            obj_Release(this->pOther);
+        }
+        this->pOther = pValue;
 
         return true;
     }
@@ -1256,15 +1302,9 @@ extern "C" {
 #endif
 
         NodeTree_setArray(this, OBJ_NIL);
-
-        if (this->pClose) {
-            obj_Release(this->pClose);
-            this->pClose = OBJ_NIL;
-        }
-        if (this->pOpen) {
-            obj_Release(this->pOpen);
-            this->pOpen = OBJ_NIL;
-        }
+        NodeTree_setCloseNode(this, OBJ_NIL);
+        NodeTree_setOpenNode(this, OBJ_NIL);
+        NodeTree_setOther(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super

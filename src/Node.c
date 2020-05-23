@@ -322,6 +322,30 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                    A c c e p t  M e t h o d
+    //---------------------------------------------------------------
+
+    bool            Node_setAcceptMethod(
+        NODE_DATA       *this,
+        ERESULT         (*pAccept)(NODE_DATA *, OBJ_ID)
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Node_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pAccept = pAccept;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          C l a s s
     //---------------------------------------------------------------
 
@@ -1806,6 +1830,12 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
+                    case 'A':
+                        if (str_Compare("Accept", (char *)pStr) == 0) {
+                            return Node_Accept;
+                        }
+                        break;
+
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
                             return Node_Disable;

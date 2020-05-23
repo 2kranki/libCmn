@@ -172,9 +172,9 @@ int         main(
         }
         pGmrFile = Path_NewA(ppOptions[0]);
         if (pGmrFile) {
-            pSrc = srcFile_NewFromPath(pGmrFile, 1, 4, true, fNL);
+            pSrc = srcFile_NewFromPath(pGmrFile, 1, 4);
             if (pSrc) {
-                srcFile_setStripCR(pSrc, true);
+                srcFile_setRemoveNLs(pSrc, true);
                 if (srcFlag) {
                     for (;;) {
                         pToken = srcFile_InputLookAhead(pSrc, 1);

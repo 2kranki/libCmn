@@ -1,0 +1,9 @@
+int8_t 		x;
+extern
+uint32_t	y;
+typedef struct Xyzzy_s {
+	int8_t	a;
+	int8_t	b;
+} XYZZY;
+
+

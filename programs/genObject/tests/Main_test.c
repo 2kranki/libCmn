@@ -357,8 +357,50 @@ int             test_Main_ParseArg01 (
 
 
 
+int             test_Main_TestHelp01 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    MAIN_DATA        *pObj = OBJ_NIL;
+    bool            fRc;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Main_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_MAIN);
+        TINYTEST_TRUE( (fRc) );
+        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        eRc = Main_UsageOptions(pObj, stderr);
+
+        {
+            ASTR_DATA       *pStr = Main_ToDebugString(pObj, 0);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_Main);
+    TINYTEST_ADD_TEST(test_Main_TestHelp01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_ParseArg01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_Test01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_Main_Copy01,setUp,tearDown);

@@ -80,7 +80,7 @@ struct Main_data_s	{
     NODECLASS_DATA  *pClass;
     DICT_DATA       *pDict;
     uint16_t        fBackup;
-    uint16_t        fJson;
+    uint16_t        unused16;
 
 };
 #pragma pack(pop)

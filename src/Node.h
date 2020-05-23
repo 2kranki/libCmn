@@ -259,6 +259,16 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     Accept method is meant to be used with the visitor pattern. However,
+     it can be used for other things as needed.
+     */
+    bool            Node_setAcceptMethod(
+        NODE_DATA       *this,
+        ERESULT         (*pAccept)(NODE_DATA *, OBJ_ID)
+    );
+
+
+    /*!
      Class property is used to categorize the Node with some kind of
      identification if needed.
      */

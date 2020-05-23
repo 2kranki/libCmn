@@ -87,6 +87,7 @@ struct Node_data_s	{
     OBJ_ID          pExtra;
     OBJ_ID          pOther;
     NODEBT_DATA     *pProperties;
+    ERESULT         (*pAccept)(NODE_DATA *, OBJ_ID);
 
 };
 #pragma pack(pop)

@@ -84,11 +84,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    VISITOR_DATA *     Visitor_Alloc (
+    VISITOR_DATA *  Visitor_Alloc (
         void
     )
     {
-        VISITOR_DATA       *this;
+        VISITOR_DATA    *this;
         uint32_t        cbSize = sizeof(VISITOR_DATA);
         
         // Do initialization.
@@ -101,7 +101,7 @@ extern "C" {
 
 
 
-    VISITOR_DATA *     Visitor_New (
+    VISITOR_DATA *  Visitor_New (
         void
     )
     {

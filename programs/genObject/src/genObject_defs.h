@@ -1,14 +1,14 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Generate Make (genMake) Header
+//                  Generate an Object (genObject) Header
 //****************************************************************
 /*
  * Program
- *			Generate Make (genMake) Header
+ *			Generate an Object (genObject) Header
  * Purpose
  *			This header supplies the constants and macros needed
- *			by the Generate Make (genMake) objects.
+ *			by the Generate an Object (genObject) objects.
  *
  * Remarks
  *	1.      None

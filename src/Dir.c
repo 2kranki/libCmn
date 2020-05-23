@@ -144,7 +144,7 @@ extern "C" {
         char            *pPath
     )
     {
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -155,7 +155,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pPath, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
@@ -184,7 +184,7 @@ extern "C" {
         char            *pPath
     )
     {
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -195,7 +195,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pPath, &statBuffer);
         if (0 == iRc) {
             eRc = ERESULT_SUCCESS;
@@ -220,7 +220,7 @@ extern "C" {
         char            *pPath
     )
     {
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -231,7 +231,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pPath, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFREG) {
@@ -261,7 +261,7 @@ extern "C" {
         char            *pPath
     )
     {
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -272,7 +272,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         iRc = stat(pPath, &statBuffer);
         if (0 == iRc) {
             if ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {
@@ -861,7 +861,7 @@ extern "C" {
     )
     {
         char            *pStr = NULL;
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
 #endif
@@ -882,7 +882,7 @@ extern "C" {
 
         pStr = AStr_CStringA((ASTR_DATA *)pPath, NULL);
         if (pStr) {
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
             iRc = stat(pStr, &statBuffer);
             if (0 == iRc) {
                 if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
@@ -919,7 +919,7 @@ extern "C" {
     )
     {
         char            *pStr = NULL;
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         int             iRc;
 #endif
         ERESULT         eRc;
@@ -944,7 +944,7 @@ extern "C" {
 
         pStr = AStr_CStringA((ASTR_DATA *)pPath, NULL);
         if (pStr) {
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
             iRc = mkdir(pStr, mode);
             if (0 == iRc) {
                 eRc = ERESULT_SUCCESS;
@@ -1118,7 +1118,7 @@ extern "C" {
     {
         ERESULT         eRc;
         char            *pDirA;
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         struct dirent   *pDirent;
         DIR             *pDirectory;
         bool            fRc;
@@ -1156,7 +1156,7 @@ extern "C" {
             return ERESULT_PATH_NOT_FOUND;
         }
 
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         pDirA = AStr_CStringA((ASTR_DATA *)pPath, NULL);
         if (pDirA) {
             pDirectory = opendir(pDirA);
