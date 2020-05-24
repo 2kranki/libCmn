@@ -99,7 +99,7 @@
         {name:"NodeTree", deps:["Node.h","NodeHash.h",
                                 "ObjList.h","szTbl.h"], json:true},
         {name:"Null", json:true},
-        {name:"number", json:true},
+        {name:"Number", json:true},
         {name:"ObjArray", deps:["array.h"], json:true},
         {name:"ObjBT", deps:["rbt_tree.h"], json:true, desc:"NOT FINISHED, DO NOT USE!"},
         {name:"ObjCb", test:{"srcs":["objTest.c", 
