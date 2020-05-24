@@ -53,7 +53,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <AStrArray.h>
-#include        <number.h>
+#include        <Number.h>
 #include        <ObjArray.h>
 #include        <Path.h>
 

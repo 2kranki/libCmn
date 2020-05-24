@@ -55,7 +55,7 @@
 #include        <NodeHash_internal.h>
 #include        <NodeLink_internal.h>
 #include        <Null.h>
-#include        <number.h>
+#include        <Number.h>
 #include        <ObjArray_internal.h>
 #include        <ObjHash_internal.h>
 #include        <ObjList_internal.h>

@@ -390,6 +390,20 @@ extern "C" {
 
 
 
+    void            JsonOut_Append_u64 (
+        const
+        char            *pNameA,
+        uint64_t        num,
+        ASTR_DATA       *pStr
+    )
+    {
+        if (pStr && pNameA) {
+            AStr_AppendPrint(pStr, "\t\"%s\": %lu,\n", pNameA, num);
+        }
+    }
+
+
+
     void            JsonOut_Append_utf8 (
         const
         char            *pNameA,

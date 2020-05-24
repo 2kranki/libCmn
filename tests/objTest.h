@@ -52,7 +52,7 @@
 
 #include        <test_defs.h>
 #include        <AStr.h>
-#include        <number.h>
+#include        <Number.h>
 #include        <Path.h>
 
 

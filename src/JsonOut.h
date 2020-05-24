@@ -315,6 +315,14 @@ extern "C" {
     );
 
 
+    void            JsonOut_Append_u64 (
+        const
+        char            *pNameA,
+        uint64_t        num,
+        ASTR_DATA       *pStr
+    );
+
+
     void            JsonOut_Append_utf8 (
         const
         char            *pNameA,
