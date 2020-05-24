@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 5/24/2020  6:37:09.000)
+# ( 5/24/2020  6:38:18.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -524,6 +524,21 @@ $(OBJDIR)/Null_json.o: $(SRCDIR)/Null_json.c $(SRCDIR)/Null.h $(SRCDIR)/Null_int
 OBJS += $(OBJDIR)/Null_object.o
 
 $(OBJDIR)/Null_object.o: $(SRCDIR)/Null_object.c $(SRCDIR)/Null.h $(SRCDIR)/Null_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Number.o
+
+$(OBJDIR)/Number.o: $(SRCDIR)/Number.c $(SRCDIR)/Number.h $(SRCDIR)/Number_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Number_json.o
+
+$(OBJDIR)/Number_json.o: $(SRCDIR)/Number_json.c $(SRCDIR)/Number.h $(SRCDIR)/Number_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Number_object.o
+
+$(OBJDIR)/Number_object.o: $(SRCDIR)/Number_object.c $(SRCDIR)/Number.h $(SRCDIR)/Number_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/ObjArray.o
@@ -1511,21 +1526,6 @@ OBJS += $(OBJDIR)/msgBus_object.o
 $(OBJDIR)/msgBus_object.o: $(SRCDIR)/msgBus_object.c $(SRCDIR)/msgBus.h $(SRCDIR)/msgBus_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/number.o
-
-$(OBJDIR)/number.o: $(SRCDIR)/number.c $(SRCDIR)/number.h $(SRCDIR)/number_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/number_json.o
-
-$(OBJDIR)/number_json.o: $(SRCDIR)/number_json.c $(SRCDIR)/number.h $(SRCDIR)/number_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/number_object.o
-
-$(OBJDIR)/number_object.o: $(SRCDIR)/number_object.c $(SRCDIR)/number.h $(SRCDIR)/number_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/obj.o
 
 $(OBJDIR)/obj.o: $(SRCDIR)/obj.c $(SRCDIR)/obj.h $(SRCDIR)/cmn_defs.h 
@@ -2145,6 +2145,12 @@ Null_test: $(TEST_SRC)/Null_test.c $(SRCDIR)/Null.h $(SRCDIR)/Null_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += Number_test
+
+Number_test: $(TEST_SRC)/Number_test.c $(SRCDIR)/Number.h $(SRCDIR)/Number_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += ObjArray_test
 
 ObjArray_test: $(TEST_SRC)/ObjArray_test.c $(SRCDIR)/ObjArray.h $(SRCDIR)/ObjArray_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
@@ -2629,12 +2635,6 @@ TESTS += msgBus_test
 
 msgBus_test: $(TEST_SRC)/msgBus_test.c $(SRCDIR)/msgBus.h $(SRCDIR)/msgBus_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += number_test
-
-number_test: $(TEST_SRC)/number_test.c $(SRCDIR)/number.h $(SRCDIR)/number_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
 TESTS += objMatrix_test
