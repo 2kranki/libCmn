@@ -276,7 +276,30 @@ extern "C" {
         }
 #endif
 
-        return (LEX_DATA *)this;
+        return this->pLex;
+    }
+
+
+    bool            Parser_setLex (
+        PARSER_DATA     *this,
+        LEX_DATA        *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pLex) {
+            obj_Release(this->pLex);
+        }
+        this->pLex = pValue;
+
+        return true;
     }
 
 
@@ -697,6 +720,7 @@ extern "C" {
         Parser_setAux1(this, OBJ_NIL);
         Parser_setAux2(this, OBJ_NIL);
         Parser_setCompiler(this, OBJ_NIL);
+        Parser_setLex(this, OBJ_NIL);
 
         if (this->pProperties) {
             obj_Release(this->pProperties);
@@ -828,7 +852,8 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)lex_Init((LEX_DATA *)this, 8);           // Needed for Inheritance
+        //this = (OBJ_ID)lex_Init((LEX_DATA *)this, 8);           // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_PARSER);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -976,7 +1001,7 @@ extern "C" {
         
         // Add the next char to the queue.
         pToken = &this->pInputs[this->curInputs];
-        scp = this->pSrcChrLookAhead(this->pSrcObj,1);
+        scp = this->pSrcChrLookAhead(this->pSrcObj, 1);
         BREAK_NULL(scp);
 #ifdef NDEBUG
 #else
@@ -1666,6 +1691,87 @@ extern "C" {
         
         
         
+    //---------------------------------------------------------------
+    //         S e t u p  p p l e x  f r o m  A S t r
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Parser_SetupPPLexFromAStr (
+        PARSER_DATA     *this,
+        PATH_DATA       *pPath,
+        ASTR_DATA       *pStr,
+        bool            fLex1,
+        bool            fLex3,
+        bool            fNL,
+        bool            fWS,
+        uint16_t        tabSize
+    )
+    {
+        ERESULT         eRc;
+        LEX_DATA        *pLex = OBJ_NIL;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+    #endif
+
+        pLex = (LEX_DATA *)pplex_New(tabSize);
+        if (OBJ_NIL == pLex) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        // We must establish if we want NL or WS tokens before
+        // we start the lexical scanner.
+        pplex_setReturnNL((PPLEX_DATA *)pLex, fNL);
+        pplex_setReturnWS((PPLEX_DATA *)pLex, fWS);
+
+        // Create the lexers. We always get pplex2. pplex1 and pplex3 are
+        // optional.
+        eRc = pplex_CreateLexers((PPLEX_DATA *)pLex, fLex1, fLex3);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(pLex);
+            return eRc;
+        }
+
+        // Plug in the input source into the lexer(s).
+        eRc =   pplex_CreateSourceFromAStr(
+                                      (PPLEX_DATA *)pLex,
+                                      pPath,
+                                      pStr
+                );
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            obj_Release(pLex);
+            return eRc;
+        }
+        Parser_setLex(this, pLex);
+        obj_Release(pLex);
+
+        // Now set up the lexer chain as the parser's input without
+        // ownership.
+        Parser_setSourceFunction(
+                                this,
+                                (void *)pplex_InputAdvance,
+                                (void *)pplex_InputLookAhead,
+                                pLex
+        );
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  J S O N
     //---------------------------------------------------------------

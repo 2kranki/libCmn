@@ -98,6 +98,8 @@ extern "C" {
         JsonIn_FindAStrNodeInHashA(pParser, "type", &pWrk);
         if (pWrk) {
             pObject->type = Number_DescToType(AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
             (void)JsonIn_FindU64NodeInHashA(pParser, "u64", &pObject->u64);
         }
 
@@ -299,7 +301,7 @@ extern "C" {
         char            *pDesc;
 
         pDesc = Number_TypeToDesc(this->type);
-        JsonOut_Append_utf8("type", pDesc, pStr);
+        JsonOut_Append_StrA("type", pDesc, pStr);
         JsonOut_Append_u64("u64", this->u64, pStr);
 
 #ifdef XYZZZY

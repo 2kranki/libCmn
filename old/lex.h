@@ -96,42 +96,6 @@ extern "C" {
 #endif
     
 
-    typedef enum lex_class_e {
-        /* Values below 256 are a character by itself that makes
-         * its own token class. All other classes for groups of
-         * characters should be allocated in the range above
-         * LEX_CLASS_GROUP_LOWEST.
-         */
-        LEX_CLASS_EOF=-1,
-        LEX_CLASS_UNKNOWN=0,
-        
-        LEX_CLASS_GROUP_LOWEST=256,
-        
-        LEX_CLASS_COMMENT_GROUP=256,
-        
-        LEX_CLASS_CONSTANT_GROUP=512,
-        LEX_CONSTANT_CHAR,
-        LEX_CONSTANT_CHAR_WIDE,
-        LEX_CONSTANT_FLOAT,
-        LEX_CONSTANT_INTEGER,
-        LEX_CONSTANT_STRING,
-        LEX_CONSTANT_STRING_WIDE,
-        
-        LEX_IDENTIFIER=750,
-        
-        LEX_CLASS_SEP_GROUP=756,
-        
-        LEX_CLASS_OP_GROUP=1024,
-        
-        LEX_CLASS_KWD_GROUP=1280,
-        
-        LEX_CLASS_SPCL_GROUP=1536,
-        
-        LEX_CLASS_HIGHEST=2048,
-        
-    } LEX_CLASS;
-    
-    
     //****************************************************************
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
@@ -155,11 +119,11 @@ extern "C" {
         
         bool            (*pSetParserFunction)(
             LEX_DATA        *this,
-            bool            (*pParser)(OBJ_ID, TOKEN_DATA *),
+            ERESULT         (*pParser)(OBJ_ID, TOKEN_DATA *),
             OBJ_ID          pParseObj
         );
         
-        bool            (*pSetSourceFunction)(
+        bool            (*pSetSourceInput)(
             LEX_DATA        *this,
             TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID,uint16_t),
             TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID,uint16_t),
@@ -203,6 +167,49 @@ extern "C" {
     } LEX_VTBL;
 
     
+    typedef enum lex_class_e {
+        /* Values below 256 are a character by itself that makes
+         * its own token class. All other classes for groups of
+         * characters should be allocated in the range above
+         * LEX_CLASS_GROUP_LOWEST.
+         */
+        LEX_CLASS_EOF=-1,
+        LEX_CLASS_UNKNOWN=0,
+
+        LEX_CLASS_GROUP_LOWEST=256,
+
+        LEX_CLASS_COMMENT_GROUP=256,
+
+        LEX_CLASS_CONSTANT_GROUP=512,
+        LEX_CONSTANT_CHAR,
+        LEX_CONSTANT_CHAR_WIDE,
+        LEX_CONSTANT_FLOAT,
+        LEX_CONSTANT_INTEGER,
+        LEX_CONSTANT_STRING,
+        LEX_CONSTANT_STRING_WIDE,
+
+        LEX_IDENTIFIER=750,
+
+        LEX_CLASS_SEP_GROUP=756,
+
+        LEX_CLASS_OP_GROUP=1024,
+
+        LEX_CLASS_KWD_GROUP=1280,
+
+        LEX_CLASS_SPCL_GROUP=1536,
+
+        LEX_CLASS_HIGHEST=2048,
+
+    } LEX_CLASS;
+
+
+    // Use a uint32_t field for the following:
+    typedef enum Lex_Statuses_e {
+        LEX_STATUS_UNKNOWN=0,
+        LEX_STATUS_INIT       =0x80000000,         /* Initialization accomplished */
+        LEX_STATUS_CHECKPOINT =0x40000000,         /* Input Checkpoint is active */
+        LEX_STATUS_MULTICHRCON=0x20000000,         /* ??? */
+    } LEX_STATUSES;
 
 
     /****************************************************************
@@ -248,12 +255,21 @@ extern "C" {
         ERESULT_DATA    *pValue
     );
     
-    
-    ERESULT         lex_getLastError (
+    /*! These are the input flags that should be used before any
+        processing of tokens is done to control the tokenization
+        process. One bit might be used to say return tokens for
+        newlines or don't for instance.
+     */
+    uint32_t        lex_getFlags(
         LEX_DATA        *this
     );
-    
-    
+
+    bool            lex_setFlags(
+        LEX_DATA        *this,
+        uint32_t        value
+    );
+
+
     bool            lex_getMultiCharConstant (
         LEX_DATA        *this
     );
@@ -266,12 +282,12 @@ extern "C" {
     
     bool            lex_setParserFunction (
         LEX_DATA        *this,
-        bool            (*pParser)(OBJ_ID, TOKEN_DATA *),
+        ERESULT         (*pParser)(OBJ_ID, TOKEN_DATA *),
         OBJ_ID          pParseObj
     );
     
     
-    bool            lex_setSourceFunction(
+    bool            lex_setSourceInput(
         LEX_DATA        *this,
         TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID,uint16_t),
         TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID,uint16_t),
@@ -279,6 +295,16 @@ extern "C" {
     );
     
     
+    uint32_t        lex_getStatuses(
+        LEX_DATA        *this
+    );
+
+    bool            lex_setStatuses(
+        LEX_DATA        *this,
+        uint32_t        value
+    );
+
+
     W32STR_DATA *   lex_getString (
         LEX_DATA        *this
     );

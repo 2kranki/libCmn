@@ -65,7 +65,7 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    bool            lex_DefaultParser(
+    ERESULT         lex_DefaultParser(
         OBJ_ID          pObj,
         TOKEN_DATA      *pTokenOut      // Output Token
     )
@@ -78,7 +78,7 @@ extern "C" {
 #else
         if( !lex_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -86,7 +86,7 @@ extern "C" {
         Token_Assign(pToken, pTokenOut);
         this->pSrcChrAdvance(this->pSrcObj, 1);
         
-        return true;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -181,10 +181,10 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      L a s t  E r r o r
+    //                          f l a g s
     //---------------------------------------------------------------
     
-    ERESULT         lex_getLastError(
+    uint32_t        lex_getFlags(
         LEX_DATA        *this
     )
     {
@@ -198,14 +198,13 @@ extern "C" {
         }
 #endif
         
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return this->flags;
     }
     
     
-    bool            lex_setLastError(
+    bool            lex_setFlags(
         LEX_DATA        *this,
-        ERESULT         value
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
@@ -216,7 +215,7 @@ extern "C" {
         }
 #endif
         
-        this->eRc = value;
+        this->flags = value;
         
         return true;
     }
@@ -263,9 +262,13 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      P a r s e r
+    //---------------------------------------------------------------
+
     bool            lex_setParserFunction(
         LEX_DATA        *this,
-        bool            (*pParser)(OBJ_ID, TOKEN_DATA *),
+        ERESULT         (*pParser)(OBJ_ID, TOKEN_DATA *),
         OBJ_ID          pParseObj
     )
     {
@@ -285,7 +288,11 @@ extern "C" {
     
     
     
-    bool            lex_setSourceFunction(
+    //---------------------------------------------------------------
+    //                    S o u r c e  I n p u t
+    //---------------------------------------------------------------
+
+    bool            lex_setSourceInput(
         LEX_DATA        *this,
         TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID,uint16_t),
         TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID,uint16_t),
@@ -309,6 +316,52 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      s t a t u s e s
+    //---------------------------------------------------------------
+
+    uint32_t        lex_getStatuses(
+        LEX_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        return this->statuses;
+    }
+
+
+    bool            lex_setStatuses(
+        LEX_DATA        *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->statuses = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S t r i n g
+    //---------------------------------------------------------------
+
     W32STR_DATA *   lex_getString(
         LEX_DATA        *this
     )
@@ -1266,7 +1319,6 @@ extern "C" {
                 if ((chr == 'x') || (chr == 'X')) {
                     this->pSrcChrAdvance(this->pSrcObj, 1);
                     if( !lex_ParseDigitsHex(this) ) {
-                        lex_setLastError(this, ERESULT_HEX_SYNTAX);
                         return 0;
                     }
                     clsNew = LEX_CONSTANT_INTEGER;
@@ -1304,7 +1356,6 @@ extern "C" {
         iRc = lex_ParseIntegerSuffix(this);
         if (iRc) {
             Token_setMisc(&this->token, iRc);
-            lex_setLastError(this, ERESULT_SUCCESS);
             return clsNew;
         }
         
@@ -1356,7 +1407,6 @@ extern "C" {
             clsNew = LEX_CONSTANT_FLOAT;
        }
 
-        lex_setLastError(this, ERESULT_SUCCESS);
         return clsNew;
     }
     

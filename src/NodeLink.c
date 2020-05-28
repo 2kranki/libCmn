@@ -863,6 +863,29 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                    P r o p e r t i e s
+    //---------------------------------------------------------------
+
+    NODEBT_DATA *   NodeLink_getProperties (
+        NODELINK_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeLink_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return Node_getProperties((NODE_DATA *)this);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      R i g h t  I n d e x
     //---------------------------------------------------------------
 
@@ -1483,6 +1506,41 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          H a s h
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    uint32_t            NodeLink_Hash (
+        NODELINK_DATA       *this
+    )
+    {
+        //ERESULT           eRc;
+        uint32_t            hash = 0;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!NodeLink_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+    #endif
+
+        hash = Node_getHash(NodeLink_getNode(this));
+
+        // Return to caller.
+        return hash;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -1573,6 +1631,91 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                     P r o p e r t y  A d d
+    //---------------------------------------------------------------
+
+    ERESULT         NodeLink_PropertyAddA(
+        NODELINK_DATA   *this,
+        const
+        char            *pNameA,
+        OBJ_ID          pData
+    )
+    {
+        ERESULT         eRc;
+        //NODE_DATA       *pNode = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = Node_PropertyAddA((NODE_DATA *)this, pNameA, pData);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //              P r o p e r t y  C o u n t
+    //---------------------------------------------------------------
+
+    uint32_t        NodeLink_PropertyCount(
+        NODELINK_DATA   *this
+    )
+    {
+        uint32_t        num = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        num = Node_PropertyCount((NODE_DATA *)this);
+
+        // Return to caller.
+        return num;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    P r o p e r t y  K e y s
+    //---------------------------------------------------------------
+
+    NODEARRAY_DATA * NodeLink_Properties(
+        NODELINK_DATA   *this
+    )
+    {
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeLink_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pArray = Node_Properties((NODE_DATA *)this);
+
+        // Return to caller.
+        return pArray;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------

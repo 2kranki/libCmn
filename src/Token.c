@@ -94,6 +94,36 @@ extern "C" {
 
 
 
+    uint16_t     Token_StringToType (
+        TOKEN_DATA      *this,
+        const
+        char            *pType
+    )
+    {
+        uint16_t        type = 0;
+        const
+        char            **pEntry = pTypeStr;
+
+
+        // Do initialization.
+        if (strlen(pType) == 0) {
+            return TOKEN_TYPE_UNKNOWN;
+        }
+
+        while (*pEntry) {
+            if (0 == strcmp(*pEntry, pType)) {
+                return type;
+            }
+            type++;
+            pEntry++;
+        }
+        type = TOKEN_TYPE_UNKNOWN;
+
+        // Return to caller.
+        return type;
+    }
+
+
     const
     char *     Token_TypeToString (
         TOKEN_DATA      *this,
@@ -183,6 +213,20 @@ extern "C" {
         if (this) {
             eRc = Token_SetupFnLCC(this, pLoc, cls);
             Token_setInteger(this, integer);
+        }
+        return this;
+    }
+
+
+    TOKEN_DATA *   Token_NewFromFields(
+        TOKEN_FIELDS    *pFields
+    )
+    {
+        TOKEN_DATA      *this;
+
+        this = Token_New( );
+        if (this) {
+            memmove(&this->data, pFields, sizeof(TOKEN_FIELDS));
         }
         return this;
     }

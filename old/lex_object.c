@@ -190,7 +190,7 @@ LEX_VTBL        lex_Vtbl = {
     lex_getErrors,
     lex_setErrors,
     lex_setParserFunction,
-    lex_setSourceFunction,
+    lex_setSourceInput,
     lex_getString,
     lex_getToken,
     lex_InputAdvance,

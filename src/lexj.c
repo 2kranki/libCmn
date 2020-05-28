@@ -675,7 +675,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        fRc =   lex_setSourceFunction(
+        fRc =   lex_setSourceInput(
                     (LEX_DATA *)this,
                     (void *)srcFile_InputAdvance,
                     (void *)srcFile_InputLookAhead,
@@ -732,7 +732,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        fRc =   lex_setSourceFunction(
+        fRc =   lex_setSourceInput(
                     (LEX_DATA *)this,
                     (void *)srcFile_InputAdvance,
                     (void *)srcFile_InputLookAhead,
@@ -789,7 +789,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        fRc =   lex_setSourceFunction(
+        fRc =   lex_setSourceInput(
                                       (LEX_DATA *)this,
                                       (void *)srcFile_InputAdvance,
                                       (void *)srcFile_InputLookAhead,

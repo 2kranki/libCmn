@@ -2302,13 +2302,14 @@ extern "C" {
         
         pStr = array_Ptr(this->pData, 1);
         if (pStr) {
-            hash = str_HashAcmA( pStr, NULL );
+            hash = str_HashAcmA(pStr, NULL);
         }
         
         return hash;
     }
     
     
+
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------

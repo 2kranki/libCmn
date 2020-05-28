@@ -1089,7 +1089,7 @@ extern "C" {
         char            *pValue
     )
     {
-        uint32_t        len;
+        //uint32_t        len;
 
 #ifdef NDEBUG
 #else
@@ -1104,8 +1104,7 @@ extern "C" {
 #endif
 
         str_Copy((char *)Sym_getEntry(this)->name, sizeof(Sym_getEntry(this)->name), pValue);
-        len = utf8_StrLenA(pValue);
-        //FIXME: Sym_getEntry(this)->cName = len;
+        Sym_getEntry(this)->hash = str_HashAcmA(Sym_getEntry(this)->name, NULL);
 
         return true;
     }
@@ -1844,6 +1843,27 @@ extern "C" {
         
         // Return to caller.
         return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          H a s h
+    //---------------------------------------------------------------
+
+    uint32_t        Sym_Hash(
+        SYM_DATA        *this
+    )
+    {
+
+#ifdef NDEBUG
+#else
+        if( !Sym_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        return this->entry.hash;
     }
 
 

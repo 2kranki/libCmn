@@ -415,7 +415,7 @@ SYM_VTBL     Sym_Vtbl = {
         (P_OBJ_COMPARE)Sym_Compare,
         (P_OBJ_PTR)Sym_Copy,
         NULL, 			// (P_OBJ_PTR)Sym_DeepCopy,
-        NULL 			// (P_OBJ_HASH)Sym_Hash,
+        (P_OBJ_HASH)Sym_Hash,
     },
     // Put other object method names below this.
     // Properties:

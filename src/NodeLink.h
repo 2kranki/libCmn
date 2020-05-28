@@ -311,6 +311,11 @@ extern "C" {
     );
 
 
+    NODEBT_DATA *   NodeLink_getProperties(
+        NODELINK_DATA   *this
+    );
+
+
     bool            NodeLink_getRightChild(
         NODELINK_DATA   *this
     );
@@ -434,6 +439,31 @@ extern "C" {
     );
 
 
+    OBJ_ID          NodeLink_PropertyA (
+        NODELINK_DATA   *this,
+        const
+        char            *pName
+    );
+
+
+    ERESULT         NodeLink_PropertyAddA (
+        NODELINK_DATA   *this,
+        const
+        char            *pNameA,
+        OBJ_ID          pData
+    );
+
+
+    uint32_t        NodeLink_PropertyCount (
+        NODELINK_DATA   *this
+    );
+
+
+    NODEARRAY_DATA * NodeLink_Properties (
+        NODELINK_DATA   *this
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -447,7 +477,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *    NodeLink_ToDebugString (
-        NODELINK_DATA     *this,
+        NODELINK_DATA   *this,
         int             indent
     );
     

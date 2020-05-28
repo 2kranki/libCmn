@@ -574,8 +574,8 @@ extern "C" {
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
     ERESULT         Sym_Compare (
-        SYM_DATA     *this,
-        SYM_DATA     *pOther
+        SYM_DATA        *this,
+        SYM_DATA        *pOther
     );
 
 
@@ -590,10 +590,14 @@ extern "C" {
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SYM_DATA *     Sym_Copy (
-        SYM_DATA       *this
+    SYM_DATA *      Sym_Copy (
+        SYM_DATA        *this
     );
 
+
+    uint32_t        Sym_Hash(
+        SYM_DATA        *this
+    );
 
     SYM_DATA *      Sym_Init (
         SYM_DATA        *this
@@ -615,7 +619,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     Sym_ToJson (
-        SYM_DATA   *this
+        SYM_DATA        *this
     );
 #endif
 
@@ -632,8 +636,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    Sym_ToDebugString (
-        SYM_DATA     *this,
+    ASTR_DATA *     Sym_ToDebugString (
+        SYM_DATA        *this,
         int             indent
     );
     

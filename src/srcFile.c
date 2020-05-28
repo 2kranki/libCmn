@@ -116,6 +116,10 @@ extern "C" {
         SRCFILE_DATA    *this = OBJ_NIL;
         ERESULT         eRc;
         TOKEN_DATA      *pToken;
+
+        if (OBJ_NIL == pStr) {
+            return OBJ_NIL;
+        }
         
         this = srcFile_New( );
         if (this) {

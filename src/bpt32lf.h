@@ -12,7 +12,8 @@
  *          each node consists of a uint32_t key and fixed sized
  *          data. The size of the data is specified at block creation
  *          time.  The block is normally part of a doubly-linked
- *          list of leaf blocks for fast sequential access.
+ *          list of leaf blocks for fast sequential access. It is
+ *          used by the bpt32 object.
  *
  *          Note that the data size can vary according to require-
  *          ments, but is the same for all node entries once the

@@ -823,7 +823,7 @@ extern "C" {
         }
 #endif
         
-        fRc =   lex_setSourceFunction(
+        fRc =   lex_setSourceInput(
                         (LEX_DATA *)this,
                         pSrcChrAdvance,
                         pSrcChrLookAhead,
@@ -949,7 +949,7 @@ extern "C" {
 
         // Now chain them together using their source methods.
         if (this->pLex3 && this->pLex2) {
-            fRc =   lex_setSourceFunction(
+            fRc =   lex_setSourceInput(
                         this->pLex3,
                         (void *)lex_TokenAdvance,
                         (void *)lex_TokenLookAhead,
@@ -965,7 +965,7 @@ extern "C" {
                 this->pLex3 = OBJ_NIL;
                 return ERESULT_FAILURE;
             }
-            fRc =   lex_setSourceFunction(
+            fRc =   lex_setSourceInput(
                         (LEX_DATA *)this,
                         (void *)lex_TokenAdvance,
                         (void *)lex_TokenLookAhead,
@@ -982,7 +982,7 @@ extern "C" {
             }
         }
         if (this->pLex2 && this->pLex1) {
-            fRc =   lex_setSourceFunction(
+            fRc =   lex_setSourceInput(
                         this->pLex2,
                         (void *)lex_TokenAdvance,
                         (void *)lex_TokenLookAhead,
@@ -999,7 +999,7 @@ extern "C" {
             }
         }
         if (this->pLex2 && (this->pLex3 == OBJ_NIL)) {
-            fRc =   lex_setSourceFunction(
+            fRc =   lex_setSourceInput(
                         (LEX_DATA *)this,
                         (void *)lex_TokenAdvance,
                         (void *)lex_TokenLookAhead,
@@ -1039,6 +1039,10 @@ extern "C" {
         if( !pplex_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         
@@ -1138,6 +1142,14 @@ extern "C" {
         }
 #endif
 
+        if (this->pLex5) {
+            obj_Release(this->pLex5);
+            this->pLex5 = OBJ_NIL;
+        }
+        if (this->pLex4) {
+            obj_Release(this->pLex4);
+            this->pLex4 = OBJ_NIL;
+        }
         if (this->pLex3) {
             obj_Release(this->pLex3);
             this->pLex3 = OBJ_NIL;
@@ -1462,7 +1474,7 @@ extern "C" {
         
         // Now set the srcFile object as the lexer input.
         if (this->pLex1) {
-            fRc =   lex_setSourceFunction(
+            fRc =   lex_setSourceInput(
                                           this->pLex1,
                                           (void *)pSrcChrAdvance,
                                           (void *)pSrcChrLookAhead,
@@ -1470,7 +1482,7 @@ extern "C" {
                     );
         }
         else {
-            fRc =   lex_setSourceFunction(
+            fRc =   lex_setSourceInput(
                                           this->pLex2,
                                           (void *)pSrcChrAdvance,
                                           (void *)pSrcChrLookAhead,

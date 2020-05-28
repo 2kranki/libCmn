@@ -427,7 +427,7 @@ OBJ_INFO        Parser_Info = {
     "Parser",
     "Parser Base",
     (OBJ_DATA *)&Parser_ClassObj,
-    (OBJ_DATA *)&lex_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&Parser_Vtbl,
     sizeof(PARSER_DATA)
 };

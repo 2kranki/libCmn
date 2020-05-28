@@ -67,8 +67,8 @@ struct lex_data_s	{
 #define LEX_CHECKPOINT  OBJ_FLAG_USER2
 #define LEX_MULTICHRCON OBJ_FLAG_USER3
     // OBJ_FLAG_USER1-OBJ_FLAG_USER4 Reserved for Lex
-
-    ERESULT         eRc;
+    uint32_t        flags;
+    uint32_t        statuses;
     ERESULT_DATA    *pErrors;
 
     // Input Data/Routines
@@ -87,7 +87,7 @@ struct lex_data_s	{
     //      pParse parses the pInputs into the token passed or ignores the
     //      passed token and uses lex_ParseSetup() and lex_ParseFinish() to
     //      accumulate the token.
-    bool            (*pParser)(OBJ_ID, TOKEN_DATA *); // Lexical Parser
+    ERESULT         (*pParser)(OBJ_ID, TOKEN_DATA *); // Lexical Parser
     OBJ_ID          pParseObj;
     TOKEN_DATA      token;              // Next Output Token (output of pParser)
     W32STR_DATA     *pStr;              // String from accumulated tokens
@@ -106,12 +106,6 @@ struct lex_data_s	{
 
 
     // Internal Functions
-    bool            lex_setLastError(
-        LEX_DATA        *this,
-        ERESULT         value
-    );
-    
-    
     void            lex_Dealloc(
         OBJ_ID          objId
     );

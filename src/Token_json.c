@@ -2,7 +2,7 @@
 /*
  * File:   Token_json.c
  *
- *	Generated 01/02/2020 15:58:09
+ *  Generated 05/28/13 13:10:01
  *
  */
 
@@ -47,18 +47,20 @@
 #include    <stdlib.h>
 #include    <string.h>
 #include    <AStr_internal.h>
-#include    <dec_internal.h>
+#include    <dec.h>
 #include    <JsonIn.h>
+#include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeHash.h>
+#include    <SrcErrors.h>
 #include    <SrcLoc_internal.h>
 #include    <szTbl.h>
-#include    <utf8_internal.h>
+#include    <utf8.h>
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -72,80 +74,71 @@ extern "C" {
      ****************************************************************/
     
     /*!
-     Parse the new object from an established parser.
-     @param pParser an established jsonIn Parser Object
-     @return    a new object if successful, otherwise, OBJ_NIL
-     @warning   Returned object must be released.
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
      */
-    TOKEN_DATA * Token_ParseJsonObject(
-        JSONIN_DATA     *pParser
+    ERESULT     Token_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        TOKEN_DATA     *pObject
     )
     {
-        ERESULT         eRc;
-        TOKEN_DATA   *pObject = OBJ_NIL;
-        const
-        OBJ_INFO        *pInfo;
-        int64_t         intIn;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        //NODE_DATA       *pNode = OBJ_NIL;
+        //NODEARRAY_DATA  *pArray = OBJ_NIL;
+        //NODEHASH_DATA   *pHash = OBJ_NIL;
+        //uint32_t        i;
+        //uint32_t        iMax;
+        //int64_t         intIn;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        //uint8_t         *pData;
+        //uint32_t        len;
         SRCLOC_DATA     *pSrc = OBJ_NIL;
-        uint32_t        cls = 0;
-        uint32_t        type = 0;
-        int16_t         misc = 0;
-        uint8_t         *pUtf8;
-        int64_t         integer;
 
-        pInfo = obj_getInfo(Token_Class());
-        
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(stderr, "ERROR - objectType is invalid!\n");
-            goto exit00;
-        }
-
+        (void)JsonIn_FindU16NodeInHashA(pParser, "len", &pObject->data.len);
+        (void)JsonIn_FindI16NodeInHashA(pParser, "cls", &pObject->data.cls);
+        (void)JsonIn_FindI16NodeInHashA(pParser, "misc", &pObject->data.misc);
         eRc = JsonIn_SubObjectInHash(pParser, "loc");
-        pSrc = SrcLoc_ParseJsonObject(pParser);
-        JsonIn_SubObjectEnd(pParser);
-        if (OBJ_NIL == pSrc) {
-            goto exit00;
+        if (ERESULT_OK(eRc)) {
+            pSrc = SrcLoc_ParseJsonObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+            if (OBJ_NIL == pSrc) {
+                DEBUG_BREAK();
+                obj_Release(pSrc);
+                pSrc = OBJ_NIL;
+                return ERESULT_DATA_ERROR;
+            }
+            memmove(&pObject->data.src, SrcLoc_getSrc(pSrc), sizeof(SRCLOC));
+            obj_Release(pSrc);
+            pSrc = OBJ_NIL;
         }
 
-        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "class", &intIn);
-        cls = (uint32_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
-        misc = (uint16_t)intIn;
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "type", &intIn);
-        type = (uint32_t)intIn;
 
-        switch (type) {
+        (void)JsonIn_FindStringNodeInHashA(pParser, "type", &pWrk);
+        if (pWrk) {
+            pObject->data.type = Token_StringToType(pObject, AStr_getData(pWrk));
+        } else {
+            DEBUG_BREAK();
+            return ERESULT_DATA_ERROR;
+        }
+
+        switch (pObject->data.type) {
 
             case TOKEN_TYPE_INTEGER:
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseJsonObject(pParser);
-                pObject = Token_NewInteger(SrcLoc_getSrc(pSrc), cls, integer);
-                JsonIn_SubObjectEnd(pParser);
-                if (OBJ_NIL == pObject) {
-                    goto exit00;
-                }
+                (void)JsonIn_FindI64NodeInHashA(pParser, "data", &pObject->data.integer);
                 break;
 
             case TOKEN_TYPE_STRTOKEN:
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                pUtf8 = utf8_ParseJsonObject(pParser, NULL);
-                JsonIn_SubObjectEnd(pParser);
-                if (pUtf8) {
-                    pObject = Token_NewStrA(SrcLoc_getSrc(pSrc), cls, (char *)pUtf8);
-                    mem_Free(pUtf8);
-                    pUtf8 = NULL;
-                }
+                (void)JsonIn_FindAStrNodeInHashA(pParser, "data", &pWrk);
+                pObject->data.strToken = szTbl_StringToToken(OBJ_NIL, AStr_getData(pWrk));
                 break;
 
             case TOKEN_TYPE_W32CHAR:
-                eRc = JsonIn_SubObjectInHash(pParser, "data");
-                integer = dec_ParseJsonObject(pParser);
-                pObject = Token_NewCharW32(SrcLoc_getSrc(pSrc), cls, (W32CHR_T)integer);
-                JsonIn_SubObjectEnd(pParser);
-                if (OBJ_NIL == pObject) {
-                    goto exit00;
-                }
+                (void)JsonIn_FindI32NodeInHashA(pParser, "data", &pObject->data.w32chr[0]);
+                pObject->data.w32chr[1] = 0;
                 break;
 
             default:
@@ -155,7 +148,45 @@ extern "C" {
 
         // Return to caller.
     exit00:
-        obj_Release(pSrc);
+        return eRc;
+    }
+    
+    
+    
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    TOKEN_DATA * Token_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    )
+    {
+        ERESULT         eRc;
+        TOKEN_DATA   *pObject = OBJ_NIL;
+        const
+        OBJ_INFO        *pInfo;
+        //int64_t         intIn;
+        //ASTR_DATA       *pWrk;
+
+        pInfo = obj_getInfo(Token_Class());
+        
+        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            goto exit00;
+        }
+
+        pObject = Token_New( );
+        if (OBJ_NIL == pObject) {
+            goto exit00;
+        }
+        
+        eRc =  Token_ParseJsonFields(pParser, pObject);
+
+        // Return to caller.
+    exit00:
         return pObject;
     }
     
@@ -174,7 +205,7 @@ extern "C" {
     //===============================================================
     
 
-    TOKEN_DATA *   Token_NewFromJsonString(
+    TOKEN_DATA *   Token_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
@@ -185,6 +216,7 @@ extern "C" {
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
+            SrcErrors_Print(OBJ_NIL, stderr);
             goto exit00;
         }
         
@@ -201,16 +233,16 @@ extern "C" {
     
     
 
-    TOKEN_DATA * Token_NewFromJsonStringA(
+    TOKEN_DATA * Token_NewFromJsonStringA (
         const
-        char            *pString
+        char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
         TOKEN_DATA   *pObject = OBJ_NIL;
         
-        if (pString) {
-            pStr = AStr_NewA(pString);
+        if (pStringA) {
+            pStr = AStr_NewA(pStringA);
             pObject = Token_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -235,18 +267,14 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Token_ToJson(
+    ASTR_DATA *     Token_ToJson (
         TOKEN_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-        ASTR_DATA       *pWrkStr;
-        SRCLOC_DATA     *pSrc = OBJ_NIL;
-        W32CHR_T        w32;
-        const
-        char            *pConStr;
+        ERESULT         eRc;
 
 #ifdef NDEBUG
 #else
@@ -259,91 +287,12 @@ extern "C" {
         
         pStr = AStr_New();
         if (pStr) {
-            AStr_AppendPrint(pStr,
-                             "{\"objectType\":\"%s\", \"class\":%d, ",
-                             pInfo->pClassName,
-                             this->data.cls
-            );
-            pSrc = SrcLoc_NewSrcLoc(&this->data.src);
-            if (pSrc) {
-                pWrkStr = SrcLoc_ToJson(pSrc);
-                if (pWrkStr) {
-                    AStr_AppendPrint(pStr, "\"loc\":%s, ", AStr_getData(pWrkStr));
-                    obj_Release(pWrkStr);
-                    pWrkStr = OBJ_NIL;
-                }
-                obj_Release(pSrc);
-                pSrc = OBJ_NIL;
-            }
-            AStr_AppendPrint(pStr, "\"misc\":%d, ", Token_getMisc(this));
-
-            switch (this->data.type) {
-
-                case TOKEN_TYPE_UNKNOWN:
-                    AStr_AppendPrint(
-                                     pStr,
-                                     "\"type\":%d /*TOKEN_TYPE_UNKNOWN*/ ",
-                                     TOKEN_TYPE_UNKNOWN
-                    );
-                    break;
-
-                case TOKEN_TYPE_CHAR:
-                case TOKEN_TYPE_W32CHAR:
-                    w32 = Token_getChrW32(this);
-                    AStr_AppendPrint(
-                                     pStr,
-                                     "\"type\":%d /*TOKEN_TYPE_W32CHAR*/, \"data\":",
-                                     TOKEN_TYPE_W32CHAR
-                    );
-                    pWrkStr = dec_UInt64ToJson(w32);
-                    if (pWrkStr) {
-                        AStr_Append(pStr, pWrkStr);
-                        obj_Release(pWrkStr);
-                        pWrkStr = OBJ_NIL;
-                    }
-                    break;
-
-                case TOKEN_TYPE_INTEGER:
-                    AStr_AppendPrint(
-                                     pStr,
-                                     "\"type\":%d /*TOKEN_TYPE_INTEGER*/, \"data\":",
-                                     TOKEN_TYPE_INTEGER
-                    );
-                    pWrkStr = dec_UInt64ToJson(this->data.integer);
-                    if (pWrkStr) {
-                        AStr_Append(pStr, pWrkStr);
-                        obj_Release(pWrkStr);
-                        pWrkStr = OBJ_NIL;
-                    }
-                    break;
-
-                case TOKEN_TYPE_STRTOKEN:
-                    pConStr = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
-                    if (pConStr) {
-                        AStr_AppendPrint(
-                                     pStr,
-                                     "\"type\":%d /*TOKEN_TYPE_STRTOKEN*/, \"data\":",
-                                     TOKEN_TYPE_STRTOKEN
-                        );
-                        pWrkStr = utf8_DataToJson(pConStr);
-                        AStr_Append(pStr, pWrkStr);
-                        obj_Release(pWrkStr);
-                        pWrkStr = OBJ_NIL;
-                    }
-                    else {
-                        DEBUG_BREAK();
-                        obj_Release(pStr);
-                        pStr = OBJ_NIL;
-                    }
-                    break;
-
-                default:
-                    DEBUG_BREAK();
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                    break;
-
-            }
+             AStr_AppendPrint(pStr,
+                              "{ \"objectType\":\"%s\",\n",
+                              pInfo->pClassName
+             );
+     
+            eRc = Token_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -352,10 +301,88 @@ extern "C" {
     }
     
     
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Token_ToJsonFields (
+        TOKEN_DATA     *this,
+        ASTR_DATA       *pStr
+    )
+    {
+#ifdef XYZZZY 
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+#endif
+        SRCLOC_DATA     *pSrc = OBJ_NIL;
+        ASTR_DATA       *pWrkStr;
+        const
+        char            *pType;
+
+        JsonOut_Append_u16("len", this->data.len, pStr);
+        pType = Token_TypeToString(this, this->data.type);
+        if (pType) {
+            AStr_AppendPrint(pStr, "\t\"type\":\"%s\",\n", pType);
+        }
+        pSrc = SrcLoc_NewSrcLoc(&this->data.src);
+        if (pSrc) {
+            pWrkStr = SrcLoc_ToJson(pSrc);
+            if (pWrkStr) {
+                AStr_AppendPrint(pStr, "\t\"loc\":%s,\n", AStr_getData(pWrkStr));
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+            }
+            obj_Release(pSrc);
+            pSrc = OBJ_NIL;
+        }
+        JsonOut_Append_i16("cls", this->data.cls, pStr);
+        JsonOut_Append_i16("misc", this->data.misc, pStr);
+
+        switch (this->data.type) {
+            case TOKEN_TYPE_UNKNOWN:
+                break;
+            case TOKEN_TYPE_CHAR:
+            case TOKEN_TYPE_W32CHAR:
+                JsonOut_Append_i32("data", this->data.w32chr[0], pStr);
+                break;
+            case TOKEN_TYPE_INTEGER:
+                JsonOut_Append_i64("data", this->data.w32chr[0], pStr);
+                break;
+            case TOKEN_TYPE_STRTOKEN:
+                pType = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
+                if (pType) {
+                    AStr_AppendPrint(pStr, "\t\"data\": %s,\n", pType);
+                }
+                else {
+                    DEBUG_BREAK();
+                    return ERESULT_DATA_ERROR;
+                }
+                break;
+            default:
+                DEBUG_BREAK();
+                return ERESULT_DATA_ERROR;
+                break;
+        }
+
+        return ERESULT_SUCCESS;
+    }
     
     
     
-#ifdef	__cplusplus
+    
+    
+#ifdef  __cplusplus
 }
 #endif
 

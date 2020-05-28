@@ -402,7 +402,7 @@ TINYTEST_START_SUITE(test_Number);
     TINYTEST_ADD_TEST(test_Number_Test03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Number_Test02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Number_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_Number_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Number_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Number_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

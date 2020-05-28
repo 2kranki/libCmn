@@ -549,6 +549,9 @@ extern "C" {
                         node is visited
      @return    If success, ERESULT_SUCCESS. Otherwise an ERESULT_*
                 error code.
+     @warning   This routine uses the Misc1 field in the object. So, it
+                should not be used for anyuthing if this traversal is
+                used.
      */
     ERESULT         NodeTree_VisitBreadthFirst(
         NODETREE_DATA    *this,
@@ -597,7 +600,7 @@ extern "C" {
                                    OBJ_ID,             // Object supplied below
                                    NODETREE_DATA *,    // Our Tree
                                    NODELINK_DATA *,    // Current Node
-                                   uint16_t            // Indent level * 4
+                                   uint16_t            // Indent level
                                   ),
         OBJ_ID          pObject
     );

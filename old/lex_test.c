@@ -294,7 +294,7 @@ int         test_lex_Number01(
             if (pLex) {
                 
                 obj_TraceSet(pLex, true);
-                fRc =   lex_setSourceFunction(
+                fRc =   lex_setSourceInput(
                             pLex,
                             (void *)srcFile_InputAdvance,
                             (void *)srcFile_InputLookAhead,
@@ -359,7 +359,7 @@ int         test_lex_Number02(
             if (pLex) {
                 
                 obj_TraceSet(pLex, true);
-                fRc =   lex_setSourceFunction(
+                fRc =   lex_setSourceInput(
                                               pLex,
                                               (void *)srcFile_InputAdvance,
                                               (void *)srcFile_InputLookAhead,
@@ -423,7 +423,7 @@ int         test_lex_Number03(
             if (pLex) {
                 
                 obj_TraceSet(pLex, true);
-                fRc =   lex_setSourceFunction(
+                fRc =   lex_setSourceInput(
                                               pLex,
                                               (void *)srcFile_InputAdvance,
                                               (void *)srcFile_InputLookAhead,
@@ -487,7 +487,7 @@ int         test_lex_Number04(
             if (pLex) {
 
                 obj_TraceSet(pLex, true);
-                fRc =   lex_setSourceFunction(
+                fRc =   lex_setSourceInput(
                                               pLex,
                                               (void *)srcFile_InputAdvance,
                                               (void *)srcFile_InputLookAhead,
@@ -743,7 +743,7 @@ int         test_lex_Strings04(
             if (pLex) {
                 
                 obj_TraceSet(pLex, true);
-                fRc =   lex_setSourceFunction(
+                fRc =   lex_setSourceInput(
                                               pLex,
                                               (void *)srcFile_InputAdvance,
                                               (void *)srcFile_InputLookAhead,

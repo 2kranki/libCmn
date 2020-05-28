@@ -876,6 +876,15 @@ extern "C" {
                     break;
                     
                 case '(':           /*** '(' ***/
+                    pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj,2);
+                    cls = Token_getClass(pInput);
+                    if( ':' == cls) {
+                        newCls = PPLEX_SPCL_PAREN_LEFT;
+                        lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                        lex_InputAdvance((LEX_DATA *)this, 2);
+                        fMore = false;
+                        break;
+                    }
                     newCls = PPLEX_SEP_LPAREN;
                     ((LEX_DATA *)this)->pSrcChrAdvance(((LEX_DATA *)this)->pSrcObj, 1);
                     fMore = false;
@@ -1067,6 +1076,20 @@ extern "C" {
                         fMore = false;
                         break;
                     }
+                    if( ')' == cls) {
+                        newCls = PPLEX_SPCL_PAREN_RIGHT;
+                        lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                        lex_InputAdvance((LEX_DATA *)this, 2);
+                        fMore = false;
+                        break;
+                    }
+                    if( '>' == cls) {
+                        newCls = PPLEX_SPCL_COLON_RIGHT;
+                        lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                        lex_InputAdvance((LEX_DATA *)this, 2);
+                        fMore = false;
+                        break;
+                    }
                     newCls = PPLEX_SPCL_COLON;
                     lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
@@ -1126,6 +1149,13 @@ extern "C" {
                             }
                         }
                         newCls = PPLEX_SEP_LT_DOT;
+                        lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                        lex_InputAdvance((LEX_DATA *)this, 2);
+                        fMore = false;
+                        break;
+                    }
+                    if( ':' == cls) {
+                        newCls = PPLEX_SPCL_COLON_LEFT;
                         lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
                         lex_InputAdvance((LEX_DATA *)this, 2);
                         fMore = false;

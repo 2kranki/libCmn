@@ -43,6 +43,7 @@
 #include        <JsonIn.h>
 #include        <lex_internal.h>
 #include        <ObjArray.h>
+#include        <pplex.h>
 #include        <SrcErrors.h>
 
 
@@ -75,6 +76,7 @@ struct Parser_data_s	{
     #define PARSER_INIT_DONE    OBJ_FLAG_USER1
 
     // Common Data
+    LEX_DATA        *pLex;
     COMPILER_DATA   *pCompiler;
     SRCERRORS_DATA  *pErrors;
     OBJ_ID          pAux1;
@@ -113,7 +115,7 @@ struct Parser_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  PARSER_SINGLETON
-    PARSER_DATA *     Parser_getSingleton (
+    PARSER_DATA *   Parser_getSingleton (
         void
     );
 

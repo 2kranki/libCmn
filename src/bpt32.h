@@ -8,7 +8,8 @@
  *			B-Plus 32-Bit Tree (bpt32)
  * Purpose
  *			This object provides support for a B-Plus Tree which
- *          has 32-bit integer keys.
+ *          has 32-bit integer keys. It uses bpt32idx (index blocks)
+ *          and bpt32lf (leaf blocks) as well.
  *
  * Remarks
  *	1.      None

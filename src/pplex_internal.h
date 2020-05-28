@@ -66,6 +66,8 @@ struct pplex_data_s	{
     LEX_DATA        *pLex1;
     LEX_DATA        *pLex2;
     LEX_DATA        *pLex3;
+    LEX_DATA        *pLex4;
+    LEX_DATA        *pLex5;
     SRCFILE_DATA    *pSrc;
     uint16_t        lang;
     uint16_t        k;

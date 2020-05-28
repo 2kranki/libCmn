@@ -15,7 +15,8 @@
  *          a special index, P0, which points to the child block of
  *          keys less than the key in the first node entry.  The
  *          rest of the fields in the block are for management of
- *          the nodes and block identification purposes.
+ *          the nodes and block identification purposes.  It is used
+ *          by bpt32 objects.
  *
  *          Note that the nodes in this block are of fixed size
  *          whereas the nodes in a leaf block vary in size according

@@ -91,23 +91,24 @@ extern "C" {
     } PPLEX_VTBL;
     
 
+    // Use uint32_t for these options.
     typedef enum pplex_lang_e {
         PPLEX_LANG_UNKNOWN=0,
-        PPLEX_LANG_ASM      = 0x8000,           // Base Assembler Keywords
-        PPLEX_LANG_ASM86    = 0x4000,           // Intel 8x86 Assembler Keywords Extension
-        PPLEX_LANG_ASM360   = 0x2000,           // IBM 360 Assembler Keywords Extension
-        PPLEX_LANG_C        = 0x1000,           // Base C Keywords
-        PPLEX_LANG_CPP      = 0x0800,           // C++ Keywords Extension of C
-        PPLEX_LANG_LL1      = 0x0400,
-        PPLEX_LANG_MSC      = 0x0200,           // Microsoft C Extensions of C
-        PPLEX_LANG_OBJC     = 0x0100,           // Obj-C Keywords Extension of C
-        PPLEX_LANG_OOBJ     = 0x0080,           // Our Object Keywords Extension of C
+        PPLEX_LANG_ASM      = 0x80000000,       // Base Assembler
+        PPLEX_LANG_ASM86    = 0x40000000,       // -- Intel 8x86 Assembler Extension
+        PPLEX_LANG_ASM360   = 0x20000000,       // -- IBM 360 Assembler Keywords Extension
+        PPLEX_LANG_C        = 0x00800000,       // Base C Language
+        PPLEX_LANG_MSC      = 0x00400000,       // -- Microsoft C Extensions of C
+        PPLEX_LANG_CPP      = 0x00200000,       // -- C++ Keywords Extension of C
+        PPLEX_LANG_OBJC     = 0x00100000,       // -- Obj-C Keywords Extension
+        PPLEX_LANG_OOBJ     = 0x00080000,       // -- Our Object Keywords Extension
+        PPLEX_LANG_LL1      = 0x00010000,       // -- LL1 Extension
     } PPLEX_LANG;
     
     
     typedef struct pplex_kwdtbl_entry_s {
         int32_t     value;                    /* Lexical Scan Value */
-        uint16_t    flags;                    /* Flags */
+        uint32_t    flags;                    /* Flags */
         char        *pKwd;                    /* Key Word */
     } PPLEX_KWDTBL_ENTRY;
 
@@ -223,6 +224,7 @@ extern "C" {
         PPLEX_KWD_AT_THROW,                 // OBJC
         PPLEX_KWD_AT_TRY,                   // OBJC
         PPLEX_KWD_AUTO,
+        PPLEX_KWD_BOOL,
         PPLEX_KWD_BREAK,
         PPLEX_KWD_BYCOPY,
         PPLEX_KWD_BYREF,
@@ -263,6 +265,7 @@ extern "C" {
         PPLEX_KWD_ID,
         PPLEX_KWD_IF,
         PPLEX_KWD_IN,
+        PPLEX_KWD_INLINE,
         PPLEX_KWD_INOUT,
         PPLEX_KWD_INT,
         PPLEX_KWD_INT8,
@@ -329,11 +332,19 @@ extern "C" {
         PPLEX_KWD_WXTRN,                    // ASM
 
         PPLEX_CLASS_SPCL_GROUP=LEX_CLASS_SPCL_GROUP,
+        PPLEX_SPCL_BRACK_COLON,             // [:
+        PPLEX_SPCL_CURL_COLON,              // {:
         PPLEX_SPCL_AT_LBRACK,               // @[
         PPLEX_SPCL_AT_LCURL,                // @{
         PPLEX_SPCL_AT_LPAREN,               // @(
+        PPLEX_SPCL_PAREN_LEFT,              // (:
+        PPLEX_SPCL_PAREN_RIGHT,             // :)
         PPLEX_SPCL_COLON,                   // :
+        PPLEX_SPCL_COLON_BRACK,             // :]
+        PPLEX_SPCL_COLON_CURL,              // :}
         PPLEX_SPCL_DBLCOLON,                // ::
+        PPLEX_SPCL_COLON_LEFT,              // <:
+        PPLEX_SPCL_COLON_RIGHT,             // :>
         PPLEX_SPCL_LBRACK,                  // %[
         PPLEX_SPCL_LCURL,                   // %{
         PPLEX_SPCL_LPAREN,                  // %(
@@ -504,8 +515,8 @@ extern "C" {
     /*!
      Create and chain pplex1..pplex3.
      @param     this        PPLEX Object Pointer
-     @param     fLex3       true == create and chain a pplex3
      @param     fLex1       true == create and chain a pplex1
+     @param     fLex3       true == create and chain a pplex3
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error.
      */

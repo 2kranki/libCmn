@@ -2606,7 +2606,7 @@ extern "C" {
             OBJ_ID          ,               // Object supplied below
             NODETREE_DATA   *,              // Our Tree
             NODELINK_DATA   *,              // Current Node
-            uint16_t                        // Indent level * 4
+            uint16_t                        // Indent level
         ),
         OBJ_ID          pObject
     )

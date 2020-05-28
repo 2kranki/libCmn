@@ -137,7 +137,7 @@ int         test_pplex_Input01(
 
         pplex_setReturnNL((PPLEX_DATA *)pLex, true);
         pplex_setReturnWS((PPLEX_DATA *)pLex, true);
-        
+	//                                           pplex1 pplex3 
         eRc = pplex_CreateLexers((PPLEX_DATA *)pLex, false, true);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         

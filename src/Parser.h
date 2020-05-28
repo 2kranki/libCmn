@@ -187,8 +187,18 @@ extern "C" {
     );
 
 
+    /*! Lexer property which is separate from the
+        source methods.  If you use this property,
+        you will probably want to set it up as the
+        source functions/object as well.
+    */
     LEX_DATA *      Parser_getLex (
         PARSER_DATA     *this
+    );
+
+    bool            Parser_setLex (
+        PARSER_DATA     *this,
+        LEX_DATA        *pValue
     );
 
 
@@ -228,8 +238,6 @@ extern "C" {
 
 
 
-
-    
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -369,6 +377,32 @@ extern "C" {
     );
     
     
+    /*!
+     Set up a pplex object as the lexer.
+     @param     this    object pointer
+     @param     pPath   optional path object pointer (used for error messages)
+     @param     pStr    AStr object pointer for input to parse
+     @param     fLex1   Add a pplex1 to the lexical chain
+     @param     fLex3   Add a pplex3 to the lexical chain
+     @param     fNL     true == pass NL lexical tokens to the parser
+     @param     fWS     true == pass White-space tokens (other than NL) to the parser
+     @param     tabSize define the tab-size for the lexical string so that column
+                        numbers are accurate
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Parser_SetupPPLexFromAStr (
+        PARSER_DATA     *this,
+        PATH_DATA       *pPath,
+        ASTR_DATA       *pStr,
+        bool            fLex1,
+        bool            fLex3,
+        bool            fNL,
+        bool            fWS,
+        uint16_t        tabSize
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

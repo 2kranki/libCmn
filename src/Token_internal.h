@@ -59,32 +59,6 @@ extern "C" {
 
 
 
-    // The TOKEN data contains all the information for a token. It is a fixed
-    // length which facilitates it being used in arrays of data. If you want
-    // to store variable length data such as character strings, then you MUST
-    // use a mechanism such as the global/shared string table.  All data within
-    // this struct must be only primitive types that can be written to or read
-    // from disk files.
-
-#pragma pack(push, 1)
-    typedef struct Token_s    {
-        uint16_t        len;                // Character/Token Length (Optional)
-        uint16_t        type;               // Type in union below
-        SRCLOC          src;
-        int16_t         cls;                // Character/Token Class (Optional)
-        int16_t         misc;
-        union {
-            char            chr[8];
-            double          flt;
-            int64_t         integer;            // Integer
-            uint32_t        strToken;           // String Index Token
-            W32CHR_T        w32chr[2];          // Unicode Character followed by NUL
-        };
-        // Do NOT declare any variables here, put them above the union.
-    } TOKEN;
-#pragma pack(pop)
-
-
 
     //---------------------------------------------------------------
     //                  Object Data Description
@@ -98,7 +72,7 @@ struct Token_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    TOKEN           data;
+    TOKEN_FIELDS    data;
 
 };
 #pragma pack(pop)
@@ -149,10 +123,33 @@ struct Token_data_s	{
 
 
 #ifdef  TOKEN_JSON_SUPPORT
-    TOKEN_DATA *    Token_ParseJsonObject (
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    TOKEN_DATA *       Token_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
+
+
+    /*!
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Token_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        TOKEN_DATA     *pObject
+    );
 #endif
+
+
 
 
     void *          Token_QueryInfo (
@@ -197,13 +194,52 @@ struct Token_data_s	{
     );
 
 
+    uint16_t     Token_StringToType (
+        TOKEN_DATA      *this,
+        const
+        char            *pType
+    );
+
+
 #ifdef  TOKEN_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Token_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
     ASTR_DATA *     Token_ToJson (
         TOKEN_DATA      *this
+    );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Token_ToJsonFields (
+        TOKEN_DATA     *this,
+        ASTR_DATA       *pStr
     );
 #endif
 
 
+    const
+    char *     Token_TypeToString (
+        TOKEN_DATA      *this,
+        uint16_t        type
+    );
 
 
 #ifdef NDEBUG
