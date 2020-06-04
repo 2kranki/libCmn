@@ -51,7 +51,7 @@
 
 
 #include        <cmn_defs.h>
-#include        <lex.h>
+#include        <Lex.h>
 #include        <Node.h>
 #include        <ObjArray.h>
 #include        <Path.h>

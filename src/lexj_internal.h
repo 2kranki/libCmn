@@ -40,7 +40,7 @@
 
 
 #include    <lexj.h>
-#include    <lex_internal.h>
+#include    <Lex_internal.h>
 #include    <srcFile.h>
 
 

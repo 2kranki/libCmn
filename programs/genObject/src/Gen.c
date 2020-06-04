@@ -1364,7 +1364,7 @@ extern "C" {
                        "%2.2d/%2.2d/%2.2d",
                        now->tm_mon+1,
                        now->tm_mday,
-                       now->tm_hour
+                       now->tm_year+1900
         );
         pStr = AStr_NewA(str);
         if (pStr) {

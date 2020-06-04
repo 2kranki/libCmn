@@ -156,13 +156,14 @@ extern "C" {
     // If you must transfer the data between machines, use the JSON format of
     // this data.
 
+    // Token_fields_s size must be a multiple of 8.
 #pragma pack(push, 1)
     typedef struct Token_fields_s    {
         uint16_t        len;                // Character/Token Length (Optional)
-        uint16_t        type;               // Type in union below
-        SRCLOC          src;
+        uint16_t        type;               // Type in enum above
         int16_t         cls;                // Character/Token Class (Optional)
         int16_t         misc;
+        SRCLOC          src;
         union {
             char            chr[8];
             double          flt;

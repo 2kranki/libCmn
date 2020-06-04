@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include <lexj_internal.h>
+#include <ascii.h>
 #include <SrcErrors.h>
 #include <trace.h>
 #include <W32Str.h>
@@ -85,7 +86,7 @@ extern "C" {
 #endif
         
         for (;;) {
-            pInput = lex_InputAdvance((LEX_DATA *)this, 1);
+            pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
             cls = Token_getClass(pInput);
             if ((cls == ':') || (cls == ',')
                 || (cls == '{') || (cls == '}')
@@ -94,7 +95,7 @@ extern "C" {
                 break;
             }
             else {
-                lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
             }
         }
         
@@ -603,7 +604,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)lex_Init((LEX_DATA *)this, 4);    // Needed for Inheritance
+        this = (OBJ_ID)Lex_Init((LEX_DATA *)this);    // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_LEXJ);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -618,7 +619,7 @@ extern "C" {
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = ObjArray_New( );
 
-        fRc =   lex_setParserFunction(
+        fRc =   Lex_setParserFunction(
                             (LEX_DATA *)this,
                             (void *)lexj_ParseTokenJson,
                             this
@@ -675,7 +676,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        fRc =   lex_setSourceInput(
+        fRc =   Lex_setSourceInput(
                     (LEX_DATA *)this,
                     (void *)srcFile_InputAdvance,
                     (void *)srcFile_InputLookAhead,
@@ -732,7 +733,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        fRc =   lex_setSourceInput(
+        fRc =   Lex_setSourceInput(
                     (LEX_DATA *)this,
                     (void *)srcFile_InputAdvance,
                     (void *)srcFile_InputLookAhead,
@@ -789,7 +790,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        fRc =   lex_setSourceInput(
+        fRc =   Lex_setSourceInput(
                                       (LEX_DATA *)this,
                                       (void *)srcFile_InputAdvance,
                                       (void *)srcFile_InputLookAhead,
@@ -927,16 +928,16 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
         
         while (fMore) {
-            pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
+            pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
             if (pInput) {
                 cls = Token_getClass(pInput);
             }
             else {
-                pInput = lex_ParseEOF(((LEX_DATA *)this));
+                pInput = Lex_ParseEOF(((LEX_DATA *)this));
                 cls = Token_getClass(pInput);
                 DEBUG_BREAK();
             }
-            eRc = lex_ParseTokenSetup(((LEX_DATA *)this), pInput);
+            eRc = Lex_ParseTokenSetup(((LEX_DATA *)this), pInput);
             if (cls == EOF) {
                 fSaveStr = false;
                 newCls = LEX_CLASS_EOF;
@@ -947,7 +948,7 @@ extern "C" {
                     
                 case ASCII_LEXICAL_WHITESPACE:
                     for (;;) {
-                        pInput = lex_InputAdvance((LEX_DATA *)this, 1);
+                        pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
                         cls = Token_getClass(pInput);
                         if (cls == ASCII_LEXICAL_WHITESPACE) {
                         }
@@ -959,7 +960,7 @@ extern "C" {
                     
                 case ASCII_LEXICAL_EOL:
                     for (;;) {
-                        pInput = lex_InputAdvance((LEX_DATA *)this, 1);
+                        pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
                         cls = Token_getClass(pInput);
                         if (cls == ASCII_LEXICAL_WHITESPACE) {
                         }
@@ -1010,10 +1011,10 @@ extern "C" {
                     
                 case ASCII_LEXICAL_NUMBER:
                 parseNumber:
-                    newCls = lex_ParseNumber((LEX_DATA *)this);
+                    newCls = Lex_ParseNumber((LEX_DATA *)this);
                     if (newCls) {
                         uint16_t            type;
-                        type = lex_ParseIntegerSuffix((LEX_DATA *)this);
+                        type = Lex_ParseIntegerSuffix((LEX_DATA *)this);
                         Token_setMisc(&this->super.token, type);
                     }
                     TRC_OBJ(
@@ -1027,14 +1028,14 @@ extern "C" {
                 case '"':           /*** '"' ***/
                     // Quoted String
                     //TODO: "..." {<white-space> "..."}
-                    lex_InputAdvance((LEX_DATA *)this, 1);
-                    lex_ParseTokenTruncate((LEX_DATA *)this);
-                    while(lex_ParseChrConWS((LEX_DATA *)this, '"'))
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    Lex_ParseTokenTruncate((LEX_DATA *)this);
+                    while(Lex_ParseChrConWS((LEX_DATA *)this, '"'))
                         ;
-                    pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
+                    pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
                     cls = Token_getClass(pInput);
                     if (cls == '"') {
-                        lex_InputAdvance((LEX_DATA *)this, 1);
+                        Lex_InputAdvance((LEX_DATA *)this, 1);
                         newCls = LEX_CONSTANT_STRING;
                         fMore = false;
                         TRC_OBJ(
@@ -1056,7 +1057,7 @@ extern "C" {
                 case '#':           /*** '#' ***/
                     // Comment
                     for (;;) {
-                        pInput = lex_InputAdvance((LEX_DATA *)this, 1);
+                        pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
                         cls = Token_getClass(pInput);
                         if (cls == ASCII_LEXICAL_EOL) {
                             break;
@@ -1066,36 +1067,36 @@ extern "C" {
                     
                 case '+':           /*** '+' ***/
                     newCls = LEXJ_SEP_PLUS;
-                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: +\n");
                     break;
                     
                 case ',':           /*** ',' ***/
                     newCls = LEXJ_SEP_COMMA;
-                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: ,\n");
                     break;
                     
                 case '-':           /*** '-' ***/
                     newCls = LEXJ_SEP_MINUS;
-                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: -\n");
                     break;
                     
                 case '/':           /*** '/' ***/
-                    pInput = lex_InputLookAhead((LEX_DATA *)this, 2);
+                    pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
                     cls = Token_getClass(pInput);
                     if( '/' == cls) {
                         // Single Line Comment - // ... <eol>
-                        lex_InputAdvance((LEX_DATA *)this, 2);
+                        Lex_InputAdvance((LEX_DATA *)this, 2);
                         for (;;) {
-                            pInput = lex_InputAdvance((LEX_DATA *)this, 1);
+                            pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
                             cls = Token_getClass(pInput);
                             if (cls == ASCII_LEXICAL_EOL) {
-                                lex_InputAdvance((LEX_DATA *)this, 1); // Skip over '\n'.
+                                Lex_InputAdvance((LEX_DATA *)this, 1); // Skip over '\n'.
                                 break;
                             }
                         }
@@ -1105,15 +1106,15 @@ extern "C" {
                         uint32_t        depth = 1;
                         bool            fMore2 = true;
                         // Multi-line comment - /* ... */
-                        pInput = lex_InputAdvance((LEX_DATA *)this, 2);
+                        pInput = Lex_InputAdvance((LEX_DATA *)this, 2);
                         while (fMore2) {
-                            pInput = lex_InputLookAhead((LEX_DATA *)this, 1);
+                            pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
                             cls = Token_getClass(pInput);
                             if (cls == '*') {
-                                pInput = lex_InputLookAhead((LEX_DATA *)this, 2);
+                                pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
                                 cls = Token_getClass(pInput);
                                 if (cls == '/') {
-                                    lex_InputAdvance((LEX_DATA *)this, 2);
+                                    Lex_InputAdvance((LEX_DATA *)this, 2);
                                     --depth;
                                     if (0 == depth) {
                                         fMore2 = false;
@@ -1122,10 +1123,10 @@ extern "C" {
                                 }
                             }
                             if (cls == '/') {
-                                pInput = lex_InputLookAhead((LEX_DATA *)this, 2);
+                                pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
                                 cls = Token_getClass(pInput);
                                 if (cls == '*') {
-                                    lex_InputAdvance((LEX_DATA *)this, 2);
+                                    Lex_InputAdvance((LEX_DATA *)this, 2);
                                     ++depth;
                                     continue;
                                 }
@@ -1137,7 +1138,7 @@ extern "C" {
                                     "Unexpected EOF within a Comment"
                                 );
                             }
-                            lex_InputAdvance((LEX_DATA *)this, 1);
+                            Lex_InputAdvance((LEX_DATA *)this, 1);
                         }
                         break;
                     }
@@ -1148,35 +1149,35 @@ extern "C" {
                     
                 case ':':           /*** ':' ***/
                     newCls = LEXJ_SEP_COLON;
-                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: :\n");
                     break;
                     
                 case '[':           /*** '[' ***/
                     newCls = LEXJ_SEP_LBRACKET;
-                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: [\n");
                     break;
                     
                 case ']':           /*** ']' ***/
                     newCls = LEXJ_SEP_RBRACKET;
-                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: ]\n");
                     break;
                     
                 case '{':           /*** '{' ***/
                     newCls = LEXJ_SEP_LBRACE;
-                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: {\n");
                     break;
                     
                 case '}':           /*** '}' ***/
                     newCls = LEXJ_SEP_RBRACE;
-                    lex_InputAdvance((LEX_DATA *)this, 1);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: }\n");
                     break;
@@ -1196,7 +1197,7 @@ extern "C" {
         }
         
         // Return to caller.
-        eRc = lex_ParseTokenFinalize((LEX_DATA *)this, newCls, fSaveStr);
+        eRc = Lex_ParseTokenFinalize((LEX_DATA *)this, newCls, fSaveStr);
         BREAK_FALSE(ERESULT_IS_SUCCESSFUL(eRc));
         return true;
     }
@@ -1284,7 +1285,7 @@ extern "C" {
         }
 #endif
         
-        pToken = lex_TokenAdvance((LEX_DATA *)this, numChrs);
+        pToken = Lex_TokenAdvance((LEX_DATA *)this, numChrs);
         
         return pToken;
     }
@@ -1311,7 +1312,7 @@ extern "C" {
         }
 #endif
         
-        pToken = lex_TokenLookAhead((LEX_DATA *)this, num);
+        pToken = Lex_TokenLookAhead((LEX_DATA *)this, num);
         
         // Return to caller.
         return pToken;
@@ -1335,7 +1336,7 @@ extern "C" {
         
         // Do initialization.
         
-        eRc = lex_TokenPush((LEX_DATA *)this, pToken);
+        eRc = Lex_TokenPush((LEX_DATA *)this, pToken);
         
         // Return to caller.
         return eRc;

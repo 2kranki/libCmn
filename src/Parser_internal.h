@@ -41,9 +41,8 @@
 
 #include        <Parser.h>
 #include        <JsonIn.h>
-#include        <lex_internal.h>
+#include        <Lex_internal.h>
 #include        <ObjArray.h>
-#include        <pplex.h>
 #include        <SrcErrors.h>
 
 

@@ -53,7 +53,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Compiler.h>
-#include        <lex.h>
+#include        <Lex.h>
 #include        <Node.h>
 #include        <NodeArray.h>
 #include        <SrcLoc.h>

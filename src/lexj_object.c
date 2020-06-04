@@ -210,7 +210,7 @@ OBJ_INFO        lexj_Info = {
     "lexj",
     "lexical scanner for HJSON",
     (OBJ_DATA *)&lexj_ClassObj,
-    (OBJ_DATA *)&lex_ClassObj,
+    (OBJ_DATA *)&Lex_ClassObj,
     (OBJ_IUNKNOWN *)&lexj_Vtbl
 };
 

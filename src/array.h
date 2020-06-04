@@ -120,8 +120,8 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint8_t *        array_getData(
-        ARRAY_DATA     *this
+    uint8_t *       array_getData(
+        ARRAY_DATA      *this
     );
     
     
@@ -135,7 +135,7 @@ extern "C" {
      used by this object.
      */
     uint32_t        array_getMisc(
-        ARRAY_DATA     *this
+        ARRAY_DATA      *this
     );
     
     bool            array_setMisc(
@@ -220,8 +220,8 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned the ARRAY object.
      */
-    ARRAY_DATA *     array_Copy(
-        ARRAY_DATA       *this
+    ARRAY_DATA *    array_Copy(
+        ARRAY_DATA      *this
     );
     
     

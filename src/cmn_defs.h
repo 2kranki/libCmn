@@ -193,26 +193,17 @@ extern "C" {
         OBJ_IDENT_BPT32LF_CLASS,
         OBJ_IDENT_BPT32,                // B-Plus 32-Bit Tree
         OBJ_IDENT_BPT32_CLASS,
-        OBJ_IDENT_BPTINDEX,             // B-Plus Index Node
-        OBJ_IDENT_BPTINDEX_CLASS,
-        OBJ_IDENT_BPTLEAF,              // B-Plus Leaf Node
-        OBJ_IDENT_BPTLEAF_CLASS,
-        OBJ_IDENT_BPTREE,               // B-Plus Tree Index
-        OBJ_IDENT_BPTREE_CLASS,
-        OBJ_IDENT_BSTR,                 // Basic String
-        OBJ_IDENT_BSTR_CLASS,
         OBJ_IDENT_BTP,                  /* Binary Search Tree */
         OBJ_IDENT_BTP_CLASS,
         OBJ_IDENT_CB,                   /* Generic Circular Buffer */
         OBJ_IDENT_CB_CLASS,
-        OBJ_IDENT_CB8,                  /* Circular Buffer for 8-bit data */
         OBJ_IDENT_CB16,                 /* Circular Buffer for 16-bit data */
         OBJ_IDENT_CB16_CLASS,
         OBJ_IDENT_CB32,                 /* Circular Buffer for 32-bit data */
         OBJ_IDENT_CB32_CLASS,
         OBJ_IDENT_CFA,                  // C Fixed Array
         OBJ_IDENT_CFA_CLASS,
-        OBJ_IDENT_CMDUTL,               // Command Utilities
+        OBJ_IDENT_CMDUTL,               // Command Line Parsing/Control Utilities
         OBJ_IDENT_CMDUTL_CLASS,
         OBJ_IDENT_COMPILER,
         OBJ_IDENT_COMPILER_CLASS,
@@ -304,10 +295,28 @@ extern "C" {
         OBJ_IDENT_JSONPP_CLASS,
         OBJ_IDENT_LEX,                  // Generic Lexical Scanner
         OBJ_IDENT_LEX_CLASS,
+        OBJ_IDENT_LEX00,                // Whitespace and NL Lexical Scanner
+        OBJ_IDENT_LEX00_CLASS,
+        OBJ_IDENT_LEX01,                // ??? Lexical Scanner
+        OBJ_IDENT_LEX01_CLASS,
+        OBJ_IDENT_LEX02,                // ??? Lexical Scanner
+        OBJ_IDENT_LEX02_CLASS,
+        OBJ_IDENT_LEX03,                // ??? Lexical Scanner
+        OBJ_IDENT_LEX03_CLASS,
+        OBJ_IDENT_LEX04,                // ??? Lexical Scanner
+        OBJ_IDENT_LEX04_CLASS,
+        OBJ_IDENT_LEX05,                // ??? Lexical Scanner
+        OBJ_IDENT_LEX05_CLASS,
+        OBJ_IDENT_LEX06,                // ??? Lexical Scanner
+        OBJ_IDENT_LEX06_CLASS,
+        OBJ_IDENT_LEX07,                // ??? Lexical Scanner
+        OBJ_IDENT_LEX07_CLASS,
         OBJ_IDENT_LEXJ,                 // Simple Lexical Scanner for HJSON
         OBJ_IDENT_LEXJ_CLASS,
         OBJ_IDENT_LEXS,                 // Simple Lexical Scanner for JSON, CSV, etc
         OBJ_IDENT_LEXS_CLASS,
+        OBJ_IDENT_LINEINDEX,            // Line Index into File or Buffer
+        OBJ_IDENT_LINEINDEX_CLASS,
         OBJ_IDENT_LISTDL,               // Generic Doubly-linked List
         OBJ_IDENT_LISTDL_CLASS,
         OBJ_IDENT_LRU,                  // Least Recently Used Caching
@@ -464,8 +473,6 @@ extern "C" {
         OBJ_IDENT_SGRAPH_CLASS,
         OBJ_IDENT_SIDX,                 // Simple Integer Index
         OBJ_IDENT_SIDX_CLASS,
-        OBJ_IDENT_SIDXE,                // Simple Integer Index with extended info
-        OBJ_IDENT_SIDXE_CLASS,
         OBJ_IDENT_SQLCOL,               // SQL Column 
         OBJ_IDENT_SQLCOL_CLASS,
         OBJ_IDENT_SQLCOLDEF,            // SQL Column Definition
