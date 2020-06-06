@@ -1,21 +1,24 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Tokenize a Source File (srcFile) Header
+//          Tokenize a TextIn Stream (SrcFile) Header
 //****************************************************************
 /*
  * Program
- *			Tokenize a Source File (srcFile)
+ *          Tokenize a TextIn Stream with Look-ahead and Backup Recovery (SrcFile)
  * Purpose
- *			This object provides a standardized way of tokenizing
- *          a Source File (ie returning the file one character at
- *          a time with appropriate location information.
+ *          This object tokenizes an input stream of text using
+ *          a TextIn object and provides look-ahead in conforming
+ *          to Lex input.  It also provides for backup/recovery
+ *          of those tokens for lexical scanner that must backup
+ *          such as re2c.
  *
  * Remarks
- *	1.      None
+ *  1.      None
  *
  * History
- *	12/18/2018 Generated
+ *  12/18/2018 Generated
+ *  06/06/2020 Regenerated and updated with backup/recovery.
  */
 
 
@@ -60,13 +63,15 @@
 #define         SRCFILE_H
 
 
-//#define   SRCFILE_SINGLETON    1
+//#define   SRCFILE_IS_IMMUTABLE     1
+//#define   SRCFILE_JSON_SUPPORT     1
+//#define   SRCFILE_SINGLETON        1
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -76,22 +81,22 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct srcFile_data_s	SRCFILE_DATA;            // Inherits from OBJ
-    typedef struct srcFile_class_data_s SRCFILE_CLASS_DATA;   // Inherits from OBJ
+    typedef struct SrcFile_data_s  SRCFILE_DATA;            // Inherits from OBJ
+    typedef struct SrcFile_class_data_s SRCFILE_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct srcFile_vtbl_s	{
+    typedef struct SrcFile_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in srcFile_object.c.
+        // method names to the vtbl definition in SrcFile_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(SRCFILE_DATA *);
     } SRCFILE_VTBL;
 
-    typedef struct srcFile_class_vtbl_s	{
+    typedef struct SrcFile_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in srcFile_object.c.
+        // method names to the vtbl definition in SrcFile_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(SRCFILE_DATA *);
@@ -101,7 +106,7 @@ extern "C" {
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -110,11 +115,11 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  SRCFILE_SINGLETON
-    SRCFILE_DATA *  srcFile_Shared (
+    SRCFILE_DATA *  SrcFile_Shared (
         void
     );
 
-    bool            srcFile_SharedReset (
+    void            SrcFile_SharedReset (
         void
     );
 #endif
@@ -124,141 +129,170 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to srcFile object if successful, otherwise OBJ_NIL.
+     @return    pointer to SrcFile object if successful, otherwise OBJ_NIL.
      */
-    SRCFILE_DATA *  srcFile_Alloc (
+    SRCFILE_DATA *  SrcFile_Alloc (
         void
     );
     
     
-    OBJ_ID          srcFile_Class (
+    OBJ_ID          SrcFile_Class (
         void
     );
     
     
-    SRCFILE_DATA *  srcFile_New (
+    SRCFILE_DATA *  SrcFile_New (
         void
     );
     
-    SRCFILE_DATA *  srcFile_NewFromAStr(
+    SRCFILE_DATA *  SrcFile_NewFromAStr(
         PATH_DATA       *pFilePath,     // Optoinal File Path used for Documentation Purposes
         ASTR_DATA       *pStr,          // Buffer of file data
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
-    SRCFILE_DATA *  srcFile_NewFromFile(
+
+    SRCFILE_DATA *  SrcFile_NewFromFile(
         FILE            *pFile,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
-    SRCFILE_DATA *  srcFile_NewFromPath(
+
+    SRCFILE_DATA *  SrcFile_NewFromPath(
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
-    
+
+
+#ifdef  SRCFILE_JSON_SUPPORT
+    SRCFILE_DATA *  SrcFile_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    SRCFILE_DATA *  SrcFile_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
 
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            srcFile_getExpandTabs (
+    bool            SrcFile_getExpandTabs (
         SRCFILE_DATA    *this
     );
-    
-    bool            srcFile_setExpandTabs (
+
+    bool            SrcFile_setExpandTabs (
         SRCFILE_DATA    *this,
         bool            fValue
     );
 
-    
+
     /*!
      The file index property is meant to index some table for the
      file path information.
      */
-    uint16_t        srcFile_getFileIndex (
+    uint16_t        SrcFile_getFileIndex (
         SRCFILE_DATA     *this
     );
-    
-    bool            srcFile_setFileIndex (
+
+    bool            SrcFile_setFileIndex (
         SRCFILE_DATA    *this,
         uint16_t        value
     );
 
-    
+
     /*!
      The Remove NL property allows for NLs to be skipped as
      input but still reflected in the statistics.
      */
-    bool            srcFile_getRemoveNLs (
+    bool            SrcFile_getRemoveNLs (
         SRCFILE_DATA    *this
     );
 
-    bool            srcFile_setRemoveNLs (
+    bool            SrcFile_setRemoveNLs (
         SRCFILE_DATA    *this,
         bool            fValue
     );
-    
-    
+
+
     /*!
      The Tab Size property if non-zero causes horizontal tabs
      to be expanded to spaces to multiples of the tabl size.
      The default is zero (ie no tab expansion).
      */
-    uint16_t        srcFile_getTabSize (
+    uint16_t        SrcFile_getTabSize (
         SRCFILE_DATA    *this
     );
-    
-    bool            srcFile_setTabSize (
+
+    bool            SrcFile_setTabSize (
         SRCFILE_DATA    *this,
         uint16_t        value
     );
-    
-    
 
-    
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    SRCFILE_DATA *   srcFile_Init (
-        SRCFILE_DATA     *this
+    SRCFILE_DATA *  SrcFile_Init (
+        SRCFILE_DATA    *this
     );
-    
-    
+
+
     /*!
      Advance the input the number of characters specified.
      @param     this    object pointer
      @param     numChrs number of characters to advance (must be > 0)
      @return    The current token character or OBJ_NIL if an error occurred.
      */
-    TOKEN_DATA *    srcFile_InputAdvance (
+    TOKEN_DATA *    SrcFile_InputAdvance (
         SRCFILE_DATA    *this,
         uint16_t        numChrs
     );
-    
-    
+
+
     /*!
      Look ahead the number of characters specified.
      @param     this    object pointer
      @param     num     number of characters to look ahead (must be > 0)
      @return    The token character or OBJ_NIL if an error occurred.
      */
-    TOKEN_DATA *    srcFile_InputLookAhead (
+    TOKEN_DATA *    SrcFile_InputLookAhead (
         SRCFILE_DATA    *this,
         uint16_t        num
     );
-    
-    
+
+
+#ifdef  SRCFILE_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = SrcFile_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SrcFile_ToJson (
+        SRCFILE_DATA    *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = srcFile_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SrcFile_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -266,17 +300,17 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    srcFile_ToDebugString (
-        SRCFILE_DATA     *this,
+    ASTR_DATA *     SrcFile_ToDebugString (
+        SRCFILE_DATA    *this,
         int             indent
     );
     
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* SRCFILE_H */
+#endif  /* SRCFILE_H */
 

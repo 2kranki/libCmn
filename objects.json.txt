@@ -156,7 +156,7 @@
         {name:"SrcErrors", deps:["SrcError.h", "ObjArray.h"], json:true},
         {name:"SrcFile", deps:["ascii.h","TextIn.h",
                                 "path.h","Token.h","TokenList.h"],
-                        desc:"Tokenizes TextIn Stream with Backup Recovery"},
+                        desc:"Tokenize a TextIn Stream with Look-ahead and Backup Recovery"},
         {name:"srcFiles", deps:["ObjArray.h","path.h","srcFile.h",
                                 "Token.h"]},
         {name:"SrcLoc", json:true},

@@ -664,7 +664,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pInput = srcFile_NewFromAStr(
+        this->pInput = SrcFile_NewFromAStr(
                                     OBJ_NIL,
                                     pStr,
                                     1,
@@ -678,8 +678,8 @@ extern "C" {
         
         fRc =   Lex_setSourceInput(
                     (LEX_DATA *)this,
-                    (void *)srcFile_InputAdvance,
-                    (void *)srcFile_InputLookAhead,
+                    (void *)SrcFile_InputAdvance,
+                    (void *)SrcFile_InputLookAhead,
                     this->pInput
                 );
         if (!fRc) {
@@ -722,7 +722,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pInput =  srcFile_NewFromFile(
+        this->pInput =  SrcFile_NewFromFile(
                             pFile,
                             1,
                             tabSize
@@ -735,8 +735,8 @@ extern "C" {
         
         fRc =   Lex_setSourceInput(
                     (LEX_DATA *)this,
-                    (void *)srcFile_InputAdvance,
-                    (void *)srcFile_InputLookAhead,
+                    (void *)SrcFile_InputAdvance,
+                    (void *)SrcFile_InputLookAhead,
                     this->pInput
                 );
         if (!fRc) {
@@ -779,7 +779,7 @@ extern "C" {
             return OBJ_NIL;
         }
         
-        this->pInput =  srcFile_NewFromPath(
+        this->pInput =  SrcFile_NewFromPath(
                                         pFilePath,
                                         1,
                                         tabSize
@@ -792,8 +792,8 @@ extern "C" {
         
         fRc =   Lex_setSourceInput(
                                       (LEX_DATA *)this,
-                                      (void *)srcFile_InputAdvance,
-                                      (void *)srcFile_InputLookAhead,
+                                      (void *)SrcFile_InputAdvance,
+                                      (void *)SrcFile_InputLookAhead,
                                       this->pInput
                                       );
         if (!fRc) {

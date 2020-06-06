@@ -89,13 +89,13 @@ extern "C" {
         }
 #endif
 
-        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        pToken = SrcFile_InputLookAhead(this->pSrc, 1);
         chr = Token_getChrW32(pToken);
         if (chr == '#') {
-            srcFile_InputAdvance(this->pSrc, 1);
+            SrcFile_InputAdvance(this->pSrc, 1);
             this->lenFld = 0;
             while (!(fRc = CsvFile_ParseCRLF(this))) {
-                srcFile_InputAdvance(this->pSrc, 1);
+                SrcFile_InputAdvance(this->pSrc, 1);
             }
             return true;
         }
@@ -122,24 +122,24 @@ extern "C" {
         }
 #endif
 
-        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        pToken = SrcFile_InputLookAhead(this->pSrc, 1);
         chr = Token_getChrW32(pToken);
         if (chr == '\r') {
-            srcFile_InputAdvance(this->pSrc, 1);
-            pToken = srcFile_InputLookAhead(this->pSrc, 1);
+            SrcFile_InputAdvance(this->pSrc, 1);
+            pToken = SrcFile_InputLookAhead(this->pSrc, 1);
             chr = Token_getChrW32(pToken);
             if (chr == '\n') {
-                srcFile_InputAdvance(this->pSrc, 1);
+                SrcFile_InputAdvance(this->pSrc, 1);
             }
             this->lenFld = 0;
             return true;
         }
         else if (chr == '\n') {
-            srcFile_InputAdvance(this->pSrc, 1);
-            pToken = srcFile_InputLookAhead(this->pSrc, 1);
+            SrcFile_InputAdvance(this->pSrc, 1);
+            pToken = SrcFile_InputLookAhead(this->pSrc, 1);
             chr = Token_getChrW32(pToken);
             if (chr == '\r') {
-                srcFile_InputAdvance(this->pSrc, 1);
+                SrcFile_InputAdvance(this->pSrc, 1);
             }
             this->lenFld = 0;
             return true;
@@ -165,10 +165,10 @@ extern "C" {
         }
 #endif
 
-        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        pToken = SrcFile_InputLookAhead(this->pSrc, 1);
         chr = Token_getChrW32(pToken);
         if (chr == EOF) {
-            srcFile_InputAdvance(this->pSrc, 1);
+            SrcFile_InputAdvance(this->pSrc, 1);
             this->lenFld = 0;
             return true;
         }
@@ -202,7 +202,7 @@ extern "C" {
         if (pStr) {
             return pStr;
         }
-        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        pToken = SrcFile_InputLookAhead(this->pSrc, 1);
         SrcErrors_AddFatalFromTokenA(
             OBJ_NIL,
             pToken,
@@ -247,7 +247,7 @@ extern "C" {
         pRecord = ObjArray_New();
         if (pRecord == OBJ_NIL) {
             TOKEN_DATA      *pToken;
-            pToken = srcFile_InputLookAhead(this->pSrc, 1);
+            pToken = SrcFile_InputLookAhead(this->pSrc, 1);
             SrcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
@@ -259,7 +259,7 @@ extern "C" {
         eRc = ObjArray_AppendObj(pRecord, pStr, NULL);
         if (ERESULT_HAS_FAILED(eRc)) {
             TOKEN_DATA      *pToken;
-            pToken = srcFile_InputLookAhead(this->pSrc, 1);
+            pToken = SrcFile_InputLookAhead(this->pSrc, 1);
             SrcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
@@ -276,7 +276,7 @@ extern "C" {
             pStr = CsvFile_ParseField(this);
             if (pStr == OBJ_NIL) {
                 TOKEN_DATA      *pToken;
-                pToken = srcFile_InputLookAhead(this->pSrc, 1);
+                pToken = SrcFile_InputLookAhead(this->pSrc, 1);
                 SrcErrors_AddFatalFromTokenA(
                     OBJ_NIL,
                     pToken,
@@ -289,7 +289,7 @@ extern "C" {
             eRc = ObjArray_AppendObj(pRecord, pStr, NULL);
             if (ERESULT_HAS_FAILED(eRc)) {
                 TOKEN_DATA      *pToken;
-                pToken = srcFile_InputLookAhead(this->pSrc, 1);
+                pToken = SrcFile_InputLookAhead(this->pSrc, 1);
                 SrcErrors_AddFatalFromTokenA(
                     OBJ_NIL,
                     pToken,
@@ -302,7 +302,7 @@ extern "C" {
 
         if (!CsvFile_ParseCRLF(this)) {
             TOKEN_DATA      *pToken;
-            pToken = srcFile_InputLookAhead(this->pSrc, 1);
+            pToken = SrcFile_InputLookAhead(this->pSrc, 1);
             SrcErrors_AddFatalFromTokenA(
                                 OBJ_NIL,
                                 pToken,
@@ -337,7 +337,7 @@ extern "C" {
         pRecords = ObjArray_New();
         if (pRecords == OBJ_NIL) {
             TOKEN_DATA      *pToken;
-            pToken = srcFile_InputLookAhead(this->pSrc, 1);
+            pToken = SrcFile_InputLookAhead(this->pSrc, 1);
             SrcErrors_AddFatalFromTokenA(
                 OBJ_NIL,
                 pToken,
@@ -360,7 +360,7 @@ extern "C" {
             eRc = ObjArray_AppendObj(pRecords, pRecord, NULL);
             if (ERESULT_HAS_FAILED(eRc)) {
                 TOKEN_DATA      *pToken;
-                pToken = srcFile_InputLookAhead(this->pSrc, 1);
+                pToken = SrcFile_InputLookAhead(this->pSrc, 1);
                 SrcErrors_AddFatalFromTokenA(
                     OBJ_NIL,
                     pToken,
@@ -392,7 +392,7 @@ extern "C" {
                 eRc = ObjArray_AppendObj(pRecords, pRecord, NULL);
                 if (ERESULT_HAS_FAILED(eRc)) {
                     TOKEN_DATA      *pToken;
-                    pToken = srcFile_InputLookAhead(this->pSrc, 1);
+                    pToken = SrcFile_InputLookAhead(this->pSrc, 1);
                     SrcErrors_AddFatalFromTokenA(
                                         OBJ_NIL,
                                         pToken,
@@ -409,7 +409,7 @@ extern "C" {
 
         if (!CsvFile_ParseEOF(this)) {
             TOKEN_DATA      *pToken;
-            pToken = srcFile_InputLookAhead(this->pSrc, 1);
+            pToken = SrcFile_InputLookAhead(this->pSrc, 1);
             SrcErrors_AddFatalFromTokenA(
                                 OBJ_NIL,
                                 pToken,
@@ -439,11 +439,11 @@ extern "C" {
 #endif
 
         CsvFile_ParseWS(this);
-        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        pToken = SrcFile_InputLookAhead(this->pSrc, 1);
         chr = Token_getChrW32(pToken);
         if (chr == this->fieldSeparator) {
             this->lenFld = 0;
-            srcFile_InputAdvance(this->pSrc, 1);
+            SrcFile_InputAdvance(this->pSrc, 1);
             return true;
         }
 
@@ -470,27 +470,27 @@ extern "C" {
 #endif
         CsvFile_ParseWS(this);
 
-        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        pToken = SrcFile_InputLookAhead(this->pSrc, 1);
         chr = Token_getChrW32(pToken);
         if (chr == '"') {
-            srcFile_InputAdvance(this->pSrc, 1);
+            SrcFile_InputAdvance(this->pSrc, 1);
         }
         else {
             return pStr;
         }
 
         for (;;) {
-            pToken = srcFile_InputLookAhead(this->pSrc, 1);
+            pToken = SrcFile_InputLookAhead(this->pSrc, 1);
             chr = Token_getChrW32(pToken);
             if (CsvFile_ParseTEXTDATA(this)) {
                 // Do something, maybe!
             }
             else if (chr == '"') {
-                pToken = srcFile_InputLookAhead(this->pSrc, 2);
+                pToken = SrcFile_InputLookAhead(this->pSrc, 2);
                 chr = Token_getChrW32(pToken);
                 if (chr == '"') {
                     CsvFile_AppendCharW32ToString(this, '"');
-                    srcFile_InputAdvance(this->pSrc, 2);
+                    SrcFile_InputAdvance(this->pSrc, 2);
                 }
                 else {
                     break;
@@ -498,22 +498,22 @@ extern "C" {
             }
             else if (chr == this->fieldSeparator) {
                 CsvFile_AppendCharW32ToString(this, this->fieldSeparator);
-                srcFile_InputAdvance(this->pSrc, 1);
+                SrcFile_InputAdvance(this->pSrc, 1);
             }
             else if ((chr == '\f') || (chr == '\n') || (chr == '\r') || (chr == '\t')) {
                 CsvFile_AppendCharW32ToString(this, chr);
-                srcFile_InputAdvance(this->pSrc, 1);
+                SrcFile_InputAdvance(this->pSrc, 1);
             }
             else if (chr == '\\') {
-                pToken = srcFile_InputLookAhead(this->pSrc, 1);
+                pToken = SrcFile_InputLookAhead(this->pSrc, 1);
                 chr = Token_getChrW32(pToken);
                 if (chr == '"') {
                     CsvFile_AppendCharW32ToString(this, '"');
-                    srcFile_InputAdvance(this->pSrc, 1);
+                    SrcFile_InputAdvance(this->pSrc, 1);
                 }
                 else {
                     CsvFile_AppendCharW32ToString(this, '\\');
-                    srcFile_InputAdvance(this->pSrc, 1);
+                    SrcFile_InputAdvance(this->pSrc, 1);
                 }
             }
             else {
@@ -525,10 +525,10 @@ extern "C" {
             }
         }
 
-        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        pToken = SrcFile_InputLookAhead(this->pSrc, 1);
         chr = Token_getChrW32(pToken);
         if (chr == '"') {
-            srcFile_InputAdvance(this->pSrc, 1);
+            SrcFile_InputAdvance(this->pSrc, 1);
             pStr = AStr_NewW32(this->pFld);
             this->lenFld = 0;
         }
@@ -580,7 +580,7 @@ extern "C" {
         }
 #endif
 
-        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        pToken = SrcFile_InputLookAhead(this->pSrc, 1);
         chr = Token_getChrW32(pToken);
         if( (chr == this->fieldSeparator) || (chr == '"') ) {
             return false;
@@ -597,7 +597,7 @@ extern "C" {
         }
 
         CsvFile_AppendCharW32ToString(this, chr);
-        srcFile_InputAdvance(this->pSrc, 1);
+        SrcFile_InputAdvance(this->pSrc, 1);
 
         return true;
     }
@@ -621,11 +621,11 @@ extern "C" {
         }
 #endif
 
-        pToken = srcFile_InputLookAhead(this->pSrc, 1);
+        pToken = SrcFile_InputLookAhead(this->pSrc, 1);
         chr = Token_getChrW32(pToken);
         while ((chr == ' ') || (chr == '\f') || (chr == '\r') || (chr == '\t')) {
-            srcFile_InputAdvance(this->pSrc, 1);
-            pToken = srcFile_InputLookAhead(this->pSrc, 1);
+            SrcFile_InputAdvance(this->pSrc, 1);
+            pToken = SrcFile_InputLookAhead(this->pSrc, 1);
             chr = Token_getChrW32(pToken);
             fRc = true;
         }
@@ -688,7 +688,7 @@ extern "C" {
 
        this = CsvFile_New( );
        if (this) {
-           this->pSrc = srcFile_NewFromAStr(pPath, pAStr, 1, tabSize);
+           this->pSrc = SrcFile_NewFromAStr(pPath, pAStr, 1, tabSize);
            if (OBJ_NIL == this->pSrc) {
                obj_Release(this);
                return OBJ_NIL;
@@ -707,7 +707,7 @@ extern "C" {
        CSVFILE_DATA    *this;
 
        this = CsvFile_New( );
-       this->pSrc = srcFile_NewFromPath(pPath, 1, tabSize);
+       this->pSrc = SrcFile_NewFromPath(pPath, 1, tabSize);
        if (OBJ_NIL == this->pSrc) {
            obj_Release(this);
            return OBJ_NIL;

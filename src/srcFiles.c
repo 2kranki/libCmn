@@ -310,7 +310,7 @@ extern "C" {
         }
 #endif
         
-        pToken = srcFile_InputAdvance(this->pTop, numChrs);
+        pToken = SrcFile_InputAdvance(this->pTop, numChrs);
         
         // Return to caller.
         return pToken;
@@ -338,7 +338,7 @@ extern "C" {
         }
 #endif
         
-        pToken = srcFile_InputLookAhead(this->pTop, num);
+        pToken = SrcFile_InputLookAhead(this->pTop, num);
         
         // Return to caller.
         return pToken;
@@ -369,7 +369,7 @@ extern "C" {
         }
 #endif
         
-        pSrc = srcFile_NewFromAStr(pFilePath, pAStr, fileIndex, tabSize);
+        pSrc = SrcFile_NewFromAStr(pFilePath, pAStr, fileIndex, tabSize);
         if (OBJ_NIL == pSrc) {
             obj_Release(this);
             return ERESULT_OUT_OF_MEMORY;
@@ -400,7 +400,7 @@ extern "C" {
         }
 #endif
         
-        pSrc = srcFile_NewFromFile(pFile, fileIndex, tabSize);
+        pSrc = SrcFile_NewFromFile(pFile, fileIndex, tabSize);
         if (OBJ_NIL == pSrc) {
             obj_Release(this);
             return ERESULT_OUT_OF_MEMORY;
@@ -431,7 +431,7 @@ extern "C" {
         }
 #endif
         
-        pSrc = srcFile_NewFromPath(pFilePath, fileIndex, tabSize);
+        pSrc = SrcFile_NewFromPath(pFilePath, fileIndex, tabSize);
         if (OBJ_NIL == pSrc) {
             obj_Release(this);
             return ERESULT_OUT_OF_MEMORY;

@@ -53,7 +53,7 @@
 
 
 #include        <cmn_defs.h>
-#include        <srcFile.h>
+#include        <SrcFile.h>
 #include        <ObjArray.h>
 #include        <Path.h>
 #include        <Token.h>

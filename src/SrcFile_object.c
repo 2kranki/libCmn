@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'srcFile'
-//	Generated 12/18/2018 10:08:34
+//  Class Object Metods and Tables for 'SrcFile'
+//  Generated 06/06/2020 10:44:03
 
 
 /*
@@ -34,8 +34,8 @@
 
 
 
-#define			SRCFILE_OBJECT_C	    1
-#include        <srcFile_internal.h>
+#define         SRCFILE_OBJECT_C       1
+#include        <SrcFile_internal.h>
 #ifdef  SRCFILE_SINGLETON
 #include        <psxLock.h>
 #endif
@@ -46,7 +46,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct srcFile_class_data_s	{
+struct SrcFile_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -69,7 +69,7 @@ struct srcFile_class_data_s	{
 
 
 static
-void *          srcFileClass_QueryInfo (
+void *          SrcFileClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,31 +78,38 @@ void *          srcFileClass_QueryInfo (
 
 static
 const
-OBJ_INFO        srcFile_Info;            // Forward Reference
+OBJ_INFO        SrcFile_Info;            // Forward Reference
 
 
 
 
 static
-bool            srcFileClass_IsKindOf (
-    uint16_t		classID
+bool            SrcFileClass_IsKindOf (
+    uint16_t        classID
 )
 {
+    OBJ_DATA        *pObj;
+    
     if (OBJ_IDENT_SRCFILE_CLASS == classID) {
        return true;
-    }
-    if (OBJ_IDENT_TEXTIN_CLASS == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
+    
+    pObj = obj_getInfo(SrcFile_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        return obj_getVtbl(pObj)->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 static
-uint16_t		srcFileClass_WhoAmI (
+uint16_t        SrcFileClass_WhoAmI (
     void
 )
 {
@@ -120,33 +127,33 @@ static
 const
 SRCFILE_CLASS_VTBL    class_Vtbl = {
     {
-        &srcFile_Info,
-        srcFileClass_IsKindOf,
+        &SrcFile_Info,
+        SrcFileClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        srcFile_Class,
-        srcFileClass_WhoAmI,
-        (P_OBJ_QUERYINFO)srcFileClass_QueryInfo,
-        NULL                        // srcFileClass_ToDebugString
+        SrcFile_Class,
+        SrcFileClass_WhoAmI,
+        (P_OBJ_QUERYINFO)SrcFileClass_QueryInfo,
+        NULL                        // SrcFileClass_ToDebugString
     },
 };
 
 
 
 //-----------------------------------------------------------
-//						Class Object
+//                      Class Object
 //-----------------------------------------------------------
 
-SRCFILE_CLASS_DATA  srcFile_ClassObj = {
+SRCFILE_CLASS_DATA  SrcFile_ClassObj = {
     {
-        (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl
-        sizeof(SRCFILE_CLASS_DATA),         // cbSize
-        0,                                  // cbFlags
-        1,                                  // cbRetainCount
-        {0}                                 // cbMisc
+        (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
+        sizeof(SRCFILE_CLASS_DATA),                  // cbSize
+        0,                                      // cbFlags
+        1,                                      // cbRetainCount
+        {0}                                     // cbMisc
     },
-	//0
+    //0
 };
 
 
@@ -156,15 +163,20 @@ SRCFILE_CLASS_DATA  srcFile_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  SRCFILE_SINGLETON
-SRCFILE_DATA *     srcFile_getSingleton (
+extern
+const
+SRCFILE_VTBL       SrcFile_VtblShared;
+
+
+SRCFILE_DATA *     SrcFile_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(srcFile_ClassObj.pSingleton);
+    return (OBJ_ID)(SrcFile_ClassObj.pSingleton);
 }
 
 
-bool            srcFile_setSingleton (
+bool            SrcFile_setSingleton (
     SRCFILE_DATA       *pValue
 )
 {
@@ -185,10 +197,10 @@ bool            srcFile_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (srcFile_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(srcFile_ClassObj.pSingleton));
+    if (SrcFile_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(SrcFile_ClassObj.pSingleton));
     }
-    srcFile_ClassObj.pSingleton = pValue;
+    SrcFile_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -198,17 +210,18 @@ bool            srcFile_setSingleton (
 
 
 
-SRCFILE_DATA *     srcFile_Shared (
+SRCFILE_DATA *     SrcFile_Shared (
     void
 )
 {
-    SRCFILE_DATA       *this = (OBJ_ID)(srcFile_ClassObj.pSingleton);
+    SRCFILE_DATA       *this = (OBJ_ID)(SrcFile_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = srcFile_New( );
-        srcFile_setSingleton(this);
+        this = SrcFile_New( );
+        obj_setVtbl(this, (void *)&SrcFile_VtblShared);
+        SrcFile_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // srcFile_ClassObj.pSingleton = OBJ_NIL;
+        // SrcFile_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -216,15 +229,16 @@ SRCFILE_DATA *     srcFile_Shared (
 
 
 
-void            srcFile_SharedReset (
+void            SrcFile_SharedReset (
     void
 )
 {
-    SRCFILE_DATA       *this = (OBJ_ID)(srcFile_ClassObj.pSingleton);
+    SRCFILE_DATA       *this = (OBJ_ID)(SrcFile_ClassObj.pSingleton);
     
     if (this) {
+        obj_setVtbl(this, (void *)&SrcFile_Vtbl);
         obj_Release(this);
-        srcFile_ClassObj.pSingleton = OBJ_NIL;
+        SrcFile_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -240,7 +254,7 @@ void            srcFile_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          srcFileClass_QueryInfo (
+void *          SrcFileClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -265,14 +279,18 @@ void *          srcFileClass_QueryInfo (
             break;
             
         // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&srcFile_Info;
+                        return (void *)&SrcFile_Info;
+                    }
+                    break;
+                    
+                case 'S':
+                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                        return (void *)&SrcFile_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -290,13 +308,35 @@ void *          srcFileClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return srcFile_New;
+                        return SrcFile_New;
                     }
                     break;
                     
+                case 'P':
+#ifdef  SRCFILE_JSON_SUPPORT
+                    if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                        return SrcFile_ParseJsonFields;
+                    }
+                    if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                        return SrcFile_ParseJsonObject;
+                    }
+#endif
+                    break;
+
+                case 'T':
+#ifdef  SRCFILE_JSON_SUPPORT
+                    if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                        return SrcFile_ToJsonFields;
+                    }
+                    if (str_Compare("ToJson", (char *)pStr) == 0) {
+                        return SrcFile_ToJson;
+                    }
+#endif
+                    break;
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return srcFileClass_WhoAmI;
+                        return SrcFileClass_WhoAmI;
                     }
                     break;
                     
@@ -316,40 +356,50 @@ void *          srcFileClass_QueryInfo (
 
 
 static
-bool            srcFile_IsKindOf (
-    uint16_t		classID
+bool            SrcFile_IsKindOf (
+    uint16_t        classID
 )
 {
+    OBJ_DATA        *pObj;
+    const
+    OBJ_INFO        *pInfo;
+
     if (OBJ_IDENT_SRCFILE == classID) {
        return true;
-    }
-    if (OBJ_IDENT_TEXTIN == classID) {
-        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
+
+    pObj = obj_getInfo(SrcFile_Class())->pClassSuperObject;
+    if (pObj == obj_BaseClass())
+        ;
+    else {
+        pInfo = obj_getInfo(pObj);
+        return pInfo->pDefaultVtbls->pIsKindOf(classID);
+    }
+    
     return false;
 }
 
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            srcFile_Dealloc (
+void            SrcFile_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          srcFile_Class (
+OBJ_ID          SrcFile_Class (
     void
 )
 {
-    return (OBJ_ID)&srcFile_ClassObj;
+    return (OBJ_ID)&SrcFile_ClassObj;
 }
 
 
 static
-uint16_t		srcFile_WhoAmI (
+uint16_t        SrcFile_WhoAmI (
     void
 )
 {
@@ -364,35 +414,69 @@ uint16_t		srcFile_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
+#ifdef  SRCFILE_SINGLETON
+// A Shared object ignores Retain() and Release() except for
+// initialization and termination. So, there must be an
+// independent VTbl from the normal which does support Retain()
+// and Release().
 const
-SRCFILE_VTBL     srcFile_Vtbl = {
+SRCFILE_VTBL     SrcFile_VtblShared = {
     {
-        &srcFile_Info,
-        srcFile_IsKindOf,
-#ifdef  SRCFILE_IS_SINGLETON
+        &SrcFile_Info,
+        SrcFile_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-#else
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-#endif
-        srcFile_Dealloc,
-        srcFile_Class,
-        srcFile_WhoAmI,
-        (P_OBJ_QUERYINFO)srcFile_QueryInfo,
-        (P_OBJ_TOSTRING)srcFile_ToDebugString,
-        NULL,			// srcFile_Enable,
-        NULL,			// srcFile_Disable,
-        NULL,			// (P_OBJ_ASSIGN)srcFile_Assign,
-        NULL,			// (P_OBJ_COMPARE)srcFile_Compare,
-        NULL, 			// (P_OBJ_PTR)srcFile_Copy,
-        NULL, 			// (P_OBJ_PTR)srcFile_DeepCopy,
-        NULL 			// (P_OBJ_HASH)srcFile_Hash,
+        SrcFile_Dealloc,
+        SrcFile_Class,
+        SrcFile_WhoAmI,
+        (P_OBJ_QUERYINFO)SrcFile_QueryInfo,
+        (P_OBJ_TOSTRING)SrcFile_ToDebugString,
+        NULL,           // SrcFile_Enable,
+        NULL,           // SrcFile_Disable,
+        NULL,           // (P_OBJ_ASSIGN)SrcFile_Assign,
+        NULL,           // (P_OBJ_COMPARE)SrcFile_Compare,
+        NULL,           // (P_OBJ_PTR)SrcFile_Copy,
+        NULL,           // (P_OBJ_PTR)SrcFile_DeepCopy,
+        NULL            // (P_OBJ_HASH)SrcFile_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //srcFile_IsEnabled,
+    //SrcFile_IsEnabled,
+ 
+};
+#endif
+
+
+// This VTbl supports Retain() and Release() which is
+// used by objects other than the Shared object. These
+// objects can still be shared among other objects. It
+// just that they are deleted when their usage count
+// goes to zero.
+const
+SRCFILE_VTBL     SrcFile_Vtbl = {
+    {
+        &SrcFile_Info,
+        SrcFile_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        SrcFile_Dealloc,
+        SrcFile_Class,
+        SrcFile_WhoAmI,
+        (P_OBJ_QUERYINFO)SrcFile_QueryInfo,
+        (P_OBJ_TOSTRING)SrcFile_ToDebugString,
+        NULL,           // SrcFile_Enable,
+        NULL,           // SrcFile_Disable,
+        NULL,           // (P_OBJ_ASSIGN)SrcFile_Assign,
+        NULL,           // (P_OBJ_COMPARE)SrcFile_Compare,
+        NULL,           // (P_OBJ_PTR)SrcFile_Copy,
+        NULL,           // (P_OBJ_PTR)SrcFile_DeepCopy,
+        NULL            // (P_OBJ_HASH)SrcFile_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //SrcFile_IsEnabled,
  
 };
 
@@ -400,12 +484,12 @@ SRCFILE_VTBL     srcFile_Vtbl = {
 
 static
 const
-OBJ_INFO        srcFile_Info = {
-    "srcFile",
-    "Tokenize a Source File",	
-    (OBJ_DATA *)&srcFile_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&srcFile_Vtbl,
+OBJ_INFO        SrcFile_Info = {
+    "SrcFile",
+    "Tokenize a TextIn Stream with Look-ahead and Backup Recovery",
+    (OBJ_DATA *)&SrcFile_ClassObj,
+    (OBJ_DATA *)&TextIn_ClassObj,
+    (OBJ_IUNKNOWN *)&SrcFile_Vtbl,
     sizeof(SRCFILE_DATA)
 };
 

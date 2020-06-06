@@ -41,7 +41,7 @@
 
 #include    <lexj.h>
 #include    <Lex_internal.h>
-#include    <srcFile.h>
+#include    <SrcFile.h>
 
 
 #ifndef LEXJ_INTERNAL_H

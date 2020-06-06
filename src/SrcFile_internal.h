@@ -1,10 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   srcFile_internal.h
- *	Generated 12/18/2018 10:08:34
+ * File:   SrcFile_internal.h
+ *  Generated 06/06/2020 10:44:03
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
 
@@ -39,25 +39,20 @@
 
 
 
-#include        <srcFile.h>
+#include        <SrcFile.h>
 #include        <JsonIn.h>
 #include        <TextIn_internal.h>
 #include        <Token_internal.h>
 
 
-
-
 #ifndef SRCFILE_INTERNAL_H
-#define	SRCFILE_INTERNAL_H
+#define SRCFILE_INTERNAL_H
 
 
 
-#define     PROPERTY_PATH_OWNED 1
-#define     PROPERTY_STR_OWNED 1
 
 
-
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -69,7 +64,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct srcFile_data_s	{
+struct SrcFile_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     TEXTIN_DATA     super;
@@ -77,21 +72,21 @@ struct srcFile_data_s	{
 
     // Common Data
     TOKEN_DATA      curchr;             /*  Current Character */
+    uint8_t         fInit;
+    uint8_t         rsvd8[3];
     uint16_t        sizeInputs;
     uint16_t        curInputs;
     TOKEN_DATA      *pInputs;
-    uint8_t         fInit;
-    uint8_t         rsvd8[3];
 
 };
 #pragma pack(pop)
 
     extern
-    struct srcFile_class_data_s  srcFile_ClassObj;
+    struct SrcFile_class_data_s  SrcFile_ClassObj;
 
     extern
     const
-    SRCFILE_VTBL    srcFile_Vtbl;
+    SRCFILE_VTBL     SrcFile_Vtbl;
 
 
 
@@ -100,11 +95,11 @@ struct srcFile_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  SRCFILE_SINGLETON
-    SRCFILE_DATA *  srcFile_getSingleton (
+    SRCFILE_DATA *  SrcFile_getSingleton (
         void
     );
 
-    bool            srcFile_setSingleton (
+    bool            SrcFile_setSingleton (
      SRCFILE_DATA       *pValue
 );
 #endif
@@ -115,52 +110,115 @@ struct srcFile_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  srcFile_getSuperVtbl (
-        SRCFILE_DATA    *this
+    OBJ_IUNKNOWN *  SrcFile_getSuperVtbl (
+        SRCFILE_DATA     *this
     );
 
 
-    void            srcFile_Dealloc (
+    ERESULT         SrcFile_Assign (
+        SRCFILE_DATA    *this,
+        SRCFILE_DATA    *pOther
+    );
+
+
+    SRCFILE_DATA *  SrcFile_Copy (
+        SRCFILE_DATA     *this
+    );
+
+
+    void            SrcFile_Dealloc (
         OBJ_ID          objId
     );
 
 
-    ERESULT         srcFile_InputNextChar (
+    ERESULT         SrcFile_InputNextChar (
         SRCFILE_DATA    *this
     );
-    
-    
-    SRCFILE_DATA *  srcFile_ParseObject (
+
+
+#ifdef  SRCFILE_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    SRCFILE_DATA *       SrcFile_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          srcFile_QueryInfo (
+    /*!
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SrcFile_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        SRCFILE_DATA     *pObject
+    );
+#endif
+
+
+    void *          SrcFile_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ASTR_DATA *     srcFile_ToJson (
-        SRCFILE_DATA    *this
+#ifdef  SRCFILE_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = SrcFile_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SrcFile_ToJson (
+        SRCFILE_DATA      *this
     );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SrcFile_ToJsonFields (
+        SRCFILE_DATA     *this,
+        ASTR_DATA       *pStr
+    );
+#endif
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			srcFile_Validate (
-        SRCFILE_DATA    *this
+    bool            SrcFile_Validate (
+        SRCFILE_DATA       *this
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* SRCFILE_INTERNAL_H */
+#endif  /* SRCFILE_INTERNAL_H */
 

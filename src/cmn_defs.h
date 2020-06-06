@@ -471,7 +471,7 @@ extern "C" {
         OBJ_IDENT_SCREEN_CLASS,
         OBJ_IDENT_SGRAPH,               // Simple Graph
         OBJ_IDENT_SGRAPH_CLASS,
-        OBJ_IDENT_SQLCOL,               // SQL Column 
+        OBJ_IDENT_SQLCOL,               // SQL Column
         OBJ_IDENT_SQLCOL_CLASS,
         OBJ_IDENT_SQLCOLDEF,            // SQL Column Definition
         OBJ_IDENT_SQLCOLDEF_CLASS,
@@ -483,8 +483,8 @@ extern "C" {
         OBJ_IDENT_SRCERROR_CLASS,
         OBJ_IDENT_SRCERRORS,            // Source Error Messages
         OBJ_IDENT_SRCERRORS_CLASS,
-        OBJ_IDENT_SRCFILE,
-        OBJ_IDENT_SRCFILE_CLASS,
+        OBJ_IDENT_SRCFILE,              // Tokenize a TextIn Stream with Look-ahead
+        OBJ_IDENT_SRCFILE_CLASS,        // and Backup Recovery
         OBJ_IDENT_SRCFILES,
         OBJ_IDENT_SRCFILES_CLASS,
         OBJ_IDENT_SRCLOC,               // Source Location (File, Line, Col)
