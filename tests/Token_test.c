@@ -124,7 +124,7 @@ int             test_Token_Copy01 (
 #if defined(TOKEN_JSON_SUPPORT)
     ASTR_DATA       *pStr = OBJ_NIL;
 #endif
-    SRCLOC          loc = {1,2,0,3,4};
+    SRCLOC          loc = {1,2,0,3,0,4};
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -227,7 +227,7 @@ int         test_Token_Test01(
 )
 {
     TOKEN_DATA    *pObj = OBJ_NIL;
-    SRCLOC      loc = {1,2,0,3,4};
+    SRCLOC      loc = {1,2,0,3,0,4};
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     pObj = Token_NewInteger(&loc, 11, 64);

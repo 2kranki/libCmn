@@ -27,9 +27,9 @@
 #include    <trace.h>
 #include    <Lex01_internal.h>
 #include    <ascii.h>
-#include    <pplex.h>
+#include    <Lex.h>
 #include    <SrcErrors.h>
-#include    <srcFile.h>
+#include    <SrcFile.h>
 #include    <szTbl.h>
 
 
@@ -261,7 +261,7 @@ int         test_Lex01_Input01(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
 
-        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
+        pSrc = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
 
@@ -273,8 +273,8 @@ int         test_Lex01_Input01(
 
                 fRc =   Lex_setSourceInput(
                                               pLex,
-                                              (void *)srcFile_InputAdvance,
-                                              (void *)srcFile_InputLookAhead,
+                                              (void *)SrcFile_InputAdvance,
+                                              (void *)SrcFile_InputLookAhead,
                                               pSrc
                         );
                 XCTAssertTrue( (fRc) );
@@ -283,7 +283,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 fprintf(stderr, "\tchr = %c\n", Token_getChrW32(pToken));
                 XCTAssertTrue( ('+' == Token_getClass(pToken)) );
                 XCTAssertTrue( ('+' == Token_getChrW32(pToken)) );
@@ -293,7 +293,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 XCTAssertTrue( (ASCII_LEXICAL_WHITESPACE == Token_getClass(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
@@ -309,7 +309,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 XCTAssertTrue( (ASCII_LEXICAL_WHITESPACE == Token_getClass(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
@@ -323,7 +323,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 XCTAssertTrue( (ASCII_LEXICAL_EOL == Token_getClass(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
@@ -332,7 +332,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 XCTAssertTrue( (ASCII_LEXICAL_WHITESPACE == Token_getClass(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
@@ -340,7 +340,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 XCTAssertTrue( (ASCII_LEXICAL_WHITESPACE == Token_getClass(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
@@ -348,7 +348,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 XCTAssertTrue( (ASCII_LEXICAL_WHITESPACE == Token_getClass(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
@@ -356,7 +356,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 XCTAssertTrue( (ASCII_LEXICAL_WHITESPACE == Token_getClass(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
@@ -364,7 +364,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 XCTAssertTrue( (ASCII_LEXICAL_ALPHA_LOWER == Token_getClass(pToken)) );
                 XCTAssertTrue( ('a' == Token_getChrW32(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);
@@ -373,7 +373,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 XCTAssertTrue( ('\\' == cls) );
                 XCTAssertTrue( ('\\' == Token_getChrW32(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);
@@ -382,7 +382,7 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, pplex_ClassToString(cls));
+                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
                 XCTAssertTrue( (ASCII_LEXICAL_ALPHA_LOWER == Token_getClass(pToken)) );
                 XCTAssertTrue( ('b' == Token_getChrW32(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);

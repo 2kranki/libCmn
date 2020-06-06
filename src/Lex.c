@@ -66,6 +66,14 @@ extern "C" {
     static
     XLATE_ENTRY   xlateTbl[] = {
         { LEX_CLASS_EOF,    "LEX_CLASS_EOF" },
+        { LEX_CLASS_UNKNOWN, "LEX_CLASS_UNKNOWN"},
+        { LEX_CLASS_ALPHA_LOWER, "LEX_CLASS_ALPHA_LOWER"},
+        { LEX_CLASS_ALPHA_UPPER, "LEX_CLASS_ALPHA_UPPER"},
+        { LEX_CLASS_DELETE, "LEX_CLASS_DELETE"},
+        { LEX_CLASS_NUMBER, "LEX_CLASS_NUMBER"},
+        { LEX_CLASS_EOL, "LEX_CLASS_EOL"},
+        { LEX_CLASS_WHITESPACE, "LEX_CLASS_WHITESPACE"},
+        { LEX_CLASS_UNICODE, "LEX_CLASS_UNICODE"},
         { LEX_CONSTANT_CHAR,    "LEX_CONSTANT_CHAR" },
         { LEX_CONSTANT_CHAR_WIDE,    "LEX_CONSTANT_CHAR_WIDE" },
         { LEX_CONSTANT_FLOAT,    "LEX_CONSTANT_FLOAT" },
@@ -233,7 +241,6 @@ extern "C" {
         { LEX_SEP_RBRACE,    "LEX_SEP_RBRACE" },
         { LEX_SEP_RPAREN,    "LEX_SEP_RPAREN" },
         { LEX_SEP_SEMICOLON,    "LEX_SEP_SEMICOLON" },
-        { LEX_SEP_WHITESPACE,    "LEX_SEP_WHITESPACE" },
         { LEX_SPCL_AT_LBRACK,    "LEX_SPCL_AT_LBRACK" },
         { LEX_SPCL_AT_LCURL,    "LEX_SPCL_AT_LCURL" },
         { LEX_SPCL_AT_LPAREN,    "LEX_SPCL_AT_LPAREN" },
@@ -384,6 +391,9 @@ extern "C" {
         uint32_t        iMax;
         XLATE_ENTRY     *pEntry;
 
+        if ((value > 0) && (value < 256)) {
+            return "LEX_CLASS_CHAR";
+        }
         iMax = cXlateTbl;
         for (i=0; i<iMax; ++i) {
             pEntry = &xlateTbl[i];

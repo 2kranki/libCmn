@@ -176,13 +176,22 @@ extern "C" {
          Classes 1-255 are meant to represent the individual ASCII
          characters as their own class.  So, a token should have
          the character in both the class and value.
+         LEX_CLASS_CHAR
          */
 
         LEX_CLASS_GROUP_LOWEST=256,
+        // Note the following must be kept synchronized with the
+        // ascii lexical classes.
+        LEX_CLASS_ALPHA_LOWER=256,          // a-z
+        LEX_CLASS_ALPHA_UPPER,              // A-Z
+        LEX_CLASS_DELETE,                   // ascii 127
+        LEX_CLASS_NUMBER,                   // 0-9
+        LEX_CLASS_EOL,                      // '\n'
+        LEX_CLASS_WHITESPACE,               // ' ', '\t', '\n', '\r', '\f'
         LEX_CLASS_UNICODE,                  //  Class for characters not in the
         //                                  //  range 1..255
 
-        LEX_CLASS_COMMENT_GROUP=260,
+        LEX_CLASS_COMMENT_GROUP=270,
         LEX_COMMENT_SINGLE,                 //  Single Line Comment
         LEX_COMMENT_MULTI,                  //  Multiple Line Comment
 
@@ -201,7 +210,6 @@ extern "C" {
         LEX_IDENTIFIER=400,
 
         LEX_CLASS_SEP_GROUP=500,
-        LEX_SEP_WHITESPACE,
         LEX_SEP_AT,                         // @
         LEX_SEP_COMMA,                      // ,
         LEX_SEP_DOT,                        // .

@@ -877,16 +877,17 @@ extern "C" {
     //                      P a r s e  T o k e n
     //--------------------------------------------------------------
 
-    /* ParseToken() gets the next token from the source file. It
-     * saves that token for the file/line/col numbers and then
-     * proceeds to build upon it. It accumulates tokens until
-     * based on the class/type. When it finds a token which does
-     * not belong to that class, it saves the current token
-     * string to the string table, and tells the source file
-     * to re-use the token which did not match on the next parse.
-     * The token returned from this routine has the index of the
-     * token string in the string table if it is larger than 1
-     * character.
+    /*! ParseToken() gets the next token from the source file. It
+        saves that token for the file/line/col numbers and then
+        proceeds to build upon it. It accumulates tokens until
+        based on the class/type. When it finds a token which does
+        not belong to that class, it saves the current token
+        string to the string table, and tells the source file
+        to re-use the token which did not match on the next parse.
+        The token returned from this routine has the index of the
+        token string in the string table if it is larger than 1
+        character.
+     @return    true == EOF not reached, false == EOF or Error occurred
      */
 
     bool            Lex00_ParseToken(
@@ -894,10 +895,9 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        TOKEN_DATA      *pInput;
+        TOKEN_DATA      *pToken;
         int32_t         cls;
-        int32_t         chr;
-        bool            fMore = true;
+        W32CHR_T        chr;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -907,99 +907,98 @@ extern "C" {
             return false;
         }
 #endif
-        TRC_OBJ(this, "Lex00_ParseToken:");
+        TRC_OBJ(this, "Lex00_ParseToken:\n");
 
-        while (fMore) {
-            pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
-            if (pInput) {
-                cls = Token_getClass(pInput);
-            }
-            else {
-                pInput = Lex_ParseEOF((LEX_DATA *)this);
-                cls = Token_getClass(pInput);
-                DEBUG_BREAK();
-            }
-            eRc = Lex_ParseTokenSetup((LEX_DATA *)this, pInput);
-            if (cls == LEX_CLASS_EOF) {
-                break;
-            }
-
-            switch (cls) {
-
-                case '?':           /*** '?' ***/
-                    TRC_OBJ(this, "\tFound 1st ?\n");
-                    pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
-                    cls = Token_getClass(pInput);
-                    if( '?' == cls) {
-                        TRC_OBJ(this, "\tFound 2nd ?\n");
-                        pInput = Lex_InputLookAhead((LEX_DATA *)this, 3);
-                        cls = Token_getClass(pInput);
-                        switch (cls) {
-                            case '(':
-                                chr = '[';
-                            setupChr:
-                                TRC_OBJ(this, "\tFound ??%c - %c\n", cls, chr);
-                                Token_setClass(&this->super.token, cls);
-                                Token_setChrW32(&this->super.token, cls);
-                                Lex_InputAdvance((LEX_DATA *)this, 3);
-                                fMore = false;
-                                break;
-
-                            case '/':
-                                chr = '\\';
-                                goto setupChr;
-                                break;
-
-                            case ')':
-                                chr = ']';
-                                goto setupChr;
-                                break;
-
-                            case '\'':
-                                chr = '^';
-                                goto setupChr;
-                                break;
-
-                            case '<':
-                                chr = '{';
-                                goto setupChr;
-                                break;
-
-                            case '!':
-                                chr = '|';
-                                goto setupChr;
-                                break;
-
-                            case '>':
-                                chr = '}';
-                                goto setupChr;
-                                break;
-
-                            case '-':
-                                chr = '~';
-                                goto setupChr;
-                                break;
-
-                            case '=':
-                                chr = '#';
-                                goto setupChr;
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
-                    fMore = false;
-                    break;
-                default:
-                    Token_Assign(pInput, &this->super.token); //???
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
-                    break;
-            }
-            fMore = false;
-            break;
+        pToken = Lex_InputLookAhead((LEX_DATA *)this, 1);
+        if (pToken) {
+            cls = Token_getClass(pToken);
         }
+        else {
+            pToken = Lex_ParseEOF((LEX_DATA *)this);
+            cls = Token_getClass(pToken);
+            DEBUG_BREAK();
+        }
+        eRc = Lex_ParseTokenSetup((LEX_DATA *)this, pToken);
+
+        switch (cls) {
+
+            case '?':           /*** '?' ***/
+                TRC_OBJ(this, "\tFound 1st ?\n");
+                pToken = Lex_InputLookAhead((LEX_DATA *)this, 2);
+                cls = Token_getClass(pToken);
+                if( '?' == cls) {
+                    TRC_OBJ(this, "\tFound 2nd ?\n");
+                    pToken = Lex_InputLookAhead((LEX_DATA *)this, 3);
+                    cls = Token_getClass(pToken);
+                    TRC_OBJ(this, "\t3rd %d('%c')\n",
+                            cls,
+                            ((cls >= ' ') && (cls <0x7F) ? cls : ' ')
+                            );
+                    switch (cls) {
+                        case '(':
+                            chr = '[';
+                            goto setupChr;
+                            break;
+
+                        case '/':
+                            chr = '\\';
+                            goto setupChr;
+                            break;
+
+                        case ')':
+                            chr = ']';
+                            goto setupChr;
+                            break;
+
+                        case '\'':
+                            chr = '^';
+                            goto setupChr;
+                            break;
+
+                        case '<':
+                            chr = '{';
+                            goto setupChr;
+                            break;
+
+                        case '!':
+                            chr = '|';
+                            goto setupChr;
+                            break;
+
+                        case '>':
+                            chr = '}';
+                            goto setupChr;
+                            break;
+
+                        case '-':
+                            chr = '~';
+                            goto setupChr;
+                            break;
+
+                        case '=':
+                            chr = '#';
+                        setupChr:
+                            TRC_OBJ(this, "\tFound ??%c -> %c\n", cls, chr);
+                            Token_setClass(pToken, chr);
+                            Token_setChrW32(pToken, chr);
+                            Lex_InputAdvance((LEX_DATA *)this, 2);
+                            break;
+
+                        default:
+                            // Reset to 1st char.
+                            pToken = Lex_InputLookAhead((LEX_DATA *)this, 1);
+                            break;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        Token_Assign(pToken, &this->super.token);
+        if (Token_getClass(pToken) == LEX_CLASS_EOF)
+            ;
+        else
+            Lex_InputAdvance((LEX_DATA *)this, 1);
 
         // Return to caller.
         TRC_OBJ(this, "...Lex00_ParseToken");

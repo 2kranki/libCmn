@@ -154,13 +154,14 @@ extern "C" {
     // character is part of a group, then the group
     // number is returned for its class.
     typedef enum ascii_Lexical_CharClasses_e {
-        ASCII_LEXICAL_UNKNOWN=-1,
-        ASCII_LEXICAL_ALPHA_LOWER=-2,       // a-z
-        ASCII_LEXICAL_ALPHA_UPPER=-3,       // A-Z
-        ASCII_LEXICAL_DELETE=-4,            // ascii 127
-        ASCII_LEXICAL_NUMBER=-5,            // 0-9
-        ASCII_LEXICAL_EOL=-6,               // '\n'
-        ASCII_LEXICAL_WHITESPACE=-7         // ' ', '\t', '\n', '\r', '\f'
+        ASCII_LEXICAL_UNKNOWN=0,
+        ASCII_LEXICAL_ALPHA_LOWER=256,      // a-z
+        ASCII_LEXICAL_ALPHA_UPPER,          // A-Z
+        ASCII_LEXICAL_DELETE,               // ascii 127
+        ASCII_LEXICAL_NUMBER,               // 0-9
+        ASCII_LEXICAL_EOL,                  // '\n'
+        ASCII_LEXICAL_WHITESPACE,           // ' ', '\t', '\n', '\r', '\f'
+        ASCII_LEXICAL_UNICODE,              // >256
     } ASCII_LEXICAL_CharClasses;
     
     

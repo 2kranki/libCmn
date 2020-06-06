@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 6/ 4/2020 21:10:59.000)
+# ( 6/ 6/2020 21:01:11.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -911,6 +911,16 @@ OBJS += $(OBJDIR)/SrcErrors_object.o
 $(OBJDIR)/SrcErrors_object.o: $(SRCDIR)/SrcErrors_object.c $(SRCDIR)/ObjArray.h $(SRCDIR)/SrcError.h $(SRCDIR)/SrcErrors.h $(SRCDIR)/SrcErrors_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/SrcFile.o
+
+$(OBJDIR)/SrcFile.o: $(SRCDIR)/SrcFile.c $(SRCDIR)/SrcFile.h $(SRCDIR)/SrcFile_internal.h $(SRCDIR)/TextIn.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/ascii.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SrcFile_object.o
+
+$(OBJDIR)/SrcFile_object.o: $(SRCDIR)/SrcFile_object.c $(SRCDIR)/SrcFile.h $(SRCDIR)/SrcFile_internal.h $(SRCDIR)/TextIn.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/ascii.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/SrcLoc.o
 
 $(OBJDIR)/SrcLoc.o: $(SRCDIR)/SrcLoc.c $(SRCDIR)/SrcLoc.h $(SRCDIR)/SrcLoc_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1721,16 +1731,6 @@ OBJS += $(OBJDIR)/shellSortPtrs.o
 $(OBJDIR)/shellSortPtrs.o: $(SRCDIR)/shellSortPtrs.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/srcFile.o
-
-$(OBJDIR)/srcFile.o: $(SRCDIR)/srcFile.c $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/ascii.h $(SRCDIR)/fbsi.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/srcFile_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/srcFile_object.o
-
-$(OBJDIR)/srcFile_object.o: $(SRCDIR)/srcFile_object.c $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/ascii.h $(SRCDIR)/fbsi.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/srcFile_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/srcFiles.o
 
 $(OBJDIR)/srcFiles.o: $(SRCDIR)/srcFiles.c $(SRCDIR)/ObjArray.h $(SRCDIR)/Token.h $(SRCDIR)/path.h $(SRCDIR)/srcFile.h $(SRCDIR)/srcFiles.h $(SRCDIR)/srcFiles_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2330,6 +2330,12 @@ SrcErrors_test: $(TEST_SRC)/SrcErrors_test.c $(SRCDIR)/SrcErrors.h $(SRCDIR)/Src
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += SrcFile_test
+
+SrcFile_test: $(TEST_SRC)/SrcFile_test.c $(SRCDIR)/SrcFile.h $(SRCDIR)/SrcFile_internal.h $(SRCDIR)/TextIn.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/ascii.h $(SRCDIR)/path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += SrcLoc_test
 
 SrcLoc_test: $(TEST_SRC)/SrcLoc_test.c $(SRCDIR)/SrcLoc.h $(SRCDIR)/SrcLoc_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2747,12 +2753,6 @@ scanReader_test: $(TEST_SRC)/scanReader_test.c $(SRCDIR)/scanReader.h $(SRCDIR)/
 TESTS += screen_test
 
 screen_test: $(TEST_SRC)/screen_test.c $(SRCDIR)/screen.h $(SRCDIR)/screen_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += srcFile_test
-
-srcFile_test: $(TEST_SRC)/srcFile_test.c $(SRCDIR)/srcFile.h $(SRCDIR)/srcFile_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/ascii.h $(SRCDIR)/fbsi.h $(SRCDIR)/path.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

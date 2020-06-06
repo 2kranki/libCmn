@@ -28,7 +28,7 @@
 #include    <Lex_internal.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
-#include    <srcFile.h>
+#include    <SrcFile.h>
 
 
 
@@ -250,7 +250,7 @@ int         test_Lex_Number01(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
 
-        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
+        pSrc = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
 
@@ -261,13 +261,13 @@ int         test_Lex_Number01(
                 obj_TraceSet(pLex, true);
                 fRc =   Lex_setSourceInput(
                             pLex,
-                            (void *)srcFile_InputAdvance,
-                            (void *)srcFile_InputLookAhead,
+                            (void *)SrcFile_InputAdvance,
+                            (void *)SrcFile_InputLookAhead,
                             pSrc
                         );
                 XCTAssertTrue( (fRc) );
 
-                pToken = srcFile_InputLookAhead(pSrc, 1);
+                pToken = SrcFile_InputLookAhead(pSrc, 1);
                 eRc = Lex_ParseTokenSetup(pLex, pToken);
                 XCTAssertFalse( (ERESULT_FAILED(eRc)) );
                 newClass = Lex_ParseNumber(pLex);
@@ -315,7 +315,7 @@ int         test_Lex_Number02(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
 
-        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
+        pSrc = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
 
@@ -326,13 +326,13 @@ int         test_Lex_Number02(
                 obj_TraceSet(pLex, true);
                 fRc =   Lex_setSourceInput(
                                               pLex,
-                                              (void *)srcFile_InputAdvance,
-                                              (void *)srcFile_InputLookAhead,
+                                              (void *)SrcFile_InputAdvance,
+                                              (void *)SrcFile_InputLookAhead,
                                               pSrc
                                               );
                 XCTAssertTrue( (fRc) );
 
-                pToken = srcFile_InputLookAhead(pSrc, 1);
+                pToken = SrcFile_InputLookAhead(pSrc, 1);
                 eRc = Lex_ParseTokenSetup(pLex, pToken);
                 newClass = Lex_ParseNumber(pLex);
                 XCTAssertTrue( (LEX_CONSTANT_FLOAT == newClass) );
@@ -379,7 +379,7 @@ int         test_Lex_Number03(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
 
-        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
+        pSrc = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
 
@@ -390,13 +390,13 @@ int         test_Lex_Number03(
                 obj_TraceSet(pLex, true);
                 fRc =   Lex_setSourceInput(
                                               pLex,
-                                              (void *)srcFile_InputAdvance,
-                                              (void *)srcFile_InputLookAhead,
+                                              (void *)SrcFile_InputAdvance,
+                                              (void *)SrcFile_InputLookAhead,
                                               pSrc
                                               );
                 XCTAssertTrue( (fRc) );
 
-                pToken = srcFile_InputLookAhead(pSrc, 1);
+                pToken = SrcFile_InputLookAhead(pSrc, 1);
                 eRc = Lex_ParseTokenSetup(pLex, pToken);
                 newClass = Lex_ParseNumber(pLex);
                 XCTAssertTrue( (LEX_CONSTANT_INTEGER == newClass) );
@@ -443,7 +443,7 @@ int         test_Lex_Number04(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
 
-        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
+        pSrc = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
 
@@ -454,13 +454,13 @@ int         test_Lex_Number04(
                 obj_TraceSet(pLex, true);
                 fRc =   Lex_setSourceInput(
                                               pLex,
-                                              (void *)srcFile_InputAdvance,
-                                              (void *)srcFile_InputLookAhead,
+                                              (void *)SrcFile_InputAdvance,
+                                              (void *)SrcFile_InputLookAhead,
                                               pSrc
                                               );
                 XCTAssertTrue( (fRc) );
 
-                pToken = srcFile_InputLookAhead(pSrc, 1);
+                pToken = SrcFile_InputLookAhead(pSrc, 1);
                 eRc = Lex_ParseTokenSetup(pLex, pToken);
                 newClass = Lex_ParseNumber(pLex);
                 if (pLex->pStr) {
@@ -693,7 +693,7 @@ int         test_Lex_Strings04(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
 
-        pSrc = srcFile_NewFromAStr(pPath, pBuf, 1, 4);
+        pSrc = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
 
@@ -704,8 +704,8 @@ int         test_Lex_Strings04(
                 obj_TraceSet(pLex, true);
                 fRc =   Lex_setSourceInput(
                                               pLex,
-                                              (void *)srcFile_InputAdvance,
-                                              (void *)srcFile_InputLookAhead,
+                                              (void *)SrcFile_InputAdvance,
+                                              (void *)SrcFile_InputLookAhead,
                                               pSrc
                         );
                 XCTAssertTrue( (fRc) );

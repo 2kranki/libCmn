@@ -113,10 +113,10 @@ int         test_SrcError_Json01(
     ERESULT         eRc;
     SRCERROR_DATA   *pObj = OBJ_NIL;
     SRCERROR_DATA   *pObj2 = OBJ_NIL;
-    SRCLOC          loc = {1,2,0,3,4};
-    SRCLOC          loc2 = {0};
+    SRCLOC          loc = {1,2,0,3,0,4};
+    //SRCLOC          loc2 = {0};
     ASTR_DATA       *pJson = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
 
 
     fprintf(stderr, "Performing: %s\n", pTestName);
