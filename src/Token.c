@@ -1568,7 +1568,7 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                              S e t
+    //                           S e t u p
     //---------------------------------------------------------------
 
     ERESULT     Token_SetupCharW32(
@@ -1596,6 +1596,32 @@ extern "C" {
         }
 
         Token_setChrW32(this, chr);
+
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    ERESULT         Token_SetupFields(
+        TOKEN_DATA      *this,
+        TOKEN_FIELDS    *pFields
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Token_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (pFields) {
+            memmove(&this->data, pFields, sizeof(TOKEN_FIELDS));
+        } else {
+            return ERESULT_DATA_MISSING;
+        }
 
         return ERESULT_SUCCESS;
     }

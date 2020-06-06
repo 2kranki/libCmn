@@ -896,6 +896,7 @@ extern "C" {
         ERESULT         eRc;
         TOKEN_DATA      *pInput;
         int32_t         cls;
+        int32_t         chr;
         bool            fMore = true;
 
         // Do initialization.
@@ -906,6 +907,7 @@ extern "C" {
             return false;
         }
 #endif
+        TRC_OBJ(this, "Lex00_ParseToken:");
 
         while (fMore) {
             pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
@@ -925,26 +927,66 @@ extern "C" {
             switch (cls) {
 
                 case '?':           /*** '?' ***/
+                    TRC_OBJ(this, "\tFound 1st ?\n");
                     pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
                     cls = Token_getClass(pInput);
                     if( '?' == cls) {
+                        TRC_OBJ(this, "\tFound 2nd ?\n");
                         pInput = Lex_InputLookAhead((LEX_DATA *)this, 3);
                         cls = Token_getClass(pInput);
-                        if( '(' == cls) {
-                            Token_setClass(&this->super.token, '[');
-                            Token_setChrW32(&this->super.token, '[');
-                            Lex_InputAdvance((LEX_DATA *)this, 3);
-                            cls = '[';
-                            fMore = false;
-                            break;
-                        }
-                        if( '=' == cls) {
-                            Token_setClass(&this->super.token, '#');
-                            Token_setChrW32(&this->super.token, '#');
-                            Lex_InputAdvance((LEX_DATA *)this, 3);
-                            cls = '#';
-                            fMore = false;
-                            break;
+                        switch (cls) {
+                            case '(':
+                                chr = '[';
+                            setupChr:
+                                TRC_OBJ(this, "\tFound ??%c - %c\n", cls, chr);
+                                Token_setClass(&this->super.token, cls);
+                                Token_setChrW32(&this->super.token, cls);
+                                Lex_InputAdvance((LEX_DATA *)this, 3);
+                                fMore = false;
+                                break;
+
+                            case '/':
+                                chr = '\\';
+                                goto setupChr;
+                                break;
+
+                            case ')':
+                                chr = ']';
+                                goto setupChr;
+                                break;
+
+                            case '\'':
+                                chr = '^';
+                                goto setupChr;
+                                break;
+
+                            case '<':
+                                chr = '{';
+                                goto setupChr;
+                                break;
+
+                            case '!':
+                                chr = '|';
+                                goto setupChr;
+                                break;
+
+                            case '>':
+                                chr = '}';
+                                goto setupChr;
+                                break;
+
+                            case '-':
+                                chr = '~';
+                                goto setupChr;
+                                break;
+
+                            case '=':
+                                chr = '#';
+                                goto setupChr;
+                                break;
+
+                            default:
+                                break;
                         }
                     }
                     Lex_InputAdvance((LEX_DATA *)this, 1);
@@ -960,8 +1002,7 @@ extern "C" {
         }
 
         // Return to caller.
-        //eRc = lex_ParseTokenFinalize((LEX_DATA *)this, newCls, fSaveStr);
-        //BREAK_FALSE(ERESULT_IS_SUCCESSFUL(eRc));
+        TRC_OBJ(this, "...Lex00_ParseToken");
         return true;
     }
 

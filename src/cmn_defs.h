@@ -471,8 +471,6 @@ extern "C" {
         OBJ_IDENT_SCREEN_CLASS,
         OBJ_IDENT_SGRAPH,               // Simple Graph
         OBJ_IDENT_SGRAPH_CLASS,
-        OBJ_IDENT_SIDX,                 // Simple Integer Index
-        OBJ_IDENT_SIDX_CLASS,
         OBJ_IDENT_SQLCOL,               // SQL Column 
         OBJ_IDENT_SQLCOL_CLASS,
         OBJ_IDENT_SQLCOLDEF,            // SQL Column Definition

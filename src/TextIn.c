@@ -116,8 +116,8 @@ extern "C" {
 #endif
 
         chrs[0] = 0;
-        ++this->curChr.loc.offset;
-        chrs[0] = u8Array_Get(this->pU8Array, (uint32_t)this->curChr.loc.offset);
+        ++this->curTok.src.offset;
+        chrs[0] = u8Array_Get(this->pU8Array, (uint32_t)this->curTok.src.offset);
         if (0 == chrs[0]) {
             *pChar = EOF;
             return ERESULT_EOF_ERROR;
@@ -127,8 +127,8 @@ extern "C" {
             --len;
             chr = 1;
             while (len--) {
-                ++this->curChr.loc.offset;
-                chrs[chr++] = u8Array_Get(this->pU8Array, (uint32_t)this->curChr.loc.offset);
+                ++this->curTok.src.offset;
+                chrs[chr++] = u8Array_Get(this->pU8Array, (uint32_t)this->curTok.src.offset);
                 if (0 == chrs[0]) {
                     *pChar = EOF;
                     return ERESULT_EOF_ERROR;
@@ -137,7 +137,7 @@ extern "C" {
             len = utf8_Utf8ToW32(chrs, &chr);
         }
         if( chr == ASCII_CPM_EOF ) {
-            this->curChr.loc.offset = u8Array_getSize(this->pU8Array);
+            this->curTok.src.offset = u8Array_getSize(this->pU8Array);
             chr = EOF;
         }
         *pChar = chr;
@@ -174,9 +174,9 @@ extern "C" {
                 break;
 
             case TEXTIN_TYPE_ASTR:
-                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->curChr.loc.offset++);
+                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->curTok.src.offset++);
                 if ((chr == ASCII_CPM_EOF) || (chr == EOF)){
-                    this->curChr.loc.offset = AStr_getLength(this->pAStr);
+                    this->curTok.src.offset = AStr_getLength(this->pAStr);
                     chr = EOF;
                 }
                 break;
@@ -189,9 +189,9 @@ extern "C" {
                 break;
 
             case TEXTIN_TYPE_WSTR:
-                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)this->curChr.loc.offset++ );
+                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)this->curTok.src.offset++ );
                 if( chr == ASCII_CPM_EOF ) {
-                    this->curChr.loc.offset = W32Str_getLength(this->pWStr);
+                    this->curTok.src.offset = W32Str_getLength(this->pWStr);
                     chr = EOF;
                 }
                 break;
@@ -372,7 +372,7 @@ extern "C" {
         }
 #endif
 
-        return this->curChr.loc.fileIndex;
+        return this->curTok.src.fileIndex;
     }
 
 
@@ -389,7 +389,53 @@ extern "C" {
         }
 #endif
 
-        this->curChr.loc.fileIndex = value;
+        this->curTok.src.fileIndex = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                     L i n e  I n d e x
+    //---------------------------------------------------------------
+
+    LINEINDEX_DATA * TextIn_getLineIndex (
+        TEXTIN_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pLineIndex;
+    }
+
+
+    bool            TextIn_setLineIndex (
+        TEXTIN_DATA     *this,
+        LINEINDEX_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pLineIndex) {
+            obj_Release(this->pLineIndex);
+        }
+        this->pLineIndex = pValue;
 
         return true;
     }
@@ -848,8 +894,8 @@ extern "C" {
         this->fOpen = 0;
         this->type = TEXTIN_TYPE_UNKNOWN;
 
-        if (this->pSidx) {
-            sidxe_Reset(this->pSidx);
+        if (this->pLineIndex) {
+            LineIndex_Reset(this->pLineIndex);
         }
 
         // Return to caller.
@@ -995,12 +1041,8 @@ extern "C" {
 #endif
 
         eRc = TextIn_Close(this);
+        TextIn_setLineIndex(this, OBJ_NIL);
         TextIn_setPath(this, OBJ_NIL);
-
-        if (this->pSidx) {
-            obj_Release(this->pSidx);
-            this->pSidx = OBJ_NIL;
-        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1133,9 +1175,6 @@ extern "C" {
     //                          G e t  L i n e
     //---------------------------------------------------------------
 
-    //TODO: Think about returning an AStrC or W32StrC instead of the
-    // buffer to allow for long lines.
-    //TODO: Terminate line with '\0'.
     ERESULT         TextIn_GetLineA (
         TEXTIN_DATA     *this,
         int             size,
@@ -1144,13 +1183,13 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        W32CHR_T        chr;
         int             chrSize;
         int             len = 0;
         SRCLOC          loc = {0};
         char            chrData[11];
         bool            fMore = true;
         bool            fLoc = false;
+        TOKEN_FIELDS    *pTok;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1174,8 +1213,8 @@ extern "C" {
         --size;                         // Allow space for trailing NUL.
 
         while (fMore) {
-            chr = TextIn_NextChar(this);
-            switch (chr) {
+            pTok = TextIn_NextToken(this);
+            switch (pTok->w32chr[0]) {
                 case '\n':
                     fMore = false;
                     break;
@@ -1192,10 +1231,10 @@ extern "C" {
                     break;
                 default:
                     if (!fLoc) {
-                        loc = this->curChr.loc;
+                        loc = this->curTok.src;
                         fLoc = true;
                     }
-                    chrSize = utf8_W32ToChrCon(chr, chrData);
+                    chrSize = utf8_W32ToChrCon(pTok->w32chr[0], chrData);
                     if (chrSize && (chrSize < size)) {
                         str_Concat(pBuffer, size, chrData);
                         pBuffer += chrSize;
@@ -1203,7 +1242,7 @@ extern "C" {
                     }
                     else {
                         fMore = false;
-                        this->savChr = this->curChr;
+                        this->savTok = this->curTok;
                         obj_FlagOn(this, TEXTIN_FLAG_SAVCHR);
                     }
                     len++;
@@ -1217,6 +1256,9 @@ extern "C" {
         *pBuffer = '\0';
 
         // Return to caller.
+        if (ERESULT_OK(eRc)) {
+            (void)LineIndex_Add(this->pLineIndex, &loc);
+        }
         if (pLoc) {
             *pLoc = loc;
         }
@@ -1231,12 +1273,12 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        W32CHR_T        chr;
         int             len = 0;
         SRCLOC          loc = {0};
         bool            fMore = true;
         bool            fLoc = false;
         ASTR_DATA       *pStr = OBJ_NIL;
+        TOKEN_FIELDS    *pTok;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1256,8 +1298,8 @@ extern "C" {
         }
 
         while (fMore) {
-            chr = TextIn_NextChar(this);
-            switch (chr) {
+            pTok = TextIn_NextToken(this);
+            switch (pTok->w32chr[0]) {
                 case '\n':
                     fMore = false;
                     break;
@@ -1276,10 +1318,10 @@ extern "C" {
                     break;
                 default:
                     if (!fLoc) {
-                        loc = this->curChr.loc;
+                        loc = this->curTok.src;
                         fLoc = true;
                     }
-                    eRc = AStr_AppendCharW32(pStr, chr);
+                    eRc = AStr_AppendCharW32(pStr, pTok->w32chr[0]);
                     len++;
                     if (this->upperLimit && (len >= this->upperLimit)) {
                         fMore = false;
@@ -1290,6 +1332,9 @@ extern "C" {
         }
 
         // Return to caller.
+        if (ERESULT_OK(eRc)) {
+            (void)LineIndex_Add(this->pLineIndex, &loc);
+        }
         if (pLoc) {
             *pLoc = loc;
         }
@@ -1311,10 +1356,10 @@ extern "C" {
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         int             len = 0;
-        W32CHR_T        chr;
         SRCLOC          loc = {0};
         bool            fMore = true;
         bool            fLoc = false;
+        TOKEN_FIELDS    *pTok;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1337,8 +1382,8 @@ extern "C" {
         --size;                         // Allow space for trailing NUL.
 
         while (fMore) {
-            chr = TextIn_NextChar(this);
-            switch (chr) {
+            pTok = TextIn_NextToken(this);
+            switch (pTok->w32chr[0]) {
                 case '\n':
                     fMore = false;
                     break;
@@ -1351,17 +1396,17 @@ extern "C" {
                     break;
                 default:
                     if (!fLoc) {
-                        loc = this->curChr.loc;
+                        loc = this->curTok.src;
                         fLoc = true;
                     }
                     if (size) {
-                        *pBuffer = chr;
+                        *pBuffer = pTok->w32chr[0];
                         pBuffer++;
                         size--;
                     }
                     else {
                         fMore = false;
-                        this->savChr = this->curChr;
+                        this->savTok = this->curTok;
                         obj_FlagOn(this, TEXTIN_FLAG_SAVCHR);
                     }
                     len++;
@@ -1375,6 +1420,9 @@ extern "C" {
         *pBuffer = '\0';
 
         // Return to caller.
+        if (ERESULT_OK(eRc)) {
+            (void)LineIndex_Add(this->pLineIndex, &loc);
+        }
         if (pLoc) {
             *pLoc = loc;
         }
@@ -1420,16 +1468,16 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&TextIn_Vtbl);
         
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-        this->pSidx = sidxe_NewWithMax(3072);
-        if (OBJ_NIL == this->pSidx) {
+        this->pLineIndex = LineIndex_NewWithMax(512);
+        if (OBJ_NIL == this->pLineIndex) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        this->pSidx = sidxe_NewWithMax(3072);
-        if (OBJ_NIL == this->pSidx) {
+        this->pLineIndex = LineIndex_NewWithMax(512);
+        if (OBJ_NIL == this->pLineIndex) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -1512,11 +1560,11 @@ extern "C" {
         if (pFilenameIndex)
             *pFilenameIndex = this->filenameIndex;
         if (pOffset)
-            *pOffset = this->curChr.loc.offset;
+            *pOffset = this->curTok.src.offset;
         if (pLineNo)
-            *pLineNo = this->curChr.loc.lineNo;
+            *pLineNo = this->curTok.src.lineNo;
         if (pColNo)
-            *pColNo = this->curChr.loc.colNo;
+            *pColNo = this->curTok.src.colNo;
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1525,38 +1573,38 @@ extern "C" {
 
 
     //--------------------------------------------------------------
-    //                      N e x t  C h a r
+    //                      N e x t  T o k e n
     //--------------------------------------------------------------
 
-    W32CHR_T            TextIn_NextChar (
-        TEXTIN_DATA         *this
+    TOKEN_FIELDS *  TextIn_NextToken (
+        TEXTIN_DATA     *this
     )
     {
-        W32CHR_T            chr = 0;
-        ERESULT             eRc = ERESULT_SUCCESS;
+        W32CHR_T        chr = 0;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !TextIn_Validate( this ) ) {
+        if( !TextIn_Validate(this) ) {
             DEBUG_BREAK();
-            return -2;
+            return OBJ_NIL;
         }
 #endif
 
     again:
         switch (this->state) {
             case TEXTIN_STATE_IN_TAB:
-                if (this->curChr.loc.colNo % this->tabSize) {
+                if (this->curTok.src.colNo % this->tabSize) {
                     chr = ' ';
-                    ++this->curChr.loc.colNo;
+                    ++this->curTok.src.colNo;
                     break;
                 }
                 this->state = TEXTIN_STATE_NORMAL;
 
             case TEXTIN_STATE_NORMAL:
                 if (obj_Flag(this, TEXTIN_FLAG_SAVCHR)) {
-                    this->curChr = this->savChr;
+                    this->curTok = this->savTok;
                     obj_FlagOff(this, TEXTIN_FLAG_SAVCHR);
                     break;
                 }
@@ -1567,8 +1615,8 @@ extern "C" {
                     switch (chr) {
 
                         case '\b':
-                            if (this->curChr.loc.colNo) {
-                                --this->curChr.loc.colNo;
+                            if (this->curTok.src.colNo) {
+                                --this->curTok.src.colNo;
                             }
                             break;
 
@@ -1577,20 +1625,20 @@ extern "C" {
 
                         case '\f':
                         case '\n':
-                            ++this->curChr.loc.lineNo;
-                            this->curChr.loc.colNo = 0;
+                            ++this->curTok.src.lineNo;
+                            this->curTok.src.colNo = 0;
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-                            sidxe_Add(this->pSidx, &this->curChr.loc);
+                            LineIndex_Add(this->pLineIndex, &this->curTok.src);
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-                            sidxe_Add(this->pSidx, &this->curChr.loc);
+                            LineIndex_Add(this->pLineIndex, &this->curTok.src);
 #endif
                             if (this->fStripNL && ('\n' == chr))
                                 goto again;
                             break;
 
                         case '\r':
-                            this->curChr.loc.colNo = 0;
+                            this->curTok.src.colNo = 0;
                             if (this->fStripCR)
                                 goto again;
                             break;
@@ -1598,11 +1646,11 @@ extern "C" {
                         case '\t':
                             if( this->tabSize ) {
                                 chr = ' ';
-                                ++this->curChr.loc.colNo;
+                                ++this->curTok.src.colNo;
                                 this->state = TEXTIN_STATE_IN_TAB;
                             }
                             else {
-                                ++this->curChr.loc.colNo;
+                                ++this->curTok.src.colNo;
                             }
                             break;
 
@@ -1612,7 +1660,7 @@ extern "C" {
 
                         default:
                             if (chr) {
-                                ++this->curChr.loc.colNo;
+                                ++this->curTok.src.colNo;
                             }
                             break;
                     }
@@ -1624,39 +1672,18 @@ extern "C" {
         }
 
         if (chr >= 0) {
-            this->curChr.cls = ascii_toLexicalClassW32(chr);
+            this->curTok.cls = ascii_toLexicalClassW32(chr);
         }
         else {
-            this->curChr.cls = EOF;
+            this->curTok.cls = EOF;
         }
+        this->curTok.type = TOKEN_TYPE_W32CHAR;
+        this->curTok.len = 1;
+        this->curTok.w32chr[0] = chr;
+        this->curTok.w32chr[1] = 0;
 
         // Return to caller.
-        return chr;
-    }
-
-
-    ERESULT         TextIn_NextChrLoc (
-        TEXTIN_DATA     *this,
-        TEXTIN_CHAR     *pChr
-    )
-    {
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!TextIn_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        TextIn_NextChar(this);
-        if (pChr) {
-            *pChr = this->curChr;
-        }
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
+        return &this->curTok;
     }
 
 
@@ -1801,6 +1828,92 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                         S e e k
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         TextIn_Seek (
+        TEXTIN_DATA     *this,
+        uint32_t        lineNo
+    )
+    {
+        SRCLOC          loc;
+        //TOKEN_FIELDS    tok = {0};
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = LineIndex_Find(this->pLineIndex, lineNo, &loc);
+        if (ERESULT_FAILED(eRc)) {
+            loc.lineNo = 0;
+            loc.offset = 0;
+        }
+        loc.colNo = 1;
+
+        this->curTok.src = loc;
+        switch (this->type) {
+
+            case TEXTIN_TYPE_FILE:
+#ifdef XYZZY
+                eRc = TextIn_FileGetc(this, &chr);
+                if (ERESULT_HAS_FAILED(eRc) || (chr == EOF) || feof(this->pFile)) {
+                    chr = EOF;
+                }
+#endif
+                break;
+
+            case TEXTIN_TYPE_ASTR:
+#ifdef XYZZY
+                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->curChr.loc.offset++);
+                if ((chr == ASCII_CPM_EOF) || (chr == EOF)){
+                    this->curTok.src.offset = AStr_getLength(this->pAStr);
+                    chr = EOF;
+                }
+#endif
+                break;
+
+            case TEXTIN_TYPE_U8ARRAY:
+#ifdef XYZZY
+                eRc = TextIn_u8ArrayGetc(this, &chr);
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    chr = EOF;
+                }
+#endif
+                break;
+
+            case TEXTIN_TYPE_WSTR:
+#ifdef XYZZY
+                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)this->curTok.src.offset++ );
+                if( chr == ASCII_CPM_EOF ) {
+                    this->curTok.src.offset = W32Str_getLength(this->pWStr);
+                    chr = EOF;
+                }
+#endif
+                break;
+
+            default:
+                break;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          S e t u p
     //---------------------------------------------------------------
 
@@ -1849,9 +1962,9 @@ extern "C" {
                                         Path_getData(this->pPath)
                             );
         }
-        this->curChr.loc.lineNo  = 1;
-        this->curChr.loc.colNo   = 0;
-        this->curChr.loc.fileIndex = fileIndex;
+        this->curTok.src.lineNo  = 1;
+        this->curTok.src.colNo   = 0;
+        this->curTok.src.fileIndex = fileIndex;
         this->state = TEXTIN_STATE_NORMAL;
 
         return ERESULT_SUCCESS;
@@ -1889,8 +2002,8 @@ extern "C" {
         this->pAStr = pStr;
         this->fAtEOF = 0;
         this->fOpen = 1;
-        this->curChr.loc.fileIndex = fileIndex;
-        this->curChr.loc.offset = 1;    // AStr is relative to 1.
+        this->curTok.src.fileIndex = fileIndex;
+        this->curTok.src.offset = 1;    // AStr is relative to 1.
 
         return ERESULT_SUCCESS;
     }
@@ -2057,8 +2170,8 @@ extern "C" {
         this->pWStr = pStr;
         this->fAtEOF = 0;
         this->fOpen = 1;
-        this->curChr.loc.fileIndex = fileIndex;
-        this->curChr.loc.offset = 1;        // W32Str is relative to 1.
+        this->curTok.src.fileIndex = fileIndex;
+        this->curTok.src.offset = 1;        // W32Str is relative to 1.
 
         return ERESULT_SUCCESS;
     }
@@ -2073,8 +2186,8 @@ extern "C" {
         TEXTIN_DATA         *this
     )
     {
-        W32CHR_T            chr = 0;
         ERESULT             eRc = ERESULT_SUCCESS;
+        TOKEN_FIELDS        *pTok;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -2086,12 +2199,12 @@ extern "C" {
 #endif
 
         for (;;) {
-            chr = TextIn_NextChar(this);
-            if (chr < 0) {
+            pTok = TextIn_NextToken(this);
+            if (pTok->w32chr[0] < 0) {
                 eRc = ERESULT_EOF_ERROR;
                 break;
             }
-            if ((chr == '\n') || (chr == '\r')) {
+            if ((pTok->w32chr[0] == '\n') || (pTok->w32chr[0] == '\r')) {
                 break;
             }
         }

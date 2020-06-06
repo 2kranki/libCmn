@@ -910,11 +910,9 @@ extern "C" {
         SRCFILE_DATA        *this
     )
     {
-        //ERESULT             eRc;
+        ERESULT             eRc;
         TOKEN_DATA          *pToken;
-        //TEXTIN_CHRLOC       chrLoc;
-        W32CHR_T            chr;
-        int32_t             cls;
+        TOKEN_FIELDS        *pTok;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -925,24 +923,16 @@ extern "C" {
         }
 #endif
         
-        chr = TextIn_NextChar((TEXTIN_DATA *)this);
-        if (chr >= 0) {
-            cls = ascii_toLexicalClassW32(chr);
+        pTok = TextIn_NextToken((TEXTIN_DATA *)this);
+        if (NULL == pTok) {
+            return ERESULT_DATA_MISSING;
         }
-        else {
-            cls = EOF;
-        }
-        
+
         // Add the next char to the queue.
         pToken = &this->pInputs[this->curInputs];
         this->fInit = 1;
         Token_Init(pToken);
-        Token_SetupCharW32(
-                          pToken,
-                          &this->super.curChr.loc,
-                          cls,
-                          chr
-        );
+        eRc = Token_SetupFields(pToken, pTok);
         this->curInputs = (this->curInputs + 1) % this->sizeInputs;
         
         // Return to caller.

@@ -168,6 +168,12 @@ struct Token_data_s	{
     );
 
 
+    ERESULT         Token_SetupFields(
+        TOKEN_DATA      *this,
+        TOKEN_FIELDS    *pFields
+    );
+
+
     /*!
      Set the general parameters of the token at once releasing any prior
      data retained.

@@ -115,6 +115,20 @@ extern "C" {
     }
 
 
+    LINEINDEX_DATA *    LineIndex_NewWithMax (
+        uint16_t            max
+    )
+    {
+        LINEINDEX_DATA      *this;
+
+        this = LineIndex_New( );
+        if (this) {
+            LineIndex_setMax(this, max);
+        }
+        return this;
+    }
+
+
 
     
 
@@ -123,10 +137,56 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          P r i o r i t y
+    //                       A r r a y
     //---------------------------------------------------------------
-    
-    uint16_t        LineIndex_getPriority (
+
+    ARRAY_DATA *    LineIndex_getArray (
+        LINEINDEX_DATA  *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!LineIndex_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pArray;
+    }
+
+
+    bool            LineIndex_setArray (
+        LINEINDEX_DATA  *this,
+        ARRAY_DATA      *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!LineIndex_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pArray) {
+            obj_Release(this->pArray);
+        }
+        this->pArray = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      I n t e r v a l
+    //---------------------------------------------------------------
+
+    uint32_t        LineIndex_getInterval (
         LINEINDEX_DATA     *this
     )
     {
@@ -140,14 +200,13 @@ extern "C" {
         }
 #endif
 
-        //return this->priority;
-        return 0;
+        return array_getMisc(this->pArray);
     }
 
 
-    bool            LineIndex_setPriority (
-        LINEINDEX_DATA     *this,
-        uint16_t        value
+    bool            LineIndex_setInterval (
+        LINEINDEX_DATA  *this,
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
@@ -158,7 +217,7 @@ extern "C" {
         }
 #endif
 
-        //this->priority = value;
+        array_setMisc(this->pArray, value);
 
         return true;
     }
@@ -166,7 +225,72 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S i z e
+    //                         M a x
+    //---------------------------------------------------------------
+    
+    uint32_t        LineIndex_getMax (
+        LINEINDEX_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!LineIndex_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->max;
+    }
+
+
+    bool            LineIndex_setMax (
+        LINEINDEX_DATA  *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!LineIndex_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->max = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      M a x  L i n e
+    //---------------------------------------------------------------
+
+    uint32_t        LineIndex_getMaxLine (
+        LINEINDEX_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!LineIndex_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->maxLineNo;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                           S i z e
     //---------------------------------------------------------------
     
     uint32_t        LineIndex_getSize (
@@ -181,57 +305,11 @@ extern "C" {
         }
 #endif
 
-        return 0;
+        return array_getSize(this->pArray);
     }
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * LineIndex_getStr (
-        LINEINDEX_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!LineIndex_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        LineIndex_setStr (
-        LINEINDEX_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!LineIndex_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -264,6 +342,67 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                              A d d
+    //---------------------------------------------------------------
+
+    ERESULT         LineIndex_Add (
+        LINEINDEX_DATA  *this,
+        SRCLOC          *pLoc
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        //uint32_t        i;
+        //uint32_t        iMax;
+        //uint32_t        j;
+        //SRCLOC          *pEntry = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !LineIndex_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pLoc) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (0 == this->max) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+
+        if (0 == LineIndex_getSize(this)) {
+            if ( (pLoc->lineNo % LineIndex_getInterval(this)) == 0 ) {
+                eRc = array_AppendData(this->pArray, 1, pLoc);
+                this->maxLineNo = pLoc->lineNo;
+                return eRc;
+            }
+        }
+        else {
+            eRc = ERESULT_SUCCESS;
+            if ((pLoc->lineNo > this->maxLineNo)
+                && ((pLoc->lineNo % LineIndex_getInterval(this)) == 0)) {
+                if (LineIndex_getMax(this) == LineIndex_getSize(this)) {
+                    eRc = array_DeleteOdd(this->pArray);
+                    if (ERESULT_FAILED(eRc)) {
+                        return eRc;
+                    }
+                }
+                eRc = array_AppendData(this->pArray, 1, pLoc);
+                if (!ERESULT_FAILED(eRc))
+                    this->maxLineNo = pLoc->lineNo;
+            }
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -281,11 +420,11 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         LineIndex_Assign (
-        LINEINDEX_DATA       *this,
-        LINEINDEX_DATA     *pOther
+        LINEINDEX_DATA  *this,
+        LINEINDEX_DATA  *pOther
     )
     {
-        ERESULT     eRc;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -311,16 +450,13 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
         if (pOther->pArray) {
             obj_Release(pOther->pArray);
             pOther->pArray = OBJ_NIL;
         }
-#endif
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
         if (this->pArray) {
             if (obj_getVtbl(this->pArray)->pCopy) {
                 pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
@@ -330,16 +466,14 @@ extern "C" {
                 pOther->pArray = this->pArray;
             }
         }
-#endif
 
         // Copy other data from this object to other.
-        //pOther->x     = this->x; 
+        pOther->max       = this->max;
+        pOther->maxLineNo = this->maxLineNo;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -485,7 +619,7 @@ extern "C" {
         }
 #endif
 
-        LineIndex_setStr(this, OBJ_NIL);
+        LineIndex_setArray(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -590,7 +724,7 @@ extern "C" {
                 error code.
      */
     ERESULT         LineIndex_Enable (
-        LINEINDEX_DATA       *this
+        LINEINDEX_DATA  *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -610,6 +744,101 @@ extern "C" {
         
         // Return to caller.
         return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          F i n d
+    //---------------------------------------------------------------
+
+    ERESULT         LineIndex_Find (
+        LINEINDEX_DATA  *this,
+        uint32_t        lineNo,
+        SRCLOC          *pLoc
+    )
+    {
+        //ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        uint32_t        i;
+        uint32_t        iMax;
+        //uint32_t        j;
+        SRCLOC          *pEntry = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !LineIndex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        iMax = LineIndex_getSize(this);
+        if (iMax) {
+            for (i=0; i<iMax; ++i) {
+                pEntry = array_GetAddrOf(this->pArray, (i + 1));
+                if (lineNo < pEntry->lineNo)
+                    break;
+            }
+            if (i) {
+                pEntry = array_GetAddrOf(this->pArray, i);
+            }
+        }
+        else
+            return ERESULT_DATA_NOT_FOUND;
+
+        // Return to caller.
+        if (pEntry) {
+            if (pLoc) {
+                *pLoc = *pEntry;
+            }
+        }
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         LineIndex_FindOffset (
+        LINEINDEX_DATA  *this,
+        int64_t         offset,
+        SRCLOC          *pLoc
+    )
+    {
+        //ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        uint32_t        i;
+        uint32_t        iMax;
+        //uint32_t        j;
+        SRCLOC          *pEntry = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !LineIndex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        iMax = LineIndex_getSize(this);
+        if (iMax) {
+            for (i=0; i<iMax; ++i) {
+                pEntry = array_GetAddrOf(this->pArray, (i + 1));
+                if (offset < pEntry->offset)
+                    break;
+            }
+            if (i) {
+                pEntry = array_GetAddrOf(this->pArray, i);
+            }
+        }
+        else
+            return ERESULT_DATA_NOT_FOUND;
+
+        // Return to caller.
+        if (pEntry) {
+            if (pLoc) {
+                *pLoc = *pEntry;
+            }
+        }
+        return ERESULT_SUCCESS;
     }
 
 
@@ -650,14 +879,13 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&LineIndex_Vtbl);
         
-        /*
-        this->pArray = objArray_New( );
+        this->pArray = array_NewWithSize(sizeof(SRCLOC));
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
+        LineIndex_setInterval(this, 1);
 
 #ifdef NDEBUG
 #else
@@ -850,6 +1078,40 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          R e s e t
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         LineIndex_Reset (
+        LINEINDEX_DATA  *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!LineIndex_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        this->maxLineNo = 0;
+        eRc = array_Truncate(this->pArray, 0);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -875,9 +1137,9 @@ extern "C" {
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        //uint32_t        i;
-        //uint32_t        j;
-        
+        uint32_t        i;
+        uint32_t        iMax;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -899,11 +1161,12 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d retain=%d\n",
+                    "{%p(%s) size=%d max=%d, maxLineNo=%d\n",
                     this,
                     pInfo->pClassName,
                     LineIndex_getSize(this),
-                    obj_getRetainCount(this)
+                    LineIndex_getMax(this),
+                    this->maxLineNo
             );
 
 #ifdef  XYZZY        
@@ -921,6 +1184,32 @@ extern "C" {
         }
 #endif
         
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+        }
+        eRc =   AStr_AppendA(pStr, "Location Table:\n");
+        iMax = LineIndex_getSize(this);
+        for (i=0; i<iMax; ++i) {
+            SRCLOC          *pEntry = array_GetAddrOf(this->pArray, (i + 1));
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent+6, ' ');
+            }
+            eRc =   AStr_AppendPrint(
+                            pStr,
+                        "{%p(SrcLoc) fileIndex=%4d offset=%lld line=%d col=%d (SrcLoc)%p}\n",
+                        pEntry,
+                        pEntry->fileIndex,
+                        pEntry->offset,
+                        pEntry->lineNo,
+                        pEntry->colNo,
+                        pEntry
+                    );
+        }
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+        }
+        eRc =   AStr_AppendA(pStr, "End of Table\n");
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }

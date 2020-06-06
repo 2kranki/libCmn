@@ -53,6 +53,7 @@
 #include    <Node.h>
 #include    <NodeHash.h>
 #include    <SrcErrors.h>
+#include    <SrcLoc_internal.h>
 #include    <utf8.h>
 
 
@@ -81,33 +82,42 @@ extern "C" {
      */
     ERESULT     LineIndex_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        LINEINDEX_DATA     *pObject
+        LINEINDEX_DATA  *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        //NODE_DATA       *pNode = OBJ_NIL;
-        //NODEARRAY_DATA  *pArray = OBJ_NIL;
-        //NODEHASH_DATA   *pHash = OBJ_NIL;
-        //uint32_t        i;
-        //uint32_t        iMax;
+        NODE_DATA       *pNode = OBJ_NIL;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        NODEHASH_DATA   *pHash = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
         //uint8_t         *pData;
         //uint32_t        len;
 
-#ifdef XYZZZY 
-        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
-        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
+        (void)JsonIn_FindU32NodeInHashA(pParser, "max", &pObject->max);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "size", &iMax);
+        eRc = JsonIn_FindArrayNodeInHashA(pParser, "array", &pArray);
+        if (pArray && (iMax == NodeArray_getSize(pArray)))
+            ;
+        else {
 
-        eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
-        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
         }
-        JsonIn_SubObjectEnd(pParser);
-#endif
+        for (i=0; i<iMax; i++) {
+            SRCLOC          loc = {0};
+            pNode = NodeArray_Get(pArray, i+1);
+            pHash = JsonIn_CheckNodeForHash(pNode);
+            if (pHash) {
+                eRc = JsonIn_SubObjectFromHash(pParser, pHash);
+                (void)JsonIn_FindU32NodeInHashA(pParser, "fileIndex", &loc.fileIndex);
+                (void)JsonIn_FindU32NodeInHashA(pParser, "lineNo", &loc.lineNo);
+                (void)JsonIn_FindU16NodeInHashA(pParser, "colNo", &loc.colNo);
+                (void)JsonIn_FindI64NodeInHashA(pParser, "offset", &loc.offset);
+                JsonIn_SubObjectEnd(pParser);
+                eRc = LineIndex_Add(pObject, &loc);
+            }
+        }
 
         // Return to caller.
     exit00:
@@ -289,17 +299,31 @@ extern "C" {
         );
         ASTR_DATA       *pWrkStr;
 #endif
+        uint32_t        i;
+        uint32_t        iMax;
 
-#ifdef XYZZZY 
-        JsonOut_Append_i32("x", this->x, pStr);
-        JsonOut_Append_i64("t", this->t, pStr);
-        JsonOut_Append_u32("o", this->o, pStr);
-        JsonOut_Append_utf8("n", pEntry->pN, pStr);
-        JsonOut_Append_Object("e", this->pE, pStr);
-        JsonOut_Append_AStr("d", this->pAStr, pStr);
-        JsonOut_Append_StrA("d", this->pStrA, pStr);
-        JsonOut_Append_StrW32("d", this->pStrW32, pStr);
-#endif
+        JsonOut_Append_u32("max", this->max, pStr);
+        JsonOut_Append_u32("size", LineIndex_getSize(this), pStr);
+        AStr_AppendA(pStr, "\tarray:[\n");
+        iMax = LineIndex_getSize(this);
+        for (i=0; i<iMax; i++) {
+            SRCLOC          *pEntry = NULL;
+            pEntry = array_GetAddrOf(this->pArray, (i + 1));
+            if (pEntry) {
+                AStr_AppendPrint(pStr,
+                                 "\t\t{\"fileIndex\":%d, "
+                                 "\"offset\":%lld, "
+                                 "\"lineNo\":%d, "
+                                 "\"colNo\":%d "
+                                 "},\n",
+                                 pEntry->fileIndex,
+                                 pEntry->offset,
+                                 pEntry->lineNo,
+                                 pEntry->colNo
+                );
+            }
+        }
+        AStr_AppendA(pStr, "]\n");
 
         return ERESULT_SUCCESS;
     }

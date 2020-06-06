@@ -278,7 +278,7 @@ int         test_Lex00_Input01(
                         );
                 XCTAssertTrue( (fRc) );
 
-                // 1st Line - "+ ??( ??)\n"
+                // 1st Line - "+ ??( ??)\n" -> "+ [ ]"
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
@@ -314,6 +314,7 @@ int         test_Lex00_Input01(
                 XCTAssertFalse( (OBJ_NIL == pToken) );
 
                 pToken = Lex_TokenLookAhead(pLex, 1);
+                fprintf(stderr, "] == %c\n", Token_getClass(pToken));
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 XCTAssertTrue( (']' == Token_getClass(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);

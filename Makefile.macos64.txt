@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 5/31/2020 14:14:18.000)
+# ( 6/ 4/2020 21:10:59.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -444,6 +444,21 @@ $(OBJDIR)/Lex07_object.o: $(SRCDIR)/Lex07_object.c $(SRCDIR)/Lex07.h $(SRCDIR)/L
 OBJS += $(OBJDIR)/Lex_object.o
 
 $(OBJDIR)/Lex_object.o: $(SRCDIR)/Lex_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/LineIndex.o
+
+$(OBJDIR)/LineIndex.o: $(SRCDIR)/LineIndex.c $(SRCDIR)/LineIndex.h $(SRCDIR)/LineIndex_internal.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/LineIndex_json.o
+
+$(OBJDIR)/LineIndex_json.o: $(SRCDIR)/LineIndex_json.c $(SRCDIR)/LineIndex.h $(SRCDIR)/LineIndex_internal.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/LineIndex_object.o
+
+$(OBJDIR)/LineIndex_object.o: $(SRCDIR)/LineIndex_object.c $(SRCDIR)/LineIndex.h $(SRCDIR)/LineIndex_internal.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/MsgData.o
@@ -1591,46 +1606,6 @@ OBJS += $(OBJDIR)/objMatrix_object.o
 $(OBJDIR)/objMatrix_object.o: $(SRCDIR)/objMatrix_object.c $(SRCDIR)/objMatrix.h $(SRCDIR)/objMatrix_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/pplex.o
-
-$(OBJDIR)/pplex.o: $(SRCDIR)/pplex.c $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/pplex.h $(SRCDIR)/pplex_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/pplex1.o
-
-$(OBJDIR)/pplex1.o: $(SRCDIR)/pplex1.c $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/pplex1.h $(SRCDIR)/pplex1_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/pplex1_object.o
-
-$(OBJDIR)/pplex1_object.o: $(SRCDIR)/pplex1_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/pplex1.h $(SRCDIR)/pplex1_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/pplex2.o
-
-$(OBJDIR)/pplex2.o: $(SRCDIR)/pplex2.c $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/pplex2.h $(SRCDIR)/pplex2_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/pplex2_object.o
-
-$(OBJDIR)/pplex2_object.o: $(SRCDIR)/pplex2_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/pplex2.h $(SRCDIR)/pplex2_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/pplex3.o
-
-$(OBJDIR)/pplex3.o: $(SRCDIR)/pplex3.c $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/pplex3.h $(SRCDIR)/pplex3_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/pplex3_object.o
-
-$(OBJDIR)/pplex3_object.o: $(SRCDIR)/pplex3_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/pplex3.h $(SRCDIR)/pplex3_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/pplex_object.o
-
-$(OBJDIR)/pplex_object.o: $(SRCDIR)/pplex_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/pplex.h $(SRCDIR)/pplex_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/prt.o
 
 $(OBJDIR)/prt.o: $(SRCDIR)/prt.c $(SRCDIR)/prt.h $(SRCDIR)/prt_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1744,26 +1719,6 @@ $(OBJDIR)/screen_object.o: $(SRCDIR)/screen_object.c $(SRCDIR)/screen.h $(SRCDIR
 OBJS += $(OBJDIR)/shellSortPtrs.o
 
 $(OBJDIR)/shellSortPtrs.o: $(SRCDIR)/shellSortPtrs.c $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/sidx.o
-
-$(OBJDIR)/sidx.o: $(SRCDIR)/sidx.c $(SRCDIR)/sidx.h $(SRCDIR)/sidx_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/sidx_object.o
-
-$(OBJDIR)/sidx_object.o: $(SRCDIR)/sidx_object.c $(SRCDIR)/sidx.h $(SRCDIR)/sidx_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/sidxe.o
-
-$(OBJDIR)/sidxe.o: $(SRCDIR)/sidxe.c $(SRCDIR)/SrcLoc.h $(SRCDIR)/sidxe.h $(SRCDIR)/sidxe_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/sidxe_object.o
-
-$(OBJDIR)/sidxe_object.o: $(SRCDIR)/sidxe_object.c $(SRCDIR)/SrcLoc.h $(SRCDIR)/sidxe.h $(SRCDIR)/sidxe_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/srcFile.o
@@ -2174,6 +2129,12 @@ Lex07_test: $(TEST_SRC)/Lex07_test.c $(SRCDIR)/Lex07.h $(SRCDIR)/Lex07_internal.
 TESTS += Lex_test
 
 Lex_test: $(TEST_SRC)/Lex_test.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += LineIndex_test
+
+LineIndex_test: $(TEST_SRC)/LineIndex_test.c $(SRCDIR)/LineIndex.h $(SRCDIR)/LineIndex_internal.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2723,30 +2684,6 @@ objMatrix_test: $(TEST_SRC)/objMatrix_test.c $(SRCDIR)/objMatrix.h $(SRCDIR)/obj
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += pplex1_test
-
-pplex1_test: $(TEST_SRC)/pplex1_test.c $(SRCDIR)/pplex1.h $(SRCDIR)/pplex1_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += pplex2_test
-
-pplex2_test: $(TEST_SRC)/pplex2_test.c $(SRCDIR)/pplex2.h $(SRCDIR)/pplex2_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += pplex3_test
-
-pplex3_test: $(TEST_SRC)/pplex3_test.c $(SRCDIR)/pplex3.h $(SRCDIR)/pplex3_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += pplex_test
-
-pplex_test: $(TEST_SRC)/pplex_test.c $(SRCDIR)/pplex.h $(SRCDIR)/pplex_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += prt_test
 
 prt_test: $(TEST_SRC)/prt_test.c $(SRCDIR)/prt.h $(SRCDIR)/prt_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2810,18 +2747,6 @@ scanReader_test: $(TEST_SRC)/scanReader_test.c $(SRCDIR)/scanReader.h $(SRCDIR)/
 TESTS += screen_test
 
 screen_test: $(TEST_SRC)/screen_test.c $(SRCDIR)/screen.h $(SRCDIR)/screen_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += sidx_test
-
-sidx_test: $(TEST_SRC)/sidx_test.c $(SRCDIR)/sidx.h $(SRCDIR)/sidx_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += sidxe_test
-
-sidxe_test: $(TEST_SRC)/sidxe_test.c $(SRCDIR)/sidxe.h $(SRCDIR)/sidxe_internal.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

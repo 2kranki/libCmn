@@ -125,20 +125,36 @@ int             test_LineIndex_Copy01 (
     LINEINDEX_DATA       *pObj1 = OBJ_NIL;
     LINEINDEX_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(LINEINDEX_JSON_SUPPORT) && defined(XYZZY)
+#if defined(LINEINDEX_JSON_SUPPORT)
     ASTR_DATA       *pStr = OBJ_NIL;
 #endif
-   
+    uint32_t        i;
+    uint32_t        iMax;
+    SRCLOC          loc = {0};
+    SRCLOC          fnd = {0};
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = LineIndex_New( );
+    pObj1 = LineIndex_NewWithMax(4);
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_LINEINDEX);
         TINYTEST_TRUE( (fRc) );
-        
+        iMax = 7;
+        for (i=0; i<iMax; ++i) {
+            loc.lineNo = i;
+            loc.offset = i << 1;
+            eRc = LineIndex_Add(pObj1, &loc);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            eRc = LineIndex_Find(pObj1, i, &fnd);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        }
+        XCTAssertTrue( (4 == LineIndex_getSize(pObj1)) );
+        XCTAssertTrue( (4 == LineIndex_getMax(pObj1)) );
+        XCTAssertTrue( (2 == LineIndex_getInterval(pObj1)) );
+
         // Test assign.
         pObj2 = LineIndex_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
@@ -147,9 +163,14 @@ int             test_LineIndex_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_LINEINDEX);
         TINYTEST_TRUE( (fRc) );
-        //eRc = LineIndex_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
-        //TODO: Add More tests here!
+        eRc = LineIndex_Find(pObj2, 3, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (2 == fnd.lineNo) );
+        XCTAssertTrue( (4 == fnd.offset) );
+        eRc = LineIndex_Find(pObj2, 7, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (6 == fnd.lineNo) );
+        XCTAssertTrue( (12 == fnd.offset) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -160,15 +181,20 @@ int             test_LineIndex_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_LINEINDEX);
         TINYTEST_TRUE( (fRc) );
-        //eRc = LineIndex_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
-        //TODO: Add More tests here!
+        eRc = LineIndex_Find(pObj2, 3, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (2 == fnd.lineNo) );
+        XCTAssertTrue( (4 == fnd.offset) );
+        eRc = LineIndex_Find(pObj2, 7, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (6 == fnd.lineNo) );
+        XCTAssertTrue( (12 == fnd.offset) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(LINEINDEX_JSON_SUPPORT) && defined(XYZZY)
+#if defined(LINEINDEX_JSON_SUPPORT)
         pStr = LineIndex_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
@@ -178,8 +204,14 @@ int             test_LineIndex_Copy01 (
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = LineIndex_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        eRc = LineIndex_Find(pObj2, 3, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (2 == fnd.lineNo) );
+        XCTAssertTrue( (4 == fnd.offset) );
+        eRc = LineIndex_Find(pObj2, 7, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (6 == fnd.lineNo) );
+        XCTAssertTrue( (12 == fnd.offset) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -201,7 +233,7 @@ int             test_LineIndex_Test01 (
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    LINEINDEX_DATA       *pObj = OBJ_NIL;
+    LINEINDEX_DATA  *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -234,10 +266,103 @@ int             test_LineIndex_Test01 (
 
 
 
+int         test_LineIndex_General01 (
+    const
+    char        *pTestName
+)
+{
+    LINEINDEX_DATA  *pObj = OBJ_NIL;
+    uint32_t        i;
+    uint32_t        iMax;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr;
+    SRCLOC          loc;
+    SRCLOC          fnd;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = LineIndex_NewWithMax(4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        XCTAssertTrue( (4 == LineIndex_getMax(pObj)) );
+
+        iMax = 4;
+        for (i=0; i<iMax; ++i) {
+            loc.lineNo = i;
+            loc.offset = i << 1;
+            eRc = LineIndex_Add(pObj, &loc);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            eRc = LineIndex_Find(pObj, i, &fnd);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        }
+        XCTAssertTrue( (4 == LineIndex_getSize(pObj)) );
+        XCTAssertTrue( (4 == LineIndex_getMax(pObj)) );
+        XCTAssertTrue( (1 == LineIndex_getInterval(pObj)) );
+
+        pStr = LineIndex_ToDebugString(pObj, 0);
+        fprintf(stderr, "%s\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        iMax = 7;
+        for (i=4; i<iMax; ++i) {
+            loc.lineNo = i;
+            loc.offset = i << 1;
+            eRc = LineIndex_Add(pObj, &loc);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            eRc = LineIndex_Find(pObj, i, &fnd);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        }
+        XCTAssertTrue( (4 == LineIndex_getSize(pObj)) );
+        XCTAssertTrue( (4 == LineIndex_getMax(pObj)) );
+        XCTAssertTrue( (2 == LineIndex_getInterval(pObj)) );
+
+        pStr = LineIndex_ToDebugString(pObj, 0);
+        fprintf(stderr, "%s\n\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        eRc = LineIndex_Find(pObj, 0, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == fnd.lineNo) );
+        XCTAssertTrue( (0 == fnd.offset) );
+
+        eRc = LineIndex_Find(pObj, 1, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == fnd.lineNo) );
+        XCTAssertTrue( (0 == fnd.offset) );
+
+        eRc = LineIndex_Find(pObj, 2, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (2 == fnd.lineNo) );
+        XCTAssertTrue( (4 == fnd.offset) );
+
+        eRc = LineIndex_Find(pObj, 3, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (2 == fnd.lineNo) );
+        XCTAssertTrue( (4 == fnd.offset) );
+
+        eRc = LineIndex_Find(pObj, 7, &fnd);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (6 == fnd.lineNo) );
+        XCTAssertTrue( (12 == fnd.offset) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_LineIndex);
+    TINYTEST_ADD_TEST(test_LineIndex_General01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_LineIndex_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_LineIndex_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_LineIndex_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_LineIndex_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

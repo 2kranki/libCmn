@@ -43,7 +43,7 @@
 #include        <JsonIn.h>
 #include        <SrcLoc_internal.h>
 #include        <ascii.h>
-#include        <sidxe.h>
+#include        <LineIndex.h>
 #include        <u8Array.h>
 #include        <W32Str.h>
 
@@ -125,13 +125,13 @@ struct TextIn_data_s	{
     uint16_t        filenameIndex;
     uint16_t        upperLimit;         // If set upper length limit for line.
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-    SIDXE_DATA      *pSidx;
+    LINEINDEX_DATA  *pLineIndex;
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-    SIDXE_DATA      *pSidx;
+    LINEINDEX_DATA  *pLineIndex;
 #endif
-    TEXTIN_CHAR     curChr;
-    TEXTIN_CHAR     savChr;
+    TOKEN_FIELDS    curTok;
+    TOKEN_FIELDS    savTok;
     ERESULT         (*pLineExit)(
                                  OBJ_ID,
                                  int             len,

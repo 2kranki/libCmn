@@ -225,7 +225,7 @@ int             test_TextIn_Input01(
 {
     TEXTIN_DATA     *pObj = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
-    W32CHR_T        chr = 0;
+    TOKEN_FIELDS    *pTok = NULL;
     //ERESULT         eRc;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -236,20 +236,25 @@ int             test_TextIn_Input01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == 'a') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == 'a') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == 'b') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == 'b') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == 'c') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == 'c') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == '\n') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == '\n') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == EOF) );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == EOF) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -271,7 +276,7 @@ int             test_TextIn_Input02(
 {
     TEXTIN_DATA     *pObj = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
-    W32CHR_T        chr = 0;
+    TOKEN_FIELDS    *pTok = NULL;
     //ERESULT         eRc;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -282,32 +287,41 @@ int             test_TextIn_Input02(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == 'a') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == 'a') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == 'b') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == 'b') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == 'c') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == 'c') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == ' ') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == ' ') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == 'd') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == 'd') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == 'e') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == 'e') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == 'f') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == 'f') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == '\n') );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == '\n') );
 
-        chr = TextIn_NextChar(pObj);
-        TINYTEST_TRUE( (chr == EOF) );
+        pTok = TextIn_NextToken(pObj);
+        TINYTEST_FALSE( (NULL == pTok) );
+        TINYTEST_TRUE( (pTok->w32chr[0] == EOF) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -559,6 +573,7 @@ int             test_TextIn_GetLine05(
         TINYTEST_TRUE( (ERESULT_EOF_ERROR == eRc) );
         TINYTEST_TRUE( (OBJ_NIL == pLine) );
         fprintf(stderr, "\tRead %d lines.\n", cnt);
+        TINYTEST_TRUE( (15 == cnt) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -613,6 +628,7 @@ int             test_TextIn_GetLine06(
         TINYTEST_TRUE( (ERESULT_EOF_ERROR == eRc) );
         TINYTEST_TRUE( (OBJ_NIL == pLine) );
         fprintf(stderr, "\tRead %d lines.\n", cnt);
+        TINYTEST_TRUE( (214 == cnt) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

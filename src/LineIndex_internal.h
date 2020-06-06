@@ -40,6 +40,7 @@
 
 
 #include        <LineIndex.h>
+#include        <array.h>
 #include        <JsonIn.h>
 
 
@@ -69,9 +70,9 @@ struct LineIndex_data_s  {
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;           // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    uint32_t        max;            // maximum number of entries
+    uint32_t        maxLineNo;
+    ARRAY_DATA      *pArray;
 
 };
 #pragma pack(pop)

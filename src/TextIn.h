@@ -53,6 +53,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <SrcLoc.h>
+#include        <Token.h>
 
 
 
@@ -97,13 +98,6 @@ extern "C" {
         // Methods:
         //bool        (*pIsEnabled)(TEXTIN_DATA *);
     } TEXTIN_CLASS_VTBL;
-
-
-    typedef struct textIn_char_s {
-        SRCLOC          loc;
-        int32_t         cls;        // ASCII Class
-        W32CHR_T        chr;
-    } TEXTIN_CHAR;
 
 
 
@@ -243,7 +237,9 @@ extern "C" {
     /*!
      The Upper Limit property if non-zero causes GetLine() to
      stop gathering data for that line when the limit is reached.
-     The remaining data for that line will be skipped.
+     The remaining data for that line will be skipped. For
+     instance, setting this to 80, only returns the first 80
+     bytes of a line and the rest of the line is ignored.
      */
     uint16_t        TextIn_getUpperLimit (
         TEXTIN_DATA     *this
@@ -322,9 +318,8 @@ extern "C" {
        TEXTIN_DATA      *this
     );
 
-    ERESULT         TextIn_NextChrLoc(
-       TEXTIN_DATA      *this,
-       TEXTIN_CHAR      *pChr               // [out] next char is returned here
+    TOKEN_FIELDS *  TextIn_NextToken (
+       TEXTIN_DATA      *this
     );
 
 

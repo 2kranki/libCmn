@@ -1724,6 +1724,8 @@ extern "C" {
         }
     #endif
 
+        //FIXME: Set up for LEX??.
+#ifdef XYZZY
         pLex = (LEX_DATA *)pplex_New(tabSize);
         if (OBJ_NIL == pLex) {
             return ERESULT_OUT_OF_MEMORY;
@@ -1765,6 +1767,7 @@ extern "C" {
                                 (void *)pplex_InputLookAhead,
                                 pLex
         );
+#endif
 
         // Return to caller.
         return ERESULT_SUCCESS;

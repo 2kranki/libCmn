@@ -523,11 +523,6 @@ extern "C" {
     );
 
 
-    ERESULT         Token_IsEnabled (
-        TOKEN_DATA      *this
-    );
-    
- 
     /*!
      Create a string of the token data in string format. This returns
      just the data, not any other fields such a filename, line or col.

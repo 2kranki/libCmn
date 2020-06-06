@@ -467,9 +467,9 @@ LINEINDEX_VTBL     LineIndex_Vtbl = {
         (P_OBJ_TOSTRING)LineIndex_ToDebugString,
         NULL,           // LineIndex_Enable,
         NULL,           // LineIndex_Disable,
-        NULL,           // (P_OBJ_ASSIGN)LineIndex_Assign,
+        (P_OBJ_ASSIGN)LineIndex_Assign,
         NULL,           // (P_OBJ_COMPARE)LineIndex_Compare,
-        NULL,           // (P_OBJ_PTR)LineIndex_Copy,
+        (P_OBJ_PTR)LineIndex_Copy,
         NULL,           // (P_OBJ_PTR)LineIndex_DeepCopy,
         NULL            // (P_OBJ_HASH)LineIndex_Hash,
     },
@@ -486,15 +486,12 @@ static
 const
 OBJ_INFO        LineIndex_Info = {
     "LineIndex",
-    "LineIndex",
+    "Line Index into File or Buffer",
     (OBJ_DATA *)&LineIndex_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&LineIndex_Vtbl,
     sizeof(LINEINDEX_DATA)
 };
-#warning -- adjust super class object in Info above 
-//          if object inherits from another class
-//          Also, update description
 
 
 
