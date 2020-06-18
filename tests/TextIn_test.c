@@ -99,7 +99,7 @@ int             test_TextIn_OpenClose (
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);       
+        obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_TEXTIN);
         TINYTEST_TRUE( (fRc) );
         
@@ -236,6 +236,8 @@ int             test_TextIn_Input01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        obj_TraceSet(pObj, true);
+
         pTok = TextIn_NextToken(pObj);
         TINYTEST_FALSE( (NULL == pTok) );
         TINYTEST_TRUE( (pTok->w32chr[0] == 'a') );
@@ -286,6 +288,8 @@ int             test_TextIn_Input02(
     pObj = TextIn_NewFromAStr(OBJ_NIL, pStr, 1, 4);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
+
+        obj_TraceSet(pObj, true);
 
         pTok = TextIn_NextToken(pObj);
         TINYTEST_FALSE( (NULL == pTok) );
@@ -355,6 +359,8 @@ int             test_TextIn_GetLine01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        obj_TraceSet(pObj, true);
+
         eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "abc")) );
@@ -408,6 +414,8 @@ int             test_TextIn_GetLine02(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        obj_TraceSet(pObj, true);
+
         eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "{")) );
@@ -449,6 +457,8 @@ int             test_TextIn_GetLine03(
     if (pObj) {
 
         TextIn_setUpperLimit(pObj, 2);
+
+        obj_TraceSet(pObj, true);
 
         eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
@@ -496,6 +506,8 @@ int             test_TextIn_GetLine04(
     pObj = TextIn_NewFromAStr(OBJ_NIL, pStr, 1, 4);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
+
+        obj_TraceSet(pObj, true);
 
         eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
@@ -559,6 +571,8 @@ int             test_TextIn_GetLine05(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        obj_TraceSet(pObj, true);
+
         for (;;) {
             eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
             if (ERESULT_FAILED(eRc)) {
@@ -614,6 +628,8 @@ int             test_TextIn_GetLine06(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        obj_TraceSet(pObj, true);
+
         for (;;) {
             eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
             if (ERESULT_FAILED(eRc)) {
@@ -629,6 +645,20 @@ int             test_TextIn_GetLine06(
         TINYTEST_TRUE( (OBJ_NIL == pLine) );
         fprintf(stderr, "\tRead %d lines.\n", cnt);
         TINYTEST_TRUE( (214 == cnt) );
+        {
+            ASTR_DATA       *pStr = OBJ_NIL;
+            pStr = TextIn_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+            }
+        }
+
+        eRc = TextIn_SeekOffset(pObj, 5380);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE( (5380 == pObj->curTok.src.offset) );
+        TINYTEST_TRUE( (211 == pObj->curTok.src.lineNo) );
+        TINYTEST_TRUE( (0 == pObj->curTok.src.colNo) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

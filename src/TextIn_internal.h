@@ -44,7 +44,6 @@
 #include        <SrcLoc_internal.h>
 #include        <ascii.h>
 #include        <LineIndex.h>
-#include        <u8Array.h>
 #include        <W32Str.h>
 
 
@@ -74,7 +73,6 @@ typedef enum TextIn_type_e {
     TEXTIN_TYPE_UNKNOWN=0,
     TEXTIN_TYPE_ASTR,
     TEXTIN_TYPE_FILE,
-    TEXTIN_TYPE_U8ARRAY,
     TEXTIN_TYPE_WSTR
 } TEXTIN_TYPE;
 
@@ -97,7 +95,6 @@ struct TextIn_data_s	{
     union {
         ASTR_DATA           *pAStr;
         FILE                *pFile;
-        U8ARRAY_DATA        *pU8Array;
         W32STR_DATA         *pWStr;
     };
     uint16_t        type;               // see TEXTIN_TYPE
@@ -122,7 +119,7 @@ struct TextIn_data_s	{
     const
     char            *pPathA;
     uint8_t         *pBuffer;
-    uint16_t        filenameIndex;
+    uint16_t        fileIndex;
     uint16_t        upperLimit;         // If set upper length limit for line.
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
     LINEINDEX_DATA  *pLineIndex;
@@ -130,6 +127,7 @@ struct TextIn_data_s	{
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     LINEINDEX_DATA  *pLineIndex;
 #endif
+    int64_t         offset;
     TOKEN_FIELDS    curTok;
     TOKEN_FIELDS    savTok;
     ERESULT         (*pLineExit)(

@@ -40,6 +40,7 @@
 
 
 #include        <SrcFile.h>
+#include        <array.h>
 #include        <JsonIn.h>
 #include        <TextIn_internal.h>
 #include        <Token_internal.h>
@@ -77,6 +78,7 @@ struct SrcFile_data_s  {
     uint16_t        sizeInputs;
     uint16_t        curInputs;
     TOKEN_DATA      *pInputs;
+    TOKEN_FIELDS    chkData;
 
 };
 #pragma pack(pop)

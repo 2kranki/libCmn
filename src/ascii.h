@@ -160,7 +160,7 @@ extern "C" {
         ASCII_LEXICAL_DELETE,               // ascii 127
         ASCII_LEXICAL_NUMBER,               // 0-9
         ASCII_LEXICAL_EOL,                  // '\n'
-        ASCII_LEXICAL_WHITESPACE,           // ' ', '\t', '\n', '\r', '\f'
+        ASCII_LEXICAL_WHITESPACE,           // ' ', '\t', '\r', '\f'
         ASCII_LEXICAL_UNICODE,              // >256
     } ASCII_LEXICAL_CharClasses;
     

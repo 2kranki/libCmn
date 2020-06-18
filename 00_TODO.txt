@@ -10,10 +10,8 @@ will depend upon time and resources.
         * Win32/Win64
 
 -- TextIn:
-    * Specify a large line buffer size and buffer one line at a time. Read a line at
-        a time (W32).  Change Next() methods to offset within the line.  When the end
-        of line is reached, read the next line.
-    * Add method, Repos(), to reposition based on lines.  
+    * Add method, Repos(), to reposition based on lineNo and colNo.  
+    * Add method, Repos(), to reposition based on file position.  
 
 -- Lex:
     *   Rewrite Lex to support W32Str for accumulation.

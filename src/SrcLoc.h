@@ -84,7 +84,7 @@ extern "C" {
         uint16_t        unused16;
         uint32_t        lineNo;             // Source Input Line Number
         uint32_t        unused32;
-        int64_t         offset;             // File Offset
+        int64_t         offset;             // File Offset (zero based)
     } SRCLOC;
 #pragma pack(pop)
     

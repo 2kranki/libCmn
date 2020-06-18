@@ -1712,8 +1712,8 @@ extern "C" {
         uint16_t        tabSize
     )
     {
-        ERESULT         eRc;
-        LEX_DATA        *pLex = OBJ_NIL;
+        //ERESULT         eRc;
+        //LEX_DATA        *pLex = OBJ_NIL;
 
         // Do initialization.
     #ifdef NDEBUG

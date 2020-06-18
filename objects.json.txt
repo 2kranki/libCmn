@@ -89,8 +89,8 @@
             used to modularize building a scanner for testing purposes.
          */
         {name:"Lex", deps:["Token.h","TokenList.h"], desc:"Base Lexical Scanner"},
-        {name:"Lex00", deps:["Token.h","TokenList.h"], desc:"??? Lexical Scanner"},
-        {name:"Lex01", deps:["Token.h","TokenList.h"], desc:"??? Lexical Scanner"},
+        {name:"Lex00", deps:["Token.h","TokenList.h"], desc:"C Trigraphs Lexical Scanner"},
+        {name:"Lex01", deps:["Token.h","TokenList.h"], desc:"C99 Lexical Scanner"},
         {name:"Lex02", deps:["Token.h","TokenList.h"], desc:"??? Lexical Scanner"},
         {name:"Lex03", deps:["Token.h","TokenList.h"], desc:"??? Lexical Scanner"},
         {name:"Lex04", deps:["Token.h","TokenList.h"], desc:"??? Lexical Scanner"},

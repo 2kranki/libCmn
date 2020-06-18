@@ -314,6 +314,30 @@ extern "C" {
     
     
 
+    //---------------------------------------------------------------
+    //               L e x i c a l  S c a n n e r
+    //---------------------------------------------------------------
+
+    inline
+    LEX_DATA *      lexj_getLex(
+        LEXJ_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !lexj_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (LEX_DATA *)this;
+    }
+
+
+
     uint16_t        lexj_getPriority(
         LEXJ_DATA     *this
     )

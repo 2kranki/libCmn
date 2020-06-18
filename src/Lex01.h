@@ -1,17 +1,14 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Lexical Scanner 01 - C Trigraphs (Lex01) Header
+//          C99 Lexical Scanner (Lex01) Header
 //****************************************************************
 /*
  * Program
- *          Lexical Scanner 01 - C Trigraphs (Lex01)
+ *          C99 Lexical Scanner (Lex01)
  * Purpose
- *          This object serves as a filter to convert all C
- *          trigraphs back into normal C letters. Most source
- *          tokens are just passed through this. When a trigraph
- *          is recognized, it is converted into one token from
- *          three input tokens.
+ *          This object serves as a filter to convert source code
+ *          into C99 Lexical Tokens.
  *
  * Remarks
  *  1.      None
@@ -101,6 +98,14 @@ extern "C" {
     } LEX01_CLASS_VTBL;
 
 
+    // The first eight flags are reserved for Lex.
+    typedef enum Lex01_Flags_e {
+        LEX01_FLAG_RETURN_CM=0x00800000,            // Comments
+        LEX01_FLAG_RETURN_NL=0x00400000,            // New-Line
+        LEX01_FLAG_RETURN_WS=0x00200000,            // White-Space excluding New-Lines
+    } LEX01_FLAGS;
+
+
 
 
     /****************************************************************
@@ -129,7 +134,7 @@ extern "C" {
      released.
      @return    pointer to Lex01 object if successful, otherwise OBJ_NIL.
      */
-    LEX01_DATA *     Lex01_Alloc (
+    LEX01_DATA *    Lex01_Alloc (
         void
     );
     
@@ -139,17 +144,17 @@ extern "C" {
     );
     
     
-    LEX01_DATA *     Lex01_New (
+    LEX01_DATA *    Lex01_New (
         void
     );
     
     
 #ifdef  LEX01_JSON_SUPPORT
-    LEX01_DATA *   Lex01_NewFromJsonString (
+    LEX01_DATA *    Lex01_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    LEX01_DATA *   Lex01_NewFromJsonStringA (
+    LEX01_DATA *    Lex01_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -161,6 +166,44 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    // Comments is a flag to indicate if comments should be
+    // included in the token stream. The default is false
+    // which excludes comments from the token stream.
+    bool            Lex01_getComments(
+        LEX01_DATA      *this
+    );
+
+    bool            Lex01_setComments(
+        LEX01_DATA      *this,
+        bool            fValue
+    );
+
+
+    LEX_DATA *      Lex01_getLex(
+        LEX01_DATA      *this
+    );
+
+
+    bool            Lex01_getNL(
+        LEX01_DATA      *this
+    );
+
+    bool            Lex01_setNL(
+        LEX01_DATA      *this,
+        bool            fValue
+    );
+
+
+    bool            Lex01_geWS(
+        LEX01_DATA      *this
+    );
+
+    bool            Lex01_setWS(
+        LEX01_DATA      *this,
+        bool            fValue
+    );
+
+
 
 
     
@@ -168,23 +211,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Lex01_Disable (
-        LEX01_DATA       *this
+    ERESULT         Lex01_Disable (
+        LEX01_DATA      *this
     );
 
 
-    ERESULT     Lex01_Enable (
-        LEX01_DATA       *this
+    ERESULT         Lex01_Enable (
+        LEX01_DATA      *this
     );
 
    
-    LEX01_DATA *   Lex01_Init (
-        LEX01_DATA     *this
+    LEX01_DATA *    Lex01_Init (
+        LEX01_DATA      *this
     );
 
 
-    ERESULT     Lex01_IsEnabled (
-        LEX01_DATA       *this
+    ERESULT         Lex01_IsEnabled (
+        LEX01_DATA      *this
     );
     
  

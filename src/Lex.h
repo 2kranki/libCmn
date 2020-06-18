@@ -304,6 +304,7 @@ extern "C" {
         LEX_KWD_CHAR,
         LEX_KWD_CLASS,
         LEX_KWD_CNOP,
+        LEX_KWD_COMPLEX,
         LEX_KWD_CONST,
         LEX_KWD_CONTINUE,
         LEX_KWD_COPY,
@@ -334,6 +335,7 @@ extern "C" {
         LEX_KWD_GOTO,
         LEX_KWD_ID,
         LEX_KWD_IF,
+        LEX_KWD_IMAGINARY,
         LEX_KWD_IN,
         LEX_KWD_INLINE,
         LEX_KWD_INOUT,
@@ -368,6 +370,7 @@ extern "C" {
         LEX_KWD_READWRITE,
         LEX_KWD_REGISTER,
         LEX_KWD_RETAIN,
+        LEX_KWD_RESTRICT,
         LEX_KWD_RETURN,
         LEX_KWD_RSECT,
         LEX_KWD_SELECT,
@@ -436,7 +439,7 @@ extern "C" {
     } LEX_CLASS;
 
 
-    // The following defines the flags for the scanner. The first eigth flags
+    // The following defines the flags for the scanner. The first eight flags
     // should be reserved for this object. Inheriting object may use the rest.
     // These flags are used with the Flags property:
     typedef enum Lex_Flags_e {

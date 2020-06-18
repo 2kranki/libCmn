@@ -56,6 +56,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Path.h>
+#include        <TextIn.h>
 #include        <Token.h>
 
 
@@ -235,10 +236,32 @@ extern "C" {
     );
 
 
+    /*! SrcFile inherits from TextIn. So, get direct access
+        to TextIn.
+     */
+    TEXTIN_DATA *   SrcFile_getTextIn (
+        SRCFILE_DATA    *this
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Save the current token for a checkpoint which will allow a restart
+     to begin again at this point.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     @warning   Mulitple checkpoints can be called, but only the last
+                one will be recognized by SrcFile_Restart().
+     */
+    ERESULT         SrcFile_CheckPoint (
+        SRCFILE_DATA    *this
+    );
+
 
     SRCFILE_DATA *  SrcFile_Init (
         SRCFILE_DATA    *this
@@ -266,6 +289,20 @@ extern "C" {
     TOKEN_DATA *    SrcFile_InputLookAhead (
         SRCFILE_DATA    *this,
         uint16_t        num
+    );
+
+
+    /*!
+     Restart the token stream at the previous checkpoint.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     @warning   This should never be called unless SrcFile_Checkpoint()
+                has already been called first at the point that you
+                want restarted at.
+     */
+    ERESULT         SrcFile_Restart (
+        SRCFILE_DATA    *this
     );
 
 

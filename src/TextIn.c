@@ -68,91 +68,11 @@ extern "C" {
     ****************************************************************/
 
     static
-    ERESULT         TextIn_FileGetc (
-        TEXTIN_DATA     *this,
-        W32CHR_T        *pChar
-    )
-    {
-        W32CHR_T        chr;
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!TextIn_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        chr = fgetwc(this->pFile);
-        if( chr == ASCII_CPM_EOF ) {
-            while ((chr = fgetwc(this->pFile)) != EOF) {
-            }
-        }
-        *pChar = chr;
-
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    static
-    ERESULT         TextIn_u8ArrayGetc (
-        TEXTIN_DATA     *this,
-        W32CHR_T        *pChar
-    )
-    {
-        char            chrs[8];
-        W32CHR_T        chr = -1;
-        uint32_t        len;
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!TextIn_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        chrs[0] = 0;
-        ++this->curTok.src.offset;
-        chrs[0] = u8Array_Get(this->pU8Array, (uint32_t)this->curTok.src.offset);
-        if (0 == chrs[0]) {
-            *pChar = EOF;
-            return ERESULT_EOF_ERROR;
-        }
-        if (chrs[0] > 0x7F) {
-            len = utf8_ChrLen(chrs[0]);
-            --len;
-            chr = 1;
-            while (len--) {
-                ++this->curTok.src.offset;
-                chrs[chr++] = u8Array_Get(this->pU8Array, (uint32_t)this->curTok.src.offset);
-                if (0 == chrs[0]) {
-                    *pChar = EOF;
-                    return ERESULT_EOF_ERROR;
-                }
-            }
-            len = utf8_Utf8ToW32(chrs, &chr);
-        }
-        if( chr == ASCII_CPM_EOF ) {
-            this->curTok.src.offset = u8Array_getSize(this->pU8Array);
-            chr = EOF;
-        }
-        *pChar = chr;
-
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    static
     W32CHR_T        TextIn_UnicodeGetc (
         TEXTIN_DATA     *this
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         W32CHR_T        chr = EOF;
 
         // Validate the input parameters.
@@ -167,29 +87,29 @@ extern "C" {
         switch (this->type) {
 
             case TEXTIN_TYPE_FILE:
-                eRc = TextIn_FileGetc(this, &chr);
-                if (ERESULT_HAS_FAILED(eRc) || (chr == EOF) || feof(this->pFile)) {
+                this->curTok.src.offset = ftell(this->pFile);
+                chr = fgetwc(this->pFile);
+                if( chr == ASCII_CPM_EOF ) {
+                    while ((chr = fgetwc(this->pFile)) != EOF) {
+                    }
+                }
+                if ((chr == EOF) || feof(this->pFile)) {
                     chr = EOF;
                 }
                 break;
 
             case TEXTIN_TYPE_ASTR:
-                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->curTok.src.offset++);
+                this->curTok.src.offset = this->offset;
+                chr = AStr_CharGetW32(this->pAStr, (uint32_t)++this->offset);
                 if ((chr == ASCII_CPM_EOF) || (chr == EOF)){
                     this->curTok.src.offset = AStr_getLength(this->pAStr);
                     chr = EOF;
                 }
                 break;
 
-            case TEXTIN_TYPE_U8ARRAY:
-                eRc = TextIn_u8ArrayGetc(this, &chr);
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    chr = EOF;
-                }
-                break;
-
             case TEXTIN_TYPE_WSTR:
-                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)this->curTok.src.offset++ );
+                this->curTok.src.offset = this->offset;
+                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)++this->offset );
                 if( chr == ASCII_CPM_EOF ) {
                     this->curTok.src.offset = W32Str_getLength(this->pWStr);
                     chr = EOF;
@@ -875,13 +795,6 @@ extern "C" {
                 }
                 break;
 
-            case TEXTIN_TYPE_U8ARRAY:
-                if (this->pU8Array) {
-                    obj_Release(this->pU8Array);
-                    this->pU8Array = OBJ_NIL;
-                }
-                break;
-
             case TEXTIN_TYPE_WSTR:
                 if (this->pWStr) {
                     obj_Release(this->pWStr);
@@ -1468,7 +1381,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&TextIn_Vtbl);
         
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-        this->pLineIndex = LineIndex_NewWithMax(512);
+        this->pLineIndex = LineIndex_NewWithMax(32);
         if (OBJ_NIL == this->pLineIndex) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1476,7 +1389,7 @@ extern "C" {
         }
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        this->pLineIndex = LineIndex_NewWithMax(512);
+        this->pLineIndex = LineIndex_NewWithMax(32);
         if (OBJ_NIL == this->pLineIndex) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1505,6 +1418,35 @@ extern "C" {
     }
 
      
+
+    //---------------------------------------------------------------
+    //                       I s  A t  E O F
+    //---------------------------------------------------------------
+
+    bool            TextIn_IsAtEOF (
+        TEXTIN_DATA     *this
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (this->fAtEOF) {
+            return true;
+        }
+
+        // Return to caller.
+        return false;
+    }
+
+
 
     //---------------------------------------------------------------
     //                       I s E n a b l e d
@@ -1558,7 +1500,7 @@ extern "C" {
 #endif
 
         if (pFilenameIndex)
-            *pFilenameIndex = this->filenameIndex;
+            *pFilenameIndex = this->fileIndex;
         if (pOffset)
             *pOffset = this->curTok.src.offset;
         if (pLineNo)
@@ -1591,6 +1533,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
+        //TRC_OBJ(this, "TextIn_NextToken:\n");
 
     again:
         switch (this->state) {
@@ -1681,8 +1624,20 @@ extern "C" {
         this->curTok.len = 1;
         this->curTok.w32chr[0] = chr;
         this->curTok.w32chr[1] = 0;
+        TRC_OBJ(
+                this,
+                "\tNextToken: file:%d Line:%d Col:%d Offset:%lld Char:(%d)%c\n",
+                this->curTok.src.fileIndex,
+                this->curTok.src.lineNo,
+                this->curTok.src.colNo,
+                this->curTok.src.offset,
+                this->curTok.w32chr[0],
+                (((this->curTok.w32chr[0] > ' ') && (this->curTok.w32chr[0] < 0x7F))
+                 ? this->curTok.w32chr[0] : ' ')
+        );
 
         // Return to caller.
+        //TRC_OBJ(this, "...TextIn_NextToken\n");
         return &this->curTok;
     }
 
@@ -1832,19 +1787,20 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Enable operation of this object.
+     Seek (ie reposition) in the file to the following offset insuring
+     that the line and column number are proper.
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         TextIn_Seek (
+    ERESULT         TextIn_SeekOffset (
         TEXTIN_DATA     *this,
-        uint32_t        lineNo
+        int64_t         offset
     )
     {
-        SRCLOC          loc;
-        //TOKEN_FIELDS    tok = {0};
         ERESULT         eRc;
+        int             iRc;
+        TOKEN_FIELDS    *pFields;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1854,57 +1810,64 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+        obj_FlagOff(this, TEXTIN_FLAG_SAVCHR);
+        this->fAtEOF = 0;
+        //memmove(&this->curTok, pLoc, sizeof(TOKEN_FIELDS));
+        //this->offset = pLoc->src.offset;
 
-        eRc = LineIndex_Find(this->pLineIndex, lineNo, &loc);
+        // First, we must find the closest entry in the offset/line table.
+        eRc = LineIndex_FindOffset(this->pLineIndex, offset, &this->curTok.src);
         if (ERESULT_FAILED(eRc)) {
-            loc.lineNo = 0;
-            loc.offset = 0;
+            // Set the location to the beginning of the file.
+            this->curTok.src.fileIndex = this->fileIndex;
+            this->curTok.src.colNo = 1;
+            this->curTok.src.lineNo = 1;
+            this->curTok.src.offset = 0;
         }
-        loc.colNo = 1;
 
-        this->curTok.src = loc;
+        // Now we re-adjust the physical offset within the input source.
         switch (this->type) {
 
             case TEXTIN_TYPE_FILE:
-#ifdef XYZZY
-                eRc = TextIn_FileGetc(this, &chr);
-                if (ERESULT_HAS_FAILED(eRc) || (chr == EOF) || feof(this->pFile)) {
-                    chr = EOF;
+                iRc = fseek(this->pFile, this->curTok.src.offset, SEEK_SET);
+                if (0 == iRc)
+                    ;
+                else {
+                    this->fAtEOF = 1;
                 }
-#endif
                 break;
 
             case TEXTIN_TYPE_ASTR:
-#ifdef XYZZY
-                chr = AStr_CharGetW32(this->pAStr, (uint32_t)this->curChr.loc.offset++);
-                if ((chr == ASCII_CPM_EOF) || (chr == EOF)){
-                    this->curTok.src.offset = AStr_getLength(this->pAStr);
-                    chr = EOF;
+                // offset field is used.
+                if (this->curTok.src.offset <= AStr_getLength(this->pAStr))
+                    this->offset = this->curTok.src.offset;
+                else {
+                    DEBUG_BREAK();
+                    return ERESULT_DATA_OUT_OF_RANGE;
                 }
-#endif
-                break;
-
-            case TEXTIN_TYPE_U8ARRAY:
-#ifdef XYZZY
-                eRc = TextIn_u8ArrayGetc(this, &chr);
-                if (ERESULT_HAS_FAILED(eRc)) {
-                    chr = EOF;
-                }
-#endif
                 break;
 
             case TEXTIN_TYPE_WSTR:
-#ifdef XYZZY
-                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)this->curTok.src.offset++ );
-                if( chr == ASCII_CPM_EOF ) {
-                    this->curTok.src.offset = W32Str_getLength(this->pWStr);
-                    chr = EOF;
+                // offset field is used.
+                if (this->curTok.src.offset <= W32Str_getLength(this->pWStr))
+                    this->offset = this->curTok.src.offset;
+                else {
+                    DEBUG_BREAK();
+                    return ERESULT_DATA_OUT_OF_RANGE;
                 }
-#endif
                 break;
 
             default:
                 break;
+        }
+
+        // Now, we repostition within the file.
+        while (offset > this->curTok.src.offset) {
+            pFields = TextIn_NextToken(this);
+            if (NULL == pFields) {
+                DEBUG_BREAK();
+                return ERESULT_GENERAL_FAILURE;
+            }
         }
 
         // Return to caller.
@@ -1966,6 +1929,7 @@ extern "C" {
         this->curTok.src.colNo   = 0;
         this->curTok.src.fileIndex = fileIndex;
         this->state = TEXTIN_STATE_NORMAL;
+        this->offset = 0;
 
         return ERESULT_SUCCESS;
     }
@@ -2097,45 +2061,6 @@ extern "C" {
         }
 
         return eRc;
-    }
-
-
-    ERESULT  TextIn_SetupU8Array (
-        TEXTIN_DATA     *this,
-        U8ARRAY_DATA    *pBuffer,       // Buffer of file data
-        PATH_DATA       *pFilePath,
-        uint16_t        fileIndex,      // File Path Index for a separate path table
-        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    )
-    {
-        ERESULT         eRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !TextIn_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pBuffer) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-        eRc = TextIn_SetupBase((TEXTIN_DATA *)this, pFilePath, fileIndex, tabSize);
-        if (ERESULT_FAILED(eRc)) {
-            return eRc;
-        }
-
-        // Open the file.
-        this->type = TEXTIN_TYPE_U8ARRAY;
-        obj_Retain(pBuffer);
-        this->pU8Array = pBuffer;
-        this->fAtEOF = 0;
-        this->fOpen = 1;
-
-        return ERESULT_SUCCESS;
     }
 
 
@@ -2273,6 +2198,7 @@ extern "C" {
 
 #ifdef  XYZZY        
         if (this->pData) {
+            ASTR_DATA       *pWrkStr = OBJ_NIL;
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
                                                     this->pData,
@@ -2284,6 +2210,34 @@ extern "C" {
         }
 #endif
         
+        #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+            if (this->pLineIndex) {
+                ASTR_DATA       *pWrkStr = OBJ_NIL;
+                if (((OBJ_DATA *)(this->pLineIndex))->pVtbl->pToDebugString) {
+                    pWrkStr =   ((OBJ_DATA *)(this->pLineIndex))->pVtbl->pToDebugString(
+                                                        this->pLineIndex,
+                                                        indent+3
+                                );
+                    if (pWrkStr) {
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                    }
+                }
+            }
+        #endif
+        #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+            if (this->pLineIndex) {
+                if (((OBJ_DATA *)(this->pLineIndex))->pVtbl->pToDebugString) {
+                    pWrkStr =   ((OBJ_DATA *)(this->pLineIndex))->pVtbl->pToDebugString(
+                                                        this->pLineIndex,
+                                                        indent+3
+                                );
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
+            }
+        #endif
+
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }

@@ -9,7 +9,8 @@
  * Purpose
  *			This object provides support to read a text file from
  *			one of several sources and either at the byte level or
- *			the line level.
+ *			the line level.  It also provides support for skipping
+ *          certain portions of the file if needed.
  *
  * Remarks
  *	1.      This object uses OBJ_FLAG_USER1 internally.
@@ -297,6 +298,15 @@ extern "C" {
     );
 
 
+    /*!
+    Indicate if End-of-File has been reached.
+    @return    true if EOF has been reached. Otherwise, false.
+    */
+    bool            TextIn_IsAtEOF (
+        TEXTIN_DATA     *this
+    );
+
+
     /*! Get the location for the last character received.
     */
     ERESULT         TextIn_Location (
@@ -310,16 +320,24 @@ extern "C" {
 
     /*!
     Return the next character in the file.
-    @return    If successful, ERESULT_SUCCESS and *pChar contains the next
-               character from the file, otherwise, an ERESULT_* error and
-               *pChar contains EOF(-1).
+    @return    If successful, pointer to a TOKEN_FIELD that contains the next
+               character from the file and its associated data. Otherwise, NULL.
     */
-    W32CHR_T        TextIn_NextChar (
+    TOKEN_FIELDS *  TextIn_NextToken (
        TEXTIN_DATA      *this
     );
 
-    TOKEN_FIELDS *  TextIn_NextToken (
-       TEXTIN_DATA      *this
+
+    /*!
+     Seek (ie reposition) in the file to the following offset insuring
+     that the line and column number are proper.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         TextIn_SeekOffset (
+        TEXTIN_DATA     *this,
+        int64_t         offset
     );
 
 
@@ -341,14 +359,6 @@ extern "C" {
 
     ERESULT         TextIn_SetupPath (
        TEXTIN_DATA     *this,
-       PATH_DATA       *pFilePath,
-       uint16_t        fileIndex,      // File Path Index for a separate path table
-       uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
-    );
-
-    ERESULT         TextIn_SetupU8Array (
-       TEXTIN_DATA     *this,
-       U8ARRAY_DATA    *pBuffer,       // Buffer of file data
        PATH_DATA       *pFilePath,
        uint16_t        fileIndex,      // File Path Index for a separate path table
        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)

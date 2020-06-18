@@ -215,7 +215,7 @@ int             test_SrcFile_Test01 (
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    SRCFILE_DATA       *pObj = OBJ_NIL;
+    SRCFILE_DATA    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -253,9 +253,11 @@ int                 test_SrcFile_General01 (
     char            *pTestName
 )
 {
+    ERESULT         eRc;
     SRCFILE_DATA    *pObj = OBJ_NIL;
     ASTR_DATA       *pBuf = OBJ_NIL;
     PATH_DATA       *pPath = Path_NewA("abc");
+    TOKEN_DATA      *pToken;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -265,6 +267,35 @@ int                 test_SrcFile_General01 (
 
         pObj = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pObj) );
+
+        pToken = SrcFile_InputLookAhead(pObj, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( ('c' == Token_getChrW32(pToken)) );
+        pToken = SrcFile_InputLookAhead(pObj, 2);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( ('l' == Token_getChrW32(pToken)) );
+        pToken = SrcFile_InputLookAhead(pObj, 3);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( ('a' == Token_getChrW32(pToken)) );
+
+        eRc = SrcFile_CheckPoint(pObj);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pToken = SrcFile_InputAdvance(pObj, 3);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( ('s' == Token_getChrW32(pToken)) );
+
+        eRc = SrcFile_Restart(pObj);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        pToken = SrcFile_InputLookAhead(pObj, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( ('c' == Token_getChrW32(pToken)) );
+        pToken = SrcFile_InputLookAhead(pObj, 2);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( ('l' == Token_getChrW32(pToken)) );
+        pToken = SrcFile_InputLookAhead(pObj, 3);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( ('a' == Token_getChrW32(pToken)) );
+
         if (pObj) {
             obj_Release(pObj);
             pObj = OBJ_NIL;

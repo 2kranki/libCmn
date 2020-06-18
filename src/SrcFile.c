@@ -540,6 +540,29 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                      T e x t I n
+    //---------------------------------------------------------------
+
+    TEXTIN_DATA *   SrcFile_getTextIn (
+        SRCFILE_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SrcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (TEXTIN_DATA *)this;
+    }
+
+
+
 
 
     //===============================================================
@@ -629,6 +652,46 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                 C h e c k  P o i n t
+    //---------------------------------------------------------------
+
+    /*!
+     Save the current token for a checkpoint which will allow a restart
+     to begin again at this point.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     @warning   Mulitple checkpoints can be called, but only the last
+                one will be recognized by SrcFile_Restart().
+     */
+    ERESULT         SrcFile_CheckPoint (
+        SRCFILE_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint16_t        idx;
+        TOKEN_DATA      *pToken = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SrcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        idx = this->curInputs % this->sizeInputs;
+        pToken = &this->pInputs[idx];
+        memmove(&this->chkData, &pToken->data, sizeof(TOKEN_FIELDS));
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
@@ -879,7 +942,7 @@ extern "C" {
                 error code.
      */
     ERESULT         SrcFile_Enable (
-        SRCFILE_DATA       *this
+        SRCFILE_DATA    *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -946,12 +1009,6 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef XYZZY
-        Token_Init(&this->curchr);
-        for (i=0; i<this->sizeInputs; i++) {
-            Token_Init(&this->pInputs[i]);
-        }
-#endif
 
 #ifdef NDEBUG
 #else
@@ -1252,6 +1309,47 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                         R e s t a r t
+    //---------------------------------------------------------------
+
+    /*!
+     Restart the token stream at the previous checkpoint.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SrcFile_Restart (
+        SRCFILE_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SrcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = TextIn_SeekOffset(SrcFile_getTextIn(this), this->chkData.src.offset);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eRc;
+        }
+
+        // Prime the inputs.
+        this->curInputs = 0;
+        SrcFile_InputAdvance(this, this->sizeInputs);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      S k i p  T o E O L
     //---------------------------------------------------------------

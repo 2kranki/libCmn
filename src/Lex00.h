@@ -1,17 +1,20 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//         Lexical Scanner 00 - C Trigraphs (Lex00) Header
+//          C Trigraphs Lexical Scanner (Lex00) Header
 //****************************************************************
 /*
  * Program
- *          Lexical Scanner 00 - C Trigraphs (Lex00)
+ *          C Trigraphs Lexical Scanner - C Trigraphs (Lex00)
  * Purpose
  *          This object serves as a filter to convert all C
  *          trigraphs back into normal C letters. Most source
  *          tokens are just passed through this. When a trigraph
  *          is recognized, it is converted into one token from
  *          three input tokens.
+ *
+ *          Trigraphs were created because systems such as IBM
+ *          EBCDIC terminals did not have the ASCII character set.
  *
  * Remarks
  *  1.      None
@@ -175,6 +178,11 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    LEX_DATA *      Lex00_getLex(
+        LEX00_DATA      *this
+    );
+
 
     bool            Lex00_getReturnNL(
         LEX00_DATA      *this

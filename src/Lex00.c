@@ -167,6 +167,7 @@ extern "C" {
     //               L e x i c a l  S c a n n e r
     //---------------------------------------------------------------
 
+    inline
     LEX_DATA *      Lex00_getLex(
         LEX00_DATA      *this
     )

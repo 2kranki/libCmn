@@ -167,6 +167,7 @@ extern "C" {
     //               L e x i c a l  S c a n n e r
     //---------------------------------------------------------------
 
+    inline
     LEX_DATA *      Lex07_getLex(
         LEX07_DATA      *this
     )
@@ -807,10 +808,10 @@ extern "C" {
         LEX07_DATA      *this
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         TOKEN_DATA      *pInput;
-        int32_t         cls;
-        bool            fMore = true;
+        //int32_t         cls;
+        //bool            fMore = true;
 
         // Do initialization.
 #ifdef NDEBUG
