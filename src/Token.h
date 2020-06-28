@@ -575,7 +575,9 @@ extern "C" {
         int             indent
     );
     
-    
+    ASTR_DATA *     Token_ToString(
+        TOKEN_DATA      *this
+    );
 
     
 #ifdef	__cplusplus

@@ -181,11 +181,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     audioCW_getLastError(
-        AUDIOCW_DATA	*this
-    );
-
-
     uint16_t        audioCW_getTone(
         AUDIOCW_DATA    *this
     );

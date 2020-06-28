@@ -805,7 +805,8 @@ extern "C" {
      */
 
     bool            Lex05_ParseToken(
-        LEX05_DATA      *this
+        LEX05_DATA      *this,
+        TOKEN_DATA      *pTokenOut
     )
     {
         //ERESULT         eRc;
@@ -883,6 +884,14 @@ extern "C" {
         // Return to caller.
         //eRc = lex_ParseTokenFinalize((LEX_DATA *)this, newCls, fSaveStr);
         //BREAK_FALSE(ERESULT_IS_SUCCESSFUL(eRc));
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            ASTR_DATA       *pStr = Token_ToString(pTokenOut);
+            TRC_OBJ(this, "...Lex05_ParseToken token=%s", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
+#endif
         return true;
     }
 

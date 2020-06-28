@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Lex05 (Lex05) Header
+//                  LL1 Lexical Scanner (Lex05) Header
 //****************************************************************
 /*
  * Program
- *          Lex05 (Lex05)
+ *          LL1 Lexical Scanner (Lex05)
  * Purpose
  *          This object provides a standardized way of handling
  *          a separate Lex05 to run things without complications

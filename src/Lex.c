@@ -65,8 +65,6 @@ extern "C" {
 
     static
     XLATE_ENTRY   xlateTbl[] = {
-        { LEX_CLASS_EOF,    "LEX_CLASS_EOF" },
-        { LEX_CLASS_UNKNOWN, "LEX_CLASS_UNKNOWN"},
         { LEX_CLASS_ALPHA_LOWER, "LEX_CLASS_ALPHA_LOWER"},
         { LEX_CLASS_ALPHA_UPPER, "LEX_CLASS_ALPHA_UPPER"},
         { LEX_CLASS_DELETE, "LEX_CLASS_DELETE"},
@@ -286,12 +284,7 @@ extern "C" {
 #endif
 
         obj_setSize(&this->token, sizeof(TOKEN_DATA));
-        Token_SetupCharW32(
-            &this->token,
-            NULL,
-            -1,
-            -1
-        );
+        Token_SetupCharW32(&this->token, NULL, LEX_CLASS_EOF, -1);
 
         // Return to caller.
         return &this->token;
@@ -315,12 +308,7 @@ extern "C" {
 #endif
 
         obj_setSize(&this->token, sizeof(TOKEN_DATA));
-        Token_SetupCharW32(
-            &this->token,
-            NULL,
-            -1,
-            -1
-        );
+        Token_SetupCharW32(&this->token, NULL, LEX_CLASS_EOF, -1);
 
         // Return to caller.
         return &this->token;
@@ -391,6 +379,12 @@ extern "C" {
         uint32_t        iMax;
         XLATE_ENTRY     *pEntry;
 
+        if (-1 == value) {
+            return "LEX_CLASS_EOF";
+        }
+        if (0 == value) {
+            return "LEX_CLASS_UNKNOWN";
+        }
         if ((value > 0) && (value < 256)) {
             return "LEX_CLASS_CHAR";
         }
@@ -1394,7 +1388,7 @@ extern "C" {
         }
 #endif
 
-        if (this->pSrcChrAdvance) {
+        if (this->pSrcChrLookAhead) {
             pToken = this->pSrcChrLookAhead(this->pSrcObj, num);
         }
 
@@ -2364,7 +2358,7 @@ extern "C" {
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA           *pStr = Token_ToDebugString(&this->token, 0);
+            ASTR_DATA           *pStr = Token_ToString(&this->token);
             TRC_OBJ( this, "Lex_ParseToken:  %s \n", AStr_getData(pStr) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -2425,7 +2419,7 @@ extern "C" {
 
     /*!
      Finalize the string being built by the parser creating the token
-     to be returned.
+     to be returned in this->token.
      @param     this     object pointer
      @param     newClass If non-zero, use this class for the token
                 being built.
@@ -2453,7 +2447,7 @@ extern "C" {
 #endif
 
         Token_setClass(&this->token, newClass);
-        if (fSaveStr && this->pStr) {
+        if (fSaveStr && this->pStr && (W32Str_getLength(this->pStr) > 1)) {
             strToken =  szTbl_StringW32ToToken(
                                  OBJ_NIL,
                                  W32Str_getData(this->pStr)
@@ -2461,6 +2455,9 @@ extern "C" {
             BREAK_ZERO(strToken);
             fRc = Token_setStrToken(&this->token, strToken);
             BREAK_FALSE(fRc);
+        }
+        if (this->pStr) {
+            W32Str_Truncate(this->pStr, 0);
         }
 
         // Return to caller.
@@ -2498,10 +2495,6 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-
-        if (this->pStr == OBJ_NIL) {
-            this->pStr = W32Str_New();
-        }
 
         type = Token_getType(pToken);
         switch (type) {
@@ -2555,6 +2548,7 @@ extern "C" {
      Setup the given token as the beginning of the next parse output
      token (ie First element of the next parse) and initialize the ac-
      cumulation string to the contents of the given token.
+     This sets up this->pStr and this->token.
      @param     this    object pointer
      @param     pInput pointer to a token that is used to define the
                 next parsed output token. The string/char within the
@@ -2578,19 +2572,25 @@ extern "C" {
         }
 #endif
 
-        W32Str_Truncate(this->pStr, 0);
+        if (this->pStr == OBJ_NIL) {
+            this->pStr = W32Str_New();
+        } else {
+            W32Str_Truncate(this->pStr, 0);
+        }
+
         if (OBJ_NIL == pInput) {
             DEBUG_BREAK();
             Lex_ParseEOF(this);
             return ERESULT_EOF_ERROR;
         }
-        eRc = Lex_ParseTokenAppendString(this, pInput);
-        if(ERESULT_FAILED(eRc)) {
+        
+        eRc = Token_Assign(pInput, &this->token);
+        if(ERESULT_HAS_FAILED(eRc)) {
             DEBUG_BREAK();
             return ERESULT_GENERAL_FAILURE;
         }
-        eRc = Token_Assign(pInput, &this->token);
-        if(ERESULT_HAS_FAILED(eRc)) {
+        eRc = Lex_ParseTokenAppendString(this, pInput);
+        if(ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return ERESULT_GENERAL_FAILURE;
         }
@@ -3008,8 +3008,8 @@ extern "C" {
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA           *pStr = Token_ToDebugString(pToken, 0);
-            TRC_OBJ(this, "Lex_InputLookAhead:  %s \n", AStr_getData(pStr));
+            ASTR_DATA           *pStr = Token_ToString(pToken);
+            TRC_OBJ(this, "...Lex_InputLookAhead:  %s \n", AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }

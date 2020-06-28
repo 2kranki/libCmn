@@ -486,7 +486,7 @@ static
 const
 OBJ_INFO        Lex00_Info = {
     "Lex00",
-    "C Trigraphs Lexical Scanner",
+    "??? Lexical Scanner",
     (OBJ_DATA *)&Lex00_ClassObj,
     (OBJ_DATA *)&Lex_ClassObj,
     (OBJ_IUNKNOWN *)&Lex00_Vtbl,

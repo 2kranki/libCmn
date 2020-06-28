@@ -182,9 +182,14 @@ struct Lex_data_s  {
      */
     ERESULT         Lex_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        LEX_DATA     *pObject
+        LEX_DATA        *pObject
     );
 #endif
+
+
+    bool            Lex_ParseWhiteSpace(
+        LEX_DATA        *this
+    );
 
 
     void *          Lex_QueryInfo (

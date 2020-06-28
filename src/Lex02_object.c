@@ -486,7 +486,7 @@ static
 const
 OBJ_INFO        Lex02_Info = {
     "Lex02",
-    "Lex02",
+    "C Lexical Scanner",
     (OBJ_DATA *)&Lex02_ClassObj,
     (OBJ_DATA *)&Lex_ClassObj,
     (OBJ_IUNKNOWN *)&Lex02_Vtbl,

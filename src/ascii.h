@@ -154,6 +154,7 @@ extern "C" {
     // character is part of a group, then the group
     // number is returned for its class.
     typedef enum ascii_Lexical_CharClasses_e {
+        ASCII_LEXICAL_EOF=-1,               // EOF
         ASCII_LEXICAL_UNKNOWN=0,
         ASCII_LEXICAL_ALPHA_LOWER=256,      // a-z
         ASCII_LEXICAL_ALPHA_UPPER,          // A-Z
@@ -334,7 +335,14 @@ extern "C" {
         W32CHR_T            unicodeChar
     );
     
-    
+    /*! If the provided character is in the ascii priantable
+     range of ' '..'~', then return it otherwise return ' '.
+     */
+    W32CHR_T            ascii_toPrintW32(
+        W32CHR_T            asciiChar
+    );
+
+
     char                ascii_toUpperA (
         char                asciiChar
     );

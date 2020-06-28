@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Lex03 (Lex03) Header
+//                  JSON Lexical Scanner (Lex03) Header
 //****************************************************************
 /*
  * Program
- *          Lex03 (Lex03)
+ *          JSON Lexical Scanner (Lex03)
  * Purpose
  *          This object provides a standardized way of handling
  *          a separate Lex03 to run things without complications
@@ -98,6 +98,14 @@ extern "C" {
         // Methods:
         //bool        (*pIsEnabled)(LEX03_DATA *);
     } LEX03_CLASS_VTBL;
+
+
+    // The first eight flags are reserved for Lex.
+    typedef enum Lex03_Flags_e {
+        LEX03_FLAG_RETURN_CM=0x00800000,            // Comments
+        LEX03_FLAG_RETURN_NL=0x00400000,            // New-Line
+        LEX03_FLAG_RETURN_WS=0x00200000,            // White-Space excluding New-Lines
+    } LEX03_FLAGS;
 
 
 

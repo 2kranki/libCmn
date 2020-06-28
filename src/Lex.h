@@ -7,13 +7,18 @@
  * Program
  *          Lex (Lex)
  * Purpose
- *          This object provides a standardized way of handling
- *          a separate Lex to run things without complications
- *          of interfering with the main Lex. A Lex may be 
- *          called a Lex on other O/S's.
+ *          This object provides the basis for Lexical Scanner. It
+ *          support creating an output token from the input and queueing
+ *          those output tokens as needed.
+ *
+ *          From an output point of view, callers to this object can
+ *          lookahead to next tokens in the output queue and/or just
+ *          process the current token which advances to the next token.
+ *          See TokenLookAhead() and Lex_TokenAdvance().
  *
  * Remarks
- *  1.      None
+ *  1.      This object is designed to be inherited. See internal
+ *          documentation on how to use this object.
  *
  * History
  *  09/07/2015  Generated
@@ -181,7 +186,7 @@ extern "C" {
 
         LEX_CLASS_GROUP_LOWEST=256,
         // Note the following must be kept synchronized with the
-        // ascii lexical classes.
+        // ascii lexical classes (See ascii.h).
         LEX_CLASS_ALPHA_LOWER=256,          // a-z
         LEX_CLASS_ALPHA_UPPER,              // A-Z
         LEX_CLASS_DELETE,                   // ascii 127

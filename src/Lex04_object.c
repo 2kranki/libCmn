@@ -486,7 +486,7 @@ static
 const
 OBJ_INFO        Lex04_Info = {
     "Lex04",
-    "Lex04",
+    "Assembler Lexical Scanner",
     (OBJ_DATA *)&Lex04_ClassObj,
     (OBJ_DATA *)&Lex_ClassObj,
     (OBJ_IUNKNOWN *)&Lex04_Vtbl,

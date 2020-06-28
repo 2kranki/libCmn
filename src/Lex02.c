@@ -123,6 +123,52 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                      C o m m e n t s
+    //---------------------------------------------------------------
+
+    bool            Lex02_getCM (
+        LEX02_DATA      *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Lex02_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        return Lex_getFlags(Lex02_getLex(this)) & LEX02_FLAG_RETURN_CM ? true : false;
+    }
+
+    bool            Lex02_setCM(
+        LEX02_DATA      *this,
+        bool            fValue
+    )
+    {
+        bool            fRc;
+        uint32_t        flags;
+
+#ifdef NDEBUG
+#else
+        if( !Lex02_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        flags = Lex_getFlags(Lex02_getLex(this));
+        if (fValue)
+            flags |= LEX02_FLAG_RETURN_CM;
+        else
+            flags &= ~LEX02_FLAG_RETURN_CM;
+        fRc = Lex_setFlags(Lex02_getLex(this), flags);
+
+        return fRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      F l a g s
     //---------------------------------------------------------------
 
@@ -167,8 +213,7 @@ extern "C" {
     //               L e x i c a l  S c a n n e r
     //---------------------------------------------------------------
 
-    inline
-    LEX_DATA *      Lex02_getLex(
+    LEX_DATA *      Lex02_getLex (
         LEX02_DATA      *this
     )
     {
@@ -183,6 +228,52 @@ extern "C" {
 #endif
 
         return (LEX_DATA *)this;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      N e w - L i n e s
+    //---------------------------------------------------------------
+
+    bool            Lex02_getNL (
+        LEX02_DATA      *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Lex02_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        return Lex_getFlags(Lex02_getLex(this)) & LEX02_FLAG_RETURN_NL ? true : false;
+    }
+
+    bool            Lex02_setNL(
+        LEX02_DATA      *this,
+        bool            fValue
+    )
+    {
+        bool            fRc;
+        uint32_t        flags;
+
+#ifdef NDEBUG
+#else
+        if( !Lex02_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        flags = Lex_getFlags(Lex02_getLex(this));
+        if (fValue)
+            flags |= LEX02_FLAG_RETURN_NL;
+        else
+            flags &= ~LEX02_FLAG_RETURN_NL;
+        fRc = Lex_setFlags(Lex02_getLex(this), flags);
+
+        return fRc;
     }
 
 
@@ -321,7 +412,53 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                      W h i t e - S p a c e
+    //---------------------------------------------------------------
+
+    bool            Lex02_getWS (
+        LEX02_DATA      *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Lex02_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        return Lex_getFlags(Lex02_getLex(this)) & LEX02_FLAG_RETURN_WS ? true : false;
+    }
+
+    bool            Lex02_setWS(
+        LEX02_DATA      *this,
+        bool            fValue
+    )
+    {
+        bool            fRc;
+        uint32_t        flags;
+
+#ifdef NDEBUG
+#else
+        if( !Lex02_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        flags = Lex_getFlags(Lex02_getLex(this));
+        if (fValue)
+            flags |= LEX02_FLAG_RETURN_WS;
+        else
+            flags &= ~LEX02_FLAG_RETURN_WS;
+        fRc = Lex_setFlags(Lex02_getLex(this), flags);
+
+        return fRc;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -805,13 +942,19 @@ extern "C" {
      */
 
     bool            Lex02_ParseToken(
-        LEX02_DATA      *this
+        LEX02_DATA      *this,
+        TOKEN_DATA      *pTokenOut
     )
     {
-        //ERESULT         eRc;
-        TOKEN_DATA      *pInput;
-        //int32_t         cls;
-        //bool            fMore = true;
+        ERESULT         eRc;
+        TOKEN_DATA      *pToken;
+        int32_t         cls1;           // Input: 1 Lookahead
+        W32CHR_T        chr1;
+        int32_t         cls2;           // Input: 2 Lookahead
+        W32CHR_T        chr2;
+        int32_t         clsNew = LEX_CLASS_UNKNOWN;
+        bool            fSavStr = Lex02_getWS(this);
+        uint32_t        i;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -821,68 +964,283 @@ extern "C" {
             return false;
         }
 #endif
+        TRC_OBJ(this, "Lex02_ParseToken:\n");
 
-#ifdef XYZZY
-        while (fMore) {
-            pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
-            if (pInput) {
-                cls = Token_getClass(pInput);
-            }
-            else {
-                pInput = Lex_ParseEOF((LEX_DATA *)this);
-                cls = Token_getClass(pInput);
-                DEBUG_BREAK();
-            }
-            eRc = Lex_ParseTokenSetup((LEX_DATA *)this, pInput);
-            if (cls == LEX_CLASS_EOF) {
-                break;
-            }
+    nextToken:
+        pToken = Lex_InputLookAhead(Lex02_getLex(this), 1);
+        if (pToken)
+            ;
+        else {
+            pToken = Lex_ParseEOF(Lex02_getLex(this));
+            DEBUG_BREAK();          // This should never happen!
+        }
+        cls1 = Token_getClass(pToken);
+        chr1 = Token_getChrW32(pToken);
+        clsNew = cls1;              // Default to Input Class.
+        eRc = Lex_ParseTokenSetup(Lex02_getLex(this), pToken); // Set up the input token
+        //                              // as the basis for the output token.
+        pToken = Lex_InputLookAhead(Lex02_getLex(this), 2);
+        if (pToken)
+            ;
+        else {
+            pToken = Lex_ParseEOF(Lex02_getLex(this));
+            DEBUG_BREAK();          // This should never happen!
+        }
+        cls2 = Token_getClass(pToken);
+        chr2 = Token_getChrW32(pToken);
 
-            switch (cls) {
+        switch (cls1) {
+            // Note: Unless EOF is reached in a case, each case must leave the input
+            // stream with an advance to be made for the first char of the following
+            // token.
 
-                case '?':           /*** '?' ***/
-                    pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
-                    cls = Token_getClass(pInput);
-                    if( '?' == cls) {
-                        pInput = Lex_InputLookAhead((LEX_DATA *)this, 3);
-                        cls = Token_getClass(pInput);
-                        if( '(' == cls) {
-                            Token_setClass(&this->super.token, '[');
-                            Token_setChrW32(&this->super.token, '[');
-                            Lex_InputAdvance((LEX_DATA *)this, 3);
-                            cls = '[';
-                            fMore = false;
-                            break;
-                        }
-                        if( '=' == cls) {
-                            Token_setClass(&this->super.token, '#');
-                            Token_setChrW32(&this->super.token, '#');
-                            Lex_InputAdvance((LEX_DATA *)this, 3);
-                            cls = '#';
-                            fMore = false;
+            case LEX_CLASS_WHITESPACE:
+                if (Lex02_getWS(this)) {
+                    // Sometimes, NL is handled as white-space. So, we must separate
+                    // that back out here.
+                    if (Lex02_getNL(this)) {
+                        if ('\n' ==  chr1) {
+                            clsNew = LEX_CLASS_EOL;
                             break;
                         }
                     }
+                    // At this point, the LookAhead() character is white-space,
+                    // but not EOL. Remember that we must stay one InputAdvance()
+                    // back here, because we advance after the case and it must
+                    // only absorb white-space characters.
+                    for (;;) {
+                        pToken = Lex_InputLookAhead(Lex02_getLex(this), 2);
+                        if (pToken)
+                            ;
+                        else {
+                            pToken = Lex_ParseEOF(Lex02_getLex(this));
+                            DEBUG_BREAK();          // This should never happen!
+                        }
+                        cls2 = Token_getClass(pToken);
+                        chr2 = Token_getChrW32(pToken);
+                        if ( chr2 == '\n' ) {
+                            break;
+                        }
+                        if (cls2 == LEX_CLASS_WHITESPACE) {
+                            Lex_InputAdvance(Lex02_getLex(this), 1);
+                            Lex_ParseTokenAppendString(Lex02_getLex(this), pToken);
+                        }
+                        else
+                            break;
+                    }
+                    clsNew = LEX_CLASS_WHITESPACE;
+                } else {
+                    goto nextToken;
+                }
+                break;
+
+            case LEX_CLASS_EOL:
+                if (Lex02_getNL(this)) {
+                    clsNew = LEX_CLASS_EOL;
+                } else {
+                    goto nextToken;
+                }
+                break;
+
+            case '_':
+            case LEX_CLASS_ALPHA_LOWER:
+            case LEX_CLASS_ALPHA_UPPER:
+                    // At this point, the LookAhead() character is alphabetic,
+                    // Remember that we must stay one InputAdvance() back here,
+                    // because we advance after the case and it must only
+                    // absorb identifier characters.
+                    for (;;) {
+                        pToken = Lex_InputLookAhead(Lex02_getLex(this), 2);
+                        if (pToken)
+                            ;
+                        else {
+                            pToken = Lex_ParseEOF(Lex02_getLex(this));
+                            DEBUG_BREAK();          // This should never happen!
+                        }
+                        cls2 = Token_getClass(pToken);
+                        chr2 = Token_getChrW32(pToken);
+                        if (
+                            (cls2 == LEX_CLASS_ALPHA_LOWER)
+                            || (cls2 == LEX_CLASS_ALPHA_LOWER)
+                            || (cls2 == LEX_CLASS_NUMBER)
+                            || (cls2 == '_')
+                        ) {
+                            Lex_ParseTokenAppendString(Lex02_getLex(this), pToken);
+                            Lex_InputAdvance(Lex02_getLex(this), 1);
+                        } else {
+                            break;
+                        }
+                    }
+                    clsNew = LEX_IDENTIFIER;
+                    break;
+
+            case LEX_CLASS_NUMBER:
+#ifdef XYZZY
+                clsNew = Lex_ParseNumber((LEX_DATA *)this);
+                if (clsNew) {
+                    uint16_t        type;
+                    type = Lex_ParseIntegerSuffix((LEX_DATA *)this);
+                    Token_setMisc(&this->super.token, type);
+                }
+#endif
+                break;
+
+            case '!':           /*** '!' ***/
+                clsNew = LEX_OP_NOT;
+                if( '=' == cls2) {
+                    clsNew = LEX_OP_NE;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
+                }
+                break;
+
+            case '"':           /*** '"' ***/
+#ifdef XYZZY
+                ((LEX_DATA *)this)->pSrcChrAdvance(((LEX_DATA *)this)->pSrcObj, 1);
+                while(Lex_ParseChrCon((LEX_DATA *)this,'"'))
+                    ;
+                pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj,1);
+                cls = Token_getClass(pInput);
+                if (cls == '"') {
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                    ((LEX_DATA *)this)->pSrcChrAdvance(((LEX_DATA *)this)->pSrcObj, 1);
+                    newCls = LEX_CONSTANT_STRING;
                     fMore = false;
                     break;
-                default:
-                    Token_Assign(pInput, &this->super.token); //???
+                }
+                else {
+                    SrcErrors_AddFatalFromTokenA(
+                            OBJ_NIL,
+                            pInput,
+                            "Malformed String constant"
+                    );
+                }
+#endif
+                break;
+
+            case '%':
+                clsNew = LEX_OP_MOD;
+                if( '=' == cls2) {
+                    clsNew = LEX_OP_ASSIGN_MOD;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                }
+                break;
+
+            case '&':
+                clsNew = LEX_OP_AND;
+                if( '=' == cls2) {
+                    clsNew = LEX_OP_ASSIGN_AND;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                } else if( '&' == cls2) {
+                    clsNew = LEX_OP_LOG_AND;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                }
+                break;
+
+            case '\'':
+#ifdef XYZZY
+                ((LEX_DATA *)this)->pSrcChrAdvance(((LEX_DATA *)this)->pSrcObj, 1);
+                if (Lex_getMultiCharConstant((LEX_DATA *)this)) {
+                    while(Lex_ParseChrCon((LEX_DATA *)this,'\''))
+                        ;
+                }
+                else {
+                    Lex_ParseChrCon((LEX_DATA *)this, '\'');
+                }
+                pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 1);
+                cls = Token_getClass(pInput);
+                if (cls == '\'') {
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    if (Lex_getMultiCharConstant((LEX_DATA *)this)) {
+                        newCls = PPLEX_CONSTANT_STRING;
+                    }
+                    else {
+                        newCls = PPLEX_CONSTANT_CHAR;
+                    }
+                    fMore = false;
+                    break;
+                }
+                else {
+                    SrcErrors_AddFatalFromTokenA(
+                                                 OBJ_NIL,
+                                                 pInput,
+                                                 "Malformed Character Constant"
+                                                 );
+                }
+#endif
+                break;
+
+            case '(':           /*** '(' ***/
+                clsNew = LEX_SEP_LPAREN;
+                break;
+
+            case ')':           /*** ')' ***/
+                clsNew = LEX_SEP_RPAREN;
+                break;
+
+            case '*':           /*** '*' ***/
+                clsNew = LEX_OP_MUL;
+                if( '=' == cls2) {
+                    clsNew = LEX_OP_ASSIGN_MUL;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
-            }
-            fMore = false;
-            break;
-        }
-#else
-        pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
-        Token_Assign(pInput, &this->super.token);
-        Lex_InputAdvance((LEX_DATA *)this, 1);
+                }
+                break;
+
+#ifdef XYZZY
+            case '+':           /*** '+' ***/
+                pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
+                cls = Token_getClass(pInput);
+                if( '+' == cls) {
+                    newCls = PPLEX_OP_INC;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                    Lex_InputAdvance((LEX_DATA *)this, 2);
+                    fMore = false;
+                    break;
+                }
+                if( '=' == cls) {
+                    newCls = PPLEX_OP_ASSIGN_ADD;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                    Lex_InputAdvance((LEX_DATA *)this, 2);
+                    fMore = false;
+                    break;
+                }
+                Lex_InputAdvance((LEX_DATA *)this, 1);
+                fMore = false;
+                break;
+
+            case ',':           /*** ',' ***/
+                newCls = PPLEX_SEP_COMMA;
+                Lex_InputAdvance((LEX_DATA *)this, 1);
+                fMore = false;
+                break;
 #endif
 
+            default:
+                break;
+        }
+        if (Token_getClass(pToken) == LEX_CLASS_EOF)
+            ;
+        else
+            Lex_InputAdvance((LEX_DATA *)this, 1);
+
+        // Set up the output token.
+        eRc = Lex_ParseTokenFinalize(Lex02_getLex(this), clsNew, fSavStr);
+
         // Return to caller.
-        //eRc = lex_ParseTokenFinalize((LEX_DATA *)this, newCls, fSaveStr);
-        //BREAK_FALSE(ERESULT_IS_SUCCESSFUL(eRc));
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            ASTR_DATA       *pStr = Token_ToString(pTokenOut);
+            TRC_OBJ(this, "...Lex00_ParseToken token=%s", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
+#endif
         return true;
     }
 

@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Lex02 (Lex02) Header
+//                  C Lexical Scanner (Lex02) Header
 //****************************************************************
 /*
  * Program
- *          Lex02 (Lex02)
+ *          C Lexical Scanner (Lex02)
  * Purpose
  *          This object provides a standardized way of handling
  *          a separate Lex02 to run things without complications
@@ -98,6 +98,14 @@ extern "C" {
         // Methods:
         //bool        (*pIsEnabled)(LEX02_DATA *);
     } LEX02_CLASS_VTBL;
+
+
+    // The first eight flags are reserved for Lex.
+    typedef enum Lex02_Flags_e {
+        LEX02_FLAG_RETURN_CM=0x00800000,            // Comments
+        LEX02_FLAG_RETURN_NL=0x00400000,            // New-Line
+        LEX02_FLAG_RETURN_WS=0x00200000,            // White-Space excluding New-Lines
+    } LEX02_FLAGS;
 
 
 

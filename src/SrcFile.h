@@ -251,12 +251,13 @@ extern "C" {
 
     /*!
      Save the current token for a checkpoint which will allow a restart
-     to begin again at this point.
+     to begin again at this point.  You may issue as many checkpoints as
+     you want. However, Restart() will only recognize the last one.
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      @warning   Mulitple checkpoints can be called, but only the last
-                one will be recognized by SrcFile_Restart().
+                one will be recognized by Restart().
      */
     ERESULT         SrcFile_CheckPoint (
         SRCFILE_DATA    *this

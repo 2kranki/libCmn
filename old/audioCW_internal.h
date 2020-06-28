@@ -61,8 +61,11 @@ struct audioCW_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
 
     // Common Data
-    ERESULT         eRc;
-    
+    AUDIOWAV_DATA   *pWave;
+    int32_t         lastChar;
+    uint16_t        freq;
+    uint16_t        rsvd16;
+
     // CW Timing Data
     uint16_t        wpmChar;				// Character Speed in Wpm
     uint16_t		wpmText;				// Text Speed in Wpm
@@ -74,10 +77,7 @@ struct audioCW_data_s	{
     uint16_t		timeIdg;				// Inter-Dit Gap Time in Milliseconds
     uint16_t		timeIwg;				// Inter-Word Gap Time in Milliseconds
     
-    AUDIOWAV_DATA   *pWave;
-    int32_t         lastChar;
-    uint16_t		freq;
-    
+
 };
 #pragma pack(pop)
 

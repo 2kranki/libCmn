@@ -221,25 +221,6 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    ERESULT         audioCW_getLastError(
-        AUDIOCW_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !audioCW_Validate(this) ) {
-            DEBUG_BREAK();
-            return this->eRc;
-        }
-#endif
-
-        return this->eRc;
-    }
-
-
-
     uint16_t        audioCW_getFreq(
         AUDIOCW_DATA    *this
     )
@@ -344,22 +325,22 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         audioCW_Assign(
-        AUDIOCW_DATA		*this,
-        AUDIOCW_DATA      *pOther
+        AUDIOCW_DATA	*this,
+        AUDIOCW_DATA    *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !audioCW_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
         if( !audioCW_Validate(pOther) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
@@ -392,10 +373,10 @@ extern "C" {
         //goto eom;
 
         // Return to caller.
-        //this->eRc = ERESULT_SUCCESS;
-        this->eRc = ERESULT_NOT_IMPLEMENTED; // <-- Remove this!
+        //eRc = ERESULT_SUCCESS;
+        eRc = ERESULT_NOT_IMPLEMENTED; // <-- Remove this!
     //eom:
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -416,20 +397,17 @@ extern "C" {
 #else
         if( !audioCW_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         if( (wpmChar < 5) || (wpmChar > 55) ) {
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
         if( (wpmText < 5) || (wpmText > 55) ) {
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
         if( wpmChar < wpmText ) {
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
         this->wpmChar = wpmChar;
         this->wpmText = wpmText;
@@ -449,8 +427,7 @@ extern "C" {
         this->timeIwg = (7 * this->timeFrn) / 19;
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -502,7 +479,6 @@ extern "C" {
         
         // Return to caller.
         //obj_Release(pOther);
-        this->eRc = ERESULT_SUCCESS;
         return pOther;
     }
     
@@ -631,13 +607,12 @@ extern "C" {
 #else
         if( !audioCW_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         if (pData == OBJ_NIL) {
             DEBUG_BREAK();
-            this->eRc = ERESULT_INVALID_PARAMETER;
-            return this->eRc;
+            return ERESULT_INVALID_PARAMETER;
         }
         len = cData;
         if (cData == 0) {
@@ -674,8 +649,7 @@ extern "C" {
         }
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -689,6 +663,7 @@ extern "C" {
         W32CHR_T        chr
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        work;
         
         // Do initialization.
@@ -696,7 +671,7 @@ extern "C" {
 #else
         if( !audioCW_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
@@ -716,7 +691,7 @@ extern "C" {
                 else {
                     work = this->timeIwg - this->timeIdg - this->timeIcg;
                 }
-                this->eRc = audioWAV_AppendSilence(this->pWave, work);
+                eRc = audioWAV_AppendSilence(this->pWave, work);
                 break;
             default:
             {
@@ -724,21 +699,21 @@ extern "C" {
                 char		    *nextElement = cwCharElements[chr & 0x7F];
                 for( ; *nextElement; ++nextElement ) {
                     if ('.' == *nextElement) {
-                        this->eRc = audioWAV_AppendSineWave(
+                        eRc = audioWAV_AppendSineWave(
                                             this->pWave,
                                             this->freq,
                                             this->timeDit
                                     );
                     }
                     else if ('-' == *nextElement) {
-                        this->eRc = audioWAV_AppendSineWave(
+                        eRc = audioWAV_AppendSineWave(
                                             this->pWave,
                                             this->freq,
                                             this->timeDah
                                     );
                     }
-                    if( !ERESULT_FAILED(this->eRc) ) {
-                        this->eRc = audioWAV_AppendSilence(
+                    if( !ERESULT_FAILED(eRc) ) {
+                        eRc = audioWAV_AppendSilence(
                                                 this->pWave,
                                                 this->timeIdg
                                     );
@@ -747,8 +722,8 @@ extern "C" {
             }
                 break;
         }
-        if( !ERESULT_FAILED(this->eRc) ) {
-            this->eRc = audioWAV_AppendSilence(
+        if( !ERESULT_FAILED(eRc) ) {
+            eRc = audioWAV_AppendSilence(
                                     this->pWave,
                                     (this->timeIcg - this->timeIdg)
                         );
@@ -756,8 +731,7 @@ extern "C" {
         this->lastChar = chr;
         
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return eRc;
     }
     
     
@@ -841,7 +815,6 @@ extern "C" {
         AUDIOCW_DATA      *this
     )
     {
-        this->eRc = ERESULT_INVALID_OBJECT;
         if( this ) {
             if ( obj_IsKindOf(this,OBJ_IDENT_AUDIOCW) )
                 ;
@@ -854,7 +827,6 @@ extern "C" {
             return false;
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
     #endif
@@ -865,26 +837,27 @@ extern "C" {
     //                    W r i t e  T o  F i l e
     //---------------------------------------------------------------
     
-    ERESULT         audioCW_WriteToFile(
+    ERESULT         audioCW_WriteToFile (
         AUDIOCW_DATA    *this,
         PATH_DATA       *pPath
     )
     {
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !audioCW_Validate(this) ) {
             DEBUG_BREAK();
-            return this->eRc;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         
-        this->eRc = audioWAV_WriteToFile(this->pWave, pPath);
+        eRc = audioWAV_WriteToFile(this->pWave, pPath);
         
         // Return to caller.
         //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
+        return eRc;
     }
     
     

@@ -40,6 +40,7 @@
 
 
 #include        <Lex00.h>
+#include        <ascii.h>
 #include        <JsonIn.h>
 #include        <Lex_internal.h>
 
@@ -156,7 +157,8 @@ struct Lex00_data_s  {
 
 
     bool            Lex00_ParseToken(
-        LEX00_DATA      *this
+        LEX00_DATA      *this,
+        TOKEN_DATA      *pTokenOut
     );
 
 

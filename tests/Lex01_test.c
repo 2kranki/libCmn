@@ -256,6 +256,7 @@ int         test_Lex01_Input01(
     bool            fRc;
     PATH_DATA       *pPath = Path_NewA("abc");
     int32_t         cls;
+    W32CHR_T        chr;
 
     pBuf = AStr_NewA(pTestInput01);
     XCTAssertFalse( (OBJ_NIL == pBuf) );
@@ -283,8 +284,9 @@ int         test_Lex01_Input01(
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
                 cls = Token_getClass(pToken);
-                fprintf(stderr, "\tcls = (%d)-%s\n", cls, Lex_ClassToString(cls));
-                fprintf(stderr, "\tchr = %c\n", Token_getChrW32(pToken));
+                fprintf(stderr, "\tcls = (%d) %s\n", cls, Lex_ClassToString(cls));
+                chr = Token_getChrW32(pToken);
+                fprintf(stderr, "\tchr = '%c' (0x%04X)\n", ascii_toPrintW32(chr), chr);
                 XCTAssertTrue( ('+' == Token_getClass(pToken)) );
                 XCTAssertTrue( ('+' == Token_getChrW32(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);

@@ -106,6 +106,11 @@ struct Lex02_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    LEX_DATA *      Lex02_getLex (
+        LEX02_DATA      *this
+    );
+
+
     OBJ_IUNKNOWN *  Lex02_getSuperVtbl (
         LEX02_DATA     *this
     );
@@ -156,7 +161,8 @@ struct Lex02_data_s  {
 
 
     bool            Lex02_ParseToken(
-        LEX02_DATA      *this
+        LEX02_DATA      *this,
+        TOKEN_DATA      *pTokenOut
     );
 
 

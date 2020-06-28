@@ -91,12 +91,12 @@ struct Lex01_data_s  {
     //---------------------------------------------------------------
 
 #ifdef  LEX01_SINGLETON
-    LEX01_DATA *     Lex01_getSingleton (
+    LEX01_DATA *    Lex01_getSingleton (
         void
     );
 
     bool            Lex01_setSingleton (
-     LEX01_DATA       *pValue
+     LEX01_DATA         *pValue
 );
 #endif
 
@@ -107,18 +107,18 @@ struct Lex01_data_s  {
     //---------------------------------------------------------------
 
     OBJ_IUNKNOWN *  Lex01_getSuperVtbl (
-        LEX01_DATA     *this
+        LEX01_DATA      *this
     );
 
 
     ERESULT         Lex01_Assign (
-        LEX01_DATA    *this,
-        LEX01_DATA    *pOther
+        LEX01_DATA      *this,
+        LEX01_DATA      *pOther
     );
 
 
     LEX01_DATA *    Lex01_Copy (
-        LEX01_DATA     *this
+        LEX01_DATA      *this
     );
 
 
@@ -134,7 +134,7 @@ struct Lex01_data_s  {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    LEX01_DATA *       Lex01_ParseJsonObject (
+    LEX01_DATA *    Lex01_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -148,15 +148,16 @@ struct Lex01_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex01_ParseJsonFields (
-        JSONIN_DATA     *pParser,
+    ERESULT        Lex01_ParseJsonFields (
+        JSONIN_DATA    *pParser,
         LEX01_DATA     *pObject
     );
 #endif
 
 
     bool            Lex01_ParseToken(
-        LEX01_DATA      *this
+        LEX01_DATA      *this,
+        TOKEN_DATA      *pTokenOut
     );
 
 
@@ -195,7 +196,7 @@ struct Lex01_data_s  {
                 error code.
      */
     ERESULT         Lex01_ToJsonFields (
-        LEX01_DATA     *this,
+        LEX01_DATA      *this,
         ASTR_DATA       *pStr
     );
 #endif

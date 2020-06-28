@@ -1,14 +1,20 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          C99 Lexical Scanner (Lex01) Header
+//          C Trigraphs Lexical Scanner (Lex00) Header
 //****************************************************************
 /*
  * Program
- *          C99 Lexical Scanner (Lex01)
+ *          C Trigraphs Lexical Scanner - C Trigraphs (Lex00)
  * Purpose
- *          This object serves as a filter to convert source code
- *          into C99 Lexical Tokens.
+ *          This object serves as a filter to convert all C
+ *          trigraphs back into normal C letters. Most source
+ *          tokens are just passed through this. When a trigraph
+ *          is recognized, it is converted into one token from
+ *          three input tokens.
+ *
+ *          Trigraphs were created because systems such as IBM
+ *          EBCDIC terminals did not have the ASCII character set.
  *
  * Remarks
  *  1.      None
@@ -211,26 +217,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         Lex01_Disable (
-        LEX01_DATA      *this
-    );
-
-
-    ERESULT         Lex01_Enable (
-        LEX01_DATA      *this
-    );
-
-   
     LEX01_DATA *    Lex01_Init (
         LEX01_DATA      *this
     );
 
 
-    ERESULT         Lex01_IsEnabled (
-        LEX01_DATA      *this
-    );
-    
- 
 #ifdef  LEX01_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in

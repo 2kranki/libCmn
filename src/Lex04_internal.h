@@ -156,7 +156,8 @@ struct Lex04_data_s  {
 
 
     bool            Lex04_ParseToken(
-        LEX04_DATA      *this
+        LEX04_DATA      *this,
+        TOKEN_DATA      *pTokenOut
     );
 
 

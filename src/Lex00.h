@@ -1,26 +1,26 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          C Trigraphs Lexical Scanner (Lex00) Header
+//          White-Space and EOL Lexical Scanner (Lex00) Header
 //****************************************************************
 /*
  * Program
- *          C Trigraphs Lexical Scanner - C Trigraphs (Lex00)
+ *          White-Space and EOL Lexical Scanner (Lex00)
  * Purpose
- *          This object serves as a filter to convert all C
- *          trigraphs back into normal C letters. Most source
- *          tokens are just passed through this. When a trigraph
- *          is recognized, it is converted into one token from
- *          three input tokens.
+ *          This object serves as a filter to convert all white-
+ *          space or end-of-lines optionally into appropriate
+ *          tokens.
  *
- *          Trigraphs were created because systems such as IBM
- *          EBCDIC terminals did not have the ASCII character set.
+ *          This filter can be used to accumulate white-space into
+ *          one output token or to just remove all white-space from
+ *          the input.  The same is true for end-of-line (EOL) tokens.
  *
  * Remarks
- *  1.      None
+ *  1.      The default is to remove white-space and EOL tokens
+ *          from the input stream.
  *
  * History
- *  05/30/2020 Generated and merged logic from pplex1
+ *  05/30/2020 Generated and merged logic from pplex2
  */
 
 
@@ -109,13 +109,9 @@ extern "C" {
     // These flags are used with the Flags property:
     typedef enum Lex00_Flags_e {
         LEX00_FLAG_UNKNOWN=0,
-        LEX00_FLAG_NL=0x00800000,                   /* ON: Pass NLs as a separate token
-                                                       OFF: Ignore NLs
-                                                     */
-        LEX00_FLAG_WS=0x00400000,                   /* ON: Pass White-space as a separate
-                                                            token
-                                                       OFF: Ignore White-Space
-                                                     */
+        LEX00_FLAG_RETURN_NL=0x00400000,            // New-Line
+        LEX00_FLAG_RETURN_WS=0x00200000,            // Accumulated White-Space excluding
+        //                                          // New-Lines
     } LEX00_FLAGS;
 
 
@@ -184,21 +180,25 @@ extern "C" {
     );
 
 
-    bool            Lex00_getReturnNL(
+    /*! @property   NL - true == return NL tokens
+     */
+    bool            Lex00_getNL(
         LEX00_DATA      *this
     );
 
-    bool            Lex00_setReturnNL(
+    bool            Lex00_setNL(
         LEX00_DATA      *this,
         bool            value
     );
 
 
-    bool            Lex00_getReturnWS(
+    /*! @property   WS - true == return White-Space tokens
+     */
+    bool            Lex00_getWS(
         LEX00_DATA      *this
     );
 
-    bool            Lex00_setReturnWS(
+    bool            Lex00_setWS(
         LEX00_DATA      *this,
         bool            value
     );

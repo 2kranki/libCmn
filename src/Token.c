@@ -1907,7 +1907,44 @@ extern "C" {
     }
     
     
-    
+    ASTR_DATA *     Token_ToString(
+        TOKEN_DATA      *this
+    )
+    {
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrkStr;
+
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return OBJ_NIL;
+        }
+
+        AStr_AppendPrint(
+                    pStr,
+                    "{fileIndex=%10d offset=%lld line=%d col=%d class=%d chr=\"",
+                    this->data.src.fileIndex,
+                    this->data.src.offset,
+                    this->data.src.lineNo,
+                    this->data.src.colNo,
+                    this->data.cls
+        );
+        pWrkStr = Token_ToDataString(this);
+        AStr_Append(pStr, pWrkStr);
+        obj_Release(pWrkStr);
+        pWrkStr = OBJ_NIL;
+
+        AStr_AppendPrint(pStr, "\"}\n");
+
+        return pStr;
+    }
+
+
+
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

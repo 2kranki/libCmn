@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Lex04 (Lex04) Header
+//                  Assembler Lexical Scanner (Lex04) Header
 //****************************************************************
 /*
  * Program
- *          Lex04 (Lex04)
+ *          Assembler Lexical Scanner (Lex04)
  * Purpose
  *          This object provides a standardized way of handling
  *          a separate Lex04 to run things without complications

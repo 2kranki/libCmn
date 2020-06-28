@@ -294,52 +294,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      N e w - L i n e s
-    //---------------------------------------------------------------
-
-    bool            Lex01_getNL (
-        LEX01_DATA      *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Lex01_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-
-        return Lex_getFlags(Lex01_getLex(this)) & LEX01_FLAG_RETURN_NL ? true : false;
-    }
-
-    bool            Lex01_setNL(
-        LEX01_DATA      *this,
-        bool            fValue
-    )
-    {
-        bool            fRc;
-        uint32_t        flags;
-
-#ifdef NDEBUG
-#else
-        if( !Lex01_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        flags = Lex_getFlags(Lex01_getLex(this));
-        if (fValue)
-            flags |= LEX01_FLAG_RETURN_NL;
-        else
-            flags &= ~LEX01_FLAG_RETURN_NL;
-        fRc = Lex_setFlags(Lex01_getLex(this), flags);
-
-        return fRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -472,52 +426,6 @@ extern "C" {
     }
     
   
-
-    //---------------------------------------------------------------
-    //                      W h i t e - S p a c e
-    //---------------------------------------------------------------
-
-    bool            Lex01_getWS (
-        LEX01_DATA      *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Lex01_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-
-        return Lex_getFlags(Lex01_getLex(this)) & LEX01_FLAG_RETURN_WS ? true : false;
-    }
-
-    bool            Lex01_setWS(
-        LEX01_DATA      *this,
-        bool            fValue
-    )
-    {
-        bool            fRc;
-        uint32_t        flags;
-
-#ifdef NDEBUG
-#else
-        if( !Lex01_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        flags = Lex_getFlags(Lex01_getLex(this));
-        if (fValue)
-            flags |= LEX01_FLAG_RETURN_WS;
-        else
-            flags &= ~LEX01_FLAG_RETURN_WS;
-        fRc = Lex_setFlags(Lex01_getLex(this), flags);
-
-        return fRc;
-    }
-
-
 
 
 
@@ -997,20 +905,39 @@ extern "C" {
     //                      P a r s e  T o k e n
     //--------------------------------------------------------------
 
+    /*!
+        ParseToken()'s job is to parse one or more input tokens creating
+        1 output token.  It gets the next token from the source file. It
+        saves that token for the file/line/col numbers and then proceeds
+        to build upon it. It accumulates input tokens based on the class
+        or type into Lex's work string. When it finds a token which does
+        not belong to that classes that it is looking for, it saves the
+        current output token string to the string table if it is more
+        than 1 character, and tells the source file to advance the number
+        of input tokens used.
+
+        The token returned from this routine has the index of the
+        token string in the string table if it is larger than 1
+        character.
+
+        Because on the input side, we use lookahead/advance to avoid
+        having to back up the parse unlike some other lexical generators.
+     @param     this        object pointer
+     @param     pTokenOut   output token pointer
+     @return    true == EOF not reached, false == EOF or Error occurred
+     */
+
     bool            Lex01_ParseToken(
-        LEX01_DATA      *this
+        LEX01_DATA      *this,
+        TOKEN_DATA      *pTokenOut
     )
     {
         ERESULT         eRc;
-        TOKEN_DATA      *pToken = OBJ_NIL;
-        TOKEN_DATA      *pTokenNext;
-        int32_t         cls = LEX_CLASS_UNKNOWN;
-        W32CHR_T        chr = -1;
-        int32_t         cls2 = LEX_CLASS_UNKNOWN;
-        W32CHR_T        chr2 = 1;
+        TOKEN_DATA      *pToken;
+        int32_t         cls;
         int32_t         clsNew = LEX_CLASS_UNKNOWN;
-        bool            fMore = true;
-        bool            fSaveStr = true;
+        W32CHR_T        chr;
+        bool            fSavStr = true;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1020,82 +947,28 @@ extern "C" {
             return false;
         }
 #endif
-        TRC_OBJ(this, "Lex01_ParseToken:\n");
+        TRC_OBJ(this, "Lex00_ParseToken:\n");
 
-    nextToken:
-        pToken =    Lex01_getLex(this)->pSrcChrLookAhead(
-                                Lex01_getLex(this)->pSrcObj,
-                                 1
-                    );
+        pToken = Lex_InputLookAhead((LEX_DATA *)this, 1);
         if (pToken) {
             cls = Token_getClass(pToken);
-            chr = Token_getChrW32(pToken);
         }
         else {
-            pToken = Lex_ParseEOF(Lex01_getLex(this));
+            pToken = Lex_ParseEOF((LEX_DATA *)this);
             cls = Token_getClass(pToken);
-            chr = -1;
             DEBUG_BREAK();
         }
         eRc = Lex_ParseTokenSetup((LEX_DATA *)this, pToken);
-        pTokenNext = Lex_InputLookAhead(Lex01_getLex(this), 1);
-        if (pTokenNext) {
-            cls2 = Token_getClass(pTokenNext);
-            chr2 = Token_getChrW32(pTokenNext);
-        }
+
         switch (cls) {
-
-            case ASCII_LEXICAL_WHITESPACE:
-                if (Lex01_getWS(this)) {
-                    for (;;) {
-                        pToken =    Lex01_getLex(this)->pSrcChrAdvance(
-                                                Lex01_getLex(this)->pSrcObj,
-                                                 1
-                                    );
-                        if (pToken) {
-                            cls = Token_getClass(pToken);
-                            if (ASCII_LEXICAL_WHITESPACE == cls) {
-                                Lex_ParseTokenAppendString(
-                                                    Lex01_getLex(this),
-                                                    pToken
-                                );
-                                continue;
-                            } else {
-                                break;
-                            }
-                        } else {
-                            DEBUG_BREAK();
-                            //TODO: Issue Fatal Error Message. This should never happen!
-                            break;
-                        }
-                    }
-                    clsNew = LEX_CLASS_WHITESPACE;
-                    fMore = false;
-                }
-                else {
-                    Lex_InputAdvance(Lex01_getLex(this), 1);
-                    goto nextToken;
-                }
-                break;
-
-            case ASCII_LEXICAL_EOL:
-                if (Lex01_getNL(this)) {
-                    clsNew = LEX_CLASS_EOL;
-                    Lex_InputAdvance(Lex01_getLex(this), 1);
-                    fMore = false;
-                }
-                else {
-                    Lex_InputAdvance(Lex01_getLex(this), 1);
-                }
-                break;
 
             case '?':           /*** '?' ***/
                 TRC_OBJ(this, "\tFound 1st ?\n");
-                pToken = Lex_InputLookAhead(Lex01_getLex(this), 2);
+                pToken = Lex_InputLookAhead((LEX_DATA *)this, 2);
                 cls = Token_getClass(pToken);
                 if( '?' == cls) {
                     TRC_OBJ(this, "\tFound 2nd ?\n");
-                    pToken = Lex_InputLookAhead(Lex01_getLex(this), 3);
+                    pToken = Lex_InputLookAhead((LEX_DATA *)this, 3);
                     cls = Token_getClass(pToken);
                     TRC_OBJ(this, "\t3rd %d('%c')\n",
                             cls,
@@ -1148,12 +1021,12 @@ extern "C" {
                             TRC_OBJ(this, "\tFound ??%c -> %c\n", cls, chr);
                             Token_setClass(pToken, chr);
                             Token_setChrW32(pToken, chr);
-                            Lex_InputAdvance(Lex01_getLex(this), 2);
+                            Lex_InputAdvance((LEX_DATA *)this, 2);
                             break;
 
                         default:
                             // Reset to 1st char.
-                            pToken = Lex_InputLookAhead(Lex01_getLex(this), 1);
+                            pToken = Lex_InputLookAhead((LEX_DATA *)this, 1);
                             break;
                     }
                 }
@@ -1161,15 +1034,23 @@ extern "C" {
             default:
                 break;
         }
+        if (Token_getClass(pToken) == LEX_CLASS_EOF)
+            ;
+        else
+            Lex_InputAdvance((LEX_DATA *)this, 1);
 
-        eRc = Lex_ParseTokenFinalize(Lex01_getLex(this), clsNew, fSaveStr);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            //TODO: Issue Internal Error Message.
-        }
+        // Set up the output token.
+        eRc = Lex_ParseTokenFinalize(Lex01_getLex(this), clsNew, fSavStr);
 
         // Return to caller.
-        TRC_OBJ(this, "...Lex01_ParseToken");
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            ASTR_DATA       *pStr = Token_ToString(pTokenOut);
+            TRC_OBJ(this, "...Lex01_ParseToken token=%s", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
+#endif
         return true;
     }
 
