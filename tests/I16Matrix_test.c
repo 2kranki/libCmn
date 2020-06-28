@@ -173,6 +173,12 @@ int             test_I16Matrix_Copy01 (
                 TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
             }
         }
+        {
+            ASTR_DATA       *pStr = I16Matrix_ToDebugString(pObj1, 4);
+            fprintf(stderr, "Base:\n%s\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
 
         // Test assign.
         //                              m      n

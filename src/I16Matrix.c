@@ -680,16 +680,18 @@ extern "C" {
         }
 #endif
 
-        if ((this->m == pOther->m) && (this->m == pOther->m))
+        if ((this->m == pOther->m) && (this->n == pOther->n))
             ;
         else {
             return ERESULT_SUCCESS_UNEQUAL;
         }
+        fprintf(stderr, "\t(m,n) are OK\n");
         if (this->cElems == pOther->cElems)
             ;
         else {
             return ERESULT_SUCCESS_UNEQUAL;
         }
+        fprintf(stderr, "\tcElems are OK\n");
 
         for (i=0; i<this->cElems; i++) {
             pValue1 = array_GetAddrOf((ARRAY_DATA *)this, i+1);
@@ -698,9 +700,11 @@ extern "C" {
                 if (*pValue1 == *pValue2)
                     ;
                 else {
+                    fprintf(stderr, "\tElem(%d) %d != %d\n", i, *pValue1, *pValue2);
                     return ERESULT_SUCCESS_UNEQUAL;
                 }
             } else {
+                fprintf(stderr, "\tElem(%d) %p ? %p\n", i, pValue1, pValue2);
                 return ERESULT_SUCCESS_UNEQUAL;
             }
         }

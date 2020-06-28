@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 6/ 7/2020 23:59:53.000)
+# ( 6/28/2020 15:38:19.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -104,6 +104,26 @@ $(OBJDIR)/Appl.o: $(SRCDIR)/Appl.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h $(
 OBJS += $(OBJDIR)/Appl_object.o
 
 $(OBJDIR)/Appl_object.o: $(SRCDIR)/Appl_object.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/AudioCW.o
+
+$(OBJDIR)/AudioCW.o: $(SRCDIR)/AudioCW.c $(SRCDIR)/AStr.h $(SRCDIR)/AudioCW.h $(SRCDIR)/AudioCW_internal.h $(SRCDIR)/audioWAV.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/AudioCW_object.o
+
+$(OBJDIR)/AudioCW_object.o: $(SRCDIR)/AudioCW_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AudioCW.h $(SRCDIR)/AudioCW_internal.h $(SRCDIR)/audioWAV.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/AudioWAV.o
+
+$(OBJDIR)/AudioWAV.o: $(SRCDIR)/AudioWAV.c $(SRCDIR)/AStr.h $(SRCDIR)/AudioWAV.h $(SRCDIR)/AudioWAV_internal.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/AudioWAV_object.o
+
+$(OBJDIR)/AudioWAV_object.o: $(SRCDIR)/AudioWAV_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AudioWAV.h $(SRCDIR)/AudioWAV_internal.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/BitMatrix.o
@@ -1166,26 +1186,6 @@ OBJS += $(OBJDIR)/ascii_object.o
 $(OBJDIR)/ascii_object.o: $(SRCDIR)/ascii_object.c $(SRCDIR)/ascii.h $(SRCDIR)/ascii_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/audioCW.o
-
-$(OBJDIR)/audioCW.o: $(SRCDIR)/audioCW.c $(SRCDIR)/AStr.h $(SRCDIR)/audioCW.h $(SRCDIR)/audioCW_internal.h $(SRCDIR)/audioWAV.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/audioCW_object.o
-
-$(OBJDIR)/audioCW_object.o: $(SRCDIR)/audioCW_object.c $(SRCDIR)/AStr.h $(SRCDIR)/audioCW.h $(SRCDIR)/audioCW_internal.h $(SRCDIR)/audioWAV.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/audioWAV.o
-
-$(OBJDIR)/audioWAV.o: $(SRCDIR)/audioWAV.c $(SRCDIR)/AStr.h $(SRCDIR)/audioWAV.h $(SRCDIR)/audioWAV_internal.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/audioWAV_object.o
-
-$(OBJDIR)/audioWAV_object.o: $(SRCDIR)/audioWAV_object.c $(SRCDIR)/AStr.h $(SRCDIR)/audioWAV.h $(SRCDIR)/audioWAV_internal.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/blks.o
 
 $(OBJDIR)/blks.o: $(SRCDIR)/blks.c $(SRCDIR)/blks.h $(SRCDIR)/blks_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1952,6 +1952,18 @@ Appl_test: $(TEST_SRC)/Appl_test.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += AudioCW_test
+
+AudioCW_test: $(TEST_SRC)/AudioCW_test.c $(SRCDIR)/AudioCW.h $(SRCDIR)/AudioCW_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/audioWAV.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += AudioWAV_test
+
+AudioWAV_test: $(TEST_SRC)/AudioWAV_test.c $(SRCDIR)/AudioWAV.h $(SRCDIR)/AudioWAV_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += BitMatrix_test
 
 BitMatrix_test: $(TEST_SRC)/BitMatrix_test.c $(SRCDIR)/BitMatrix.h $(SRCDIR)/BitMatrix_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/BitSet.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
@@ -2447,18 +2459,6 @@ array_test: $(TEST_SRC)/array_test.c $(SRCDIR)/array.h $(SRCDIR)/array_internal.
 TESTS += ascii_test
 
 ascii_test: $(TEST_SRC)/ascii_test.c $(SRCDIR)/ascii.h $(SRCDIR)/ascii_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += audioCW_test
-
-audioCW_test: $(TEST_SRC)/audioCW_test.c $(SRCDIR)/audioCW.h $(SRCDIR)/audioCW_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/audioWAV.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += audioWAV_test
-
-audioWAV_test: $(TEST_SRC)/audioWAV_test.c $(SRCDIR)/audioWAV.h $(SRCDIR)/audioWAV_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

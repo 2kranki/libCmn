@@ -7,8 +7,10 @@
 //
 
 #include    <cmn_defs.h>
-#include    <audioCW.h>
-#include    <srcFile.h>
+#include    <AStr.h>
+#include    <AudioCW.h>
+#include    <Path.h>
+#include    <W32Str.h>
 #include    <stdint.h>
 #include    <stdio.h>
 #include    <stdlib.h>
@@ -17,7 +19,7 @@
 const
 char        *pProgramPath = NULL;
 int         fDebug = 0;             // -d or --debug or --no-debug
-int         jsonFlag = 0;
+int         speed = 20;
 int         srcFlag = 0;
 const
 char        *pOutput = NULL;	
@@ -82,10 +84,17 @@ int         parseArgs(
             --fDebug;
         }
         else if (0 == strcmp(*ppWrkArgV, "--output")) {
-            if (NULL != *(ppWrkArgV+1) {
+            if (NULL != *(ppWrkArgV+1)) {
                 --wrkArgC;
                 ++ppWrkArgV;
-                pOutput = ppWrkArgV;
+                pOutput = *ppWrkArgV;
+            }
+        }
+        else if (0 == strcmp(*ppWrkArgV, "--speed")) {
+            if (NULL != *(ppWrkArgV+1)) {
+                --wrkArgC;
+                ++ppWrkArgV;
+                speed = atoi(*ppWrkArgV);
             }
         }
         else if (0 == strcmp(*ppWrkArgV, "--")) {
@@ -102,10 +111,17 @@ int         parseArgs(
                         ++fDebug;
                         break;
                     case 'o':
-                        if (NULL != *(ppWrkArgV+1) {
+                        if (NULL != *(ppWrkArgV+1)) {
                             --wrkArgC;
                             ++ppWrkArgV;
-                            pOutput = ppWrkArgV;
+                            pOutput = *ppWrkArgV;
+                        }
+                        break;
+                    case 's':
+                        if (NULL != *(ppWrkArgV+1)) {
+                            --wrkArgC;
+                            ++ppWrkArgV;
+                            speed = atoi(*ppWrkArgV);
                         }
                         break;
                     default:
@@ -152,17 +168,83 @@ void        display_output(
 
 
 
+void             genCW (
+    const
+    char            *pStrA,
+    const
+    char            *pPathA
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    AUDIOCW_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    W32STR_DATA     *pStrW32 = OBJ_NIL;
+
+    if (NULL == pStrA) {
+        fprintf(stderr, "ERROR: genCW() NULL generate string!\n\n\n");
+        exit(16);
+    }
+    pStrW32 = W32Str_NewA(pStrA);
+    if (OBJ_NIL == pStrW32) {
+        fprintf(stderr, "ERROR: Could not create W32 String object!\n\n\n");
+        exit(16);
+    }
+
+    if (NULL == pPathA) {
+        pPathA = "~/gencw.wav";
+    }
+    pPath = Path_NewA(pPathA);
+    if (OBJ_NIL == pPathA) {
+        fprintf(stderr, "ERROR: Could not create Output Path object!\n\n\n");
+        exit(16);
+    }
+
+    pObj = AudioCW_NewWithParms(1, 11025, 8, 740);
+    if (pObj) {
+
+        eRc = AudioCW_CalculateTiming(pObj, speed, speed);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR: Could not create calculate timing for %d!\n\n\n", speed);
+            exit(16);
+        }
+
+        eRc = AudioCW_PutTextW32(pObj, W32Str_getLength(pStrW32), (W32CHR_T *)W32Str_getData(pStrW32) );
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR: Could not create wav data for %s!\n\n\n", pStrA);
+            exit(16);
+        }
+
+        eRc = AudioCW_WriteToFile(pObj, pPath);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "ERROR: Failed to write wav data to %s!\n\n\n", Path_getData(pPath));
+            exit(16);
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    } else {
+        fprintf(stderr, "ERROR: Could not create AudoCW object!\n\n\n");
+        exit(16);
+    }
+
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    obj_Release(pStrW32);
+    pStrW32 = OBJ_NIL;
+
+}
+
+
+
 int         main(
     int         argc,
     const
     char        *argv[]
 )
 {
-    PPLEX_DATA      *pLex = OBJ_NIL;
-    SRCFILE_DATA    *pSrc = OBJ_NIL;
     PATH_DATA       *pGmrFile = OBJ_NIL;
     bool            fRc;
-    TOKEN_DATA      *pToken;
     ASTR_DATA       *pStr = OBJ_NIL;
     int             i;
     ERESULT         eRc;
@@ -170,73 +252,10 @@ int         main(
     parseArgs(argc, argv);
     
     if (cOptions > 0) {
-        if (srcFlag) {
-            fprintf(stdout, "//\t--src\n");
-        }
-        for (i=0; i<cOptions; ++i) {
-            fprintf(stdout, "//\tfiles = \"%s\"\n", ppOptions[i]);
-        }
-        pGmrFile = Path_NewA(ppOptions[0]);
-        Path_Clean(pGmrFile);
-        if (pGmrFile) {
-            if (srcFlag) {
-                pSrc = srcFile_NewFromPath(pGmrFile, 1, 4);
-                BREAK_NULL(pSrc);
-                for (;;) {
-                    pToken = srcFile_InputLookAhead(pSrc, 1);
-                    if (jsonFlag) {
-                        pStr = Token_ToJson(pToken);
-                        display_output(pStr);
-                    }
-                    else {
-                        pStr = Token_ToDebugString(pToken, 0);
-                        display_output(pStr);
-                    }
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                    if (Token_getClass(pToken) == -1) {
-                        break;
-                    }
-                    pToken = srcFile_InputAdvance(pSrc, 1);
-                }
-                obj_Release(pSrc);
-                pSrc = OBJ_NIL;
-            }
-            else {
-                pLex = pplex_New(4);
-                BREAK_NULL(pLex);
-                pplex_setReturnNL(pLex, fNL ? true : false);
-                pplex_setReturnWS(pLex, fWS ? true : false);
-                eRc = pplex_CreateLexers((PPLEX_DATA *)pLex, false, true);
-                BREAK_TRUE(ERESULT_FAILED(eRc));
-                eRc = pplex_CreateSourceFromPath(pLex, pGmrFile);
-                BREAK_TRUE(ERESULT_FAILED(eRc));
-                fRc = pplex_setLang(pLex, lexType);
-                BREAK_FALSE(fRc);
-                for (;;) {
-                    pToken = lex_InputLookAhead((LEX_DATA *)pLex, 1);
-                    if (jsonFlag) {
-                        pStr = Token_ToJson(pToken);
-                        display_output(pStr);
-                    }
-                    else {
-                        pStr = Token_ToDebugString(pToken, 0);
-                        display_output(pStr);
-                    }
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                    if (Token_getClass(pToken) == -1) {
-                        break;
-                    }
-                    pToken = lex_InputAdvance((LEX_DATA *)pLex, 1);
-                    
-                }
-            }
-        }
-        
+        genCW(ppOptions[0], pOutput);
     }
     else {
-        usage("ERROR - Missing input file name!");
+        usage("ERROR - Missing input text!");
         exit(99);
     }
         
