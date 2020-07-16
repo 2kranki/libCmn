@@ -211,6 +211,7 @@ int             test_I16Matrix_Copy01 (
         pStr = I16Matrix_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
+        //obj_TraceSet(pStr, true);
         pObj2 = I16Matrix_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_I16MATRIX);

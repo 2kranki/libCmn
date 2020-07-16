@@ -74,7 +74,7 @@ struct TextIns_data_s	{
     // Common Data
     OBJARRAY_DATA   *pPaths;
     OBJARRAY_DATA   *pStack;
-    uint8_t         fReuse;
+    uint8_t         fReuse;         // True == ???
     uint8_t         rsvd8[3];
     ERESULT         (*pLineExit)(
                                  OBJ_ID,

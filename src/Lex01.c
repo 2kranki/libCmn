@@ -938,6 +938,7 @@ extern "C" {
         int32_t         clsNew = LEX_CLASS_UNKNOWN;
         W32CHR_T        chr;
         bool            fSavStr = true;
+        bool            fAdv = true;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -950,14 +951,13 @@ extern "C" {
         TRC_OBJ(this, "Lex00_ParseToken:\n");
 
         pToken = Lex_InputLookAhead((LEX_DATA *)this, 1);
-        if (pToken) {
-            cls = Token_getClass(pToken);
-        }
-        else {
+        if (OBJ_NIL == pToken) {
             pToken = Lex_ParseEOF((LEX_DATA *)this);
-            cls = Token_getClass(pToken);
             DEBUG_BREAK();
         }
+        cls = Token_getClass(pToken);
+        clsNew = cls;
+        chr = Token_getChrW32(pToken);
         eRc = Lex_ParseTokenSetup((LEX_DATA *)this, pToken);
 
         switch (cls) {
@@ -1019,8 +1019,9 @@ extern "C" {
                             chr = '#';
                         setupChr:
                             TRC_OBJ(this, "\tFound ??%c -> %c\n", cls, chr);
-                            Token_setClass(pToken, chr);
-                            Token_setChrW32(pToken, chr);
+                            clsNew = chr;
+                            fSavStr = false;
+                            Token_setChrW32(Lex_getToken(Lex01_getLex(this)), chr);
                             Lex_InputAdvance((LEX_DATA *)this, 2);
                             break;
 
@@ -1031,13 +1032,16 @@ extern "C" {
                     }
                 }
                 break;
+
             default:
                 break;
         }
         if (Token_getClass(pToken) == LEX_CLASS_EOF)
             ;
-        else
-            Lex_InputAdvance((LEX_DATA *)this, 1);
+        else {
+            if (fAdv)
+                Lex_InputAdvance((LEX_DATA *)this, 1);
+        }
 
         // Set up the output token.
         eRc = Lex_ParseTokenFinalize(Lex01_getLex(this), clsNew, fSavStr);

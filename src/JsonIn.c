@@ -157,6 +157,9 @@ extern "C" {
         if (this) {
             this = JsonIn_Init(this);
             if (this) {
+                if (obj_Trace(pStr)) {
+                    obj_TraceSet(this, true);
+                }
                 eRc = JsonIn_ParseAStr(this, pStr);
                 if (ERESULT_FAILED(eRc)) {
                     obj_Release(this);
@@ -2270,7 +2273,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (obj_Trace(this)) {
+        if (obj_Trace(this) || obj_Trace(pStr)) {
             obj_TraceSet(pParser, true);
         }
 #endif

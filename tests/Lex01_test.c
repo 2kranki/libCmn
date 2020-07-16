@@ -258,6 +258,7 @@ int         test_Lex01_Input01(
     int32_t         cls;
     W32CHR_T        chr;
 
+    fprintf(stderr, "Scanning:\n%s\n\n", pTestInput01);
     pBuf = AStr_NewA(pTestInput01);
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
@@ -265,6 +266,8 @@ int         test_Lex01_Input01(
         pSrc = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
         XCTAssertFalse( (OBJ_NIL == pSrc) );
         if (pSrc) {
+
+            obj_TraceSet(pSrc, true);
 
             pLex = (LEX_DATA *)Lex01_New();
             XCTAssertFalse( (OBJ_NIL == pLex) );
@@ -302,6 +305,10 @@ int         test_Lex01_Input01(
 
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
+                cls = Token_getClass(pToken);
+                fprintf(stderr, "\tcls = (%d) %s\n", cls, Lex_ClassToString(cls));
+                chr = Token_getChrW32(pToken);
+                fprintf(stderr, "\tchr = '%c' (0x%04X)\n", ascii_toPrintW32(chr), chr);
                 fprintf(stderr, "[ == %c\n", Token_getClass(pToken));
                 XCTAssertTrue( ('[' == Token_getClass(pToken)) );
                 XCTAssertTrue( ('[' == Token_getChrW32(pToken)) );
@@ -318,7 +325,12 @@ int         test_Lex01_Input01(
 
                 pToken = Lex_TokenLookAhead(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
+                cls = Token_getClass(pToken);
+                fprintf(stderr, "\tcls = (%d) %s\n", cls, Lex_ClassToString(cls));
+                chr = Token_getChrW32(pToken);
+                fprintf(stderr, "\tchr = '%c' (0x%04X)\n", ascii_toPrintW32(chr), chr);
                 XCTAssertTrue( (']' == Token_getClass(pToken)) );
+                XCTAssertTrue( (']' == Token_getChrW32(pToken)) );
                 pToken = Lex_TokenAdvance(pLex, 1);
                 XCTAssertFalse( (OBJ_NIL == pToken) );
 

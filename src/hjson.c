@@ -161,19 +161,20 @@ extern "C" {
                                              );
                 obj_Release(pStr);
                 obj_Release(pLoc);
+                obj_Release(pArray);
                 return OBJ_NIL;
             }
         }
         
         pNode = JsonIn_NodeFromArray(pArray);
         obj_Release(pArray);
+        pArray = OBJ_NIL;
         if (pNode == OBJ_NIL) {
             SrcErrors_AddFatalA(OBJ_NIL, NULL, "Out of Memory");
-            obj_Release(pLoc);
-            return OBJ_NIL;
-        }
-        if (pLoc && pNode) {
-            Node_setExtra(pNode, pLoc);
+        } else {
+            if (pLoc) {
+                Node_setExtra(pNode, pLoc);
+            }
         }
         obj_Release(pLoc);
         pLoc = OBJ_NIL;
@@ -285,9 +286,7 @@ extern "C" {
             );
             obj_Release(pStr);
             obj_Release(pLoc);
-            obj_Release(pNode);
-            pNode = OBJ_NIL;
-            return pNode;
+            goto exit;
         }
         
         pNode = JsonIn_NodeFromHash(pHash);
@@ -296,13 +295,16 @@ extern "C" {
         }
         obj_Release(pLoc);
         pLoc = OBJ_NIL;
+
+    exit:
         obj_Release(pHash);
         pHash = OBJ_NIL;
+#ifdef NDEBUG
+#else
         if (pNode == OBJ_NIL) {
             DEBUG_BREAK();
-            return OBJ_NIL;
         }
-
+#endif
         return pNode;
     }
     

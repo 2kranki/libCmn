@@ -1626,14 +1626,17 @@ extern "C" {
         this->curTok.w32chr[1] = 0;
         TRC_OBJ(
                 this,
-                "\tNextToken: file:%d Line:%d Col:%d Offset:%lld Char:(%d)%c\n",
+                "\tTextIn::NextToken: file:%d Line:%d Col:%d Offset:%lld Char:(%d)%c Cls:(%d)%c\n",
                 this->curTok.src.fileIndex,
                 this->curTok.src.lineNo,
                 this->curTok.src.colNo,
                 this->curTok.src.offset,
                 this->curTok.w32chr[0],
                 (((this->curTok.w32chr[0] > ' ') && (this->curTok.w32chr[0] < 0x7F))
-                 ? this->curTok.w32chr[0] : ' ')
+                 ? this->curTok.w32chr[0] : ' '),
+                this->curTok.cls,
+                (((this->curTok.cls > ' ') && (this->curTok.cls < 0x7F))
+                 ? this->curTok.cls : ' ')
         );
 
         // Return to caller.

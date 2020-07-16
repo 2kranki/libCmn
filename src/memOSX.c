@@ -410,7 +410,7 @@ extern "C" {
                 }
                 pObj = (OBJ_DATA *)pData;
                 if (pObj->pVtbl && pObj->pVtbl->pToDebugString) {
-                    pStr = pObj->pVtbl->pToDebugString(pObj, 0);
+                    pStr = pObj->pVtbl->pToDebugString(pObj, 4);
                     fprintf(stderr, "debug: \n%s\n\n\n", AStr_getData(pStr));
                     obj_Release(pStr);
                 }

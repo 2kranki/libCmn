@@ -160,7 +160,7 @@ extern "C" {
 #pragma pack(push, 1)
     typedef struct Token_fields_s    {
         uint16_t        len;                // Character/Token Length (Optional)
-        uint16_t        type;               // Type in enum above
+        uint16_t        type;               // Type for union in enum above
         int16_t         cls;                // Character/Token Class (Optional)
         int16_t         misc;
         SRCLOC          src;

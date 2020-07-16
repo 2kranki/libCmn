@@ -85,7 +85,7 @@ int         tearDown(
                 "\x1b[31m"
                 "ERROR: "
                 "\x1b[0m"
-                "Leaked memory areas were found!\n"
+                "Leaked memory areas were found!\n\n\n\n\n"
         );
         exitCode = 4;
         return 0;
@@ -120,7 +120,7 @@ int         test_hjson_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -240,7 +240,7 @@ int         test_hjson01(
         pHJSON = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -301,7 +301,7 @@ int         test_hjson02(
         pHJSON = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -362,7 +362,7 @@ int         test_hjson03(
         pHJSON = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -391,7 +391,7 @@ int         test_hjson04(
     XCTAssertFalse( (OBJ_NIL == pHJSON) );
     if (pHJSON) {
         
-        obj_TraceSet(pHJSON, true);
+        //obj_TraceSet(pHJSON, true);
         pFileNode = hjson_ParseFileHash(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
@@ -423,7 +423,7 @@ int         test_hjson04(
         pHJSON = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -484,114 +484,92 @@ int         test_hjson05(
         pHJSON = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
 
 
-int             test_hjson_File01(
+int         test_hjson06(
     const
-    char            *pTestName
+    char        *pTestName
 )
 {
-    ERESULT         eRc;
-    HJSON_DATA      *pObj = OBJ_NIL;
-    PATH_DATA       *pPath = OBJ_NIL;
+    HJSON_DATA      *pHJSON = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
-    //NODEHASH_DATA   *pHash;
+    NODEHASH_DATA   *pHash;
+    NODEHASH_DATA   *pHash2;
     NODE_DATA       *pFileNode;
-    //NODE_DATA       *pNode;
-    //NODEARRAY_DATA  *pArray;
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pPath = Path_NewA("~/git/libCmn/tests/files/test_hjson_01.txt");
-    XCTAssertFalse( (OBJ_NIL == pPath) );
-    eRc = Path_Clean(pPath);
-    XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
-    
-    pObj = hjson_NewFromPath(pPath, 4);
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    obj_Release(pPath);
-    if (pObj) {
-        
-        obj_TraceSet(pObj, true);
-        pFileNode = hjson_ParseFileHash(pObj);
-        XCTAssertFalse( (OBJ_NIL == pFileNode) );
-        if (pFileNode) {
-            pStr = Node_ToDebugString(pFileNode, 0);
-            fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-            
-        }
-        
-        obj_Release(pFileNode);
-        pFileNode = OBJ_NIL;
-        
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-    
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
-}
-
-
-
-int             test_hjson_File02(
+    NODE_DATA       *pNode;
+    NODEARRAY_DATA  *pArray;
     const
-    char            *pTestName
-)
-{
-    ERESULT         eRc;
-    HJSON_DATA      *pObj = OBJ_NIL;
-    PATH_DATA       *pPath = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
-    //NODEHASH_DATA   *pHash;
-    NODE_DATA       *pFileNode;
-    //NODE_DATA       *pNode;
-    //NODEARRAY_DATA  *pArray;
-    FILE            *pInput = NULL;
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pPath = Path_NewA("~/git/libCmn/tests/files/test_hjson_02.txt");
-    XCTAssertFalse( (OBJ_NIL == pPath) );
-    eRc = Path_Clean(pPath);
-    XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
+    char            *pStrA = "{\"one\" : {\"items\": [null,false,true]} }\n";
 
-    pInput = fopen(Path_getData(pPath), "r");
-    XCTAssertFalse( (OBJ_NIL == pInput) );
-    
-    pObj = hjson_NewFromFile(pInput, 4);
-    XCTAssertFalse( (OBJ_NIL == pObj) );
-    obj_Release(pPath);
-    if (pObj) {
-        
-        obj_TraceSet(pObj, true);
-        pFileNode = hjson_ParseFileHash(pObj);
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    fprintf(stderr, "\tParsing: %s\n", pStrA);
+    pHJSON = hjson_NewA(pStrA, 4);
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+    XCTAssertFalse( (OBJ_NIL == pHJSON) );
+    if (pHJSON) {
+
+        obj_TraceSet(pHJSON, true);
+        pFileNode = hjson_ParseFileHash(pHJSON);
         XCTAssertFalse( (OBJ_NIL == pFileNode) );
         if (pFileNode) {
-            pStr = Node_ToDebugString(pFileNode, 0);
-            fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-            
+            pStrA = Node_getNameUTF8(pFileNode);
+            XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
+            mem_Free((void *)pStrA);
+            pStrA = NULL;
+            pHash = Node_getData(pFileNode);
+            XCTAssertFalse( (OBJ_NIL == pHash) );
+            fprintf(stderr, "hash size = %d\n", NodeHash_getSize(pHash));
+            XCTAssertTrue( (1 == NodeHash_getSize(pHash)) );
+
+            pNode = NodeHash_FindA(pHash, 0, "one");
+            XCTAssertTrue( (pNode) );
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
+            XCTAssertTrue( (0 == strcmp("hash", pStrA)) );
+            mem_Free((void *)pStrA);
+            pStrA = NULL;
+            pHash2 = Node_getData(pNode);
+            XCTAssertFalse( (OBJ_NIL == pHash2) );
+            fprintf(stderr, "hash2 size = %d\n", NodeHash_getSize(pHash2));
+            XCTAssertTrue( (1 == NodeHash_getSize(pHash2)) );
+
+            pNode = NodeHash_FindA(pHash2, 0, "items");
+            XCTAssertTrue( (pNode) );
+            pNode = Node_getData(pNode);
+            pStrA = Node_getNameUTF8(pNode);
+            XCTAssertTrue( (0 == strcmp("array", pStrA)) );
+            mem_Free((void *)pStrA);
+            pStrA = NULL;
+            pArray = Node_getData(pNode);
+            XCTAssertFalse( (OBJ_NIL == pArray) );
+            fprintf(stderr, "array size = %d\n", NodeArray_getSize(pArray));
+            XCTAssertTrue( (1 == NodeHash_getSize(pHash2)) ); // items
+
+            if (obj_Trace(pHJSON)) {
+                ASTR_DATA       *pStr = Node_ToDebugString(pFileNode, 0);
+                fprintf(stderr, "\n\n\n====> FileNode for %s:\n%s\n\n\n",
+                        pTestName,
+                        AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
         }
-        
+
         obj_Release(pFileNode);
         pFileNode = OBJ_NIL;
-        
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
+
+        obj_Release(pHJSON);
+        pHJSON = OBJ_NIL;
     }
-    
-    fclose(pInput);
-    pInput = NULL;
-    
-    fprintf(stderr, "...%s completed.\n", pTestName);
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -635,7 +613,7 @@ int         test_hjson_Float01(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -679,7 +657,7 @@ int         test_hjson_Float02(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -731,7 +709,7 @@ int         test_hjson_Simple01(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -768,7 +746,64 @@ int         test_hjson_Simple02(
         pObj = OBJ_NIL;
     }
     
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_hjson_Simple03(
+    const
+    char        *pTestName
+)
+{
+    ERESULT         eRc;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    NODE_DATA       *pFileNode;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pStringToParseA = "{\"m\": 3,\n \"n\": 4\n}\n";
+    NODEHASH_DATA   *pHash;
+    int64_t         num = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = hjson_NewA(pStringToParseA, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFileHash(pObj);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStr = Node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+
+        }
+
+        pHash = JsonIn_CheckNodeForHash(pFileNode);
+        XCTAssertFalse( (OBJ_NIL == pHash) );
+        eRc = NodeHash_FindIntegerNodeInHashA(pHash, "m", &num);
+        XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (3 == num) );
+        XCTAssertFalse( (SrcErrors_getFatal(OBJ_NIL)) );
+        XCTAssertTrue( (0 == SrcErrors_getNumErrors(OBJ_NIL)) );
+        eRc = NodeHash_FindIntegerNodeInHashA(pHash, "n", &num);
+        XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (4 == num) );
+        XCTAssertFalse( (SrcErrors_getFatal(OBJ_NIL)) );
+        XCTAssertTrue( (0 == SrcErrors_getNumErrors(OBJ_NIL)) );
+
+        obj_Release(pFileNode);
+        pFileNode = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -829,15 +864,123 @@ int             test_hjson_Object01(
 
 
 
+int             test_hjson_File01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
+    //NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode;
+    //NODE_DATA       *pNode;
+    //NODEARRAY_DATA  *pArray;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = Path_NewA("~/git/libCmn/tests/files/test_hjson_01.txt");
+    XCTAssertFalse( (OBJ_NIL == pPath) );
+    eRc = Path_Clean(pPath);
+    XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
+
+    pObj = hjson_NewFromPath(pPath, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    obj_Release(pPath);
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFileHash(pObj);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            ASTR_DATA       *pStr = Node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "==>FileNode:\n%s\n\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+
+            obj_Release(pFileNode);
+            pFileNode = OBJ_NIL;
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_hjson_File02(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    //NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode;
+    //NODE_DATA       *pNode;
+    //NODEARRAY_DATA  *pArray;
+    FILE            *pInput = NULL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = Path_NewA("~/git/libCmn/tests/files/test_hjson_02.txt");
+    XCTAssertFalse( (OBJ_NIL == pPath) );
+    eRc = Path_Clean(pPath);
+    XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
+
+    pInput = fopen(Path_getData(pPath), "r");
+    XCTAssertFalse( (OBJ_NIL == pInput) );
+
+    pObj = hjson_NewFromFile(pInput, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    obj_Release(pPath);
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFileHash(pObj);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStr = Node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+
+        }
+
+        obj_Release(pFileNode);
+        pFileNode = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fclose(pInput);
+    pInput = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_hjson);
+    TINYTEST_ADD_TEST(test_hjson_File02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson_File01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Object01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson_Simple03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Simple02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Simple01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Float02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Float01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_hjson_File02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_hjson_File01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson06,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson03,setUp,tearDown);

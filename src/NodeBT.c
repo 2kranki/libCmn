@@ -1322,9 +1322,9 @@ extern "C" {
         void            *pArg3              // Used as third parameter of scan method
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
         LISTDL_DATA     *pList = NULL;
         BLOCKS_NODE     *pEntry = NULL;
-        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1665,7 +1665,9 @@ extern "C" {
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        
+        LISTDL_DATA     *pList = NULL;
+        BLOCKS_NODE     *pEntry = NULL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1694,7 +1696,28 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
+        pList = Blocks_getList((BLOCKS_DATA *)this);
+        pEntry = listdl_Head(pList);
+        while (pEntry) {
+            NODEBT_RECORD       *pRecord = (NODEBT_RECORD *)pEntry->data;
+            OBJ_DATA            *pData;
+
+            pData = pRecord->node.pKey;
+            if (pData) {
+                if (((OBJ_DATA *)(pData))->pVtbl->pToDebugString) {
+                    ASTR_DATA   *pWrkStr =  ((OBJ_DATA *)(pData))->pVtbl->pToDebugString(
+                                                        pData,
+                                                        indent+4
+                                            );
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
+            }
+
+            pEntry = listdl_Next(pList, pEntry);
+        }
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(

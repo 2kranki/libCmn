@@ -91,8 +91,14 @@ extern "C" {
         ASTR_DATA       *pStr;
         uint16_t        *pValue;
 
-        (void)JsonIn_FindU32NodeInHashA(pParser, "m", &pObject->m);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "n", &pObject->n);
+        {
+            ASTR_DATA       *pStr = JsonIn_ToDebugString(pParser, 4);
+            fprintf(stderr, "Base:\n%s\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        eRc = JsonIn_FindU32NodeInHashA(pParser, "m", &pObject->m);
+        eRc = JsonIn_FindU32NodeInHashA(pParser, "n", &pObject->n);
         (void)JsonIn_FindU32NodeInHashA(pParser, "cElems", &pObject->cElems);
         if (pObject->m && pObject->n) {
             eRc = I16Matrix_Setup(pObject, pObject->m, pObject->n);
@@ -231,6 +237,9 @@ extern "C" {
         I16MATRIX_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
+        if (obj_Trace(pString)) {
+            obj_TraceSet(pParser, true);
+        }
         eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
@@ -255,7 +264,7 @@ extern "C" {
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        I16MATRIX_DATA   *pObject = OBJ_NIL;
+        I16MATRIX_DATA  *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);

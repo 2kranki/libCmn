@@ -270,12 +270,15 @@ int                 test_SrcFile_General01 (
 
         pToken = SrcFile_InputLookAhead(pObj, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (ASCII_LEXICAL_ALPHA_LOWER == Token_getClass(pToken)) );
         XCTAssertTrue( ('c' == Token_getChrW32(pToken)) );
         pToken = SrcFile_InputLookAhead(pObj, 2);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (ASCII_LEXICAL_ALPHA_LOWER == Token_getClass(pToken)) );
         XCTAssertTrue( ('l' == Token_getChrW32(pToken)) );
         pToken = SrcFile_InputLookAhead(pObj, 3);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (ASCII_LEXICAL_ALPHA_LOWER == Token_getClass(pToken)) );
         XCTAssertTrue( ('a' == Token_getChrW32(pToken)) );
 
         eRc = SrcFile_CheckPoint(pObj);
@@ -288,12 +291,15 @@ int                 test_SrcFile_General01 (
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pToken = SrcFile_InputLookAhead(pObj, 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (ASCII_LEXICAL_ALPHA_LOWER == Token_getClass(pToken)) );
         XCTAssertTrue( ('c' == Token_getChrW32(pToken)) );
         pToken = SrcFile_InputLookAhead(pObj, 2);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (ASCII_LEXICAL_ALPHA_LOWER == Token_getClass(pToken)) );
         XCTAssertTrue( ('l' == Token_getChrW32(pToken)) );
         pToken = SrcFile_InputLookAhead(pObj, 3);
         XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (ASCII_LEXICAL_ALPHA_LOWER == Token_getClass(pToken)) );
         XCTAssertTrue( ('a' == Token_getChrW32(pToken)) );
 
         if (pObj) {

@@ -158,6 +158,8 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! @property   reuse 
+     */
     bool            TextIns_getReuse(
         TEXTINS_DATA    *this
     );

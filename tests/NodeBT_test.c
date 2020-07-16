@@ -177,6 +177,13 @@ int             test_NodeBT_Test01 (
             pNode = OBJ_NIL;
         }
 
+        {
+            ASTR_DATA       *pStr = NodeBT_ToDebugString(pTree, 4);
+            fprintf(stderr, "Base:\n%s\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
         obj_Release(pTree);
         pTree = OBJ_NIL;
     }
@@ -195,9 +202,9 @@ int             test_NodeBT_Add01(
     NODEBT_DATA     *pTree = OBJ_NIL;
     NODE_DATA       *pNode = OBJ_NIL;
     NODE_DATA       *pFound = OBJ_NIL;
-    NODE_DATA       *pEntry = NULL;
+    //NODE_DATA       *pEntry = NULL;
     ERESULT         eRc;
-    bool            fRc;
+    //bool            fRc;
     const
     char            *pStrA = "ABCDEFG";
     const

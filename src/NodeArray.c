@@ -1568,7 +1568,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        //int             j;
+        int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
@@ -1602,7 +1602,21 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
+        if (this->pArray) {
+            for (j=0; j<ObjArray_getSize(this->pArray); ++j) {
+                NODE_DATA       *pNode = ObjArray_Get(this->pArray, j+1);
+                if (pNode) {
+                    ASTR_DATA       *pWrk = Node_ToDebugString(pNode, indent+4);
+                    if (pWrk) {
+                        AStr_AppendA(pStr, "  ");
+                        AStr_Append(pStr, pWrk);
+                        obj_Release(pWrk);
+                    }
+                }
+            }
+        }
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
@@ -1635,8 +1649,6 @@ extern "C" {
     {
         int             j;
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrk;
-        NODE_DATA       *pNode;
 
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1647,12 +1659,14 @@ extern "C" {
 
         if (this->pArray) {
             for (j=0; j<ObjArray_getSize(this->pArray); ++j) {
-                pNode = ObjArray_Get(this->pArray, j+1);
-                pWrk = Node_ToString(pNode);
-                if (pWrk) {
-                    AStr_AppendA(pStr, "  ");
-                    AStr_Append(pStr, pWrk);
-                    obj_Release(pWrk);
+                NODE_DATA       *pNode = ObjArray_Get(this->pArray, j+1);
+                if (pNode) {
+                    ASTR_DATA       *pWrk = Node_ToString(pNode);
+                    if (pWrk) {
+                        AStr_AppendA(pStr, "  ");
+                        AStr_Append(pStr, pWrk);
+                        obj_Release(pWrk);
+                    }
                 }
             }
         }

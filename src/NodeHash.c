@@ -1787,17 +1787,20 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     NodeHash_ToDebugString (
-        NODEHASH_DATA      *this,
+        NODEHASH_DATA   *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
+        int             i;
+        int             iMax;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        
+        NODEARRAY_DATA  *pArray;
+        NODE_DATA       *pNode;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1826,7 +1829,24 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
+        pArray = NodeHash_Nodes(this);
+        if (pArray) {
+            iMax = NodeArray_getSize(pArray);
+            for (i=0; i < iMax; i++) {
+                pNode = NodeArray_Get(pArray, i+1);
+                if (pNode) {
+                    ASTR_DATA       *pWrkStr = Node_ToDebugString(pNode, indent+4);
+                    if (pWrkStr) {
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                    }
+                }
+            }
+            obj_Release(pArray);
+            pArray = OBJ_NIL;
+        }
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(

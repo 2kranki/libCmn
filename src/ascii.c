@@ -857,9 +857,9 @@ extern "C" {
     {
         int32_t             lexical;
         
-        lexical = (LexicalCharClassTable[(asciiChar & 0x7F)]);
+        lexical = LexicalCharClassTable[(asciiChar & 0x7F)];
         
-        return( lexical );
+        return lexical;
     }
     
     
@@ -868,27 +868,17 @@ extern "C" {
     )
     {
         int32_t             lexical = ASCII_LEXICAL_UNKNOWN;
-        
-        if (unicodeChar < 0x80) {
-            lexical = (LexicalCharClassTable[unicodeChar]);
-        }
-        else if (unicodeChar == 0x00A0) {       // no-break space
-            lexical = ASCII_LEXICAL_WHITESPACE;
-        }
-        else if (unicodeChar == 0x200B) {       // zero width space
-            lexical = ASCII_LEXICAL_WHITESPACE;
-        }
-        else if (unicodeChar == 0x2060) {       // word joiner
-            lexical = ASCII_LEXICAL_WHITESPACE;
-        }
-        else if (unicodeChar == 0x3000) {       // ideographic space
-            lexical = ASCII_LEXICAL_WHITESPACE;
-        }
-        else if (unicodeChar == 0xFEFF) {       // zero width no-break space
-            lexical = ASCII_LEXICAL_WHITESPACE;
+
+        if (unicodeChar > 0) {
+            if (unicodeChar < 0x80) {
+                lexical = LexicalCharClassTable[unicodeChar & 0x7F];
+            }
+            else if (ascii_isWhiteSpaceW32(unicodeChar)) {       // no-break space
+                lexical = ASCII_LEXICAL_WHITESPACE;
+            }
         }
         
-        return( lexical );
+        return lexical;
     }
     
     

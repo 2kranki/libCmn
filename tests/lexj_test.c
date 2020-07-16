@@ -1109,8 +1109,110 @@ int         test_lexj_String03(
 
 
 
+int         test_lexj_String04(
+    const
+    char        *pTestName
+)
+{
+    LEXJ_DATA       *pLexJ = OBJ_NIL;
+    TOKEN_DATA      *pToken;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pStringToParse = "{\"m\" : 2, \"n\" : 3}";
+    
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pLexJ = lexj_NewA(pStringToParse, 4, true);
+    XCTAssertFalse( (OBJ_NIL == pLexJ) );
+    obj_TraceSet(pLexJ, true);
+    if (pLexJ) {
+        
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_SEP_LBRACE == Token_getClass(pToken)) );
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_CONSTANT_STRING == Token_getClass(pToken)) );
+        pStr = Token_ToDataString(pToken);
+        XCTAssertTrue( (0 == strcmp("m", AStr_getData(pStr))) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_SEP_COLON == Token_getClass(pToken)) );
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_CONSTANT_INTEGER == Token_getClass(pToken)) );
+        pStr = Token_ToDataString(pToken);
+        XCTAssertTrue( (0 == strcmp("2", AStr_getData(pStr))) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+      
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_SEP_COMMA == Token_getClass(pToken)) );
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_CONSTANT_STRING == Token_getClass(pToken)) );
+        pStr = Token_ToDataString(pToken);
+        XCTAssertTrue( (0 == strcmp("n", AStr_getData(pStr))) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_SEP_COLON == Token_getClass(pToken)) );
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_CONSTANT_INTEGER == Token_getClass(pToken)) );
+        pStr = Token_ToDataString(pToken);
+        XCTAssertTrue( (0 == strcmp("3", AStr_getData(pStr))) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+      
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEXJ_SEP_RBRACE == Token_getClass(pToken)) );
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        
+        pToken = lexj_TokenLookAhead(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        XCTAssertTrue( (LEX_CLASS_EOF == Token_getClass(pToken)) );
+        pToken = lexj_TokenAdvance(pLexJ, 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        
+        obj_Release(pLexJ);
+        pLexJ = OBJ_NIL;
+    }
+    
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_lexj);
+    TINYTEST_ADD_TEST(test_lexj_String04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_String03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_String02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_lexj_String01,setUp,tearDown);

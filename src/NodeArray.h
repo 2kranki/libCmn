@@ -12,11 +12,11 @@
  *          it.
  *
  * Remarks
- *    1.    You can create a Queue of Nodes by using AddToTop()
- *          to add nodes to the queue and DeleteFromBottom() to
+ *    1.    You can create a Queue of Nodes by using AppendNode()
+ *          to add nodes to the queue and DeleteFirst() to
  *          remove nodes from the queue.
- *    2.    You can create a Stack of Nodes by using AddToTop()
- *          to add nodes to the stack and DeleteFromTop() to
+ *    2.    You can create a Stack of Nodes by using AppendNode()
+ *          to add nodes to the stack and DeleteLast() to
  *          remove nodes from the stack.
  *
  * History
@@ -268,9 +268,11 @@ extern "C" {
     );
 
 
-    // DeleteFromBottom() returns the top element after deleting it,
-    // but not releasing it. It needs to be released before it is
-    // discarded.
+    /*! Return the top element after deleting it from the array,
+        but not releasing it. It needs to be released before it is
+        discarded.
+     @param     this    Object Pointer
+     */
     NODE_DATA *     NodeArray_DeleteFirst (
         NODEARRAY_DATA  *this
     );
@@ -285,6 +287,7 @@ extern "C" {
 
 
     /*! Create an enumerator for the array.
+     @param     this    Object Pointer
      @return    If successful, an ENUM object is returned.  Otherwise,
                  OBJ_NIL.
      @warning   Remember to release the returned ENUM object.
@@ -296,6 +299,7 @@ extern "C" {
 
     /*!
      Find the first occurrence of a node in the array by name.
+     @param     this    Object Pointer
      @return    If successful, ERESULT_SUCCESS is returned and
                 ppNode will contain the node ptr otherwise an error code
                 will be returned.

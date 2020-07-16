@@ -181,7 +181,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        I32MATRIX_DATA   *pObject = OBJ_NIL;
+        I32MATRIX_DATA  *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
@@ -228,14 +228,28 @@ extern "C" {
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        I32MATRIX_DATA   *pObject = OBJ_NIL;
+        I32MATRIX_DATA  *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
+#ifdef NDEBUG
+#else
+        if (obj_Trace(pString)) {
+            obj_TraceSet(pParser, true);
+        }
+#endif
         eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
             goto exit00;
         }
-        
+//#ifdef XYZZY
+        {
+            ASTR_DATA       *pStr = JsonIn_ToDebugString(pParser, 4);
+            fprintf(stderr, "Parser:\n%s\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+//#endif
+
         pObject = I32Matrix_ParseJsonObject(pParser);
         
         // Return to caller.

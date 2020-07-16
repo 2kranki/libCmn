@@ -2434,6 +2434,7 @@ extern "C" {
         bool            fSaveStr
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
         bool            fRc;
         uint32_t        strToken;
 
@@ -2447,21 +2448,29 @@ extern "C" {
 #endif
 
         Token_setClass(&this->token, newClass);
-        if (fSaveStr && this->pStr && (W32Str_getLength(this->pStr) > 1)) {
-            strToken =  szTbl_StringW32ToToken(
-                                 OBJ_NIL,
-                                 W32Str_getData(this->pStr)
-                        );
-            BREAK_ZERO(strToken);
-            fRc = Token_setStrToken(&this->token, strToken);
-            BREAK_FALSE(fRc);
+        if (fSaveStr && this->pStr) {
+            uint32_t        strlen = W32Str_getLength(this->pStr);
+            if ((strlen == 0) || (strlen > 1)) {
+                strToken =  szTbl_StringW32ToToken(
+                                     OBJ_NIL,
+                                     W32Str_getData(this->pStr)
+                            );
+                BREAK_ZERO(strToken);
+                fRc = Token_setStrToken(&this->token, strToken);
+                BREAK_FALSE(fRc);
+            } else if (strlen == 1) {
+                fRc = Token_setChrW32(&this->token, W32Str_CharGetW32(this->pStr, 1));
+                BREAK_FALSE(fRc);
+            } else {
+                eRc = ERESULT_GENERAL_FAILURE;
+            }
         }
         if (this->pStr) {
             W32Str_Truncate(this->pStr, 0);
         }
 
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 

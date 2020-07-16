@@ -7,14 +7,14 @@
  * Program
  *          Lex (Lex)
  * Purpose
- *          This object provides the basis for Lexical Scanner. It
- *          support creating an output token from the input and queueing
+ *          This object provides the basis for a Lexical Scanner. It
+ *          supports creating an output token from the input and queueing
  *          those output tokens as needed.
  *
  *          From an output point of view, callers to this object can
  *          lookahead to next tokens in the output queue and/or just
  *          process the current token which advances to the next token.
- *          See TokenLookAhead() and Lex_TokenAdvance().
+ *          See TokenLookAhead() and TokenAdvance().
  *
  * Remarks
  *  1.      This object is designed to be inherited. See internal

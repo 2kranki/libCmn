@@ -41,7 +41,7 @@
 
 #include        <NodeArray.h>
 #include        <JsonIn.h>
-#include        <ObjArray.h>
+#include        <ObjArray_internal.h>
 
 
 #ifndef NODEARRAY_INTERNAL_H

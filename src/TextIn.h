@@ -345,7 +345,7 @@ extern "C" {
        TEXTIN_DATA      *this,
        PATH_DATA        *pFilePath,     // Optoinal Path used for Documentation Only
        ASTR_DATA        *pStr,          // Buffer of file data
-       uint16_t        fileIndex,      // File Path Index for a separate path table
+       uint16_t         fileIndex,      // File Path Index for a separate path table
        uint16_t         tabSize         // Tab Spacing if any (0 will default to 4)
     );
 

@@ -954,7 +954,8 @@ extern "C" {
         W32CHR_T        chr2;
         int32_t         clsNew = LEX_CLASS_UNKNOWN;
         bool            fSavStr = Lex02_getWS(this);
-        uint32_t        i;
+        bool            fAdv = true;
+        //uint32_t        i;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1169,7 +1170,7 @@ extern "C" {
                                                  OBJ_NIL,
                                                  pInput,
                                                  "Malformed Character Constant"
-                                                 );
+                    );
                 }
 #endif
                 break;
@@ -1199,25 +1200,21 @@ extern "C" {
                 if( '+' == cls) {
                     newCls = PPLEX_OP_INC;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
-                    Lex_InputAdvance((LEX_DATA *)this, 2);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     break;
                 }
                 if( '=' == cls) {
                     newCls = PPLEX_OP_ASSIGN_ADD;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
-                    Lex_InputAdvance((LEX_DATA *)this, 2);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     break;
                 }
-                Lex_InputAdvance((LEX_DATA *)this, 1);
-                fMore = false;
                 break;
 
             case ',':           /*** ',' ***/
                 newCls = PPLEX_SEP_COMMA;
-                Lex_InputAdvance((LEX_DATA *)this, 1);
-                fMore = false;
                 break;
 #endif
 
@@ -1226,8 +1223,10 @@ extern "C" {
         }
         if (Token_getClass(pToken) == LEX_CLASS_EOF)
             ;
-        else
-            Lex_InputAdvance((LEX_DATA *)this, 1);
+        else {
+            if (fAdv)
+                Lex_InputAdvance((LEX_DATA *)this, 1);
+        }
 
         // Set up the output token.
         eRc = Lex_ParseTokenFinalize(Lex02_getLex(this), clsNew, fSavStr);
