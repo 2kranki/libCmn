@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Lex03.c
- *  Generated 05/30/2020 14:52:23
+ * File:   SQLite.c
+ *  Generated 07/26/2020 08:55:08
  *
  */
 
@@ -41,8 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <Lex03_internal.h>
-#include        <ascii.h>
+#include        <SQLite_internal.h>
 #include        <trace.h>
 
 
@@ -63,46 +62,16 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    //---------------------------------------------------------------
-    //           P a r s e  Q u o t e l e s s  S t r i n g
-    //---------------------------------------------------------------
-
-    // The first character of the string has already been parsed, but
-    // not advanced. So, we just keep accumulating the proper letters
-    // until there are no more that are acceptable.
-
-    bool            Lex03_ParseQuotelessString(
-        LEX03_DATA      *this
+#ifdef XYZZY
+    static
+    void            SQLite_task_body (
+        void            *pData
     )
     {
-        int32_t         cls;
-        TOKEN_DATA      *pInput;
-
-#ifdef NDEBUG
-#else
-        if( !Lex03_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        for (;;) {
-            pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
-            cls = Token_getClass(pInput);
-            if ((cls == ':') || (cls == ',')
-                || (cls == '{') || (cls == '}')
-                || (cls == '[') || (cls == ']')
-                || (cls == ASCII_LEXICAL_EOL) || (cls == -1)) {
-                break;
-            }
-            else {
-                Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
-            }
-        }
-
-        return true;
+        //SQLITE_DATA  *this = pData;
+        
     }
-
+#endif
 
 
 
@@ -115,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    LEX03_DATA *     Lex03_Alloc (
+    SQLITE_DATA *     SQLite_Alloc (
         void
     )
     {
-        LEX03_DATA       *this;
-        uint32_t        cbSize = sizeof(LEX03_DATA);
+        SQLITE_DATA       *this;
+        uint32_t        cbSize = sizeof(SQLITE_DATA);
         
         // Do initialization.
         
@@ -132,15 +101,15 @@ extern "C" {
 
 
 
-    LEX03_DATA *     Lex03_New (
+    SQLITE_DATA *     SQLite_New (
         void
     )
     {
-        LEX03_DATA       *this;
+        SQLITE_DATA       *this;
         
-        this = Lex03_Alloc( );
+        this = SQLite_Alloc( );
         if (this) {
-            this = Lex03_Init(this);
+            this = SQLite_Init(this);
         } 
         return this;
     }
@@ -154,82 +123,18 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      F l a g s
-    //---------------------------------------------------------------
-
-    uint32_t        Lex03_getFlags(
-        LEX03_DATA      *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Lex03_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-
-        return Lex_getFlags((LEX_DATA *)this);
-    }
-
-
-    bool            Lex03_setFlags(
-        LEX03_DATA      *this,
-        uint32_t        value
-    )
-    {
-        bool            fRc;
-
-#ifdef NDEBUG
-#else
-        if( !Lex03_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        fRc = Lex_setFlags((LEX_DATA *)this, value);
-
-        return fRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //               L e x i c a l  S c a n n e r
-    //---------------------------------------------------------------
-
-    LEX_DATA *      Lex03_getLex(
-        LEX03_DATA      *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !Lex03_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return (LEX_DATA *)this;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        Lex03_getPriority (
-        LEX03_DATA     *this
+    uint16_t        SQLite_getPriority (
+        SQLITE_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -240,14 +145,14 @@ extern "C" {
     }
 
 
-    bool            Lex03_setPriority (
-        LEX03_DATA     *this,
+    bool            SQLite_setPriority (
+        SQLITE_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -264,13 +169,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        Lex03_getSize (
-        LEX03_DATA       *this
+    uint32_t        SQLite_getSize (
+        SQLITE_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -285,15 +190,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * Lex03_getStr (
-        LEX03_DATA     *this
+    ASTR_DATA * SQLite_getStr (
+        SQLITE_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -303,14 +208,14 @@ extern "C" {
     }
     
     
-    bool        Lex03_setStr (
-        LEX03_DATA     *this,
+    bool        SQLite_setStr (
+        SQLITE_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -331,15 +236,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Lex03_getSuperVtbl (
-        LEX03_DATA     *this
+    OBJ_IUNKNOWN *  SQLite_getSuperVtbl (
+        SQLITE_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -368,16 +273,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = Lex03_Assign(this,pOther);
+        ERESULT eRc = SQLite_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another LEX03 object
+     @param     pOther  a pointer to another SQLITE object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         Lex03_Assign (
-        LEX03_DATA       *this,
-        LEX03_DATA     *pOther
+    ERESULT         SQLite_Assign (
+        SQLITE_DATA       *this,
+        SQLITE_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -385,11 +290,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Lex03_Validate(pOther)) {
+        if (!SQLite_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -450,9 +355,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         Lex03_Compare (
-        LEX03_DATA     *this,
-        LEX03_DATA     *pOther
+    ERESULT         SQLite_Compare (
+        SQLITE_DATA     *this,
+        SQLITE_DATA     *pOther
     )
     {
         int             i = 0;
@@ -466,11 +371,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Lex03_Validate(pOther)) {
+        if (!SQLite_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -508,36 +413,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Lex03      *pCopy = Lex03_Copy(this);
+        SQLite      *pCopy = SQLite_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a LEX03 object which must be 
+     @return    If successful, a SQLITE object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    LEX03_DATA *     Lex03_Copy (
-        LEX03_DATA       *this
+    SQLITE_DATA *     SQLite_Copy (
+        SQLITE_DATA       *this
     )
     {
-        LEX03_DATA       *pOther = OBJ_NIL;
+        SQLITE_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef LEX03_IS_IMMUTABLE
+#ifdef SQLITE_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = Lex03_New( );
+        pOther = SQLite_New( );
         if (pOther) {
-            eRc = Lex03_Assign(this, pOther);
+            eRc = SQLite_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -555,11 +460,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            Lex03_Dealloc (
+    void            SQLite_Dealloc (
         OBJ_ID          objId
     )
     {
-        LEX03_DATA   *this = objId;
+        SQLITE_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -568,7 +473,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -576,11 +481,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((LEX03_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((SQLITE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        Lex03_setStr(this, OBJ_NIL);
+        SQLite_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -601,32 +506,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Lex03      *pDeepCopy = Lex03_Copy(this);
+        SQLite      *pDeepCopy = SQLite_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a LEX03 object which must be 
+     @return    If successful, a SQLITE object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    LEX03_DATA *     Lex03_DeepyCopy (
-        LEX03_DATA       *this
+    SQLITE_DATA *     SQLite_DeepyCopy (
+        SQLITE_DATA       *this
     )
     {
-        LEX03_DATA       *pOther = OBJ_NIL;
+        SQLITE_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = Lex03_New( );
+        pOther = SQLite_New( );
         if (pOther) {
-            eRc = Lex03_Assign(this, pOther);
+            eRc = SQLite_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -649,8 +554,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex03_Disable (
-        LEX03_DATA       *this
+    ERESULT         SQLite_Disable (
+        SQLITE_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -658,7 +563,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -684,8 +589,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex03_Enable (
-        LEX03_DATA       *this
+    ERESULT         SQLite_Enable (
+        SQLITE_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -693,7 +598,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -713,14 +618,13 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    LEX03_DATA *   Lex03_Init (
-        LEX03_DATA       *this
+    SQLITE_DATA *   SQLite_Init (
+        SQLITE_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(LEX03_DATA);
+        uint32_t        cbSize = sizeof(SQLITE_DATA);
         //ERESULT         eRc;
-        bool            fRc;
-
+        
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -735,8 +639,8 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)Lex_Init((LEX_DATA *)this);          // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_LEX03);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SQLITE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -744,7 +648,7 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Lex03_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SQLite_Vtbl);
         
         /*
         this->pArray = objArray_New( );
@@ -755,20 +659,9 @@ extern "C" {
         }
         */
 
-        fRc =   Lex_setParserFunction(
-                                (LEX_DATA *)this,
-                                (void *)Lex03_ParseToken,
-                                this
-                );
-        if (!fRc) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -777,11 +670,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "Lex03::sizeof(LEX03_DATA) = %lu\n", 
-                sizeof(LEX03_DATA)
+                "SQLite::sizeof(SQLITE_DATA) = %lu\n", 
+                sizeof(SQLITE_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(LEX03_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(SQLITE_DATA));
 #endif
 
         return this;
@@ -793,8 +686,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Lex03_IsEnabled (
-        LEX03_DATA       *this
+    ERESULT         SQLite_IsEnabled (
+        SQLITE_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -802,7 +695,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -818,92 +711,6 @@ extern "C" {
     
     
     
-    //--------------------------------------------------------------
-    //                      P a r s e  T o k e n
-    //--------------------------------------------------------------
-
-    /* ParseToken() gets the next token from the source file. It
-     * saves that token for the file/line/col numbers and then
-     * proceeds to build upon it. It accumulates tokens until
-     * based on the class/type. When it finds a token which does
-     * not belong to that class, it saves the current token
-     * string to the string table, and tells the source file
-     * to re-use the token which did not match on the next parse.
-     * The token returned from this routine has the index of the
-     * token string in the string table if it is larger than 1
-     * character.
-     */
-
-    bool            Lex03_ParseToken(
-        LEX03_DATA      *this,
-        TOKEN_DATA      *pTokenOut
-    )
-    {
-        ERESULT         eRc;
-        TOKEN_DATA      *pToken;
-        int32_t         cls;
-        int32_t         clsNew = LEX_CLASS_UNKNOWN;
-        W32CHR_T        chr;
-        bool            fSavStr = true;
-        bool            fAdv = true;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Lex03_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-                TRC_OBJ(this, "Lex00_ParseToken:\n");
-
-                pToken = Lex_InputLookAhead((LEX_DATA *)this, 1);
-                if (OBJ_NIL == pToken) {
-                    pToken = Lex_ParseEOF((LEX_DATA *)this);
-                    DEBUG_BREAK();
-                }
-                cls = Token_getClass(pToken);
-                clsNew = cls;
-                chr = Token_getChrW32(pToken);
-                eRc = Lex_ParseTokenSetup((LEX_DATA *)this, pToken);
-
-                switch (cls) {
-
-                    case ':':           /*** ':' ***/
-                    case '=':           /*** '=' ***/
-                        TRC_OBJ(this, "\tFound ??%c -> %c\n", cls, chr);
-                        clsNew = LEX_SEP_COLON;
-                        fSavStr = false;
-                        Token_setChrW32(Lex_getToken(Lex03_getLex(this)), chr);
-                        break;
-
-                    default:
-                        break;
-                }
-                if (Token_getClass(pToken) == LEX_CLASS_EOF)
-                    ;
-                else {
-                    if (fAdv)
-                        Lex_InputAdvance((LEX_DATA *)this, 1);
-                }
-
-                // Set up the output token.
-                eRc = Lex_ParseTokenFinalize(Lex03_getLex(this), clsNew, fSavStr);
-
-                // Return to caller.
-        #ifdef NDEBUG
-        #else
-                if (obj_Trace(this)) {
-                    ASTR_DATA       *pStr = Token_ToString(pTokenOut);
-                    TRC_OBJ(this, "...Lex01_ParseToken token=%s", AStr_getData(pStr));
-                    obj_Release(pStr);
-                }
-        #endif
-        return true;
-    }
-
-
-
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -915,14 +722,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = Lex03_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = SQLite_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "Lex03", prefix,
+                        the object name, "SQLite", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -930,13 +737,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          Lex03_QueryInfo (
+    void *          SQLite_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        LEX03_DATA     *this = objId;
+        SQLITE_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -945,7 +752,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -954,11 +761,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(LEX03_DATA);
+                return (void *)sizeof(SQLITE_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)Lex03_Class();
+                return (void *)SQLite_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -984,37 +791,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return Lex03_Disable;
+                            return SQLite_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return Lex03_Enable;
+                            return SQLite_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  LEX03_JSON_SUPPORT
+#ifdef  SQLITE_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return Lex03_ParseJsonFields;
+                            return SQLite_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return Lex03_ParseJsonObject;
+                            return SQLite_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return Lex03_ToDebugString;
+                            return SQLite_ToDebugString;
                         }
-#ifdef  LEX03_JSON_SUPPORT
+#ifdef  SQLITE_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return Lex03_ToJsonFields;
+                            return SQLite_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return Lex03_ToJson;
+                            return SQLite_ToJson;
                         }
 #endif
                         break;
@@ -1025,10 +832,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == Lex03_ToDebugString)
+                if (pData == SQLite_ToDebugString)
                     return "ToDebugString";
-#ifdef  LEX03_JSON_SUPPORT
-                if (pData == Lex03_ToJson)
+#ifdef  SQLITE_JSON_SUPPORT
+                if (pData == SQLite_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1050,7 +857,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Lex03_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SQLite_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1058,8 +865,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Lex03_ToDebugString (
-        LEX03_DATA      *this,
+    ASTR_DATA *     SQLite_ToDebugString (
+        SQLITE_DATA      *this,
         int             indent
     )
     {
@@ -1074,7 +881,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex03_Validate(this)) {
+        if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1095,12 +902,13 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    Lex03_getSize(this),
+                    SQLite_getSize(this),
                     obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
         if (this->pData) {
+            ASTR_DATA       *pWrkStr = OBJ_NIL;
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
                                                     this->pData,
@@ -1135,15 +943,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            Lex03_Validate (
-        LEX03_DATA      *this
+    bool            SQLite_Validate (
+        SQLITE_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_LEX03))
+            if (obj_IsKindOf(this, OBJ_IDENT_SQLITE))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1159,7 +967,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(LEX03_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(SQLITE_DATA))) {
             return false;
         }
 

@@ -1339,6 +1339,22 @@ extern "C" {
         pToken = Lex_TokenLookAhead((LEX_DATA *)this, num);
         
         // Return to caller.
+#ifdef NDEBUG
+#else
+        if( obj_Trace(this) ) {
+            fprintf(stderr, "\tlexj_TokenLookAhead(%d)\n", num);
+            if (pToken) {
+                ASTR_DATA       *pStr2 = Token_ToDataString(pToken);
+                fprintf(stderr, "\t\tToken Class  = %d\n", Token_getClass(pToken));
+                fprintf(stderr, "\t\tToken String = \"%s\"\n", AStr_getData(pStr2));
+                obj_Release(pStr2);
+            } else {
+                fprintf(stderr, "\t\tNULL Token!\n");
+            }
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
         return pToken;
     }
     

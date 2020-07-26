@@ -475,6 +475,8 @@ extern "C" {
         OBJ_IDENT_SQLCOL_CLASS,
         OBJ_IDENT_SQLCOLDEF,            // SQL Column Definition
         OBJ_IDENT_SQLCOLDEF_CLASS,
+        OBJ_IDENT_SQLITE,               // SQLite Interface
+        OBJ_IDENT_SQLITE_CLASS,
         OBJ_IDENT_SQLROWDEF,            // SQL Row Definition
         OBJ_IDENT_SQLROWDEF_CLASS,
         OBJ_IDENT_SRC,

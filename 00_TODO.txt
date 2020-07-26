@@ -9,10 +9,6 @@ will depend upon time and resources.
         * Linux
         * Win32/Win64
 
--- TextIn:
-    * Add method, Repos(), to reposition based on lineNo and colNo.  
-    * Add method, Repos(), to reposition based on file position.  
-
 -- Lex:
     *   Rewrite Lex to support W32Str for accumulation.
     *   Rewrite Lex to do a non-destructive scan until a complete Lexical token is matched.  

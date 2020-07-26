@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 7/16/2020  4:08:50.000)
+# ( 7/26/2020 13:00:03.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -839,6 +839,16 @@ $(OBJDIR)/PsxExec.o: $(SRCDIR)/PsxExec.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_i
 OBJS += $(OBJDIR)/PsxExec_object.o
 
 $(OBJDIR)/PsxExec_object.o: $(SRCDIR)/PsxExec_object.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SQLite.o
+
+$(OBJDIR)/SQLite.o: $(SRCDIR)/SQLite.c $(SRCDIR)/SQLite.h $(SRCDIR)/SQLite_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SQLite_object.o
+
+$(OBJDIR)/SQLite_object.o: $(SRCDIR)/SQLite_object.c $(SRCDIR)/SQLite.h $(SRCDIR)/SQLite_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Scanner.o
@@ -2303,6 +2313,12 @@ Path_test: $(TEST_SRC)/Path_test.c $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(
 TESTS += PsxExec_test
 
 PsxExec_test: $(TEST_SRC)/PsxExec_test.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += SQLite_test
+
+SQLite_test: $(TEST_SRC)/SQLite_test.c $(SRCDIR)/SQLite.h $(SRCDIR)/SQLite_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

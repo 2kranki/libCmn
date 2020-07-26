@@ -5,13 +5,24 @@
 //****************************************************************
 /*
  * Program
- *          Tokenize a TextIn Stream with Look-ahead and Backup Recovery (SrcFile)
+ *          Tokenize a TextIn Stream with Look-ahead and Backup
+ *          Recovery (SrcFile)
  * Purpose
  *          This object tokenizes an input stream of text using
- *          a TextIn object and provides look-ahead in conforming
+ *          a TextIn object and provides look-ahead conforming
  *          to Lex input.  It also provides for backup/recovery
  *          of those tokens for lexical scanner that must backup
  *          such as re2c.
+ *
+ *          This object requires look-ahead which defaults to 4.
+ *          This means that you can always see the next 4 tokens
+ *          of input.  However, this may be insufficient on oc-
+ *          casion.
+ *
+ *          When look-ahead is insufficient, you can use the
+ *          backup and recovery (checkpoint/restart) system which
+ *          allows you to look further ahead in the text file
+ *          with optional restart if needed (ie parse failure).
  *
  * Remarks
  *  1.      None
@@ -252,7 +263,8 @@ extern "C" {
     /*!
      Save the current token for a checkpoint which will allow a restart
      to begin again at this point.  You may issue as many checkpoints as
-     you want. However, Restart() will only recognize the last one.
+     you want. However, Restart() will only recognize the last one, because
+     they overwrite the previous one (ie not stacked).
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.

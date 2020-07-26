@@ -211,11 +211,15 @@ extern "C" {
         LEX_CONSTANT_TEXTB,                 // Text surrounded by "%[" ... "%]"
         LEX_CONSTANT_TEXTC,                 // Text surrounded by "%(" ... "%)"
         LEX_CONSTANT_TEXTD,                 // Text surrounded by "<." ... ".>"
+        LEX_CONSTANT_TEXTE,                 // Text surrounded by "{." ... ".}"
+        LEX_CONSTANT_TEXTF,                 // Text surrounded by "[." ... ".]"
+        LEX_CONSTANT_TEXTG,                 // Text surrounded by "(." ... ".)"
 
         LEX_IDENTIFIER=400,
 
         LEX_CLASS_SEP_GROUP=500,
         LEX_SEP_AT,                         // @
+        LEX_SEP_COLON,                      // :
         LEX_SEP_COMMA,                      // ,
         LEX_SEP_DOT,                        // .
         LEX_SEP_DOT_GT,                     // .>
@@ -330,6 +334,7 @@ extern "C" {
         LEX_KWD_EQU,
         LEX_KWD_EXTERN,
         LEX_KWD_EXTRN,
+        LEX_KWD_FALSE,
         LEX_KWD_FAR,
         LEX_KWD_FLOAT,
         LEX_KWD_FOR,
@@ -359,9 +364,11 @@ extern "C" {
         LEX_KWD_MEND,
         LEX_KWD_NEAR,
         LEX_KWD_NEW,
+        LEX_KWD_NIL,
         LEX_KWD_NONATOMIC,
         LEX_KWD_NSENUM,
         LEX_KWD_NSOPTIONS,
+        LEX_KWD_NULL,
         LEX_KWD_OFFSETOF,
         LEX_KWD_ONEWAY,
         LEX_KWD_OPERATOR,
@@ -392,6 +399,7 @@ extern "C" {
         LEX_KWD_SWITCH,
         LEX_KWD_TERM,
         LEX_KWD_THIS,
+        LEX_KWD_TRUE,
         LEX_KWD_TYPEDEF,
         LEX_KWD_UINT8,
         LEX_KWD_UINT16,

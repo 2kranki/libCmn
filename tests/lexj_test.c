@@ -25,7 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <lexj_internal.h>
-#include    <srcFile.h>
+#include    <SrcFile.h>
 
 
 static
@@ -126,9 +126,21 @@ int         test_lexj01(
     LEXJ_DATA       *pLexJ = OBJ_NIL;
     TOKEN_DATA      *pToken;
     ASTR_DATA       *pStr = OBJ_NIL;
-    
+    const
+    char            *pTestInput =
+    "// Test01 Input\n"
+    "{ /* test comment */\n\n\n"
+        "\t\"one\": -123,\n"
+        "\ttwo: \"xyz\",\n"
+        "\tthree: [a, b, c] // Another comment\n"
+        "\tfour: null,\n"
+        "\t\"five\": true,\n"
+        "\t\"six\": false\n"
+    "}\n";
+    int32_t         cls;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pBuf = AStr_NewA(pTestInput01);
+    pBuf = AStr_NewA(pTestInput);
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         
@@ -137,9 +149,14 @@ int         test_lexj01(
         obj_TraceSet(pLexJ, true);
         if (pLexJ) {
             
-#ifdef XYZZY
             pToken = lexj_TokenLookAhead(pLexJ, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
+            {
+                ASTR_DATA       *pStr2 = Token_ToDataString(pToken);
+                fprintf(stderr, "\tToken Class  = %d\n", Token_getClass(pToken));
+                fprintf(stderr, "\tToken String = \"%s\"\n", AStr_getData(pStr2));
+                obj_Release(pStr2);
+            }
             XCTAssertTrue( (LEXJ_SEP_LBRACE == Token_getClass(pToken)) );
             pToken = lexj_TokenAdvance(pLexJ, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
@@ -363,8 +380,7 @@ int         test_lexj01(
             XCTAssertTrue( (LEX_CLASS_EOF == Token_getClass(pToken)) );
             pToken = lexj_TokenAdvance(pLexJ, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
-#endif
-            
+
             obj_Release(pLexJ);
             pLexJ = OBJ_NIL;
         }
@@ -830,7 +846,7 @@ int         test_lexj_Number10(
     ASTR_DATA       *pStr = OBJ_NIL;
     const
     char            *pStringToParse = "{\"one\" : 0x11}";
-    ASTR_DATA       *pAStr = OBJ_NIL;
+    //ASTR_DATA       *pAStr = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     pLexJ = lexj_NewA(pStringToParse, 4, true);

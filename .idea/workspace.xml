@@ -11,19 +11,12 @@
   <component name="ChangeListManager">
     <list default="true" id="dcbae2a0-8874-4a9a-8e44-82d9738ed537" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Compiler.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Compiler.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Expr_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Expr_internal.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Scanner.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scanner.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Scanner.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scanner.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Sym.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Sym.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Sym.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Sym.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Sym_json.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Sym_json.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Sym_object.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Sym_object.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/W32StrC.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/W32StrC.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/W32StrC_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/W32StrC_internal.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/obj.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/obj.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/BlkdRcds16_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/BlkdRcds16_test.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/Scanner_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Scanner_test.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/00_TODO.txt" beforeDir="false" afterPath="$PROJECT_DIR$/00_TODO.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Lex.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Lex03.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lex03.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SrcFile.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/SrcFile.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lexj.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexj.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/lexj_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/lexj_test.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xcode/testCmn/testCmn.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/xcode/testCmn/testCmn.xcodeproj/project.pbxproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -40,13 +33,13 @@
   <component name="ProjectId" id="1StvHIKXd1Sm1t1sT6GjayqSNzE" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="cf.first.check.clang-format" value="false" />
     <property name="js.buildTools.grunt.grunt-cli.package" value="" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -93,18 +86,6 @@
       <item itemvalue="Makefile.all" />
     </list>
   </component>
-  <component name="ServiceViewManager">
-    <option name="viewStates">
-      <list>
-        <serviceView>
-          <treeState>
-            <expand />
-            <select />
-          </treeState>
-        </serviceView>
-      </list>
-    </option>
-  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -121,24 +102,25 @@
       <workItem from="1586009645228" duration="1460000" />
       <workItem from="1586022162035" duration="801000" />
       <workItem from="1586132500529" duration="145000" />
+      <workItem from="1595129490611" duration="482000" />
+      <workItem from="1595549652931" duration="22000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+    <option name="version" value="2" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="COLUMN_ORDER" />
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="562" y="277" key="#all" timestamp="1586022199678">
