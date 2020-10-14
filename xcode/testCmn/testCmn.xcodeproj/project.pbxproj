@@ -388,6 +388,11 @@
 		C4EBE2F423CA1B22008E9EE8 /* Name_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EBE2EF23CA1B1F008E9EE8 /* Name_json.c */; };
 		C4EBE2F523CA1B22008E9EE8 /* Name_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EBE2F023CA1B20008E9EE8 /* Name_object.c */; };
 		C4EBE2F623CA1B22008E9EE8 /* Name.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EBE2F223CA1B21008E9EE8 /* Name.c */; };
+		C4EC06292533B43400C0F25A /* SQLite.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EC06242533B43300C0F25A /* SQLite.c */; };
+		C4EC062A2533B43400C0F25A /* SQLite_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EC06272533B43300C0F25A /* SQLite_object.c */; };
+		C4EC06342535FE7A00C0F25A /* Uri_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EC06302535FE7900C0F25A /* Uri_object.c */; };
+		C4EC06352535FE7A00C0F25A /* Uri_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EC06312535FE7900C0F25A /* Uri_json.c */; };
+		C4EC06362535FE7A00C0F25A /* Uri.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EC06332535FE7A00C0F25A /* Uri.c */; };
 		C4EF2A3E245632710074544A /* SqlColDef_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EF2A342456326C0074544A /* SqlColDef_json.c */; };
 		C4EF2A3F245632710074544A /* SqlRowDef_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EF2A362456326D0074544A /* SqlRowDef_json.c */; };
 		C4EF2A40245632710074544A /* SqlColDef.c in Sources */ = {isa = PBXBuildFile; fileRef = C4EF2A372456326E0074544A /* SqlColDef.c */; };
@@ -1120,6 +1125,16 @@
 		C4EBE2F123CA1B20008E9EE8 /* Name.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Name.h; sourceTree = "<group>"; };
 		C4EBE2F223CA1B21008E9EE8 /* Name.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Name.c; sourceTree = "<group>"; };
 		C4EBE2F323CA1B21008E9EE8 /* Name_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Name_internal.h; sourceTree = "<group>"; };
+		C4EC0622252ABE2F00C0F25A /* laInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = laInterface.h; sourceTree = "<group>"; };
+		C4EC06242533B43300C0F25A /* SQLite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SQLite.c; sourceTree = "<group>"; };
+		C4EC06252533B43300C0F25A /* SQLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLite.h; sourceTree = "<group>"; };
+		C4EC06262533B43300C0F25A /* SQLite_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLite_internal.h; sourceTree = "<group>"; };
+		C4EC06272533B43300C0F25A /* SQLite_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SQLite_object.c; sourceTree = "<group>"; };
+		C4EC062F2535FE7900C0F25A /* Uri_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uri_internal.h; sourceTree = "<group>"; };
+		C4EC06302535FE7900C0F25A /* Uri_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Uri_object.c; sourceTree = "<group>"; };
+		C4EC06312535FE7900C0F25A /* Uri_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Uri_json.c; sourceTree = "<group>"; };
+		C4EC06322535FE7A00C0F25A /* Uri.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uri.h; sourceTree = "<group>"; };
+		C4EC06332535FE7A00C0F25A /* Uri.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Uri.c; sourceTree = "<group>"; };
 		C4EF2A342456326C0074544A /* SqlColDef_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SqlColDef_json.c; sourceTree = "<group>"; };
 		C4EF2A352456326D0074544A /* SqlColDef_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SqlColDef_internal.h; sourceTree = "<group>"; };
 		C4EF2A362456326D0074544A /* SqlRowDef_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SqlRowDef_json.c; sourceTree = "<group>"; };
@@ -1196,6 +1211,7 @@
 				C4E02E8321FA0E49003DA92E /* memOSX_object.c */,
 				C4E02E8721FA0E4B003DA92E /* memOSX.c */,
 				C4EBE27623C2CF5F008E9EE8 /* ioRrdsInterface.h */,
+				C4EC0622252ABE2F00C0F25A /* laInterface.h */,
 				C4E02E8521FA0E4A003DA92E /* memOSX.h */,
 				C4EA0E3C22FF7C5A00DED0AF /* ioInterface.h */,
 				C45A9F92230082AD00785895 /* w32Reader.h */,
@@ -1736,6 +1752,10 @@
 				C4EF2A3C245632700074544A /* SqlColDef_object.c */,
 				C4EF2A372456326E0074544A /* SqlColDef.c */,
 				C4EF2A3D245632700074544A /* SqlColDef.h */,
+				C4EC06262533B43300C0F25A /* SQLite_internal.h */,
+				C4EC06272533B43300C0F25A /* SQLite_object.c */,
+				C4EC06242533B43300C0F25A /* SQLite.c */,
+				C4EC06252533B43300C0F25A /* SQLite.h */,
 				C4EF2A392456326F0074544A /* SqlRowDef_internal.h */,
 				C4EF2A362456326D0074544A /* SqlRowDef_json.c */,
 				C4EF2A3B2456326F0074544A /* SqlRowDef_object.c */,
@@ -1882,6 +1902,11 @@
 				C4359BBB1FC9C48200CA858E /* uint128_object.c */,
 				C4359B8E1FC9C47E00CA858E /* uint128.c */,
 				C4359B721FC9C47B00CA858E /* uint128.h */,
+				C4EC062F2535FE7900C0F25A /* Uri_internal.h */,
+				C4EC06312535FE7900C0F25A /* Uri_json.c */,
+				C4EC06302535FE7900C0F25A /* Uri_object.c */,
+				C4EC06332535FE7A00C0F25A /* Uri.c */,
+				C4EC06322535FE7A00C0F25A /* Uri.h */,
 				C4359B7B1FC9C47C00CA858E /* utf8_internal.h */,
 				C479BFF123ADB92D0057A017 /* utf8_json.c */,
 				C4359BC61FC9C48300CA858E /* utf8_object.c */,
@@ -1960,6 +1985,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = C43599281FC9C2F200CA858E;
 			productRefGroup = C43599321FC9C2F200CA858E /* Products */;
@@ -2020,6 +2046,7 @@
 				C4B0465123E4A76300162B4F /* CmdUtl.c in Sources */,
 				C4917E02210A96C200FE234E /* screen_object.c in Sources */,
 				C4B0464123E47E1C00162B4F /* Dir_object.c in Sources */,
+				C4EC06352535FE7A00C0F25A /* Uri_json.c in Sources */,
 				C42C553223CBC2FA00AA762C /* Node_object.c in Sources */,
 				C4EF2A3E245632710074544A /* SqlColDef_json.c in Sources */,
 				C4359AEE1FC9C3D800CA858E /* lru_object.c in Sources */,
@@ -2068,6 +2095,7 @@
 				C43584E123AFBF9D0069B103 /* BlkdRcds16_object.c in Sources */,
 				C4359A541FC9C38800CA858E /* file.c in Sources */,
 				C4B75F4523FC4E1300701E77 /* U16Matrix_object.c in Sources */,
+				C4EC062A2533B43400C0F25A /* SQLite_object.c in Sources */,
 				C4359A551FC9C38800CA858E /* dbField.c in Sources */,
 				C4E137D423BB9BAE0095EABE /* MsgData_json.c in Sources */,
 				C43599C51FC9C36800CA858E /* consumer_object.c in Sources */,
@@ -2137,6 +2165,7 @@
 				C49D985323A6ACE9003A25FD /* ObjList_object.c in Sources */,
 				C40F056C2482E55A00D66F9B /* Lex05.c in Sources */,
 				C4804609248BE39A008935B7 /* SrcFile.c in Sources */,
+				C4EC06342535FE7A00C0F25A /* Uri_object.c in Sources */,
 				C4B0460123E2083800162B4F /* DateTime_object.c in Sources */,
 				C4B75F8E24020A8C00701E77 /* Syms_object.c in Sources */,
 				C48EA13923A7EAB300CCAF2B /* ObjEnum.c in Sources */,
@@ -2199,6 +2228,7 @@
 				C4359A6F1FC9C38800CA858E /* dbField_object.c in Sources */,
 				C41B751223A927CF00C7DEBD /* NodeScan_object.c in Sources */,
 				C4EBE27323C2BE37008E9EE8 /* memrrds_io.c in Sources */,
+				C4EC06292533B43400C0F25A /* SQLite.c in Sources */,
 				C4FF85C321590FE500264EE7 /* objTest_object.c in Sources */,
 				C4BED99A23009C40006DF1C1 /* scanReader_object.c in Sources */,
 				C47FB38F21EBDD7D0022C1CC /* memFile.c in Sources */,
@@ -2308,6 +2338,7 @@
 				C4B045D823DD340900162B4F /* JsonOut_object.c in Sources */,
 				C40F05692482E55A00D66F9B /* Lex01_object.c in Sources */,
 				C435855423B7CE810069B103 /* SrcError_json.c in Sources */,
+				C4EC06362535FE7A00C0F25A /* Uri.c in Sources */,
 				C4359A3E1FC9C38800CA858E /* dec_object.c in Sources */,
 				C4EF2A3F245632710074544A /* SqlRowDef_json.c in Sources */,
 				C40F055E2482E55A00D66F9B /* Lex06_object.c in Sources */,

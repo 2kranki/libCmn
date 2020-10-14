@@ -3,6 +3,21 @@
 The following are things that are being thought about. Whether they get done or not
 will depend upon time and resources.
 
+-- Finish SQLite interface.
+
+-- Convert python RPG object to C
+
+-- Packed Decimal support
+
+-- int128 support
+
+-- Write a Money package that is compatible with SQLite or add it
+    to SQLite or Docker-M$_SQL
+
+-- Write interface for scanning (lookahead, advance, comparison,  etc)
+
+-- Write generic scanner that that uses  above interface.
+
 -- eresult:
     *   Look into having it support errno and using errno for its current value.
         * MacOS

@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 7/26/2020 13:00:03.000)
+# (10/14/2020 13:26:20.000)
 
 LIBNAM=libCmn
 SYS=macos64
@@ -896,6 +896,21 @@ OBJS += $(OBJDIR)/SqlCol_object.o
 $(OBJDIR)/SqlCol_object.o: $(SRCDIR)/SqlCol_object.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/SqlCurs.o
+
+$(OBJDIR)/SqlCurs.o: $(SRCDIR)/SqlCurs.c $(SRCDIR)/SqlCurs.h $(SRCDIR)/SqlCurs_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlCurs_json.o
+
+$(OBJDIR)/SqlCurs_json.o: $(SRCDIR)/SqlCurs_json.c $(SRCDIR)/SqlCurs.h $(SRCDIR)/SqlCurs_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlCurs_object.o
+
+$(OBJDIR)/SqlCurs_object.o: $(SRCDIR)/SqlCurs_object.c $(SRCDIR)/SqlCurs.h $(SRCDIR)/SqlCurs_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/SqlRowDef.o
 
 $(OBJDIR)/SqlRowDef.o: $(SRCDIR)/SqlRowDef.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1119,6 +1134,21 @@ $(OBJDIR)/U16Matrix_json.o: $(SRCDIR)/U16Matrix_json.c $(SRCDIR)/U16Matrix.h $(S
 OBJS += $(OBJDIR)/U16Matrix_object.o
 
 $(OBJDIR)/U16Matrix_object.o: $(SRCDIR)/U16Matrix_object.c $(SRCDIR)/U16Array.h $(SRCDIR)/U16Matrix.h $(SRCDIR)/U16Matrix_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Uri.o
+
+$(OBJDIR)/Uri.o: $(SRCDIR)/Uri.c $(SRCDIR)/Uri.h $(SRCDIR)/Uri_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Uri_json.o
+
+$(OBJDIR)/Uri_json.o: $(SRCDIR)/Uri_json.c $(SRCDIR)/Uri.h $(SRCDIR)/Uri_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Uri_object.o
+
+$(OBJDIR)/Uri_object.o: $(SRCDIR)/Uri_object.c $(SRCDIR)/Uri.h $(SRCDIR)/Uri_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Value.o
@@ -2340,6 +2370,12 @@ SqlCol_test: $(TEST_SRC)/SqlCol_test.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_inter
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += SqlCurs_test
+
+SqlCurs_test: $(TEST_SRC)/SqlCurs_test.c $(SRCDIR)/SqlCurs.h $(SRCDIR)/SqlCurs_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += SqlRowDef_test
 
 SqlRowDef_test: $(TEST_SRC)/SqlRowDef_test.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2439,6 +2475,12 @@ U16Array_test: $(TEST_SRC)/U16Array_test.c $(SRCDIR)/U16Array.h $(SRCDIR)/U16Arr
 TESTS += U16Matrix_test
 
 U16Matrix_test: $(TEST_SRC)/U16Matrix_test.c $(SRCDIR)/U16Matrix.h $(SRCDIR)/U16Matrix_internal.h $(SRCDIR)/U16Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Uri_test
+
+Uri_test: $(TEST_SRC)/Uri_test.c $(SRCDIR)/Uri.h $(SRCDIR)/Uri_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

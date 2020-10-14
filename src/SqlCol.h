@@ -164,7 +164,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  SQLCOL_SINGLETON
-    SQLCOL_DATA *     SqlCol_Shared (
+    SQLCOL_DATA *   SqlCol_Shared (
         void
     );
 

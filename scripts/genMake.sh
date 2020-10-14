@@ -242,8 +242,8 @@ main( ) {
         done
     fi
 
-    doCmd "genMake  --msc32  -o Makefile.win32.txt objects.json.txt"
-    doCmd "genMake  --macos  -o Makefile.macos.txt objects.json.txt"
+    #doCmd "genMake  --msc32  -o Makefile.win32.txt objects.json.txt"
+    doCmd "genMake  --macos64  -o Makefile.macos64.txt objects.json.txt"
 
     return $?
 }

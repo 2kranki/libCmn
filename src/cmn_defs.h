@@ -475,6 +475,8 @@ extern "C" {
         OBJ_IDENT_SQLCOL_CLASS,
         OBJ_IDENT_SQLCOLDEF,            // SQL Column Definition
         OBJ_IDENT_SQLCOLDEF_CLASS,
+        OBJ_IDENT_SQLCURS,              // SQL Cursor
+        OBJ_IDENT_SQLCURS_CLASS,
         OBJ_IDENT_SQLITE,               // SQLite Interface
         OBJ_IDENT_SQLITE_CLASS,
         OBJ_IDENT_SQLROWDEF,            // SQL Row Definition
@@ -553,6 +555,8 @@ extern "C" {
         OBJ_IDENT_U8VLARRAY_CLASS,
         OBJ_IDENT_UINT128,
         OBJ_IDENT_UINT128_CLASS,
+        OBJ_IDENT_URI,                  // Uniform Resource Identifier (RFC 3986)
+        OBJ_IDENT_URI_CLASS,
         OBJ_IDENT_UTF8,
         OBJ_IDENT_UTF8_CLASS,
         OBJ_IDENT_UTF8FILE,

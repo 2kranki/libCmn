@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   SQLite_internal.h
- *  Generated 07/26/2020 08:55:08
+ * File:   SqlCurs_internal.h
+ *  Generated 10/11/2020 18:09:06
  *
  * Notes:
  *  --  N/A
@@ -39,13 +39,12 @@
 
 
 
-#include        <SQLite.h>
+#include        <SqlCurs.h>
 #include        <JsonIn.h>
-#include        <sqlite3.h>
 
 
-#ifndef SQLITE_INTERNAL_H
-#define SQLITE_INTERNAL_H
+#ifndef SQLCURS_INTERNAL_H
+#define SQLCURS_INTERNAL_H
 
 
 
@@ -63,14 +62,13 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct SQLite_data_s  {
+struct SqlCurs_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    sqlite3         *pConn;
     uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
@@ -79,11 +77,11 @@ struct SQLite_data_s  {
 #pragma pack(pop)
 
     extern
-    struct SQLite_class_data_s  SQLite_ClassObj;
+    struct SqlCurs_class_data_s  SqlCurs_ClassObj;
 
     extern
     const
-    SQLITE_VTBL         SQLite_Vtbl;
+    SQLCURS_VTBL         SqlCurs_Vtbl;
 
 
 
@@ -91,13 +89,13 @@ struct SQLite_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  SQLITE_SINGLETON
-    SQLITE_DATA *     SQLite_getSingleton (
+#ifdef  SQLCURS_SINGLETON
+    SQLCURS_DATA *     SqlCurs_getSingleton (
         void
     );
 
-    bool            SQLite_setSingleton (
-     SQLITE_DATA       *pValue
+    bool            SqlCurs_setSingleton (
+     SQLCURS_DATA       *pValue
 );
 #endif
 
@@ -107,35 +105,35 @@ struct SQLite_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  SQLite_getSuperVtbl (
-        SQLITE_DATA     *this
+    OBJ_IUNKNOWN *  SqlCurs_getSuperVtbl (
+        SQLCURS_DATA     *this
     );
 
 
-    ERESULT         SQLite_Assign (
-        SQLITE_DATA    *this,
-        SQLITE_DATA    *pOther
+    ERESULT         SqlCurs_Assign (
+        SQLCURS_DATA    *this,
+        SQLCURS_DATA    *pOther
     );
 
 
-    SQLITE_DATA *       SQLite_Copy (
-        SQLITE_DATA     *this
+    SQLCURS_DATA *       SqlCurs_Copy (
+        SQLCURS_DATA     *this
     );
 
 
-    void            SQLite_Dealloc (
+    void            SqlCurs_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  SQLITE_JSON_SUPPORT
+#ifdef  SQLCURS_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SQLITE_DATA *       SQLite_ParseJsonObject (
+    SQLCURS_DATA *       SqlCurs_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -149,35 +147,35 @@ struct SQLite_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SQLite_ParseJsonFields (
+    ERESULT         SqlCurs_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SQLITE_DATA     *pObject
+        SQLCURS_DATA     *pObject
     );
 #endif
 
 
-    void *          SQLite_QueryInfo (
+    void *          SqlCurs_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  SQLITE_JSON_SUPPORT
+#ifdef  SQLCURS_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SQLite_ToJson(this);
+     ASTR_DATA      *pDesc = SqlCurs_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SQLite_ToJson (
-        SQLITE_DATA      *this
+    ASTR_DATA *     SqlCurs_ToJson (
+        SQLCURS_DATA      *this
     );
 
 
@@ -190,8 +188,8 @@ struct SQLite_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SQLite_ToJsonFields (
-        SQLITE_DATA     *this,
+    ERESULT         SqlCurs_ToJsonFields (
+        SQLCURS_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -201,8 +199,8 @@ struct SQLite_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            SQLite_Validate (
-        SQLITE_DATA       *this
+    bool            SqlCurs_Validate (
+        SQLCURS_DATA       *this
     );
 #endif
 
@@ -212,5 +210,5 @@ struct SQLite_data_s  {
 }
 #endif
 
-#endif  /* SQLITE_INTERNAL_H */
+#endif  /* SQLCURS_INTERNAL_H */
 

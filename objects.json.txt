@@ -1,4 +1,5 @@
 // vi:nu:et:sts=4 ts=4 sw=4
+// genMake  objects.json.txt >Makefile.txt
 
 {
     "library":{
@@ -160,6 +161,7 @@
         {name:"screen"},
         {name:"SqlCol", json:true, desc:"SQL Column Support"},
         {name:"SqlColDef", json:true, desc:"SQL Column Definition"},
+        {name:"SqlCurs", json:true, desc:"SQL Cursor to be used with SQL Connections"},
         {name:"SQLite", json:false, desc:"SQLite Interface"},
         {name:"SqlRowDef", json:true, desc:"SQL Row Definition"},
         {name:"SrcError", deps:["AStr.h","SrcLoc.h"], json:true},
@@ -188,14 +190,15 @@
         {name:"TRegex", desc:"8-bit Tiny Regex"},
         {name:"TRegex32", desc:"32-bit Tiny Regex"},
         {name:"True", json:true},
-        {name:"u8Array", json:true},
-        {name:"u8VlArray", json:true},
+        {name:"u8Array", json:true, desc:"Dynamic Array of uint8_t"},
+        {name:"u8VlArray", json:true, desc:"uint8_t variable length array"},
         {name:"u12Array", deps:["array.h"]},
         {name:"U16Array", deps:["array.h"], json:true},
         {name:"U16Matrix", deps:["U16Array.h"], json:true},
         {name:"u32Array", deps:["array.h"]},
         {name:"u32Matrix"},
         {name:"uint128"},
+        {name:"Uri", json:true, desc:"Uniform Resource Identifier (RFC 3986)"},
         {name:"utf8", json:true, desc:"UTF-8/16/32 Conversion"},
         {name:"Value", json:true, desc:"Generic Value (Multiple Types Supported)"},
         {name:"Visitor"},

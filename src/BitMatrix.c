@@ -748,7 +748,7 @@ extern "C" {
      square matrix (ie N X N).
      .
      @param     this    object pointer
-     @param     i       vertex/node to search
+     @param     pExit   vertex/node exit
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */

@@ -12,11 +12,18 @@
     <list default="true" id="dcbae2a0-8874-4a9a-8e44-82d9738ed537" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/00_TODO.txt" beforeDir="false" afterPath="$PROJECT_DIR$/00_TODO.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Lex.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Lex03.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lex03.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SrcFile.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/SrcFile.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lexj.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexj.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/lexj_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/lexj_test.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile.macos64.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile.macos64.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/objects.json.txt" beforeDir="false" afterPath="$PROJECT_DIR$/objects.json.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/genMake.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/genMake.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/mkLib.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/mkLib.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BitMatrix.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/BitMatrix.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SQLite.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/SQLite.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SQLite_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/SQLite_internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SQLite_test.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SqlCol.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/SqlCol.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cmn_defs.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/cmn_defs.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/enum.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/enum.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/u12Array.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/u12Array.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xcode/testCmn/testCmn.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/xcode/testCmn/testCmn.xcodeproj/project.pbxproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -36,6 +43,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -47,7 +55,7 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.make" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunManager" selected="Makefile.Test">
     <configuration name="Install" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
@@ -104,6 +112,9 @@
       <workItem from="1586132500529" duration="145000" />
       <workItem from="1595129490611" duration="482000" />
       <workItem from="1595549652931" duration="22000" />
+      <workItem from="1602681714787" duration="56000" />
+      <workItem from="1602681778281" duration="137000" />
+      <workItem from="1602681922605" duration="491000" />
     </task>
     <servers />
   </component>
@@ -123,41 +134,9 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="562" y="277" key="#all" timestamp="1586022199678">
-      <screen x="26" y="23" width="1654" height="1027" />
-    </state>
-    <state x="562" y="277" key="#all/26.23.1654.1027@26.23.1654.1027" timestamp="1586022199678" />
-    <state x="107" y="163" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586022587502">
-      <screen x="26" y="23" width="1654" height="1027" />
-    </state>
-    <state x="107" y="163" key="#com.intellij.execution.impl.EditConfigurationsDialog/26.23.1654.1027@26.23.1654.1027" timestamp="1586022587502" />
-    <state x="519" y="259" key="#com.intellij.featureStatistics.actions.ShowFeatureUsageStatisticsDialog" timestamp="1586018564615">
-      <screen x="26" y="23" width="1654" height="1027" />
-    </state>
-    <state x="519" y="259" key="#com.intellij.featureStatistics.actions.ShowFeatureUsageStatisticsDialog/26.23.1654.1027@26.23.1654.1027" timestamp="1586018564615" />
-    <state width="1358" height="267" key="GridCell.Tab.0.bottom" timestamp="1586029563093">
-      <screen x="26" y="23" width="1654" height="1027" />
-    </state>
-    <state width="1358" height="267" key="GridCell.Tab.0.bottom/26.23.1654.1027@26.23.1654.1027" timestamp="1586029563093" />
-    <state width="1358" height="267" key="GridCell.Tab.0.center" timestamp="1586029563093">
-      <screen x="26" y="23" width="1654" height="1027" />
-    </state>
-    <state width="1358" height="267" key="GridCell.Tab.0.center/26.23.1654.1027@26.23.1654.1027" timestamp="1586029563093" />
-    <state width="1358" height="267" key="GridCell.Tab.0.left" timestamp="1586029563092">
-      <screen x="26" y="23" width="1654" height="1027" />
-    </state>
-    <state width="1358" height="267" key="GridCell.Tab.0.left/26.23.1654.1027@26.23.1654.1027" timestamp="1586029563092" />
-    <state width="1358" height="267" key="GridCell.Tab.0.right" timestamp="1586029563093">
-      <screen x="26" y="23" width="1654" height="1027" />
-    </state>
-    <state width="1358" height="267" key="GridCell.Tab.0.right/26.23.1654.1027@26.23.1654.1027" timestamp="1586029563093" />
-    <state x="72" y="171" key="SettingsEditor" timestamp="1586018508066">
-      <screen x="26" y="23" width="1654" height="1027" />
-    </state>
-    <state x="72" y="171" key="SettingsEditor/26.23.1654.1027@26.23.1654.1027" timestamp="1586018508066" />
-    <state x="533" y="369" key="com.intellij.ide.util.TipDialog" timestamp="1586132510623">
+    <state x="334" y="193" key="SettingsEditor" timestamp="1602681915139">
       <screen x="28" y="23" width="1652" height="1027" />
     </state>
-    <state x="533" y="369" key="com.intellij.ide.util.TipDialog/28.23.1652.1027@28.23.1652.1027" timestamp="1586132510623" />
+    <state x="334" y="193" key="SettingsEditor/28.23.1652.1027@28.23.1652.1027" timestamp="1602681915139" />
   </component>
 </project>

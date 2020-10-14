@@ -246,6 +246,7 @@ main( ) {
     doCmd "make -f Makefile.txt all"
     doCmd "make -f Makefile.txt test"
     #doCmd "make -f Makefile.txt install"
+    doCmd "rm Makefile.txt"
 
     return $?
 }
