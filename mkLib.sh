@@ -250,6 +250,8 @@ main( ) {
     fi
 
     doCmd "genMake objects.json.txt"
+    doCmd "cp Makefile.${osType}.txt Makefile"
+    doCmd "make -f Makefile.${osType}.txt clean"
     doCmd "make -f Makefile.${osType}.txt all"
     if doCmd "make -f Makefile.${osType}.txt test"; then
         doCmd "make -f Makefile.${osType}.txt install"

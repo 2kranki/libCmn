@@ -9,6 +9,11 @@
 *.swp
 *.tmp
 
+# GNU LibTool Files and Directories
+.lib/
+*.lo
+
+
 # XCode Files
 *.pbxuser
 *.mode1v3

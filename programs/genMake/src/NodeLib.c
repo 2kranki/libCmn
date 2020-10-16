@@ -943,7 +943,7 @@ extern "C" {
                 }
             }
         }
-        AStr_AppendA(pStr, "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n");
+        AStr_AppendA(pStr, "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses -lsqlite3\n\n");
 
         AStr_AppendA(pStr, "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n");
         AStr_AppendA(pStr, "LIBOBJ = $(BASE_OBJ)/$(SYS)\n");

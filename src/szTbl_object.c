@@ -120,7 +120,6 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //-----------------------------------------------------------
 
 static
-const
 SZTBL_CLASS_DATA  szTbl_ClassObj = {
     {
         &obj_Vtbl,                  // pVtbl

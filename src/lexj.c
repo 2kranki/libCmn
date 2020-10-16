@@ -1350,9 +1350,9 @@ extern "C" {
                 obj_Release(pStr2);
             } else {
                 fprintf(stderr, "\t\tNULL Token!\n");
+                DEBUG_BREAK();
+                return OBJ_NIL;
             }
-            DEBUG_BREAK();
-            return OBJ_NIL;
         }
 #endif
         return pToken;
