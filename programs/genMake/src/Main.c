@@ -1431,7 +1431,7 @@ extern "C" {
                     );
             exit(EXIT_FAILURE);
         }
-        eRc = Path_ExpandVars(pMakepath, this->pDict);
+        eRc = Path_ExpandVars(pMakepath, (void *)Dict_GetA, this->pDict);
         if (ERESULT_FAILED(eRc) ) {
             DEBUG_BREAK();
             fprintf(stderr, "FATAL - Failed to expand Makepath\n");

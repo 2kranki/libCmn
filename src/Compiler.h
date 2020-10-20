@@ -57,7 +57,7 @@
 #include        <Path.h>
 #include        <prt.h>
 #include        <SrcErrors.h>
-#include        <srcFiles.h>
+#include        <SrcFiles.h>
 #include        <szTbl.h>
 #include        <AStr.h>
 #include        <Token.h>

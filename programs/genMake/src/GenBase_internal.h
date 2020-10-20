@@ -95,7 +95,7 @@ struct GenBase_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  GENBASE_SINGLETON
-    GENBASE_DATA *     GenBase_getSingleton (
+    GENBASE_DATA *  GenBase_getSingleton (
         void
     );
 

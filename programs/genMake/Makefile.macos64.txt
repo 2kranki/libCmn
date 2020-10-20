@@ -1,5 +1,8 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/ 9/2019 19:54:55.000)
+# (10/16/2020 11:37:10.000)
+
+.DEFAULT_GOAL := all
+SHELL=/bin/sh
 
 PGMNAM=genMake
 SYS=macos64
@@ -22,7 +25,7 @@ CFLAGS_LIBS =
 LIBCMN_BASE = $(LIB_BASE)/libCmn
 CFLAGS += -I$(LIBCMN_BASE)/include
 CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)
-CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses
+CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses -lsqlite3
 
 LIBOBJ = $(BASE_OBJ)/$(SYS)
 ifdef  NDEBUG

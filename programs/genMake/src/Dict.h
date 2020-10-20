@@ -218,7 +218,8 @@ extern "C" {
 
    
     /*!
-     Get the dictionary value for a given name.
+     Get the dictionary value for a given name. Note: this method is
+     compatible with Path_ExpandVars().
      @param     this    object pointer
      @param     pNameA  pointer to UTF-8 Name string
      @return    if successful, pointer to data string.  Otherwise, NULL.

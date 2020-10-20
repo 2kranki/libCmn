@@ -999,6 +999,10 @@ extern "C" {
         }
         AStr_AppendA(pStr, "\n");
 
+        AStr_AppendA(pStr, ".DEFAULT_GOAL := all\n");
+        AStr_AppendA(pStr, "SHELL=/bin/sh\n");
+        AStr_AppendA(pStr, "\n");
+
         //AStr_AppendA(pStr, "CC=clang\n");
         AStr_AppendPrint(pStr, "PGMNAM=%s\n", AStrC_getData(NodePgm_getName(this)));
         AStr_AppendA(pStr, "SYS=macos64\n");
@@ -1039,7 +1043,7 @@ extern "C" {
                 }
             }
         }
-        AStr_AppendA(pStr, "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n");
+        AStr_AppendA(pStr, "CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses -lsqlite3\n\n");
 
         AStr_AppendA(pStr, "LIBOBJ = $(BASE_OBJ)/$(SYS)\n");
         AStr_AppendA(pStr, "ifdef  NDEBUG\n");

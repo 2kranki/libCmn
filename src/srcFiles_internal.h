@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   srcFiles_internal.h
- *	Generated 08/06/2015 14:36:39
+ * File:   SrcFiles_internal.h
+ *  Generated 10/19/2020 16:14:31
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,24 +39,34 @@
 
 
 
+#include        <SrcFiles.h>
+#include        <JsonIn.h>
+
+
 #ifndef SRCFILES_INTERNAL_H
-#define	SRCFILES_INTERNAL_H
+#define SRCFILES_INTERNAL_H
 
 
-#include    "srcFiles.h"
-#include    "ObjArray.h"
 
-#ifdef	__cplusplus
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
 
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct srcFiles_data_s	{
+struct SrcFiles_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     OBJARRAY_DATA   *pPaths;
@@ -68,34 +79,144 @@ struct srcFiles_data_s	{
 #pragma pack(pop)
 
     extern
+    struct SrcFiles_class_data_s  SrcFiles_ClassObj;
+
+    extern
     const
-    OBJ_IUNKNOWN    srcFiles_Vtbl;
+    SRCFILES_VTBL         SrcFiles_Vtbl;
 
 
 
-    // Internal Functions
-    bool            srcFiles_setPaths(
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  SRCFILES_SINGLETON
+    SRCFILES_DATA * SrcFiles_getSingleton (
+        void
+    );
+
+    bool            SrcFiles_setSingleton (
+     SRCFILES_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    bool            SrcFiles_setPaths(
         SRCFILES_DATA   *this,
         OBJARRAY_DATA   *pValue
     );
-    
 
-    void            srcFiles_Dealloc(
+
+    OBJ_IUNKNOWN *  SrcFiles_getSuperVtbl (
+        SRCFILES_DATA     *this
+    );
+
+
+    ERESULT         SrcFiles_Assign (
+        SRCFILES_DATA    *this,
+        SRCFILES_DATA    *pOther
+    );
+
+
+    SRCFILES_DATA * SrcFiles_Copy (
+        SRCFILES_DATA     *this
+    );
+
+
+    void            SrcFiles_Dealloc (
         OBJ_ID          objId
     );
 
-#ifdef NDEBUG
-#else
-    bool			srcFiles_Validate(
-        SRCFILES_DATA       *cbp
+
+#ifdef  SRCFILES_JSON_SUPPORT
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    SRCFILES_DATA * SrcFiles_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+
+
+    /*!
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SrcFiles_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        SRCFILES_DATA   *pObject
+    );
+#endif
+
+
+    void *          SrcFiles_QueryInfo (
+        OBJ_ID          objId,
+        uint32_t        type,
+        void            *pData
+    );
+
+
+#ifdef  SRCFILES_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = SrcFiles_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SrcFiles_ToJson (
+        SRCFILES_DATA    *this
+    );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SrcFiles_ToJsonFields (
+        SRCFILES_DATA   *this,
+        ASTR_DATA       *pStr
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+
+#ifdef NDEBUG
+#else
+    bool            SrcFiles_Validate (
+        SRCFILES_DATA       *this
+    );
+#endif
+
+
+
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* SRCFILES_INTERNAL_H */
+#endif  /* SRCFILES_INTERNAL_H */
 

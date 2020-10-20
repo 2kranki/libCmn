@@ -466,6 +466,7 @@ extern "C" {
     {
         SQLITE_DATA   *this = objId;
         //ERESULT         eRc;
+        int         sqlError;
 
         // Do initialization.
         if (NULL == this) {
@@ -486,6 +487,11 @@ extern "C" {
 #endif
 
         SQLite_setStr(this, OBJ_NIL);
+
+        sqlError = sqlite3_shutdown();
+        if (sqlError != SQLITE_OK) {
+            DEBUG_BREAK();
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -630,7 +636,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        int             error;
+        int             sqlError;
         char            *pErrmsg = NULL;
 
         // Do initialization.
@@ -645,7 +651,7 @@ extern "C" {
             return ERESULT_GENERAL_FAILURE;
         }
 
-        error = sqlite3_exec(
+        sqlError = sqlite3_exec(
                              this->pConn,
                              AStr_getData(pSql), // 1 or more SQL statements terminated
                              //             // with a ';'
@@ -671,8 +677,8 @@ extern "C" {
                              &pErrmsg       // An error message allocate with
                              //             // sqlite3_malloc() which must be freed
                              //             // with sqlite3_free()
-                );
-        if (error) {
+                    );
+        if (sqlError) {
             eRc = ERESULT_OPEN_ERROR;
             this->pConn = NULL;
         }
@@ -693,6 +699,7 @@ extern "C" {
     {
         uint32_t        cbSize = sizeof(SQLITE_DATA);
         //ERESULT         eRc;
+        int             sqlError;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -718,15 +725,13 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&SQLite_Vtbl);
-        
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
+
+        sqlError = sqlite3_initialize();
+        if (sqlError != SQLITE_OK) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
 
 #ifdef NDEBUG
 #else
@@ -796,7 +801,10 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        int             error;
+        int             sqlError;
+        const
+        char            *pFilePath = "";    // Default to on-disk temporary database
+        //              ":memory:" would be in-memory temporary database
 
         // Do initialization.
 #ifdef NDEBUG
@@ -810,10 +818,21 @@ extern "C" {
             return ERESULT_GENERAL_FAILURE;
         }
 
-        error = sqlite3_open(Path_getData(pPath), &this->pConn);
-        if (error) {
+        if (pPath) {
+            pFilePath = Path_getData(pPath);
+        }
+        sqlError = sqlite3_open_v2(
+                                pFilePath,
+                                &this->pConn,
+                                (SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE),
+                                NULL         // default sqlite3_vfs object
+                    );
+        if (sqlError != SQLITE_OK) {
             eRc = ERESULT_OPEN_ERROR;
-            this->pConn = NULL;
+            if (this->pConn) {
+                sqlite3_close(this->pConn);
+                this->pConn = NULL;
+            }
         }
 
         // Return to caller.

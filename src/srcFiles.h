@@ -1,23 +1,23 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Stacked Source Input Files (srcFiles) Header
+//          Tokenize a TextIn Streams (SrcFiles) Header
 //****************************************************************
 /*
  * Program
- *				Stacked Source Input Files (srcFiles)
+ *          SrcFiles (SrcFiles)
  * Purpose
- *				This object serves two purposes. First, it provides
+ *              This object serves two purposes. First, it provides
  *              for file inclusion by using a stack of sources which
  *              when exhausted are popped off the stack. Second, it
  *              provides for translation from a file number used in
  *              the tokens back to a file name.
-*
+ *
  * Remarks
- *	1.      None
+ *  1.      None
  *
  * History
- *	08/06/2015 Generated
+ *  10/19/2020 Generated
  */
 
 
@@ -53,6 +53,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <AStr.h>
 #include        <SrcFile.h>
 #include        <ObjArray.h>
 #include        <Path.h>
@@ -63,8 +64,15 @@
 #define         SRCFILES_H
 
 
+//#define   SRCFILES_IS_IMMUTABLE     1
+//#define   SRCFILES_JSON_SUPPORT     1
+//#define   SRCFILES_SINGLETON        1
 
-#ifdef	__cplusplus
+
+
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -74,13 +82,32 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct srcFiles_data_s	SRCFILES_DATA;
+    typedef struct SrcFiles_data_s  SRCFILES_DATA;            // Inherits from OBJ
+    typedef struct SrcFiles_class_data_s SRCFILES_CLASS_DATA;   // Inherits from OBJ
+
+    typedef struct SrcFiles_vtbl_s  {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in SrcFiles_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(SRCFILES_DATA *);
+    } SRCFILES_VTBL;
+
+    typedef struct SrcFiles_class_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in SrcFiles_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(SRCFILES_DATA *);
+    } SRCFILES_CLASS_VTBL;
 
 
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -88,125 +115,164 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    SRCFILES_DATA *  srcFiles_Alloc(
+#ifdef  SRCFILES_SINGLETON
+    SRCFILES_DATA * SrcFiles_Shared (
+        void
+    );
+
+    void            SrcFiles_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to SrcFiles object if successful, otherwise OBJ_NIL.
+     */
+    SRCFILES_DATA * SrcFiles_Alloc (
         void
     );
     
     
-    SRCFILES_DATA *  srcFiles_New(
+    OBJ_ID          SrcFiles_Class (
         void
     );
     
     
+    SRCFILES_DATA * SrcFiles_New (
+        void
+    );
+    
+    
+#ifdef  SRCFILES_JSON_SUPPORT
+    SRCFILES_DATA * SrcFiles_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    SRCFILES_DATA * SrcFiles_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * srcFiles_getPaths(
+    OBJARRAY_DATA * SrcFiles_getPaths(
         SRCFILES_DATA   *this
     );
-    
 
-    bool            srcFiles_getReuse(
+
+    bool            SrcFiles_getReuse(
         SRCFILES_DATA   *this
     );
-    
-    bool            srcFiles_setReuse(
+
+    bool            SrcFiles_setReuse(
         SRCFILES_DATA   *this,
         bool            fValue
     );
-    
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    uint16_t        srcFiles_AddPath(
-        SRCFILES_DATA   *this
-    );
-    
-    
-    SRCFILES_DATA * srcFiles_Init(
+    uint16_t        SrcFiles_AddPath(
         SRCFILES_DATA   *this
     );
 
 
-    TOKEN_DATA *    srcFiles_InputAdvance(
+    SRCFILES_DATA * SrcFiles_Init(
+        SRCFILES_DATA   *this
+    );
+
+
+    TOKEN_DATA *    SrcFiles_InputAdvance(
         SRCFILES_DATA   *this,
         uint16_t        numChrs
     );
-    
-    
-    TOKEN_DATA *    srcFiles_InputLookAhead(
+
+
+    TOKEN_DATA *    SrcFiles_InputLookAhead(
         SRCFILES_DATA   *this,
         uint16_t        num
     );
-    
-    
+
+
     /*!
      Create a new srcFile object from the given parameters and push it to the
      top of the stack.
      */
-    ERESULT         srcFiles_NewSrcFromAStr(
+    ERESULT         SrcFiles_NewSrcFromAStr(
         SRCFILES_DATA   *this,
         PATH_DATA       *pFilePath,
         ASTR_DATA       *pAStr,         // Buffer of file data
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
-    ERESULT         srcFiles_NewSrcFromFile(
+
+    ERESULT         SrcFiles_NewSrcFromFile(
         SRCFILES_DATA   *this,
         FILE            *pFile,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
-    
-    ERESULT         srcFiles_NewSrcFromPath(
+
+
+    ERESULT         SrcFiles_NewSrcFromPath(
         SRCFILES_DATA   *this,
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
-    
-    
-    ERESULT         srcFiles_StackPop(
+
+
+    ERESULT         SrcFiles_StackPop(
         SRCFILES_DATA   *this
     );
-    
-    
-    ERESULT			srcFiles_StackPush(
+
+
+    ERESULT         SrcFiles_StackPush(
         SRCFILES_DATA   *this,
         SRCFILE_DATA    *pItem
     );
-   
-    
-    SRCFILE_DATA *  srcFiles_StackTop(
+
+
+    SRCFILE_DATA *  SrcFiles_StackTop(
         SRCFILES_DATA   *this
     );
-    
-    
-    /*!
-     Create a string that describes this object and the
-     objects within it.
-     @return:   If successful, an AStr object which must be released,
-                otherwise OBJ_NIL.
+
+
+    /*
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = SrcFiles_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     srcFiles_ToDebugString(
-        SRCFILES_DATA   *this,
+    ASTR_DATA *     SrcFiles_ToDebugString (
+        SRCFILES_DATA     *this,
         int             indent
     );
     
     
+
     
-    
-    
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* SRCFILES_H */
+#endif  /* SRCFILES_H */
 

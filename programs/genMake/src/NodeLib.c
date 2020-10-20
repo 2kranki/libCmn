@@ -903,6 +903,10 @@ extern "C" {
         }
         AStr_AppendA(pStr, "\n");
 
+        AStr_AppendA(pStr, ".DEFAULT_GOAL := all\n");
+        AStr_AppendA(pStr, "SHELL=/bin/sh\n");
+        AStr_AppendA(pStr, "\n");
+
         //AStr_AppendA(pStr, "CC=clang\n");
         AStr_AppendPrint(pStr, "LIBNAM=lib%s\n", AStrC_getData(NodeLib_getName(this)));
         AStr_AppendA(pStr, "SYS=macos64\n");

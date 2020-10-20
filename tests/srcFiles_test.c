@@ -1,5 +1,6 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
- *	Generated 06/05/2017 21:57:10
+ *  Generated 10/19/2020 16:14:31
  */
 
 
@@ -24,14 +25,17 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <srcFiles_internal.h>
+#include    <SrcFiles_internal.h>
+#ifdef  SRCFILES_JSON_SUPPORT
+#   include    <SrcErrors.h>
+#endif
 #include    <szTbl.h>
 
 
 
-int         setUp(
+int             setUp (
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     mem_Init( );
@@ -43,15 +47,17 @@ int         setUp(
 }
 
 
-int         tearDown(
+int             tearDown (
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
+#ifdef  SRCFILES_JSON_SUPPORT
+    SrcErrors_SharedReset( );
+#endif
     szTbl_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {
@@ -61,7 +67,7 @@ int         tearDown(
                 "\x1b[31m"
                 "ERROR: "
                 "\x1b[0m"
-                "Leaked memory areas were found!\n"
+                "Leaked memory areas were found!\n\n\n\n\n"
         );
         exitCode = 4;
         return 0;
@@ -76,34 +82,159 @@ int         tearDown(
 
 
 
-int         test_srcFiles_OpenClose(
+int             test_SrcFiles_OpenClose (
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    SRCFILES_DATA *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SRCFILES_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    
-    pObj = srcFiles_Alloc( );
+
+    pObj = SrcFiles_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = srcFiles_Init( pObj );
+    pObj = SrcFiles_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SRCFILES);
+        TINYTEST_TRUE( (fRc) );
+        
         // Test something.
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
-int         test_srcFiles_TestPath01(
+int             test_SrcFiles_Copy01 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SRCFILES_DATA       *pObj1 = OBJ_NIL;
+    SRCFILES_DATA       *pObj2 = OBJ_NIL;
+    bool            fRc;
+#if defined(SRCFILES_JSON_SUPPORT) && defined(XYZZY)
+    ASTR_DATA       *pStr = OBJ_NIL;
+#endif
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj1 = SrcFiles_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj1) );
+    if (pObj1) {
+
+        //obj_TraceSet(pObj1, true);       
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_SRCFILES);
+        TINYTEST_TRUE( (fRc) );
+        
+        // Test assign.
+        pObj2 = SrcFiles_New();
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        eRc = SrcFiles_Assign(pObj1, pObj2);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SRCFILES);
+        TINYTEST_TRUE( (fRc) );
+        //eRc = SrcFiles_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TODO: Add More tests here!
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        // Test copy.
+        pObj2 = SrcFiles_Copy(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SRCFILES);
+        TINYTEST_TRUE( (fRc) );
+        //eRc = SrcFiles_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TODO: Add More tests here!
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        // Test json support.
+#if defined(SRCFILES_JSON_SUPPORT) && defined(XYZZY)
+        pStr = SrcFiles_ToJson(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
+        pObj2 = SrcFiles_NewFromJsonString(pStr);
+        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SRCFILES);
+        TINYTEST_TRUE( (fRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        //eRc = SrcFiles_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+#endif
+
+        obj_Release(pObj1);
+        pObj1 = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_SrcFiles_Test01 (
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    SRCFILES_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = SrcFiles_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SRCFILES);
+        TINYTEST_TRUE( (fRc) );
+        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        
+        {
+            ASTR_DATA       *pStr = SrcFiles_ToDebugString(pObj, 0);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_SrcFiles_TestPath01(
     const
     char            *pTestName
 )
@@ -121,15 +252,15 @@ int         test_srcFiles_TestPath01(
     pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
 
-    pObj = srcFiles_New( );
+    pObj = SrcFiles_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
-        
-        eRc = srcFiles_NewSrcFromPath(pObj, pPath, 0, 4);
+
+        eRc = SrcFiles_NewSrcFromPath(pObj, pPath, 0, 4);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         for (;;) {
-            pToken = srcFiles_InputLookAhead(pObj, 1);
+            pToken = SrcFiles_InputLookAhead(pObj, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
             cls = Token_getClass(pToken);
             if (cls == -1)
@@ -141,14 +272,14 @@ int         test_srcFiles_TestPath01(
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
-            pToken = srcFiles_InputAdvance(pObj, 1);
+            pToken = SrcFiles_InputAdvance(pObj, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
         }
-        
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
-    
+
     obj_Release(pPath);
     pPath = OBJ_NIL;
 
@@ -158,7 +289,7 @@ int         test_srcFiles_TestPath01(
 
 
 
-int         test_srcFiles_TestAStr01(
+int         test_SrcFiles_TestAStr01(
     const
     char            *pTestName
 )
@@ -173,24 +304,24 @@ int         test_srcFiles_TestAStr01(
     ASTR_DATA       *pStr = OBJ_NIL;
     const
     char            *pStrA = "label opcode\n";
-    
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
-    
-    pObj = srcFiles_New( );
+
+    pObj = SrcFiles_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
-        
+
         pStr = AStr_NewA(pStrA);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        eRc = srcFiles_NewSrcFromAStr(pObj, pPath, pStr, 0, 4);
+        eRc = SrcFiles_NewSrcFromAStr(pObj, pPath, pStr, 0, 4);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
         for (;;) {
-            pToken = srcFiles_InputLookAhead(pObj, 1);
+            pToken = SrcFiles_InputLookAhead(pObj, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
             cls = Token_getClass(pToken);
             if (cls == -1)
@@ -205,17 +336,17 @@ int         test_srcFiles_TestAStr01(
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
-            pToken = srcFiles_InputAdvance(pObj, 1);
+            pToken = SrcFiles_InputAdvance(pObj, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
         }
-        
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
-    
+
     obj_Release(pPath);
     pPath = OBJ_NIL;
-    
+
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }
@@ -223,13 +354,15 @@ int         test_srcFiles_TestAStr01(
 
 
 
-TINYTEST_START_SUITE(test_srcFiles);
-    TINYTEST_ADD_TEST(test_srcFiles_TestAStr01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcFiles_TestPath01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_srcFiles_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_SrcFiles);
+    TINYTEST_ADD_TEST(test_SrcFiles_TestAStr01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcFiles_TestPath01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcFiles_Test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_SrcFiles_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SrcFiles_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_srcFiles);
+TINYTEST_MAIN_SINGLE_SUITE(test_SrcFiles);
 
 
 
