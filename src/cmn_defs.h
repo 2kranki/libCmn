@@ -481,6 +481,8 @@ extern "C" {
         OBJ_IDENT_SQLITE_CLASS,
         OBJ_IDENT_SQLROWDEF,            // SQL Row Definition
         OBJ_IDENT_SQLROWDEF_CLASS,
+        OBJ_IDENT_SQLSTMT,              // SQL Statement
+        OBJ_IDENT_SQLSTMT_CLASS,
         OBJ_IDENT_SRC,
         OBJ_IDENT_SRC_CLASS,
         OBJ_IDENT_SRCERROR,             // Source Error Message

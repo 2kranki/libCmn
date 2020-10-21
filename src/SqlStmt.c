@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   SQLite.c
- *  Generated 07/26/2020 08:55:08
+ * File:   SqlStmt.c
+ *  Generated 10/20/2020 13:49:42
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <SQLite_internal.h>
+#include        <SqlStmt_internal.h>
 #include        <trace.h>
 
 
@@ -64,11 +64,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            SQLite_task_body (
+    void            SqlStmt_task_body (
         void            *pData
     )
     {
-        //SQLITE_DATA  *this = pData;
+        //SQLSTMT_DATA  *this = pData;
         
     }
 #endif
@@ -84,12 +84,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SQLITE_DATA *     SQLite_Alloc (
+    SQLSTMT_DATA *  SqlStmt_Alloc (
         void
     )
     {
-        SQLITE_DATA       *this;
-        uint32_t        cbSize = sizeof(SQLITE_DATA);
+        SQLSTMT_DATA    *this;
+        uint32_t        cbSize = sizeof(SQLSTMT_DATA);
         
         // Do initialization.
         
@@ -101,18 +101,34 @@ extern "C" {
 
 
 
-    SQLITE_DATA *     SQLite_New (
+    SQLSTMT_DATA *  SqlStmt_New (
         void
     )
     {
-        SQLITE_DATA       *this;
+        SQLSTMT_DATA    *this;
         
-        this = SQLite_Alloc( );
+        this = SqlStmt_Alloc( );
         if (this) {
-            this = SQLite_Init(this);
+            this = SqlStmt_Init(this);
         } 
         return this;
     }
+
+
+    SQLSTMT_DATA *  SqlStmt_NewStmt (
+        SQLITE_DATA     *pDB,
+        ASTR_DATA       *pStmt
+    )
+    {
+        SQLSTMT_DATA    *this;
+        
+        this = SqlStmt_New( );
+        if (this) {
+            SqlStmt_Setup(this, pDB, pStmt);
+        } 
+        return this;
+    }
+
 
 
 
@@ -123,25 +139,47 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                   C o n n e c t i o n
+    //                              D B
     //---------------------------------------------------------------
 
-    sqlite3 *       SQLite_getConn (
-        SQLITE_DATA     *this
+    SQLITE_DATA *   SqlStmt_getDB (
+        SQLSTMT_DATA     *this
     )
     {
 
         // Validate the input parameters.
-    #ifdef NDEBUG
-    #else
-        if (!SQLite_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
-            return 0;
+            return OBJ_NIL;
         }
-    #endif
+#endif
+
+        return this->pDB;
+    }
 
 
-        return this->pConn;
+    bool            SqlStmt_setDB (
+        SQLSTMT_DATA    *this,
+        SQLITE_DATA     *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlStmt_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(this->pDB);
+        if (this->pDB) {
+            obj_Release(this->pDB);
+        }
+        this->pDB = pValue;
+
+        return true;
     }
 
 
@@ -150,15 +188,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        SQLite_getPriority (
-        SQLITE_DATA     *this
+    uint16_t        SqlStmt_getPriority (
+        SQLSTMT_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -169,14 +207,14 @@ extern "C" {
     }
 
 
-    bool            SQLite_setPriority (
-        SQLITE_DATA     *this,
+    bool            SqlStmt_setPriority (
+        SQLSTMT_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -193,13 +231,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        SQLite_getSize (
-        SQLITE_DATA       *this
+    uint32_t        SqlStmt_getSize (
+        SQLSTMT_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -211,45 +249,45 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
+    //                              S t m t
     //---------------------------------------------------------------
     
-    ASTR_DATA * SQLite_getStr (
-        SQLITE_DATA     *this
+    ASTR_DATA * SqlStmt_getStmt (
+        SQLSTMT_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        return this->pStr;
+        return this->pStmt;
     }
     
     
-    bool        SQLite_setStr (
-        SQLITE_DATA     *this,
+    bool        SqlStmt_setStmt (
+        SQLSTMT_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
         obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
+        if (this->pStmt) {
+            obj_Release(this->pStmt);
         }
-        this->pStr = pValue;
+        this->pStmt = pValue;
         
         return true;
     }
@@ -260,15 +298,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  SQLite_getSuperVtbl (
-        SQLITE_DATA     *this
+    OBJ_IUNKNOWN *  SqlStmt_getSuperVtbl (
+        SQLSTMT_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -297,16 +335,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = SQLite_Assign(this,pOther);
+        ERESULT eRc = SqlStmt_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another SQLITE object
+     @param     pOther  a pointer to another SQLSTMT object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         SQLite_Assign (
-        SQLITE_DATA       *this,
-        SQLITE_DATA     *pOther
+    ERESULT         SqlStmt_Assign (
+        SQLSTMT_DATA       *this,
+        SQLSTMT_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -314,11 +352,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!SQLite_Validate(pOther)) {
+        if (!SqlStmt_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -379,9 +417,9 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         SQLite_Compare (
-        SQLITE_DATA     *this,
-        SQLITE_DATA     *pOther
+    ERESULT         SqlStmt_Compare (
+        SQLSTMT_DATA     *this,
+        SQLSTMT_DATA     *pOther
     )
     {
         int             i = 0;
@@ -395,11 +433,11 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!SQLite_Validate(pOther)) {
+        if (!SqlStmt_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -437,36 +475,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        SQLite      *pCopy = SQLite_Copy(this);
+        SqlStmt      *pCopy = SqlStmt_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a SQLITE object which must be 
+     @return    If successful, a SQLSTMT object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SQLITE_DATA *     SQLite_Copy (
-        SQLITE_DATA       *this
+    SQLSTMT_DATA *     SqlStmt_Copy (
+        SQLSTMT_DATA       *this
     )
     {
-        SQLITE_DATA       *pOther = OBJ_NIL;
+        SQLSTMT_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef SQLITE_IS_IMMUTABLE
+#ifdef SQLSTMT_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = SQLite_New( );
+        pOther = SqlStmt_New( );
         if (pOther) {
-            eRc = SQLite_Assign(this, pOther);
+            eRc = SqlStmt_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -484,13 +522,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            SQLite_Dealloc (
+    void            SqlStmt_Dealloc (
         OBJ_ID          objId
     )
     {
-        SQLITE_DATA   *this = objId;
+        SQLSTMT_DATA   *this = objId;
         //ERESULT         eRc;
-        int         sqlError;
 
         // Do initialization.
         if (NULL == this) {
@@ -498,7 +535,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -506,15 +543,15 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((SQLITE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((SQLSTMT_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        SQLite_setStr(this, OBJ_NIL);
-
-        sqlError = sqlite3_shutdown();
-        if (sqlError != SQLITE_OK) {
-            DEBUG_BREAK();
+        SqlStmt_setDB(this, OBJ_NIL);
+        SqlStmt_setStmt(this, OBJ_NIL);
+        if (this->pSqlStmt) {
+            sqlite3_reset(this->pSqlStmt);
+            sqlite3_finalize(this->pSqlStmt);
         }
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -536,32 +573,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        SQLite      *pDeepCopy = SQLite_Copy(this);
+        SqlStmt      *pDeepCopy = SqlStmt_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a SQLITE object which must be 
+     @return    If successful, a SQLSTMT object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SQLITE_DATA *     SQLite_DeepyCopy (
-        SQLITE_DATA       *this
+    SQLSTMT_DATA *     SqlStmt_DeepyCopy (
+        SQLSTMT_DATA       *this
     )
     {
-        SQLITE_DATA       *pOther = OBJ_NIL;
+        SQLSTMT_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = SQLite_New( );
+        pOther = SqlStmt_New( );
         if (pOther) {
-            eRc = SQLite_Assign(this, pOther);
+            eRc = SqlStmt_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -584,8 +621,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SQLite_Disable (
-        SQLITE_DATA       *this
+    ERESULT         SqlStmt_Disable (
+        SQLSTMT_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -593,7 +630,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -619,8 +656,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SQLite_Enable (
-        SQLITE_DATA       *this
+    ERESULT         SqlStmt_Enable (
+        SQLSTMT_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -628,7 +665,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -645,85 +682,15 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          E x e c
-    //---------------------------------------------------------------
-
-    /*!
-     Open/create an SQLite3 database file.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         SQLite_Exec (
-        SQLITE_DATA     *this,
-        ASTR_DATA       *pSql
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int             sqlError;
-        char            *pErrmsg = NULL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!SQLite_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_ALREADY_EXISTS;
-        }
-#endif
-        if (NULL == this->pConn) {
-            return ERESULT_GENERAL_FAILURE;
-        }
-
-        sqlError = sqlite3_exec(
-                             this->pConn,
-                             AStr_getData(pSql), // 1 or more SQL statements terminated
-                             //             // with a ';'
-                             NULL,          // int (*pCallback)(void*,int,char**,char**)
-                             //             // If the callback function is not NULL, then
-                             //             // it is invoked for each result row coming
-                             //             // out of the evaluated SQL statements.
-                             //             // If non-zero is returned from callback,
-                             //             // sqlite3_exec() immediately returns
-                             //             // SQLITE_ABORT.
-                             NULL,          // 1st Arg to pCallback
-                             //             // 2nd Arg is number of columns in result
-                             //             // 3rd Arg is an array of pointers to strings
-                             //             // obtained as if from sqlite3_column_text(),
-                             //             // one for each column. If a result row is
-                             //             // NULL, then the corresponding string pointer
-                             //             // for the sqlite3_exec() callback is a NULL
-                             //             // pointer.
-                             //             // 4th Arg is an array of pointers to strings
-                             //             // where each entry represents the name of
-                             //             // corresponding result column as obtained
-                             //             // from sqlite3_column_name().
-                             &pErrmsg       // An error message allocate with
-                             //             // sqlite3_malloc() which must be freed
-                             //             // with sqlite3_free()
-                    );
-        if (sqlError) {
-            eRc = ERESULT_OPEN_ERROR;
-            this->pConn = NULL;
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    SQLITE_DATA *   SQLite_Init (
-        SQLITE_DATA       *this
+    SQLSTMT_DATA *   SqlStmt_Init (
+        SQLSTMT_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(SQLITE_DATA);
+        uint32_t        cbSize = sizeof(SQLSTMT_DATA);
         //ERESULT         eRc;
-        int             sqlError;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -740,7 +707,7 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SQLITE);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SQLSTMT);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -748,18 +715,20 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SQLite_Vtbl);
-
-        sqlError = sqlite3_initialize();
-        if (sqlError != SQLITE_OK) {
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SqlStmt_Vtbl);
+        
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
+        */
 
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -768,11 +737,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "SQLite::sizeof(SQLITE_DATA) = %lu\n", 
-                sizeof(SQLITE_DATA)
+                "SqlStmt::sizeof(SQLSTMT_DATA) = %lu\n", 
+                sizeof(SQLSTMT_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(SQLITE_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(SQLSTMT_DATA));
 #endif
 
         return this;
@@ -784,8 +753,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         SQLite_IsEnabled (
-        SQLITE_DATA       *this
+    ERESULT         SqlStmt_IsEnabled (
+        SQLSTMT_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -793,7 +762,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -810,62 +779,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          O p e n
-    //---------------------------------------------------------------
-
-    /*!
-     Open/create an SQLite3 database file.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         SQLite_Open (
-        SQLITE_DATA     *this,
-        PATH_DATA       *pPath
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int             sqlError;
-        const
-        char            *pFilePath = "";    // Default to on-disk temporary database
-        //              ":memory:" would be in-memory temporary database
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!SQLite_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_DATA_ALREADY_EXISTS;
-        }
-#endif
-        if (this->pConn) {
-            return ERESULT_GENERAL_FAILURE;
-        }
-
-        if (pPath) {
-            pFilePath = Path_getData(pPath);
-        }
-        sqlError = sqlite3_open_v2(
-                                pFilePath,
-                                &this->pConn,
-                                (SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE),
-                                NULL         // default sqlite3_vfs object
-                    );
-        if (sqlError != SQLITE_OK) {
-            eRc = ERESULT_OPEN_ERROR;
-            if (this->pConn) {
-                sqlite3_close(this->pConn);
-                this->pConn = NULL;
-            }
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -876,14 +789,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = SQLite_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = SqlStmt_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "SQLite", prefix,
+                        the object name, "SqlStmt", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -891,13 +804,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          SQLite_QueryInfo (
+    void *          SqlStmt_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SQLITE_DATA     *this = objId;
+        SQLSTMT_DATA    *this = objId;
         const
         char            *pStr = pData;
         
@@ -906,7 +819,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -915,11 +828,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(SQLITE_DATA);
+                return (void *)sizeof(SQLSTMT_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)SQLite_Class();
+                return (void *)SqlStmt_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -945,37 +858,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return SQLite_Disable;
+                            return SqlStmt_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return SQLite_Enable;
+                            return SqlStmt_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  SQLITE_JSON_SUPPORT
+#ifdef  SQLSTMT_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return SQLite_ParseJsonFields;
+                            return SqlStmt_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return SQLite_ParseJsonObject;
+                            return SqlStmt_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return SQLite_ToDebugString;
+                            return SqlStmt_ToDebugString;
                         }
-#ifdef  SQLITE_JSON_SUPPORT
+#ifdef  SQLSTMT_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return SQLite_ToJsonFields;
+                            return SqlStmt_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return SQLite_ToJson;
+                            return SqlStmt_ToJson;
                         }
 #endif
                         break;
@@ -986,10 +899,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == SQLite_ToDebugString)
+                if (pData == SqlStmt_ToDebugString)
                     return "ToDebugString";
-#ifdef  SQLITE_JSON_SUPPORT
-                if (pData == SQLite_ToJson)
+#ifdef  SQLSTMT_JSON_SUPPORT
+                if (pData == SqlStmt_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1000,9 +913,50 @@ extern "C" {
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
-    
-    
-    
+
+
+
+    //---------------------------------------------------------------
+    //                     S e t u p  S t m t
+    //---------------------------------------------------------------
+
+    ERESULT         SqlStmt_Setup (
+        SQLSTMT_DATA    *this,
+        SQLITE_DATA     *pDB,
+        ASTR_DATA       *pStmt
+    )
+    {
+        int             error;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SqlStmt_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pSqlStmt) {
+            error = sqlite3_reset(this->pSqlStmt);
+            error = sqlite3_finalize(this->pSqlStmt);
+        }
+        SqlStmt_setDB(this, pDB);
+        SqlStmt_setStmt(this, pStmt);
+
+        error = sqlite3_prepare_v2(
+                        SQLite_getConn(this->pDB),
+                        AStr_getData(this->pStmt),
+                        -1,
+                        &this->pSqlStmt,
+                        NULL
+                        );
+
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -1011,7 +965,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = SQLite_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SqlStmt_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1019,8 +973,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SQLite_ToDebugString (
-        SQLITE_DATA      *this,
+    ASTR_DATA *     SqlStmt_ToDebugString (
+        SQLSTMT_DATA      *this,
         int             indent
     )
     {
@@ -1035,7 +989,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SQLite_Validate(this)) {
+        if (!SqlStmt_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1056,7 +1010,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    SQLite_getSize(this),
+                    SqlStmt_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1097,15 +1051,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            SQLite_Validate (
-        SQLITE_DATA      *this
+    bool            SqlStmt_Validate (
+        SQLSTMT_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_SQLITE))
+            if (obj_IsKindOf(this, OBJ_IDENT_SQLSTMT))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1121,7 +1075,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(SQLITE_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(SQLSTMT_DATA))) {
             return false;
         }
 

@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <sqlite3.h>
 
 
 #ifndef         SQLITE_H
@@ -127,7 +128,7 @@ extern "C" {
      released.
      @return    pointer to SQLite object if successful, otherwise OBJ_NIL.
      */
-    SQLITE_DATA *     SQLite_Alloc (
+    SQLITE_DATA *   SQLite_Alloc (
         void
     );
     
@@ -137,7 +138,7 @@ extern "C" {
     );
     
     
-    SQLITE_DATA *     SQLite_New (
+    SQLITE_DATA *   SQLite_New (
         void
     );
     
@@ -159,6 +160,9 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    sqlite3 *       SQLite_getConn (
+        SQLITE_DATA     *this
+    );
 
 
     

@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (10/20/2020  0:46:04.000)
+# (10/21/2020 14:57:26.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -927,6 +927,16 @@ $(OBJDIR)/SqlRowDef_json.o: $(SRCDIR)/SqlRowDef_json.c $(SRCDIR)/SqlRowDef.h $(S
 OBJS += $(OBJDIR)/SqlRowDef_object.o
 
 $(OBJDIR)/SqlRowDef_object.o: $(SRCDIR)/SqlRowDef_object.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlStmt.o
+
+$(OBJDIR)/SqlStmt.o: $(SRCDIR)/SqlStmt.c $(SRCDIR)/SqlStmt.h $(SRCDIR)/SqlStmt_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlStmt_object.o
+
+$(OBJDIR)/SqlStmt_object.o: $(SRCDIR)/SqlStmt_object.c $(SRCDIR)/SqlStmt.h $(SRCDIR)/SqlStmt_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SrcError.o
@@ -2382,6 +2392,12 @@ SqlCurs_test: $(TEST_SRC)/SqlCurs_test.c $(SRCDIR)/SqlCurs.h $(SRCDIR)/SqlCurs_i
 TESTS += SqlRowDef_test
 
 SqlRowDef_test: $(TEST_SRC)/SqlRowDef_test.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += SqlStmt_test
+
+SqlStmt_test: $(TEST_SRC)/SqlStmt_test.c $(SRCDIR)/SqlStmt.h $(SRCDIR)/SqlStmt_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

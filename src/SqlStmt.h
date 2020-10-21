@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Assembler Lexical Scanner (Lex04) Header
+//                  SQL Statement (SqlStmt) Header
 //****************************************************************
 /*
  * Program
- *          Assembler Lexical Scanner (Lex04)
+ *          SQL Statement (SqlStmt)
  * Purpose
  *          This object provides a standardized way of handling
- *          a separate Lex04 to run things without complications
- *          of interfering with the main Lex04. A Lex04 may be 
- *          called a Lex04 on other O/S's.
+ *          a separate SqlStmt to run things without complications
+ *          of interfering with the main SqlStmt. A SqlStmt may be 
+ *          called a SqlStmt on other O/S's.
  *
  * Remarks
  *  1.      None
  *
  * History
- *  05/30/2020 Generated
+ *  10/20/2020 Generated
  */
 
 
@@ -53,16 +53,16 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <Lex.h>
+#include        <SQLite.h>
 
 
-#ifndef         LEX04_H
-#define         LEX04_H
+#ifndef         SQLSTMT_H
+#define         SQLSTMT_H
 
 
-//#define   LEX04_IS_IMMUTABLE     1
-//#define   LEX04_JSON_SUPPORT     1
-//#define   LEX04_SINGLETON        1
+//#define   SQLSTMT_IS_IMMUTABLE     1
+//#define   SQLSTMT_JSON_SUPPORT     1
+//#define   SQLSTMT_SINGLETON        1
 
 
 
@@ -78,26 +78,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Lex04_data_s  LEX04_DATA;            // Inherits from OBJ
-    typedef struct Lex04_class_data_s LEX04_CLASS_DATA;   // Inherits from OBJ
+    typedef struct SqlStmt_data_s  SQLSTMT_DATA;            // Inherits from OBJ
+    typedef struct SqlStmt_class_data_s SQLSTMT_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Lex04_vtbl_s  {
+    typedef struct SqlStmt_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Lex04_object.c.
+        // method names to the vtbl definition in SqlStmt_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(LEX04_DATA *);
-    } LEX04_VTBL;
+        //bool        (*pIsEnabled)(SQLSTMT_DATA *);
+    } SQLSTMT_VTBL;
 
-    typedef struct Lex04_class_vtbl_s    {
+    typedef struct SqlStmt_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Lex04_object.c.
+        // method names to the vtbl definition in SqlStmt_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(LEX04_DATA *);
-    } LEX04_CLASS_VTBL;
+        //bool        (*pIsEnabled)(SQLSTMT_DATA *);
+    } SQLSTMT_CLASS_VTBL;
 
 
 
@@ -111,12 +111,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  LEX04_SINGLETON
-    LEX04_DATA *    Lex04_Shared (
+#ifdef  SQLSTMT_SINGLETON
+    SQLSTMT_DATA *  SqlStmt_Shared (
         void
     );
 
-    void            Lex04_SharedReset (
+    void            SqlStmt_SharedReset (
         void
     );
 #endif
@@ -126,29 +126,35 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Lex04 object if successful, otherwise OBJ_NIL.
+     @return    pointer to SqlStmt object if successful, otherwise OBJ_NIL.
      */
-    LEX04_DATA *    Lex04_Alloc (
+    SQLSTMT_DATA *  SqlStmt_Alloc (
         void
     );
     
     
-    OBJ_ID          Lex04_Class (
+    OBJ_ID          SqlStmt_Class (
         void
     );
     
     
-    LEX04_DATA *    Lex04_New (
+    SQLSTMT_DATA *  SqlStmt_New (
         void
     );
     
     
-#ifdef  LEX04_JSON_SUPPORT
-    LEX04_DATA *   Lex04_NewFromJsonString (
+    SQLSTMT_DATA *  SqlStmt_NewStmt (
+        SQLITE_DATA     *pDB,
+        ASTR_DATA       *pStmt
+    );
+    
+    
+#ifdef  SQLSTMT_JSON_SUPPORT
+    SQLSTMT_DATA *  SqlStmt_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    LEX04_DATA *   Lex04_NewFromJsonStringA (
+    SQLSTMT_DATA *  SqlStmt_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -160,6 +166,24 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    SQLITE_DATA *   SqlStmt_getDB (
+        SQLSTMT_DATA    *this
+    );
+
+    bool            SqlStmt_setDB (
+        SQLSTMT_DATA    *this,
+        SQLITE_DATA     *pValue
+    );
+
+
+    ASTR_DATA *     SqlStmt_getStmt (
+        SQLSTMT_DATA    *this
+    );
+    
+    bool            SqlStmt_setStmt (
+        SQLSTMT_DATA    *this,
+        ASTR_DATA       *pValue
+    );
 
 
     
@@ -167,41 +191,38 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         Lex04_Disable (
-        LEX04_DATA      *this
-    );
-
-
-    ERESULT         Lex04_Enable (
-        LEX04_DATA      *this
+    ERESULT     SqlStmt_Enable (
+        SQLSTMT_DATA       *this
     );
 
    
-    LEX04_DATA *    Lex04_Init (
-        LEX04_DATA      *this
+    SQLSTMT_DATA *   SqlStmt_Init (
+        SQLSTMT_DATA     *this
     );
 
 
-    ERESULT     Lex04_IsEnabled (
-        LEX04_DATA      *this
+    ERESULT         SqlStmt_Setup (
+        SQLSTMT_DATA    *this,
+        SQLITE_DATA     *pDB,
+        ASTR_DATA       *pStmt
     );
-    
- 
-#ifdef  LEX04_JSON_SUPPORT
+
+
+#ifdef  SQLSTMT_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Lex04_ToJson(this);
+     ASTR_DATA      *pDesc = SqlStmt_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA * Lex04_ToJson (
-        LEX04_DATA      *this
+    ASTR_DATA *     SqlStmt_ToJson (
+        SQLSTMT_DATA   *this
     );
 #endif
 
@@ -210,7 +231,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Lex04_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SqlStmt_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -218,8 +239,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Lex04_ToDebugString (
-        LEX04_DATA      *this,
+    ASTR_DATA *     SqlStmt_ToDebugString (
+        SQLSTMT_DATA     *this,
         int             indent
     );
     
@@ -230,5 +251,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* LEX04_H */
+#endif  /* SQLSTMT_H */
 
