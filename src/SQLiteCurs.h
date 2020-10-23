@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  SQL Statement (SqlStmt) Header
+//                  SQLiteCurs (SQLiteCurs) Header
 //****************************************************************
 /*
  * Program
- *          SQL Statement (SqlStmt)
+ *          SQLiteCurs (SQLiteCurs)
  * Purpose
  *          This object provides a standardized way of handling
- *          a separate SqlStmt to run things without complications
- *          of interfering with the main SqlStmt. A SqlStmt may be 
- *          called a SqlStmt on other O/S's.
+ *          a separate SQLiteCurs to run things without complications
+ *          of interfering with the main SQLiteCurs. A SQLiteCurs may be 
+ *          called a SQLiteCurs on other O/S's.
  *
  * Remarks
  *  1.      None
  *
  * History
- *  10/20/2020 Generated
+ *  10/23/2020 Generated
  */
 
 
@@ -53,16 +53,15 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <SQLite.h>
 
 
-#ifndef         SQLSTMT_H
-#define         SQLSTMT_H
+#ifndef         SQLITECURS_H
+#define         SQLITECURS_H
 
 
-//#define   SQLSTMT_IS_IMMUTABLE     1
-//#define   SQLSTMT_JSON_SUPPORT     1
-//#define   SQLSTMT_SINGLETON        1
+//#define   SQLITECURS_IS_IMMUTABLE     1
+//#define   SQLITECURS_JSON_SUPPORT     1
+//#define   SQLITECURS_SINGLETON        1
 
 
 
@@ -78,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct SqlStmt_data_s  SQLSTMT_DATA;            // Inherits from OBJ
-    typedef struct SqlStmt_class_data_s SQLSTMT_CLASS_DATA;   // Inherits from OBJ
+    typedef struct SQLiteCurs_data_s  SQLITECURS_DATA;            // Inherits from OBJ
+    typedef struct SQLiteCurs_class_data_s SQLITECURS_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct SqlStmt_vtbl_s  {
+    typedef struct SQLiteCurs_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in SqlStmt_object.c.
+        // method names to the vtbl definition in SQLiteCurs_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SQLSTMT_DATA *);
-    } SQLSTMT_VTBL;
+        //bool        (*pIsEnabled)(SQLITECURS_DATA *);
+    } SQLITECURS_VTBL;
 
-    typedef struct SqlStmt_class_vtbl_s    {
+    typedef struct SQLiteCurs_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in SqlStmt_object.c.
+        // method names to the vtbl definition in SQLiteCurs_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SQLSTMT_DATA *);
-    } SQLSTMT_CLASS_VTBL;
+        //bool        (*pIsEnabled)(SQLITECURS_DATA *);
+    } SQLITECURS_CLASS_VTBL;
 
 
 
@@ -111,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  SQLSTMT_SINGLETON
-    SQLSTMT_DATA *  SqlStmt_Shared (
+#ifdef  SQLITECURS_SINGLETON
+    SQLITECURS_DATA *     SQLiteCurs_Shared (
         void
     );
 
-    void            SqlStmt_SharedReset (
+    void            SQLiteCurs_SharedReset (
         void
     );
 #endif
@@ -126,35 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to SqlStmt object if successful, otherwise OBJ_NIL.
+     @return    pointer to SQLiteCurs object if successful, otherwise OBJ_NIL.
      */
-    SQLSTMT_DATA *  SqlStmt_Alloc (
+    SQLITECURS_DATA *     SQLiteCurs_Alloc (
         void
     );
     
     
-    OBJ_ID          SqlStmt_Class (
+    OBJ_ID          SQLiteCurs_Class (
         void
     );
     
     
-    SQLSTMT_DATA *  SqlStmt_New (
+    SQLITECURS_DATA *     SQLiteCurs_New (
         void
     );
     
     
-    SQLSTMT_DATA *  SqlStmt_NewStmt (
-        SQLITE_DATA     *pDB,
-        ASTR_DATA       *pStmt
-    );
-    
-    
-#ifdef  SQLSTMT_JSON_SUPPORT
-    SQLSTMT_DATA *  SqlStmt_NewFromJsonString (
+#ifdef  SQLITECURS_JSON_SUPPORT
+    SQLITECURS_DATA *   SQLiteCurs_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    SQLSTMT_DATA *  SqlStmt_NewFromJsonStringA (
+    SQLITECURS_DATA *   SQLiteCurs_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -166,24 +159,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    SQLITE_DATA *   SqlStmt_getDB (
-        SQLSTMT_DATA    *this
-    );
-
-    bool            SqlStmt_setDB (
-        SQLSTMT_DATA    *this,
-        SQLITE_DATA     *pValue
-    );
-
-
-    ASTR_DATA *     SqlStmt_getStmt (
-        SQLSTMT_DATA    *this
-    );
-    
-    bool            SqlStmt_setStmt (
-        SQLSTMT_DATA    *this,
-        ASTR_DATA       *pValue
-    );
 
 
     
@@ -191,38 +166,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     SqlStmt_Enable (
-        SQLSTMT_DATA       *this
+    ERESULT     SQLiteCurs_Disable (
+        SQLITECURS_DATA       *this
+    );
+
+
+    ERESULT     SQLiteCurs_Enable (
+        SQLITECURS_DATA       *this
     );
 
    
-    SQLSTMT_DATA *   SqlStmt_Init (
-        SQLSTMT_DATA     *this
+    SQLITECURS_DATA *   SQLiteCurs_Init (
+        SQLITECURS_DATA     *this
     );
 
 
-    ERESULT         SqlStmt_Setup (
-        SQLSTMT_DATA    *this,
-        SQLITE_DATA     *pDB,
-        ASTR_DATA       *pStmt
+    ERESULT     SQLiteCurs_IsEnabled (
+        SQLITECURS_DATA       *this
     );
-
-
-#ifdef  SQLSTMT_JSON_SUPPORT
+    
+ 
+#ifdef  SQLITECURS_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SqlStmt_ToJson(this);
+     ASTR_DATA      *pDesc = SQLiteCurs_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlStmt_ToJson (
-        SQLSTMT_DATA   *this
+    ASTR_DATA *     SQLiteCurs_ToJson (
+        SQLITECURS_DATA   *this
     );
 #endif
 
@@ -231,7 +209,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = SqlStmt_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SQLiteCurs_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -239,8 +217,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlStmt_ToDebugString (
-        SQLSTMT_DATA     *this,
+    ASTR_DATA *     SQLiteCurs_ToDebugString (
+        SQLITECURS_DATA     *this,
         int             indent
     );
     
@@ -251,5 +229,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* SQLSTMT_H */
+#endif  /* SQLITECURS_H */
 

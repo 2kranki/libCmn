@@ -479,6 +479,10 @@ extern "C" {
         OBJ_IDENT_SQLCURS_CLASS,
         OBJ_IDENT_SQLITE,               // SQLite Interface
         OBJ_IDENT_SQLITE_CLASS,
+        OBJ_IDENT_SQLITECURS,           // SQLite Cursor Interface
+        OBJ_IDENT_SQLITECURS_CLASS,
+        OBJ_IDENT_SQLITESTMT,           // SQLite Statement Interface
+        OBJ_IDENT_SQLITESTMT_CLASS,
         OBJ_IDENT_SQLROWDEF,            // SQL Row Definition
         OBJ_IDENT_SQLROWDEF_CLASS,
         OBJ_IDENT_SQLSTMT,              // SQL Statement

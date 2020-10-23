@@ -14,14 +14,7 @@
   <component name="ChangeListManager">
     <list default="true" id="410d5303-536c-4ab3-9b37-479cce564cb9" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile.macos64.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile.macos64.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mkLib.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/objects.json.txt" beforeDir="false" afterPath="$PROJECT_DIR$/objects.json.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Lex04.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lex04.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SQLite.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/SQLite.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SQLite.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/SQLite.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cmn_defs.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/cmn_defs.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SqlStmt.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/SqlStmt.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +87,7 @@
       <option name="presentableId" value="Default" />
       <updated>1602982396097</updated>
       <workItem from="1602982397341" duration="2084000" />
-      <workItem from="1603220624877" duration="3851000" />
+      <workItem from="1603220624877" duration="4867000" />
     </task>
     <servers />
   </component>

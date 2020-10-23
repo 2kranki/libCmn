@@ -178,6 +178,11 @@
 		C43A106B239B4FFB0033158E /* FileRef_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C43A1069239B4FFB0033158E /* FileRef_object.c */; };
 		C440262B202B4252009B7806 /* szData_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4402628202B424E009B7806 /* szData_object.c */; };
 		C440262C202B4252009B7806 /* szData.c in Sources */ = {isa = PBXBuildFile; fileRef = C4402629202B4250009B7806 /* szData.c */; };
+		C4404DC32541D5EB00A6787F /* SQLite_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4404DC22541D5EB00A6787F /* SQLite_test.c */; };
+		C4404DDE254349D100A6787F /* SQLiteStmt_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4404DD7254349D000A6787F /* SQLiteStmt_object.c */; };
+		C4404DDF254349D100A6787F /* SQLiteCurs.c in Sources */ = {isa = PBXBuildFile; fileRef = C4404DDA254349D000A6787F /* SQLiteCurs.c */; };
+		C4404DE0254349D100A6787F /* SQLiteCurs_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4404DDC254349D100A6787F /* SQLiteCurs_object.c */; };
+		C4404DE1254349D100A6787F /* SQLiteStmt.c in Sources */ = {isa = PBXBuildFile; fileRef = C4404DDD254349D100A6787F /* SQLiteStmt.c */; };
 		C44BF49D21E1BCD500175791 /* rrds_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C44BF49921E1BCD200175791 /* rrds_object.c */; };
 		C44BF49E21E1BCD500175791 /* rrds.c in Sources */ = {isa = PBXBuildFile; fileRef = C44BF49B21E1BCD400175791 /* rrds.c */; };
 		C456276D2389B25E00603132 /* cmnMac64.c in Sources */ = {isa = PBXBuildFile; fileRef = C456276C2389B25E00603132 /* cmnMac64.c */; };
@@ -322,7 +327,6 @@
 		C4C0504223745AB600D7BB36 /* AStrCArray_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C0503F23745AB600D7BB36 /* AStrCArray_object.c */; };
 		C4C7A257253E2FB400696C20 /* SrcFiles_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C7A253253E2FB400696C20 /* SrcFiles_object.c */; };
 		C4C7A258253E2FB400696C20 /* SrcFiles.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C7A254253E2FB400696C20 /* SrcFiles.c */; };
-		C4C7A25D253E69B400696C20 /* SrcFiles_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4C7A25C253E69B400696C20 /* SrcFiles_test.c */; };
 		C4D463102419275C00AF453D /* False_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4630B2419275900AF453D /* False_json.c */; };
 		C4D463112419275C00AF453D /* False_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4630C2419275A00AF453D /* False_object.c */; };
 		C4D463122419275C00AF453D /* False.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4630F2419275C00AF453D /* False.c */; };
@@ -755,6 +759,15 @@
 		C4402628202B424E009B7806 /* szData_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = szData_object.c; sourceTree = "<group>"; };
 		C4402629202B4250009B7806 /* szData.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = szData.c; sourceTree = "<group>"; };
 		C440262A202B4251009B7806 /* szData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = szData.h; sourceTree = "<group>"; };
+		C4404DC22541D5EB00A6787F /* SQLite_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SQLite_test.c; sourceTree = "<group>"; };
+		C4404DD6254349D000A6787F /* SQLiteCurs_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLiteCurs_internal.h; sourceTree = "<group>"; };
+		C4404DD7254349D000A6787F /* SQLiteStmt_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SQLiteStmt_object.c; sourceTree = "<group>"; };
+		C4404DD8254349D000A6787F /* SQLiteStmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLiteStmt.h; sourceTree = "<group>"; };
+		C4404DD9254349D000A6787F /* SQLiteCurs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLiteCurs.h; sourceTree = "<group>"; };
+		C4404DDA254349D000A6787F /* SQLiteCurs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SQLiteCurs.c; sourceTree = "<group>"; };
+		C4404DDB254349D000A6787F /* SQLiteStmt_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLiteStmt_internal.h; sourceTree = "<group>"; };
+		C4404DDC254349D100A6787F /* SQLiteCurs_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SQLiteCurs_object.c; sourceTree = "<group>"; };
+		C4404DDD254349D100A6787F /* SQLiteStmt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SQLiteStmt.c; sourceTree = "<group>"; };
 		C44BF49921E1BCD200175791 /* rrds_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rrds_object.c; sourceTree = "<group>"; };
 		C44BF49A21E1BCD300175791 /* rrds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rrds.h; sourceTree = "<group>"; };
 		C44BF49B21E1BCD400175791 /* rrds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rrds.c; sourceTree = "<group>"; };
@@ -1016,7 +1029,6 @@
 		C4C7A254253E2FB400696C20 /* SrcFiles.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcFiles.c; sourceTree = "<group>"; };
 		C4C7A255253E2FB400696C20 /* SrcFiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SrcFiles.h; sourceTree = "<group>"; };
 		C4C7A256253E2FB400696C20 /* SrcFiles_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SrcFiles_internal.h; sourceTree = "<group>"; };
-		C4C7A25C253E69B400696C20 /* SrcFiles_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcFiles_test.c; sourceTree = "<group>"; };
 		C4D4630B2419275900AF453D /* False_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = False_json.c; sourceTree = "<group>"; };
 		C4D4630C2419275A00AF453D /* False_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = False_object.c; sourceTree = "<group>"; };
 		C4D4630D2419275B00AF453D /* False_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = False_internal.h; sourceTree = "<group>"; };
@@ -1190,7 +1202,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C4C7A25C253E69B400696C20 /* SrcFiles_test.c */,
+				C4404DC22541D5EB00A6787F /* SQLite_test.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -1756,6 +1768,14 @@
 				C4EC06272533B43300C0F25A /* SQLite_object.c */,
 				C4EC06242533B43300C0F25A /* SQLite.c */,
 				C4EC06252533B43300C0F25A /* SQLite.h */,
+				C4404DD6254349D000A6787F /* SQLiteCurs_internal.h */,
+				C4404DDC254349D100A6787F /* SQLiteCurs_object.c */,
+				C4404DDA254349D000A6787F /* SQLiteCurs.c */,
+				C4404DD9254349D000A6787F /* SQLiteCurs.h */,
+				C4404DDB254349D000A6787F /* SQLiteStmt_internal.h */,
+				C4404DD7254349D000A6787F /* SQLiteStmt_object.c */,
+				C4404DDD254349D100A6787F /* SQLiteStmt.c */,
+				C4404DD8254349D000A6787F /* SQLiteStmt.h */,
 				C4EF2A392456326F0074544A /* SqlRowDef_internal.h */,
 				C4EF2A362456326D0074544A /* SqlRowDef_json.c */,
 				C4EF2A3B2456326F0074544A /* SqlRowDef_object.c */,
@@ -2029,6 +2049,7 @@
 				C4359A411FC9C38800CA858E /* hash32.c in Sources */,
 				C43204C0239170060078124D /* TextOut.c in Sources */,
 				C47FB38E21EBDD7D0022C1CC /* memFile_object.c in Sources */,
+				C4404DC32541D5EB00A6787F /* SQLite_test.c in Sources */,
 				C48EA13823A7EAB300CCAF2B /* ObjEnum_object.c in Sources */,
 				C4359BFB1FC9C48400CA858E /* u12Array_object.c in Sources */,
 				C4753275247998EB001DEF19 /* Number_object.c in Sources */,
@@ -2137,6 +2158,7 @@
 				C4359BE71FC9C48400CA858E /* szHash.c in Sources */,
 				C463898821EA71EC00DFCE35 /* bpt32idx_object.c in Sources */,
 				C4B0468023E71AAA00162B4F /* ObjHash.c in Sources */,
+				C4404DDF254349D100A6787F /* SQLiteCurs.c in Sources */,
 				C4359BDF1FC9C48400CA858E /* trctbl.c in Sources */,
 				C4359B081FC9C3D800CA858E /* listdl.c in Sources */,
 				C4EBE2B523C90111008E9EE8 /* NodeArray_json.c in Sources */,
@@ -2170,6 +2192,7 @@
 				C48EA13923A7EAB300CCAF2B /* ObjEnum.c in Sources */,
 				C40F053724805B1000D66F9B /* Lex.c in Sources */,
 				C4B0467E23E71AAA00162B4F /* ObjHash_object.c in Sources */,
+				C4404DE1254349D100A6787F /* SQLiteStmt.c in Sources */,
 				C43599CD1FC9C36800CA858E /* AStrArray_object.c in Sources */,
 				C4E137E023BBE6F30095EABE /* Value.c in Sources */,
 				C4359A461FC9C38800CA858E /* crc_object.c in Sources */,
@@ -2326,8 +2349,10 @@
 				C4359A5A1FC9C38800CA858E /* fileio.c in Sources */,
 				C417412123CE86DF008B50A5 /* I32Array_json.c in Sources */,
 				C4EF2A40245632710074544A /* SqlColDef.c in Sources */,
+				C4404DDE254349D100A6787F /* SQLiteStmt_object.c in Sources */,
 				C43599B41FC9C36800CA858E /* AStrC.c in Sources */,
 				C4EBE2AB23C8E3F4008E9EE8 /* Blocks.c in Sources */,
+				C4404DE0254349D100A6787F /* SQLiteCurs_object.c in Sources */,
 				C4EBE2DC23C95883008E9EE8 /* NodeTree_json.c in Sources */,
 				C417411823CE75F0008B50A5 /* ObjVLink_object.c in Sources */,
 				C48045FB24894195008935B7 /* LineIndex.c in Sources */,
@@ -2380,7 +2405,6 @@
 				C43204C1239170060078124D /* TextOut_object.c in Sources */,
 				C4B75FFD24056E3A00701E77 /* szBT.c in Sources */,
 				C43599B91FC9C36800CA858E /* block32_object.c in Sources */,
-				C4C7A25D253E69B400696C20 /* SrcFiles_test.c in Sources */,
 				C4359BEA1FC9C48400CA858E /* szHash_object.c in Sources */,
 				C4E137AE23B985C40095EABE /* ObjArray_object.c in Sources */,
 				C4B75F6923FD83A000701E77 /* I32Matrix_object.c in Sources */,

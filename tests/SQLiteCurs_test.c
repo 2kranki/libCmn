@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *  Generated 10/11/2020 18:09:06
+ *  Generated 10/23/2020 12:25:40
  */
 
 
@@ -25,8 +25,8 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <SqlCurs_internal.h>
-#ifdef  SQLCURS_JSON_SUPPORT
+#include    <SQLiteCurs_internal.h>
+#ifdef  SQLITECURS_JSON_SUPPORT
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
@@ -55,7 +55,7 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  SQLCURS_JSON_SUPPORT
+#ifdef  SQLITECURS_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
@@ -82,25 +82,25 @@ int             tearDown (
 
 
 
-int             test_SqlCurs_OpenClose (
+int             test_SQLiteCurs_OpenClose (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SQLCURS_DATA       *pObj = OBJ_NIL;
+    SQLITECURS_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = SqlCurs_Alloc( );
+    pObj = SQLiteCurs_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = SqlCurs_Init( pObj );
+    pObj = SQLiteCurs_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLCURS);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLITECURS);
         TINYTEST_TRUE( (fRc) );
         
         // Test something.
@@ -116,38 +116,38 @@ int             test_SqlCurs_OpenClose (
 
 
 
-int             test_SqlCurs_Copy01 (
+int             test_SQLiteCurs_Copy01 (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SQLCURS_DATA       *pObj1 = OBJ_NIL;
-    SQLCURS_DATA       *pObj2 = OBJ_NIL;
+    SQLITECURS_DATA       *pObj1 = OBJ_NIL;
+    SQLITECURS_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(SQLCURS_JSON_SUPPORT) && defined(XYZZY)
+#if defined(SQLITECURS_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
 #endif
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = SqlCurs_New( );
+    pObj1 = SQLiteCurs_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_SQLCURS);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_SQLITECURS);
         TINYTEST_TRUE( (fRc) );
         
         // Test assign.
-        pObj2 = SqlCurs_New();
+        pObj2 = SQLiteCurs_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        eRc = SqlCurs_Assign(pObj1, pObj2);
+        eRc = SQLiteCurs_Assign(pObj1, pObj2);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLCURS);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLITECURS);
         TINYTEST_TRUE( (fRc) );
-        //eRc = SqlCurs_Compare(pObj1, pObj2);
+        //eRc = SQLiteCurs_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -155,12 +155,12 @@ int             test_SqlCurs_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = SqlCurs_Copy(pObj1);
+        pObj2 = SQLiteCurs_Copy(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLCURS);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLITECURS);
         TINYTEST_TRUE( (fRc) );
-        //eRc = SqlCurs_Compare(pObj1, pObj2);
+        //eRc = SQLiteCurs_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -168,17 +168,17 @@ int             test_SqlCurs_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(SQLCURS_JSON_SUPPORT) && defined(XYZZY)
-        pStr = SqlCurs_ToJson(pObj1);
+#if defined(SQLITECURS_JSON_SUPPORT) && defined(XYZZY)
+        pStr = SQLiteCurs_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = SqlCurs_NewFromJsonString(pStr);
+        pObj2 = SQLiteCurs_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLCURS);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLITECURS);
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = SqlCurs_Compare(pObj1, pObj2);
+        //eRc = SQLiteCurs_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
@@ -195,28 +195,28 @@ int             test_SqlCurs_Copy01 (
 
 
 
-int             test_SqlCurs_Test01 (
+int             test_SQLiteCurs_Test01 (
     const
     char            *pTestName
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    SQLCURS_DATA       *pObj = OBJ_NIL;
+    SQLITECURS_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = SqlCurs_New( );
+    pObj = SQLiteCurs_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLCURS);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLITECURS);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         
         {
-            ASTR_DATA       *pStr = SqlCurs_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = SQLiteCurs_ToDebugString(pObj, 0);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -235,13 +235,13 @@ int             test_SqlCurs_Test01 (
 
 
 
-TINYTEST_START_SUITE(test_SqlCurs);
-    TINYTEST_ADD_TEST(test_SqlCurs_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_SqlCurs_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_SqlCurs_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_SQLiteCurs);
+    TINYTEST_ADD_TEST(test_SQLiteCurs_Test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_SQLiteCurs_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SQLiteCurs_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_SqlCurs);
+TINYTEST_MAIN_SINGLE_SUITE(test_SQLiteCurs);
 
 
 

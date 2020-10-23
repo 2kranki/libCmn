@@ -1132,7 +1132,48 @@ extern "C" {
 
 
     
-    
+    //---------------------------------------------------------------
+    //                  X l a t e  E r r o r
+    //---------------------------------------------------------------
+
+    ERESULT         SQLite_XlateError (
+        SQLITE_DATA     *this,
+        int             error
+    )
+    {
+        ERESULT         eRc = ERESULT_FAILURE;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        switch (error) {
+            case SQLITE_ABORT:
+                eRc = ERESULT_FAILURE;
+            case SQLITE_BUSY:
+                eRc = ERESULT_BUSY;
+            case SQLITE_IOERR:
+                eRc = ERESULT_IO_ERROR;
+            case SQLITE_OK:
+                eRc = ERESULT_SUCCESS;
+            case SQLITE_ROW:
+                eRc = ERESULT_SUCCESS_PARTIAL_DATA;
+            default:
+                eRc = ERESULT_UNKNOWN;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS_FALSE;
+    }
+
+
+
+
     
 #ifdef  __cplusplus
 }

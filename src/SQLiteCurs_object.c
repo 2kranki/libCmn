@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//  Class Object Metods and Tables for 'SqlStmt'
-//  Generated 10/20/2020 13:49:42
+//  Class Object Metods and Tables for 'SQLiteCurs'
+//  Generated 10/23/2020 12:25:40
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define         SQLSTMT_OBJECT_C       1
-#include        <SqlStmt_internal.h>
-#ifdef  SQLSTMT_SINGLETON
+#define         SQLITECURS_OBJECT_C       1
+#include        <SQLiteCurs_internal.h>
+#ifdef  SQLITECURS_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct SqlStmt_class_data_s    {
+struct SQLiteCurs_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  SQLSTMT_SINGLETON
+#ifdef  SQLITECURS_SINGLETON
     volatile
-    SQLSTMT_DATA       *pSingleton;
+    SQLITECURS_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct SqlStmt_class_data_s    {
 
 
 static
-void *          SqlStmtClass_QueryInfo (
+void *          SQLiteCursClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          SqlStmtClass_QueryInfo (
 
 static
 const
-OBJ_INFO        SqlStmt_Info;            // Forward Reference
+OBJ_INFO        SQLiteCurs_Info;            // Forward Reference
 
 
 
 
 static
-bool            SqlStmtClass_IsKindOf (
+bool            SQLiteCursClass_IsKindOf (
     uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_SQLSTMT_CLASS == classID) {
+    if (OBJ_IDENT_SQLITECURS_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(SqlStmt_Class())->pClassSuperObject;
+    pObj = obj_getInfo(SQLiteCurs_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            SqlStmtClass_IsKindOf (
 
 
 static
-uint16_t        SqlStmtClass_WhoAmI (
+uint16_t        SQLiteCursClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_SQLSTMT_CLASS;
+    return OBJ_IDENT_SQLITECURS_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t        SqlStmtClass_WhoAmI (
 
 static
 const
-SQLSTMT_CLASS_VTBL    class_Vtbl = {
+SQLITECURS_CLASS_VTBL    class_Vtbl = {
     {
-        &SqlStmt_Info,
-        SqlStmtClass_IsKindOf,
+        &SQLiteCurs_Info,
+        SQLiteCursClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        SqlStmt_Class,
-        SqlStmtClass_WhoAmI,
-        (P_OBJ_QUERYINFO)SqlStmtClass_QueryInfo,
-        NULL                        // SqlStmtClass_ToDebugString
+        SQLiteCurs_Class,
+        SQLiteCursClass_WhoAmI,
+        (P_OBJ_QUERYINFO)SQLiteCursClass_QueryInfo,
+        NULL                        // SQLiteCursClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ SQLSTMT_CLASS_VTBL    class_Vtbl = {
 //                      Class Object
 //-----------------------------------------------------------
 
-SQLSTMT_CLASS_DATA  SqlStmt_ClassObj = {
+SQLITECURS_CLASS_DATA  SQLiteCurs_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(SQLSTMT_CLASS_DATA),                  // cbSize
+        sizeof(SQLITECURS_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,22 +162,22 @@ SQLSTMT_CLASS_DATA  SqlStmt_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  SQLSTMT_SINGLETON
+#ifdef  SQLITECURS_SINGLETON
 extern
 const
-SQLSTMT_VTBL       SqlStmt_VtblShared;
+SQLITECURS_VTBL       SQLiteCurs_VtblShared;
 
 
-SQLSTMT_DATA *     SqlStmt_getSingleton (
+SQLITECURS_DATA *     SQLiteCurs_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(SqlStmt_ClassObj.pSingleton);
+    return (OBJ_ID)(SQLiteCurs_ClassObj.pSingleton);
 }
 
 
-bool            SqlStmt_setSingleton (
-    SQLSTMT_DATA       *pValue
+bool            SQLiteCurs_setSingleton (
+    SQLITECURS_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -197,10 +197,10 @@ bool            SqlStmt_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (SqlStmt_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(SqlStmt_ClassObj.pSingleton));
+    if (SQLiteCurs_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(SQLiteCurs_ClassObj.pSingleton));
     }
-    SqlStmt_ClassObj.pSingleton = pValue;
+    SQLiteCurs_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -210,18 +210,18 @@ bool            SqlStmt_setSingleton (
 
 
 
-SQLSTMT_DATA *     SqlStmt_Shared (
+SQLITECURS_DATA *     SQLiteCurs_Shared (
     void
 )
 {
-    SQLSTMT_DATA       *this = (OBJ_ID)(SqlStmt_ClassObj.pSingleton);
+    SQLITECURS_DATA       *this = (OBJ_ID)(SQLiteCurs_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = SqlStmt_New( );
-        obj_setVtbl(this, (void *)&SqlStmt_VtblShared);
-        SqlStmt_setSingleton(this);
+        this = SQLiteCurs_New( );
+        obj_setVtbl(this, (void *)&SQLiteCurs_VtblShared);
+        SQLiteCurs_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // SqlStmt_ClassObj.pSingleton = OBJ_NIL;
+        // SQLiteCurs_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -229,16 +229,16 @@ SQLSTMT_DATA *     SqlStmt_Shared (
 
 
 
-void            SqlStmt_SharedReset (
+void            SQLiteCurs_SharedReset (
     void
 )
 {
-    SQLSTMT_DATA       *this = (OBJ_ID)(SqlStmt_ClassObj.pSingleton);
+    SQLITECURS_DATA       *this = (OBJ_ID)(SQLiteCurs_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&SqlStmt_Vtbl);
+        obj_setVtbl(this, (void *)&SQLiteCurs_Vtbl);
         obj_Release(this);
-        SqlStmt_ClassObj.pSingleton = OBJ_NIL;
+        SQLiteCurs_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -254,13 +254,13 @@ void            SqlStmt_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          SqlStmtClass_QueryInfo (
+void *          SQLiteCursClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    SQLSTMT_CLASS_DATA *this = objId;
+    SQLITECURS_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -271,7 +271,7 @@ void *          SqlStmtClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(SQLSTMT_DATA);
+            return (void *)sizeof(SQLITECURS_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -284,13 +284,13 @@ void *          SqlStmtClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&SqlStmt_Info;
+                        return (void *)&SQLiteCurs_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&SqlStmt_Info.pClassSuperObject;
+                        return (void *)&SQLiteCurs_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -308,35 +308,35 @@ void *          SqlStmtClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return SqlStmt_New;
+                        return SQLiteCurs_New;
                     }
                     break;
                     
                 case 'P':
-#ifdef  SQLSTMT_JSON_SUPPORT
+#ifdef  SQLITECURS_JSON_SUPPORT
                     if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                        return SqlStmt_ParseJsonFields;
+                        return SQLiteCurs_ParseJsonFields;
                     }
                     if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return SqlStmt_ParseJsonObject;
+                        return SQLiteCurs_ParseJsonObject;
                     }
 #endif
                     break;
 
                 case 'T':
-#ifdef  SQLSTMT_JSON_SUPPORT
+#ifdef  SQLITECURS_JSON_SUPPORT
                     if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                        return SqlStmt_ToJsonFields;
+                        return SQLiteCurs_ToJsonFields;
                     }
                     if (str_Compare("ToJson", (char *)pStr) == 0) {
-                        return SqlStmt_ToJson;
+                        return SQLiteCurs_ToJson;
                     }
 #endif
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return SqlStmtClass_WhoAmI;
+                        return SQLiteCursClass_WhoAmI;
                     }
                     break;
                     
@@ -356,7 +356,7 @@ void *          SqlStmtClass_QueryInfo (
 
 
 static
-bool            SqlStmt_IsKindOf (
+bool            SQLiteCurs_IsKindOf (
     uint16_t        classID
 )
 {
@@ -364,14 +364,14 @@ bool            SqlStmt_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_SQLSTMT == classID) {
+    if (OBJ_IDENT_SQLITECURS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(SqlStmt_Class())->pClassSuperObject;
+    pObj = obj_getInfo(SQLiteCurs_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -385,25 +385,25 @@ bool            SqlStmt_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            SqlStmt_Dealloc (
+void            SQLiteCurs_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          SqlStmt_Class (
+OBJ_ID          SQLiteCurs_Class (
     void
 )
 {
-    return (OBJ_ID)&SqlStmt_ClassObj;
+    return (OBJ_ID)&SQLiteCurs_ClassObj;
 }
 
 
 static
-uint16_t        SqlStmt_WhoAmI (
+uint16_t        SQLiteCurs_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_SQLSTMT;
+    return OBJ_IDENT_SQLITECURS;
 }
 
 
@@ -414,35 +414,35 @@ uint16_t        SqlStmt_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  SQLSTMT_SINGLETON
+#ifdef  SQLITECURS_SINGLETON
 // A Shared object ignores Retain() and Release() except for
 // initialization and termination. So, there must be an
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-SQLSTMT_VTBL     SqlStmt_VtblShared = {
+SQLITECURS_VTBL     SQLiteCurs_VtblShared = {
     {
-        &SqlStmt_Info,
-        SqlStmt_IsKindOf,
+        &SQLiteCurs_Info,
+        SQLiteCurs_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        SqlStmt_Dealloc,
-        SqlStmt_Class,
-        SqlStmt_WhoAmI,
-        (P_OBJ_QUERYINFO)SqlStmt_QueryInfo,
-        (P_OBJ_TOSTRING)SqlStmt_ToDebugString,
-        NULL,           // SqlStmt_Enable,
-        NULL,           // SqlStmt_Disable,
-        NULL,           // (P_OBJ_ASSIGN)SqlStmt_Assign,
-        NULL,           // (P_OBJ_COMPARE)SqlStmt_Compare,
-        NULL,           // (P_OBJ_PTR)SqlStmt_Copy,
-        NULL,           // (P_OBJ_PTR)SqlStmt_DeepCopy,
-        NULL            // (P_OBJ_HASH)SqlStmt_Hash,
+        SQLiteCurs_Dealloc,
+        SQLiteCurs_Class,
+        SQLiteCurs_WhoAmI,
+        (P_OBJ_QUERYINFO)SQLiteCurs_QueryInfo,
+        (P_OBJ_TOSTRING)SQLiteCurs_ToDebugString,
+        NULL,           // SQLiteCurs_Enable,
+        NULL,           // SQLiteCurs_Disable,
+        NULL,           // (P_OBJ_ASSIGN)SQLiteCurs_Assign,
+        NULL,           // (P_OBJ_COMPARE)SQLiteCurs_Compare,
+        NULL,           // (P_OBJ_PTR)SQLiteCurs_Copy,
+        NULL,           // (P_OBJ_PTR)SQLiteCurs_DeepCopy,
+        NULL            // (P_OBJ_HASH)SQLiteCurs_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //SqlStmt_IsEnabled,
+    //SQLiteCurs_IsEnabled,
  
 };
 #endif
@@ -454,29 +454,29 @@ SQLSTMT_VTBL     SqlStmt_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-SQLSTMT_VTBL     SqlStmt_Vtbl = {
+SQLITECURS_VTBL     SQLiteCurs_Vtbl = {
     {
-        &SqlStmt_Info,
-        SqlStmt_IsKindOf,
+        &SQLiteCurs_Info,
+        SQLiteCurs_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        SqlStmt_Dealloc,
-        SqlStmt_Class,
-        SqlStmt_WhoAmI,
-        (P_OBJ_QUERYINFO)SqlStmt_QueryInfo,
-        (P_OBJ_TOSTRING)SqlStmt_ToDebugString,
-        NULL,           // SqlStmt_Enable,
-        NULL,           // SqlStmt_Disable,
-        NULL,           // (P_OBJ_ASSIGN)SqlStmt_Assign,
-        NULL,           // (P_OBJ_COMPARE)SqlStmt_Compare,
-        NULL,           // (P_OBJ_PTR)SqlStmt_Copy,
-        NULL,           // (P_OBJ_PTR)SqlStmt_DeepCopy,
-        NULL            // (P_OBJ_HASH)SqlStmt_Hash,
+        SQLiteCurs_Dealloc,
+        SQLiteCurs_Class,
+        SQLiteCurs_WhoAmI,
+        (P_OBJ_QUERYINFO)SQLiteCurs_QueryInfo,
+        (P_OBJ_TOSTRING)SQLiteCurs_ToDebugString,
+        NULL,           // SQLiteCurs_Enable,
+        NULL,           // SQLiteCurs_Disable,
+        NULL,           // (P_OBJ_ASSIGN)SQLiteCurs_Assign,
+        NULL,           // (P_OBJ_COMPARE)SQLiteCurs_Compare,
+        NULL,           // (P_OBJ_PTR)SQLiteCurs_Copy,
+        NULL,           // (P_OBJ_PTR)SQLiteCurs_DeepCopy,
+        NULL            // (P_OBJ_HASH)SQLiteCurs_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //SqlStmt_IsEnabled,
+    //SQLiteCurs_IsEnabled,
  
 };
 
@@ -484,13 +484,13 @@ SQLSTMT_VTBL     SqlStmt_Vtbl = {
 
 static
 const
-OBJ_INFO        SqlStmt_Info = {
-    "SqlStmt",
-    "SQL Statement",
-    (OBJ_DATA *)&SqlStmt_ClassObj,
+OBJ_INFO        SQLiteCurs_Info = {
+    "SQLiteCurs",
+    "SQLite Cursor",
+    (OBJ_DATA *)&SQLiteCurs_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&SqlStmt_Vtbl,
-    sizeof(SQLSTMT_DATA)
+    (OBJ_IUNKNOWN *)&SQLiteCurs_Vtbl,
+    sizeof(SQLITECURS_DATA)
 };
 
 
