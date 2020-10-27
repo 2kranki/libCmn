@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <AStrCArray.h>
 #include        <sqlite3.h>
 
 
@@ -142,7 +143,11 @@ extern "C" {
         void
     );
     
-    
+    SQLITE_DATA *   SQLite_NewPath (
+        PATH_DATA       *pPath
+    );
+
+
 #ifdef  SQLITE_JSON_SUPPORT
     SQLITE_DATA *   SQLite_NewFromJsonString (
         ASTR_DATA       *pString
@@ -170,26 +175,58 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     SQLite_Disable (
-        SQLITE_DATA       *this
+    /*!
+     Close a connection to an open SQLite3 database.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SQLite_Close (
+        SQLITE_DATA     *this
     );
 
 
-    ERESULT     SQLite_Enable (
-        SQLITE_DATA       *this
+    ERESULT         SQLite_Enable (
+        SQLITE_DATA     *this
     );
 
    
+    ERESULT         SQLite_Exec (
+        SQLITE_DATA     *this,
+        ASTR_DATA       *pSql,
+        int             (*pCallback)(void*, int, char**, char**),
+        void            *pParm1
+    );
+
+
     SQLITE_DATA *   SQLite_Init (
         SQLITE_DATA     *this
     );
 
 
-    ERESULT     SQLite_IsEnabled (
-        SQLITE_DATA       *this
+    /*!
+     Open/create an SQLite3 database file and create a connection to it.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SQLite_Open (
+        SQLITE_DATA     *this,
+        PATH_DATA       *pPath
     );
     
  
+    /*!
+     Get an array of the permanent table names in this database.
+     @param     this    object pointer
+     @return    if successful, an array of table names.  Otherwise,
+                OBJ_NIL.
+     */
+    ASTRCARRAY_DATA * SQLite_TableNames (
+        SQLITE_DATA     *this
+    );
+
+
 #ifdef  SQLITE_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in

@@ -3,6 +3,17 @@
  * File:   SQLite.c
  *  Generated 07/26/2020 08:55:08
  *
+ * To get names of all databases currently open:
+    PRAGMA database_list;
+ * To retrieve all table names:
+    SELECT name FROM sqlite_master
+        WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%'
+    UNION ALL
+    SELECT name FROM sqlite_temp_master
+        WHERE type IN ('table','view')
+    ORDER BY 1;
+ * To get columns of a table:
+    PRAGMA table_info(<table_name>);
  */
 
  
@@ -54,7 +65,10 @@ extern "C" {
 #endif
     
 
-    
+    typedef struct table_cb_work_st {
+        SQLITE_DATA     *this;
+        ASTRCARRAY_DATA *pArray;
+    } table_cb_work;
 
 
  
@@ -62,16 +76,74 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
+    // int (*pCallback)(void*,int,char**,char**)
     static
-    void            SQLite_task_body (
-        void            *pData
+    int             SQLite_dump_callback (
+        void            *pData,
+        int             numCols,
+        char            **pColText,
+        char            **pColName
     )
     {
-        //SQLITE_DATA  *this = pData;
-        
+        //SQLITE_DATA     *this = pData;
+        uint32_t        i;
+
+        for (i=0; i<numCols; ++i) {
+            fprintf(stderr, "\t%15s: %s\n", pColName[i], pColText[i]);
+        }
+
+        return SQLITE_OK;
     }
-#endif
+
+
+
+    // int (*pCallback)(void*,int,char**,char**)
+    static
+    int             SQLite_table_callback (
+        void            *pData,
+        int             numCols,
+        char            **pColText,
+        char            **pColName
+    )
+    {
+        ERESULT         eRc;
+        table_cb_work   *pWork = pData;
+        int             i;
+        bool            fDisplay = false;
+        const
+        char            *pNameA = NULL;
+        bool            fSqliteName = false;
+
+        // The sqlite_master.tbl_name column holds the name of a table or view that the
+        // object is associated with. For a table or view, the tbl_name column is a copy
+        // of the name column. For an index, the tbl_name is the name of the table that
+        // is indexed. For a trigger, the tbl_name column stores the name of the table or
+        // view that causes the trigger to fire.
+
+        for (i=0; i<numCols; ++i) {
+            if (((strcmp(pColName[i], "type") == 0) && (strcmp(pColText[i], "table") == 0))) {
+                fDisplay = true;
+            }
+            if ((strcmp(pColName[i], "name") == 0) && (strncmp(pColText[i], "sqlite_", 7) == 0))
+                fSqliteName = true;
+            if (strcmp(pColName[i], "name") == 0) {
+                pNameA = pColText[i];
+            }
+        }
+        if (fDisplay) {
+            if (pNameA && !fSqliteName) {
+                TRC_OBJ(pWork->this, "\tName: %s\n", pNameA);
+                if (pWork->pArray) {
+                    eRc = AStrCArray_AppendA(pWork->pArray, pNameA, NULL);
+                    if (ERESULT_FAILED(eRc)) {
+                        return SQLITE_ABORT;
+                    }
+                }
+            }
+        }
+
+        return SQLITE_OK;
+    }
 
 
 
@@ -101,16 +173,35 @@ extern "C" {
 
 
 
-    SQLITE_DATA *     SQLite_New (
+    SQLITE_DATA *   SQLite_New (
         void
     )
     {
-        SQLITE_DATA       *this;
+        SQLITE_DATA     *this;
         
         this = SQLite_Alloc( );
         if (this) {
             this = SQLite_Init(this);
         } 
+        return this;
+    }
+
+
+    SQLITE_DATA *   SQLite_NewPath (
+        PATH_DATA       *pPath
+    )
+    {
+        SQLITE_DATA     *this;
+        ERESULT         eRc;
+
+        this = SQLite_New( );
+        if (this) {
+            eRc = SQLite_Open(this, pPath);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
         return this;
     }
 
@@ -146,7 +237,53 @@ extern "C" {
 
 
 
-//---------------------------------------------------------------
+    //---------------------------------------------------------------
+    //                         P a t h
+    //---------------------------------------------------------------
+
+    PATH_DATA *     SQLite_getPath (
+        SQLITE_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pPath;
+    }
+
+
+    bool            SQLite_setPath (
+        SQLITE_DATA     *this,
+        PATH_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pPath) {
+            obj_Release(this->pPath);
+        }
+        this->pPath = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -370,6 +507,45 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          C l o s e
+    //---------------------------------------------------------------
+
+    /*!
+     Close the open connection.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SQLite_Close (
+        SQLITE_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pConn) {
+            sqlite3_close(this->pConn);
+            this->pConn = NULL;
+        }
+        else {
+            eRc = ERESULT_FILE_CLOSED;
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -510,7 +686,7 @@ extern "C" {
         }
 #endif
 
-        SQLite_setStr(this, OBJ_NIL);
+        SQLite_setPath(this, OBJ_NIL);
 
         sqlError = sqlite3_shutdown();
         if (sqlError != SQLITE_OK) {
@@ -649,14 +825,19 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Open/create an SQLite3 database file.
-     @param     this    object pointer
+     Execute an SQL Statement.
+     @param     this        object pointer
+     @param     pSql        sql statement
+     @param     pCallback   optional callback address
+     @param     pParm1      optional 1st parameter pass to callback
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
     ERESULT         SQLite_Exec (
         SQLITE_DATA     *this,
-        ASTR_DATA       *pSql
+        ASTR_DATA       *pSql,
+        int             (*pCallback)(void*,int,char**,char**),
+        void            *pParm1
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -679,14 +860,14 @@ extern "C" {
                              this->pConn,
                              AStr_getData(pSql), // 1 or more SQL statements terminated
                              //             // with a ';'
-                             NULL,          // int (*pCallback)(void*,int,char**,char**)
+                                pCallback,  // int (*pCallback)(void*,int,char**,char**)
                              //             // If the callback function is not NULL, then
                              //             // it is invoked for each result row coming
                              //             // out of the evaluated SQL statements.
                              //             // If non-zero is returned from callback,
                              //             // sqlite3_exec() immediately returns
                              //             // SQLITE_ABORT.
-                             NULL,          // 1st Arg to pCallback
+                            pParm1,          // 1st Arg to pCallback
                              //             // 2nd Arg is number of columns in result
                              //             // 3rd Arg is an array of pointers to strings
                              //             // obtained as if from sqlite3_column_text(),
@@ -703,8 +884,12 @@ extern "C" {
                              //             // with sqlite3_free()
                     );
         if (sqlError) {
-            eRc = ERESULT_OPEN_ERROR;
-            this->pConn = NULL;
+            eRc = ERESULT_GENERAL_FAILURE;
+        }
+        if (pErrmsg) {
+            TRC_OBJ(this,"%s\n", pErrmsg);
+            fprintf(stderr, "%s\n", pErrmsg);
+            sqlite3_free(pErrmsg);
         }
 
         // Return to caller.
@@ -826,9 +1011,6 @@ extern "C" {
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         int             sqlError;
-        const
-        char            *pFilePath = "";    // Default to on-disk temporary database
-        //              ":memory:" would be in-memory temporary database
 
         // Do initialization.
 #ifdef NDEBUG
@@ -842,21 +1024,25 @@ extern "C" {
             return ERESULT_GENERAL_FAILURE;
         }
 
-        if (pPath) {
-            pFilePath = Path_getData(pPath);
+        if (pPath == NULL) {
+            this->pPath = Path_NewA("");
+            //              Default to on-disk temporary database
+            //              ":memory:" would be in-memory temporary database
+        }
+        else {
+            SQLite_setPath(this, pPath);
         }
         sqlError = sqlite3_open_v2(
-                                pFilePath,
+                                Path_getData(this->pPath),
                                 &this->pConn,
                                 (SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE),
                                 NULL         // default sqlite3_vfs object
                     );
         if (sqlError != SQLITE_OK) {
+            // Under some circumstances, the open will fail, but conn is
+            // left active. So, we have to clean it up.
             eRc = ERESULT_OPEN_ERROR;
-            if (this->pConn) {
-                sqlite3_close(this->pConn);
-                this->pConn = NULL;
-            }
+            SQLite_Close(this);
         }
 
         // Return to caller.
@@ -1003,6 +1189,63 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                  T a b l e  N a m e s
+    //---------------------------------------------------------------
+
+    ASTRCARRAY_DATA * SQLite_TableNames (
+        SQLITE_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pSql = OBJ_NIL;
+        ASTRCARRAY_DATA *pArray = OBJ_NIL;
+        table_cb_work   *pWork = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+        pSql = AStr_NewA("SELECT * FROM sqlite_master;");
+        if (OBJ_NIL == pSql) {
+            return OBJ_NIL;
+        }
+        pArray = AStrCArray_New();
+        if (OBJ_NIL == pArray) {
+            obj_Release(pSql);
+            return OBJ_NIL;
+        }
+        pWork = mem_Malloc(sizeof(table_cb_work));
+        if (OBJ_NIL == pWork) {
+            obj_Release(pSql);
+            obj_Release(pArray);
+            return OBJ_NIL;
+        }
+        pWork->pArray = pArray;
+        pWork->this = this;
+
+        eRc = SQLite_Exec(this, pSql, SQLite_table_callback, pWork);
+
+        mem_Free(pWork);
+        pWork = NULL;
+        obj_Release(pSql);
+        pSql = OBJ_NIL;
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pArray);
+            pArray = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return pArray;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

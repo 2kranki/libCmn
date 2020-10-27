@@ -33,6 +33,75 @@
 
 
 
+// int (*pCallback)(void*,int,char**,char**)
+static
+int             SQLite_dump_callback (
+    void            *pData,
+    int             numCols,
+    char            **pColText,
+    char            **pColName
+)
+{
+    //SQLITE_DATA     *this = pData;
+    uint32_t        i;
+
+    for (i=0; i<numCols; ++i) {
+        fprintf(stderr, "\t%15s: %s\n", pColName[i], pColText[i]);
+    }
+
+    return SQLITE_OK;
+}
+
+
+// int (*pCallback)(void*,int,char**,char**)
+static
+int             SQLite_table_callback (
+    void            *pData,
+    int             numCols,
+    char            **pColText,
+    char            **pColName
+)
+{
+    //SQLITE_DATA     *this = pData;
+    int             i;
+    bool            fDisplay = false;
+    const
+    char            *pName = NULL;
+    const
+    char            *pTblName = NULL;
+    bool            fSqliteName = false;
+
+    // The sqlite_master.tbl_name column holds the name of a table or view that the
+    // object is associated with. For a table or view, the tbl_name column is a copy
+    // of the name column. For an index, the tbl_name is the name of the table that
+    // is indexed. For a trigger, the tbl_name column stores the name of the table or
+    // view that causes the trigger to fire.
+
+    for (i=0; i<numCols; ++i) {
+        if (((strcmp(pColName[i], "type") == 0) && (strcmp(pColText[i], "table") == 0))) {
+            fDisplay = true;
+        }
+        if ((strcmp(pColName[i], "name") == 0) && (strncmp(pColText[i], "sqlite_", 7) == 0))
+            fSqliteName = true;
+        if (strcmp(pColName[i], "name") == 0) {
+            pName = pColText[i];
+        }
+        if (strcmp(pColName[i], "tbl_name") == 0) {
+            pTblName = pColText[i];
+        }
+    }
+    if (fDisplay) {
+        if (pName && !fSqliteName)
+            fprintf(stderr, "\tName: %s\n", pName);
+        if (pTblName && !fSqliteName)
+            fprintf(stderr, "\tTbl_Name: %s\n", pTblName);
+    }
+
+    return SQLITE_OK;
+}
+
+
+
 int             setUp (
     const
     char            *pTestName
@@ -200,21 +269,46 @@ int             test_SQLite_Test01 (
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
-    SQLITE_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SQLITE_DATA     *pObj = OBJ_NIL;
     bool            fRc;
-   
+    const
+    char            *pDatabasePath = "~/git/libCmn/tests/files/chinook.db";
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pSql = OBJ_NIL;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = SQLite_New( );
+    pPath = Path_NewA(pDatabasePath);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    eRc = Path_Clean(pPath);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+    pObj = SQLite_NewPath(pPath);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);       
+        //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLITE);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         
+        pSql = AStr_NewA("SELECT * FROM sqlite_master;");
+        TINYTEST_FALSE( (OBJ_NIL == pSql) );
+        fprintf(stderr, "==> SQL: %s\n", AStr_getData(pSql));
+        eRc = SQLite_Exec(pObj, pSql, SQLite_dump_callback, NULL);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        obj_Release(pSql);
+        pSql = OBJ_NIL;
+
+        pSql = AStr_NewA("SELECT * FROM sqlite_master;");
+        TINYTEST_FALSE( (OBJ_NIL == pSql) );
+        fprintf(stderr, "==> TABLE SQL: %s\n", AStr_getData(pSql));
+        eRc = SQLite_Exec(pObj, pSql, SQLite_table_callback, NULL);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        obj_Release(pSql);
+        pSql = OBJ_NIL;
+
         {
             ASTR_DATA       *pStr = SQLite_ToDebugString(pObj, 0);
             if (pStr) {
@@ -228,6 +322,75 @@ int             test_SQLite_Test01 (
         pObj = OBJ_NIL;
     }
 
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_SQLite_Table01 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SQLITE_DATA     *pObj = OBJ_NIL;
+    bool            fRc;
+    const
+    char            *pDatabasePath = "~/git/libCmn/tests/files/chinook.db";
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTRCARRAY_DATA *pArray = OBJ_NIL;
+    int             i;
+    ASTRC_DATA      *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = Path_NewA(pDatabasePath);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    eRc = Path_Clean(pPath);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+    pObj = SQLite_NewPath(pPath);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLITE);
+        TINYTEST_TRUE( (fRc) );
+        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        pArray = SQLite_TableNames(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pArray) );
+        fprintf(stderr, "Array Size: %d\n", AStrCArray_getSize(pArray));
+        TINYTEST_TRUE( (11 == AStrCArray_getSize(pArray)) );
+        for (i=0; i<11; ++i) {
+            pStr = AStrCArray_Get(pArray, i);
+            if (pStr) {
+                fprintf(stderr, "\t%s\n", AStrC_getData(pStr));
+            }
+        }
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+
+        {
+            ASTR_DATA       *pStr = SQLite_ToDebugString(pObj, 0);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
@@ -236,6 +399,7 @@ int             test_SQLite_Test01 (
 
 
 TINYTEST_START_SUITE(test_SQLite);
+    TINYTEST_ADD_TEST(test_SQLite_Table01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SQLite_Test01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_SQLite_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SQLite_OpenClose,setUp,tearDown);

@@ -71,6 +71,7 @@ struct SQLite_data_s  {
 
     // Common Data
     sqlite3         *pConn;
+    PATH_DATA       *pPath;         // Database Path
     uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
