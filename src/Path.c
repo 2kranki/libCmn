@@ -1544,7 +1544,7 @@ extern "C" {
 
         pStr = (char *)AStr_getData((ASTR_DATA *)this);
         if (pStr) {
-            size = file_SizeA(pStr);
+            size = File_SizeA(pStr);
             if (-1 == size) {
                 eRc = ERESULT_DATA_NOT_FOUND;
             }
@@ -2813,7 +2813,7 @@ extern "C" {
 
         pPath = Path_ToVersioned(this);
         if (pPath) {
-            eRc = file_RenameA(Path_getData(this), Path_getData(pPath));
+            eRc = File_RenameA(Path_getData(this), Path_getData(pPath));
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }

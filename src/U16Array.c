@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include        <U16Array_internal.h>
-#include        <file.h>
+#include        <File.h>
 #include        <Path_internal.h>
 #include        <trace.h>
 
@@ -299,7 +299,7 @@ extern "C" {
         }
 #endif
 
-        size = file_SizeA(Path_getData(pPath));
+        size = File_SizeA(Path_getData(pPath));
         if (-1 == size) {
             return ERESULT_DATA_NOT_FOUND;
         }

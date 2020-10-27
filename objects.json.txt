@@ -61,7 +61,7 @@
         {name:"False", json:true},
         {name:"fbsi", deps:["Path.h","u8Array.h"]},
         {name:"fbso", deps:["Path.h"]},
-        {name:"file", deps:["u8Array.h"]},
+        {name:"File", deps:["u8Array.h"]},
         {name:"fileio", deps:["Path.h"]},
         {name:"FileRef" deps:["AStrC.h","Path.h"]},
         {name:"genObj"},

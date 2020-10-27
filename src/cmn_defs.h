@@ -797,17 +797,6 @@ typedef struct AStrArray_vtbl_s	{
 } ASTRARRAY_VTBL;
 
 
-typedef struct file_data_s	FILE_DATA;
-typedef struct file_vtbl_s	{
-    OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-    // Put other methods below this as pointers and add their
-    // method names to the vtbl definition in fat16_object.c.
-    // Properties:
-    // Methods:
-    //bool        (*pIsEnabled)(FBSI_DATA *);
-} FILE_VTBL;
-
-
 typedef struct Path_data_s          PATH_DATA;
 typedef struct Path_class_data_s    PATH_CLASS_DATA;
 typedef struct Path_vtbl_s	{

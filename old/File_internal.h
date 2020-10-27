@@ -1,19 +1,12 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Path_internal.h
- *	Generated 01/29/2020 13:19:38
+ * File:   File_internal.h
+ *  Generated 10/27/2020 09:53:08
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
-
-
-//TODO: Normalize a pathname by collapsing redundant separators
-//      and up-level references so that A//B, A/B/, A/./B and
-//      A/foo/../B all become A/B
-//TODO: Return the canonical path of the specified filename,
-//      eliminating any symbolic links encountered in the path
 
 
 /*
@@ -46,23 +39,18 @@
 
 
 
-#include        <Path.h>
-#include        <AStr_internal.h>
 #include        <File.h>
 #include        <JsonIn.h>
-#include        <utf8.h>
 
 
-#ifndef PATH_INTERNAL_H
-#define	PATH_INTERNAL_H
-
-
-
-#define     PROPERTY_STR_OWNED 1
+#ifndef FILE_INTERNAL_H
+#define FILE_INTERNAL_H
 
 
 
-#ifdef	__cplusplus
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -74,23 +62,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Path_data_s	{
+struct File_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
-    ASTR_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    uint16_t        size;           // maximum number of elements
+    uint16_t        rsvd16;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct Path_class_data_s  Path_ClassObj;
+    struct File_class_data_s  File_ClassObj;
 
     extern
     const
-    PATH_VTBL         Path_Vtbl;
+    FILE_VTBL         File_Vtbl;
 
 
 
@@ -98,13 +89,13 @@ struct Path_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  PATH_SINGLETON
-    PATH_DATA *     Path_getSingleton (
+#ifdef  FILE_SINGLETON
+    FILE_DATA *     File_getSingleton (
         void
     );
 
-    bool            Path_setSingleton (
-     PATH_DATA       *pValue
+    bool            File_setSingleton (
+     FILE_DATA       *pValue
 );
 #endif
 
@@ -114,64 +105,92 @@ struct Path_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  Path_getSuperVtbl (
-        PATH_DATA     *this
+    OBJ_IUNKNOWN *  File_getSuperVtbl (
+        FILE_DATA     *this
     );
 
 
-    ERESULT         Path_Assign (
-        PATH_DATA    *this,
-        PATH_DATA    *pOther
+    ERESULT         File_Assign (
+        FILE_DATA    *this,
+        FILE_DATA    *pOther
     );
 
 
-    PATH_DATA *       Path_Copy (
-        PATH_DATA     *this
+    FILE_DATA *       File_Copy (
+        FILE_DATA     *this
     );
 
 
-    void            Path_Dealloc (
+    void            File_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  PATH_JSON_SUPPORT
+#ifdef  FILE_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    PATH_DATA *       Path_ParseJsonObject (
+    FILE_DATA *       File_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
 
     /*!
-     Parse the object from an established parser.
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
      @param pParser     an established jsonIn Parser Object
      @param pObject     an Object to be filled in with the
                         parsed fields.
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Path_ParseJsonFields(
+    ERESULT         File_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        PATH_DATA     *pObject
+        FILE_DATA     *pObject
     );
 #endif
 
 
-    void *          Path_QueryInfo (
+    void *          File_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  PATH_JSON_SUPPORT
-    ASTR_DATA *     Path_ToJson (
-        PATH_DATA      *this
+#ifdef  FILE_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = File_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     File_ToJson (
+        FILE_DATA      *this
+    );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         File_ToJsonFields (
+        FILE_DATA     *this,
+        ASTR_DATA       *pStr
     );
 #endif
 
@@ -180,16 +199,16 @@ struct Path_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			Path_Validate (
-        PATH_DATA       *this
+    bool            File_Validate (
+        FILE_DATA       *this
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* PATH_INTERNAL_H */
+#endif  /* FILE_INTERNAL_H */
 

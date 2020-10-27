@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include    <u8Array_internal.h>
 #include    <ascii.h>
-#include    <file.h>
+#include    <File.h>
 #include    <hex.h>
 #include    <Path_internal.h>
 #include    <stdio.h>
@@ -401,7 +401,7 @@ extern "C" {
         }
 #endif
         
-        size = file_SizeA(Path_getData(pPath));
+        size = File_SizeA(Path_getData(pPath));
         if (-1 == size) {
             return ERESULT_DATA_NOT_FOUND;
         }
