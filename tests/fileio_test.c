@@ -24,7 +24,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <DateTime.h>
-#include    <file.h>
+#include    <File.h>
 #include    <trace.h>
 #include    <fileio_internal.h>
 
@@ -248,7 +248,7 @@ int         test_fileio_Create01(
         eRc = fileio_Close(pObj, true);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        fileSize = file_SizeA(Path_getData(pPath));
+        fileSize = File_SizeA(Path_getData(pPath));
         TINYTEST_TRUE( (-1 == fileSize) );
         
         obj_Release(pObj);

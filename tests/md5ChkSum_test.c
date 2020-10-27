@@ -25,7 +25,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <md5ChkSum_internal.h>
-#include    <file.h>
+#include    <File.h>
 #include    <fileio.h>
 
 
@@ -140,7 +140,7 @@ int         test_md5ChkSum_Read01(
         eRc = fileio_Open(pObj, pPath);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         
-        fileSize = file_SizeA(pPathA);
+        fileSize = File_SizeA(pPathA);
         TINYTEST_FALSE( (-1 == fileSize) );
 
         if (fileSize) {

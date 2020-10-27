@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (10/21/2020 14:57:26.000)
+# (10/27/2020 14:42:37.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -274,6 +274,11 @@ OBJS += $(OBJDIR)/False_object.o
 $(OBJDIR)/False_object.o: $(SRCDIR)/False_object.c $(SRCDIR)/False.h $(SRCDIR)/False_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/File.o
+
+$(OBJDIR)/File.o: $(SRCDIR)/File.c $(SRCDIR)/File.h $(SRCDIR)/File_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/FileRef.o
 
 $(OBJDIR)/FileRef.o: $(SRCDIR)/FileRef.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
@@ -282,6 +287,11 @@ $(OBJDIR)/FileRef.o: $(SRCDIR)/FileRef.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $
 OBJS += $(OBJDIR)/FileRef_object.o
 
 $(OBJDIR)/FileRef_object.o: $(SRCDIR)/FileRef_object.c $(SRCDIR)/AStrC.h $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/File_object.o
+
+$(OBJDIR)/File_object.o: $(SRCDIR)/File_object.c $(SRCDIR)/File.h $(SRCDIR)/File_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/I16Array.o
@@ -849,6 +859,26 @@ OBJS += $(OBJDIR)/SQLite.o
 $(OBJDIR)/SQLite.o: $(SRCDIR)/SQLite.c $(SRCDIR)/SQLite.h $(SRCDIR)/SQLite_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/SQLiteCurs.o
+
+$(OBJDIR)/SQLiteCurs.o: $(SRCDIR)/SQLiteCurs.c $(SRCDIR)/SQLiteCurs.h $(SRCDIR)/SQLiteCurs_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SQLiteCurs_object.o
+
+$(OBJDIR)/SQLiteCurs_object.o: $(SRCDIR)/SQLiteCurs_object.c $(SRCDIR)/SQLiteCurs.h $(SRCDIR)/SQLiteCurs_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SQLiteStmt.o
+
+$(OBJDIR)/SQLiteStmt.o: $(SRCDIR)/SQLiteStmt.c $(SRCDIR)/SQLiteStmt.h $(SRCDIR)/SQLiteStmt_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SQLiteStmt_object.o
+
+$(OBJDIR)/SQLiteStmt_object.o: $(SRCDIR)/SQLiteStmt_object.c $(SRCDIR)/SQLiteStmt.h $(SRCDIR)/SQLiteStmt_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/SQLite_object.o
 
 $(OBJDIR)/SQLite_object.o: $(SRCDIR)/SQLite_object.c $(SRCDIR)/SQLite.h $(SRCDIR)/SQLite_internal.h $(SRCDIR)/cmn_defs.h 
@@ -899,21 +929,6 @@ OBJS += $(OBJDIR)/SqlCol_object.o
 $(OBJDIR)/SqlCol_object.o: $(SRCDIR)/SqlCol_object.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/SqlCurs.o
-
-$(OBJDIR)/SqlCurs.o: $(SRCDIR)/SqlCurs.c $(SRCDIR)/SqlCurs.h $(SRCDIR)/SqlCurs_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/SqlCurs_json.o
-
-$(OBJDIR)/SqlCurs_json.o: $(SRCDIR)/SqlCurs_json.c $(SRCDIR)/SqlCurs.h $(SRCDIR)/SqlCurs_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/SqlCurs_object.o
-
-$(OBJDIR)/SqlCurs_object.o: $(SRCDIR)/SqlCurs_object.c $(SRCDIR)/SqlCurs.h $(SRCDIR)/SqlCurs_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/SqlRowDef.o
 
 $(OBJDIR)/SqlRowDef.o: $(SRCDIR)/SqlRowDef.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
@@ -927,16 +942,6 @@ $(OBJDIR)/SqlRowDef_json.o: $(SRCDIR)/SqlRowDef_json.c $(SRCDIR)/SqlRowDef.h $(S
 OBJS += $(OBJDIR)/SqlRowDef_object.o
 
 $(OBJDIR)/SqlRowDef_object.o: $(SRCDIR)/SqlRowDef_object.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/SqlStmt.o
-
-$(OBJDIR)/SqlStmt.o: $(SRCDIR)/SqlStmt.c $(SRCDIR)/SqlStmt.h $(SRCDIR)/SqlStmt_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/SqlStmt_object.o
-
-$(OBJDIR)/SqlStmt_object.o: $(SRCDIR)/SqlStmt_object.c $(SRCDIR)/SqlStmt.h $(SRCDIR)/SqlStmt_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SrcError.o
@@ -1487,16 +1492,6 @@ $(OBJDIR)/fbso.o: $(SRCDIR)/fbso.c $(SRCDIR)/Path.h $(SRCDIR)/fbso.h $(SRCDIR)/f
 OBJS += $(OBJDIR)/fbso_object.o
 
 $(OBJDIR)/fbso_object.o: $(SRCDIR)/fbso_object.c $(SRCDIR)/Path.h $(SRCDIR)/fbso.h $(SRCDIR)/fbso_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/file.o
-
-$(OBJDIR)/file.o: $(SRCDIR)/file.c $(SRCDIR)/file.h $(SRCDIR)/file_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/file_object.o
-
-$(OBJDIR)/file_object.o: $(SRCDIR)/file_object.c $(SRCDIR)/file.h $(SRCDIR)/file_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/fileio.o
@@ -2095,6 +2090,12 @@ FileRef_test: $(TEST_SRC)/FileRef_test.c $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += File_test
+
+File_test: $(TEST_SRC)/File_test.c $(SRCDIR)/File.h $(SRCDIR)/File_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += I16Array_test
 
 I16Array_test: $(TEST_SRC)/I16Array_test.c $(SRCDIR)/I16Array.h $(SRCDIR)/I16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
@@ -2359,6 +2360,18 @@ PsxExec_test: $(TEST_SRC)/PsxExec_test.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += SQLiteCurs_test
+
+SQLiteCurs_test: $(TEST_SRC)/SQLiteCurs_test.c $(SRCDIR)/SQLiteCurs.h $(SRCDIR)/SQLiteCurs_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += SQLiteStmt_test
+
+SQLiteStmt_test: $(TEST_SRC)/SQLiteStmt_test.c $(SRCDIR)/SQLiteStmt.h $(SRCDIR)/SQLiteStmt_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += SQLite_test
 
 SQLite_test: $(TEST_SRC)/SQLite_test.c $(SRCDIR)/SQLite.h $(SRCDIR)/SQLite_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2383,21 +2396,9 @@ SqlCol_test: $(TEST_SRC)/SqlCol_test.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_inter
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += SqlCurs_test
-
-SqlCurs_test: $(TEST_SRC)/SqlCurs_test.c $(SRCDIR)/SqlCurs.h $(SRCDIR)/SqlCurs_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += SqlRowDef_test
 
 SqlRowDef_test: $(TEST_SRC)/SqlRowDef_test.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += SqlStmt_test
-
-SqlStmt_test: $(TEST_SRC)/SqlStmt_test.c $(SRCDIR)/SqlStmt.h $(SRCDIR)/SqlStmt_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2674,12 +2675,6 @@ fbsi_test: $(TEST_SRC)/fbsi_test.c $(SRCDIR)/fbsi.h $(SRCDIR)/fbsi_internal.h $(
 TESTS += fbso_test
 
 fbso_test: $(TEST_SRC)/fbso_test.c $(SRCDIR)/fbso.h $(SRCDIR)/fbso_internal.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += file_test
-
-file_test: $(TEST_SRC)/file_test.c $(SRCDIR)/file.h $(SRCDIR)/file_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
