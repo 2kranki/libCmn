@@ -202,7 +202,7 @@ static
 const
 OBJ_INFO        array_Info = {
     "array",
-    "Array",
+    "Dynamic Array",
     (OBJ_DATA *)&array_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&array_Vtbl,

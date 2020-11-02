@@ -275,7 +275,8 @@ int             test_SQLite_Test01 (
     const
     char            *pDatabasePath = "~/git/libCmn/tests/files/chinook.db";
     PATH_DATA       *pPath = OBJ_NIL;
-    ASTR_DATA       *pSql = OBJ_NIL;
+    const
+    char            *pSqlA = NULL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -293,21 +294,15 @@ int             test_SQLite_Test01 (
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         
-        pSql = AStr_NewA("SELECT * FROM sqlite_master;");
-        TINYTEST_FALSE( (OBJ_NIL == pSql) );
-        fprintf(stderr, "==> SQL: %s\n", AStr_getData(pSql));
-        eRc = SQLite_Exec(pObj, pSql, SQLite_dump_callback, NULL);
+        pSqlA = "SELECT * FROM sqlite_master;";
+        fprintf(stderr, "==> SQL: %s\n", pSqlA);
+        eRc = SQLite_Exec(pObj, SQLite_dump_callback, NULL, pSqlA);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        obj_Release(pSql);
-        pSql = OBJ_NIL;
 
-        pSql = AStr_NewA("SELECT * FROM sqlite_master;");
-        TINYTEST_FALSE( (OBJ_NIL == pSql) );
-        fprintf(stderr, "==> TABLE SQL: %s\n", AStr_getData(pSql));
-        eRc = SQLite_Exec(pObj, pSql, SQLite_table_callback, NULL);
+        pSqlA = "SELECT * FROM sqlite_master;";
+        fprintf(stderr, "==> TABLE SQL: %s\n", pSqlA);
+        eRc = SQLite_Exec(pObj, SQLite_table_callback, NULL, pSqlA);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        obj_Release(pSql);
-        pSql = OBJ_NIL;
 
         {
             ASTR_DATA       *pStr = SQLite_ToDebugString(pObj, 0);

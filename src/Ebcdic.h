@@ -111,7 +111,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  EBCDIC_SINGLETON
-    EBCDIC_DATA *     Ebcdic_Shared (
+    EBCDIC_DATA *   Ebcdic_Shared (
         void
     );
 

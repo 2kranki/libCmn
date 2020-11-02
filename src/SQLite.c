@@ -824,20 +824,12 @@ extern "C" {
     //                          E x e c
     //---------------------------------------------------------------
 
-    /*!
-     Execute an SQL Statement.
-     @param     this        object pointer
-     @param     pSql        sql statement
-     @param     pCallback   optional callback address
-     @param     pParm1      optional 1st parameter pass to callback
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
     ERESULT         SQLite_Exec (
         SQLITE_DATA     *this,
-        ASTR_DATA       *pSql,
         int             (*pCallback)(void*,int,char**,char**),
-        void            *pParm1
+        void            *pParm1,
+        const
+        char            *pSqlA
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -858,9 +850,9 @@ extern "C" {
 
         sqlError = sqlite3_exec(
                              this->pConn,
-                             AStr_getData(pSql), // 1 or more SQL statements terminated
+                             pSqlA,         // 1 or more SQL statements terminated
                              //             // with a ';'
-                                pCallback,  // int (*pCallback)(void*,int,char**,char**)
+                            pCallback,  // int (*pCallback)(void*,int,char**,char**)
                              //             // If the callback function is not NULL, then
                              //             // it is invoked for each result row coming
                              //             // out of the evaluated SQL statements.
@@ -890,6 +882,59 @@ extern "C" {
             TRC_OBJ(this,"%s\n", pErrmsg);
             fprintf(stderr, "%s\n", pErrmsg);
             sqlite3_free(pErrmsg);
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         SQLite_ExecPrint (
+        SQLITE_DATA     *this,
+        int             (*pCallback)(void*,int,char**,char**),
+        void            *pParm1,
+        const
+        char            *pFormatA,
+        ...
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        char            str[256];
+        int             size;
+        va_list         arg_ptr;
+        char            *pStrA = str;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_ALREADY_EXISTS;
+        }
+#endif
+        if (NULL == this->pConn) {
+            return ERESULT_GENERAL_FAILURE;
+        }
+
+        va_start( arg_ptr, pFormatA );
+        str[0] = '\0';
+        size = vsnprintf(str, sizeof(str), pFormatA, arg_ptr);
+        va_end( arg_ptr );
+        if (size >= sizeof(str)) {
+            ++size;
+            pStrA = (char *)mem_Malloc(size);
+            if( pStrA == NULL ) {
+                return ERESULT_INSUFFICIENT_MEMORY;
+            }
+            va_start( arg_ptr, pFormatA );
+            size = vsnprintf( pStrA, size, pFormatA, arg_ptr );
+            va_end( arg_ptr );
+            eRc = SQLite_Exec(this, pCallback, pParm1, pStrA);
+            mem_Free( pStrA );
+            pStrA = NULL;
+        }
+        else {
+            eRc = SQLite_Exec(this, pCallback, pParm1, pStrA);
         }
 
         // Return to caller.
@@ -1198,7 +1243,6 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        ASTR_DATA       *pSql = OBJ_NIL;
         ASTRCARRAY_DATA *pArray = OBJ_NIL;
         table_cb_work   *pWork = NULL;
 
@@ -1211,30 +1255,27 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        pSql = AStr_NewA("SELECT * FROM sqlite_master;");
-        if (OBJ_NIL == pSql) {
-            return OBJ_NIL;
-        }
         pArray = AStrCArray_New();
         if (OBJ_NIL == pArray) {
-            obj_Release(pSql);
             return OBJ_NIL;
         }
         pWork = mem_Malloc(sizeof(table_cb_work));
         if (OBJ_NIL == pWork) {
-            obj_Release(pSql);
             obj_Release(pArray);
             return OBJ_NIL;
         }
         pWork->pArray = pArray;
         pWork->this = this;
 
-        eRc = SQLite_Exec(this, pSql, SQLite_table_callback, pWork);
+        eRc =   SQLite_Exec(
+                            this,
+                            SQLite_table_callback,
+                            pWork,
+                            "SELECT * FROM sqlite_master;"
+                );
 
         mem_Free(pWork);
         pWork = NULL;
-        obj_Release(pSql);
-        pSql = OBJ_NIL;
         if (ERESULT_FAILED(eRc)) {
             obj_Release(pArray);
             pArray = OBJ_NIL;

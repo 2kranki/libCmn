@@ -27,8 +27,8 @@
  * Remarks
  *	1.      Internally, lines may be 80-82 characters. When a
  *          dataset is opened, it will be scanned at bytes 80
- *          and 81 to determine if there are \r or \n characters
- *          after the 80 bytes of data.
+ *          and 81 to determine if there are \r, \n, \r\n or
+ *          \n\r characters after the 80 bytes of data.
  *
  * History
  *	01/05/2019 Generated
@@ -281,6 +281,18 @@ extern "C" {
     
     RRDS_DATA *     rrds_Init (
         RRDS_DATA       *this
+    );
+
+
+    /*!
+     IsOpen() returns ERESULT_SUCCESS if the file is open and
+     ready to be read.
+     @param     this    object pointer
+     @Return    If file is open, ERESULT_SUCCESS; otherwise an
+                ERESULT_* error.
+     */
+    ERESULT         rrds_IsOpen (
+        RRDS_DATA        *this
     );
 
 

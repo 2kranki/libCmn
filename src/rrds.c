@@ -1177,6 +1177,34 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                       I s O p e n
+    //---------------------------------------------------------------
+
+    ERESULT         rrds_IsOpen (
+        RRDS_DATA        *this
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!rrds_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (fileio_IsOpen(this->pIO)) {
+            return ERESULT_SUCCESS;
+        }
+
+        // Return to caller.
+        return ERESULT_GENERAL_FAILURE;
+    }
+
+
+
     //----------------------------------------------------------------
     //                      Open - Open a File
     //----------------------------------------------------------------

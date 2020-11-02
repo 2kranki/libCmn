@@ -162,7 +162,7 @@ void            Ebcdic_TranslateAsciiToEbcdicA (
     uint8_t         *pBuffer
 )
 {
-    while (--cBuffer) {
+    while (cBuffer--) {
         if (*pBuffer == '\0')
             break;
         *pBuffer = Ebcdic_AsciiToEbcdicA(*pBuffer);
@@ -177,7 +177,7 @@ void            Ebcdic_TranslateEbcdicToAsciiA (
     uint8_t         *pBuffer
 )
 {
-    while (--cBuffer) {
+    while (cBuffer--) {
         if (*pBuffer == '\0')
             break;
         *pBuffer = Ebcdic_EbcdicToAsciiA(*pBuffer);

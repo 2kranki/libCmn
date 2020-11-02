@@ -7,10 +7,10 @@
  * Program
  *			Dynamic Array (array)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate array to run things without complications
- *          of interfering with the main array. A array may be 
- *          called a array on other O/S's.
+ *			This object provides a dynamic array. That is an array
+ *			which is mutable. However, the original array definitions
+ *			such as element size may not be changed once the array
+ *			is created.
  *
  * Remarks
  *	1.      Since this object supports Assign(), the array elements
@@ -370,6 +370,13 @@ extern "C" {
     );
     
     
+    /*!
+     Truncate the number of elements in the array to the length given
+     if the length < the current size of the array.
+     @param     this    ARRAY object pointer
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
     ERESULT         array_Truncate(
         ARRAY_DATA      *this,
         uint32_t        len

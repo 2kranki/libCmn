@@ -191,11 +191,30 @@ extern "C" {
     );
 
    
+    /*!
+     Execute an SQL Statement.
+     @param     this        object pointer
+     @param     pCallback   optional callback address
+     @param     pParm1      optional 1st parameter pass to callback
+     @param     pSqlA       sql statement
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
     ERESULT         SQLite_Exec (
         SQLITE_DATA     *this,
-        ASTR_DATA       *pSql,
         int             (*pCallback)(void*, int, char**, char**),
-        void            *pParm1
+        void            *pParm1,
+        const
+        char            *pSqlA
+    );
+
+    ERESULT         SQLite_ExecPrint (
+        SQLITE_DATA     *this,
+        int             (*pCallback)(void*, int, char**, char**),
+        void            *pParm1,
+        const
+        char            *pFormatA,
+        ...
     );
 
 

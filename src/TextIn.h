@@ -7,11 +7,19 @@
  * Program
  *			Text File Input (TextIn)
  * Purpose
- *			This object provides support to read a text file from
- *			one of several sources and either at the byte level or
- *			the line level.  It also provides support for skipping
+ *			This object provides support to read an ASCII text file
+ *			from one of several sources and either at the byte level
+ *			or the line level.  It also provides support for skipping
  *          certain portions of the file if needed.
  *
+ *          This object also provides for input of 80 column records
+ *          as used in the IBM environment where the input has already
+ *          been translated from EBCDIC to ASCII. In this case, the
+ *          input file consists of 81 byte records with the last byte
+ *          being a NL (0x0A) as a record terminator. Normally, the
+ *          last eight bytes are a sequence number which may consist
+ *          of letters or blanks only, letters combined with numbers
+ *          or last just numbers.
  * Remarks
  *	1.      This object uses OBJ_FLAG_USER1 internally.
  *
@@ -373,8 +381,8 @@ extern "C" {
     );
 
 
-    ERESULT             TextIn_SkipToEOL (
-        TEXTIN_DATA         *this
+    ERESULT         TextIn_SkipToEOL (
+        TEXTIN_DATA     *this
     );
 
 
@@ -393,7 +401,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     TextIn_ToJson(
-        TEXTIN_DATA   *this
+        TEXTIN_DATA     *this
     );
 #endif
 

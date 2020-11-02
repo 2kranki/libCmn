@@ -42,6 +42,8 @@
 
 /* Header File Inclusion */
 #include        <File_internal.h>
+#include        <stdio.h>
+#include        <copyfile.h>
 #include        <trace.h>
 
 
@@ -97,6 +99,65 @@ extern "C" {
         
         // Return to caller.
         return this;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      C o p y  F i l e
+    //---------------------------------------------------------------
+
+    ERESULT         File_CopyFileA(
+        const
+        char            *pPathInA,
+        const
+        char            *pPathOutA
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        struct stat     statBuffer;
+        int             iRc;
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        bool            bRc;
+#endif
+
+        if ((NULL == pPathInA) || (NULL == pPathOutA)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        iRc = stat(pPathInA, &statBuffer);
+        if (0 == iRc) {
+            iRc = copyfile(pPathInA, pPathOutA, NULL, COPYFILE_ALL);
+            if (0 == iRc) {
+                eRc = ERESULT_SUCCESS;
+            }
+            else {
+                eRc = ERESULT_FILE_OPERATION_FAILED;
+            }
+        }
+        else {
+            eRc = ERESULT_FILE_NOT_FOUND;
+        }
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        //TODO: MoveFileExW is more pwerful. Need to investgate using
+        //      it instead
+        /***
+        bRc = MoveFileExA(pPathOldA, pPathNewA, MOVEFILE_WRITE_THROUGH);
+        if (bRc)
+            eRc = ERESULT_SUCCESS;
+        else
+            eRc = ERESULT_FILE_OPERATION_FAILED;
+         ***/
+        eRc = ERESULT_NOT_IMPLEMENTED;
+#endif
+
+        // Return to caller.
+        return eRc;
     }
 
 

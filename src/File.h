@@ -138,9 +138,17 @@ extern "C" {
     );
     
     
+    ERESULT         File_CopyFileA(
+        const
+        char            *pPathInA,
+        const
+        char            *pPathOutA
+    );
+
+
     ERESULT         File_DeleteA(
         const
-        char            *pPath
+        char            *pPathA
     );
 
 
@@ -171,20 +179,20 @@ extern "C" {
 
     int64_t         File_SizeA(
         const
-        char            *pPath
+        char            *pPathA
     );
 
 
     ERESULT         File_ToArrayA(
         const
-        char            *pPath,
+        char            *pPathA,
         U8ARRAY_DATA    **ppArray
     );
 
 
     ERESULT         File_ToBufferA(
         const
-        char            *pPath,
+        char            *pPathA,
         uint8_t         **ppBuffer
     );
 
