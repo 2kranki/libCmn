@@ -119,7 +119,7 @@ extern "C" {
         const
         SRCLOC          *pLoc,
         const
-        char            *pErrorString
+        char            *pErrorStringA
     )
     {
         SRCERROR_DATA   *this;
@@ -130,13 +130,54 @@ extern "C" {
             if (pLoc) {
                 SrcError_setLocation(this, pLoc);
             }
-            if (pErrorString) {
-                this->pErrorStr = AStr_NewA(pErrorString);
+            if (pErrorStringA) {
+                this->pErrorStr = AStr_NewA(pErrorStringA);
                 if (OBJ_NIL == this->pErrorStr) {
                     obj_Release(this);
                     return OBJ_NIL;
                 }
             }
+        }
+
+        return this;
+    }
+
+
+
+    SRCERROR_DATA * SrcError_NewFromPrint (
+        uint16_t        severity,
+        const
+        SRCLOC          *pLoc,
+        const
+        char            *pFormatA,
+        ...
+    )
+    {
+        SRCERROR_DATA   *this = OBJ_NIL;
+        char            str[256];
+        int             size;
+        va_list         arg_ptr;
+        char            *pStr = NULL;
+
+        va_start( arg_ptr, pFormatA );
+        str[0] = '\0';
+        size = vsnprintf(str, sizeof(str), pFormatA, arg_ptr);
+        va_end( arg_ptr );
+        if (size >= sizeof(str)) {
+            ++size;
+            pStr = (char *)mem_Malloc(size);
+            if( pStr == NULL ) {
+                return OBJ_NIL;
+            }
+            va_start( arg_ptr, pFormatA );
+            size = vsnprintf( pStr, size, pFormatA, arg_ptr );
+            va_end( arg_ptr );
+            this = SrcError_NewFromData(severity, pLoc, pStr);
+            mem_Free( pStr );
+            pStr = NULL;
+        }
+        else {
+            this = SrcError_NewFromData(severity, pLoc, str);
         }
 
         return this;
@@ -196,6 +237,68 @@ extern "C" {
     }
 
     
+
+    ASTR_DATA *     SrcError_AStrFromData (
+        uint16_t        severity,
+        const
+        SRCLOC          *pLoc,
+        const
+        char            *pErrorStringA
+    )
+    {
+        SRCERROR_DATA   *this;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        this = SrcError_NewFromData(severity, pLoc, pErrorStringA);
+        if (this) {
+            pStr = SrcError_ToString(this);
+            obj_Release(this);
+        }
+
+        return pStr;
+    }
+
+
+
+    ASTR_DATA *     SrcError_AStrFromPrint (
+        uint16_t        severity,
+        const
+        SRCLOC          *pLoc,
+        const
+        char            *pFormatA,
+        ...
+    )
+    {
+        ASTR_DATA       *pAStr = OBJ_NIL;
+        char            str[256];
+        int             size;
+        va_list         arg_ptr;
+        char            *pStr = NULL;
+
+        va_start( arg_ptr, pFormatA );
+        str[0] = '\0';
+        size = vsnprintf(str, sizeof(str), pFormatA, arg_ptr);
+        va_end( arg_ptr );
+        if (size >= sizeof(str)) {
+            ++size;
+            pStr = (char *)mem_Malloc(size);
+            if( pStr == NULL ) {
+                return OBJ_NIL;
+            }
+            va_start( arg_ptr, pFormatA );
+            size = vsnprintf( pStr, size, pFormatA, arg_ptr );
+            va_end( arg_ptr );
+            pAStr = SrcError_AStrFromData(severity, pLoc, pStr);
+            mem_Free( pStr );
+            pStr = NULL;
+        }
+        else {
+            pAStr = SrcError_AStrFromData(severity, pLoc, str);
+        }
+
+        return pAStr;
+    }
+
 
 
 

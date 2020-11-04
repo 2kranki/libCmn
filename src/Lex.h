@@ -228,6 +228,7 @@ extern "C" {
         LEX_SEP_LT_DOT,                     // <.
         LEX_SEP_LPAREN,                     // (
         LEX_SEP_NL,                         // '\n'
+        LEX_SEP_WS,                         // ' ' , '\n', '\r', '\t'
         LEX_SEP_LARROW,                     // <-
         LEX_SEP_RARROW,                     // ->
         LEX_SEP_RBRACKET,                   // ]
@@ -458,6 +459,9 @@ extern "C" {
     typedef enum Lex_Flags_e {
         LEX_FLAG_UNKNOWN=0,
         LEX_FLAG_MULTICHRCON=0x80000000,            /* ??? */
+        LEX_FLAG_WS=0x40000000,                     /* Return Whitespace */
+        LEX_FLAG_NL=0x20000000,                     /* Return NLs */
+        LEX_FLAG_CMT=0x20000000,                    /* Return comments */
     } LEX_FLAGS;
 
 

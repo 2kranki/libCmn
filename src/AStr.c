@@ -1175,7 +1175,7 @@ extern "C" {
     ERESULT         AStr_AppendPrint(
         ASTR_DATA		*this,
         const
-        char            *pFormat,
+        char            *pFormatA,
         ...
     )
     {
@@ -1195,9 +1195,9 @@ extern "C" {
         }
 #endif
         
-        va_start( arg_ptr, pFormat );
+        va_start( arg_ptr, pFormatA );
         str[0] = '\0';
-        size = vsnprintf(str, sizeof(str), pFormat, arg_ptr);
+        size = vsnprintf(str, sizeof(str), pFormatA, arg_ptr);
         va_end( arg_ptr );
         if (size >= sizeof(str)) {
             ++size;
@@ -1205,8 +1205,8 @@ extern "C" {
             if( pStr == NULL ) {
                 return ERESULT_INSUFFICIENT_MEMORY;
             }
-            va_start( arg_ptr, pFormat );
-            size = vsnprintf( pStr, size, pFormat, arg_ptr );
+            va_start( arg_ptr, pFormatA );
+            size = vsnprintf( pStr, size, pFormatA, arg_ptr );
             va_end( arg_ptr );
             eRc = AStr_AppendA(this, pStr);
             mem_Free( pStr );

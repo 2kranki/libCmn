@@ -101,8 +101,18 @@ struct Lex_data_s  {
     //      pParse parses the pInputs into the token passed or ignores the
     //      passed token and uses lex_ParseSetup() and lex_ParseFinish() to
     //      accumulate the token.
-    ERESULT         (*pParser)(OBJ_ID, TOKEN_DATA *); // Lexical Parser
+    ERESULT         (*pParser)(OBJ_ID, TOKEN_DATA *);   // Lexical Parser
     OBJ_ID          pParseObj;
+    ERESULT         (*pError)(OBJ_ID, ASTR_DATA *);     // Error Exit
+    OBJ_ID          pErrorObj;
+    int             (*pParserExit)(
+                                   OBJ_ID,          // pParserExitObj
+                                   LEX_DATA *,      // LEX Object Ptr
+                                   TOKEN_DATA *,    // Current Token Ptr
+                                   int32_t *,       // clsNew return Ptr
+                                   W32STR_DATA *    // Output Token Accumulaion String
+                    );
+    OBJ_ID          pParserExitObj;
     TOKEN_DATA      token;              // Next Output Token (output of pParser)
     W32STR_DATA     *pStr;              // String from accumulated tokens
 

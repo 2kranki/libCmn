@@ -127,6 +127,11 @@ int         test_pplex2_Input01(
     PATH_DATA       *pPath = Path_NewA("abc");
     ASTR_DATA       *pWrkA = OBJ_NIL;
     int32_t         cls;
+    const
+    char            *pTestInput01 =
+                        "class xyz {\n"
+			"\ta += b + 10;\n"
+			"}\n";
     
     pBuf = AStr_NewA(pTestInput01);
     XCTAssertFalse( (OBJ_NIL == pBuf) );
@@ -334,7 +339,7 @@ int         test_pplex2_Input02(
     ASTR_DATA       *pWrkA = OBJ_NIL;
     int32_t         cls;
     
-    pBuf = AStr_NewA(pTestInput02);
+    pBuf = AStr_NewA("@class xyz %{\n\ta += b + c;\n%}\n");
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     if (pBuf) {
         

@@ -151,7 +151,7 @@ extern "C" {
     );
     
     
-   SRCERROR_DATA * SrcError_NewFromData(
+   SRCERROR_DATA *  SrcError_NewFromData(
        uint16_t        severity,
        const
        SRCLOC          *pLoc,
@@ -160,29 +160,60 @@ extern "C" {
    );
    
    
-   SRCERROR_DATA * SrcError_NewFatalFromToken (
-       TOKEN_DATA      *pToken,
-       ASTR_DATA       *pErrorString
-   );
+    SRCERROR_DATA * SrcError_NewFromPrint (
+        uint16_t        severity,
+        const
+        SRCLOC          *pLoc,
+        const
+        char            *pFormatA,
+        ...
+    );
+
+
+    SRCERROR_DATA * SrcError_NewFatalFromToken (
+        TOKEN_DATA      *pToken,
+        ASTR_DATA       *pErrorString
+    );
    
    
-   SRCERROR_DATA * SrcError_NewFatalFromTokenA (
+   SRCERROR_DATA *  SrcError_NewFatalFromTokenA (
        TOKEN_DATA      *pToken,
        const
        char            *pErrorStringA
    );
    
    
-   SRCERROR_DATA * SrcError_NewFromJsonString (
+   SRCERROR_DATA *  SrcError_NewFromJsonString (
        ASTR_DATA       *pString
    );
    
    
-   SRCERROR_DATA * SrcError_NewFromJsonStringA (
+   SRCERROR_DATA *  SrcError_NewFromJsonStringA (
        const
        char            *pStringA
    );
    
+
+    ASTR_DATA *     SrcError_AStrFromData(
+        uint16_t        severity,
+        const
+        SRCLOC          *pLoc,
+        const
+        char            *pErrorStringA
+    );
+
+
+    ASTR_DATA *     SrcError_AStrFromPrint (
+        uint16_t        severity,
+        const
+        SRCLOC          *pLoc,
+        const
+        char            *pFormatA,
+        ...
+    );
+
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
