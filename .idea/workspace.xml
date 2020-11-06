@@ -14,7 +14,12 @@
   <component name="ChangeListManager">
     <list default="true" id="410d5303-536c-4ab3-9b37-479cce564cb9" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SqlStmt.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/SqlStmt.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ObjEnum.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/ObjEnum.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Parser.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Parser.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Parser_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Parser_internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Syms.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Syms.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Lex_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Lex_test.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xcode/testCmn/testCmn.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/xcode/testCmn/testCmn.xcodeproj/project.pbxproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,6 +93,7 @@
       <updated>1602982396097</updated>
       <workItem from="1602982397341" duration="2084000" />
       <workItem from="1603220624877" duration="4867000" />
+      <workItem from="1604624017577" duration="1028000" />
     </task>
     <servers />
   </component>

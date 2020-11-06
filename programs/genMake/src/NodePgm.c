@@ -1097,6 +1097,9 @@ extern "C" {
         AStr_AppendA(pStr, "\n\n.PHONY: test\n");
         AStr_AppendPrint(pStr, "test: $(%s)\n\n\n", Dict_GetA(pDict, testsVarID));
          
+        AStr_AppendA(pStr, "\n\n.PHONY: check\n");
+        AStr_AppendPrint(pStr, "check: $(%s)\n\n\n", Dict_GetA(pDict, testsVarID));
+         
         AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
         AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(PGMNAM) ] "
                             "&& rm -fr $(PGMNAM)\n\n\n");

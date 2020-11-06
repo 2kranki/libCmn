@@ -1005,9 +1005,12 @@ extern "C" {
                         " && rm $(LIB_FILENAME)\n");
         AStr_AppendPrint(pStr, "\tar rc $(LIB_PATH) $(%s)\n\n\n",
                          Dict_GetA(pDict, objsVarID));
-        AStr_AppendA(pStr, ".PHONY: test\n");
-        
+
+        AStr_AppendA(pStr, ".PHONY: test\n");        
         AStr_AppendPrint(pStr, "test: $(%s)\n\n\n", Dict_GetA(pDict, testsVarID));
+         
+        AStr_AppendA(pStr, ".PHONY: check\n");        
+        AStr_AppendPrint(pStr, "check: $(%s)\n\n\n", Dict_GetA(pDict, testsVarID));
          
         AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
         AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] "

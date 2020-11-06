@@ -979,6 +979,38 @@ int             ObjList_SortCompare (
     
     
     //---------------------------------------------------------------
+    //                          G e t
+    //---------------------------------------------------------------
+
+    OBJ_ID          ObjList_Get (
+        OBJLIST_DATA    *this,
+        int32_t         index                    // (relative to 1)
+    )
+    {
+        OBJ_ID          pObject = OBJ_NIL;
+        OBJLIST_RECORD  *pNode;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjList_Validate(this) ) {
+            DEBUG_BREAK();
+            return pObject;
+        }
+#endif
+
+        pNode = listdl_Index(&this->list, index);
+        if (pNode) {
+            pObject = pNode->pObject;
+        }
+
+        // Return to caller.
+        return pObject;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          H e a d
     //---------------------------------------------------------------
 
@@ -1603,6 +1635,38 @@ int             ObjList_SortCompare (
         
         
         
+    //---------------------------------------------------------------
+    //                          T o p
+    //---------------------------------------------------------------
+
+    OBJ_ID          ObjList_Top (
+        OBJLIST_DATA    *this
+    )
+    {
+        OBJ_ID          pObject = OBJ_NIL;
+        OBJLIST_RECORD  *pNode;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if( !ObjList_Validate(this) ) {
+            DEBUG_BREAK();
+            return pObject;
+        }
+    #endif
+
+        pNode = listdl_Head(&this->list);
+        if (pNode) {
+            pObject = pNode->pObject;
+        }
+        this->pCur = pNode;
+
+        // Return to caller.
+        return pObject;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

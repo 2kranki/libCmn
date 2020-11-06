@@ -293,6 +293,8 @@ int             test_NodeLib_Begin01(
     char            *pGenCheck =
     //"# Generated file - edits may be discarded!\n"
     //"# (11/30/2019  4:09:40.000)\n\n\n"
+    ".DEFAULT_GOAL := all\n"
+    "SHELL=/bin/sh\n\n"
     "LIBNAM=libCmn\n"
     "SYS=macos64\n"
     "TEMP=/tmp\n"
@@ -377,6 +379,7 @@ int             test_NodeLib_Begin01(
 
     // Compare the remainder.
     iRc = str_CompareSpcl(pChr, pGenCheck, &offset);
+    fprintf(stderr, "\toffset = %d\n", offset);
     TINYTEST_TRUE( (0 == iRc) );
 
     obj_Release(pStr);
@@ -418,6 +421,8 @@ int             test_NodeLib_Begin02(
     char            *pGenCheck =
     //"# Generated file - edits may be discarded!\n"
     //"# (11/30/2019  4:09:40.000)\n\n\n"
+    ".DEFAULT_GOAL := all\n"
+    "SHELL=/bin/sh\n\n"
     "LIBNAM=libEmu\n"
     "SYS=macos64\n"
     "TEMP=/tmp\n"
@@ -506,6 +511,7 @@ int             test_NodeLib_Begin02(
 
     // Compare the remainder.
     iRc = str_CompareSpcl(pChr, pGenCheck, &offset);
+    fprintf(stderr, "\toffset = %d\n", offset);
     TINYTEST_TRUE( (0 == iRc) );
 
     obj_Release(pStr);
@@ -546,6 +552,8 @@ int             test_NodeLib_End01(
         "\tar rc $(LIB_PATH) $(OBJS)\n\n\n"
         ".PHONY: test\n"
         "test: $(TESTS)\n\n\n"
+        ".PHONY: check\n"
+        "check: $(TESTS)\n\n\n"
         ".PHONY: clean\n"
         "clean:\n"
         "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n"
@@ -599,6 +607,7 @@ int             test_NodeLib_End01(
         fprintf(stderr, "Generated:\n%s...End of Generated\n\n", AStr_getData(pStr));
     }
     iRc = str_CompareSpcl(AStr_getData(pStr), pGenCheck, &offset);
+    fprintf(stderr, "\toffset = %d\n", offset);
     TINYTEST_TRUE( (0 == iRc) );
 
     obj_Release(pStr);

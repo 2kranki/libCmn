@@ -552,6 +552,8 @@ int             test_NodePgm_End01(
     char            *pGenCheck =
         "\n\n.PHONY: test\n"
         "test: $(TESTS)\n\n\n"
+        ".PHONY: check\n"
+        "check: $(TESTS)\n\n\n"
         ".PHONY: clean\n"
         "clean:\n"
         "\t-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n\n\n"

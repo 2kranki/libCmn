@@ -334,7 +334,7 @@ extern "C" {
     //                 S e m a n t i c  S t a c k
     //---------------------------------------------------------------
     
-    NODEARRAY_DATA * Parser_getSemanticStack (
+    OBJLIST_DATA *  Parser_getSemanticStack (
         PARSER_DATA     *this
     )
     {
@@ -354,7 +354,7 @@ extern "C" {
     
     bool            Parser_setSemanticStack (
         PARSER_DATA     *this,
-        NODEARRAY_DATA  *pValue
+        OBJLIST_DATA    *pValue
     )
     {
 #ifdef NDEBUG
@@ -420,6 +420,53 @@ extern "C" {
         this->pSrcChrLookAhead = pSrcChrLookAhead;
         this->pSrcObj = pSrcObj;
         
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //              S o u r c e  I n p u t
+    //---------------------------------------------------------------
+
+    OBJ_ID          Parser_getSourceInput (
+        PARSER_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pSrcInput;
+    }
+
+
+    bool            Parser_setSourceInput (
+        PARSER_DATA     *this,
+        OBJ_ID          pValue
+    )
+    {
+
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pSrcInput) {
+            obj_Release(this->pSrcInput);
+        }
+        this->pSrcInput = pValue;
+
         return true;
     }
 
@@ -1546,7 +1593,7 @@ extern "C" {
         }
 #endif
         if( this->pSemanticStack ) {
-            pItem = NodeArray_Get(this->pSemanticStack,index);
+            pItem = ObjList_Get(this->pSemanticStack, index);
         }
         
         // Return to caller.
@@ -1575,11 +1622,11 @@ extern "C" {
     //                      S e m  P o p
     //---------------------------------------------------------------
     
-    NODE_DATA *         Parser_SemPop(
+    OBJ_ID          Parser_SemPop(
         PARSER_DATA     *this
     )
     {
-        NODE_DATA       *pItem = OBJ_NIL;
+        OBJ_ID          pItem = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1593,11 +1640,7 @@ extern "C" {
         /* Pop 1 element from the top of the semantic stack.
          */
         if( this->pSemanticStack ) {
-            pItem = NodeArray_DeleteLast(this->pSemanticStack);
-            TRC_OBJ( this,
-                     "\tparser_SemPop:  %s\n",
-                     Node_getName(pItem)
-            );
+            pItem = ObjList_Pop(this->pSemanticStack);
         }
         
         // Return to caller.
@@ -1612,10 +1655,11 @@ extern "C" {
     
     bool            Parser_SemPush(
         PARSER_DATA     *this,
-        NODE_DATA       *pItem
+        OBJ_ID          pItem
     )
     {
         ERESULT         eRc;
+        bool            fRc = true;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1631,27 +1675,23 @@ extern "C" {
         }
         
         if (this->pSemanticStack == OBJ_NIL) {
-            this->pSemanticStack = NodeArray_New();
+            this->pSemanticStack = ObjList_New();
             if (this->pSemanticStack == OBJ_NIL) {
                 DEBUG_BREAK();
                 return false;
             }
         }
         
-        eRc = NodeArray_AppendNode(this->pSemanticStack, pItem, NULL);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            TRC_OBJ( this,
-                     "\tparse_SemPush:  %s\n",
-                     Node_getName(pItem)
-            );
-        }
+        eRc = ObjList_Push(this->pSemanticStack, pItem);
+        if (ERESULT_IS_SUCCESSFUL(eRc))
+            ;
         else {
             DEBUG_BREAK();
-            return false;
+            fRc = false;
         }
         
         // Return to caller.
-        return true;
+        return fRc;
     }
     
     
@@ -1660,11 +1700,11 @@ extern "C" {
     //                      S e m  T o p
     //---------------------------------------------------------------
     
-    NODE_DATA *     Parser_SemTop (
+    OBJ_ID          Parser_SemTop (
         PARSER_DATA     *this
     )
     {
-        NODE_DATA       *pItem = OBJ_NIL;
+        OBJ_ID          pItem = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1676,13 +1716,7 @@ extern "C" {
 #endif
 
         if( this->pSemanticStack ) {
-            pItem = NodeArray_GetLast(this->pSemanticStack);
-            if (pItem) {
-                TRC_OBJ( this,
-                         "\tparser_SemTop:  %s\n",
-                         Node_getName(pItem)
-                );
-            }
+            pItem = ObjList_Top(this->pSemanticStack);
         }
         
         // Return to caller.

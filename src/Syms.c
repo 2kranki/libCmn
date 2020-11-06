@@ -119,8 +119,9 @@ extern "C" {
 #endif
 
         // We can ignore the key since it is part of the data object.
-
-        eRc = ObjEnum_AppendObj(pEnum, pData);
+        if (pData) {
+            eRc = ObjEnum_AppendObj(pEnum, pData);
+        }
 
         // Return to caller.
         return eRc;
@@ -1109,10 +1110,12 @@ extern "C" {
                 if (ERESULT_FAILED(eRc)) {
                     break;
                 }
-                pWrk = Sym_ToDebugString(pSym, indent+4);
-                if (pWrk) {
-                    AStr_Append(pStr, pWrk);
-                    obj_Release(pWrk);
+                if (pSym) {
+                    pWrk = Sym_ToDebugString(pSym, indent+4);
+                    if (pWrk) {
+                        AStr_Append(pStr, pWrk);
+                        obj_Release(pWrk);
+                    }
                 }
             }
             obj_Release(pEnum);

@@ -708,7 +708,7 @@ extern "C" {
         }
 #endif
         if (OBJ_NIL == this->pArray)
-            return ERESULT_SUCCESS;
+            return ERESULT_OUT_OF_RANGE;
 
         if (obj_Flag(this, OBJENUM_SORTED))
             ;

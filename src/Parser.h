@@ -55,7 +55,7 @@
 #include        <Compiler.h>
 #include        <Lex.h>
 #include        <Node.h>
-#include        <NodeArray.h>
+#include        <ObjList.h>
 #include        <SrcLoc.h>
 
 
@@ -209,7 +209,7 @@ extern "C" {
     );
 
 
-    NODEARRAY_DATA * Parser_getSemanticStack(
+    OBJLIST_DATA *  Parser_getSemanticStack(
         PARSER_DATA     *this
     );
 
@@ -361,18 +361,18 @@ extern "C" {
     );
     
     
-    NODE_DATA *     Parser_SemPop(
+    OBJ_ID          Parser_SemPop(
         PARSER_DATA     *this
     );
     
     
     bool            Parser_SemPush(
         PARSER_DATA     *this,
-        NODE_DATA       *pItem
+        OBJ_ID          pItem
     );
 
     
-    NODE_DATA *     Parser_SemTop(
+    OBJ_ID          Parser_SemTop(
         PARSER_DATA     *this
     );
     

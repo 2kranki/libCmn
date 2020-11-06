@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (11/ 4/2020  5:14:40.000)
+# (11/ 6/2020 15:00:17.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -2933,6 +2933,10 @@ $(LIB_PATH):  $(OBJS)
 
 .PHONY: test
 test: $(TESTS)
+
+
+.PHONY: check
+check: $(TESTS)
 
 
 .PHONY: clean

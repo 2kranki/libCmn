@@ -294,6 +294,12 @@ extern "C" {
      );
      
      
+    OBJ_ID          ObjList_Get (
+        OBJLIST_DATA    *this,
+        int32_t         index                    // (relative to 1)
+    );
+
+
      OBJ_ID         ObjList_Head (
          OBJLIST_DATA   *this
      );
@@ -382,6 +388,11 @@ extern "C" {
     );
     
     
+    OBJ_ID          ObjList_Top (
+        OBJLIST_DATA    *this
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
