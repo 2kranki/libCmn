@@ -178,28 +178,24 @@ int         test_AStr_OpenClose(
         XCTAssertTrue( (0 == strcmp("abcdef", AStr_getData(pObj))) );
         
         eRc = AStr_CompareA(pObj, "abcdef");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         
         eRc = AStr_CompareA(pObj, "aaaaaa");
-        XCTAssertTrue( (ERESULT_SUCCESS_GREATER_THAN == eRc) );
+        XCTAssertTrue( (eRc > 0) );
         
         eRc = AStr_CompareA(pObj, "zzzzzz");
-        XCTAssertTrue( (ERESULT_SUCCESS_LESS_THAN == eRc) );
+        XCTAssertTrue( (eRc < 0) );
         
         chrW = AStr_CharGetW32( pObj, 0 );
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (-1 == chrW) );
         
         chrW = AStr_CharGetW32( pObj, 1 );
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( ('a' == chrW) );
         
         chrW = AStr_CharGetW32( pObj, 6 );
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( ('f' == chrW) );
         
         chrW = AStr_CharGetW32( pObj, 7 );
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (-1 == chrW) );
         
         eRc = AStr_Remove( pObj, 4, 2 );
@@ -591,11 +587,11 @@ int         test_AStr_CompareRight(
         //eRc = AStr_CompareRightA(pObj, NULL);
         //XCTAssertTrue( (ERESULT_FAILED(eRc)) );
         eRc = AStr_CompareRightA(pObj, "abc");
-        XCTAssertTrue( (eRc == ERESULT_SUCCESS_GREATER_THAN) );
+        XCTAssertTrue( (eRc > 0) );
         eRc = AStr_CompareRightA(pObj, "nop");
-        XCTAssertTrue( (eRc == ERESULT_SUCCESS_EQUAL) );
+        XCTAssertTrue( (eRc == 0) );
         eRc = AStr_CompareRightA(pObj, "xyz");
-        XCTAssertTrue( (eRc == ERESULT_SUCCESS_LESS_THAN) );
+        XCTAssertTrue( (eRc < 0) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -628,7 +624,7 @@ int         test_AStr_File(
     fprintf(stderr, "\tastr: \"%s\"\n", AStr_getData(pObj));
     fprintf(stderr, "\tPath: \"%s\"\n", Path_getData(pPath));
     eRc = AStr_Compare(pObj, (ASTR_DATA *)pPath);
-    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+    XCTAssertTrue( (0 == eRc) );
     obj_Release(pPath);
     pPath = OBJ_NIL;
     if (pObj) {
@@ -645,7 +641,7 @@ int         test_AStr_File(
             XCTAssertFalse( (OBJ_NIL == pOther) );
             if (pOther) {
                 eRc = AStr_Compare(pObj, pOther);
-                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+                XCTAssertTrue( (0 == eRc) );
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
@@ -915,7 +911,7 @@ int         test_AStr_Trim(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (2 == AStr_getLength(pObj)) );
         eRc = AStr_CompareA( pObj, "bb" );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         
         // Trailing spaces
         eRc = AStr_AppendA( pObj, "   " );
@@ -926,7 +922,7 @@ int         test_AStr_Trim(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (2 == AStr_getLength(pObj)) );
         eRc = AStr_CompareA( pObj, "bb" );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         
         eRc = AStr_Truncate( pObj, 0 );
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -941,7 +937,7 @@ int         test_AStr_Trim(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (2 == AStr_getLength(pObj)) );
         eRc = AStr_CompareA( pObj, "bb" );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -1229,7 +1225,7 @@ int         test_AStr_ExpandVars01(
         eRc = AStr_ExpandVars(pObj, NULL, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (len == AStr_getLength((ASTR_DATA *)pObj)) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
+        XCTAssertTrue( (0 == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
         //obj_Release(pStr);
         //pStr = NULL;
         
@@ -1272,7 +1268,7 @@ int         test_AStr_ExpandVars02(
         eRc = AStr_ExpandVars(pObj, NULL, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
+        XCTAssertTrue( (0 == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -1349,7 +1345,7 @@ int         test_AStr_SplitOn02(
         XCTAssertTrue( (1 == AStrArray_getSize(pArray)) );
         pStr = AStrArray_Get(pArray, 1);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "123")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "123")) );
 
         obj_Release(pArray);
         pArray = OBJ_NIL;
@@ -1394,19 +1390,19 @@ int         test_AStr_SplitOn03(
         XCTAssertTrue( (5 == AStrArray_getSize(pArray)) );
         pStr = AStrArray_Get(pArray, 1);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "1")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "1")) );
         pStr = AStrArray_Get(pArray, 2);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "2")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "2")) );
         pStr = AStrArray_Get(pArray, 3);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "3")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "3")) );
         pStr = AStrArray_Get(pArray, 4);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "4")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "4")) );
         pStr = AStrArray_Get(pArray, 5);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "5")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "5")) );
 
         obj_Release(pArray);
         pArray = OBJ_NIL;
@@ -1451,7 +1447,7 @@ int         test_AStr_SplitOn04(
         XCTAssertTrue( (1 == AStrArray_getSize(pArray)) );
         pStr = AStrArray_Get(pArray, 1);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "1")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "1")) );
         
         obj_Release(pArray);
         pArray = OBJ_NIL;

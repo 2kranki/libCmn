@@ -465,18 +465,18 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Number_Compare (
+    int             Number_Compare (
         NUMBER_DATA     *this,
         NUMBER_DATA     *pOther
     )
     {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             i = -1;
+#ifdef  xyzzy
         const
         char            *pStr1;
         const
@@ -487,34 +487,17 @@ extern "C" {
 #else
         if (!Number_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if (!Number_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
 
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
-
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        return i;
     }
     
    

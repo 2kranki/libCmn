@@ -110,7 +110,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  OBJENUM_SINGLETON
-    OBJENUM_DATA *     ObjEnum_Shared (
+    OBJENUM_DATA *  ObjEnum_Shared (
         void
     );
 
@@ -126,7 +126,7 @@ extern "C" {
      released.
      @return    pointer to ObjEnum object if successful, otherwise OBJ_NIL.
      */
-    OBJENUM_DATA *     ObjEnum_Alloc (
+    OBJENUM_DATA *  ObjEnum_Alloc (
         void
     );
     
@@ -136,7 +136,7 @@ extern "C" {
     );
     
     
-    OBJENUM_DATA *     ObjEnum_New (
+    OBJENUM_DATA *  ObjEnum_New (
         void
     );
     

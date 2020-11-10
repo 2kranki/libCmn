@@ -255,12 +255,11 @@ extern "C" {
 
 
     /*!
-     @result
-     ERESULT_SUCCESS_EQUAL if this == other,
-     ERESULT_SUCCESS_LESS_THAN if this < other
-     or ERESULT_SUCCESS_GREATER_THAN if this > other.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         W32StrC_Compare(
+    int             W32StrC_Compare(
         W32STRC_DATA    *this,
         W32STRC_DATA    *pOther
     );
@@ -269,12 +268,11 @@ extern "C" {
     /*!
      @param     pString
      Pointer to nul-terminated UTF-8 char string
-     @result
-     ERESULT_SUCCESS_EQUAL if this == string,
-     ERESULT_SUCCESS_LESS_THAN if this < string
-     or ERESULT_SUCCESS_GREATER_THAN if this > string.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         W32StrC_CompareA(
+    int             W32StrC_CompareA(
         W32STRC_DATA    *this,
         const
         char            *pString
@@ -284,12 +282,11 @@ extern "C" {
     /*!
      @param     pString
      Pointer to nul-terminated wide char string
-     @result
-     ERESULT_SUCCESS_EQUAL if this == string,
-     ERESULT_SUCCESS_LESS_THAN if this < string
-     or ERESULT_SUCCESS_GREATER_THAN if this > string.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         W32StrC_CompareW32(
+    int             W32StrC_CompareW32(
         W32STRC_DATA    *this,
         const
         W32CHR_T        *pString

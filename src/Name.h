@@ -290,11 +290,11 @@ extern "C" {
 
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Name_Compare (
+    int             Name_Compare (
         NAME_DATA       *this,
         NAME_DATA       *pOther
     );
@@ -302,11 +302,11 @@ extern "C" {
    
     /*!
      Compare the name to the provided string.
-     @return    ERESULT_SUCCESS_EQUAL if name == other
-                ERESULT_SUCCESS_LESS_THAN if name < other
-                ERESULT_SUCCESS_GREATER_THAN if name > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Name_CompareA (
+    int             Name_CompareA (
         NAME_DATA       *this,
         const
         char            *pOther

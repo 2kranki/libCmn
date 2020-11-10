@@ -1276,28 +1276,30 @@ Exit00:
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         Scanner_Compare (
-        SCANNER_DATA     *this,
-        SCANNER_DATA     *pOther
+    int             Scanner_Compare (
+        SCANNER_DATA    *this,
+        SCANNER_DATA    *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             iRc = 0;
 
 #ifdef NDEBUG
 #else
         if (!Scanner_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if (!Scanner_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
 
-        eRc = W32StrC_Compare((W32STRC_DATA *)this, (W32STRC_DATA *)pOther);
+        iRc = W32StrC_Compare((W32STRC_DATA *)this, (W32STRC_DATA *)pOther);
 
-        return eRc;
+        return iRc;
     }
     
    

@@ -572,17 +572,17 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
     ERESULT         SrcError_Compare (
-        SRCERROR_DATA     *this,
-        SRCERROR_DATA     *pOther
+        SRCERROR_DATA   *this,
+        SRCERROR_DATA   *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
+        int             iRc = 0;
+#ifdef  xyzzy
         const
         char            *pStr1;
         const
@@ -593,54 +593,57 @@ extern "C" {
 #else
         if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if (!SrcError_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
         if( OBJ_NIL == pOther ) {
             DEBUG_BREAK();
-            return ERESULT_SUCCESS_GREATER_THAN;
+            //return ERESULT_SUCCESS_GREATER_THAN;
+            return 1;
         }
         
         if (this->loc.fileIndex == pOther->loc.fileIndex)
             ;
         else {
             if (this->loc.fileIndex < pOther->loc.fileIndex)
-                return ERESULT_SUCCESS_LESS_THAN;
+                return -1;
             else
-                return ERESULT_SUCCESS_GREATER_THAN;
+                return 1;
         }
         if (this->loc.offset == pOther->loc.offset)
             ;
         else {
             if (this->loc.offset < pOther->loc.offset)
-                return ERESULT_SUCCESS_LESS_THAN;
+                return -1;
             else
-                return ERESULT_SUCCESS_GREATER_THAN;
+                return 1;
         }
         if (this->loc.lineNo == pOther->loc.lineNo)
             ;
         else {
             if (this->loc.lineNo < pOther->loc.lineNo)
-                return ERESULT_SUCCESS_LESS_THAN;
+                return -1;
             else
-                return ERESULT_SUCCESS_GREATER_THAN;
+                return 1;
         }
         if (this->loc.colNo == pOther->loc.colNo)
             ;
         else {
             if (this->loc.colNo < pOther->loc.colNo)
-                return ERESULT_SUCCESS_LESS_THAN;
+                return -1;
             else
-                return ERESULT_SUCCESS_GREATER_THAN;
+                return 1;
         }
-        eRc = AStr_Compare(this->pErrorStr, pOther->pErrorStr);
+        iRc = AStr_Compare(this->pErrorStr, pOther->pErrorStr);
 
 
-        return eRc;
+        return iRc;
     }
     
    

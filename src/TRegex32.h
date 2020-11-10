@@ -218,10 +218,10 @@ extern "C" {
     int             TRegex32_Match(
         TREGEX32_DATA   *this,
         const
-        W32CHR_T        *pPattern,
+        W32CHR_T        *pPattern,      // (in)
         const
-        W32CHR_T        *pText,
-        int             *pLength
+        W32CHR_T        *pText,         // (in)
+        int             *pLength        // (Out)
     );
        
     
@@ -239,7 +239,7 @@ extern "C" {
         TREGEX32_DATA   *this,
         const
         W32CHR_T        *pText,
-        int             *pLength
+        int             *pLength        // (Out)
     );
 
 

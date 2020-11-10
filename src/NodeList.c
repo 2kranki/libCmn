@@ -907,7 +907,7 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
         OBJLIST_RECORD  *pRecord;
         LISTDL_DATA *   pList;
-        ERESULT         eRc;
+        int             iRc;
 
 
         // Do initialization.
@@ -934,8 +934,8 @@ extern "C" {
 
         pRecord = listdl_Head(pList);
         while ( pRecord ) {
-            eRc = Node_CompareA(pRecord->pObject, cls, pName);
-            if (ERESULT_SUCCESS_EQUAL == eRc) {
+            iRc = Node_CompareA(pRecord->pObject, cls, pName);
+            if (0 == iRc) {
                 pNode = pRecord->pObject;
                 break;
             }

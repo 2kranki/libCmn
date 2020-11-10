@@ -192,7 +192,8 @@ extern "C" {
     
     /*!
      Compare the UTF-8 characters of src1 and src2.
-     @return    0 for (src1 == src2), < 0 for (src1 < src2) or
+     @return    0   for (src1 == src2),
+                < 0 for (src1 < src2) or
                 > 0 for (src1 > src2)
      */
     int             utf8_StrCmp(

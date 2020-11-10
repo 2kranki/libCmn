@@ -1690,12 +1690,12 @@ extern "C" {
     //                       C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         AStr_Compare(
+    int             AStr_Compare(
         ASTR_DATA		*this,
         ASTR_DATA       *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -1703,39 +1703,38 @@ extern "C" {
 #else
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if( !AStr_Validate(pOther) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
 #endif
         if( OBJ_NIL == pOther ) {
             DEBUG_BREAK();
-            return ERESULT_SUCCESS_GREATER_THAN;
+            //return ERESULT_SUCCESS_GREATER_THAN;
+            return -1;
         }
         
         i = utf8_StrCmp(
                     array_Ptr(this->pData, 1),
                     array_Ptr(pOther->pData, 1)
             );
-        if( i < 0 )
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        if( i > 0 )
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-       
+
         // Return to caller.
-        return eRc;
+        return i;
     }
     
     
-    ERESULT         AStr_CompareA(
+    int             AStr_CompareA(
         ASTR_DATA		*this,
         const
         char            *pData
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -1743,11 +1742,13 @@ extern "C" {
 #else
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if( NULL == pData ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
         
@@ -1755,23 +1756,19 @@ extern "C" {
                         array_Ptr(this->pData, 1),
                         pData
             );
-        if( i < 0 )
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        if( i > 0 )
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        
+
         // Return to caller.
-        return eRc;
+        return i;
     }
     
 
-    ERESULT         AStr_CompareLeftA(
+    int             AStr_CompareLeftA(
         ASTR_DATA       *this,
         const
         char            *pData
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         int32_t         len;
         int             lenData;
@@ -1782,38 +1779,37 @@ extern "C" {
 #else
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if( NULL == pData ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
         lenData = utf8_StrLenA(pData);
         len = AStr_getLength(this);
         if (len < lenData) {
-            return ERESULT_DATA_TOO_SMALL;
+            //return ERESULT_DATA_TOO_SMALL;
+            return -1;
         }
         
         offset = 1;
         i = utf8_StrNCmp(array_Ptr(this->pData, offset), pData, lenData);
-        if( i < 0 )
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        if( i > 0 )
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        
+
         // Return to caller.
-        return eRc;
+        return i;
     }
     
     
-    ERESULT         AStr_CompareRightA(
+    int             AStr_CompareRightA(
         ASTR_DATA		*this,
         const
         char            *pData
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         int32_t         len;
         int             lenData;
@@ -1824,38 +1820,37 @@ extern "C" {
 #else
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if( NULL == pData ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
         lenData = utf8_StrLenA(pData);
         len = AStr_getLength(this);
         if (len < lenData) {
-            return ERESULT_DATA_TOO_SMALL;
+            //return ERESULT_DATA_TOO_SMALL;
+            return -1;
         }
         
         offset = len - lenData + 1;
         i = utf8_StrCmp(array_Ptr(this->pData, offset), pData);
-        if( i < 0 )
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        if( i > 0 )
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        
+
         // Return to caller.
-        return eRc;
+        return i;
     }
     
     
-    ERESULT         AStr_CompareW32(
+    int             AStr_CompareW32(
         ASTR_DATA		*this,
         const
         W32CHR_T        *pData
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -1863,22 +1858,20 @@ extern "C" {
 #else
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if( NULL == pData ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
         
         i = utf8_StrCmpAW32(array_Ptr(this->pData, 1), pData);
-        if( i < 0 )
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        if( i > 0 )
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        
+
         // Return to caller.
-        return eRc;
+        return i;
     }
     
     

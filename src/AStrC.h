@@ -240,22 +240,22 @@ extern "C" {
      Compare 'this' to 'pOther'.
      @param     this    object pointer
      @param     pOther  Other String Object Pointer
-     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise,
-                ERESULT_SUCCESS_LESS_THAN, ERESULT_SUCCESS_GREATER_THAN or an
-                ERESULT_* error code.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         AStrC_Compare(
+    int             AStrC_Compare(
         ASTRC_DATA      *this,
         ASTRC_DATA      *pOther
     );
     
-    ERESULT         AStrC_CompareA(
+    int             AStrC_CompareA(
         ASTRC_DATA		*this,
         const
         char            *pData
     );
     
-    ERESULT         AStrC_CompareW32(
+    int             AStrC_CompareW32(
         ASTRC_DATA		*this,
         const
         W32CHR_T        *pData

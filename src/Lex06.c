@@ -416,17 +416,17 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
     ERESULT         Lex06_Compare (
         LEX06_DATA     *this,
         LEX06_DATA     *pOther
     )
     {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             iRc = 0;
 #ifdef  xyzzy        
         const
         char            *pStr1;
@@ -438,34 +438,23 @@ extern "C" {
 #else
         if (!Lex06_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if (!Lex06_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
 
 #ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
         pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
         pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
+        iRc = strcmp(pStr1, pStr2);
 #endif
 
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        return iRc;
     }
     
    

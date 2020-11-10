@@ -352,8 +352,8 @@ extern "C" {
         OBJENUM_DATA     *pOther
     )
     {
-        int             i = 0;
         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             i = 0;
 #ifdef  xyzzy        
         const
         char            *pStr1;

@@ -106,24 +106,34 @@ extern "C" {
     typedef struct    Opcode_Entry_s {
 #define OPCODE_ENTRY_NAME_MAX 9             // Name Length w/ trailing NUL
         const
-        char            Name[OPCODE_ENTRY_NAME_MAX];
+        char            NameA[OPCODE_ENTRY_NAME_MAX];
+#define OPCODE_ENTRY_DIS_MAX 16              // Disassembly String Length w/ trailing NUL
+        const
+        char            DisA[OPCODE_ENTRY_NAME_MAX];
         uint8_t         iLen;               // Full Instruction Length including operands
         uint8_t         cCode;              // Operation Code Length
 #define OPCODE_ENTRY_CCODE_MAX 8            // Entry Length w/o trailing NUL
         uint8_t         iCode[OPCODE_ENTRY_CCODE_MAX]; // Operation Code
-        uint8_t         iMask[OPCODE_ENTRY_CCODE_MAX];
+        uint8_t         iMask[OPCODE_ENTRY_CCODE_MAX]; // Operation Code Mask
+        /*
+         To detect an operation code, you must retrieve the number of bytes
+         from memory given by cCode, and it with the mask and then compare
+         it with the actual operation code.
+         */
         int16_t         iType;              //
-        uint8_t         rsvd8;
+        uint8_t         iClass;
         uint8_t         cCondCodes;         // Operation Code Length
 #define OPCODE_ENTRY_CCONDCODE_MAX 8        // Maximum number of condition codes
 #define OPCODE_ENTRY_SZCONDCODE_MAX 11      // Condition Code Length w/ trailing NUL
         const
         char            szCondCodes[OPCODE_ENTRY_CCONDCODE_MAX][OPCODE_ENTRY_SZCONDCODE_MAX];
+        uint16_t        iCondCodes;
         uint16_t        iFeatures;
 #define OPCODE_ENTRY_IFEATURES_MAX 16       // Number of Features allowed (1 per bit)
-        uint16_t        rsvd16;
         uint32_t        iInterrupts;
 #define OPCODE_ENTRY_IINTERRUPTS_MAX 32     // Number of Interrupts allowed (1 per bit)
+        uint32_t        unique;             // A unique number used as an index by other
+        //                                  // programs
     }   OPCODE_ENTRY;
 
 
@@ -192,6 +202,14 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! Property: Opcode Disassembly String
+     */
+    const
+    char *          Opcode_getDisA (
+        OPCODE_DATA     *this
+    );
+
+
     /*! Property: Raw Opcode Entry
      */
     OPCODE_ENTRY *  Opcode_getEntry (
@@ -241,6 +259,11 @@ extern "C" {
     );
 
 
+    int16_t         Opcode_getType (
+        OPCODE_DATA     *this
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Methods ***
@@ -266,12 +289,13 @@ extern "C" {
 
 
     /*!
-     Compare the two provided objects using their names only.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     Compare the two provided objects based on their
+     names.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Opcode_Compare (
+    int             Opcode_Compare (
         OPCODE_DATA     *this,
         OPCODE_DATA     *pOther
     );

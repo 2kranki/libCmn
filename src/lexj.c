@@ -1178,6 +1178,13 @@ extern "C" {
                     TRC_OBJ(this, "\tseperator: :\n");
                     break;
                     
+                case '=':           /*** '=' ***/
+                    newCls = LEXJ_SEP_EQUAL;
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    fMore = false;
+                    TRC_OBJ(this, "\tseperator: :\n");
+                    break;
+
                 case '[':           /*** '[' ***/
                     newCls = LEXJ_SEP_LBRACKET;
                     Lex_InputAdvance((LEX_DATA *)this, 1);

@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include        <Opcode_internal.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
@@ -136,6 +137,51 @@ extern "C" {
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //           D i s a s s e m b l y  S t r i n g
+    //---------------------------------------------------------------
+
+    const
+    char *          Opcode_getDisA (
+        OPCODE_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Opcode_getEntry(this)->DisA;
+    }
+
+
+    bool            Opcode_setDisA (
+        OPCODE_DATA     *this,
+        const
+        char            *pValue
+    )
+    {
+
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        str_Copy((char *)Opcode_getEntry(this)->DisA, OPCODE_ENTRY_DIS_MAX, pValue);
+
+        return true;
+    }
+
+
 
     //---------------------------------------------------------------
     //                        E n t r y
@@ -265,7 +311,7 @@ extern "C" {
         }
 #endif
 
-        return Opcode_getEntry(this)->Name;
+        return Opcode_getEntry(this)->NameA;
     }
 
 
@@ -284,7 +330,7 @@ extern "C" {
         }
 #endif
 
-        str_Copy((char *)Opcode_getEntry(this)->Name, OPCODE_ENTRY_NAME_MAX, pValue);
+        str_Copy((char *)Opcode_getEntry(this)->NameA, OPCODE_ENTRY_NAME_MAX, pValue);
 
         return true;
     }
@@ -496,40 +542,35 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Opcode_Compare (
+    int             Opcode_Compare (
         OPCODE_DATA     *this,
         OPCODE_DATA     *pOther
     )
     {
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-        
+
 #ifdef NDEBUG
 #else
         if (!Opcode_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if (!Opcode_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
 
-        i = strcmp(this->entry.Name, pOther->entry.Name);
+        i = utf8_StrCmp(this->entry.NameA, pOther->entry.NameA);
         
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        return i;
     }
     
    
@@ -1084,7 +1125,8 @@ extern "C" {
         }
 
         eRc = AStr_AppendA(pStr, "\t{\n");
-        eRc = AStr_AppendPrint(pStr, "\t\t\"%s\",\n", this->entry.Name);
+        eRc = AStr_AppendPrint(pStr, "\t\t\"%s\",\n", this->entry.NameA);
+        eRc = AStr_AppendPrint(pStr, "\t\t\"%s\",\n", this->entry.DisA);
         eRc = AStr_AppendPrint(pStr, "\t\t%d,\n", this->entry.iLen);
         eRc = AStr_AppendPrint(pStr, "\t\t%d,\n", this->entry.cCode);
         eRc = AStr_AppendA(pStr, "\t\t{");
@@ -1179,7 +1221,8 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-        eRc = AStr_AppendPrint(pStr, "\tname=%s\n", this->entry.Name);
+        eRc = AStr_AppendPrint(pStr, "\tname=%s\n", this->entry.NameA);
+        eRc = AStr_AppendPrint(pStr, "\tdis=%s\n", this->entry.DisA);
         eRc = AStr_AppendPrint(pStr, "\tcCode=%d\n", this->entry.cCode);
         eRc = AStr_AppendA(pStr, "\tiCode=[");
         for (i=0; i<this->entry.cCode; i++) {

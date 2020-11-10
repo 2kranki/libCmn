@@ -176,7 +176,7 @@ extern "C" {
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        ASTR_DATA   *pObject = OBJ_NIL;
+        ASTR_DATA       *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);

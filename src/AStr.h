@@ -446,11 +446,11 @@ extern "C" {
      Compare 'this' to 'pOther'.
      @param     this    object pointer
      @param     pOther  Other String Object Pointer
-     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise,
-                ERESULT_SUCCESS_LESS_THAN, ERESULT_SUCCESS_GREATER_THAN or an
-                ERESULT_* error code.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         AStr_Compare(
+    int             AStr_Compare(
         ASTR_DATA		*this,
         ASTR_DATA       *pOther
     );
@@ -460,11 +460,11 @@ extern "C" {
      Compare 'this' to 'pOther'.
      @param     this    object pointer
      @param     pOther  UTF-8 Ascii String Pointer
-     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise,
-                ERESULT_SUCCESS_LESS_THAN, ERESULT_SUCCESS_GREATER_THAN or an
-                ERESULT_* error code.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         AStr_CompareA(
+    int             AStr_CompareA(
         ASTR_DATA		*this,
         const
         char            *pOther
@@ -475,11 +475,11 @@ extern "C" {
      Compare the given string against 'this' from the left hand side of the string
      (ie compare the leading part of the string)
      @param     this    object pointer
-     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise,
-                ERESULT_SUCCESS_LESS_THAN, ERESULT_SUCCESS_GREATER_THAN or an
-                ERESULT_* error code.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         AStr_CompareLeftA(
+    int             AStr_CompareLeftA(
         ASTR_DATA        *this,
         const
         char            *pOther
@@ -490,18 +490,18 @@ extern "C" {
      Compare the given string against 'this' from the right hand side of the string
      (ie compare the trailing part of the string)
      @param     this    object pointer
-     @return    If str == const, ERESULT_SUCCESS_EQUAL. Otherwise,
-                ERESULT_SUCCESS_LESS_THAN, ERESULT_SUCCESS_GREATER_THAN or an
-                ERESULT_* error code.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         AStr_CompareRightA(
+    int             AStr_CompareRightA(
         ASTR_DATA		*this,
         const
         char            *pOther
     );
     
     
-    ERESULT         AStr_CompareW32(
+    int             AStr_CompareW32(
         ASTR_DATA		*this,
         const
         W32CHR_T        *pOther

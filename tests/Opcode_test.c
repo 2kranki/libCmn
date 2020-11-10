@@ -136,7 +136,7 @@ int             test_Opcode_Copy01 (
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_OPCODE);
         TINYTEST_TRUE( (fRc) );
-        str_Copy((char *)pObj1->entry.Name, OPCODE_ENTRY_NAME_MAX, "ch");
+        str_Copy((char *)pObj1->entry.NameA, OPCODE_ENTRY_NAME_MAX, "ch");
         pObj1->entry.cCode = 1;
         pObj1->entry.iCode[0] = 73;
         pObj1->entry.iMask[0] = 255;
@@ -158,7 +158,7 @@ int             test_Opcode_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_OPCODE);
         TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (0 == strcmp(pObj2->entry.Name, "ch")) );
+        TINYTEST_TRUE( (0 == strcmp(pObj2->entry.NameA, "ch")) );
         TINYTEST_TRUE( (1 == pObj2->entry.cCode) );
         TINYTEST_TRUE( (73 == pObj2->entry.iCode[0]) );
         TINYTEST_TRUE( (255 == pObj2->entry.iMask[0]) );
@@ -180,7 +180,7 @@ int             test_Opcode_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_OPCODE);
         TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (0 == strcmp(pObj2->entry.Name, "ch")) );
+        TINYTEST_TRUE( (0 == strcmp(pObj2->entry.NameA, "ch")) );
         TINYTEST_TRUE( (1 == pObj2->entry.cCode) );
         TINYTEST_TRUE( (73 == pObj2->entry.iCode[0]) );
         TINYTEST_TRUE( (255 == pObj2->entry.iMask[0]) );
@@ -206,7 +206,7 @@ int             test_Opcode_Copy01 (
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        TINYTEST_TRUE( (0 == strcmp(pObj2->entry.Name, "ch")) );
+        TINYTEST_TRUE( (0 == strcmp(pObj2->entry.NameA, "ch")) );
         TINYTEST_TRUE( (1 == pObj2->entry.cCode) );
         TINYTEST_TRUE( (73 == pObj2->entry.iCode[0]) );
         TINYTEST_TRUE( (255 == pObj2->entry.iMask[0]) );
@@ -273,6 +273,7 @@ int             test_Opcode_JsonIn01 (
     char            *pJsonText = "{\n"
                                     "\tobjectType:\"Opcode\","
                                     "\tName:\"ch\",\n"
+                                    "\tDis:\"ch %r,%m\",\n"
                                     "\tcCode:1,\n"
                                     "\tiCode:[73],\n"
                                     "\tiMask:[255],\n"
@@ -281,6 +282,7 @@ int             test_Opcode_JsonIn01 (
                                     "\tiFeatures:128,\n"
                                     "\tcCondCodes:4,\n"
                                     "\tszCondCodes:[\"eq\",\"lt\",\"gt\",\"-\"],\n"
+                                    "\tiCondCodes:0,\n"
                                     "\tiInterrupts:48,\n"
                                 "}\n";
     ASTR_DATA       *pWrk;
@@ -294,7 +296,7 @@ int             test_Opcode_JsonIn01 (
         //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_OPCODE);
         TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (0 == strcmp(pObj->entry.Name, "ch")) );
+        TINYTEST_TRUE( (0 == strcmp(pObj->entry.NameA, "ch")) );
         TINYTEST_TRUE( (1 == pObj->entry.cCode) );
         TINYTEST_TRUE( (73 == pObj->entry.iCode[0]) );
         TINYTEST_TRUE( (255 == pObj->entry.iMask[0]) );

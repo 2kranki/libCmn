@@ -198,32 +198,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                  N o d e  C o m p a r e
-    //---------------------------------------------------------------
-
-    int             NodeBT_NodeCmp(
-        void            *pKeyA,
-        void            *pKeyB
-    )
-    {
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        NODE_DATA       *pNodeA = pKeyA;
-        NODE_DATA       *pNodeB = pKeyB;
-
-        eRc = Node_Compare(pNodeA, pNodeB);
-        if (eRc == ERESULT_SUCCESS_EQUAL) {
-            return 0;
-        }
-        else if (eRc == ERESULT_SUCCESS_LESS_THAN) {
-            return -1;
-        }
-
-        return 1;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                  N o d e s  E x i t
     //---------------------------------------------------------------
 
@@ -1409,7 +1383,7 @@ extern "C" {
         // Set up Red-Black tree to use Blocks to hold its data.
         rbt_Init(
                  &this->tree,
-                 (void *)NodeBT_NodeCmp,
+                 (void *)Node_Compare,
                  (sizeof(NODEBT_RECORD) - sizeof(RBT_NODE)),
                  (void *)Blocks_RecordNew,
                  (void *)Blocks_RecordFree,

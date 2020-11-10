@@ -69,7 +69,7 @@ OBJLIST_RECORD * ObjList_FindObj (
 )
 {
     OBJLIST_RECORD  *pObjInt;
-    ERESULT         eRc;
+    int             iRc;
     P_OBJ_COMPARE   pCompare = obj_getVtbl(pObj)->pCompare;
 
     if (pCompare == NULL) {
@@ -78,8 +78,8 @@ OBJLIST_RECORD * ObjList_FindObj (
     
     pObjInt = listdl_Head(&this->list);
     while ( pObjInt ) {
-        eRc = pCompare(pObj, pObjInt->pObject);
-        if (ERESULT_SUCCESS_GREATER_THAN == eRc)
+        iRc = pCompare(pObj, pObjInt->pObject);
+        if (iRc > 0)
             ;
         else {
             // pObj <= the current entry
@@ -100,19 +100,12 @@ int             ObjList_SortCompare (
 )
 {
     int             iRc;
-    ERESULT         eRc;
     P_OBJ_COMPARE   pCompare = obj_getVtbl(pNode1)->pCompare;
     
     if (NULL == pCompare)
         return -1;
-    eRc = pCompare(pNode1, pNode2);
-    if (ERESULT_SUCCESS_EQUAL == eRc)
-        iRc = 0;
-    else if (ERESULT_SUCCESS_LESS_THAN == eRc)
-        iRc = -1;
-    else
-        iRc = 1;
-    
+    iRc = pCompare(pNode1, pNode2);
+
     // Return to caller.
     return iRc;
 }

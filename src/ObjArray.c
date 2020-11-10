@@ -1403,6 +1403,7 @@ extern "C" {
         uint32_t        j;
         //OBJ_ID          pSave;
         OBJ_IUNKNOWN    *pUnk;
+        int             iRc;
         
         /*      Insertion Sort from Wikipedia
          *
@@ -1454,8 +1455,8 @@ extern "C" {
                 pObj1 = pEntry->pObj;
                 ++pEntry;
                 pObj2 = pEntry->pObj;
-                eRc = (*pCompare)(pObj1, pObj2);
-                if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
+                iRc = (*pCompare)(pObj1, pObj2);
+                if (iRc > 0) {
                     pEntry->pObj = pObj1;
                     --pEntry;
                     pEntry->pObj = pObj2;

@@ -104,6 +104,18 @@ extern "C" {
             exit(EXIT_FAILURE);
         }
         Opcode_setNameA(pObject, AStr_getData(pWrk));
+        eRc = JsonIn_FindStringNodeInHashA(pParser, "Dis", &pWrk);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Failed to find Dis!\n\n\n");
+            exit(EXIT_FAILURE);
+        }
+        if (AStr_getLength(pWrk) > OPCODE_ENTRY_DIS_MAX-1) {
+            DEBUG_BREAK();
+            fprintf(stderr, "FATAL - Dis was too big!\n\n\n");
+            exit(EXIT_FAILURE);
+        }
+        Opcode_setDisA(pObject, AStr_getData(pWrk));
         (void)JsonIn_FindU8NodeInHashA(pParser, "cCode", &pObject->entry.cCode);
         if (pObject->entry.cCode) {
             eRc = JsonIn_FindArrayNodeInHashA(pParser, "iCode", &pArray);
@@ -216,7 +228,9 @@ extern "C" {
                 }
             }
         }
-        // The optional iInterrupts can be integer or array of descriptions.
+        eRc = JsonIn_FindU16NodeInHashA(pParser, "iCondCodes",
+                                        &pObject->entry.iCondCodes);
+        // The optional iInterrupts can be an integer or an array of descriptions.
         if (pObject->pInterruptValue) {
             eRc = JsonIn_FindArrayNodeInHashA(pParser, "iInterrupts", &pArray);
             if (ERESULT_FAILED(eRc)) {
@@ -240,6 +254,7 @@ extern "C" {
             eRc = JsonIn_FindU32NodeInHashA(pParser, "iInterrupts",
                                                         &pObject->entry.iInterrupts);
         }
+        eRc = JsonIn_FindU32NodeInHashA(pParser, "unique", &pObject->entry.unique);
 
         // Return to caller.
     exit00:
@@ -415,7 +430,8 @@ extern "C" {
         char            *pDesc;
         uint32_t        i;
 
-        AStr_AppendPrint(pStr, "\tName:\"%s\",\n", this->entry.Name);
+        AStr_AppendPrint(pStr, "\tName:\"%s\",\n", this->entry.NameA);
+        AStr_AppendPrint(pStr, "\tDis:\"%s\",\n", this->entry.DisA);
         JsonOut_Append_u8("cCode", this->entry.cCode, pStr);
         JsonOut_Append_u8_array("iCode", this->entry.cCode, this->entry.iCode, pStr);
         JsonOut_Append_u8_array("iMask", this->entry.cCode, this->entry.iMask, pStr);
@@ -437,6 +453,7 @@ extern "C" {
             AStr_AppendPrint(pStr, "\t\t\"%s\"\n", this->entry.szCondCodes[i]);
             AStr_AppendA(pStr, "\t],\n");
         }
+        JsonOut_Append_i16("iCondCodes", this->entry.iCondCodes, pStr);
         if (this->entry.iFeatures) {
             if (this->pFeatureDesc) {
                 AStr_AppendA(pStr, "\tiFeatures:[\n");
@@ -471,6 +488,7 @@ extern "C" {
                 JsonOut_Append_u32("iInterrupts", this->entry.iInterrupts, pStr);
             }
         }
+        JsonOut_Append_u32("unique", this->entry.unique, pStr);
 
         return ERESULT_SUCCESS;
     }

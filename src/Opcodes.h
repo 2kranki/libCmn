@@ -7,10 +7,10 @@
  * Program
  *			Universal Opcode Table (Opcodes)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate Opcodes to run things without complications
- *          of interfering with the main Opcodes. A Opcodes may be 
- *          called a Opcodes on other O/S's.
+ *			It is the goal of this opcode table to provide all the
+ *          information needed for assemblers, disassemblers, and
+ *          emulators. Each of these applications need the opcodes
+ *          indexed differently.
  *
  * Remarks
  *	1.      None
@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <ObjArray.h>
 #include        <ObjEnum.h>
 #include        <Opcode.h>
 
@@ -113,7 +114,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  OPCODES_SINGLETON
-    OPCODES_DATA *     Opcodes_Shared (
+    OPCODES_DATA *  Opcodes_Shared (
         void
     );
 
@@ -160,6 +161,11 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    OBJARRAY_DATA * Opcodes_getArray (
+        OPCODES_DATA    *this
+    );
+
 
     uint32_t        Opcodes_getSize (
         OPCODES_DATA    *this
@@ -264,8 +270,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Opcodes_VerifyTree (
-        OPCODES_DATA        *this
+    ERESULT        Opcodes_VerifyTree (
+        OPCODES_DATA    *this
     );
 
 

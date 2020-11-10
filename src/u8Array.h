@@ -200,6 +200,33 @@ extern "C" {
     );
     
     
+    /*!
+     Append the given data to the end of the array breaking it up
+     into multiple bytes using the Endian Property Setting. 
+     @return    If successful, ERESULT_SUCCESS, otherwise an 
+                ERESULT_* error.
+     */
+    ERESULT         u8Array_AppendU8(
+        U8ARRAY_DATA	*this,
+        uint8_t         data
+    );
+    
+    ERESULT         u8Array_AppendU16(
+        U8ARRAY_DATA	*this,
+        uint16_t        data
+    );
+    
+    ERESULT         u8Array_AppendU24(
+        U8ARRAY_DATA	*this,
+        uint32_t        data
+    );
+    
+    ERESULT         u8Array_AppendU32(
+        U8ARRAY_DATA	*this,
+        uint32_t        data
+    );
+    
+    
     ERESULT         u8Array_Assign(
         U8ARRAY_DATA	*this,
         U8ARRAY_DATA	*pOther

@@ -381,7 +381,8 @@ extern "C" {
         return ERESULT_SUCCESS;
     }
     
-    
+
+
     ERESULT         u8Array_AppendFile(
         U8ARRAY_DATA	*this,
         PATH_DATA       *pPath
@@ -425,7 +426,160 @@ extern "C" {
     
     
     
-
+    ERESULT         u8Array_AppendU8(
+        U8ARRAY_DATA	*this,
+        uint8_t         data
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        offset;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        offset = array_getSize(this->pData);
+        eRc =   array_AppendData(
+                        this->pData,
+                        1,
+                        &data
+                );
+        if (ERESULT_HAS_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eRc;
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         u8Array_AppendU16(
+        U8ARRAY_DATA    *this,
+        const
+        uint16_t        data
+    )
+    {
+        ERESULT         eRc;
+        uint8_t         chr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (obj_Flag(this, U8ARRAY_FLAG_BIGENDIAN)) {
+            chr = (data >> 8) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = data & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+        }
+        else {
+            chr = data & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = (data >> 8) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         u8Array_AppendU24(
+        U8ARRAY_DATA    *this,
+        const
+        uint32_t        data
+    )
+    {
+        ERESULT         eRc;
+        uint8_t         chr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (obj_Flag(this, U8ARRAY_FLAG_BIGENDIAN)) {
+            chr = (data >> 16) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = (data >> 8) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = data & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+        }
+        else {
+            chr = data & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = (data >> 8) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = (data >> 16) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    ERESULT         u8Array_AppendU32(
+        U8ARRAY_DATA    *this,
+        const
+        uint32_t        data
+    )
+    {
+        ERESULT         eRc;
+        uint8_t         chr;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (obj_Flag(this, U8ARRAY_FLAG_BIGENDIAN)) {
+            chr = (data >> 24) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = (data >> 16) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = (data >> 8) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = data & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+        }
+        else {
+            chr = data & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = (data >> 8) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = (data >> 16) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+            chr = (data >> 24) & 0xFF;
+            eRc = u8Array_AppendData(this, chr);
+        }
+        
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+    
+    
+    
     //---------------------------------------------------------------
     //                         A s s i g n
     //---------------------------------------------------------------

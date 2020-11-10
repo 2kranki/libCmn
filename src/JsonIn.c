@@ -235,7 +235,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = Node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "array"))) {
+        if (!(0 == Name_CompareA(pName, "array"))) {
             return OBJ_NIL;
         }
 
@@ -265,7 +265,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = Node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "false"))) {
+        if (!(0 == Name_CompareA(pName, "false"))) {
             return OBJ_NIL;
         }
 
@@ -296,7 +296,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = Node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "float"))) {
+        if (!(0 == Name_CompareA(pName, "float"))) {
             return OBJ_NIL;
         }
 
@@ -326,7 +326,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = Node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))) {
+        if (!(0 == Name_CompareA(pName, "hash"))) {
             return OBJ_NIL;
         }
 
@@ -356,7 +356,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = Node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))) {
+        if (!(0 == Name_CompareA(pName, "integer"))) {
             return OBJ_NIL;
         }
 
@@ -386,7 +386,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = Node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "null"))) {
+        if (!(0 == Name_CompareA(pName, "null"))) {
             return OBJ_NIL;
         }
 
@@ -416,7 +416,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = Node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "string"))) {
+        if (!(0 == Name_CompareA(pName, "string"))) {
             return OBJ_NIL;
         }
 
@@ -447,7 +447,7 @@ extern "C" {
             return OBJ_NIL;
         }
         pName = Node_getName(pObj);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "true"))) {
+        if (!(0 == Name_CompareA(pName, "true"))) {
             return OBJ_NIL;
         }
 
@@ -473,7 +473,7 @@ extern "C" {
         }
 
         pName = Node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "array"))) {
+        if (!(0 == Name_CompareA(pName, "array"))) {
             return OBJ_NIL;
         }
 
@@ -498,7 +498,7 @@ extern "C" {
         }
 
         pName = Node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "false"))) {
+        if (!(0 == Name_CompareA(pName, "false"))) {
             return OBJ_NIL;
         }
 
@@ -524,7 +524,7 @@ extern "C" {
         }
 
         pName = Node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "float"))) {
+        if (!(0 == Name_CompareA(pName, "float"))) {
             return OBJ_NIL;
         }
 
@@ -549,7 +549,7 @@ extern "C" {
         }
 
         pName = Node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))) {
+        if (!(0 == Name_CompareA(pName, "hash"))) {
             return OBJ_NIL;
         }
         pHash = Node_getData(pNode);
@@ -574,7 +574,7 @@ extern "C" {
         }
 
         pName = Node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))) {
+        if (!(0 == Name_CompareA(pName, "integer"))) {
             return OBJ_NIL;
         }
 
@@ -599,7 +599,7 @@ extern "C" {
         }
 
         pName = Node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "null"))) {
+        if (!(0 == Name_CompareA(pName, "null"))) {
             return OBJ_NIL;
         }
 
@@ -624,7 +624,7 @@ extern "C" {
         }
 
         pName = Node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "string"))) {
+        if (!(0 == Name_CompareA(pName, "string"))) {
             return OBJ_NIL;
         }
 
@@ -650,7 +650,7 @@ extern "C" {
         }
 
         pName = Node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "true"))) {
+        if (!(0 == Name_CompareA(pName, "true"))) {
             return OBJ_NIL;
         }
 
@@ -1778,8 +1778,8 @@ extern "C" {
             eRc = ERESULT_DATA_NOT_FOUND;
             goto eom;
         }
-        eRc = AStr_CompareA(pData,"I32Array");
-        if (eRc != ERESULT_SUCCESS_EQUAL) {
+        eRc = AStr_CompareA(pData, "I32Array");
+        if (eRc != 0) {
             eRc = ERESULT_DATA_NOT_FOUND;
             goto eom;
         }
@@ -1814,7 +1814,7 @@ extern "C" {
                     goto eom;
                 }
                 pName = Node_getName(pNode);
-                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))
+                if (0 == Name_CompareA(pName, "integer"))
                     ;
                 else {
                     eRc = ERESULT_DATA_NOT_FOUND;

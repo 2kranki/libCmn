@@ -119,6 +119,13 @@ struct Opcode_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            Opcode_setDisA (
+        OPCODE_DATA     *this,
+        const
+        char            *pValue
+    );
+
+
     bool            Opcode_setEntry (
         OPCODE_DATA     *this,
         OPCODE_ENTRY    *pEntry
@@ -134,6 +141,12 @@ struct Opcode_data_s	{
 
     OBJ_IUNKNOWN *  Opcode_getSuperVtbl (
         OPCODE_DATA     *this
+    );
+
+
+    bool            Opcode_setType (
+        OPCODE_DATA     *this,
+        int16_t         value
     );
 
 

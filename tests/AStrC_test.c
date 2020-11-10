@@ -389,7 +389,7 @@ int         test_AStrC_Prepend(
         XCTAssertFalse( (OBJ_NIL == pObj2) );
         fprintf(stderr, "obj2 -> %s\n", AStrC_getData(pObj2));
         eRc = AStrC_CompareA(pObj2, "xyzisa");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         chrW32 = AStrC_CharGetFirstW32(pObj2);
         XCTAssertTrue( ('x' == chrW32) );
         chrW32 = AStrC_CharGetLastW32(pObj2);

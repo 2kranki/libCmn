@@ -71,7 +71,7 @@ struct Opcodes_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    SZBT_DATA       *pTree;
+    OBJARRAY_DATA   *pArray;
 
 };
 #pragma pack(pop)

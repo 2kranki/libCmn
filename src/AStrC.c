@@ -633,7 +633,7 @@ extern "C" {
     //                       C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         AStrC_Compare(
+    int             AStrC_Compare(
         ASTRC_DATA      *this,
         ASTRC_DATA      *pOther
     )
@@ -672,13 +672,13 @@ extern "C" {
     }
     
     
-    ERESULT         AStrC_CompareA(
+    int             AStrC_CompareA(
         ASTRC_DATA		*this,
         const
         char            *pData
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -686,11 +686,13 @@ extern "C" {
 #else
         if( !AStrC_Validate( this ) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if( NULL == pData ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
         
@@ -698,23 +700,19 @@ extern "C" {
                 this->pData,
                 pData
             );
-        if( i < 0 )
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        if( i > 0 )
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        
+
         // Return to caller.
-        return eRc;
+        return i;
     }
     
     
-    ERESULT         AStrC_CompareW32(
+    int             AStrC_CompareW32(
         ASTRC_DATA		*this,
         const
         W32CHR_T        *pData
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -722,11 +720,13 @@ extern "C" {
 #else
         if( !AStrC_Validate( this ) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if( NULL == pData ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
         
@@ -734,13 +734,9 @@ extern "C" {
                 this->pData,
                 pData
             );
-        if( i < 0 )
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        if( i > 0 )
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        
+
         // Return to caller.
-        return eRc;
+        return i;
     }
     
     

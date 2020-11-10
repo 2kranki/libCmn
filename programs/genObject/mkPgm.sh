@@ -251,7 +251,7 @@ main( ) {
 
     doCmd "genMake program.json.txt"
     doCmd "make -f Makefile.${osType}.txt all"
-    if doCmd "make -f Makefile.${osType}.txt test"; then
+    if doCmd "make -f Makefile.${osType}.txt check"; then
         doCmd "make -f Makefile.${osType}.txt install"
     fi
     

@@ -101,7 +101,6 @@ extern "C" {
         ERESULT_SUCCESS_UNEQUAL             = 4,    // Returned if we can not determine
         //                                          // a < or > relationship
         ERESULT_SUCCESS_GREATER_THAN        = 3,
-        ERESULT_SUCCESS_EQUAL               = 2,
         ERESULT_SUCCESS_LESS_THAN           = 1,
         
         ERESULT_TRUE                        = 1,
@@ -109,6 +108,7 @@ extern "C" {
         ERESULT_SUCCESS_FALSE               = 0,
         ERESULT_FALSE                       = 0,
         ERESULT_SUCCESS                     = 0,
+        ERESULT_SUCCESS_EQUAL               = 0,
         ERESULT_SUCCESSFUL_COMPLETION       = 0,
 
         ERESULT_FAILURE                     = -1,

@@ -451,16 +451,16 @@ extern "C" {
 
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Node_Compare (
+    int             Node_Compare (
         NODE_DATA       *this,
         NODE_DATA       *pOther
     );
 
-    ERESULT         Node_CompareA(
+    int             Node_CompareA(
         NODE_DATA       *this,
         int32_t         cls,
         const

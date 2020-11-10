@@ -594,7 +594,11 @@ extern "C" {
         OBJ_IDENT_PRS_ENTRIES=OBJ_IDENT_OS_ENTRIES+128,             //  64 Objects
         OBJ_IDENT_PIC32_ENTRIES=OBJ_IDENT_PRS_ENTRIES+128,          //  64 Objects
         OBJ_IDENT_TBL_ENTRIES=OBJ_IDENT_PIC32_ENTRIES+32,           //  16 Objects
-        OBJ_IDENT_VID_ENTRIES=OBJ_IDENT_TBL_ENTRIES+32,             //  32 Objects
+        OBJ_IDENT_VID_ENTRIES=OBJ_IDENT_TBL_ENTRIES+32,             //  16 Objects
+        OBJ_IDENT_ASM_ENTRIES=OBJ_IDENT_VID_ENTRIES+64,             //  32 Objects
+        OBJ_IDENT_LNK_ENTRIES=OBJ_IDENT_ASM_ENTRIES+64,             //  32 Objects
+        OBJ_IDENT_360_ENTRIES=OBJ_IDENT_LNK_ENTRIES+64,             //  32 Objects
+        OBJ_IDENT_8085_ENTRIES=OBJ_IDENT_360_ENTRIES+64,            //  32 Objects
         OBJ_IDENT_USER_ENTRIES=16384
     } OBJ_IDENTS;
 #endif

@@ -640,17 +640,17 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Name_Compare (
-        NAME_DATA     *this,
-        NAME_DATA     *pOther
+    int             Name_Compare (
+        NAME_DATA       *this,
+        NAME_DATA       *pOther
     )
     {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             i = -1;
         const
         char            *pStr1;
         const
@@ -660,11 +660,13 @@ extern "C" {
 #else
         if (!Name_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if (!Name_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
 
@@ -685,14 +687,14 @@ extern "C" {
 
             case NAME_TYPE_ASTR:
                 if (pOther->type == NAME_TYPE_ASTR) {
-                    eRc = AStr_Compare(this->pObj, pOther->pObj);
-                    return eRc;
+                    i = AStr_Compare(this->pObj, pOther->pObj);
+                } else {
+                    pStr1 = Name_getUTF8(this);
+                    pStr2 = Name_getUTF8(pOther);
+                    i = utf8_StrCmp(pStr1, pStr2);
+                    mem_Free((void *)pStr1);
+                    mem_Free((void *)pStr2);
                 }
-                pStr1 = Name_getUTF8(this);
-                pStr2 = Name_getUTF8(pOther);
-                i = utf8_StrCmp(pStr1, pStr2);
-                mem_Free((void *)pStr1);
-                mem_Free((void *)pStr2);
                 break;
 
             case NAME_TYPE_UTF8:
@@ -706,28 +708,23 @@ extern "C" {
                     break;
                 }
                 else if (pOther->type == NAME_TYPE_ASTR) {
-                    eRc = AStr_Compare(this->pObj, pOther->pObj);
-                    return eRc;
+                    i = AStr_Compare(this->pObj, pOther->pObj);
                 }
-                pStr2 = Name_getUTF8(pOther);
-                i = utf8_StrCmp(this->pChrs, pStr2);
-                mem_Free((void *)pStr2);
+                else {
+                    pStr2 = Name_getUTF8(pOther);
+                    i = utf8_StrCmp(this->pChrs, pStr2);
+                    mem_Free((void *)pStr2);
+                }
                 break;
 
             default:
                 DEBUG_BREAK();
-                return ERESULT_GENERAL_FAILURE;
+                //return ERESULT_GENERAL_FAILURE;
+                return -1;
 
         }
 
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        return i;
     }
     
    

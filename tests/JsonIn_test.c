@@ -201,7 +201,7 @@ int             test_JsonIn_01(
             pNode = NodeArray_Get(pArray, i+1);
             TINYTEST_FALSE( (OBJ_NIL == pNode) );
             pName = Node_getName(pNode);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash")));
+            TINYTEST_TRUE((0 == Name_CompareA(pName, "hash")));
             pHash = Node_getData(pNode);
             TINYTEST_FALSE( (OBJ_NIL == pHash) );
             TINYTEST_TRUE(( obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH) ));
@@ -302,7 +302,7 @@ int             test_JsonIn_Float01(
         pStrWrk = JsonIn_CheckNodeDataForFloat(pNode);
         TINYTEST_FALSE( (OBJ_NIL == pStrWrk) );
         fprintf(stderr, "\tData = %s\n", AStr_getData(pStrWrk));
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStrWrk, "3.141600E+00")));
+        TINYTEST_TRUE((0 == AStr_CompareA(pStrWrk, "3.141600E+00")));
 
         obj_Release(pStr);
         pStr = OBJ_NIL;

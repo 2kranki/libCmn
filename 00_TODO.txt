@@ -3,6 +3,9 @@
 The following are things that are being thought about. Whether they get done or not
 will depend upon time and resources.
 
+-- grep -rn --include="*.c" "ERESULT_SUCCESS_GREATER_THAN" .
+-- grep -rn --include="*.c" "ERESULT_SUCCESS_LESS_THAN" .
+
 -- Finish SQLite interface.
 
 -- Convert python RPG object to C

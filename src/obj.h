@@ -98,7 +98,10 @@ extern	"C" {
     typedef struct obj_data_s   OBJ_DATA;   /* One Interface */
 
     typedef ERESULT     (*P_OBJ_ASSIGN)(OBJ_ID, OBJ_ID);
-    typedef ERESULT     (*P_OBJ_COMPARE)(OBJ_ID, OBJ_ID);
+    typedef int         (*P_OBJ_COMPARE)(OBJ_ID, OBJ_ID);
+    // @return    0 if this == other
+    //           <0 if this < other
+    //           >0 if this > other
     typedef ERESULT     (*P_OBJ_EXEC)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_COPY)(OBJ_ID);
     typedef OBJ_ID      (*P_OBJ_DEEPCOPY)(OBJ_ID);
@@ -226,7 +229,7 @@ extern	"C" {
         //          ERESULT_SUCCESS_LESS_THAN        1st <  2nd
         //          ERESULT_SUCCESS_EQUAL            1st == 2nd
         //          ERESULT_SUCCESS_GREATER_THAN     1st >  2nd
-        ERESULT     (*pCompare)(OBJ_ID, OBJ_ID); // P_OBJ_COMPARE
+        int         (*pCompare)(OBJ_ID, OBJ_ID); // P_OBJ_COMPARE
         // Creates a new copy of the object. If the object is
         // immmutable (ie can not be changed) then it just returns
         // a retained self. Objects within this object will simply

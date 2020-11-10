@@ -1292,14 +1292,13 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         NodeLink_Compare (
-        NODELINK_DATA     *this,
-        NODELINK_DATA     *pOther
+    int             NodeLink_Compare (
+        NODELINK_DATA   *this,
+        NODELINK_DATA   *pOther
     )
     {
-        //int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
+        int             iRc = 0;
+#ifdef  xyzzy
         const
         char            *pStr1;
         const
@@ -1310,17 +1309,19 @@ extern "C" {
 #else
         if (!NodeLink_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if (!NodeLink_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
 
-        eRc = Node_Compare((NODE_DATA *)this, (NODE_DATA *)pOther);
+        iRc = Node_Compare((NODE_DATA *)this, (NODE_DATA *)pOther);
 
-        return eRc;
+        return iRc;
     }
     
    

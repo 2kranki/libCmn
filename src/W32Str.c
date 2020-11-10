@@ -210,37 +210,35 @@ extern "C" {
     
     
     
-    ERESULT         W32Str_Cmp(
+    int             W32Str_Cmp(
         const
         W32CHR_T        *pStr1,
         const
         W32CHR_T        *pStr2
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-        int             i;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             i = 0;
         
         for( ;; ) {
             if( *pStr1 )
                 ;
             else {
                 if( *pStr2 )
-                    eRc = ERESULT_SUCCESS_LESS_THAN;
+                    //eRc = ERESULT_SUCCESS_LESS_THAN;
+                    i = -1;
                 break;
             }
             if( *pStr2 )
                 ;
             else {
                 if( *pStr1 )
-                    eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    //eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    i = 1;
                 break;
             }
             i = *pStr1 - *pStr2;
             if( i ) {
-                if( i < 0 )
-                    eRc = ERESULT_SUCCESS_LESS_THAN;
-                else
-                    eRc = ERESULT_SUCCESS_GREATER_THAN;
                 break;
             }
             ++pStr1;
@@ -249,7 +247,7 @@ extern "C" {
         
         
         // Return to caller.
-        return eRc;
+        return i;
     }
     
     
@@ -1134,57 +1132,62 @@ extern "C" {
     //                       C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         W32Str_Compare(
+    int             W32Str_Compare(
         W32STR_DATA		*cbp,
-        W32STR_DATA       *pOther
+        W32STR_DATA     *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             i;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !W32Str_Validate( cbp ) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if( !W32Str_Validate( pOther ) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
 #endif
         if( OBJ_NIL == pOther ) {
             DEBUG_BREAK();
-            return ERESULT_SUCCESS_GREATER_THAN;
+            //return ERESULT_SUCCESS_GREATER_THAN;
+            return 1;
         }
 
-        eRc = W32Str_CompareW32(cbp, array_Ptr((ARRAY_DATA *)pOther,1));
+        i = W32Str_CompareW32(cbp, array_Ptr((ARRAY_DATA *)pOther,1));
         
         // Return to caller.
-        return eRc;
+        return i;
     }
     
     
-    ERESULT         W32Str_CompareA(
+    int             W32Str_CompareA(
         W32STR_DATA		*this,
         const
         char            *pString
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         uint32_t        str1len;
         const
         W32CHR_T        *pStr1;
         uint32_t        str2len;
         W32CHR_T        chr2;
-        int             i;
+        int             i = -1;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !W32Str_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
 #endif
         
@@ -1197,28 +1200,30 @@ extern "C" {
             str2len = (uint32_t)utf8_StrLenA(pString);
         }
         
+        if ((0 == str1len) && (0 == str2len)) {
+            return 0;
+        }
+
         for( ;; ) {
             chr2 = utf8_Utf8ToW32_Scan(&pString);
             if( *pStr1 )
                 ;
             else {
                 if( chr2 )
-                    eRc = ERESULT_SUCCESS_LESS_THAN;
+                    //eRc = ERESULT_SUCCESS_LESS_THAN;
+                    i = -1;
                 break;
             }
             if( chr2 )
                 ;
             else {
                 if( *pStr1 )
-                    eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    //eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    i = 1;
                 break;
             }
             i = *pStr1 - chr2;
             if( i ) {
-                if( i < 0 )
-                    eRc = ERESULT_SUCCESS_LESS_THAN;
-                else
-                    eRc = ERESULT_SUCCESS_GREATER_THAN;
                 break;
             }
             ++pStr1;
@@ -1226,31 +1231,32 @@ extern "C" {
         
         
         // Return to caller.
-        return eRc;
+        return i;
     }
     
     
-    ERESULT         W32Str_CompareW32(
+    int             W32Str_CompareW32(
         W32STR_DATA		*this,
         const
         W32CHR_T        *pString
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         uint32_t        str1len;
         const
         W32CHR_T        *pStr1;
         uint32_t        str2len;
         const
         W32CHR_T        *pStr2;
-        int             i;
+        int             i = -1;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !W32Str_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
 #endif
         
@@ -1266,36 +1272,28 @@ extern "C" {
         }
         
         if ((0 == str1len) && (0 == str2len)) {
-            return ERESULT_SUCCESS;
+            return 0;
         }
-        if ((0 == str1len) && (0 < str2len)) {
-            return ERESULT_SUCCESS_LESS_THAN;
-        }
-        if ((0 < str1len) && (0 == str2len)) {
-            return ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
+
         for( ;; ) {
             if( *pStr1 )
                 ;
             else {
                 if( *pStr2 )
-                    eRc = ERESULT_SUCCESS_LESS_THAN;
+                    //eRc = ERESULT_SUCCESS_LESS_THAN;
+                    i = -1;
                 break;
             }
             if( *pStr2 )
                 ;
             else {
                 if( *pStr1 )
-                    eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    //eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    i = 1;
                 break;
             }
             i = *pStr1 - *pStr2;
             if( i ) {
-                if( i < 0 )
-                    eRc = ERESULT_SUCCESS_LESS_THAN;
-                else
-                    eRc = ERESULT_SUCCESS_GREATER_THAN;
                 break;
             }
             ++pStr1;
@@ -1304,7 +1302,7 @@ extern "C" {
         
         
         // Return to caller.
-        return eRc;
+        return i;
     }
     
     

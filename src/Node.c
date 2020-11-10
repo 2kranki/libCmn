@@ -85,16 +85,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            Node_task_body (
-        void            *pData
-    )
-    {
-        //NODE_DATA  *this = pData;
-        
-    }
-#endif
 
 
 
@@ -1131,19 +1121,13 @@ extern "C" {
     //                      C o m p a r e
     //---------------------------------------------------------------
     
-    /*!
-     Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
-     */
-    ERESULT         Node_Compare (
-        NODE_DATA     *this,
-        NODE_DATA     *pOther
+    int             Node_Compare (
+        NODE_DATA       *this,
+        NODE_DATA       *pOther
     )
     {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             i = -1;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
 #ifdef  xyzzy        
         const
         char            *pStr1;
@@ -1155,76 +1139,66 @@ extern "C" {
 #else
         if (!Node_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
         }
         if (!Node_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
         }
 #endif
 
         i = Node_getClass((NODE_DATA *)this) - Node_getClass((NODE_DATA *)pOther);
         if (0 == i) {
-            eRc =   Name_Compare(
+            i =   Name_Compare(
                             Node_getName((NODE_DATA *)this),
                             Node_getName((NODE_DATA *)pOther)
                     );
-            return eRc;
+            return i;
         }
 
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        return i;
     }
     
    
-     ERESULT         Node_CompareA(
-         NODE_DATA       *this,
-         int32_t         cls,
+     int            Node_CompareA(
+         NODE_DATA      *this,
+         int32_t        cls,
          const
-         char            *pName
+         char           *pName
      )
      {
-         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+         //ERESULT        eRc = ERESULT_SUCCESS_EQUAL;
+         int            i = -1;
 
          // Do initialization.
  #ifdef NDEBUG
  #else
          if( !Node_Validate( this ) ) {
              DEBUG_BREAK();
-             return ERESULT_INVALID_OBJECT;
+             //return ERESULT_INVALID_OBJECT;
+             return -1;
          }
          if (NULL == pName) {
              DEBUG_BREAK();
-             return ERESULT_INVALID_PARAMETER;
+             //return ERESULT_INVALID_PARAMETER;
+             return -1;
          }
  #endif
 
          if (0 == cls) {
-             eRc = Name_CompareA(this->pName, pName);
+             i = Name_CompareA(this->pName, pName);
          }
          else {
-             int         iRc;
-             iRc = Node_getClass(this) - cls;
-             if (0 == iRc) {
-                 eRc = Name_CompareA(this->pName, pName);
-                 return eRc;
-             }
-             if (iRc < 0) {
-                 eRc = ERESULT_SUCCESS_GREATER_THAN;
-             }
-             else {
-                 eRc = ERESULT_SUCCESS_LESS_THAN;
+             i = Node_getClass(this) - cls;
+             if (0 == i) {
+                 i = Name_CompareA(this->pName, pName);
              }
 
          }
 
-         return eRc;
+         return i;
      }
 
 
