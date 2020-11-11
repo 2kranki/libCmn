@@ -148,7 +148,7 @@ int             test_W32StrC_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_W32STRC);
         TINYTEST_TRUE( (fRc) );
         eRc = W32StrC_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -160,7 +160,7 @@ int             test_W32StrC_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_W32STRC);
         TINYTEST_TRUE( (fRc) );
         eRc = W32StrC_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -179,7 +179,7 @@ int             test_W32StrC_Copy01 (
         TINYTEST_FALSE( (NULL == pObj2->pArray) );
         TINYTEST_TRUE( (pObj1->len == pObj2->len) );
         eRc = W32StrC_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -284,14 +284,14 @@ int         test_W32StrC_NewW(
         //fprintf(stderr, "len=%d\n",len);
         XCTAssertTrue( (3 == len) );
         pStr = W32StrC_getData(pObj);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32StrC_CompareW32(pObj, L"abc")) );
+        XCTAssertTrue( (0 == W32StrC_CompareW32(pObj, L"abc")) );
         pCopy = W32StrC_Copy(pObj);
         XCTAssertTrue( (pCopy == pObj) );
         XCTAssertTrue( (2 == obj_getRetainCount(pObj)) );
         len = W32StrC_getLength(pCopy);
         XCTAssertTrue( (3 == len) );
         pStr = W32StrC_getData(pCopy);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32StrC_CompareW32(pObj, L"abc")) );
+        XCTAssertTrue( (0 == W32StrC_CompareW32(pObj, L"abc")) );
         obj_Release(pCopy);
         pCopy = OBJ_NIL;
         obj_Release(pObj);
@@ -324,14 +324,14 @@ int         test_W32StrC_NewConW(
         //fprintf(stderr, "len=%d\n",len);
         XCTAssertTrue( (3 == len) );
         pStr = W32StrC_getData(pObj);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32StrC_CompareW32(pObj,L"abc")) );
+        XCTAssertTrue( (0 == W32StrC_CompareW32(pObj,L"abc")) );
         pCopy = W32StrC_Copy(pObj);
         XCTAssertTrue( (pCopy == pObj) );
         XCTAssertTrue( (2 == obj_getRetainCount(pObj)) );
         len = W32StrC_getLength(pCopy);
         XCTAssertTrue( (3 == len) );
         pStr = W32StrC_getData(pCopy);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32StrC_CompareW32(pObj,L"abc")) );
+        XCTAssertTrue( (0 == W32StrC_CompareW32(pObj,L"abc")) );
         obj_Release(pCopy);
         pCopy = OBJ_NIL;
         obj_Release(pObj);
@@ -364,14 +364,14 @@ int         test_W32StrC_Mid(
         //fprintf(stderr, "len=%d\n",len);
         XCTAssertTrue( (6 == len) );
         pStr = W32StrC_getData(pObj);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32StrC_CompareW32(pObj,L"abcdef")) );
+        XCTAssertTrue( (0 == W32StrC_CompareW32(pObj,L"abcdef")) );
 
         pCopy = W32StrC_Mid(pObj, 1, 6);
         XCTAssertTrue( (pCopy != pObj) );
         len = W32StrC_getLength(pCopy);
         XCTAssertTrue( (6 == len) );
         pStr = W32StrC_getData(pCopy);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32StrC_CompareW32(pCopy,L"abcdef")) );
+        XCTAssertTrue( (0 == W32StrC_CompareW32(pCopy,L"abcdef")) );
         obj_Release(pCopy);
         pCopy = OBJ_NIL;
 
@@ -380,7 +380,7 @@ int         test_W32StrC_Mid(
         len = W32StrC_getLength(pCopy);
         XCTAssertTrue( (4 == len) );
         pStr = W32StrC_getData(pCopy);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32StrC_CompareW32(pCopy,L"cdef")) );
+        XCTAssertTrue( (0 == W32StrC_CompareW32(pCopy,L"cdef")) );
         obj_Release(pCopy);
         pCopy = OBJ_NIL;
 
@@ -389,19 +389,19 @@ int         test_W32StrC_Mid(
         len = W32StrC_getLength(pCopy);
         XCTAssertTrue( (1 == len) );
         pStr = W32StrC_getData(pCopy);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32StrC_CompareW32(pCopy,L"f")) );
+        XCTAssertTrue( (0 == W32StrC_CompareW32(pCopy,L"f")) );
         obj_Release(pCopy);
         pCopy = OBJ_NIL;
 
         pCopy = W32StrC_Left(pObj, 3);
         XCTAssertFalse( (pCopy == OBJ_NIL) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32StrC_CompareA(pCopy,"abc")) );
+        XCTAssertTrue( (0 == W32StrC_CompareA(pCopy,"abc")) );
         obj_Release(pCopy);
         pCopy = OBJ_NIL;
 
         pCopy = W32StrC_Right(pObj, 3);
         XCTAssertFalse( (pCopy == OBJ_NIL) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == W32StrC_CompareA(pCopy,"def")) );
+        XCTAssertTrue( (0 == W32StrC_CompareA(pCopy,"def")) );
         obj_Release(pCopy);
         pCopy = OBJ_NIL;
 

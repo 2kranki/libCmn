@@ -158,7 +158,7 @@ int             test_Lex01_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_LEX01);
         TINYTEST_TRUE( (fRc) );
         //eRc = Lex01_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -171,7 +171,7 @@ int             test_Lex01_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_LEX01);
         TINYTEST_TRUE( (fRc) );
         //eRc = Lex01_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -189,7 +189,7 @@ int             test_Lex01_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         //eRc = Lex01_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;

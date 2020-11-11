@@ -545,12 +545,12 @@ extern "C" {
         if (!BitMatrix_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if (!BitMatrix_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
 

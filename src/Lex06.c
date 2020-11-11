@@ -420,43 +420,37 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    ERESULT         Lex06_Compare (
-        LEX06_DATA     *this,
-        LEX06_DATA     *pOther
+    int             Lex06_Compare (
+        LEX06_DATA      *this,
+        LEX06_DATA      *pOther
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int             iRc = 0;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+
 #ifdef NDEBUG
 #else
         if (!Lex06_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if (!Lex06_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
 
-#ifdef  xyzzy        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        iRc = strcmp(pStr1, pStr2);
+#ifdef  xyzzy
+        if (this->token == pOther->token) {
+            return iRc;
+        }
+        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
 #endif
 
         return iRc;
     }
-    
+
    
  
     //---------------------------------------------------------------

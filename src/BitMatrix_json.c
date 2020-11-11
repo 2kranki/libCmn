@@ -185,7 +185,7 @@ extern "C" {
                     goto exit00;
                 }
                 pName = Node_getName(pNode);
-                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer")) {
+                if (0 == Name_CompareA(pName, "integer")) {
                     pStr = Node_getData(pNode);
                     iWrk = AStr_ToUint64(pStr);
                     pObject->pElems[i] = (uint32_t)iWrk;

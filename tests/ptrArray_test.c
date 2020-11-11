@@ -87,7 +87,7 @@ int         tearDown(
 
 
 
-ERESULT     compareStrings(
+int    	compareStrings(
     const
     char        *pStr1,
     const
@@ -95,13 +95,7 @@ ERESULT     compareStrings(
 )
 {
     int         cmp = strcmp(pStr1, pStr2);
-    if (cmp < 0) {
-        return ERESULT_SUCCESS_LESS_THAN;
-    }
-    if (cmp > 0) {
-        return ERESULT_SUCCESS_GREATER_THAN;
-    }
-    return ERESULT_SUCCESS_EQUAL;
+    return cmp;
 }
 
 

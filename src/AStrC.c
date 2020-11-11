@@ -638,37 +638,34 @@ extern "C" {
         ASTRC_DATA      *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-        int32_t         i;
+        int32_t         iRc = 0;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
         if( !AStrC_Validate( this ) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if( !AStrC_Validate( pOther ) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
 #endif
         if( OBJ_NIL == pOther ) {
             DEBUG_BREAK();
-            return ERESULT_SUCCESS_GREATER_THAN;
+            return 1;
         }
         
-        i = utf8_StrCmp(
+        iRc = utf8_StrCmp(
                         this->pData,
                         pOther->pData
-            );
-        if( i < 0 )
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        if( i > 0 )
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        
+              );
+
         // Return to caller.
-        return eRc;
+        return iRc;
     }
     
     
@@ -678,7 +675,6 @@ extern "C" {
         char            *pData
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -687,12 +683,12 @@ extern "C" {
         if( !AStrC_Validate( this ) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if( NULL == pData ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
         
@@ -712,7 +708,6 @@ extern "C" {
         W32CHR_T        *pData
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -721,12 +716,12 @@ extern "C" {
         if( !AStrC_Validate( this ) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if( NULL == pData ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
         

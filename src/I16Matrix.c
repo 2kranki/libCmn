@@ -654,9 +654,8 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                1  if this != other
      */
     ERESULT         I16Matrix_Compare (
         I16MATRIX_DATA  *this,
@@ -664,7 +663,6 @@ extern "C" {
     )
     {
         int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int16_t         *pValue1;
         int16_t         *pValue2;
 
@@ -672,24 +670,26 @@ extern "C" {
 #else
         if (!I16Matrix_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!I16Matrix_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
         if ((this->m == pOther->m) && (this->n == pOther->n))
             ;
         else {
-            return ERESULT_SUCCESS_UNEQUAL;
+            return 1;
         }
         fprintf(stderr, "\t(m,n) are OK\n");
         if (this->cElems == pOther->cElems)
             ;
         else {
-            return ERESULT_SUCCESS_UNEQUAL;
+            return 1;
         }
         fprintf(stderr, "\tcElems are OK\n");
 
@@ -701,15 +701,15 @@ extern "C" {
                     ;
                 else {
                     fprintf(stderr, "\tElem(%d) %d != %d\n", i, *pValue1, *pValue2);
-                    return ERESULT_SUCCESS_UNEQUAL;
+                    return 1;
                 }
             } else {
                 fprintf(stderr, "\tElem(%d) %p ? %p\n", i, pValue1, pValue2);
-                return ERESULT_SUCCESS_UNEQUAL;
+                return 1;
             }
         }
 
-        return eRc;
+        return 0;
     }
     
    

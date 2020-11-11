@@ -1340,33 +1340,28 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Value_Compare (
+    int             Value_Compare (
         VALUE_DATA     *this,
         VALUE_DATA     *pOther
     )
     {
         int             iRc = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+
 #ifdef NDEBUG
 #else
         if (!Value_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!Value_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
@@ -1412,8 +1407,8 @@ extern "C" {
                 if (this->value.pObject) {
                     if (obj_getVtbl(this->value.pObject)->pCompare
                         && obj_getVtbl(pOther->value.pObject)->pCompare) {
-                        eRc = obj_getVtbl(this->value.pObject)->pCompare(this, pOther);
-                        return eRc;
+                        iRc = obj_getVtbl(this->value.pObject)->pCompare(this, pOther);
+                        return iRc;
                     }
                 }
                 break;
@@ -1436,13 +1431,13 @@ extern "C" {
 
         
         if (iRc < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
+            iRc = -1;
         }
         if (iRc > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
+            iRc = 1;
         }
         
-        return eRc;
+        return iRc;
     }
     
    

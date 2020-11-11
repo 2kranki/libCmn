@@ -72,7 +72,7 @@ extern "C" {
 
     typedef struct ptrArray_data_s	PTRARRAY_DATA;
 
-    typedef ERESULT         (*PTR_COMPARE)(void *p0, void *p1);
+    typedef int             (*PTR_COMPARE)(void *p0, void *p1);
     
     typedef struct ptrArray_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.

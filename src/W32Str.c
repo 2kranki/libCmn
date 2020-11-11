@@ -244,7 +244,10 @@ extern "C" {
             ++pStr1;
             ++pStr2;
         }
-        
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
         
         // Return to caller.
         return i;
@@ -1146,12 +1149,12 @@ extern "C" {
         if( !W32Str_Validate( cbp ) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if( !W32Str_Validate( pOther ) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
 #endif
         if( OBJ_NIL == pOther ) {
@@ -1187,7 +1190,7 @@ extern "C" {
         if( !W32Str_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
 #endif
         
@@ -1228,7 +1231,10 @@ extern "C" {
             }
             ++pStr1;
         }
-        
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
         
         // Return to caller.
         return i;
@@ -1256,7 +1262,7 @@ extern "C" {
         if( !W32Str_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
 #endif
         
@@ -1299,8 +1305,11 @@ extern "C" {
             ++pStr1;
             ++pStr2;
         }
-        
-        
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
+
         // Return to caller.
         return i;
     }

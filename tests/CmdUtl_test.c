@@ -181,7 +181,7 @@ int             test_CmdUtl_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_CMDUTL);
         TINYTEST_TRUE( (fRc) );
         //eRc = CmdUtl_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -210,7 +210,7 @@ int             test_CmdUtl_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         //eRc = CmdUtl_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -277,23 +277,23 @@ int         test_CmdUtl_CommandString01(
 
         pStr = AStrArray_Get(pArray, 1);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "")) );
 
         pStr = AStrArray_Get(pArray, 2);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "a")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "a")) );
 
         pStr = AStrArray_Get(pArray, 3);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "b")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "b")) );
 
         pStr = AStrArray_Get(pArray, 4);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "--c")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "--c")) );
 
         pStr = AStrArray_Get(pArray, 5);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "d")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "d")) );
 
         obj_Release(pArray);
         pArray = OBJ_NIL;
@@ -316,23 +316,23 @@ int         test_CmdUtl_CommandString01(
         }
         pStr = AStrArray_Get(pArray, 1);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "")) );
 
         pStr = AStrArray_Get(pArray, 2);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "--define")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "--define")) );
 
         pStr = AStrArray_Get(pArray, 3);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "xx=")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "xx=")) );
 
         pStr = AStrArray_Get(pArray, 4);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "yy yy")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "yy yy")) );
 
         pStr = AStrArray_Get(pArray, 5);
         XCTAssertFalse( (OBJ_NIL == pStr) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "abc")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "abc")) );
 
         obj_Release(pArray);
         pArray = OBJ_NIL;

@@ -309,7 +309,7 @@ int         test_NodeList_AddFindDelete02(
             pNode = NodeList_Index(pList, i+1);
             pNode2 = NodeArray_Get(pArray, i+1);
             eRc = Node_Compare(pNode, pNode2);
-            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+            XCTAssertTrue( (0 == eRc) );
         }
         obj_Release(pArray);
         pArray = OBJ_NIL;

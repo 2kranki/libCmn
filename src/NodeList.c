@@ -560,58 +560,41 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         NodeList_Compare (
-        NODELIST_DATA     *this,
-        NODELIST_DATA     *pOther
+    int             NodeList_Compare (
+        NODELIST_DATA   *this,
+        NODELIST_DATA   *pOther
     )
     {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+        int             iRc = 0;
+
 #ifdef NDEBUG
 #else
         if (!NodeList_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!NodeList_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
-#ifdef  xyzzy        
+#ifdef  xyzzy
         if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
+            return iRc;
         }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
+        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
 #endif
 
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        return iRc;
     }
-    
+
    
  
     //---------------------------------------------------------------
@@ -1402,8 +1385,8 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
     bool            NodeList_Validate (
         NODELIST_DATA      *this
     )
@@ -1435,7 +1418,7 @@ extern "C" {
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     

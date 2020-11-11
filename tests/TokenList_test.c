@@ -185,7 +185,7 @@ int         test_TokenList_AddHead01(
             XCTAssertTrue( (cnt == (i+1)) );
             pToken2 = TokenList_Head(pList);
             eRc = Token_Compare(pToken, pToken2);
-            XCTAssertTrue( (eRc == ERESULT_SUCCESS_EQUAL) );
+            XCTAssertTrue( (eRc == 0) );
             obj_Release(pToken);
             pToken = OBJ_NIL;
         }
@@ -231,7 +231,7 @@ int         test_TokenList_AddTail01(
             XCTAssertTrue( (cnt == (i+1)) );
             pToken2 = TokenList_Tail(pList);
             eRc = Token_Compare(pToken, pToken2);
-            XCTAssertTrue( (eRc == ERESULT_SUCCESS_EQUAL) );
+            XCTAssertTrue( (eRc == 0) );
             obj_Release(pToken);
             pToken = OBJ_NIL;
         }

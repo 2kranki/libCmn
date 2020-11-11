@@ -220,7 +220,7 @@ int             test_ObjCb_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_OBJCB);
         TINYTEST_TRUE( (fRc) );
         //eRc = ObjCb_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -233,7 +233,7 @@ int             test_ObjCb_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_OBJCB);
         TINYTEST_TRUE( (fRc) );
         //eRc = ObjCb_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -251,7 +251,7 @@ int             test_ObjCb_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         //eRc = ObjCb_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -334,7 +334,7 @@ int         test_ObjCb_CounterOverflow(
     for (i=0; i<8; ++i) {
         fRc = ObjCb_Get(cbp, (void *)&pName);
         XCTAssertTrue( (fRc) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName,StrArray[i])) );
+        XCTAssertTrue( (0 == Name_CompareA(pName,StrArray[i])) );
         obj_Release(pName);
     }
 

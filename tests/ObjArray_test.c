@@ -201,7 +201,7 @@ int         test_ObjArray_Test01(
             ASTRC_DATA      *pStr2 = ObjArray_Get(pObj2, i+1);
             XCTAssertFalse( (OBJ_NIL == pStr1) );
             XCTAssertFalse( (OBJ_NIL == pStr2) );
-            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStrC_Compare(pStr1, pStr2)) );
+            XCTAssertTrue( (0 == AStrC_Compare(pStr1, pStr2)) );
         }
         
         pStr = ObjArray_ToDebugString(pObj2, 0);
@@ -328,7 +328,7 @@ int         test_ObjArray_Test02(
             ASTR_DATA       *pStr2 = ObjArray_Get(pObj2, i+1);
             XCTAssertFalse( (OBJ_NIL == pStr1) );
             XCTAssertFalse( (OBJ_NIL == pStr2) );
-            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_Compare(pStr1, pStr2)) );
+            XCTAssertTrue( (0 == AStr_Compare(pStr1, pStr2)) );
         }
 
         pStr = ObjArray_ToDebugString(pObj2, 0);
@@ -464,7 +464,7 @@ int         test_ObjArray_Json01(
         for (i=0; i<iMax; i++) {
             ASTR_DATA       *pStr1 = ObjArray_Get(pObj, i+1);
             ASTR_DATA       *pStr2 = ObjArray_Get(pObj2, i+1);
-            TINYTEST_TRUE( (AStr_Compare(pStr1, pStr2) == ERESULT_SUCCESS_EQUAL) );
+            TINYTEST_TRUE( (AStr_Compare(pStr1, pStr2) == 0) );
         }
 
         obj_Release(pObj2);

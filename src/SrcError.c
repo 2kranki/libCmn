@@ -594,17 +594,17 @@ extern "C" {
         if (!SrcError_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if (!SrcError_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
         if( OBJ_NIL == pOther ) {
             DEBUG_BREAK();
-            //return ERESULT_SUCCESS_GREATER_THAN;
+            //return ERESULT_INVALID_PARAMETER;
             return 1;
         }
         

@@ -464,7 +464,7 @@ int         test_Appl_Parse01(
     TINYTEST_TRUE( (cArgs1 == i) );
     for (i=0; i<cArgs1; i++) {
         eRc = AStrC_CompareA(AStrCArray_Get(pArgV, i+1), ppArgs1[i]);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
     }
 
     obj_Release(pArgV);
@@ -515,7 +515,7 @@ int         test_Appl_Parse02(
     TINYTEST_TRUE( (cArgs1 == i) );
     for (i=0; i<cArgs1; i++) {
         eRc = AStrC_CompareA(AStrCArray_Get(pArgV, i+1), ppArgs1[i]);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
     }
 
     obj_Release(pArgV);

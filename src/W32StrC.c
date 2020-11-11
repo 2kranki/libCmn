@@ -591,12 +591,12 @@ extern "C" {
         if (!W32StrC_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if (!W32StrC_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
 
@@ -624,12 +624,12 @@ extern "C" {
         if( !W32StrC_Validate( this ) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if (NULL == pString) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
 
@@ -658,7 +658,10 @@ extern "C" {
             }
             ++pStr1;
         }
-
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
 
         // Return to caller.
         return i;

@@ -134,7 +134,7 @@ int             test_NodeLink_Test01 (
         TINYTEST_TRUE( (fRc) );
 
         eRc = NodeLink_CompareA(pLink1, 'A', "abc");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         NodeLink_setLeftLink(pLink1, 1);
         NodeLink_setRightLink(pLink1, 2);

@@ -626,10 +626,10 @@ extern "C" {
         PTR_COMPARE     pCompare
     )
     {
-        ERESULT         eRc;
         uint32_t        i;
         uint32_t        j;
         void            *pSave;
+        int             iRc;
         
         /*  Insertion Sort from Wikipedia
          *
@@ -658,8 +658,8 @@ extern "C" {
         for (i=1; i<this->size; ++i) {
             j = i;
             while (j > 0) {
-                eRc = (*pCompare)(this->ppArray[j-1], this->ppArray[j]);
-                if (ERESULT_SUCCESS_GREATER_THAN == eRc) {
+                iRc = (*pCompare)(this->ppArray[j-1], this->ppArray[j]);
+                if (iRc > 0) {
                     pSave = this->ppArray[j-1];
                     this->ppArray[j-1] = this->ppArray[j];
                     this->ppArray[j] = pSave;

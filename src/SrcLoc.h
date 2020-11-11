@@ -193,8 +193,8 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     @result    ERESULT_SUCCESS_EQUAL if this == other or
-                ERESULT_SUCCESS_UNEQUAL
+     @result    0 if this == other
+                1 if this != other
      */
     ERESULT         SrcLoc_Compare(
         SRCLOC_DATA		*this,

@@ -334,7 +334,7 @@ extern "C" {
     //                       C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         SrcLoc_Compare(
+    int             SrcLoc_Compare(
         SRCLOC_DATA		*this,
         SRCLOC_DATA     *pOther
     )
@@ -345,42 +345,44 @@ extern "C" {
 #else
         if( !SrcLoc_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if( !SrcLoc_Validate(pOther) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
 #endif
         
         if( OBJ_NIL == pOther ) {
             DEBUG_BREAK();
-            return ERESULT_SUCCESS_UNEQUAL;
+            return 1;
         }
                 
         if (this->pData->fileIndex == pOther->pData->fileIndex) {
             ;
         }
         else {
-            return ERESULT_SUCCESS_UNEQUAL;
+            return 1;
         }
         
         if (this->pData->lineNo == pOther->pData->lineNo) {
             ;
         }
         else {
-            return ERESULT_SUCCESS_UNEQUAL;
+            return 1;
         }
         
         if (this->pData->colNo == pOther->pData->colNo) {
             ;
         }
         else {
-            return ERESULT_SUCCESS_UNEQUAL;
+            return 1;
         }
         
         // Return to caller.
-        return ERESULT_SUCCESS_EQUAL;
+        return 0;
     }
     
     

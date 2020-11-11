@@ -512,7 +512,7 @@ int             test_TextIn_GetLine04(
         eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pLine) );
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pLine, "abc")) );
+        TINYTEST_TRUE( (0 == AStr_CompareA(pLine, "abc")) );
         obj_Release(pLine);
         pLine = OBJ_NIL;
 
@@ -526,7 +526,7 @@ int             test_TextIn_GetLine04(
         eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_FALSE( (OBJ_NIL == pLine) );
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pLine, "def")) );
+        TINYTEST_TRUE( (0 == AStr_CompareA(pLine, "def")) );
         obj_Release(pLine);
         pLine = OBJ_NIL;
 
@@ -579,7 +579,7 @@ int             test_TextIn_GetLine05(
                 break;
             }
             TINYTEST_FALSE( (OBJ_NIL == pLine) );
-            //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pLine, "abc")) );
+            //TINYTEST_TRUE( (0 == AStr_CompareA(pLine, "abc")) );
             cnt++;
             obj_Release(pLine);
             pLine = OBJ_NIL;
@@ -636,7 +636,7 @@ int             test_TextIn_GetLine06(
                 break;
             }
             TINYTEST_FALSE( (OBJ_NIL == pLine) );
-            //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pLine, "abc")) );
+            //TINYTEST_TRUE( (0 == AStr_CompareA(pLine, "abc")) );
             cnt++;
             obj_Release(pLine);
             pLine = OBJ_NIL;

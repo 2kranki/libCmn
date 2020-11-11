@@ -161,7 +161,7 @@ int         test_w32str_OpenClose(
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         
         eRc = W32Str_CompareA( pObj, "axc" );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         
         eRc = W32Str_IsOnlyASCII(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -205,7 +205,7 @@ int         test_w32str_Span(
         XCTAssertTrue( (12 == W32Str_getLength(pObj)) );
         
         eRc = W32Str_CompareA( pObj, "xABCyDEFzGHI" );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         
         eRc = W32Str_IndexUntil(pObj, scanStr, &index);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -265,10 +265,10 @@ int         test_w32str_AssignCopy(
         XCTAssertFalse( (OBJ_NIL == pObj) );
         
         eRc = W32Str_CompareA( pObj, "abcdefghi" );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         
         eRc = W32Str_Compare( pOther, pObj );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         
         eRc = W32Str_IsOnlyASCII(pObj);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );

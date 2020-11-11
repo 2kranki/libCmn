@@ -1288,9 +1288,9 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
     int             NodeLink_Compare (
         NODELINK_DATA   *this,
@@ -1310,12 +1310,12 @@ extern "C" {
         if (!NodeLink_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if (!NodeLink_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
 
@@ -1325,14 +1325,14 @@ extern "C" {
     }
     
    
-     ERESULT         NodeLink_CompareA(
+    int             NodeLink_CompareA(
          NODELINK_DATA   *this,
          int32_t         cls,
          const
          char            *pNameA
      )
      {
-         ERESULT         eRc;
+         int             iRc = 0;
 
          // Validate the input parameters.
  #ifdef NDEBUG
@@ -1343,9 +1343,9 @@ extern "C" {
          }
  #endif
 
-         eRc = Node_CompareA((NODE_DATA *)this, cls, pNameA);
+         iRc = Node_CompareA((NODE_DATA *)this, cls, pNameA);
 
-         return eRc;
+         return iRc;
      }
 
 

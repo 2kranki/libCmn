@@ -1180,18 +1180,17 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         DateTime_Compare (
+    int             DateTime_Compare (
         DATETIME_DATA   *this,
         DATETIME_DATA   *pOther
     )
     {
         int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
+#ifdef  xyzzy
         const
         char            *pStr1;
         const
@@ -1202,23 +1201,23 @@ extern "C" {
 #else
         if (!DateTime_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!DateTime_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
         i = (int)(this->time - pOther->time);
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
+
+        return i;
     }
     
    

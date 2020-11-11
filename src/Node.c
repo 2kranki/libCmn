@@ -1127,25 +1127,18 @@ extern "C" {
     )
     {
         int             i = -1;
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
         
 #ifdef NDEBUG
 #else
         if (!Node_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if (!Node_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
 
@@ -1157,6 +1150,10 @@ extern "C" {
                     );
             return i;
         }
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
 
         return i;
     }
@@ -1169,7 +1166,6 @@ extern "C" {
          char           *pName
      )
      {
-         //ERESULT        eRc = ERESULT_SUCCESS_EQUAL;
          int            i = -1;
 
          // Do initialization.
@@ -1178,12 +1174,12 @@ extern "C" {
          if( !Node_Validate( this ) ) {
              DEBUG_BREAK();
              //return ERESULT_INVALID_OBJECT;
-             return -1;
+             return -2;
          }
          if (NULL == pName) {
              DEBUG_BREAK();
              //return ERESULT_INVALID_PARAMETER;
-             return -1;
+             return -2;
          }
  #endif
 
@@ -1195,7 +1191,10 @@ extern "C" {
              if (0 == i) {
                  i = Name_CompareA(this->pName, pName);
              }
-
+             if (i < 0)
+                 i = -1;
+             else if (i > 0)
+                 i = 1;
          }
 
          return i;

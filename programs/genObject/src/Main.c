@@ -56,6 +56,11 @@
 #include        <sys/types.h>
 
 
+ERESULT         Main_SetOutputAsm(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
 ERESULT         Main_SetOutputCmn(
     MAIN_DATA       *this,
     const
@@ -67,6 +72,11 @@ ERESULT         Main_SetOutputEmu(
     char            *pStrA
 );
 ERESULT         Main_SetOutputLL1(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
+ERESULT         Main_SetOutputLnk(
     MAIN_DATA       *this,
     const
     char            *pStrA
@@ -111,6 +121,15 @@ extern "C" {
             "Backup output files if they exist"
         },
         {
+            "asm",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_SetOutputAsm,
+            "Output to libLL1"
+        },
+        {
             "cmn",
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
@@ -136,6 +155,15 @@ extern "C" {
             0,
             (void *)Main_SetOutputLL1,
             "Output to libLL1"
+        },
+        {
+            "lnk",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_SetOutputLnk,
+            "Output to libLnk"
         },
         {
             "mdldir",
@@ -201,6 +229,25 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+    ERESULT         Main_SetOutputAsm(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDir(this->pGen, "~/git/libAsm/src/");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
     ERESULT         Main_SetOutputCmn(
         MAIN_DATA       *this,
         const
@@ -250,6 +297,25 @@ extern "C" {
         // Do initialization.
 
         Gen_setOutputDrvDir(this->pGen, "~/git/libLL1/src/");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutputLnk(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDir(this->pGen, "~/git/libLnk/src/");
 
         // Put code here...
 

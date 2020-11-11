@@ -382,7 +382,7 @@ int         test_md5ChkSum_Parse01(
         fprintf(stderr, "\tpath = \"%s\"\n", Path_getData(pPath));
 
         eRc = Path_CompareA(pPath, pPathA);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pPath);
         pPath = OBJ_NIL;
         

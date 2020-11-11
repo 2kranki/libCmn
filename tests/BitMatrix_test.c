@@ -723,7 +723,7 @@ int             test_BitMatrix_Json01(
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "\tjson=\"%s\"\n", AStr_getData(pStr));
         eRc = AStr_CompareA(pStr, pStrA);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         
         pNew = BitMatrix_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pNew) );

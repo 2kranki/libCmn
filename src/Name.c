@@ -661,12 +661,12 @@ extern "C" {
         if (!Name_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if (!Name_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
 
@@ -728,25 +728,26 @@ extern "C" {
     }
     
    
-    ERESULT         Name_CompareA(
+    int             Name_CompareA(
         NAME_DATA       *this,
         const
         char            *pOther
     )
     {
         int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int64_t         integer;
 
 #ifdef NDEBUG
 #else
         if( !Name_Validate(this) ) {
-             DEBUG_BREAK();
-             return ERESULT_INVALID_OBJECT;
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if( NULL == pOther ) {
-             DEBUG_BREAK();
-             return ERESULT_INVALID_PARAMETER;
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
@@ -761,29 +762,22 @@ extern "C" {
                  break;
 
              case NAME_TYPE_ASTR:
-                 eRc = AStr_CompareA(this->pObj, pOther);
-                 return eRc;
+                 i = AStr_CompareA(this->pObj, pOther);
+                 return i;
                  break;
 
              case NAME_TYPE_UTF8:
              case NAME_TYPE_UTF8_CON:
-                 i = strcmp(this->pChrs, pOther);
+                 i = utf8_StrCmp(this->pChrs, pOther);
                  break;
 
              default:
                  DEBUG_BREAK();
-                 return ERESULT_GENERAL_FAILURE;
+                 return -2;
 
          }
 
-         if (i < 0) {
-             eRc = ERESULT_SUCCESS_LESS_THAN;
-         }
-         if (i > 0) {
-             eRc = ERESULT_SUCCESS_GREATER_THAN;
-         }
-
-         return eRc;
+         return i;
      }
 
 

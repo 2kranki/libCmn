@@ -350,32 +350,41 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Null_Compare (
-        NULL_DATA       *this,
-        NULL_DATA       *pOther
+    int             Null_Compare (
+        NULL_DATA     *this,
+        NULL_DATA     *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             iRc = 0;
 
 #ifdef NDEBUG
 #else
         if (!Null_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!Null_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
-        return eRc;
+#ifdef  xyzzy
+        if (this->token == pOther->token) {
+            return iRc;
+        }
+        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+#endif
+
+        return iRc;
     }
-    
+
    
  
     //---------------------------------------------------------------

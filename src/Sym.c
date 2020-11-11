@@ -1590,52 +1590,41 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Sym_Compare (
+    int             Sym_Compare (
         SYM_DATA        *this,
         SYM_DATA        *pOther
     )
     {
         int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+
 #ifdef NDEBUG
 #else
         if (!Sym_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!Sym_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
         i = this->entry.cls - pOther->entry.cls;
         if (0 == i) {
-            i = strcmp(this->entry.name, pOther->entry.name);
-            if (0 == i) {
-                return ERESULT_SUCCESS_EQUAL;
-            }
+            i = utf8_StrCmp(this->entry.name, pOther->entry.name);
         }
+        if (i < 0)
+            i =  -1;
+        else if (i > 0)
+            i = 1;
         
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        return i;
     }
     
    

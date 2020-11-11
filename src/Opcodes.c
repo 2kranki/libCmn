@@ -455,30 +455,20 @@ extern "C" {
         OPCODES_DATA    *pOther
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int             i = 0;
 
 #ifdef NDEBUG
 #else
         if (!Opcodes_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!Opcodes_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
-#endif
-
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
 #endif
 
         //i = utf8_StrCmp(Opcode_getNameA(this), Opcode_getNameA(pOther));

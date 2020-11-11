@@ -184,7 +184,7 @@ int             test_I32Matrix_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_I32MATRIX);
         TINYTEST_TRUE( (fRc) );
         eRc = I32Matrix_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -196,7 +196,7 @@ int             test_I32Matrix_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_I32MATRIX);
         TINYTEST_TRUE( (fRc) );
         eRc = I32Matrix_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -212,7 +212,7 @@ int             test_I32Matrix_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         eRc = I32Matrix_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;

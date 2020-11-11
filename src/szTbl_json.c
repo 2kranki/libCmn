@@ -195,7 +195,7 @@ extern "C" {
                     goto exit00;
                 }
                 pName = Node_getName(pNode);
-                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))
+                if (0 == Name_CompareA(pName, "hash"))
                     ;
                 else {
                     fprintf(

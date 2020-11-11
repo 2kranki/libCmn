@@ -221,7 +221,7 @@ int         test_Node_Property01(
         eRc = Node_PropertyAddA(pObj, pStrA, pAStr);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         pAWrk = Node_PropertyA(pObj, pStrA);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
+        XCTAssertTrue( (0 == AStr_CompareA(pAWrk, pStrA)) );
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
 
@@ -231,7 +231,7 @@ int         test_Node_Property01(
         eRc = Node_PropertyAddA(pObj, pStrA, pAStr);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         pAWrk = Node_PropertyA(pObj, pStrA);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
+        XCTAssertTrue( (0 == AStr_CompareA(pAWrk, pStrA)) );
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
 
@@ -241,13 +241,13 @@ int         test_Node_Property01(
         eRc = Node_PropertyAddA(pObj, pStrA, pAStr);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
         pAWrk = Node_PropertyA(pObj, pStrA);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
+        XCTAssertTrue( (0 == AStr_CompareA(pAWrk, pStrA)) );
         obj_Release(pAStr);
         pAStr = OBJ_NIL;
 
         pStrA = "a";
         pAWrk = Node_PropertyA(pObj, pStrA);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAWrk, pStrA)) );
+        XCTAssertTrue( (0 == AStr_CompareA(pAWrk, pStrA)) );
 
         pKeys = Node_Properties(pObj);
         XCTAssertFalse( (OBJ_NIL == pKeys) );
@@ -255,13 +255,13 @@ int         test_Node_Property01(
         XCTAssertTrue( (3 == i) );
         pNode = NodeArray_Get(pKeys, 1);
         XCTAssertFalse( (OBJ_NIL == pNode) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(Node_getData(pNode), "a")) );
+        XCTAssertTrue( (0 == AStr_CompareA(Node_getData(pNode), "a")) );
         pNode = NodeArray_Get(pKeys, 2);
         XCTAssertFalse( (OBJ_NIL == pNode) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(Node_getData(pNode), "b")) );
+        XCTAssertTrue( (0 == AStr_CompareA(Node_getData(pNode), "b")) );
         pNode = NodeArray_Get(pKeys, 3);
         XCTAssertFalse( (OBJ_NIL == pNode) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(Node_getData(pNode), "c")) );
+        XCTAssertTrue( (0 == AStr_CompareA(Node_getData(pNode), "c")) );
         obj_Release(pKeys);
         pKeys = OBJ_NIL;
 
@@ -306,7 +306,7 @@ int             test_Node_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NODE);
         TINYTEST_TRUE( (fRc) );
         eRc = Node_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -318,7 +318,7 @@ int             test_Node_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NODE);
         TINYTEST_TRUE( (fRc) );
         eRc = Node_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -334,7 +334,7 @@ int             test_Node_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         eRc = Node_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;

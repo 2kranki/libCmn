@@ -781,47 +781,43 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         DirEntry_Compare (
-        DIRENTRY_DATA     *this,
-        DIRENTRY_DATA     *pOther
+    int             DirEntry_Compare (
+        DIRENTRY_DATA   *this,
+        DIRENTRY_DATA   *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+        int             iRc = 0;
+
 #ifdef NDEBUG
 #else
         if (!DirEntry_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!DirEntry_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
         if( (this->type > pOther->type) ) {
-            return ERESULT_SUCCESS_GREATER_THAN;
+            return 1;
         }
         if( (this->type < pOther->type) ) {
-            return ERESULT_SUCCESS_LESS_THAN;
+            return -1;
         }
         // Types are equal.
 
 
-        eRc = Path_Compare(this->pFullPath, pOther->pFullPath);
+        iRc = Path_Compare(this->pFullPath, pOther->pFullPath);
 
-        return eRc;
+        return iRc;
     }
     
    

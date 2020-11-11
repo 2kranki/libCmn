@@ -371,20 +371,13 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         U8VlArray_Compare (
-        U8VLARRAY_DATA     *this,
-        U8VLARRAY_DATA     *pOther
+    int             U8VlArray_Compare (
+        U8VLARRAY_DATA  *this,
+        U8VLARRAY_DATA  *pOther
     )
     {
         int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+
 #ifdef NDEBUG
 #else
         if (!U8VlArray_Validate(this)) {
@@ -398,20 +391,19 @@ extern "C" {
 #endif
 
         if (this->pData == pOther->pData) {
-            return eRc;
+            return i;
         }
 
         if (this->pData[0] == pOther->pData[0]) {
             i = memcmp(this->pData, pOther->pData, this->pData[0]);
             if (i) {
-                eRc = ERESULT_SUCCESS_UNEQUAL;
+                i = 1;
             }
         } else {
-            eRc = ERESULT_SUCCESS_UNEQUAL;
+            i = 1;
         }
 
-
-        return eRc;
+        return i;
     }
     
    

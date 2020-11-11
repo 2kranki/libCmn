@@ -138,7 +138,7 @@ int             test_szData_Create01(
         szData_setClass(pObj, 9);
 
         eRc = szData_CompareA(pObj, "xyzzy");
-        TINYTEST_TRUE( (eRc == ERESULT_SUCCESS_EQUAL) );
+        TINYTEST_TRUE( (eRc == 0) );
 
         pStr = szData_ToJSON(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
@@ -155,12 +155,12 @@ int             test_szData_Create01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
         eRc = szData_CompareA(pObj, "xyzzy");
-        TINYTEST_TRUE( (eRc == ERESULT_SUCCESS_EQUAL) );
+        TINYTEST_TRUE( (eRc == 0) );
         TINYTEST_TRUE( (9 == szData_getClass(pObj)) );
         pStr = szData_getData(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         eRc = AStr_CompareA(pStr, "1234");
-        TINYTEST_TRUE( (eRc == ERESULT_SUCCESS_EQUAL) );
+        TINYTEST_TRUE( (eRc == 0) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

@@ -1102,33 +1102,27 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0 if this == other
+                1 if this != other
      */
-    ERESULT         Token_Compare (
+    int             Token_Compare (
         TOKEN_DATA     *this,
         TOKEN_DATA     *pOther
     )
     {
         int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+
 #ifdef NDEBUG
 #else
         if (!Token_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!Token_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
@@ -1140,7 +1134,7 @@ extern "C" {
                 if (i == 0)
                     ;
                 else {
-                    eRc = ERESULT_SUCCESS_UNEQUAL;
+                    i = 1;
                 }
                 break;
 
@@ -1148,7 +1142,7 @@ extern "C" {
                 if (this->data.flt == pOther->data.flt)
                     ;
                 else {
-                    eRc = ERESULT_SUCCESS_UNEQUAL;
+                    i = 1;
                 }
                 break;
 
@@ -1156,7 +1150,7 @@ extern "C" {
                 if (this->data.integer == pOther->data.integer)
                     ;
                 else {
-                    eRc = ERESULT_SUCCESS_UNEQUAL;
+                    i = 1;
                 }
                 break;
 
@@ -1164,7 +1158,7 @@ extern "C" {
                 if (this->data.strToken == pOther->data.strToken)
                     ;
                 else {
-                    eRc = ERESULT_SUCCESS_UNEQUAL;
+                    i = 1;
                 }
                 break;
 
@@ -1172,21 +1166,21 @@ extern "C" {
                 if (this->data.w32chr[0] == pOther->data.w32chr[0])
                     ;
                 else {
-                    eRc = ERESULT_SUCCESS_UNEQUAL;
+                    i = 1;
                 }
                 break;
 
             default:
-                eRc = ERESULT_SUCCESS_UNEQUAL;
+                    i = 1;
                 break;
             }
         }
         else {
-            eRc = ERESULT_SUCCESS_UNEQUAL;
+            i = 1;
         }
 
 
-        return eRc;
+        return i;
     }
     
    

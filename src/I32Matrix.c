@@ -655,16 +655,14 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                1  if this != other
      */
-    ERESULT         I32Matrix_Compare (
-        I32MATRIX_DATA     *this,
-        I32MATRIX_DATA     *pOther
+    int             I32Matrix_Compare (
+        I32MATRIX_DATA   *this,
+        I32MATRIX_DATA   *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         uint32_t        i = 0;
         int32_t         *pValue1;
         int32_t         *pValue2;
@@ -673,23 +671,25 @@ extern "C" {
 #else
         if (!I32Matrix_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!I32Matrix_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
         if ((this->m == pOther->m) && (this->m == pOther->m))
             ;
         else {
-            return ERESULT_SUCCESS_UNEQUAL;
+            return 1;
         }
         if (this->cElems == pOther->cElems)
             ;
         else {
-            return ERESULT_SUCCESS_UNEQUAL;
+            return 1;
         }
 
         for (i=0; i<this->cElems; i++) {
@@ -699,14 +699,14 @@ extern "C" {
                 if (*pValue1 == *pValue2)
                     ;
                 else {
-                    return ERESULT_SUCCESS_UNEQUAL;
+                    return 1;
                 }
             } else {
-                return ERESULT_SUCCESS_UNEQUAL;
+                return 1;
             }
         }
 
-        return eRc;
+        return 0;
     }
     
    

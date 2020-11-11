@@ -148,7 +148,7 @@ int             test_Path_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PATH);
         TINYTEST_TRUE( (fRc) );
         eRc = Path_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -177,7 +177,7 @@ int             test_Path_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         eRc = Path_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -321,7 +321,7 @@ int         test_Path_NewFromEnv(
     if (pObj) {
         
         eRc = Path_CompareA(pObj, "/Users/bob");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -1180,7 +1180,7 @@ int         test_Path_ToBash(
         eRc = Path_ToBash(pObj,&pStr);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (9 == AStr_getLength(pStr)) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "xy\\ z.txt")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pStr, "xy\\ z.txt")) );
         obj_Release(pStr);
         pStr = NULL;
         
@@ -1218,7 +1218,7 @@ int         test_Path_ExpandEnvVars01(
         eRc = Path_ExpandVars(pObj, NULL, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (len == AStr_getLength((ASTR_DATA *)pObj)) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
+        XCTAssertTrue( (0 == AStr_CompareA((ASTR_DATA *)pObj, pHome)) );
         //obj_Release(pStr);
         //pStr = NULL;
         
@@ -1261,7 +1261,7 @@ int         test_Path_ExpandEnvVars02(
         eRc = Path_ExpandVars(pObj, NULL, OBJ_NIL);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
         XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
+        XCTAssertTrue( (0 == AStr_Compare((ASTR_DATA *)pObj, pStr)) );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -1312,9 +1312,9 @@ int         test_Path_Version01(
         XCTAssertFalse( (OBJ_NIL == pStrE) );
 
         eRc = AStr_CompareA(pStrF, "test.0002");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         eRc = AStr_CompareA(pStrE, "txt");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
 
         obj_Release(pStrE);
         pStrE = OBJ_NIL;

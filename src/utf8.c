@@ -166,8 +166,7 @@ extern "C" {
         if (i == 0) {
             if (ch1) {
                 i = 1;
-            }
-            if (ch2) {
+            } else if (ch2) {
                 i = -1;
             }
         }
@@ -206,8 +205,7 @@ extern "C" {
         if (i == 0) {
             if (ch1) {
                 i = 1;
-            }
-            if (ch2) {
+            } else if (ch2) {
                 i = -1;
             }
         }
@@ -246,8 +244,7 @@ extern "C" {
         }
         if (i < 0) {
             i = -1;
-        }
-        if (i > 0) {
+        } else if (i > 0) {
             i = 1;
         }
         

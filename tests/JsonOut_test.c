@@ -148,7 +148,7 @@ int             test_JsonOut_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_JSONOUT);
         TINYTEST_TRUE( (fRc) );
         //eRc = JsonOut_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -177,7 +177,7 @@ int             test_JsonOut_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         //eRc = JsonOut_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -243,7 +243,7 @@ int             test_JsonOut_Array01 (
 
     JsonOut_Append_u8_array("x", 9, x, pStr);
     fprintf(stderr, "u8_array:\n%s\n", AStr_getData(pStr));
-    TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,x8)) );
+    TINYTEST_TRUE( (0 == AStr_CompareA(pStr,x8)) );
     obj_Release(pStr);
     pStr = OBJ_NIL;
 
@@ -292,7 +292,7 @@ int             test_JsonOut_Array02 (
 
     JsonOut_Append_i16_array("x", 9, x, pStr);
     fprintf(stderr, "i16_array:\n%s\n", AStr_getData(pStr));
-    TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr,x_out)) );
+    TINYTEST_TRUE( (0 == AStr_CompareA(pStr,x_out)) );
     obj_Release(pStr);
     pStr = OBJ_NIL;
 

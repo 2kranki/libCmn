@@ -361,8 +361,7 @@ extern "C" {
         ${UNAME}_DATA     *pOther
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-        int             i = -1;
+        int             iRc = -1;
 #ifdef  xyzzy        
         const
         char            *pStr1;
@@ -375,18 +374,18 @@ extern "C" {
         if (!${LNAME}_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return i;
+            return -2;
         }
         if (!${LNAME}_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return i;
+            return -2;
         }
 #endif
 
-        //FIXME: i = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+        //FIXME: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
      
-        return i;
+        return iRc;
     }
     
    

@@ -1051,58 +1051,41 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         JsonIn_Compare (
+    int             JsonIn_Compare (
         JSONIN_DATA     *this,
         JSONIN_DATA     *pOther
     )
     {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+        int             iRc = 0;
+
 #ifdef NDEBUG
 #else
         if (!JsonIn_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!JsonIn_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
-#ifdef  xyzzy        
+#ifdef  xyzzy
         if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
+            return iRc;
         }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
+        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
 #endif
 
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        return iRc;
     }
-    
+
    
  
     //---------------------------------------------------------------
@@ -1639,7 +1622,7 @@ extern "C" {
             goto eom;
         }
         eRc = AStr_CompareA(pData,"I16Array");
-        if (eRc != ERESULT_SUCCESS_EQUAL) {
+        if (eRc != 0) {
             eRc = ERESULT_DATA_NOT_FOUND;
             goto eom;
         }
@@ -1674,7 +1657,7 @@ extern "C" {
                     goto eom;
                 }
                 pName = Node_getName(pNode);
-                if (ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "integer"))
+                if (0 == Name_CompareA(pName, "integer"))
                     ;
                 else {
                     eRc = ERESULT_DATA_NOT_FOUND;
@@ -2778,7 +2761,7 @@ extern "C" {
             return ERESULT_DATA_ERROR;
         }
         pName = Node_getName(pNode);
-        if (!(ERESULT_SUCCESS_EQUAL == Name_CompareA(pName, "hash"))) {
+        if (!(0 == Name_CompareA(pName, "hash"))) {
             return ERESULT_DATA_ERROR;
         }
 

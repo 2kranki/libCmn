@@ -149,7 +149,7 @@ int             test_Scanner_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SCANNER);
         TINYTEST_TRUE( (fRc) );
         eRc = Scanner_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -161,7 +161,7 @@ int             test_Scanner_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SCANNER);
         TINYTEST_TRUE( (fRc) );
         eRc = Scanner_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -178,7 +178,7 @@ int             test_Scanner_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         eRc = Scanner_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -662,7 +662,7 @@ int             test_Scanner_ScanAstrArray01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         TINYTEST_TRUE( (2 == AStrArray_getSize(pArray)) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "a");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pArray);
         pArray = OBJ_NIL;
 
@@ -683,9 +683,9 @@ int             test_Scanner_ScanAstrArray01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         TINYTEST_TRUE( (3 == AStrArray_getSize(pArray)) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "a");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 3), "b");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pArray);
         pArray = OBJ_NIL;
 
@@ -706,9 +706,9 @@ int             test_Scanner_ScanAstrArray01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         TINYTEST_TRUE( (3 == AStrArray_getSize(pArray)) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "a");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 3), "b");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pArray);
         pArray = OBJ_NIL;
 
@@ -739,11 +739,11 @@ int             test_Scanner_ScanAstrArray01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         TINYTEST_TRUE( (3 == AStrArray_getSize(pArray)) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 1), "");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "yy yy");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 3), "abc");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pArray);
         pArray = OBJ_NIL;
 
@@ -775,15 +775,15 @@ int             test_Scanner_ScanAstrArray01(
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         TINYTEST_TRUE( (5 == AStrArray_getSize(pArray)) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 1), "");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "--define");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 3), "xx=");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 4), "yy yy");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = AStr_CompareA(AStrArray_Get(pArray, 5), "abc");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pArray);
         pArray = OBJ_NIL;
 

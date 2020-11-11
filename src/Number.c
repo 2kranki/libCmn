@@ -474,26 +474,19 @@ extern "C" {
         NUMBER_DATA     *pOther
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-        int             i = -1;
-#ifdef  xyzzy
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+        int             i = 0;
+
 #ifdef NDEBUG
 #else
         if (!Number_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if (!Number_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
-            return -1;
+            return -2;
         }
 #endif
 
@@ -501,25 +494,26 @@ extern "C" {
     }
     
    
-     ERESULT         Number_CompareA(
+     int            Number_CompareA(
          NUMBER_DATA     *this,
          const
          char            *pOther
      )
      {
          int             i = 0;
-         ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
          int64_t         integer;
 
  #ifdef NDEBUG
  #else
          if( !Number_Validate(this) ) {
              DEBUG_BREAK();
-             return ERESULT_INVALID_OBJECT;
+             //return ERESULT_INVALID_OBJECT;
+             return -2;
          }
          if( NULL == pOther ) {
              DEBUG_BREAK();
-             return ERESULT_INVALID_PARAMETER;
+             //return ERESULT_INVALID_PARAMETER;
+             return -2;
          }
  #endif
 
@@ -554,14 +548,12 @@ extern "C" {
                  break;
          }
 
-         if (i < 0) {
-             eRc = ERESULT_SUCCESS_LESS_THAN;
-         }
-         if (i > 0) {
-             eRc = ERESULT_SUCCESS_GREATER_THAN;
-         }
-
-         return eRc;
+         if (i < 0)
+             i = -1;
+         else if (i > 0)
+             i = 1;
+         
+         return i;
      }
 
 

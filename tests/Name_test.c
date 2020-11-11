@@ -142,7 +142,7 @@ int             test_Name_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NAME);
         TINYTEST_TRUE( (fRc) );
         eRc = Name_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -154,7 +154,7 @@ int             test_Name_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NAME);
         TINYTEST_TRUE( (fRc) );
         eRc = Name_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -170,7 +170,7 @@ int             test_Name_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         eRc = Name_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -211,7 +211,7 @@ int             test_Name_Test01 (
     if (pName1) {
 
         pAStr1 = Name_getStr(pName1);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAStr1, "abc")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "abc")) );
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
 
@@ -224,11 +224,11 @@ int             test_Name_Test01 (
         XCTAssertFalse( (OBJ_NIL == pJSON) );
         fprintf(stderr, "\tJSON=\"%s\"\n", AStr_getData(pJSON));
         //eRc = AStr_CompareA(pJSON, pJSON01);
-        //XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //XCTAssertTrue( (0 == eRc) );
 
         pName2 = Name_NewFromJsonString(pJSON);
         eRc = Name_CompareA(pName2, "abc");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         obj_Release(pJSON);
         pJSON = OBJ_NIL;
 
@@ -243,7 +243,7 @@ int             test_Name_Test01 (
         pName2 = Name_Copy(pName1);
         XCTAssertFalse( (OBJ_NIL == pName2) );
         eRc = Name_CompareA(pName2, "abc");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
 
         obj_Release(pName2);
         pName2 = OBJ_NIL;
@@ -251,7 +251,7 @@ int             test_Name_Test01 (
         pName2 = Name_DeepCopy(pName1);
         XCTAssertFalse( (OBJ_NIL == pName2) );
         eRc = Name_CompareA(pName2, "abc");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
 
         obj_Release(pName2);
         pName2 = OBJ_NIL;
@@ -288,7 +288,7 @@ int         test_Name_UTF8(
     if (pName1) {
 
         pAStr1 = Name_getStr(pName1);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAStr1, "abc")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "abc")) );
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
 
@@ -301,11 +301,11 @@ int         test_Name_UTF8(
         XCTAssertFalse( (OBJ_NIL == pJSON) );
         fprintf(stderr, "\tJSON=\"%s\"\n", AStr_getData(pJSON));
         //eRc = AStr_CompareA(pJSON, pJSON01);
-        //XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //XCTAssertTrue( (0 == eRc) );
 
         pName2 = Name_NewFromJsonString(pJSON);
         eRc = Name_CompareA(pName2, "abc");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         obj_Release(pJSON);
         pJSON = OBJ_NIL;
 
@@ -320,7 +320,7 @@ int         test_Name_UTF8(
         pName2 = Name_Copy(pName1);
         XCTAssertFalse( (OBJ_NIL == pName2) );
         eRc = Name_CompareA(pName2, "abc");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
 
         obj_Release(pName2);
         pName2 = OBJ_NIL;
@@ -328,7 +328,7 @@ int         test_Name_UTF8(
         pName2 = Name_DeepCopy(pName1);
         XCTAssertFalse( (OBJ_NIL == pName2) );
         eRc = Name_CompareA(pName2, "abc");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
 
         obj_Release(pName2);
         pName2 = OBJ_NIL;
@@ -364,7 +364,7 @@ int         test_Name_UTF8Con(
     if (pName1) {
 
         pAStr1 = Name_getStr(pName1);
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pAStr1, "abc")) );
+        XCTAssertTrue( (0 == AStr_CompareA(pAStr1, "abc")) );
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
 
@@ -377,11 +377,11 @@ int         test_Name_UTF8Con(
         XCTAssertFalse( (OBJ_NIL == pJSON) );
         fprintf(stderr, "\tJSON=\"%s\"\n", AStr_getData(pJSON));
         //eRc = AStr_CompareA(pJSON, pJSON01);
-        //XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //XCTAssertTrue( (0 == eRc) );
 
         pName2 = Name_NewFromJsonString(pJSON);
         eRc = Name_CompareA(pName2, "abc");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         obj_Release(pJSON);
         pJSON = OBJ_NIL;
 
@@ -396,7 +396,7 @@ int         test_Name_UTF8Con(
         pName2 = Name_Copy(pName1);
         XCTAssertFalse( (OBJ_NIL == pName2) );
         eRc = Name_CompareA(pName2, "abc");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
 
         obj_Release(pName2);
         pName2 = OBJ_NIL;
@@ -404,7 +404,7 @@ int         test_Name_UTF8Con(
         pName2 = Name_DeepCopy(pName1);
         XCTAssertFalse( (OBJ_NIL == pName2) );
         eRc = Name_CompareA(pName2, "abc");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
 
         obj_Release(pName2);
         pName2 = OBJ_NIL;
@@ -441,7 +441,7 @@ int         test_Name_Int(
         pAStr1 = Name_getStr(pName1);
         fprintf(stderr, "strA = \"%s\"\n", AStr_getData(pAStr1));
         eRc = AStr_CompareA(pAStr1, "0000000000000123456");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         obj_Release(pAStr1);
         pAStr1 = OBJ_NIL;
 
@@ -449,11 +449,11 @@ int         test_Name_Int(
         XCTAssertFalse( (OBJ_NIL == pJSON) );
         fprintf(stderr, "\tJSON=\"%s\"\n", AStr_getData(pJSON));
         //eRc = AStr_CompareA(pJSON, pJSON01);
-        //XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //XCTAssertTrue( (0 == eRc) );
 
         pName2 = Name_NewFromJsonString(pJSON);
         eRc = Name_CompareA(pName2, "123456");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         obj_Release(pJSON);
         pJSON = OBJ_NIL;
 
@@ -468,7 +468,7 @@ int         test_Name_Int(
         pName2 = Name_Copy(pName1);
         XCTAssertFalse( (OBJ_NIL == pName2) );
         eRc = Name_CompareA(pName2, "123456");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
 
         obj_Release(pName2);
         pName2 = OBJ_NIL;
@@ -476,7 +476,7 @@ int         test_Name_Int(
         pName2 = Name_DeepCopy(pName1);
         XCTAssertFalse( (OBJ_NIL == pName2) );
         eRc = Name_CompareA(pName2, "123456");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
 
         obj_Release(pName2);
         pName2 = OBJ_NIL;

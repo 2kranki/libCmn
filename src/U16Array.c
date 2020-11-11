@@ -430,13 +430,12 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0 if this == other
+                1 if this != other
      */
-    ERESULT         U16Array_Compare (
-        U16ARRAY_DATA     *this,
-        U16ARRAY_DATA     *pOther
+    int             U16Array_Compare (
+        U16ARRAY_DATA   *this,
+        U16ARRAY_DATA   *pOther
     )
     {
         int             i = 0;
@@ -446,18 +445,20 @@ extern "C" {
 #else
         if (!U16Array_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!U16Array_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
         if (U16Array_getSize(this) == U16Array_getSize(pOther))
             ;
         else {
-            return ERESULT_SUCCESS_UNEQUAL;
+            return 1;
         }
 
         iMax = U16Array_getSize(this);
@@ -465,11 +466,11 @@ extern "C" {
             if (U16Array_Get(this, i+1) == U16Array_Get(pOther, i+1))
                 ;
             else {
-                return ERESULT_SUCCESS_UNEQUAL;
+                return 1;
             }
         }
 
-        return ERESULT_SUCCESS_EQUAL;
+        return 0;
     }
     
    

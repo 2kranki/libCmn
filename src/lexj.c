@@ -1000,21 +1000,21 @@ extern "C" {
                     pStr = AStr_NewFromW32Str(this->super.pStr);
                     if (pStr) {
                         AStr_Trim(pStr);
-                        if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "null")) {
+                        if (0 == AStr_CompareA(pStr, "null")) {
                             newCls = LEXJ_KWD_NULL;
                             fMore = false;
                             obj_Release(pStr);
                             TRC_OBJ(this, "\tkeyword: null\n");
                             break;
                         }
-                        if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "false")) {
+                        if (0 == AStr_CompareA(pStr, "false")) {
                             newCls = LEXJ_KWD_FALSE;
                             fMore = false;
                             obj_Release(pStr);
                             TRC_OBJ(this, "\tkeyword: false\n");
                             break;
                         }
-                        if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "true")) {
+                        if (0 == AStr_CompareA(pStr, "true")) {
                             newCls = LEXJ_KWD_TRUE;
                             fMore = false;
                             obj_Release(pStr);

@@ -44,7 +44,6 @@
 		C41B752E23AA5AD100C7DEBD /* BitSet.c in Sources */ = {isa = PBXBuildFile; fileRef = C41B752A23AA5AD000C7DEBD /* BitSet.c */; };
 		C41B753523AA7BFA00C7DEBD /* BitMatrix_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C41B753223AA7BF900C7DEBD /* BitMatrix_object.c */; };
 		C41B753623AA7BFA00C7DEBD /* BitMatrix.c in Sources */ = {isa = PBXBuildFile; fileRef = C41B753323AA7BFA00C7DEBD /* BitMatrix.c */; };
-		C41C1A0D255A3FE2001F8EF2 /* W32Str_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C41C1A0C255A3FE2001F8EF2 /* W32Str_test.c */; };
 		C42C552823CB73A500AA762C /* NodeLink_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C42C552323CB73A200AA762C /* NodeLink_object.c */; };
 		C42C552923CB73A500AA762C /* NodeLink.c in Sources */ = {isa = PBXBuildFile; fileRef = C42C552423CB73A300AA762C /* NodeLink.c */; };
 		C42C552A23CB73A500AA762C /* NodeLink_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C42C552623CB73A400AA762C /* NodeLink_json.c */; };
@@ -497,7 +496,6 @@
 		C41B753323AA7BFA00C7DEBD /* BitMatrix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BitMatrix.c; sourceTree = "<group>"; };
 		C41B753423AA7BFA00C7DEBD /* BitMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BitMatrix.h; sourceTree = "<group>"; };
 		C41C1959255769C5001F8EF2 /* libCmn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCmn.a; path = ../../../Support/lib/macos64/libCmn/libCmn.a; sourceTree = "<group>"; };
-		C41C1A0C255A3FE2001F8EF2 /* W32Str_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = W32Str_test.c; sourceTree = "<group>"; };
 		C42C552323CB73A200AA762C /* NodeLink_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NodeLink_object.c; sourceTree = "<group>"; };
 		C42C552423CB73A300AA762C /* NodeLink.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NodeLink.c; sourceTree = "<group>"; };
 		C42C552523CB73A400AA762C /* NodeLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeLink.h; sourceTree = "<group>"; };
@@ -1203,7 +1201,6 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C41C1A0C255A3FE2001F8EF2 /* W32Str_test.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -2271,7 +2268,6 @@
 				C4D463112419275C00AF453D /* False_object.c in Sources */,
 				C4AA73B31FE2B740001FACEC /* lexj_object.c in Sources */,
 				C4EBE2CB23C927E2008E9EE8 /* NodeBT_json.c in Sources */,
-				C41C1A0D255A3FE2001F8EF2 /* W32Str_test.c in Sources */,
 				C463898A21EA71EC00DFCE35 /* bpt32.c in Sources */,
 				C40F05612482E55A00D66F9B /* Lex04.c in Sources */,
 				C4E1383C23BF84520095EABE /* ObjList_json.c in Sources */,

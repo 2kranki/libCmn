@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include <szData_internal.h>
 #include <szTbl.h>
+#include <utf8.h>
 
 
 
@@ -411,13 +412,12 @@ extern "C" {
     //                      C o m p a r e
     //---------------------------------------------------------------
     
-    ERESULT         szData_Compare (
+    int             szData_Compare (
         SZDATA_DATA     *this,
         SZDATA_DATA     *pOther
     )
     {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             iRc = 0;
         const
         char            *pStr1;
         const
@@ -427,42 +427,35 @@ extern "C" {
 #else
         if( !szData_Validate(this) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if( !szData_Validate(pOther) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
         
         if (this->token == pOther->token) {
-            return eRc;
+            return iRc;
         }
         
         pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
         pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
+        iRc = utf8_StrCmp(pStr1, pStr2);
 
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        return iRc;
     }
     
     
-    ERESULT         szData_CompareA(
+    int             szData_CompareA(
         SZDATA_DATA     *this,
         const
         char            *pOther
     )
     {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             iRc = 0;
         const
         char            *pStr1;
 
@@ -470,25 +463,20 @@ extern "C" {
 #else
         if( !szData_Validate( this ) ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if( NULL == pOther ) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
         
         pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        i = strcmp(pStr1, pOther);
+        iRc = utf8_StrCmp(pStr1, pOther);
         
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
+        return iRc;
     }
     
     

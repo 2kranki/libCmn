@@ -145,7 +145,7 @@ int             test_JsonPP_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_JSONPP);
         TINYTEST_TRUE( (fRc) );
         //eRc = JsonPP_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -174,7 +174,7 @@ int             test_JsonPP_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         //eRc = JsonPP_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;

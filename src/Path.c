@@ -267,14 +267,14 @@ extern "C" {
 
         if (NULL != pDriveA) {
             eRc = AStr_AppendA(pThis, pDriveA);
-            if (ERESULT_SUCCESS_EQUAL != AStr_CompareRightA(pThis, ":")) {
+            if (0 != AStr_CompareRightA(pThis, ":")) {
                 eRc = AStr_AppendA(pThis, ":");
             }
         }
 
         if (NULL != pDirA) {
             eRc = AStr_AppendA(pThis, pDirA);
-            if (ERESULT_SUCCESS_EQUAL != AStr_CompareRightA(pThis, "/")) {
+            if (0 != AStr_CompareRightA(pThis, "/")) {
                 eRc = AStr_AppendA(pThis, "/");
             }
         }
@@ -1014,62 +1014,59 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Path_Compare (
-        PATH_DATA     *this,
-        PATH_DATA     *pOther
+    int             Path_Compare (
+        PATH_DATA       *this,
+        PATH_DATA       *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+        int             iRc = 0;
+
 #ifdef NDEBUG
 #else
         if (!Path_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
         }
         if (!Path_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
         }
 #endif
 
-        eRc = AStr_Compare( (ASTR_DATA *)this, (ASTR_DATA *)pOther );
+        iRc = AStr_Compare( (ASTR_DATA *)this, (ASTR_DATA *)pOther );
 
-        return eRc;
+        return iRc;
     }
     
    
-     ERESULT         Path_CompareA(
+     int            Path_CompareA(
          PATH_DATA       *this,
          const
          char            *pOther
      )
      {
-         ERESULT         eRc;
+         int             iRc = 0;
 
          // Do initialization.
  #ifdef NDEBUG
  #else
          if( !Path_Validate(this) ) {
              DEBUG_BREAK();
-             return ERESULT_INVALID_OBJECT;
+             //return ERESULT_INVALID_OBJECT;
+             return -2;
          }
  #endif
 
-         eRc = AStr_CompareA( (ASTR_DATA *)this, pOther );
+         iRc = AStr_CompareA( (ASTR_DATA *)this, pOther );
 
          // Return to caller.
-         return eRc;
+         return iRc;
      }
 
 
@@ -1079,21 +1076,22 @@ extern "C" {
          char            *pOther
      )
      {
-         ERESULT         eRc;
+         int             iRc = 0;
 
          // Do initialization.
  #ifdef NDEBUG
  #else
          if( !Path_Validate(this) ) {
              DEBUG_BREAK();
-             return ERESULT_INVALID_OBJECT;
+             //return ERESULT_INVALID_OBJECT;
+             return -2;
          }
  #endif
 
-         eRc = AStr_CompareRightA((ASTR_DATA *)this, pOther);
+         iRc = AStr_CompareRightA((ASTR_DATA *)this, pOther);
 
          // Return to caller.
-         return eRc;
+         return iRc;
      }
 
 

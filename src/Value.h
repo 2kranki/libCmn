@@ -422,11 +422,11 @@ extern "C" {
 
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         Value_Compare (
+    int             Value_Compare (
         VALUE_DATA     *this,
         VALUE_DATA     *pOther
     );

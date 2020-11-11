@@ -1175,10 +1175,10 @@ extern "C" {
         {
             ASTR_DATA           *pWrk = AStr_NewA(pDataType);
             if (pWrk) {
-                if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "OBJ_ID")) {
+                if (0 == AStr_CompareA(pWrk, "OBJ_ID")) {
                     fObject = true;
                 }
-                else if (AStr_CompareRightA(pWrk, "_DATA *") == ERESULT_SUCCESS_EQUAL) {
+                else if (AStr_CompareRightA(pWrk, "_DATA *") == 0) {
                     fObject = true;
                 }
             }

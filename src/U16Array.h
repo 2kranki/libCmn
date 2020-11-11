@@ -209,8 +209,8 @@ extern "C" {
 
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other,
-                otherwise ERESULT_SUCCESS_UNEQUAL
+     @return    0 if this == other
+                1 if this != other
      */
     ERESULT         U16Array_Compare (
         U16ARRAY_DATA     *this,

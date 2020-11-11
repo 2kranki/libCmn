@@ -145,7 +145,7 @@ int             test_Lex_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_LEX);
         TINYTEST_TRUE( (fRc) );
         //eRc = Lex_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -158,7 +158,7 @@ int             test_Lex_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_LEX);
         TINYTEST_TRUE( (fRc) );
         //eRc = Lex_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -176,7 +176,7 @@ int             test_Lex_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         //eRc = Lex_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -273,7 +273,7 @@ int         test_Lex_Number01(
                 newClass = Lex_ParseNumber(pLex);
                 XCTAssertTrue( (LEX_CONSTANT_INTEGER == newClass) );
                 eRc = W32Str_CompareA(pLex->pStr, "123");
-                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+                XCTAssertTrue( (0 == eRc) );
 
                 obj_Release(pLex);
                 pLex = OBJ_NIL;
@@ -337,7 +337,7 @@ int         test_Lex_Number02(
                 newClass = Lex_ParseNumber(pLex);
                 XCTAssertTrue( (LEX_CONSTANT_FLOAT == newClass) );
                 eRc = W32Str_CompareA(pLex->pStr, "123.456");
-                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+                XCTAssertTrue( (0 == eRc) );
 
                 obj_Release(pLex);
                 pLex = OBJ_NIL;
@@ -401,7 +401,7 @@ int         test_Lex_Number03(
                 newClass = Lex_ParseNumber(pLex);
                 XCTAssertTrue( (LEX_CONSTANT_INTEGER == newClass) );
                 eRc = W32Str_CompareA(pLex->pStr, "0");
-                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+                XCTAssertTrue( (0 == eRc) );
 
                 obj_Release(pLex);
                 pLex = OBJ_NIL;
@@ -470,7 +470,7 @@ int         test_Lex_Number04(
                 }
                 XCTAssertTrue( (LEX_CONSTANT_FLOAT == newClass) );
                 eRc = W32Str_CompareA(pLex->pStr, "3.141600E+00");
-                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+                XCTAssertTrue( (0 == eRc) );
 
                 obj_Release(pLex);
                 pLex = OBJ_NIL;
@@ -534,7 +534,7 @@ int         test_Lex_Strings01(
         pToken = Lex_getToken(pObj);
         pStr = Token_getTextAStr(pToken);
         eRc = AStr_CompareA(pStr, "def");
-        XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+        XCTAssertTrue( (0 == eRc) );
         obj_Release(pStr);
         cls = Token_getClass(pToken);
         XCTAssertTrue( ('a' == cls) );
@@ -583,7 +583,7 @@ int         test_Lex_Strings02(
         if (pStr) {
             fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStr));
             eRc = AStr_CompareA(pStr, "\n  \n");
-            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+            XCTAssertTrue( (0 == eRc) );
         }
         obj_Release(pStr);
         cls = Token_getClass(pToken);
@@ -634,7 +634,7 @@ int         test_Lex_Strings03(
         if (pStr) {
             fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStr));
             eRc = AStr_CompareA(pStr, "@interface");
-            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+            XCTAssertTrue( (0 == eRc) );
         }
         obj_Release(pStr);
         cls = Token_getClass(pToken);
@@ -657,7 +657,7 @@ int         test_Lex_Strings03(
         if (pStr) {
             fprintf(stderr, "\toutput = \"%s\"\n", AStr_getData(pStr));
             eRc = AStr_CompareA(pStr, "@end");
-            XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+            XCTAssertTrue( (0 == eRc) );
         }
         obj_Release(pStr);
         cls = Token_getClass(pToken);
@@ -729,7 +729,7 @@ int         test_Lex_Strings04(
                     obj_Release(pWrk2);
                 }
                 eRc = W32Str_CompareA(pLex->pStr, "\"\\x01\\x02\"");
-                XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == eRc) );
+                XCTAssertTrue( (0 == eRc) );
 
                 obj_Release(pLex);
                 pLex = OBJ_NIL;
@@ -799,7 +799,7 @@ int         test_Lex_Input01(
                 XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "class")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "class")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -818,7 +818,7 @@ int         test_Lex_Input01(
                 XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "xyzzy")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "xyzzy")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -892,7 +892,7 @@ int         test_Lex_Input02(
                 XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "a")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "a")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -911,7 +911,7 @@ int         test_Lex_Input02(
                 XCTAssertTrue( (LEX_OP_ASSIGN_ADD == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "+=")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "+=")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -930,7 +930,7 @@ int         test_Lex_Input02(
                 XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "b")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "b")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -949,7 +949,7 @@ int         test_Lex_Input02(
                 XCTAssertTrue( (LEX_OP_ADD == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "+")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "+")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1023,7 +1023,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "names")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "names")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1042,7 +1042,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_SEP_LBRACE == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "{")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "{")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1061,7 +1061,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "a")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "a")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1080,7 +1080,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_OP_ASSIGN == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "=")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "=")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1099,7 +1099,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_CONSTANT_INTEGER == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "1")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "1")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1118,7 +1118,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_SEP_SEMICOLON == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, ";")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, ";")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1137,7 +1137,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "b")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "b")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1156,7 +1156,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_OP_ASSIGN == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "=")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "=")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1175,7 +1175,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_CONSTANT_INTEGER == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "2")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "2")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1194,7 +1194,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_SEP_SEMICOLON == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, ";")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, ";")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }
@@ -1213,7 +1213,7 @@ int         test_Lex_Input03(
                 XCTAssertTrue( (LEX_SEP_RBRACE == Token_getClass(pToken)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pToken);
-                    XCTAssertTrue( (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pWrk, "}")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "}")) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }

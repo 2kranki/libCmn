@@ -86,12 +86,6 @@ extern "C" {
         {ERESULT_SUCCESS_1,                 NULL},
         {ERESULT_SUCCESS_0,                 NULL},
 
-        {ERESULT_SUCCESS_UNEQUAL,           NULL},  // Returned if we can not determine
-        //                                          // a < or > relationship
-        {ERESULT_SUCCESS_GREATER_THAN,      NULL},
-        {ERESULT_SUCCESS_EQUAL,             NULL},
-        {ERESULT_SUCCESS_LESS_THAN,         NULL},
-        
         {ERESULT_TRUE,                      NULL},
         {ERESULT_SUCCESS_TRUE,              NULL},
         {ERESULT_SUCCESS_FALSE,             NULL},

@@ -148,7 +148,7 @@ int             test_PsxExec_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PSXEXEC);
         TINYTEST_TRUE( (fRc) );
         //eRc = PsxExec_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -161,7 +161,7 @@ int             test_PsxExec_Copy01 (
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PSXEXEC);
         TINYTEST_TRUE( (fRc) );
         //eRc = PsxExec_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -179,7 +179,7 @@ int             test_PsxExec_Copy01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
         //eRc = PsxExec_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -254,7 +254,7 @@ int             test_PsxExec_System01(
         fprintf(stderr, "\tiRc=%d  output=\"%s\"\n\n", iRc, AStr_getData(pOutput));
     }
     eRc = AStr_CompareA(pOutput, "just a test\n");
-    TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+    TINYTEST_TRUE( (0 == eRc) );
 
     obj_Release(pOutput);
     pOutput = OBJ_NIL;

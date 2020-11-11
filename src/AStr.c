@@ -1695,8 +1695,7 @@ extern "C" {
         ASTR_DATA       *pOther
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-        int32_t         i;
+        int             iRc = 0;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1704,27 +1703,27 @@ extern "C" {
         if( !AStr_Validate(this) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
         if( !AStr_Validate(pOther) ) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return -2;
         }
 #endif
         if( OBJ_NIL == pOther ) {
             DEBUG_BREAK();
             //return ERESULT_SUCCESS_GREATER_THAN;
-            return -1;
+            return 1;
         }
         
-        i = utf8_StrCmp(
+        iRc = utf8_StrCmp(
                     array_Ptr(this->pData, 1),
                     array_Ptr(pOther->pData, 1)
             );
 
         // Return to caller.
-        return i;
+        return iRc;
     }
     
     
@@ -1734,8 +1733,7 @@ extern "C" {
         char            *pData
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-        int32_t         i;
+        int32_t         iRc = 0;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1752,13 +1750,13 @@ extern "C" {
         }
 #endif
         
-        i = utf8_StrCmp(
+        iRc = utf8_StrCmp(
                         array_Ptr(this->pData, 1),
                         pData
             );
 
         // Return to caller.
-        return i;
+        return iRc;
     }
     
 
@@ -1768,7 +1766,6 @@ extern "C" {
         char            *pData
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         int32_t         len;
         int             lenData;
@@ -1809,7 +1806,6 @@ extern "C" {
         char            *pData
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         int32_t         len;
         int             lenData;
@@ -1850,7 +1846,6 @@ extern "C" {
         W32CHR_T        *pData
     )
     {
-        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
         int32_t         i;
         
         // Do initialization.
@@ -3300,7 +3295,7 @@ extern "C" {
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
         }
-        if (ERESULT_SUCCESS_EQUAL == AStr_CompareRightA(pStr, "\n"))
+        if (0 == AStr_CompareRightA(pStr, "\n"))
             ;
         else {
             AStr_AppendCharRepeatW32(pStr, 1, '\n');

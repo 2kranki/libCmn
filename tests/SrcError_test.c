@@ -138,7 +138,7 @@ int         test_SrcError_Json01(
         TINYTEST_TRUE( (3 == SrcError_getLocation(pObj2)->lineNo) );
         TINYTEST_TRUE( (4 == SrcError_getLocation(pObj2)->offset) );
         eRc = AStr_CompareA(SrcError_getErrorStr(pObj2), "Error - Mistake!");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
