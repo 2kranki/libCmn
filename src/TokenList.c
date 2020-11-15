@@ -785,9 +785,11 @@ extern "C" {
         obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&TokenList_Vtbl);
+#ifdef  TOKENLIST_JSON_SUPPORT
         JsonIn_RegisterClass(SrcLoc_Class());
         JsonIn_RegisterClass(Token_Class());
         JsonIn_RegisterClass(TokenList_Class());
+#endif
 
         /*
         this->pArray = objArray_New( );

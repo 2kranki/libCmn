@@ -358,7 +358,10 @@ extern "C" {
         }
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&szTbl_Vtbl);
-        
+#ifdef  SZTBL_JSON_SUPPORT
+        JsonIn_RegisterClass(szTbl_Class());
+#endif
+
         pht = szHash_Alloc();
         pht = szHash_Init(pht, SZHASH_TABLE_SIZE_SMALL);
         if (OBJ_NIL == pht) {

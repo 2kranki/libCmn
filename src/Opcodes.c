@@ -809,9 +809,11 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Opcodes_Vtbl);
+#ifdef  OPCODES_JSON_SUPPORT
         JsonIn_RegisterClass(Opcode_Class());
         JsonIn_RegisterClass(ObjArray_Class());
         JsonIn_RegisterClass(this);
+#endif
 
         this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {

@@ -826,8 +826,10 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Syms_Vtbl);
+#ifdef  SYMS_JSON_SUPPORT
         JsonIn_RegisterClass(Sym_Class());
         JsonIn_RegisterClass(Syms_Class());
+#endif
 
         this->pTree = szBT_New( );
         if (OBJ_NIL == this->pTree) {

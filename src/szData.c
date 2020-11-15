@@ -685,7 +685,10 @@ extern "C" {
         //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SZDATA);         // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&szData_Vtbl);
-        
+#ifdef  SZDATA_JSON_SUPPORT
+        JsonIn_RegisterClass(szData_Class());
+#endif
+
     #ifdef NDEBUG
     #else
         if( !szData_Validate(this) ) {

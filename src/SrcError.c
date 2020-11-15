@@ -841,7 +841,10 @@ extern "C" {
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&SrcError_Vtbl);
-        
+#ifdef  SRCERROR_JSON_SUPPORT
+        JsonIn_RegisterClass(SrcError_Class());
+#endif
+
         /*
         this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {

@@ -446,7 +446,10 @@ extern "C" {
         //obj_setSize(this, cbSize);         // Needed for Inheritance
         //obj_setIdent((OBJ_ID)this, OBJ_IDENT_SRCLOC);
         obj_setVtbl(this, &SrcLoc_Vtbl);
-        
+#ifdef  SRCLOC_JSON_SUPPORT
+        JsonIn_RegisterClass(SrcLoc_Class());
+#endif
+
         //this->stackSize = obj_getMisc1(this);
         //this->pArray = ObjArray_New( );
 

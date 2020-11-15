@@ -1576,8 +1576,10 @@ Exit00:
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Scanner_Vtbl);
+#ifdef  SCANNER_JSON_SUPPORT
         JsonIn_RegisterClass(W32StrC_Class());
         JsonIn_RegisterClass(Scanner_Class());
+#endif
 
         this->pIsLabelCharW32 = ascii_isLabelCharW32;
         this->pIsLabel1stCharW32 = ascii_isLabelFirstCharW32;
