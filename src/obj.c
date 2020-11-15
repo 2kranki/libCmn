@@ -343,6 +343,25 @@ extern	"C" {
     //                      *** Properties ***
     //===============================================================
 
+    OBJ_ID          obj_getClass(
+        OBJ_ID          objId
+    )
+    {
+        OBJ_DATA        *this = objId;
+        OBJ_INFO        *pInfo;
+
+        if (this == OBJ_NIL) {
+            return NULL;
+        }
+        if (this->pVtbl == NULL) {
+            return NULL;
+        }
+        pInfo = (OBJ_INFO *)this->pVtbl->pInfo;
+        return pInfo->pClassObject;
+    }
+
+
+
     bool            obj_IsEnabled(
         void            *pVoid
     )

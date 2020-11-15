@@ -878,7 +878,8 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&U16Array_Vtbl);
-        
+        JsonIn_RegisterClass(U16Array_Class());
+
         array_setElemSize((ARRAY_DATA *)this, 2);
         /*
         this->pArray = objArray_New( );

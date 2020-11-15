@@ -24,6 +24,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
 #include    <trace.h>
 #include    <Syms_internal.h>
 #ifdef  SYMS_JSON_SUPPORT
@@ -98,6 +99,7 @@ int             tearDown (
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

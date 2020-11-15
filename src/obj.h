@@ -300,7 +300,14 @@ extern	"C" {
         void
     );
     
-    
+
+    /*! Get the class object for any object.
+     */
+    OBJ_ID          obj_getClass(
+        OBJ_ID          objId
+    );
+
+
     OBJ_ID          obj_ClassSuper(
         OBJ_ID          objId
     );

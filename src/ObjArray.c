@@ -1378,7 +1378,7 @@ extern "C" {
         OBJ_COMPARE     pCompare
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         ARRAY_ENTRY     *pEntry;
         OBJ_ID          pObj1 = OBJ_NIL;
         OBJ_ID          pObj2;

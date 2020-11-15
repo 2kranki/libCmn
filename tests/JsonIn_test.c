@@ -24,7 +24,9 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
 #include    <trace.h>
+#include    <I16Array.h>
 #include    <NodeArray.h>
 #include    <szTbl.h>
 #include    <trace.h>
@@ -59,6 +61,7 @@ int             tearDown(
     
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -330,7 +333,6 @@ int             test_JsonIn_Integers01(
         "\"objectType\":\"IntegerArray\", "
         "\"data\":[1,2,3],"
     "}\n";
-    int64_t         type = 0;
     NODE_DATA       *pNode;
     NODEARRAY_DATA  *pArray = OBJ_NIL;
     ASTR_DATA       *pStrWrk = OBJ_NIL;
@@ -420,6 +422,7 @@ int             test_JsonIn_I16Array01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        JsonIn_RegisterClass(I16Array_Class());
         pStr = AStr_NewA(JsonInput);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         //obj_TraceSet(pObj, true);

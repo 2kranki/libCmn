@@ -25,6 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <AStrArray.h>
+#include    <JsonIn.h>
 #include    <trace.h>
 #include    <Scanner_internal.h>
 #ifdef  SCANNER_JSON_SUPPORT
@@ -60,6 +61,7 @@ int             tearDown (
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

@@ -53,10 +53,10 @@ struct JsonIn_class_data_s	{
     // Common Data
 #ifdef  JSONIN_SINGLETON
     volatile
-    JSONIN_DATA       *pSingleton;
+    JSONIN_DATA     *pSingleton;
 #endif
     //uint32_t        misc;
-    //OBJ_ID          pObjCatalog;
+    OBJLIST_DATA    *pList;
 };
 
 
@@ -153,7 +153,7 @@ JSONIN_CLASS_DATA  JsonIn_ClassObj = {
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },
-	//0
+	0
 };
 
 
@@ -241,6 +241,54 @@ void            JsonIn_SharedReset (
 #endif
 
 
+
+//---------------------------------------------------------------
+//               C l a s s  R e g i s t r a t i o n
+//---------------------------------------------------------------
+
+ERESULT         JsonIn_RegisterClass (
+    OBJ_ID          pObject
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    JSONIN_CLASS_DATA  *this = &JsonIn_ClassObj;
+
+    // Do initialization.
+    if (OBJ_NIL == this->pList) {
+        this->pList = ObjList_New();
+        if (OBJ_NIL == this->pList) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+    }
+
+    eRc = ObjList_Add2HeadExcl(this->pList, pObject);
+
+    // Return to caller.
+    return eRc;
+}
+
+
+OBJLIST_DATA *  JsonIn_RegisterList (
+    void
+)
+{
+    JSONIN_CLASS_DATA  *this = &JsonIn_ClassObj;
+
+    return this->pList;
+}
+
+
+void            JsonIn_RegisterReset(
+    void
+)
+{
+    JSONIN_CLASS_DATA  *this = &JsonIn_ClassObj;
+
+    if (this->pList) {
+        obj_Release(this->pList);
+        this->pList = OBJ_NIL;
+    }
+}
 
 //---------------------------------------------------------------
 //                     Q u e r y  I n f o

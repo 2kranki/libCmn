@@ -355,6 +355,7 @@
 					"$(HOME)/git/Support/lib/macos64/libCmn/include",
 				);
 				LIBRARY_SEARCH_PATHS = "$(HOME)/git/Support/lib/macos64/libCmn/";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -370,6 +371,7 @@
 					"$(HOME)/git/Support/lib/macos64/libCmn/include",
 				);
 				LIBRARY_SEARCH_PATHS = "$(HOME)/git/Support/lib/macos64/libCmn/";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

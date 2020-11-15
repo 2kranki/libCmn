@@ -29,6 +29,7 @@
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
+#include    <JsonIn.h>
 #include    <trace.h>
 #include    <W32StrC.h>
 
@@ -60,6 +61,7 @@ int             tearDown (
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

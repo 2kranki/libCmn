@@ -111,13 +111,14 @@ struct BlkdRcds16_data_s	{
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-    #define BLKDRCDS16_FLAG_ALLOC   OBJ_FLAG_USER1
 
     // Common Data
     uint16_t        blockSize;
     uint16_t        rsvdSize;
     ASTR_DATA       *pStr;
     DATA_BLOCK      *pBlock;
+    uint8_t         fAlloc;
+    uint8_t         rsvd8[3];
 
 };
 #pragma pack(pop)

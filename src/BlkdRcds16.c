@@ -67,10 +67,10 @@ extern "C" {
         BLKDRCDS16_DATA *this
     )
     {
-        if ( obj_Flag(this, BLKDRCDS16_FLAG_ALLOC) && this->pBlock) {
+        if ( this->fAlloc && this->pBlock) {
             mem_Free(this->pBlock);
             this->pBlock = NULL;
-            obj_FlagOff(this, BLKDRCDS16_FLAG_ALLOC);
+            this->fAlloc = 0;
         }
     }
 
@@ -1437,7 +1437,7 @@ extern "C" {
         if (NULL == pBlock) {
             this->pBlock = mem_Malloc(blockSize);
             if (this->pBlock) {
-                obj_FlagOn(this, BLKDRCDS16_FLAG_ALLOC);
+                this->fAlloc = 1;
             }
         } else {
             this->pBlock = pBlock;

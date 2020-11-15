@@ -354,6 +354,23 @@ extern "C" {
     );
 
 
+    /*!
+     Register an Object's Class() method for parsing json objects. This
+     allows a json parser to register class that it will use to parse
+     its particular json text.
+     @param     pObject  Class Object Pointer to be registered
+     @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_*
+                error code
+     */
+    ERESULT         JsonIn_RegisterClass(
+        OBJ_ID          pObject
+    );
+
+
+    void            JsonIn_RegisterReset(
+        void
+    );
+
 
 
 
@@ -687,21 +704,6 @@ extern "C" {
     ERESULT         JsonIn_ParsePath(
         JSONIN_DATA     *this,
         PATH_DATA       *pPath
-    );
-
-
-    /*!
-     Register an Object's Class() method for parsing json objects. This
-     allows a json parser to register class that it will use to parse
-     its particular json text.
-     @param     this    object pointer
-     @param     pCls    Class Method for Object Class (required)
-     @return    If successful, ERESULT_SUCCESS, otherwise, ERESULT_*
-                error code
-     */
-    ERESULT         JsonIn_RegisterClass(
-        JSONIN_DATA     *this,
-        OBJMETHOD_DATA  *pCls
     );
 
 

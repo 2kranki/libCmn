@@ -24,6 +24,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
 #include    <trace.h>
 #include    <Opcodes_internal.h>
 #ifdef  OPCODES_JSON_SUPPORT
@@ -59,6 +60,7 @@ int             tearDown (
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(
@@ -125,7 +127,7 @@ int             test_Opcodes_Copy01 (
     OPCODES_DATA	    *pObj1 = OBJ_NIL;
     OPCODES_DATA	    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(OPCODES_JSON_SUPPORT) && defined(XYZZY)
+#if defined(OPCODES_JSON_SUPPORT)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
    
@@ -168,7 +170,7 @@ int             test_Opcodes_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(OPCODES_JSON_SUPPORT) && defined(XYZZY)
+#if defined(OPCODES_JSON_SUPPORT)
         pStr = Opcodes_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
@@ -233,9 +235,12 @@ int             test_Opcodes_Test01 (
         obj_Release(pOpc);
         pOpc = Opcode_NewA("br");
         TINYTEST_FALSE( (OBJ_NIL == pOpc) );
-        // V1 was based on the opcode name being unique
-        // and was used as the index.
-        // V2 does not require that.
+        // Version 1 was based on the opcode name
+        // being unique and was used as the index.
+        // V2 does not require that, because you
+        // might have the opcode name used in
+        // several object formats or assembler
+        // inputs.
         eRc = Opcodes_Add(pObj, pOpc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (3 == Opcodes_getSize(pObj)) );

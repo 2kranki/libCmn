@@ -56,6 +56,7 @@
 #include        <crc.h>
 #include        <dec.h>
 #include        <hex.h>
+#include        <JsonIn.h>
 #include        <Node.h>
 #include        <NodeHash.h>
 #include        <utf8.h>
@@ -1923,6 +1924,8 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (void *)&W32Str_Vtbl);
+        JsonIn_RegisterClass(W32Str_Class());
+
         array_setElemSize((ARRAY_DATA *)this, sizeof(W32CHR_T));
         array_setZeroNew((ARRAY_DATA *)this, false);
 

@@ -20,7 +20,6 @@
  *    1.    Records are numbered starting with 1.  If zero is
  *          returned for a record index, it should be considered
  *          an error.
- *    2.    This object uses OBJ_FLAG_USER1 internally.
  *
  * References:
  *  *      "Data Structures and Algorithms", Alfred V. Aho et al,

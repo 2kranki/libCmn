@@ -475,66 +475,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      C o m p a r e
-    //---------------------------------------------------------------
-    
-    /*!
-     Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
-     */
-    ERESULT         Gen_Compare (
-        GEN_DATA     *this,
-        GEN_DATA     *pOther
-    )
-    {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
-#ifdef NDEBUG
-#else
-        if (!Gen_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (!Gen_Validate(pOther)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
-
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
-    }
-    
-   
- 
-    //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     
@@ -736,13 +676,13 @@ extern "C" {
 
         eRc = AStr_CompareLeftA(pModelFileName, "model.obj");
         eResult_ErrorFatalOnBool(
-                        (eRc != ERESULT_SUCCESS_EQUAL),
+                        (eRc != 0),
                         "Model Path is not \"model.obj.X.txt, %s!\n",
                         AStr_getData(pModelFileName)
         );
         eRc = AStr_CompareRightA(pModelFileName, ".txt");
         eResult_ErrorFatalOnBool(
-                        (eRc != ERESULT_SUCCESS_EQUAL),
+                        (eRc != 0),
                         "Model Path is not \"model.obj.X.txt, %s!\n",
                         AStr_getData(pModelFileName)
         );

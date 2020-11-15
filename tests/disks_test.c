@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
 #include    <trace.h>
 #include    <disks_internal.h>
 
@@ -50,7 +51,7 @@ int             tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

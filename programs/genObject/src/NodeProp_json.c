@@ -113,10 +113,10 @@ extern "C" {
         (void)JsonIn_FindU8NodeInHashA(pParser, "object", &pObject->fObj);
         (void)JsonIn_FindStringNodeInHashA(pParser, "vis", &pStr);
         if (pStr) {
-            if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "PUBLIC")) {
+            if (0 == AStr_CompareA(pStr, "PUBLIC")) {
                 pObject->vis = NODEPROP_VIS_PUBLIC;
             }
-            else if (ERESULT_SUCCESS_EQUAL == AStr_CompareA(pStr, "READ_ONLY")) {
+            else if (0 == AStr_CompareA(pStr, "READ_ONLY")) {
                 pObject->vis = NODEPROP_VIS_READ_ONLY;
             }
         }

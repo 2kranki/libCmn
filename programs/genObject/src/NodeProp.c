@@ -736,24 +736,17 @@ extern "C" {
     
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         NodeProp_Compare (
+    int             NodeProp_Compare (
         NODEPROP_DATA     *this,
         NODEPROP_DATA     *pOther
     )
     {
-        //int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
+        int             iRc = 0;
+
 #ifdef NDEBUG
 #else
         if (!NodeProp_Validate(this)) {
@@ -766,9 +759,9 @@ extern "C" {
         }
 #endif
 
-        eRc = AStr_Compare(this->pName, pOther->pName);
+        iRc = AStr_Compare(this->pName, pOther->pName);
 
-        return eRc;
+        return iRc;
     }
     
    
@@ -1067,7 +1060,7 @@ extern "C" {
         // Generate Get Method
         AStr_AppendCharRepeatA(pStr, 4, ' ');
         if (this->fObj
-            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            && !(0 == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
             AStr_AppendPrint(pStr,
                              "%s *",
                              AStr_getData(this->pTypeDef)
@@ -1155,7 +1148,7 @@ extern "C" {
         if (spcs < 1)
             spcs = 1;
         if (this->fObj
-            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            && !(0 == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
             AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
             AStr_AppendCharRepeatA(pStr, spcs, ' ');
             AStr_AppendA(pStr, "*pValue,\n");
@@ -1300,7 +1293,7 @@ extern "C" {
         // Generate Get Method
         AStr_AppendCharRepeatA(pStr, 4, ' ');
         if (this->fObj
-            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            && !(0 == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
             AStr_AppendPrint(pStr,
                              "%s *",
                              AStr_getData(this->pTypeDef)
@@ -1370,7 +1363,7 @@ extern "C" {
             if (spcs < 1)
                 spcs = 1;
             if (this->fObj
-                && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+                && !(0 == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
                 AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
                 AStr_AppendCharRepeatA(pStr, spcs, ' ');
                 AStr_AppendA(pStr, "*pValue,\n");
@@ -1447,7 +1440,7 @@ extern "C" {
         // Generate Get Method
         AStr_AppendCharRepeatA(pStr, 4, ' ');
         if (this->fObj
-            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            && !(0 == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
             AStr_AppendPrint(pStr,
                              "%s *",
                              AStr_getData(this->pTypeDef)
@@ -1516,7 +1509,7 @@ extern "C" {
         if (spcs < 1)
             spcs = 1;
         if (this->fObj
-            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            && !(0 == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
             AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
             AStr_AppendCharRepeatA(pStr, spcs, ' ');
             AStr_AppendA(pStr, "*pValue,\n");
@@ -1567,7 +1560,7 @@ extern "C" {
 
         AStr_AppendCharRepeatA(pStr, 4, ' ');
         if (this->fObj
-            && !(ERESULT_SUCCESS_EQUAL == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
+            && !(0 == AStr_CompareA(this->pTypeDef, "OBJ_ID"))) {
             AStr_AppendPrint(pStr, "%s", AStr_getData(this->pTypeDef));
             spcs = 16 - AStr_getLength(this->pTypeDef);
             if (spcs < 1)

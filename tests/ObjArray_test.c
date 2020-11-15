@@ -24,6 +24,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
 #include    <trace.h>
 #include    <ObjArray_internal.h>
 #include    <AStrC.h>
@@ -73,6 +74,7 @@ int             tearDown(
 
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(

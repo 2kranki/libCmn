@@ -364,8 +364,9 @@ extern "C" {
 
 
     /*!
-     Clean up the Path by removing "//", "/./" or "/../" combinations and
-     replace a leading '~' with the $HOME or $HOMEDRIVE Environment variable.
+     Clean up the Path by removing "//", "/./" or "/../" combinations,
+     replace a leading '~' with the $HOME or $HOMEDRIVE Environment variable
+     and expand environment variables.
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error.
      */
     ERESULT         Path_Clean (

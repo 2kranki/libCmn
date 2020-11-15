@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
 #include    <trace.h>
 #include    <lexj_internal.h>
 #include    <SrcFile.h>
@@ -68,6 +69,7 @@ int         tearDown(
     // test method in the class.
 
     szTbl_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

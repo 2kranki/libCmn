@@ -149,7 +149,7 @@ int             test_Gen_Copy01 (
         TINYTEST_TRUE( (fRc) );
         Gen_setDict(pObj2, pDict);
         //eRc = Gen_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -163,7 +163,7 @@ int             test_Gen_Copy01 (
         TINYTEST_TRUE( (fRc) );
         Gen_setDict(pObj2, pDict);
         //eRc = Gen_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -182,7 +182,7 @@ int             test_Gen_Copy01 (
         pStr = OBJ_NIL;
         Gen_setDict(pObj2, pDict);
         //eRc = Gen_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -240,7 +240,7 @@ int             test_Gen_Test01 (
         fRc = obj_IsKindOf(pStr2, OBJ_IDENT_ASTR);
         TINYTEST_TRUE( (fRc) );
         eRc = AStr_CompareA(pStr2, "Xyzzy");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = Gen_SetDefaults(pObj);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         pStrA = Dict_GetA(pObj->pDict, MODEL_DRIVE);
@@ -261,7 +261,7 @@ int             test_Gen_Test01 (
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
         fprintf(stderr, "\tmodel: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
         eRc = AStr_CompareA(Path_getAStr(pPath), "/Users/bob/Support/genObject/model.obj.h.txt");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pPath);
         pPath = OBJ_NIL;
         obj_Release(pStr2);
@@ -272,7 +272,7 @@ int             test_Gen_Test01 (
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
         fprintf(stderr, "\toutput: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
         eRc = AStr_CompareA(Path_getAStr(pPath), "/Users/bob/Support/x/Xyzzy.h");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pPath);
         pPath = OBJ_NIL;
         obj_Release(pStr2);
@@ -283,7 +283,7 @@ int             test_Gen_Test01 (
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
         fprintf(stderr, "\toutput: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
         eRc = AStr_CompareA(Path_getAStr(pPath), "/Users/bob/Support/x/Xyzzy_internal.h");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pPath);
         pPath = OBJ_NIL;
         obj_Release(pStr2);
@@ -383,9 +383,9 @@ int             test_Gen_ExpandData01 (
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "\tExpanded:\n%s\n", AStr_getData(pStr));
         eRc = AStr_CompareLeftA(pStr, "LNAME:Xyzzy UNAME:XYZZY\n");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = AStr_CompareRightA(pStr, "Xyzzy XYZZY Xyzzy\n");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         fprintf(stderr, "\tLines: %d\n", cnt);
 
         obj_Release(pObj);
@@ -478,9 +478,9 @@ int             test_Gen_ExpandFile01 (
         fprintf(stderr, "\tExpanded:\n%s\n", AStr_getData(pStr));
         fprintf(stderr, "\tLines: %d\n", cnt);
         eRc = AStr_CompareLeftA(pStr, "LNAME:Xyzzy UNAME:XYZZY\n");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
         eRc = AStr_CompareRightA(pStr, "Xyzzy XYZZY Xyzzy\n\n");
-        TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TINYTEST_TRUE( (0 == eRc) );
 
         obj_Release(pDict);
         pDict = OBJ_NIL;

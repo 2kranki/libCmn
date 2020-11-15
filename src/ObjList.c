@@ -331,6 +331,43 @@ int             ObjList_SortCompare (
     }
     
     
+    ERESULT         ObjList_Add2HeadExcl (
+        OBJLIST_DATA    *this,
+        OBJ_ID          pObject
+    )
+    {
+        ERESULT         eRc;
+        OBJLIST_RECORD  *pEntry;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjList_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( (OBJ_NIL == pObject) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        // If the object is already in the list,
+        // make it the head.
+        pEntry = ObjList_FindObj(this,  pObject);
+        if (pEntry) {
+            listdl_Delete(&this->list, pEntry);
+            listdl_Add2Head(&this->list, pEntry);
+            return ERESULT_SUCCESS;
+        }
+
+        eRc = ObjList_Add2Head(this, pObject);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
     ERESULT         ObjList_Add2Tail (
         OBJLIST_DATA    *this,
         OBJ_ID          pObject

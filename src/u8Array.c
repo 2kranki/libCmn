@@ -1072,7 +1072,8 @@ extern "C" {
         //obj_setIdent((OBJ_ID)this, OBJ_IDENT_U8ARRAY);
         this->pSuperVtbl = obj_getVtbl(this);           // Needed for Inheritance
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&u8Array_Vtbl);
-        
+        JsonIn_RegisterClass(u8Array_Class());
+
         this->pData = array_NewWithSize(1);
         if (OBJ_NIL == this->pData) {
             obj_Release(this);

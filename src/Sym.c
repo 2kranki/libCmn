@@ -1891,6 +1891,7 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Sym_Vtbl);
+        JsonIn_RegisterClass(Sym_Class());
 
         // Set up Extra to be used by U8VlArray.
         this->entry.extra[0] = sizeof(this->entry.extra);

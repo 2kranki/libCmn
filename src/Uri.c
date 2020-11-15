@@ -770,7 +770,8 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Uri_Vtbl);
-        
+        JsonIn_RegisterClass(Uri_Class());
+
         /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {

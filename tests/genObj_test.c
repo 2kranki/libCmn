@@ -23,6 +23,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <genObj_internal.h>
@@ -54,6 +55,7 @@ int         tearDown(
 
     
     szTbl_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(

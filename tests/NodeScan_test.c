@@ -25,6 +25,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
 #include    <NodeLink.h>
 #include    <trace.h>
 #include    <NodeScan_internal.h>
@@ -453,6 +454,7 @@ int             tearDown(
     // test method in the class.
 
     
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

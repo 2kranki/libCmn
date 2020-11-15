@@ -96,7 +96,7 @@ struct JsonIn_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  JSONIN_SINGLETON
-    JSONIN_DATA *     JsonIn_getSingleton (
+    JSONIN_DATA *   JsonIn_getSingleton (
         void
     );
 
@@ -104,6 +104,11 @@ struct JsonIn_data_s	{
      JSONIN_DATA       *pValue
 );
 #endif
+
+
+    OBJLIST_DATA *  JsonIn_RegisterList (
+        void
+    );
 
 
 
@@ -122,7 +127,7 @@ struct JsonIn_data_s	{
 
 
 #ifdef  JSONIN_JSON_SUPPORT
-    JSONIN_DATA *       JsonIn_ParseJsonObject (
+    JSONIN_DATA *   JsonIn_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 #endif

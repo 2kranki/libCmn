@@ -24,6 +24,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
 //#include    <szTbl.h>
 #include    <trace.h>
 #include    <NodeList_internal.h>
@@ -110,6 +111,7 @@ int             tearDown (
     // test method in the class.
 
     //szTbl_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

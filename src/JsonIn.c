@@ -43,11 +43,9 @@
 /* Header File Inclusion */
 #include        <JsonIn_internal.h>
 #include        <AStr_internal.h>
-#include        <BitMatrix_internal.h>
 #include        <dec.h>
 #include        <hex.h>
 #include        <hjson.h>
-#include        <I32Array_internal.h>
 #include        <Name_internal.h>
 #include        <Node_internal.h>
 #include        <NodeArray_internal.h>
@@ -61,7 +59,6 @@
 #include        <ObjList_internal.h>
 #include        <ObjMethod_internal.h>
 #include        <ObjHash.h>
-#include        <Opcode_internal.h>
 #include        <SrcError_internal.h>
 #include        <SrcErrors_internal.h>
 #include        <SrcLoc.h>
@@ -2306,24 +2303,29 @@ extern "C" {
         }
 #endif
 
+        pObj = ObjList_Head(JsonIn_RegisterList());
+        while (pObj) {
+            pInfo = obj_getInfo(obj_getClass(pObj));
+            eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+            if (ERESULT_OK(eRc)) {
+                OBJ_ID      pNewObj;
+                OBJ_ID      (*pMethod)(OBJ_ID) = NULL;
+                pMethod =   ObjList_QueryInfo(
+                                              this,
+                                              OBJ_QUERYINFO_TYPE_METHOD,
+                                              "ParseJsonObject"
+                            );
+                if (pMethod) {
+                    pNewObj = pMethod(this);
+                    return pNewObj;
+                }
+            }
+            pObj = ObjList_Next(JsonIn_RegisterList());
+        }
         pInfo = obj_getInfo(AStr_Class());
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)AStr_ParseJsonObject(this);
-            return pObj;
-        }
-
-        pInfo = obj_getInfo(BitMatrix_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)BitMatrix_ParseJsonObject(this);
-            return pObj;
-        }
-
-        pInfo = obj_getInfo(I32Array_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)I32Array_ParseJsonObject(this);
             return pObj;
         }
 
@@ -2394,13 +2396,6 @@ extern "C" {
         eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)ObjMethod_ParseJsonObject(this);
-            return pObj;
-        }
-
-        pInfo = obj_getInfo(Opcode_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            pObj = (OBJ_ID)Opcode_ParseJsonObject(this);
             return pObj;
         }
 
@@ -2637,43 +2632,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  R e g i s t e r  C l a s s
-    //---------------------------------------------------------------
-
-    ERESULT         JsonIn_RegisterClass (
-        JSONIN_DATA     *this,
-        OBJMETHOD_DATA  *pCls
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!JsonIn_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        if (OBJ_NIL == this->pClasses) {
-            this->pClasses = ObjArray_New();
-            if (OBJ_NIL == this->pClasses) {
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-
-        if (obj_IsEnabled(this)) {
-            return ERESULT_SUCCESS_TRUE;
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                     S u b  O b j e c t
     //---------------------------------------------------------------
 
@@ -2773,47 +2731,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-#ifdef  JSONIN_JSON_SUPPORT
-     ASTR_DATA *     JsonIn_ToJson (
-        JSONIN_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!JsonIn_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-#endif
-    
-    
-    
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

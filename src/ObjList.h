@@ -193,6 +193,20 @@ extern "C" {
     );
     
     
+    /*!
+     Add the given object to the head of the list only if the objective
+     is not already in the list. If it is in the list, make it the head.
+     @param     this    object pointer
+     @param     pObject a pointer to an object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         ObjList_Add2HeadExcl (
+        OBJLIST_DATA    *this,
+        OBJ_ID          pObject
+    );
+
+
     ERESULT         ObjList_Add2Tail (
         OBJLIST_DATA    *this,
         OBJ_ID          pObject
@@ -337,6 +351,12 @@ extern "C" {
     );
 
 
+    /*! Prepend another list in front of this list.
+     @param     this    object pointer
+     @param     other   other list to be prepended
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
     ERESULT         ObjList_Prepend(
         OBJLIST_DATA    *this,
         OBJLIST_DATA    *other
