@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <Path_internal.h>
+#include        <misc.h>
 #include        <trace.h>
 
 
@@ -1985,10 +1986,12 @@ extern "C" {
     ERESULT         Path_MatchA(
         PATH_DATA       *this,
         const
-        char            *pPattern
+        char            *pPatternA
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
+        PATH_DATA       *pFileName = OBJ_NIL;
+        bool            fRc;
 
 #ifdef NDEBUG
 #else
@@ -1998,7 +2001,25 @@ extern "C" {
         }
 #endif
 
-        eRc =   AStr_MatchA((ASTR_DATA *)this, pPattern);
+        if (pPatternA) {
+            eRc = Path_SplitPath(this, OBJ_NIL, OBJ_NIL, &pFileName);
+            if (ERESULT_OK(eRc)) {
+                fRc =   misc_PatternMatchA(
+                                           pPatternA,
+                                           Path_getData(pFileName),
+                                           NULL,
+                                           NULL
+                                           );
+                if (fRc) {
+                    eRc = ERESULT_SUCCESS;
+                }
+            }
+        } else {
+            eRc = ERESULT_DATA_MISSING;
+        }
+
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
 
         return eRc;
     }

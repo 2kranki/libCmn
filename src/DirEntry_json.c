@@ -100,6 +100,7 @@ extern "C" {
         }
 
         (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU16NodeInHashA(pParser, "typeLink", &pObject->type);
         (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
         (void)JsonIn_FindU32NodeInHashA(pParser, "userID", &pObject->userID);
         (void)JsonIn_FindU32NodeInHashA(pParser, "groupID", &pObject->groupID);
@@ -113,6 +114,11 @@ extern "C" {
 #endif
 
         eRc = JsonIn_SubObjectInHash(pParser, "FullPath");
+        if (!ERESULT_FAILED(eRc)) {
+            pObject->pFullPath = Path_ParseJsonObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+        }
+        eRc = JsonIn_SubObjectInHash(pParser, "LinkPath");
         if (!ERESULT_FAILED(eRc)) {
             pObject->pFullPath = Path_ParseJsonObject(pParser);
             JsonIn_SubObjectEnd(pParser);

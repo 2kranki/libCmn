@@ -44,13 +44,14 @@ char            *pPattern = NULL;
 static
 int             count = 1;
 
+
+
 static
-bool            scanner( void *pData, DIRENTRY_DATA *pEntry)
+bool            globScanner(void *pObject, DIRENTRY_DATA *pEntry, void *pData)
 {
     ERESULT         eRc;
     PATH_DATA       *pPath;
-    char            *pStr;
-    struct stat     statbuf;
+    DIRENTRY_DATA   *pLink;
 
     if (pPattern) {
         eRc = DirEntry_MatchA(pEntry, pPattern);
@@ -60,25 +61,66 @@ bool            scanner( void *pData, DIRENTRY_DATA *pEntry)
     }
     pPath = DirEntry_getFullPath(pEntry);
     if (pPath) {
-        pStr = AStr_CStringA((ASTR_DATA *)pPath, NULL);
-        if (pStr) {
+        fprintf(
+                stderr,
+                "\t%2d name: %s  type: %d\n",
+                count++,
+                Path_getData(DirEntry_getFullPath(pEntry)),
+                DirEntry_getType(pEntry)
+        );
+        DirEntry_Complete(pEntry);
+        pLink = DirEntry_Target(pEntry);
+        if (!(pLink == pEntry)) {
             fprintf(
                     stderr,
-                    "\t%2d name: %s  type: %d\n",
+                    "  ->  %2d name: %s  type: %d",
                     count++,
-                    pStr,
-                    DirEntry_getType(pEntry)
-                    );
-
-            if (-1 == stat(pStr,&statbuf))
-                fprintf(stderr, "\tCould not stat: %s\n", pStr);
-            else {
-                //fprintf(stderr, "\tname: (%d)%s\n", statbuf->d_namlen, pDirent->d_name);
-            }
-
-            mem_Free(pStr);
-            pStr = NULL;
+                    Path_getData(DirEntry_getFullPath(pLink)),
+                    DirEntry_getType(pLink)
+            );
         }
+        fprintf(stderr, "\n");
+    }
+
+    return true;
+}
+
+
+
+static
+bool            scanner( void *pData, DIRENTRY_DATA *pEntry)
+{
+    ERESULT         eRc;
+    PATH_DATA       *pPath;
+    DIRENTRY_DATA   *pLink;
+
+    if (pPattern) {
+        eRc = DirEntry_MatchA(pEntry, pPattern);
+        if (ERESULT_FAILED(eRc)) {
+            return true;
+        }
+    }
+    pPath = DirEntry_getFullPath(pEntry);
+    if (pPath) {
+        fprintf(
+                stderr,
+                "\t%2d name: %s  type: %d",
+                count++,
+                Path_getData(DirEntry_getFullPath(pEntry)),
+                DirEntry_getType(pEntry)
+                );
+        DirEntry_Complete(pEntry);
+        pLink = DirEntry_Target(pEntry);
+        if (!(pLink == pEntry)) {
+            fprintf(
+                    stderr,
+                    "  ->  %2d name: %s  type: %d",
+                    count++,
+                    Path_getData(DirEntry_getFullPath(pLink)),
+                    DirEntry_getType(pLink)
+            );
+        }
+            fprintf(stderr, "\n");
     }
 
     return true;
@@ -165,7 +207,7 @@ int             test_Dir_OpenClose (
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -242,36 +284,46 @@ int             test_Dir_Copy01 (
         pObj1 = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
 
 
+/* We used this test to work through adding recurse to ScanDir.
+ So, we aimed at a directory that only had a few subdirectoreis
+ and not many files to make checking easier.
+ */
 int             test_Dir_Test01 (
     const
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT         eRc = ERESULT_SUCCESS;
     DIR_DATA	    *pObj = OBJ_NIL;
-    bool            fRc;
+    char            *pPathA = "~/git/libCmn/programs/fileClean";
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = Dir_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pDir = pPathA;
+    count = 1;
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
+        PATH_DATA   *pPath;
 
-        //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_DIR);
-        TINYTEST_TRUE( (fRc) );
-        
+        count = 1;
+        pPath = Path_NewA(pPathA);
+        eRc = Dir_ScanDir(pObj, pPath, true, (void *)&scanner, NULL, NULL);
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -291,12 +343,13 @@ int         test_Dir_Scan01(
     //pPattern = "*.wav";
     pDir = getenv("HOME");
     pObj = Dir_New( );
+    count = 1;
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
         count = 1;
         pPath = Path_NewA(pDir);
-        eRc = Dir_ScanDir(pObj, pPath, &scanner, NULL);
+        eRc = Dir_ScanDir(pObj, pPath, false, (void *)&scanner, NULL, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
 
@@ -304,7 +357,7 @@ int         test_Dir_Scan01(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -323,6 +376,7 @@ int         test_Dir_Scan02(
 
     pPattern = "*.wav";
     pDir = getenv("HOME");
+    count = 1;
     pObj = Dir_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = Dir_Init( pObj );
@@ -331,7 +385,7 @@ int         test_Dir_Scan02(
 
         count = 1;
         pPath = Path_NewA(pDir);
-        eRc = Dir_ScanDir(pObj, pPath, &scanner, NULL);
+        eRc = Dir_ScanDir(pObj, pPath, false, (void *)&scanner, NULL, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
 
@@ -339,7 +393,7 @@ int         test_Dir_Scan02(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -358,6 +412,7 @@ int         test_Dir_Scan03(
 
     pPattern = NULL;
     pDir = ".";
+    count = 1;
     pObj = Dir_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
     pObj = Dir_Init( pObj );
@@ -366,7 +421,7 @@ int         test_Dir_Scan03(
 
         count = 1;
         pPath = Path_NewA(pDir);
-        eRc = Dir_ScanDir(pObj, pPath, &scanner, NULL);
+        eRc = Dir_ScanDir(pObj, pPath, false, (void *)&scanner, NULL, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
 
@@ -374,7 +429,7 @@ int         test_Dir_Scan03(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -411,7 +466,7 @@ int         test_Dir_Enum01(
 
         pPath = Path_NewA(pDir);
         if (pPath) {
-            pEnum = Dir_EnumDir(pObj, pPath);
+            pEnum = Dir_EnumDir(pObj, pPath, false);
             if (pEnum) {
                 i = 1;
                 for (;;) {
@@ -445,7 +500,154 @@ int         test_Dir_Enum01(
     free(pDir);
     pDir = NULL;
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Dir_Enum02(
+    const
+    char        *pTestName
+)
+{
+    DIR_DATA        *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    PATH_DATA       *pPath;
+    OBJENUM_DATA    *pEnum = OBJ_NIL;
+    DIRENTRY_DATA   *pEntry;
+    uint32_t        count;
+    uint32_t        i;
+    PATH_DATA       *pWrkPath = OBJ_NIL;
+    char            *pPathA = "~/git/libCmn/programs/fileClean";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pDir = NULL;
+    pDir = pPathA;
+    if (pDir) {
+        pDir = strdup(pDir);
+    }
+    fprintf(stderr, "\tDir: %s\n", pDir);
+    XCTAssertFalse( (NULL == pDir) );
+    pObj = Dir_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = Dir_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pPath = Path_NewA(pDir);
+        if (pPath) {
+            pEnum = Dir_EnumDir(pObj, pPath, true);
+            if (pEnum) {
+                i = 1;
+                for (;;) {
+                    eRc = ObjEnum_Next(pEnum, 1, (void **)&pEntry, &count);
+                    if (ERESULT_FAILED(eRc)) {
+                        break;
+                    }
+                    BREAK_NULL(pEntry);
+                    DirEntry_Complete(pEntry);
+                    fprintf(
+                            stderr,
+                            "%2d name: %-25s  type: %2d  gen: %d\n",
+                            i,
+                            Path_getData(DirEntry_getFullPath(pEntry)),
+                            DirEntry_getType(pEntry),
+                            DirEntry_getGenerationNumber(pEntry)
+                    );
+                    obj_Release(pWrkPath);
+                    ++i;
+                }
+                obj_Release(pEnum);
+                pEnum = OBJ_NIL;
+            }
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    free(pDir);
+    pDir = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Dir_Glob01(
+    const
+    char        *pTestName
+)
+{
+    DIR_DATA    *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    PATH_DATA   *pPath;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPattern = NULL;
+    pDir = "~/git/libCmn/programs/fileClean/src/*.h";
+    count = 1;
+    pObj = Dir_New( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        count = 1;
+        pPath = Path_NewA(pDir);
+        eRc = Dir_GlobMatch(pObj, pPath, false, (void *)&globScanner, NULL, NULL);
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        XCTAssertTrue( (4 == count) );
+
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Dir_Glob02(
+    const
+    char        *pTestName
+)
+{
+    DIR_DATA    *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    PATH_DATA   *pPath;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPattern = NULL;
+    pDir = "~/git/libCmn/programs/fileClean/*.h";
+    count = 1;
+    pObj = Dir_New( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        count = 1;
+        pPath = Path_NewA(pDir);
+        eRc = Dir_GlobMatch(pObj, pPath, true, (void *)&globScanner, NULL, NULL);
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        fprintf(stderr, "Count: %d\n", count);
+        XCTAssertTrue( (5 == count) );
+
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -453,6 +655,9 @@ int         test_Dir_Enum01(
 
 
 TINYTEST_START_SUITE(test_Dir);
+    //TINYTEST_ADD_TEST(test_Dir_Glob02,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_Dir_Glob01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Dir_Enum02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dir_Enum01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dir_Scan03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dir_Scan02,setUp,tearDown);

@@ -2310,7 +2310,7 @@ extern "C" {
             if (ERESULT_OK(eRc)) {
                 OBJ_ID      pNewObj;
                 OBJ_ID      (*pMethod)(OBJ_ID) = NULL;
-                pMethod =   ObjList_QueryInfo(
+                pMethod =   obj_getVtbl(pObj)->pQueryInfo(
                                               this,
                                               OBJ_QUERYINFO_TYPE_METHOD,
                                               "ParseJsonObject"

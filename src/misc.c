@@ -489,7 +489,7 @@ extern "C" {
             return false;
         }
         pPattern += len;
-        
+
         for (;;) {		/* Corresponding char */
             len = utf8_Utf8ToW32(pName, &cw);
             if (len == -1) {    // *** Malformed Unicode Char ***

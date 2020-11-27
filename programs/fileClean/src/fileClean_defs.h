@@ -1,12 +1,27 @@
 // vi:nu:et:sts=4 ts=4 sw=4
-/* 
- * File:   u8Array_internal.h
- *	Generated 08/07/2015 09:47:23
+
+//****************************************************************
+//                  File Clean (fileClean) Header
+//****************************************************************
+/*
+ * Program
+ *			File Clean (fileClean) Header
+ * Purpose
+ *			This header supplies the constants and macros needed
+ *			by the File Clean (fileClean) objects.
  *
- * Notes:
- *  --	N/A
+ * Remarks
+ *	1.      None
  *
+ * History
+ *	11/32/2020 Created
  */
+
+
+
+
+
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,66 +53,47 @@
 
 
 
-#ifndef U8ARRAY_INTERNAL_H
-#define	U8ARRAY_INTERNAL_H
+
+#include        <cmn_defs.h>
+#include        <Appl.h>
+#include        <AStr.h>
+#include        <DateTime.h>
+#include        <Path.h>
 
 
-#include        <u8Array.h>
-#include        <array_internal.h>
-#include        <JsonIn.h>
+#ifndef         FILECLEAN_H
+#define         FILECLEAN_H
+
 
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
+    
+
+    //****************************************************************
+    //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
+    //****************************************************************
 
 
-#pragma pack(push, 1)
-struct u8Array_data_s	{
-    /* Warning - OBJ_DATA must be first in this object!
-     */
-    OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
-#define U8ARRAY_FLAG_BIGENDIAN OBJ_FLAG_USER1
-
-    // Common Data
-    uint32_t        misc;
-    ARRAY_DATA      *pData;
-
-};
-#pragma pack(pop)
-
-    extern
-    struct u8Array_class_data_s  u8Array_ClassObj;
-
-    extern
-    const
-    U8ARRAY_VTBL    u8Array_Vtbl;
+    typedef enum main_idents_e {
+        MAIN_IDENT_BASE=OBJ_IDENT_USER_ENTRIES,
+    } MAIN_IDENTS;
+    
 
 
-
-    // Internal Functions
-    void            u8Array_Dealloc(
-        OBJ_ID          objId
-    );
-
-    U8ARRAY_DATA *  u8Array_ParseJsonObject(
-        JSONIN_DATA     *pParser
-    );
+    /****************************************************************
+    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    ****************************************************************/
 
 
-#ifdef NDEBUG
-#else
-    bool			u8Array_Validate(
-        U8ARRAY_DATA       *cbp
-    );
-#endif
+    
+    
 
-
-
+    
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	/* U8ARRAY_INTERNAL_H */
+#endif	/* FILECLEAN_H */
 

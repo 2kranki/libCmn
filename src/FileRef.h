@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          FILEREF Console Transmit Task (FileRef) Header
+//          File Reference (FileRef) Header
 //****************************************************************
 /*
  * Program
- *			Separate FileRef (FileRef)
+ *			File Reference (FileRef)
  * Purpose
  *			This object provides a standardized way of handling
  *          a separate FileRef to run things without complications

@@ -411,10 +411,10 @@ DIRENTRY_VTBL     DirEntry_Vtbl = {
         (P_OBJ_TOSTRING)DirEntry_ToDebugString,
         NULL,			// DirEntry_Enable,
         NULL,			// DirEntry_Disable,
-        NULL,			// (P_OBJ_ASSIGN)DirEntry_Assign,
+        (P_OBJ_ASSIGN)DirEntry_Assign,
         NULL,			// (P_OBJ_COMPARE)DirEntry_Compare,
-        NULL, 			// (P_OBJ_PTR)DirEntry_Copy,
-        NULL, 			// (P_OBJ_PTR)DirEntry_DeepCopy,
+        (P_OBJ_PTR)DirEntry_Copy,
+        (P_OBJ_PTR)DirEntry_Copy,
         NULL 			// (P_OBJ_HASH)DirEntry_Hash,
     },
     // Put other object method names below this.

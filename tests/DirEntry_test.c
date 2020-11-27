@@ -239,8 +239,44 @@ int             test_DirEntry_Test01 (
 
 
 
+int             test_DirEntry_Test02 (
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    DIRENTRY_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = DirEntry_NewPathA_Stat("~/Support");
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_DIRENTRY);
+        TINYTEST_TRUE( (fRc) );
+
+        pPath = DirEntry_getFullPath(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pPath) );
+        //TINYTEST_TRUE( (0 == Path_CompareA(pPath, pPathA1)) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_DirEntry);
+    TINYTEST_ADD_TEST(test_DirEntry_Test02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_DirEntry_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_DirEntry_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_DirEntry_OpenClose,setUp,tearDown);

@@ -562,10 +562,11 @@ extern "C" {
 
 
     /*!
-     Match this string against a pattern using misc_PatternMatchA.
+     Match the file name and externsion in this path against a pattern using
+     misc_PatternMatchA.
      @param     this    object pointer
      @param     pPattern pointer to a pattern string as containing optional
-     match characters, '?' and '*'.
+                        match characters, '?' and '*'.
      @return    If successful, ERESULT_SUCCESS is returned, otherwise an ERESULT_*
                  error is returned.
      */

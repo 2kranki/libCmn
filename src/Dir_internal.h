@@ -59,6 +59,22 @@ extern "C" {
 
 
 
+    // Only data that remains static through the directory structure
+    // should remain here.  All dynamic data should be passed through
+    // method parametera.
+#pragma pack(push, 1)
+    typedef struct Scanner_data_s {
+        bool            (*pScanner)(void *, DIRENTRY_DATA *, void *);
+        void            *pObject;
+        void            *pData;
+        const
+        char            *pPatternA;
+        bool            fRecurse;
+    } SCANNER_DATA;
+#pragma pack(pop)
+
+
+
 
     //---------------------------------------------------------------
     //                  Object Data Description

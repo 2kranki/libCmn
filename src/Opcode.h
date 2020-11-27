@@ -109,7 +109,7 @@ extern "C" {
         char            NameA[OPCODE_ENTRY_NAME_MAX];
 #define OPCODE_ENTRY_DIS_MAX 16              // Disassembly String Length w/ trailing NUL
         const
-        char            DisA[OPCODE_ENTRY_NAME_MAX];
+        char            DisA[OPCODE_ENTRY_DIS_MAX];
         uint8_t         iLen;               // Full Instruction Length including operands
         uint8_t         cCode;              // Operation Code Length
 #define OPCODE_ENTRY_CCODE_MAX 8            // Entry Length w/o trailing NUL
@@ -122,7 +122,7 @@ extern "C" {
          */
         int16_t         iType;              //
         uint8_t         iClass;
-        uint8_t         cCondCodes;         // Operation Code Length
+        uint8_t         cCondCodes;         // Number of Condition Codes
 #define OPCODE_ENTRY_CCONDCODE_MAX 8        // Maximum number of condition codes
 #define OPCODE_ENTRY_SZCONDCODE_MAX 11      // Condition Code Length w/ trailing NUL
         const
@@ -182,6 +182,11 @@ extern "C" {
     OPCODE_DATA *   Opcode_NewA (
         const
         char            *pNameA
+    );
+
+
+    OPCODE_DATA *   Opcode_NewEntry (
+        OPCODE_ENTRY    *pEntry
     );
 
 

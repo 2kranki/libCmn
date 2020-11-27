@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <Dir_internal.h>
+#include        <ObjList.h>
 #include        <trace.h>
 
 
@@ -54,8 +55,6 @@ extern "C" {
 #endif
     
 
-    
-
 
  
     /****************************************************************
@@ -65,7 +64,8 @@ extern "C" {
     static
     bool            enumScanner(
         void            *pObj,
-        DIRENTRY_DATA   *pDir
+        DIRENTRY_DATA   *pDir,
+        void            *pData
     )
     {
         ERESULT         eRc;
@@ -86,6 +86,57 @@ extern "C" {
         }
 
         return true;
+    }
+
+
+
+    static
+    bool            globScanner(
+        DIR_DATA        *this,
+        DIRENTRY_DATA   *pDirent,
+        SCANNER_DATA    *pData
+    )
+    {
+        ERESULT         eRc;
+        PATH_DATA       *pPath;
+        bool            fRc = false;
+
+        // Recurse through the directories if needed.
+        pPath = DirEntry_getFullPath(pDirent);
+        if (pData->fRecurse && DirEntry_IsDir(pDirent)
+        ) {
+            eRc =   Dir_GlobMatch(
+                                this,
+                                pPath,
+                                pData->fRecurse,
+                                (void *)pData->pScanner,
+                                pData->pObject,
+                                pData->pData
+                    );
+
+        }
+
+        // The directory scan just passes all the directory
+        // entries.  So, we will be do a match.
+        if (pData->pPatternA) {
+            eRc = DirEntry_MatchA(pDirent, pData->pPatternA);
+            if (ERESULT_FAILED(eRc)) {
+                return true;
+            }
+        }
+
+        if (pPath && Path_getSize(pPath)
+            && (DIRENTRY_TYPE_REG == DirEntry_getType(pDirent))
+        ) {
+            TRC_OBJ(
+                    this,
+                    "\tdir::globName: %s\n",
+                    Path_getData(pPath)
+            );
+            fRc = pData->pScanner(pData->pObject, pDirent, pData->pData);
+        }
+
+        return fRc;
     }
 
 
@@ -703,7 +754,8 @@ extern "C" {
 
     OBJENUM_DATA *  Dir_EnumDir (
         DIR_DATA        *this,
-        PATH_DATA       *pPath
+        PATH_DATA       *pPath,
+        bool            fRecurse
     )
     {
         ERESULT         eRc;
@@ -723,7 +775,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        eRc = Dir_ScanDir(this, pPath, &enumScanner, pEnum);
+        eRc = Dir_ScanDir(this, pPath, fRecurse, (void *)&enumScanner, pEnum, NULL);
         if (ERESULT_FAILED(eRc)) {
             obj_Release(pEnum);
             pEnum = OBJ_NIL;
@@ -734,6 +786,83 @@ extern "C" {
 
         // Return to caller.
         return pEnum;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          G l o b
+    //---------------------------------------------------------------
+
+    ERESULT         Dir_GlobMatch (
+        DIR_DATA        *this,
+        PATH_DATA       *pPath,
+        bool            fRecurse,
+        int             (*pScanner)(void *, DIRENTRY_DATA *, void *),
+        void            *pObject,
+        void            *pData
+    )
+    {
+        ERESULT         eRc;
+        SCANNER_DATA    *pScanData = NULL;
+        ASTR_DATA       *pDrive = OBJ_NIL;
+        PATH_DATA       *pDir = OBJ_NIL;
+        PATH_DATA       *pDriveDir = OBJ_NIL;
+        PATH_DATA       *pFileName = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Dir_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pScanner) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        eRc = Path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
+        if (ERESULT_FAILED(eRc)) {
+            return  ERESULT_INVALID_DATA;
+        }
+        pDriveDir = Path_NewFromDriveDirFilename(pDrive, pDir, OBJ_NIL);
+        eRc = Path_Clean(pDriveDir);
+        obj_Release(pDrive);
+        pDrive = OBJ_NIL;
+        obj_Release(pDir);
+        pDir = OBJ_NIL;
+
+        pScanData = mem_Calloc(sizeof(SCANNER_DATA), 1);
+        if( NULL == pScanData ) {
+            obj_Release(pDriveDir);
+            pDriveDir = OBJ_NIL;
+            obj_Release(pFileName);
+            pFileName = OBJ_NIL;
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        pScanData->pPatternA = Path_getData(pFileName);
+        pScanData->pScanner = (void *)pScanner;
+        pScanData->pObject = pObject;
+        pScanData->pData = pData;
+        pScanData->fRecurse = fRecurse;
+
+        eRc = Dir_ScanDir(this, pDriveDir, fRecurse, (void *)&globScanner, this, pScanData);
+
+        mem_Free(pScanData);
+        pScanData = NULL;
+        obj_Release(pDriveDir);
+        pDriveDir = OBJ_NIL;
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+
+        // Return to caller.
+        return eRc;
     }
 
 
@@ -1096,11 +1225,13 @@ extern "C" {
     ERESULT         Dir_ScanDir(
         DIR_DATA        *this,
         PATH_DATA       *pPath,
-        bool            (*pScanner)(void *, DIRENTRY_DATA *),
-        void            *pObject
+        bool            fRecurse,
+        bool            (*pScanner)(void *, DIRENTRY_DATA *, void *),
+        void            *pObject,
+        void            *pData
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
         char            *pDirA;
 #if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         struct dirent   *pDirent;
@@ -1110,6 +1241,7 @@ extern "C" {
         ASTR_DATA       *pDrive = OBJ_NIL;
         PATH_DATA       *pDir = OBJ_NIL;
         PATH_DATA       *pFileName = OBJ_NIL;
+        OBJLIST_DATA    *pList = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1128,6 +1260,7 @@ extern "C" {
         }
 #endif
 
+        Path_Clean(pPath);
         eRc = Path_IsDir(pPath);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
@@ -1140,6 +1273,14 @@ extern "C" {
             return ERESULT_PATH_NOT_FOUND;
         }
 
+        if (fRecurse) {
+            pList = ObjList_New();
+            if (OBJ_NIL == pList) {
+                eRc = ERESULT_OUT_OF_MEMORY;
+                goto exit;
+            }
+        }
+
 #if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         pDirA = AStr_CStringA((ASTR_DATA *)pPath, NULL);
         if (pDirA) {
@@ -1147,11 +1288,13 @@ extern "C" {
             mem_Free(pDirA);
             pDirA = NULL;
             if (NULL == pDirectory) {
-                return ERESULT_PATH_NOT_FOUND;
+                eRc = ERESULT_PATH_NOT_FOUND;
+                goto exit;
             }
         }
         else {
-            return ERESULT_GENERAL_FAILURE;
+            eRc = ERESULT_GENERAL_FAILURE;
+            goto exit;
         }
 
         while ((pDirent = readdir(pDirectory)) != NULL) {
@@ -1167,18 +1310,27 @@ extern "C" {
             if (OBJ_NIL == pFileName) {
                 DEBUG_BREAK();
                 closedir(pDirectory);
-                return ERESULT_OUT_OF_MEMORY;
+                eRc = ERESULT_OUT_OF_MEMORY;
+                goto exit;
             }
             pEntry = DirEntry_NewWithData(pDrive, pDir, pFileName, pDirent->d_type);
             if( OBJ_NIL == pEntry ) {
                 DEBUG_BREAK();
                 closedir(pDirectory);
-                return ERESULT_INVALID_PARAMETER;
+                eRc = ERESULT_INVALID_PARAMETER;
+                goto exit;
             }
+            // See "man 5 dir" and "man 3 stat" for details of d_type. d_type is
+            // S_IFMT portion of st_mode.
+            eRc = DirEntry_Complete(pEntry);
+
             obj_Release(pFileName);
             pFileName = OBJ_NIL;
 
-            fRc = (*pScanner)(pObject, pEntry);
+            fRc = (*pScanner)(pObject, pEntry, pData);
+            if (fRc && pList && DirEntry_IsDir(pEntry)) {
+                ObjList_Push(pList, pEntry);
+            }
             obj_Release(pEntry);
             pEntry = OBJ_NIL;
             if (!fRc) {
@@ -1187,21 +1339,39 @@ extern "C" {
         }
 
         if (EOF == closedir(pDirectory)) {
-            obj_Release(pDrive);
-            pDrive = OBJ_NIL;
-            obj_Release(pDir);
-            pDir = OBJ_NIL;
-            return ERESULT_GENERAL_FAILURE;
+            eRc = ERESULT_GENERAL_FAILURE;
+            goto exit;
         }
-
 #endif
 
+        // Now recurse the subdirectories.
+        if (pList) {
+            DIRENTRY_DATA   *pEntry;
+            for (pEntry=ObjList_Pop(pList); pEntry; pEntry=ObjList_Pop(pList)) {
+                eRc = Dir_ScanDir(
+                                  this,
+                                  DirEntry_getFullPath(pEntry),
+                                  fRecurse,
+                                  pScanner,
+                                  pObject,
+                                  pData
+                        );
+                obj_Release(pEntry);
+                if (ERESULT_FAILED(eRc))
+                    break;
+            }
+
+        }
+
         // Return to caller.
+    exit:
+        obj_Release(pList);
+        pList = OBJ_NIL;
         obj_Release(pDrive);
         pDrive = OBJ_NIL;
         obj_Release(pDir);
         pDir = OBJ_NIL;
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 

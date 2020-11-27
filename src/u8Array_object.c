@@ -107,8 +107,6 @@ OBJ_IUNKNOWN    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-static
-const
 U8ARRAY_CLASS_DATA  u8Array_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,  // pVtbl

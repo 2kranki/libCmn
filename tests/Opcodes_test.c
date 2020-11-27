@@ -124,8 +124,8 @@ int             test_Opcodes_Copy01 (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    OPCODES_DATA	    *pObj1 = OBJ_NIL;
-    OPCODES_DATA	    *pObj2 = OBJ_NIL;
+    OPCODES_DATA	*pObj1 = OBJ_NIL;
+    OPCODES_DATA	*pObj2 = OBJ_NIL;
     bool            fRc;
 #if defined(OPCODES_JSON_SUPPORT)
     ASTR_DATA	    *pStr = OBJ_NIL;

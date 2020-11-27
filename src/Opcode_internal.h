@@ -128,6 +128,7 @@ struct Opcode_data_s	{
 
     bool            Opcode_setEntry (
         OPCODE_DATA     *this,
+        const
         OPCODE_ENTRY    *pEntry
     );
 

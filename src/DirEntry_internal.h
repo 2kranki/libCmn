@@ -71,24 +71,26 @@ struct DirEntry_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-        PATH_DATA       *pFullPath;
-        ASTR_DATA       *pShortName;
-        DATETIME_DATA   *pCreationTime;
-        DATETIME_DATA   *pModifiedTime;
-        DATETIME_DATA   *pStatusChangeTime;
-        uint16_t        type;           // See DIRENTRY_TYPES
-        uint16_t        reserved16;
-        uint32_t        attr;           // File Attributes (ie Read-Only, Hidden, ...)
-    #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-        int64_t         fileSize;
-    #endif
-    #if     defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-        int64_t         fileSize;
-    #endif
-        uint32_t        userID;
-        uint32_t        groupID;
-        uint32_t        genNum;
-        uint32_t        eaSize;         // File Attributes Size in bytes
+    DIRENTRY_DATA   *pNext;         // Dir/File Links
+    PATH_DATA       *pFullPath;
+    ASTR_DATA       *pShortName;
+    DATETIME_DATA   *pCreationTime;
+    DATETIME_DATA   *pModifiedTime;
+    DATETIME_DATA   *pStatusChangeTime;
+    uint16_t        type;           // See DIRENTRY_TYPES
+    uint8_t         fCompleted;
+    uint8_t         rsvd8;
+    uint32_t        attr;           // File Attributes (ie Read-Only, Hidden, ...)
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+    int64_t         fileSize;
+#endif
+#if     defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    int64_t         fileSize;
+#endif
+    uint32_t        userID;
+    uint32_t        groupID;
+    uint32_t        genNum;
+    uint32_t        eaSize;         // File Attributes Size in bytes
 
 };
 #pragma pack(pop)

@@ -7,17 +7,21 @@
  * Program
  *			Disk Directory Entry (DirEntry)
  * Purpose
- *              This object encapsulates Directory Entries from many
- *              different operating system for a common interface.
+ *          This object encapsulates Directory Entries from many
+ *          different operating system for a common interface. Each
+ *          DirEntry represents one file.  However, this entry is
+ *          a link as supported by POSIX, then it contains a singly-
+ *          linked list for the entire link chain.
  *
  * Remarks
- *    1.      Some properties are OS dependent and will not be present
+ *    1.    Some properties are OS dependent and will not be present
  *          in all OSes.
  *
  * History
- *  06/23/2015 Generated
- *  10/04/2018 Changed to be more consistant with the path object.
- *	01/28/2020 Regenerated, adding json support
+ *  11/30/2020  Added linked dir/file support
+ *  01/28/2020  Regenerated, adding json support
+ *  10/04/2018  Changed to be more consistant with the path object.
+ *  06/23/2015  Generated
  */
 
 
@@ -157,11 +161,30 @@ extern "C" {
         void
     );
     
-    
+
+    /*!
+     Create a new DirEntry from a utf-8 character
+     string that represents the full path of the
+     file path including the optional drive and
+     directory structure.
+     */
     DIRENTRY_DATA * DirEntry_NewA (
         const
         char            *pPathA,
         uint8_t         type
+    );
+
+
+    /*!
+     Create a new DirEntry from a utf-8 character
+     string that represents the full path of the
+     file path including the optional drive and
+     directory structure. Fill in the stat data
+     and create link directory entries as well.
+     */
+    DIRENTRY_DATA * DirEntry_NewPathA_Stat (
+        const
+        char            *pPathA
     );
 
 
@@ -255,6 +278,20 @@ extern "C" {
     );
 
 
+    /*! Property: Next is the next Directory Entry
+                which this entry links to.
+     */
+
+    DIRENTRY_DATA * DirEntry_getNext (
+        DIRENTRY_DATA   *this
+    );
+
+    bool            DirEntry_setNext (
+        DIRENTRY_DATA   *this,
+        DIRENTRY_DATA   *pValue
+    );
+
+
     /*! Property: Short File Name
      */
 
@@ -281,8 +318,8 @@ extern "C" {
     );
 
 
-    /*! Property: Type indicates the type of directory entry that this
-     represents.  See DIRENT_TYPES above.
+    /*! Property:   Type indicates the type of directory entry that this
+                    represents.  See DIRENT_TYPES above.
     */
 
     uint16_t        DirEntry_getType (
@@ -322,12 +359,27 @@ extern "C" {
 
 
     /*!
-     Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     Compare the two provided object for type first then
+     full path names.
+     @return    0 if this == other
+                -1 if this < other
+                1 if this > other
+                -2 if error
      */
-    ERESULT         DirEntry_Compare (
+    int             DirEntry_Compare (
+        DIRENTRY_DATA   *this,
+        DIRENTRY_DATA   *pOther
+    );
+
+
+    /*!
+     Compare the two provided objects for full path names only.
+     @return    0 if this == other
+                -1 if this < other
+                1 if this > other
+                -2 if error
+     */
+    int             DirEntry_CompareFullPath (
         DIRENTRY_DATA   *this,
         DIRENTRY_DATA   *pOther
     );
@@ -365,6 +417,17 @@ extern "C" {
     );
 
 
+    /*!
+     Check for Directory Entry.
+     @param     this    object pointer
+     @return    true if this entry is a directory entry or it is
+                a link that eventually points to a directory entry.
+     */
+    bool            DirEntry_IsDir (
+        DIRENTRY_DATA   *this
+    );
+
+
     /*! Match this entry's file name against a pattern.
         which may include '?' and '*'.
      @param     this        object pointer
@@ -377,6 +440,15 @@ extern "C" {
         char            *pPatternA
     );
 
+
+    /*! Chase the link chain for the last target. and return it. If this
+        entry is not a link, then just return it.
+     @param     this        object pointer
+     @return:   the last target of the link chain or this entry.
+     */
+    DIRENTRY_DATA * DirEntry_Target (
+        DIRENTRY_DATA   *this
+    );
 
 #ifdef  DIRENTRY_JSON_SUPPORT
     /*!

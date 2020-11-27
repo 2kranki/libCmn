@@ -101,11 +101,11 @@ extern "C" {
 
 
 
-    OPCODE_DATA *     Opcode_New (
+    OPCODE_DATA *   Opcode_New (
         void
     )
     {
-        OPCODE_DATA       *this;
+        OPCODE_DATA     *this;
         
         this = Opcode_Alloc( );
         if (this) {
@@ -116,16 +116,31 @@ extern "C" {
 
 
 
-    OPCODE_DATA *     Opcode_NewA (
+    OPCODE_DATA *   Opcode_NewA (
         const
         char            *pNameA
     )
     {
-        OPCODE_DATA       *this;
+        OPCODE_DATA     *this;
 
         this = Opcode_New( );
         if (this) {
             Opcode_setNameA(this, pNameA);
+        }
+        return this;
+    }
+
+
+
+    OPCODE_DATA *   Opcode_NewEntry (
+        OPCODE_ENTRY    *pEntry
+    )
+    {
+        OPCODE_DATA     *this;
+
+        this = Opcode_New( );
+        if (this) {
+            Opcode_setEntry(this, pEntry);
         }
         return this;
     }
@@ -206,6 +221,7 @@ extern "C" {
 
     bool            Opcode_setEntry (
         OPCODE_DATA     *this,
+        const
         OPCODE_ENTRY    *pEntry
     )
     {
@@ -1127,7 +1143,7 @@ extern "C" {
         eRc = AStr_AppendA(pStr, "\t{\n");
         eRc = AStr_AppendPrint(pStr, "\t\t\"%s\",\n", this->entry.NameA);
         eRc = AStr_AppendPrint(pStr, "\t\t\"%s\",\n", this->entry.DisA);
-        eRc = AStr_AppendPrint(pStr, "\t\t%d,\n", this->entry.iLen);
+        eRc = AStr_AppendPrint(pStr, "\t\t%d,\t// iLen\n", this->entry.iLen);
         eRc = AStr_AppendPrint(pStr, "\t\t%d,\n", this->entry.cCode);
         eRc = AStr_AppendA(pStr, "\t\t{");
         for (i=0; i<this->entry.cCode-1; i++) {
@@ -1139,8 +1155,8 @@ extern "C" {
             eRc = AStr_AppendPrint(pStr, "0x%02X,", this->entry.iMask[i]);
         }
         eRc = AStr_AppendPrint(pStr, "0x%02X},\n", this->entry.iMask[i]);
-        eRc = AStr_AppendPrint(pStr, "\t\t%u,\n", this->entry.iType);
-        eRc = AStr_AppendA(pStr, "\t\t0,\n");       // resvd8
+        eRc = AStr_AppendPrint(pStr, "\t\t%u,\t// iType\n", this->entry.iType);
+        eRc = AStr_AppendPrint(pStr, "\t\t%d,\t// iClass\n", this->entry.iClass);
         eRc = AStr_AppendPrint(pStr, "\t\t%d,\n", this->entry.cCondCodes);
         if (this->entry.cCondCodes) {
             AStr_AppendA(pStr, "\t\t{");
@@ -1151,9 +1167,10 @@ extern "C" {
         } else {
             AStr_AppendA(pStr, "\t\t{\"\"},\n");
         }
-        eRc = AStr_AppendPrint(pStr, "\t\t%u,\n", this->entry.iFeatures);
-        eRc = AStr_AppendA(pStr, "\t\t0,\n");       // resvd16
-        eRc = AStr_AppendPrint(pStr, "\t\t%u\n", this->entry.iInterrupts);
+        eRc = AStr_AppendPrint(pStr, "\t\t%d,\t// iCondCodes\n", this->entry.iCondCodes);
+        eRc = AStr_AppendPrint(pStr, "\t\t%u,\t// iFeatures\n", this->entry.iFeatures);
+        eRc = AStr_AppendPrint(pStr, "\t\t%u,\t// iInterrupts\n", this->entry.iInterrupts);
+        eRc = AStr_AppendPrint(pStr, "\t\t%u\t// unique\n", this->entry.unique);
 
         eRc =   AStr_AppendA(pStr, " \t},\n");
 

@@ -7,10 +7,7 @@
  * Program
  *			Generic Disk File Input/Output (fileio)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate fileio to run things without complications
- *          of interfering with the main fileio. A fileio may be 
- *          called a fileio on other O/S's.
+ *			This object provides generic file input/output.
  *
  * Remarks
  *	1.      None

@@ -129,6 +129,18 @@ extern "C" {
 
 
 
+    int             NameCompare(
+        OPCODE_DATA     *pOpc1,
+        OPCODE_DATA     *pOpc2
+    )
+    {
+        int             iRc = 0;
+        iRc = utf8_StrCmp(Opcode_getEntry(pOpc1)->NameA, Opcode_getEntry(pOpc2)->NameA);
+        return iRc;
+    }
+
+
+
 
 
     /****************************************************************
@@ -348,6 +360,13 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+
+        if (OBJ_NIL == this->pArray) {
+            this->pArray = ObjArray_New();
+            if (OBJ_NIL == this->pArray) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
 
         pEntry = Opcode_getEntry(pOpc);
         pEntry->unique = ObjArray_getSize(this->pArray);
@@ -638,6 +657,10 @@ extern "C" {
         }
 #endif
 
+        if (OBJ_NIL == this->pArray) {
+            return eRc;
+        }
+
         //FIXME: eRc = szBT_DeleteA(this->pTree, pNameA);
 
         // Return to caller.
@@ -737,6 +760,10 @@ extern "C" {
         }
 #endif
 
+        if (OBJ_NIL == this->pArray) {
+            return OBJ_NIL;
+        }
+
         pEnum = ObjArray_Enum(this->pArray);
 
         return pEnum;
@@ -767,10 +794,43 @@ extern "C" {
         }
 #endif
 
+        if (OBJ_NIL == this->pArray) {
+            return OBJ_NIL;
+        }
+
         //FIXME: pOpc = (OPCODE_DATA *)szBT_FindA(this->pTree, pNameA);
 
         // Return to caller.
         return pOpc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          G e t
+    //---------------------------------------------------------------
+
+    OPCODE_DATA *   Opcodes_Get (
+        OPCODES_DATA    *this,
+        uint32_t        index
+    )
+    {
+        //ERESULT         eRc;
+        OPCODE_DATA     *pObj = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Opcodes_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pObj = ObjArray_Get(this->pArray, index);
+
+        return pObj;
     }
 
 
@@ -800,7 +860,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OPCODE);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OPCODES);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -812,7 +872,7 @@ extern "C" {
 #ifdef  OPCODES_JSON_SUPPORT
         JsonIn_RegisterClass(Opcode_Class());
         JsonIn_RegisterClass(ObjArray_Class());
-        JsonIn_RegisterClass(this);
+        JsonIn_RegisterClass(Opcodes_Class());
 #endif
 
         this->pArray = ObjArray_New( );

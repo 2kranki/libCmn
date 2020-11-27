@@ -866,19 +866,166 @@ int         test_Path_SplitPath09(
         eRc = Path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
 
-        XCTAssertTrue( (NULL == pDrive) );
-
-        XCTAssertFalse( (NULL == pPath) );
+        XCTAssertTrue( (OBJ_NIL == pDrive) );
+        XCTAssertFalse( (OBJ_NIL == pPath) );
         XCTAssertTrue( (6 == AStr_getLength((ASTR_DATA *)pPath)) );
         XCTAssertTrue( (0 == strcmp(AStr_getData((ASTR_DATA *)pPath), "/tmp/x")) );
         obj_Release(pPath);
         pPath = OBJ_NIL;
 
-        XCTAssertTrue( (NULL == pFileName) );
+        XCTAssertTrue( (OBJ_NIL == pFileName) );
+        XCTAssertTrue( (OBJ_NIL == pFileN) );
+        XCTAssertTrue( (OBJ_NIL == pFileE) );
 
-        XCTAssertTrue( (NULL == pFileN) );
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
 
-        XCTAssertTrue( (NULL == pFileE) );
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Path_SplitPath10(
+    const
+    char        *pTestName
+)
+{
+    PATH_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    ASTR_DATA   *pDrive = OBJ_NIL;
+    PATH_DATA   *pPath = OBJ_NIL;
+    PATH_DATA   *pFileName = OBJ_NIL;
+    ASTR_DATA   *pFileN = OBJ_NIL;
+    ASTR_DATA   *pFileE = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = Path_NewA("/tmp/x/*.h");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = Path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+
+        fprintf(stderr, "\tPath: %s\n", Path_getData(pObj));
+        fprintf(stderr, "\t=>Drive: %s\n", (pDrive ? AStr_getData(pDrive) : ""));
+        fprintf(stderr, "\t=>Path: %s\n", (pPath ? Path_getData(pPath) : ""));
+        fprintf(stderr, "\t=>File: %s\n", (pFileName ? Path_getData(pFileName) : ""));
+        XCTAssertTrue( (NULL == pDrive) );
+        XCTAssertFalse( (NULL == pPath) );
+        XCTAssertTrue( (6 == Path_getLength(pPath)) );
+        XCTAssertTrue( (0 == Path_CompareA(pPath, "/tmp/x")) );
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        XCTAssertTrue( (3 == Path_getLength(pFileName)) );
+        XCTAssertTrue( (0 == Path_CompareA(pFileName, "*.h")) );
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+
+        XCTAssertTrue( (OBJ_NIL == pFileName) );
+        XCTAssertTrue( (OBJ_NIL == pFileN) );
+        XCTAssertTrue( (OBJ_NIL == pFileE) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Path_SplitPath11(
+    const
+    char        *pTestName
+)
+{
+    PATH_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    ASTR_DATA   *pDrive = OBJ_NIL;
+    PATH_DATA   *pPath = OBJ_NIL;
+    PATH_DATA   *pFileName = OBJ_NIL;
+    ASTR_DATA   *pFileN = OBJ_NIL;
+    ASTR_DATA   *pFileE = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = Path_NewA("/tmp/x/a*.h");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = Path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+
+        fprintf(stderr, "\tPath: %s\n", Path_getData(pObj));
+        fprintf(stderr, "\t=>Drive: %s\n", (pDrive ? AStr_getData(pDrive) : ""));
+        fprintf(stderr, "\t=>Path: %s\n", (pPath ? Path_getData(pPath) : ""));
+        fprintf(stderr, "\t=>File: %s\n", (pFileName ? Path_getData(pFileName) : ""));
+        XCTAssertTrue( (NULL == pDrive) );
+        XCTAssertFalse( (NULL == pPath) );
+        XCTAssertTrue( (6 == Path_getLength(pPath)) );
+        XCTAssertTrue( (0 == Path_CompareA(pPath, "/tmp/x")) );
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        XCTAssertTrue( (4 == Path_getLength(pFileName)) );
+        XCTAssertTrue( (0 == Path_CompareA(pFileName, "a*.h")) );
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+
+        XCTAssertTrue( (OBJ_NIL == pFileName) );
+        XCTAssertTrue( (OBJ_NIL == pFileN) );
+        XCTAssertTrue( (OBJ_NIL == pFileE) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Path_SplitPath12(
+    const
+    char        *pTestName
+)
+{
+    PATH_DATA   *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    ASTR_DATA   *pDrive = OBJ_NIL;
+    PATH_DATA   *pPath = OBJ_NIL;
+    PATH_DATA   *pFileName = OBJ_NIL;
+    ASTR_DATA   *pFileN = OBJ_NIL;
+    ASTR_DATA   *pFileE = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = Path_NewA("/tmp/x/?a*.??h");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = Path_SplitPath(pObj, &pDrive, &pPath, &pFileName);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+
+        fprintf(stderr, "\tPath: %s\n", Path_getData(pObj));
+        fprintf(stderr, "\t=>Drive: %s\n", (pDrive ? AStr_getData(pDrive) : ""));
+        fprintf(stderr, "\t=>Path: %s\n", (pPath ? Path_getData(pPath) : ""));
+        fprintf(stderr, "\t=>File: %s\n", (pFileName ? Path_getData(pFileName) : ""));
+        XCTAssertTrue( (NULL == pDrive) );
+        XCTAssertFalse( (NULL == pPath) );
+        XCTAssertTrue( (6 == Path_getLength(pPath)) );
+        XCTAssertTrue( (0 == Path_CompareA(pPath, "/tmp/x")) );
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        XCTAssertTrue( (7 == Path_getLength(pFileName)) );
+        XCTAssertTrue( (0 == Path_CompareA(pFileName, "?a*.??h")) );
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+
+        XCTAssertTrue( (OBJ_NIL == pFileName) );
+        XCTAssertTrue( (OBJ_NIL == pFileN) );
+        XCTAssertTrue( (OBJ_NIL == pFileE) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -1336,8 +1483,84 @@ int         test_Path_Version01(
 
 
 
+int         test_Path_Match01(
+    const
+    char            *pTestName
+)
+{
+    PATH_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    const
+    char            *pPathA = "/tmp/x/abc.h";
+    const
+    char            *pMatchA = "*.h";
+    PATH_DATA       *pFileName = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = Path_NewA(pPathA);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        fprintf(stderr, "\tPath: %s\n", pPathA);
+        fprintf(stderr, "\t=>File: %s\n", (pFileName ? Path_getData(pFileName) : ""));
+        fprintf(stderr, "\tMatch: %s\n", pMatchA);
+        eRc = Path_MatchA(pObj, pMatchA);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_Path_Match02(
+    const
+    char            *pTestName
+)
+{
+    PATH_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    const
+    char            *pPathA = "/tmp/x/abc.h";
+    const
+    char            *pMatchA = "a*.h";
+    PATH_DATA       *pFileName = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    pObj = Path_NewA(pPathA);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = Path_SplitPath(pObj, OBJ_NIL, OBJ_NIL, &pFileName);
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
+        fprintf(stderr, "\tPath: %s\n", pPathA);
+        fprintf(stderr, "\t=>File: %s\n", (pFileName ? Path_getData(pFileName) : ""));
+        fprintf(stderr, "\tMatch: %s\n", pMatchA);
+        eRc = Path_MatchA(pObj, pMatchA);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_Path);
+    TINYTEST_ADD_TEST(test_Path_Match02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Path_Match01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_Version01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_ExpandEnvVars02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_ExpandEnvVars01,setUp,tearDown);
@@ -1350,6 +1573,9 @@ TINYTEST_START_SUITE(test_Path);
     TINYTEST_ADD_TEST(test_Path_CleanDir01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_SplitFile02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_SplitFile01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Path_SplitPath12,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Path_SplitPath11,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Path_SplitPath10,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_SplitPath09,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_SplitPath08,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_SplitPath07,setUp,tearDown);

@@ -133,8 +133,9 @@ extern "C" {
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
+        JsonIn_RegisterClass(${LNAME}_Class());
+
         pInfo = obj_getInfo(${LNAME}_Class());
-        
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");

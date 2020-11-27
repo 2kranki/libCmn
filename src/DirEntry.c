@@ -62,16 +62,38 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            DirEntry_task_body (
-        void            *pData
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+    ERESULT         DirEntry_CompleteFromStat (
+        DIRENTRY_DATA   *this,
+        struct stat     *pStatBuffer
     )
     {
-        //DIRENTRY_DATA  *this = pData;
-        
+        ERESULT         eRc = ERESULT_SUCCESS;
+        DATETIME_DATA   *pTime = OBJ_NIL;
+
+        // Do initialization.
+
+        pTime = DateTime_NewFromTimeT(pStatBuffer->st_birthtimespec.tv_sec);
+        DirEntry_setCreationTime(this, pTime);
+        obj_Release(pTime);
+        pTime = OBJ_NIL;
+        pTime = DateTime_NewFromTimeT(pStatBuffer->st_mtimespec.tv_sec);
+        DirEntry_setModifiedTime(this, pTime);
+        obj_Release(pTime);
+        pTime = OBJ_NIL;
+        this->attr = pStatBuffer->st_mode;      //TODO: mode translate to generic flags
+        //                                      // that we define
+        this->userID = pStatBuffer->st_uid;
+        this->groupID = pStatBuffer->st_gid;
+        this->genNum = pStatBuffer->st_gen;
+        this->fileSize = pStatBuffer->st_size;
+
+        // Return to caller.
+        return eRc;
     }
 #endif
+
+
 
 
 
@@ -122,7 +144,7 @@ extern "C" {
         uint8_t         type
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc;
         DIRENTRY_DATA   *this;
         PATH_DATA       *pPath  = OBJ_NIL;
 
@@ -136,8 +158,38 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-
+        eRc = Path_Clean(pPath);
         this->pFullPath = pPath;
+        this->type = type;
+
+        // Return to caller.
+        return this;
+    }
+
+
+
+    DIRENTRY_DATA * DirEntry_NewPathA_Stat (
+        const
+        char            *pPathA
+    )
+    {
+        ERESULT         eRc;
+        DIRENTRY_DATA   *this;
+        PATH_DATA       *pPath  = OBJ_NIL;
+
+        this = DirEntry_New();
+        if (OBJ_NIL == this) {
+            return this;
+        }
+
+        pPath = Path_NewA(pPathA);
+        if (OBJ_NIL == pPath) {
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        eRc = Path_Clean(pPath);
+        this->pFullPath = pPath;
+        eRc = DirEntry_Complete(this);
 
         // Return to caller.
         return this;
@@ -172,6 +224,7 @@ extern "C" {
                         eRc = AStr_AppendA(Path_getAStr(pPath), "/");
                     }
                 }
+                eRc = Path_Clean(pPath);
                 DirEntry_setFullPath(this, pPath);
             }
             obj_Release(pPath);
@@ -180,8 +233,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-
-        (void)DirEntry_setType(this, type);
+        this->type = type;
 
         // Return to caller.
         return this;
@@ -430,6 +482,49 @@ extern "C" {
             obj_Release(this->pModifiedTime);
         }
         this->pModifiedTime = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //             N e x t  L i n k e d  D i r / F i l e
+    //---------------------------------------------------------------
+
+    DIRENTRY_DATA * DirEntry_getNext (
+        DIRENTRY_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !DirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        return this->pNext;
+    }
+
+    bool            DirEntry_setNext (
+        DIRENTRY_DATA   *this,
+        DIRENTRY_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !DirEntry_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        obj_Retain(pValue);
+        if (this->pNext) {
+            obj_Release(this->pNext);
+        }
+        this->pNext = pValue;
 
         return true;
     }
@@ -697,6 +792,7 @@ extern "C" {
 
         // Release objects and areas in other object.
         (void)DirEntry_setFullPath(pOther, OBJ_NIL);
+        (void)DirEntry_setNext(pOther, OBJ_NIL);
         (void)DirEntry_setShortName(pOther, OBJ_NIL);
         (void)DirEntry_setCreationTime(pOther, OBJ_NIL);
         (void)DirEntry_setModifiedTime(pOther, OBJ_NIL);
@@ -711,6 +807,15 @@ extern "C" {
             else {
                 obj_Retain(this->pFullPath);
                 pOther->pFullPath = this->pFullPath;
+            }
+        }
+        if (this->pNext) {
+            if (obj_getVtbl(this->pNext)->pCopy) {
+                pOther->pNext = obj_getVtbl(this->pNext)->pCopy(this->pNext);
+            }
+            else {
+                obj_Retain(this->pNext);
+                pOther->pNext = this->pNext;
             }
         }
         if (this->pShortName) {
@@ -755,6 +860,7 @@ extern "C" {
 
         // Copy other data from this object to other.
         pOther->type     = this->type;
+        pOther->fCompleted = this->fCompleted;
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         pOther->fileSize = this->fileSize;
 #endif
@@ -821,7 +927,34 @@ extern "C" {
     }
     
    
- 
+    int             DirEntry_CompareFullPaths (
+        DIRENTRY_DATA   *this,
+        DIRENTRY_DATA   *pOther
+    )
+    {
+        int             iRc = 0;
+
+#ifdef NDEBUG
+#else
+        if (!DirEntry_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
+        }
+        if (!DirEntry_Validate(pOther)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
+        }
+#endif
+
+        iRc = Path_Compare(this->pFullPath, pOther->pFullPath);
+
+        return iRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      C o m p l e t e
     //---------------------------------------------------------------
@@ -831,46 +964,75 @@ extern "C" {
     )
     {
         const
-        char            *pStr = NULL;
+        char            *pStrA = NULL;
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         struct stat     statBuffer;
         int             iRc;
+        DIRENTRY_DATA   *pNext = OBJ_NIL;
 #endif
 #if     defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
         ERESULT         eRc = ERESULT_SUCCESS;
-        DATETIME_DATA   *pTime = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !DirEntry_Validate(this) ) {
+        if (!DirEntry_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( OBJ_NIL == this->pFullPath ) {
+        if (OBJ_NIL == this->pFullPath) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
-        pStr = Path_getData(DirEntry_getFullPath(this));
-        if (pStr) {
+        if (this->fCompleted) {
+            return eRc;
+        }
+        pStrA = Path_getData(DirEntry_getFullPath(this));
+        if (pStrA) {
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-            iRc = stat(pStr, &statBuffer);
+            iRc = lstat(pStrA, &statBuffer);
             if (0 == iRc) {
-                pTime = DateTime_NewFromTimeT(statBuffer.st_birthtimespec.tv_sec);
-                DirEntry_setCreationTime(this, pTime);
-                obj_Release(pTime);
-                pTime = OBJ_NIL;
-                pTime = DateTime_NewFromTimeT(statBuffer.st_mtimespec.tv_sec);
-                DirEntry_setModifiedTime(this, pTime);
-                obj_Release(pTime);
-                pTime = OBJ_NIL;
-                this->userID = statBuffer.st_uid;
-                this->groupID = statBuffer.st_gid;
-                this->genNum = statBuffer.st_gen;
-                this->fileSize = statBuffer.st_size;
+                eRc = DirEntry_CompleteFromStat(this, &statBuffer);
+
+                // See "man 5 dir" and "man 3 stat" for details of d_type. d_type is
+                // S_IFMT portion of st_mode.
+                // Recurse though the links to get to the end point adding more
+                // Directory Entries to the list as needed.
+                pNext = this;
+                while ((statBuffer.st_mode & S_IFMT) == S_IFLNK) {
+                    char            linkDataA[512];
+                    ssize_t         len;
+                    DIRENTRY_DATA   *pEntry = OBJ_NIL;
+                    uint16_t        type;
+
+                    len =   readlink(
+                                   pStrA,
+                                   linkDataA, sizeof(linkDataA)-1
+                            );
+                    if (len >= 0) {
+                        linkDataA[len] = '\0';
+                        iRc = lstat(linkDataA, &statBuffer);
+                        if (-1 == iRc) {
+                            break;
+                        }
+                        // Convert mode S_FMT to dirent::d_type and save.
+                        type = (statBuffer.st_mode & S_IFMT) >> 12;
+                        pEntry = DirEntry_NewA(linkDataA, type);
+                        if (pEntry) {
+                            eRc = DirEntry_CompleteFromStat(pEntry, &statBuffer);
+                            BREAK_NOT_NULL(pNext->pNext);
+                            pNext->pNext = pEntry;
+                            pNext = pEntry;
+                            pStrA = Path_getData(DirEntry_getFullPath(pNext));
+                        }
+                        else
+                            break;
+                    }
+                }
+                this->fCompleted = 1;
             }
             else {
                 eRc = ERESULT_PATH_NOT_FOUND;
@@ -878,7 +1040,7 @@ extern "C" {
 #endif
 #if     defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #endif
-            pStr = NULL;
+            pStrA = NULL;
         }
         else {
             eRc = ERESULT_DATA_ERROR;
@@ -891,17 +1053,17 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          C o p y
+    //                         C o p y
     //---------------------------------------------------------------
-    
+
     /*!
      Copy the current object creating a new object.
      Example:
-     @code 
-        DirEntry      *pCopy = DirEntry_Copy(this);
-     @endcode 
+     @code
+        DirEntry      *pDeepCopy = DirEntry_Copy(this);
+     @endcode
      @param     this    object pointer
-     @return    If successful, a DIRENTRY object which must be 
+     @return    If successful, a DIRENTRY object which must be
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
@@ -911,7 +1073,7 @@ extern "C" {
     {
         DIRENTRY_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -920,11 +1082,7 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
-#ifdef DIRENTRY_IS_IMMUTABLE
-        obj_Retain(this);
-        pOther = this;
-#else
+
         pOther = DirEntry_New( );
         if (pOther) {
             eRc = DirEntry_Assign(this, pOther);
@@ -933,14 +1091,13 @@ extern "C" {
                 pOther = OBJ_NIL;
             }
         }
-#endif
-        
+
         // Return to caller.
         return pOther;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
@@ -951,6 +1108,7 @@ extern "C" {
     {
         DIRENTRY_DATA   *this = objId;
         //ERESULT         eRc;
+        DIRENTRY_DATA   *pNext;
 
         // Do initialization.
         if (NULL == this) {
@@ -970,6 +1128,12 @@ extern "C" {
         }
 #endif
 
+        if (this->pNext) {
+            for( pNext=this->pNext; pNext; pNext=pNext->pNext)
+                (void)DirEntry_setNext(pNext, OBJ_NIL);
+        }
+
+        (void)DirEntry_setNext(this, OBJ_NIL);
         (void)DirEntry_setFullPath(this, OBJ_NIL);
         (void)DirEntry_setShortName(this, OBJ_NIL);
         (void)DirEntry_setCreationTime(this, OBJ_NIL);
@@ -987,52 +1151,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                         D e e p  C o p y
-    //---------------------------------------------------------------
-    
-    /*!
-     Copy the current object creating a new object.
-     Example:
-     @code 
-        DirEntry      *pDeepCopy = DirEntry_Copy(this);
-     @endcode 
-     @param     this    object pointer
-     @return    If successful, a DIRENTRY object which must be 
-                released, otherwise OBJ_NIL.
-     @warning   Remember to release the returned object.
-     */
-    DIRENTRY_DATA *     DirEntry_DeepyCopy (
-        DIRENTRY_DATA       *this
-    )
-    {
-        DIRENTRY_DATA       *pOther = OBJ_NIL;
-        ERESULT         eRc;
-        
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!DirEntry_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        pOther = DirEntry_New( );
-        if (pOther) {
-            eRc = DirEntry_Assign(this, pOther);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                obj_Release(pOther);
-                pOther = OBJ_NIL;
-            }
-        }
-        
-        // Return to caller.
-        return pOther;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -1171,15 +1289,50 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                       I s D i r
     //---------------------------------------------------------------
     
-    ERESULT         DirEntry_IsEnabled (
-        DIRENTRY_DATA		*this
+    bool            DirEntry_IsDir (
+        DIRENTRY_DATA   *this
     )
     {
         //ERESULT         eRc;
+        bool            fRc = false;
+        DIRENTRY_DATA   *pNext;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!DirEntry_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return false;
+        }
+#endif
+
+        for( pNext=this; pNext->pNext; pNext=pNext->pNext)
+            ;
         
+        if (DIRENTRY_TYPE_DIR == pNext->type) {
+            fRc = true;
+        }
+        
+        // Return to caller.
+        return fRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                       I s E n a b l e d
+    //---------------------------------------------------------------
+
+    ERESULT         DirEntry_IsEnabled (
+        DIRENTRY_DATA        *this
+    )
+    {
+        //ERESULT         eRc;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1188,17 +1341,17 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         if (obj_IsEnabled(this)) {
             return ERESULT_SUCCESS_TRUE;
         }
-        
+
         // Return to caller.
         return ERESULT_SUCCESS_FALSE;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                          M a t c h
     //---------------------------------------------------------------
@@ -1365,6 +1518,36 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          T a r g e t
+    //---------------------------------------------------------------
+
+    DIRENTRY_DATA * DirEntry_Target (
+        DIRENTRY_DATA   *this
+    )
+    {
+        //ERESULT         eRc;
+        DIRENTRY_DATA   *pNext;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!DirEntry_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return false;
+        }
+#endif
+
+        for( pNext=this; pNext->pNext; pNext=pNext->pNext)
+            ;
+
+        // Return to caller.
+        return pNext;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

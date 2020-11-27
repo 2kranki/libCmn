@@ -1489,7 +1489,7 @@ extern "C" {
 #endif
         size = u8Array_getSize(this->pFrames);
 
-        pOutput = fbso_New(pPath);
+        pOutput = fbso_NewPath(pPath);
         if (pOutput == OBJ_NIL) {
             return ERESULT_GENERAL_FAILURE;
         }

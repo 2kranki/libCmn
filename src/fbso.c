@@ -195,7 +195,7 @@ extern "C" {
 
 
 
-    FBSO_DATA *     fbso_New(
+    FBSO_DATA *     fbso_NewPath(
         PATH_DATA       *pPath
     )
     {

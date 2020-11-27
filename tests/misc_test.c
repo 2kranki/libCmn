@@ -219,13 +219,23 @@ int         test_misc_Match01(
     XCTAssertTrue( (fRc) );
     fRc = misc_PatternMatchA("*.dmg","xyzzy.txt",NULL,NULL);
     XCTAssertTrue( (!fRc) );
+    fRc = misc_PatternMatchA("x*.txt","xyzzy.txt",NULL,NULL);
+    XCTAssertTrue( (fRc) );
+    fRc = misc_PatternMatchA("x*.t*","xyzzy.txt",NULL,NULL);
+    XCTAssertTrue( (fRc) );
+    fRc = misc_PatternMatchA("x*.??t","xyzzy.txt",NULL,NULL);
+    XCTAssertTrue( (fRc) );
+    fRc = misc_PatternMatchA("x*.*t","xyzzy.txt",NULL,NULL);
+    XCTAssertTrue( (fRc) );
     fRc = misc_PatternMatchA("x?zz?.dmg","xyzzy.dmg",NULL,NULL);
     XCTAssertTrue( (fRc) );
     fRc = misc_PatternMatchA("x?zy?.dmg","xyzzy.dmg",NULL,NULL);
     XCTAssertTrue( (!fRc) );
     fRc = misc_PatternMatchA("x?zz?.*","xyzzy.dmg",NULL,NULL);
     XCTAssertTrue( (fRc) );
-    
+    fRc = misc_PatternMatchA("*y.??t","xyzzy.txt",NULL,NULL);
+    XCTAssertTrue( (fRc) );
+
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;
 }

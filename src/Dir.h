@@ -193,10 +193,47 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*! Collect the matching files in the given directory.
+     @param this        object pointer
+     @param pPath       path for directory to scan
+     @param fRecurse    FALSE == Scan all the entries in the specified directory,
+                        TRUE == Do FALSE, then scan each subdirectory as the
+                        specified directory until there are no more directories
+                        to scan.
+     @return    an ObjEnum object which conttains the Direcory Entries (DirEntry)
+                found.
      */
     OBJENUM_DATA *  Dir_EnumDir (
         DIR_DATA        *this,
-        PATH_DATA       *pPath
+        PATH_DATA       *pPath,
+        bool            fRecurse
+    );
+
+
+    /*!
+     Scan a directory using the supplied method.  The "." and ".." directory
+     entries are skipped.  All other entries are returned to the Scanner
+     routine unless a match if given in the provided path. The DirEntry's
+     Match method is used to select the appropriate directory entries to
+     be scanned.
+     @param     this        object pointer
+     @param     pPath       path for directory to scan with pattern to be matched
+     @param     fRecurse    True == recurse through the directory structure, False
+                            == just remain in the specified directory.
+     @param     pScanner    scan method to be called for directory entry.  It should
+                            return true to continue the scan or false to end it.
+     @param     pObject     object parameter or 1st parameter of pScanner method
+     @param     pData       optional data pointer to be passed as 3rd parameter of
+                            pScanner method
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Dir_GlobMatch (
+        DIR_DATA        *this,
+        PATH_DATA       *pPath,
+        bool            fRecurse,
+        int             (*pScanner)(void *, DIRENTRY_DATA *, void *),
+        void            *pObject,
+        void            *pData
     );
 
 
@@ -216,20 +253,29 @@ extern "C" {
 
     /*!
      Scan a directory using the supplied method.  The "." and ".." directory
-     entries are skipped.
-     @param     this    object pointer
-     @param     pPath   path for directory to scan
-     @param     pScan   scan method to be called for directory entry.  It should
+     entries are skipped.  All other entries are returned to the Scanner
+     routine.
+     @param this        object pointer
+     @param pPath       path for directory to scan
+     @param fRecurse    FALSE == Scan all the entries in the specified directory,
+                        TRUE == Do FALSE, then scan each subdirectory as the
+                        specified directory until there are no more directories
+                        to scan.
+     @param pScanner    scan method to be called for directory entry.  It should
                         return true to continue the scan or false to end it.
-     @param     pObject object parameter or 1st parameter of pScan method
+     @param pObject     object parameter or 1st parameter of pScanner method
+     @param pData       optional data pointer to be passed as 3rd parameter of
+                        pScanner method
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
     ERESULT         Dir_ScanDir (
         DIR_DATA        *this,
         PATH_DATA       *pPath,
-        bool            (*pScan)(void *, DIRENTRY_DATA *),
-        void            *pObject
+        bool            fRecurse,
+        bool            (*pScanner)(void *, DIRENTRY_DATA *, void *),
+        void            *pObject,
+        void            *pData
     );
 
 

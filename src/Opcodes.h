@@ -221,6 +221,17 @@ extern "C" {
     );
 
 
+    /*!
+     Get the indexth Opcode from the array of opcodes.
+     @return    If successful, an Opcode object is returned.  Otherwise,
+                OBJ_NIL.
+     */
+    OPCODE_DATA *   Opcodes_Get (
+        OPCODES_DATA    *this,
+        uint32_t        index
+    );
+
+
     OPCODES_DATA *   Opcodes_Init (
         OPCODES_DATA     *this
     );

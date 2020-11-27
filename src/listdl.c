@@ -1,8 +1,8 @@
+// vi: nu:noai:ts=4:sw=4
+
 /****************************************************************
  *       Doubly-Linked List (listdl) Support Subroutines        *
  ****************************************************************/
-
-// vi: nu:noai:ts=4:sw=4
 
 /*
  This is free and unencumbered software released into the public domain.

@@ -93,18 +93,14 @@ int         test_fbs_OpenClose(
     pFilePath = Path_NewA(pFilePathStr);
     XCTAssertFalse( (OBJ_NIL == pFilePath) );
     
-    pObjO = fbso_Alloc();
-    XCTAssertFalse( (OBJ_NIL == pObjO) );
-    pObjO = fbso_Init( pObjO, pFilePath );
+    pObjO = fbso_NewPath(pFilePath);
     XCTAssertFalse( (OBJ_NIL == pObjO) );
     if (pObjO) {
         obj_Release(pObjO);
         pObjO = OBJ_NIL;
     }
     
-    pObjI = fbsi_Alloc();
-    XCTAssertFalse( (OBJ_NIL == pObjI) );
-    pObjI = fbsi_InitPath( pObjI, pFilePath );
+    pObjI = fbsi_NewPath( pFilePath );
     XCTAssertFalse( (OBJ_NIL == pObjI) );
     if (pObjI) {
         obj_Release(pObjI);
