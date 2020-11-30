@@ -1,16 +1,14 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Separate NodeClass (NodeClass) Header
+//                  Class Definition (NodeClass) Header
 //****************************************************************
 /*
  * Program
- *			Separate NodeClass (NodeClass)
+ *			Class Definition (NodeClass)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate NodeClass to run things without complications
- *          of interfering with the main NodeClass. A NodeClass may be 
- *          called a NodeClass on other O/S's.
+ *			This object contains the data and methods to define
+ *          class with its properties (NodeProp).
  *
  * Remarks
  *	1.      None
@@ -161,6 +159,16 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    ASTR_DATA *     NodeClass_getDesc (
+        NODECLASS_DATA  *this
+    );
+
+    bool            NodeClass_setDesc (
+        NODECLASS_DATA  *this,
+        ASTR_DATA       *pValue
+    );
+
 
     bool            NodeClass_getImmutable (
         NODECLASS_DATA  *this

@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  ${LNAME} (${LNAME}) Header
+//                  ${DESC} (${LNAME}) Header
 //****************************************************************
 /*
  * Program
- *			${LNAME} (${LNAME})
+ *			${DESC} (${LNAME})
  * Purpose
  *			This object provides a standardized way of handling
  *          a separate ${LNAME} to run things without complications

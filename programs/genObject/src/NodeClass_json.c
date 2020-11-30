@@ -97,6 +97,8 @@ extern "C" {
 
         (void)JsonIn_FindStringNodeInHashA(pParser, "name", &pObject->pName);
         obj_Retain(pObject->pName);
+        (void)JsonIn_FindStringNodeInHashA(pParser, "desc", &pObject->pDesc);
+        obj_Retain(pObject->pDesc);
         (void)JsonIn_FindStringNodeInHashA(pParser, "super", &pObject->pSuper);
         obj_Retain(pObject->pSuper);
         eRc = JsonIn_FindTrueNodeInHashA(pParser, "immutable");
@@ -185,7 +187,9 @@ extern "C" {
             SrcErrors_Print(OBJ_NIL, stderr);
             goto exit00;
         }
-        
+        fprintf(stderr, "======-------======\nmem_Dump(); after NodeClass_NewFromJsonString()\n");
+        mem_Dump();
+
         pObject = NodeClass_ParseJsonObject(pParser);
         
         // Return to caller.
@@ -294,6 +298,9 @@ extern "C" {
 #endif
 
         AStr_AppendPrint(pStr, "\tname:\"%s\"\n", AStr_getData(this->pName));
+        if (this->pDesc) {
+            AStr_AppendPrint(pStr, "\tdesc:\"%s\"\n", AStr_getData(this->pDesc));
+        }
         if (this->pSuper) {
             AStr_AppendPrint(pStr, "\tsuper:\"%s\"\n", AStr_getData(this->pSuper));
         }

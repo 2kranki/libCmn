@@ -90,7 +90,7 @@ struct Main_data_s	{
 
     extern
     const
-    MAIN_VTBL         Main_Vtbl;
+    MAIN_VTBL        Main_Vtbl;
 
 
 

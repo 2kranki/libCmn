@@ -55,6 +55,7 @@ int             tearDown (
 
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -268,10 +269,10 @@ int             test_Gen_Test01 (
         pStr2 = OBJ_NIL;
 
         pStr2 = AStr_NewA("model.obj.h.txt");
-        pPath = Gen_CreateOutputPath(pObj, pStr2);
+        pPath = Gen_CreateOutputPath(pObj, pStr2, "src");
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
         fprintf(stderr, "\toutput: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
-        eRc = AStr_CompareA(Path_getAStr(pPath), "/Users/bob/Support/x/Xyzzy.h");
+        eRc = AStr_CompareA(Path_getAStr(pPath), "/Users/bob/Support/x/src/Xyzzy.h");
         TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pPath);
         pPath = OBJ_NIL;
@@ -279,10 +280,10 @@ int             test_Gen_Test01 (
         pStr2 = OBJ_NIL;
 
         pStr2 = AStr_NewA("model.obj._internal.h.txt");
-        pPath = Gen_CreateOutputPath(pObj, pStr2);
+        pPath = Gen_CreateOutputPath(pObj, pStr2, "src");
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
         fprintf(stderr, "\toutput: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
-        eRc = AStr_CompareA(Path_getAStr(pPath), "/Users/bob/Support/x/Xyzzy_internal.h");
+        eRc = AStr_CompareA(Path_getAStr(pPath), "/Users/bob/Support/x/src/Xyzzy_internal.h");
         TINYTEST_TRUE( (0 == eRc) );
         obj_Release(pPath);
         pPath = OBJ_NIL;

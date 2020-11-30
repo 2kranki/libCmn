@@ -132,7 +132,8 @@ int             ObjList_SortCompare (
         
         // Do initialization.
         
-         this = obj_Alloc( cbSize );
+        this = obj_Alloc( cbSize );
+        //DEBUG_BREAK();
         
         // Return to caller.
         return this;

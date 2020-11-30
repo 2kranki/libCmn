@@ -135,7 +135,9 @@ struct Gen_data_s	{
 
     PATH_DATA *     Gen_CreateOutputPath (
         GEN_DATA        *this,
-        ASTR_DATA       *pModelFileName
+        ASTR_DATA       *pModelFileName,
+        const
+        char            *pSubDir
     );
 
 

@@ -205,7 +205,7 @@ extern "C" {
     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
              error code.
     */
-    ERESULT         Gen_CreateObjectFIles (
+    ERESULT         Gen_CreateObjectFiles (
         GEN_DATA        *this,
         NODECLASS_DATA  *pClass,
         bool            fVerbose
@@ -216,13 +216,16 @@ extern "C" {
      Expand the variables (of the form ${...}) in the model file creating
      the output file.
      @param     this    object pointer
-     @param     pModel  Model File Path to be expanded,
+     @param     pSubDir Subdirectory for file to be expanded into
+     @param     pModel  Model File Path to be expanded
      @param     fVerbose true == display file generation information
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
     ERESULT         Gen_ExpandFile (
         GEN_DATA		*this,
+        const
+        char            *pSubDir,
         ASTR_DATA       *pModel,
         bool            fVerbose
     );

@@ -123,6 +123,52 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                    D e s c r i p t i o n
+    //---------------------------------------------------------------
+
+    ASTR_DATA * NodeClass_getDesc (
+        NODECLASS_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pDesc;
+    }
+
+
+    bool            NodeClass_setDesc (
+        NODECLASS_DATA  *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NodeClass_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pDesc) {
+            obj_Release(this->pDesc);
+        }
+        this->pDesc = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     I m m u t a b l e
     //---------------------------------------------------------------
 
@@ -691,6 +737,22 @@ extern "C" {
         }
 #endif
 
+        if (this->pDesc) {
+            eRc = Dict_AddAStr(
+                            pDict,
+                            OBJECT_DESC,
+                            this->pDesc
+                    );
+        } else {
+            ASTR_DATA           *pStr;
+            pStr = AStr_ToUpper(this->pName);
+            eRc = Dict_AddAStr(
+                            pDict,
+                            OBJECT_DESC,
+                            pStr
+                    );
+            obj_Release(pStr);
+        }
         if (this->fImmutable) {
             eRc = Dict_AddA(
                             pDict,
@@ -783,6 +845,7 @@ extern "C" {
 #endif
 
         NodeClass_setName(this, OBJ_NIL);
+        NodeClass_setDesc(this, OBJ_NIL);
         NodeClass_setProps(this, OBJ_NIL);
         NodeClass_setSuper(this, OBJ_NIL);
 

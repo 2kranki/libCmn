@@ -367,7 +367,7 @@ extern "C" {
     );
 
 
-    void            JsonIn_RegisterReset(
+    void            JsonIn_RegisterReset (
         void
     );
 

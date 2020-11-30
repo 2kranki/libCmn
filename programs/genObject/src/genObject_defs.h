@@ -167,6 +167,7 @@ extern "C" {
 #define GEN_TIME            "TIME"
 #define MODEL_DRIVE         "MODEL_DRIVE"
 #define MODEL_DIR           "MODEL_DIR"
+#define OBJECT_DESC         "DESC"
 #define OBJECT_NAME         "LNAME"
 #define OBJECT_NAME_UPPER   "UNAME"
 #define OUTPUT_DRIVE        "OUTPUT_DRIVE"

@@ -54,6 +54,7 @@ int             tearDown (
     // test method in the class.
 
     SrcErrors_SharedReset( );
+    JsonIn_RegisterReset();
     szTbl_SharedReset( );
     trace_SharedReset( );
     if (mem_Dump( ) ) {
@@ -255,37 +256,37 @@ int             test_Main_ParseArg01 (
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
 
-        pPath = Path_NewA("/Users/bob/Support/x/Test01.h");
+        pPath = Path_NewA("/Users/bob/Support/x/src/Test01.h");
         if (pPath) {
             eRc = Path_Delete(pPath);
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        pPath = Path_NewA("/Users/bob/Support/x/Test01.c");
+        pPath = Path_NewA("/Users/bob/Support/x/src/Test01.c");
         if (pPath) {
             eRc = Path_Delete(pPath);
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        pPath = Path_NewA("/Users/bob/Support/x/Test01_internal.h");
+        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_internal.h");
         if (pPath) {
             eRc = Path_Delete(pPath);
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        pPath = Path_NewA("/Users/bob/Support/x/Test01_json.c");
+        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_json.c");
         if (pPath) {
             eRc = Path_Delete(pPath);
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        pPath = Path_NewA("/Users/bob/Support/x/Test01_object.c");
+        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_object.c");
         if (pPath) {
             eRc = Path_Delete(pPath);
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        pPath = Path_NewA("/Users/bob/Support/x/Test01_test.c");
+        pPath = Path_NewA("/Users/bob/Support/x/tests/Test01_test.c");
         if (pPath) {
             eRc = Path_Delete(pPath);
             obj_Release(pPath);
@@ -299,7 +300,7 @@ int             test_Main_ParseArg01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
-        pPath = Path_NewA("/Users/bob/Support/x/Test01.h");
+        pPath = Path_NewA("/Users/bob/Support/x/src/Test01.h");
         if (pPath) {
             eRc = Path_IsFile(pPath);
             TINYTEST_TRUE( (ERESULT_OK(eRc)) );
@@ -307,7 +308,7 @@ int             test_Main_ParseArg01 (
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        pPath = Path_NewA("/Users/bob/Support/x/Test01.c");
+        pPath = Path_NewA("/Users/bob/Support/x/src/Test01.c");
         if (pPath) {
             eRc = Path_IsFile(pPath);
             TINYTEST_TRUE( (ERESULT_OK(eRc)) );
@@ -315,7 +316,7 @@ int             test_Main_ParseArg01 (
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        pPath = Path_NewA("/Users/bob/Support/x/Test01_internal.h");
+        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_internal.h");
         if (pPath) {
             eRc = Path_IsFile(pPath);
             TINYTEST_TRUE( (ERESULT_OK(eRc)) );
@@ -323,7 +324,7 @@ int             test_Main_ParseArg01 (
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        pPath = Path_NewA("/Users/bob/Support/x/Test01_json.c");
+        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_json.c");
         if (pPath) {
             eRc = Path_IsFile(pPath);
             TINYTEST_TRUE( (ERESULT_OK(eRc)) );
@@ -331,7 +332,7 @@ int             test_Main_ParseArg01 (
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        pPath = Path_NewA("/Users/bob/Support/x/Test01_object.c");
+        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_object.c");
         if (pPath) {
             eRc = Path_IsFile(pPath);
             TINYTEST_TRUE( (ERESULT_OK(eRc)) );
@@ -339,7 +340,7 @@ int             test_Main_ParseArg01 (
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
-        pPath = Path_NewA("/Users/bob/Support/x/Test01_test.c");
+        pPath = Path_NewA("/Users/bob/Support/x/tests/Test01_test.c");
         if (pPath) {
             eRc = Path_IsFile(pPath);
             TINYTEST_TRUE( (ERESULT_OK(eRc)) );
@@ -347,6 +348,7 @@ int             test_Main_ParseArg01 (
             obj_Release(pPath);
             pPath = OBJ_NIL;
         }
+        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -400,7 +402,7 @@ int             test_Main_TestHelp01 (
 
 
 TINYTEST_START_SUITE(test_Main);
-    TINYTEST_ADD_TEST(test_Main_TestHelp01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_Main_TestHelp01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_ParseArg01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_Test01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_Main_Copy01,setUp,tearDown);

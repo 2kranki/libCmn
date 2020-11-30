@@ -61,6 +61,16 @@ ERESULT         Main_SetOutput360(
     const
     char            *pStrA
 );
+ERESULT         Main_SetOutput8085(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
+ERESULT         Main_SetOutput8086(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
 ERESULT         Main_SetOutputAsm(
     MAIN_DATA       *this,
     const
@@ -71,7 +81,17 @@ ERESULT         Main_SetOutputCmn(
     const
     char            *pStrA
 );
+ERESULT         Main_SetOutputDisk(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
 ERESULT         Main_SetOutputEmu(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
+ERESULT         Main_SetOutputGraph(
     MAIN_DATA       *this,
     const
     char            *pStrA
@@ -135,6 +155,24 @@ extern "C" {
             "Output to lib360"
         },
         {
+            "8085",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_SetOutput8085,
+            "Output to lib8085"
+        },
+        {
+            "8086",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_SetOutput8086,
+            "Output to lib8086"
+        },
+        {
             "asm",
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
@@ -153,6 +191,15 @@ extern "C" {
             "Output to libCmn"
         },
         {
+            "disk",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_SetOutputCmn,
+            "Output to libDisk"
+        },
+        {
             "emu",
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
@@ -160,6 +207,15 @@ extern "C" {
             0,
             (void *)Main_SetOutputEmu,
             "Output to libEmu"
+        },
+        {
+            "graph",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            (void *)Main_SetOutputGraph,
+            "Output to libGraph"
         },
         {
             "ll1",
@@ -253,7 +309,45 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/lib360/src/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/lib360/");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutput8085(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDir(this->pGen, "~/git/lib8085/");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutput8086(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDir(this->pGen, "~/git/lib8086/");
 
         // Put code here...
 
@@ -272,7 +366,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libAsm/src/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libAsm/");
 
         // Put code here...
 
@@ -291,7 +385,26 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libCmn/src/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libCmn/");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutputDisk(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDir(this->pGen, "~/git/libDisk/");
 
         // Put code here...
 
@@ -310,7 +423,26 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libEmu/src/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libEmu/");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutputGraph(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDir(this->pGen, "~/git/libGraph/");
 
         // Put code here...
 
@@ -329,7 +461,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libLL1/src/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libLL1/");
 
         // Put code here...
 
@@ -348,7 +480,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libLnk/src/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libLnk/");
 
         // Put code here...
 
@@ -367,7 +499,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libObj/src/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libObj/");
 
         // Put code here...
 
@@ -386,7 +518,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libPrs/src/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libPrs/");
 
         // Put code here...
 
@@ -405,7 +537,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libTbl/src/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libTbl/");
 
         // Put code here...
 
@@ -424,7 +556,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libVid/src/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libVid/");
 
         // Put code here...
 
@@ -1351,7 +1483,6 @@ extern "C" {
     {
         ERESULT         eRc = ERESULT_SUCCESS;
         PATH_DATA       *pPath = OBJ_NIL;
-        PATH_DATA       *pMakepath = OBJ_NIL;
         ASTR_DATA       *pInput;
         NODECLASS_DATA  *pClass;
 
@@ -1403,7 +1534,7 @@ extern "C" {
                     Path_getData(pPath)
         );
 
-        eRc =   Gen_CreateObjectFIles(
+        eRc =   Gen_CreateObjectFiles(
                                     this->pGen,
                                     pClass,
                                     !Appl_getQuiet((APPL_DATA *)this)
@@ -1730,7 +1861,7 @@ extern "C" {
     )
     {
         uint32_t        i = 0;
-        CMDUTL_OPTION   *pPgmOption = pPgmOptions;
+        //CMDUTL_OPTION   *pPgmOption = pPgmOptions;
 
         // Do initialization.
 #ifdef NDEBUG

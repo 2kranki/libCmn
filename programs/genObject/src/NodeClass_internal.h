@@ -74,8 +74,9 @@ struct NodeClass_data_s	{
     uint8_t         fSingleton;
     uint8_t         fTest;
     ASTR_DATA       *pName;
+    ASTR_DATA       *pDesc;
     ASTR_DATA       *pSuper;
-    OBJARRAY_DATA   *pProps;
+    OBJARRAY_DATA   *pProps;        // An array of NodeProp(s) for this class
 
 };
 #pragma pack(pop)
@@ -94,7 +95,7 @@ struct NodeClass_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  NODECLASS_SINGLETON
-    NODECLASS_DATA *     NodeClass_getSingleton (
+    NODECLASS_DATA * NodeClass_getSingleton (
         void
     );
 
@@ -120,7 +121,7 @@ struct NodeClass_data_s	{
     );
 
 
-    NODECLASS_DATA *       NodeClass_Copy (
+    NODECLASS_DATA * NodeClass_Copy (
         NODECLASS_DATA     *this
     );
 
@@ -137,7 +138,7 @@ struct NodeClass_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NODECLASS_DATA *       NodeClass_ParseJsonObject (
+    NODECLASS_DATA * NodeClass_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -179,7 +180,7 @@ struct NodeClass_data_s	{
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     NodeClass_ToJson (
-        NODECLASS_DATA      *this
+        NODECLASS_DATA  *this
     );
 
 
@@ -193,7 +194,7 @@ struct NodeClass_data_s	{
                 error code.
      */
     ERESULT         NodeClass_ToJsonFields (
-        NODECLASS_DATA     *this,
+        NODECLASS_DATA  *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -204,7 +205,7 @@ struct NodeClass_data_s	{
 #ifdef NDEBUG
 #else
     bool			NodeClass_Validate (
-        NODECLASS_DATA       *this
+        NODECLASS_DATA  *this
     );
 #endif
 

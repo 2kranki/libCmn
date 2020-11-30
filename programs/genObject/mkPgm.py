@@ -230,6 +230,9 @@ def         parse_args(listArgV=None):
     cmd_prs.add_argument('-m', '--make', action='store_false', dest='make',
                          default=True, help='Skip Make mode'
                          )
+    cmd_prs.add_argument('-n', '--models', action='store_false', dest='models',
+                         default=True, help='Skip rebuild of Models Directory'
+                         )
     cmd_prs.add_argument('-o', '--ostype', action='store', dest='ostype',
                          default='macos64', help='Makefile Type (macos64 | win64)'
                          )
@@ -294,6 +297,21 @@ def         perform_actions():
     # Install the library.
     if args.install:
         rc = do_cmd("make -f Makefile.%s.txt install" % args.ostype)
+        if rc != 0:
+            print('ERROR - make test failed!')
+            return 4
+
+    # Install the models.
+    if args.models:
+        rc = do_cmd("rm -fr ~/git/Support/genObject")
+        if rc != 0:
+            print('ERROR - make test failed!')
+            return 4
+        rc = do_cmd("mkdir -p ~/git/Support/genObject")
+        if rc != 0:
+            print('ERROR - make test failed!')
+            return 4
+        rc = do_cmd("cp -R ./models/* ~/git/Support/genObject/")
         if rc != 0:
             print('ERROR - make test failed!')
             return 4

@@ -257,9 +257,6 @@ extern "C" {
         ERESULT         eRc;
 
         // Do initialization.
-        if (NULL == pFileNameA) {
-            return this;
-        }
         this = Path_New( );
         if (OBJ_NIL == this) {
             return this;
@@ -280,7 +277,9 @@ extern "C" {
             }
         }
 
-        eRc = AStr_AppendA(pThis, pFileNameA);
+        if (pFileNameA) {
+            eRc = AStr_AppendA(pThis, pFileNameA);
+        }
 
         if (NULL != pExtA) {
             if (*pExtA != '.') {

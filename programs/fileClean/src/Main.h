@@ -268,6 +268,12 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    ERESULT             Main_CleanFile (
+        MAIN_DATA           *this,
+        PATH_DATA           *pPath
+    );
+
+
     int             Main_Exec(
         MAIN_DATA		*this
     );

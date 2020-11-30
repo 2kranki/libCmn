@@ -54,22 +54,31 @@ extern "C" {
 #endif
     
 
-    
+    typedef struct modelFileNames_s {
+        const
+        char            *pFileName;
+        const
+        char            *pSubDir;
+    } MODEL_FILE_NAME;
+
     static
-    const
-    char        *pModelFileNames[] = {
-        "model.obj._internal.h.txt",
-        "model.obj._object.c.txt",
-        "model.obj.h.txt",
-        "model.obj.c.txt",
-        NULL
+    MODEL_FILE_NAME     ModelFileNames[] = {
+        {"model.obj._internal.h.txt", "src"},
+        {"model.obj._object.c.txt", "src"},
+        {"model.obj.h.txt", "src"},
+        {"model.obj.c.txt", "src"},
+        {NULL}
     };
     static
-    const
-    char        *pModelJsonFileName = "model.obj._json.c.txt";
+    MODEL_FILE_NAME     JsonFileName = {
+        "model.obj._json.c.txt",
+        "src"
+    };
     static
-    const
-    char        *pModelTestFileName = "model.obj._test.c.txt";
+    MODEL_FILE_NAME     TestFileName = {
+        "model.obj._test.c.txt",
+        "tests"
+    };
 
 
 #if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
@@ -574,7 +583,7 @@ extern "C" {
     //            C r e a t e  O b j e c t  F i l e s
     //---------------------------------------------------------------
 
-    ERESULT         Gen_CreateObjectFIles (
+    ERESULT         Gen_CreateObjectFiles (
         GEN_DATA        *this,
         NODECLASS_DATA  *pClass,
         bool            fVerbose
@@ -592,11 +601,11 @@ extern "C" {
         }
 #endif
 
-        for (i=0; pModelFileNames[i]; i++) {
+        for (i=0; ModelFileNames[i].pFileName; i++) {
             ASTR_DATA       *pStr = OBJ_NIL;
-            pStr = AStr_NewA(pModelFileNames[i]);
+            pStr = AStr_NewA(ModelFileNames[i].pFileName);
             if (pStr) {
-                eRc = Gen_ExpandFile(this, pStr, fVerbose);
+                eRc = Gen_ExpandFile(this, ModelFileNames[i].pSubDir, pStr, fVerbose);
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
                 if (ERESULT_FAILED(eRc))
@@ -607,9 +616,9 @@ extern "C" {
         if (ERESULT_OK(eRc)) {
             ASTR_DATA       *pStr = OBJ_NIL;
             if (NodeClass_getJson(pClass)) {
-                pStr = AStr_NewA(pModelJsonFileName);
+                pStr = AStr_NewA(JsonFileName.pFileName);
                 if (pStr) {
-                    eRc = Gen_ExpandFile(this, pStr, fVerbose);
+                    eRc = Gen_ExpandFile(this, JsonFileName.pSubDir, pStr, fVerbose);
                     obj_Release(pStr);
                     pStr = OBJ_NIL;
                 }
@@ -619,9 +628,9 @@ extern "C" {
         if (ERESULT_OK(eRc)) {
             ASTR_DATA       *pStr = OBJ_NIL;
             if (NodeClass_getTest(pClass)) {
-                pStr = AStr_NewA(pModelTestFileName);
+                pStr = AStr_NewA(TestFileName.pFileName);
                 if (pStr) {
-                    eRc = Gen_ExpandFile(this, pStr, fVerbose);
+                    eRc = Gen_ExpandFile(this, TestFileName.pSubDir, pStr, fVerbose);
                     obj_Release(pStr);
                     pStr = OBJ_NIL;
                 }
@@ -640,7 +649,9 @@ extern "C" {
 
     PATH_DATA *     Gen_CreateOutputPath (
         GEN_DATA        *this,
-        ASTR_DATA       *pModelFileName
+        ASTR_DATA       *pModelFileName,
+        const
+        char            *pSubDir
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -711,9 +722,21 @@ extern "C" {
         pPath = Path_NewFromComponentsA(
                         pOutputDriveA,
                         pOutputDirA,
-                        AStr_getData(pStr),
+                        NULL,
                         NULL
                 );
+        eResult_ErrorFatalOnBool(
+                        (pPath == OBJ_NIL),
+                        "Output Path could not be created!\n"
+        );
+        eRc = Path_AppendDirA(pPath, pSubDir);
+        if (ERESULT_OK(eRc))
+            eRc = Path_AppendFileName(pPath, pStr);
+        eResult_ErrorFatalOnBool(
+                        (ERESULT_FAILED(eRc)),
+                        "Output Path could not be created!\n"
+        );
+
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
@@ -953,6 +976,8 @@ extern "C" {
 
     ERESULT         Gen_ExpandFile (
         GEN_DATA        *this,
+        const
+        char            *pSubDir,
         ASTR_DATA       *pModel,
         bool            fVerbose
     )
@@ -978,7 +1003,7 @@ extern "C" {
                         "Could not generate Model Path from %s!\n",
                         AStr_getData(pModel)
         );
-        pOutputPath = Gen_CreateOutputPath(this, pModel);
+        pOutputPath = Gen_CreateOutputPath(this, pModel, pSubDir);
         eResult_ErrorFatalOnBool(
                         (OBJ_NIL == pModelPath),
                         "Could not generate Output Path from %s!\n",

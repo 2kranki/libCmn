@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//              Program Dictionary (Dict) Header
+//              Common Dictionary (Dict) Header
 //****************************************************************
 /*
  * Program
- *			Program Dictionary (Dict)
+ *			Common Dictionary (Dict)
  * Purpose
  *			This object provides a Dictionary of Data needed by the
  *          program.  The Dictionary index is constant character

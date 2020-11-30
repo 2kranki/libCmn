@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Separate NodeProp (NodeProp) Header
+//            Class Property Definition (NodeProp) Header
 //****************************************************************
 /*
  * Program
- *			Separate NodeProp (NodeProp)
+ *			Class Property Definition (NodeProp)
  * Purpose
  *			This object provides a standardized way of handling
  *          a separate NodeProp to run things without complications

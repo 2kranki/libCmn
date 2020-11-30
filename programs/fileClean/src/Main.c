@@ -43,8 +43,7 @@
 /* Header File Inclusion */
 #include        <Main_internal.h>
 #include        <Dir.h>
-#include        <fbsi.h>
-#include        <fbso.h>
+#include        <File.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 
@@ -485,52 +484,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      R o u t i n e s
-    //---------------------------------------------------------------
-    
-    NODEARRAY_DATA * Main_getRoutines (
-        MAIN_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !Main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pRtns;
-    }
-    
-    
-    bool            Main_setRoutines (
-        MAIN_DATA       *this,
-        NODEARRAY_DATA  *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pRtns) {
-            obj_Release(this->pRtns);
-        }
-        this->pRtns = pValue;
-        
-        return true;
-    }
-        
-        
-        
-    //---------------------------------------------------------------
     //                          S i z e
     //---------------------------------------------------------------
     
@@ -582,52 +535,6 @@ extern "C" {
     
     
 
-    //---------------------------------------------------------------
-    //                      T e s t s
-    //---------------------------------------------------------------
-    
-    NODEARRAY_DATA * Main_getTests (
-        MAIN_DATA       *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !Main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pTests;
-    }
-    
-    
-    bool            Main_setTests (
-        MAIN_DATA       *this,
-        NODEARRAY_DATA  *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        obj_Retain(pValue);
-        if (this->pTests) {
-            obj_Release(this->pTests);
-        }
-        this->pTests = pValue;
-        
-        return true;
-    }
-            
-            
-            
     //---------------------------------------------------------------
     //                          V e r b o s e
     //---------------------------------------------------------------
@@ -810,6 +717,137 @@ extern "C" {
             
             
             
+    //---------------------------------------------------------------
+    //                   C l e a n  F i l e
+    //---------------------------------------------------------------
+
+    ERESULT             Main_CleanFile (
+        MAIN_DATA           *this,
+        PATH_DATA           *pPath
+    )
+    {
+        ERESULT             eRc = ERESULT_SUCCESS;
+        FILE                *pFileIn = NULL;
+        FILE                *pFileOut = NULL;
+        PATH_DATA           *pPathOut = OBJ_NIL;
+        ASTR_DATA           *pDrive = OBJ_NIL;
+        PATH_DATA           *pDir = OBJ_NIL;
+        PATH_DATA           *pFileName = OBJ_NIL;
+        const
+        char                *pFileNameA = "file_clean_temp";
+        const
+        char                *pFileExtA = "txt";
+        uint32_t            TotalRead = 0;
+        uint32_t            TotalWrite = 0;
+        int32_t             chrWrk;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Main_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pPath ) {
+            eRc = ERESULT_INVALID_PARAMETER;
+            goto Exit00;
+        }
+#endif
+        eRc = Path_Clean(pPath);
+        eRc = Path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
+
+        // Open the input file.
+        pFileIn = fopen(Path_getData(pPath), "rb");
+        if (NULL == pFileIn) {
+            if (Appl_getDebug(Main_getAppl(this))) {
+                fprintf(stderr, "ERROR - Could not open %s!\n\n\n", Path_getData(pPath));
+            }
+            eRc = ERESULT_OPEN_ERROR;
+            goto Exit00;
+        }
+
+        // Open the output file.
+        pPathOut =  Path_NewFromComponentsA(
+                                            AStr_getData(pDrive),
+                                            Path_getData(pDir),
+                                            pFileNameA,
+                                            pFileExtA
+                    );
+        if (OBJ_NIL == pPathOut) {
+            if (Appl_getDebug(Main_getAppl(this))) {
+                fprintf(stderr, "ERROR - Out of memory!\n\n\n");
+            }
+            eRc = ERESULT_OPEN_ERROR;
+            goto Exit00;
+        }
+        pFileOut = fopen(Path_getData(pPathOut), "w");
+        if (NULL == pFileOut) {
+            if (Appl_getDebug(Main_getAppl(this))) {
+                fprintf(stderr, "ERROR - Could not open %s!\n\n\n", Path_getData(pPath));
+            }
+            eRc = ERESULT_OPEN_ERROR;
+            goto Exit00;
+        }
+
+        // Concatenate the file.
+        for ( ;; ) {
+
+            // Get the next byte.
+            chrWrk = fgetc(pFileIn);
+            if (-1 == chrWrk)
+                break;
+            ++TotalRead;
+            chrWrk &= 0x7F;
+            if( chrWrk == 0x1A )                 //*** CP/M EOF ***
+                break;
+            if( (chrWrk >= ' ') && (chrWrk < 0x7F) )
+                ;
+            else if( (chrWrk == '\f' ) || (chrWrk == '\n') || (chrWrk == '\t') )
+                ;
+            else
+                continue;
+
+            // Put the byte.
+            fputc(chrWrk, pFileOut);
+            ++TotalWrite;
+        }
+
+        // Close the file and do clean up.
+        fclose(pFileIn);
+        pFileIn = NULL;
+        fclose(pFileOut);
+        pFileOut = NULL;
+        if (Appl_getDebug(Main_getAppl(this)))
+            goto Exit00;
+        eRc = File_DeleteA(Path_getData(pPath));
+        if (ERESULT_OK(eRc)) {
+            eRc = File_RenameA(Path_getData(pPathOut), Path_getData(pPath));
+        }
+        if( !Appl_getQuiet(Main_getAppl(this)) || Appl_getDebug(Main_getAppl(this)) ) {
+            fprintf( stderr, "\t\tTotal Characters Read    = %d\n", TotalRead );
+            fprintf( stderr, "\t\tTotal Characters Written = %d\n", TotalWrite );
+        }
+
+        // Return to Caller.
+        eRc = ERESULT_SUCCESS;
+    Exit00:
+        if (pFileIn) {
+            fclose(pFileIn);
+            pFileIn = NULL;
+        }
+        if (pFileOut) {
+            fclose(pFileOut);
+            pFileOut = NULL;
+        }
+        obj_Release( pPathOut );
+        obj_Release( pDrive );
+        obj_Release( pDir );
+        obj_Release( pFileName );
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -1036,7 +1074,7 @@ extern "C" {
         char            *pPathA
     )
     {
-        ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
         DIR_DATA        *pScanner = OBJ_NIL;
         PATH_DATA       *pPath;
         const
@@ -1066,7 +1104,7 @@ extern "C" {
         }
 
         pPath = Path_NewA(pPathA);
-        eRc = Dir_ScanDir(pScanner, pPath, (void *)&DirScanner, this, NULL);
+        //eRc = Dir_ScanDir(pScanner, pPath, (void *)&DirScanner, this, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
 
@@ -1215,58 +1253,6 @@ extern "C" {
         
         // Return to caller.
         return 0;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                      F i l e  C l e a n
-    //---------------------------------------------------------------
-
-    ERESULT         Main_FileClean (
-        MAIN_DATA	    *this,
-        PATH_DATA       *pInput
-    )
-    {
-        FBSI_DATA	    *pIn = OBJ_NIL;
-        FBSO_DATA	    *pOut = OBJ_NIL;
-        PATH_DATA       *pFilePath = OBJ_NIL;
-
-        // Do initialization.
-        if (NULL == this) {
-            return ERESULT_INVALID_OBJECT;
-        }
-#ifdef NDEBUG
-#else
-        if( !Main_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        pIn = fbsi_NewPath(pInput);
-        if (OBJ_NIL == pIn) {
-            DEBUG_BREAK();
-            return ERESULT_GENERAL_FAILURE;
-        }
-
-        // Create temporary file.
-        pOut = fbso_NewPath( pFilePath );
-        if (OBJ_NIL == pOut) {
-            DEBUG_BREAK();
-            obj_Release(pIn);
-            pIn = OBJ_NIL;
-            return ERESULT_GENERAL_FAILURE;
-        }
-
-        obj_Release(pIn);
-        pIn = OBJ_NIL;
-        obj_Release(pOut);
-        pOut = OBJ_NIL;
-
-       
-        // Return to caller.
-        return ERESULT_SUCCESS;
     }
 
 
@@ -1577,54 +1563,15 @@ extern "C" {
                     "FATAL - Failed to create path \"from\" \n"
         );
 
-        /****
-        eRc = Main_ParseInputFile(this, pPath);
+        eRc = Main_CleanFile(this, pPath);
         Appl_ErrorFatalOnEresult(
                     eRc,
-                    "FATAL - Failed to parse input: %s",
+                    "FATAL - Failed to clean: %s",
                     Path_getData(pPath)
         );
-        if (!Appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\tParsed input: %s...\n", Path_getData(pPath));
-        }
-        obj_Release(pPath);
-        pPath = OBJ_NIL;
-
-        pMakepath = Main_CreateOutputPath(this, pStr, this->pOsName);
-        Appl_ErrorFatalOnBool(
-                    (OBJ_NIL == pMakepath),
-                    "FATAL - Failed to create path \"from\" \n"
-        );
-
-        // Generate the Makefile.
-        eRc = Main_GenMakefile(this);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Generate Makefile failed! \n");
-            exit(EXIT_FAILURE);
-        }
 
         if (!Appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\tCreating - %s...\n", Path_getData(pMakepath));
-        }
-        ***/
-
-        pWrk = Main_getStr(this);
-        if (OBJ_NIL == pWrk) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Failed to find output! \n");
-            exit(EXIT_FAILURE);
-        }
-        
-        eRc = AStr_ToUtf8File(pWrk, pMakepath);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Failed to write output! \n");
-            exit(EXIT_FAILURE);
-        }
-
-        if (!Appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\t\t%s created.\n", Path_getData(pMakepath));
+            fprintf(stderr, "\t\t%s cleaned.\n", Path_getData(pMakepath));
         }
 
         // Return to caller.
@@ -1884,8 +1831,8 @@ extern "C" {
 
         fprintf(
                 pOutput, 
-                "  Generate a make or nmake file for the object system created\n"
-                "  in libCmn given an input json file.\n"
+                "  Clean up old CP/M text files to conform to\n"
+                "  Unix/MacOS standards.\n"
         );
         
         // Return to caller.

@@ -4,7 +4,7 @@
     "program":{
         "name":"fileClean",
         "deps":["Cmn"],
-        "hdrs":["fileClean.h"],
+        "hdrs":["fileClean_defs.h"],
         "main":"mainProgram.c"
     },
     "objects":[
