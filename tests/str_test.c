@@ -122,6 +122,60 @@ int         test_str_CompareSpcl_NoWS(
 
 
 
+int         test_str_CompareSpclWS01(
+    const
+    char        *pTestName
+)
+{
+    int             iRc;
+    int             offset = -1;
+    const
+    char            *pStr1 = "Hello, world!\n";
+    const
+    char            *pStr2 = "Hello,    world!\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    iRc = str_CompareSpcl_WS(pStr1, pStr2, &offset);
+    XCTAssertTrue( (0 == iRc) );
+    XCTAssertTrue( (0 == offset) );
+    iRc = str_CompareSpcl_WS(pStr2, pStr1, &offset);
+    XCTAssertTrue( (0 == iRc) );
+    XCTAssertTrue( (0 == offset) );
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_str_CompareSpclWS02(
+    const
+    char        *pTestName
+)
+{
+    int             iRc;
+    int             offset = -1;
+    const
+    char            *pStr1 = "Hello,world!\n";
+    const
+    char            *pStr2 = " Hello,    world!\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    iRc = str_CompareSpcl_WS(pStr1, pStr2, &offset);
+    XCTAssertTrue( (1 == iRc) );
+    XCTAssertTrue( (0 == offset) );
+    iRc = str_CompareSpcl_WS(pStr2, pStr1, &offset);
+    XCTAssertTrue( (-1 == iRc) );
+    XCTAssertTrue( (0 == offset) );
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_str_CompareW32A(
     const
     char        *pTestName
@@ -354,6 +408,8 @@ TINYTEST_START_SUITE(test_str);
     TINYTEST_ADD_TEST(test_str_CopyFill01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_str_Concat,setUp,tearDown);
     TINYTEST_ADD_TEST(test_str_CompareW32A,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_str_CompareSpclWS02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_str_CompareSpclWS01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_str_CompareSpcl_NoWS,setUp,tearDown);
 TINYTEST_END_SUITE();
 

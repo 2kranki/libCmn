@@ -57,6 +57,7 @@ int             tearDown(
     
     szTbl_SharedReset( );
     SrcErrors_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(
@@ -238,14 +239,14 @@ int             test_NodeTest_Parse01(
     if (pStrCArray) {
         TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
         pStrC = AStrCArray_Get(pStrCArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"X86")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"X86")));
     }
     pStrCArray = NodeTest_getOSs(pTest);
     TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
     if (pStrCArray) {
         TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
         pStrC = AStrCArray_Get(pStrCArray, 1);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"macos")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"macos")));
     }
     pStrCArray = NodeTest_getDeps(pTest);
     TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
@@ -259,7 +260,7 @@ int             test_NodeTest_Parse01(
         pStrC = AStrCArray_Get(pStrCArray, 1);
         fprintf(stderr, "Srcs[1] = %s\n", AStrC_getData(pStrC));
         eRc = AStrC_CompareA(pStrC,"$(TEST_SRC)/abc.c");
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
+        TINYTEST_TRUE((0 == eRc));
     }
 
     obj_Release(pNodes);

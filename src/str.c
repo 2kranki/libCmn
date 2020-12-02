@@ -319,6 +319,74 @@ int             str_CompareSpcl_NoWS(
 }
 
 
+int             str_CompareSpcl_WS(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2,
+    int             *pOffset
+)
+{
+    int             i;
+    int             result = 0;
+    const
+    char            *pszStr;
+    int             offset = 0;
+
+    // Do initialization.
+    if (pOffset) {
+        *pOffset = 0;
+    }
+    pszStr = pszStr1;
+
+    for( ;; ) {
+        if (*pszStr1 && ascii_isWhiteSpaceA(*pszStr1)
+            && *pszStr2 && ascii_isWhiteSpaceA(*pszStr2)) {
+            while (*pszStr1 && ascii_isWhiteSpaceA(*pszStr1)) {
+                pszStr1++;
+                offset++;
+            }
+            while (*pszStr2 && ascii_isWhiteSpaceA(*pszStr2)) {
+                pszStr2++;
+            }
+            if( *pszStr1 ) {
+                if (*pszStr2 == 0) {
+                    result = 1;
+                    break;
+                }
+            }
+            else {
+                if( *pszStr2 ) {
+                    result = -1;
+                }
+                break;
+            }
+        }
+        i = *pszStr1 - *pszStr2;
+        if( i ) {
+            if( i < 0 ) {
+                if (pOffset)
+                    *pOffset = (int)(pszStr1 - pszStr);
+                result = -1;
+            }
+            else {
+                if (pOffset)
+                    *pOffset = (int)(pszStr1 - pszStr);
+                result = 1;
+            }
+            break;
+        }
+        pszStr1++; offset++;
+        pszStr2++;
+    }
+    if (result)
+        DEBUG_BREAK();
+
+    // Return to caller.
+    return result;
+}
+
+
 int             str_CompareW32(
     const
     W32CHR_T		*pszStr1,

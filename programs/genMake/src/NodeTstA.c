@@ -666,12 +666,13 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         NodeTstA_Compare (
-        NODETSTA_DATA     *this,
-        NODETSTA_DATA     *pOther
+    int             NodeTstA_Compare (
+        NODETSTA_DATA   *this,
+        NODETSTA_DATA   *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             iRc;
         
 #ifdef NDEBUG
 #else
@@ -685,9 +686,9 @@ extern "C" {
         }
 #endif
 
-        eRc = NodeBase_Compare(NodeTstA_getNodeBase(this), NodeTstA_getNodeBase(pOther));
+        iRc = NodeBase_Compare(NodeTstA_getNodeBase(this), NodeTstA_getNodeBase(pOther));
 
-        return eRc;
+        return iRc;
     }
     
    
@@ -926,10 +927,10 @@ extern "C" {
             AStrC_getData(NodeTstA_getName(this))
         );
         
-        if ((AStrC_CompareA(pExt, "c") == ERESULT_SUCCESS_EQUAL)
-            || (AStrC_CompareA(pExt, "C") == ERESULT_SUCCESS_EQUAL)
-            || (AStrC_CompareA(pExt, "cpp") == ERESULT_SUCCESS_EQUAL)
-            || (AStrC_CompareA(pExt, "CPP") == ERESULT_SUCCESS_EQUAL)) {
+        if ((AStrC_CompareA(pExt, "c") == 0)
+            || (AStrC_CompareA(pExt, "C") == 0)
+            || (AStrC_CompareA(pExt, "cpp") == 0)
+            || (AStrC_CompareA(pExt, "CPP") == 0)) {
             // First prerequisite must be the Test Program Source.
             ASTR_DATA       *pWrk = AStr_New();
             if (AStrC_CharGetFirstW32(NodeTstA_getName(this)) == '$') {

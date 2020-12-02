@@ -65,19 +65,21 @@ extern "C" {
    //          defaults.  So, they can be over-ridden by the same.
    CMDUTL_OPTION       defaultOptDefns[] = {
        {
-           NULL,                       // Long
-           '?',                        // Short
-           CMDUTL_ARG_OPTION_NONE,     // Class
-           CMDUTL_TYPE_EXEC,           // Type
-           0,                          // Offset
-           (void *)Appl_Help,          // Executed Routine
-           "Display Help"              // Description
+           NULL,                        // Long
+           '?',                         // Short
+           CMDUTL_ARG_OPTION_NONE,      // Class
+           CMDUTL_TYPE_EXEC,            // Type
+           0,                           // Constant
+           0,                           // Offset
+           (void *)Appl_Help,           // Executed Routine
+           "Display Help"               // Description
        },
        {
            "debug",
            'd',
            CMDUTL_ARG_OPTION_NONE,
            CMDUTL_TYPE_BOOL,
+           0,                           // Constant
            offsetof(APPL_DATA, fDebug),
            NULL,
            "Set Debug Mode"
@@ -87,6 +89,7 @@ extern "C" {
            'f',
            CMDUTL_ARG_OPTION_NONE,
            CMDUTL_TYPE_BOOL,
+           0,                           // Constant
            offsetof(APPL_DATA, fForce),
            NULL,
            "Set Force Mode"
@@ -96,6 +99,7 @@ extern "C" {
            'h',
            CMDUTL_ARG_OPTION_NONE,
            CMDUTL_TYPE_EXEC,
+           0,                           // Constant
            0,
            (void *)Appl_Help,
            "Display Help"
@@ -105,6 +109,7 @@ extern "C" {
            's',
            CMDUTL_ARG_OPTION_NONE,
            CMDUTL_TYPE_BOOL,
+           0,                           // Constant
            offsetof(APPL_DATA, fQuiet),
            NULL,
            "Set Quiet Mode"
@@ -115,6 +120,7 @@ extern "C" {
            's',
            CMDUTL_ARG_OPTION_NONE,
            CMDUTL_TYPE_BOOL,
+           0,                           // Constant
            offsetof(APPL_DATA, fQuiet),
            NULL,
            "Set Quiet Mode"
@@ -124,11 +130,12 @@ extern "C" {
            'v',
            CMDUTL_ARG_OPTION_NONE,
            CMDUTL_TYPE_INCR,
+           0,                           // Constant
            offsetof(APPL_DATA, iVerbose),
            NULL,
            "Set Verbose Mode"
        },
-       {NULL,0,0,0,0,NULL,NULL}                    // End of Table
+       {NULL,0,0,0,0,0,NULL,NULL}                    // End of Table
    };
 
 

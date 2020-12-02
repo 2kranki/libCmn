@@ -56,6 +56,7 @@ int             tearDown(
 
     szTbl_SharedReset( );
     SrcErrors_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

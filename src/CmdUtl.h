@@ -114,22 +114,25 @@ extern "C" {
         CMDUTL_TYPE_UNKNOWN=0,
         CMDUTL_TYPE_BOOL,               // uint16_t - 0 == false, > 0 == true
         //                              // (same as CMDUTL_TYPE_INCR)
+        CMDUTL_TYPE_CON32,              // Store a uint16_t constant value given
+        //                              // in constant
+        //                              // (with argument if available)
         CMDUTL_TYPE_EXEC,               // Execute given routine
         //                              // (with argument if available)
         CMDUTL_TYPE_HJSON,              // Node pointer - HJSON will be used
         //                              // to parse the Argument's parameter
         //                              // looking for a "value" not a "hash".
-        //                              // (Argument parameter is required)
+        //                              // (External Argument parameter is required)
         CMDUTL_TYPE_INCR,               // uint16_t - Every occurence increases the
         //                              // associated value (default is 0);
         CMDUTL_TYPE_NUMBER,             // Number pointer
-        //                              // (Argument parameter is required)
+        //                              // (External Argument parameter is required)
         CMDUTL_TYPE_PATH,               // Path pointer
-        //                              // (Argument parameter is required)
+        //                              // (External Argument parameter is required)
         CMDUTL_TYPE_STRING,             // AStr pointer
-        //                              // (Argument parameter is required)
+        //                              // (External Argument parameter is required)
         CMDUTL_TYPE_VALUE,              // Value pointer
-        //                              // (Argument parameter is required)
+        //                              // (External Argument parameter is required)
     }   CMDUTL_TYPE;
 
 
@@ -144,6 +147,7 @@ extern "C" {
         // Note - either a long or short name must be specified. Both may be specified.
         uint16_t        argOption;          // See CMDUTIL_ARG_OPTION above.
         uint16_t        argType;            // See CMDUTIL_TYPE above.
+        uint32_t        constant;
         uint32_t        offset;             // Option Offset
         ERESULT         (*pExec)(           // Method to execute if APPL_ARG_EXEC
                                  OBJ_ID,

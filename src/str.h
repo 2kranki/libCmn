@@ -129,6 +129,25 @@ int             str_CompareSpcl_NoWS(
 //                                      // strings differ.
 );
 
+/* str_CompareSpcl_WS() compares two Input Strings to each other
+ * including white-space, but ignores multiple white-space characters
+ * in a row. If the two strings differ, the offset of that difference
+ * in Str1 is returned.
+ * Returns:
+ *    -1              =    Str1 <  Str2  and offset of difference
+ *    0               =    Str1 == Str2
+ *    1               =    Str1 >  Str2  and offset of difference
+ */
+int             str_CompareSpcl_WS(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2,
+    int             *pOffset            // Optional Returned offset where the
+//                                      // strings differ.
+);
+
+
 int             str_CompareW32(
     const
     W32CHR_T		*pszStr1,

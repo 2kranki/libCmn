@@ -58,6 +58,7 @@ int             tearDown(
     
     szTbl_SharedReset( );
     SrcErrors_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -236,84 +237,84 @@ int             test_NodeBase_Parse01(
         TINYTEST_TRUE( (OBJ_NIL == pErr) );
         pStrC = NodeBase_getName(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"AStr")));
         pStrCArray = NodeBase_getArches(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"x86_64")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"x86_64")));
         }
         pStrCArray = NodeBase_getOSs(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"macos64")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"macos64")));
         }
         pStrCArray = NodeBase_getDeps(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"array.h")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"array.h")));
             pStrC = AStrCArray_Get(pStrCArray, 2);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"cmn_defs.h")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"cmn_defs.h")));
         }
         pStrCArray = NodeBase_getSrcs(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"ascii.c")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"ascii.c")));
             pStrC = AStrCArray_Get(pStrCArray, 2);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"str.c")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"str.c")));
         }
         pStrC = NodeBase_getExt(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"m")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"m")));
 
         pBase2 = NodeBase_Copy(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pBase2) );
 
         pStrC = NodeBase_getName(pBase2);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"AStr")));
         pStrCArray = NodeBase_getArches(pBase2);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"x86_64")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"x86_64")));
         }
         pStrCArray = NodeBase_getOSs(pBase2);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"macos64")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"macos64")));
         }
         pStrCArray = NodeBase_getDeps(pBase2);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"array.h")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"array.h")));
             pStrC = AStrCArray_Get(pStrCArray, 2);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"cmn_defs.h")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"cmn_defs.h")));
         }
         pStrCArray = NodeBase_getSrcs(pBase2);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"ascii.c")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"ascii.c")));
             pStrC = AStrCArray_Get(pStrCArray, 2);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"str.c")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"str.c")));
         }
         pStrC = NodeBase_getExt(pBase2);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"m")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"m")));
         
         obj_Release(pBase2);
         pBase2 = OBJ_NIL;
@@ -395,42 +396,42 @@ int             test_NodeBase_Parse02(
         // Validate the output.
         pStrC = NodeBase_getName(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC, "AStr")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC, "AStr")));
         pStrCArray = NodeBase_getArches(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"X86")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"X86")));
         }
         pStrCArray = NodeBase_getOSs(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((1 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"win32")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"win32")));
         }
         pStrCArray = NodeBase_getDeps(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"array.h")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"array.h")));
             pStrC = AStrCArray_Get(pStrCArray, 2);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"cmn_defs.h")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"cmn_defs.h")));
         }
         pStrCArray = NodeBase_getSrcs(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
         if (pStrCArray) {
             TINYTEST_TRUE((2 == AStrCArray_getSize(pStrCArray)));
             pStrC = AStrCArray_Get(pStrCArray, 1);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"ascii.c")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"ascii.c")));
             pStrC = AStrCArray_Get(pStrCArray, 2);
-            TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"str.c")));
+            TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"str.c")));
         }
         pStrC = NodeBase_getExt(pBase);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"c")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"c")));
 
         obj_Release(pNodes);
         pNodes = OBJ_NIL;

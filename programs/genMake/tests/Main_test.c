@@ -51,6 +51,8 @@ char            *pGoodJsonA =
 "}\n";
 const
 char            *pOutputA =
+".DEFAULT_GOAL := all\n"
+"SHELL=/bin/sh\n\n"
 "LIBNAM=libCmn\n"
 "SYS=macos64\n"
 "TEMP=/tmp\n"
@@ -68,7 +70,7 @@ char            *pOutputA =
 "endif  #NDEBUG\n"
 "CFLAGS += -D__MACOS64_ENV__\n"
 "CFLAGS_LIBS = \n"
-"CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
+"CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses -lsqlite3\n\n"
 
 "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
 "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
@@ -79,8 +81,8 @@ char            *pOutputA =
 "LIB_FILENAME=$(LIBNAM)D.a\n"
 "OBJDIR = $(LIBOBJ)/o/d\n"
 "endif  #NDEBUG\n"
-"TEST_OBJ = $(OBJDIR)/tests\n"
-"TEST_BIN = $(OBJDIR)/tests\n"
+"TEST_OBJ = $(OBJDIR)/obj\n"
+"TEST_BIN = $(OBJDIR)/bin\n"
 "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
 
 ".SUFFIXES:\n"
@@ -122,11 +124,19 @@ char            *pOutputA =
 "\n\n$(LIB_PATH):  $(OBJS)\n"
 "\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
 "\tar rc $(LIB_PATH) $(OBJS)\n\n\n"
-".PHONY: test\n"
-"test: $(TESTS)\n\n\n"
+".PHONY: all\n"
+"all:  clean create_dirs $(LIB_PATH)\n\n\n"
+".PHONY: build\n"
+"build:  create_dirs $(LIB_PATH)\n\n\n"
+".PHONY: check\n"
+"check: $(TESTS)\n\n\n"
 ".PHONY: clean\n"
 "clean:\n"
 "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n"
+".PHONY: create_dirs\n"
+"create_dirs:\n"
+"\t[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)\n"
+"\t[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)\n\n\n"
 ".PHONY: install\n"
 "install:\n"
 "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
@@ -136,11 +146,8 @@ char            *pOutputA =
 "\tif [ -d src/$(SYS) ]; then \\\n"
 "\t\tcp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \\\n"
 "\tfi\n\n\n"
-".PHONY: create_dirs\n"
-"create_dirs:\n"
-"\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
-".PHONY: all\n"
-"all:  clean create_dirs $(LIB_PATH)\n\n\n"
+".PHONY: test\n"
+"test: $(TESTS)\n\n\n"
 ;
 
 
@@ -164,6 +171,8 @@ char            *pGoodJsonB =
 "}\n";
 const
 char            *pOutputB =
+".DEFAULT_GOAL := all\n"
+"SHELL=/bin/sh\n\n"
 "LIBNAM=libCmn\n"
 "SYS=macos64\n"
 "TEMP=/tmp\n"
@@ -181,7 +190,7 @@ char            *pOutputB =
 "endif  #NDEBUG\n"
 "CFLAGS += -D__MACOS64_ENV__\n"
 "CFLAGS_LIBS = \n"
-"CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
+"CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses -lsqlite3\n\n"
 
 "INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)\n"
 "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
@@ -192,8 +201,8 @@ char            *pOutputB =
 "LIB_FILENAME=$(LIBNAM)D.a\n"
 "OBJDIR = $(LIBOBJ)/o/d\n"
 "endif  #NDEBUG\n"
-"TEST_OBJ = $(OBJDIR)/tests\n"
-"TEST_BIN = $(OBJDIR)/tests\n"
+"TEST_OBJ = $(OBJDIR)/obj\n"
+"TEST_BIN = $(OBJDIR)/bin\n"
 "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
 
 ".SUFFIXES:\n"
@@ -231,11 +240,19 @@ char            *pOutputB =
 "\n\n$(LIB_PATH):  $(OBJS)\n"
 "\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
 "\tar rc $(LIB_PATH) $(OBJS)\n\n\n"
-".PHONY: test\n"
-"test: $(TESTS)\n\n\n"
+".PHONY: all\n"
+"all:  clean create_dirs $(LIB_PATH)\n\n\n"
+".PHONY: build\n"
+"build:  create_dirs $(LIB_PATH)\n\n\n"
+".PHONY: check\n"
+"check: $(TESTS)\n\n\n"
 ".PHONY: clean\n"
 "clean:\n"
 "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n\n\n"
+".PHONY: create_dirs\n"
+"create_dirs:\n"
+"\t[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)\n"
+"\t[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)\n\n\n"
 ".PHONY: install\n"
 "install:\n"
 "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n"
@@ -245,11 +262,8 @@ char            *pOutputB =
 "\tif [ -d src/$(SYS) ]; then \\\n"
 "\t\tcp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \\\n"
 "\tfi\n\n\n"
-".PHONY: create_dirs\n"
-"create_dirs:\n"
-"\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
-".PHONY: all\n"
-"all:  clean create_dirs $(LIB_PATH)\n\n\n"
+".PHONY: test\n"
+"test: $(TESTS)\n\n\n"
 ;
 
 
@@ -274,6 +288,8 @@ char            *pGoodJsonC =
 "}\n";
 const
 char            *pOutputC =
+".DEFAULT_GOAL := all\n"
+"SHELL=/bin/sh\n\n"
 "PGMNAM=genMake\n"
 "SYS=macos64\n"
 "TEMP=/tmp\n"
@@ -295,7 +311,7 @@ char            *pOutputC =
 "LIBCMN_BASE = $(LIB_BASE)/libCmn\n"
 "CFLAGS += -I$(LIBCMN_BASE)/include\n"
 "CFLAGS_LIBS += -lCmn -L$(LIBCMN_BASE)\n"
-"CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses\n\n"
+"CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses -lsqlite3\n\n"
 
 "LIBOBJ = $(BASE_OBJ)/$(SYS)\n"
 "ifdef  NDEBUG\n"
@@ -305,8 +321,8 @@ char            *pOutputC =
 "LIB_FILENAME=$(PGMNAM)D.a\n"
 "OBJDIR = $(LIBOBJ)/o/d\n"
 "endif  #NDEBUG\n"
-"TEST_OBJ = $(OBJDIR)/tests\n"
-"TEST_BIN = $(OBJDIR)/tests\n"
+"TEST_OBJ = $(OBJDIR)/obj\n"
+"TEST_BIN = $(OBJDIR)/bin\n"
 "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n"
 
 ".SUFFIXES:\n"
@@ -339,13 +355,20 @@ char            *pOutputC =
 "TESTS += NodeLib_test\n\n"
 "NodeLib_test: $(TEST_SRC)/NodeLib_test.c $(SRCDIR)/NodeLib.h $(SRCDIR)/NodeLib_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h \n"
 "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<\n"
-"\t$(TEST_BIN)/$(@F)\n\n\n\n"
-
-".PHONY: test\n"
-"test: $(TESTS)\n\n\n"
+"\t$(TEST_BIN)/$(@F)\n\n"
+".PHONY: all\n"
+"all:  clean create_dirs link\n\n\n"
+".PHONY: build\n"
+"build:  create_dirs link\n\n\n"
+".PHONY: check\n"
+"check: $(TESTS)\n\n\n"
 ".PHONY: clean\n"
 "clean:\n"
 "\t-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n\n\n"
+".PHONY: create_dirs\n"
+"create_dirs:\n"
+"\t[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)\n"
+"\t[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)\n\n\n"
 ".PHONY: install\n"
 "install:\n"
 "\t-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)\n"
@@ -353,11 +376,8 @@ char            *pOutputC =
 ".PHONY: link\n"
 "link: $(OBJS) $(SRCDIR)/mainProgram.c\n"
 "\tCC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^\n\n\n"
-".PHONY: create_dirs\n"
-"create_dirs:\n"
-"\t[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests\n\n\n"
-".PHONY: all\n"
-"all:  clean create_dirs link\n\n\n"
+".PHONY: test\n"
+"test: $(TESTS)\n\n\n"
 ;
 
 
@@ -387,6 +407,7 @@ int         tearDown(
     
     szTbl_SharedReset( );
     SrcErrors_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(

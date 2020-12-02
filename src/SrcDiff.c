@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   GenBase.c
- *	Generated 11/23/2019 12:07:15
+ * File:   SrcDiff.c
+ *  Generated 12/01/2020 15:31:46
  *
  */
 
@@ -41,15 +41,17 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <GenBase_internal.h>
+#include        <SrcDiff_internal.h>
+#include        <JsonIn.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -62,18 +64,16 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    /*! If no output object is present, default to using one that
-     accumulates everything into an AStr object.
-     */
+#ifdef XYZZY
     static
-    void            GenBase_CheckOutput (
-        GENBASE_DATA    *this
+    void            SrcDiff_task_body (
+        void            *pData
     )
     {
-        if (OBJ_NIL == this->pOut) {
-            this->pOut = TextOut_NewAStr();
-        }
+        //SRCDIFF_DATA  *this = pData;
+        
     }
+#endif
 
 
 
@@ -86,12 +86,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    GENBASE_DATA *     GenBase_Alloc (
+    SRCDIFF_DATA *     SrcDiff_Alloc (
         void
     )
     {
-        GENBASE_DATA       *this;
-        uint32_t        cbSize = sizeof(GENBASE_DATA);
+        SRCDIFF_DATA       *this;
+        uint32_t        cbSize = sizeof(SRCDIFF_DATA);
         
         // Do initialization.
         
@@ -103,25 +103,15 @@ extern "C" {
 
 
 
-    GENBASE_DATA *     GenBase_New (
-        TEXTOUT_DATA    *pOutput
+    SRCDIFF_DATA *     SrcDiff_New (
+        void
     )
     {
-        GENBASE_DATA       *this;
+        SRCDIFF_DATA       *this;
         
-        this = GenBase_Alloc( );
+        this = SrcDiff_Alloc( );
         if (this) {
-            this = GenBase_Init(this);
-            if (pOutput) {
-                GenBase_setOutput(this, pOutput);
-            } else {
-                this->pOut = TextOut_NewAStr();
-                if (OBJ_NIL == this->pOut) {
-                    DEBUG_BREAK();
-                    obj_Release(this);
-                    return OBJ_NIL;
-                }
-            }
+            this = SrcDiff_Init(this);
         } 
         return this;
     }
@@ -135,66 +125,18 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                       O u t p u t
-    //---------------------------------------------------------------
-    
-    TEXTOUT_DATA *  GenBase_getOutput (
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!GenBase_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pOut;
-    }
-    
-    
-    bool            GenBase_setOutput (
-        GENBASE_DATA    *this,
-        TEXTOUT_DATA    *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!GenBase_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_STR_OWNED
-        obj_Retain(pValue);
-        if (this->pOut) {
-            obj_Release(this->pOut);
-        }
-#endif
-        this->pOut = pValue;
-        
-        return true;
-    }
-            
-            
-            
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        GenBase_getPriority (
-        GENBASE_DATA     *this
+    uint16_t        SrcDiff_getPriority (
+        SRCDIFF_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -205,14 +147,14 @@ extern "C" {
     }
 
 
-    bool            GenBase_setPriority (
-        GENBASE_DATA     *this,
+    bool            SrcDiff_setPriority (
+        SRCDIFF_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -229,13 +171,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        GenBase_getSize (
-        GENBASE_DATA       *this
+    uint32_t        SrcDiff_getSize (
+        SRCDIFF_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -250,15 +192,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * GenBase_getStr (
-        GENBASE_DATA     *this
+    ASTR_DATA * SrcDiff_getStr (
+        SRCDIFF_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -268,25 +210,23 @@ extern "C" {
     }
     
     
-    bool        GenBase_setStr (
-        GENBASE_DATA     *this,
+    bool        SrcDiff_setStr (
+        SRCDIFF_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-#ifdef  PROPERTY_STR_OWNED
         obj_Retain(pValue);
         if (this->pStr) {
             obj_Release(this->pStr);
         }
-#endif
         this->pStr = pValue;
         
         return true;
@@ -298,15 +238,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  GenBase_getSuperVtbl (
-        GENBASE_DATA     *this
+    OBJ_IUNKNOWN *  SrcDiff_getSuperVtbl (
+        SRCDIFF_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -318,55 +258,7 @@ extern "C" {
     
   
 
-    //---------------------------------------------------------------
-    //                      T i m e
-    //---------------------------------------------------------------
     
-    DATETIME_DATA * GenBase_getTime (
-        GENBASE_DATA    *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!GenBase_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pTime;
-    }
-    
-    
-    bool        GenBase_setTime (
-        GENBASE_DATA     *this,
-        DATETIME_DATA    *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!GenBase_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-#ifdef  PROPERTY_TIME_OWNED
-        obj_Retain(pValue);
-        if (this->pTime) {
-            obj_Release(this->pTime);
-        }
-#endif
-        this->pTime = pValue;
-        
-        return true;
-    }
-            
-            
-            
-
 
     //===============================================================
     //                          M e t h o d s
@@ -383,16 +275,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = GenBase_Assign(this,pOther);
+        ERESULT eRc = SrcDiff_Assign(this,pOther);
      @endcode 
-     @param     this    GENBASE object pointer
-     @param     pOther  a pointer to another GENBASE object
+     @param     this    object pointer
+     @param     pOther  a pointer to another SRCDIFF object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         GenBase_Assign (
-        GENBASE_DATA		*this,
-        GENBASE_DATA     *pOther
+    ERESULT         SrcDiff_Assign (
+        SRCDIFF_DATA       *this,
+        SRCDIFF_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -400,15 +292,25 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!GenBase_Validate(pOther)) {
+        if (!SrcDiff_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -433,8 +335,7 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        //pOther->x     = this->x; 
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -447,6 +348,50 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
+     */
+    int             SrcDiff_Compare (
+        SRCDIFF_DATA     *this,
+        SRCDIFF_DATA     *pOther
+    )
+    {
+        int             iRc = -1;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!SrcDiff_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
+        }
+        if (!SrcDiff_Validate(pOther)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
+        }
+#endif
+
+        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+     
+        return iRc;
+    }
+    
+   
+ 
+    //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     
@@ -454,40 +399,44 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        GenBase      *pCopy = GenBase_Copy(this);
+        SrcDiff      *pCopy = SrcDiff_Copy(this);
      @endcode 
-     @param     this    GENBASE object pointer
-     @return    If successful, a GENBASE object which must be 
+     @param     this    object pointer
+     @return    If successful, a SRCDIFF object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    GENBASE_DATA *     GenBase_Copy (
-        GENBASE_DATA       *this
+    SRCDIFF_DATA *     SrcDiff_Copy (
+        SRCDIFF_DATA       *this
     )
     {
-        GENBASE_DATA       *pOther = OBJ_NIL;
+        SRCDIFF_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = GenBase_New(OBJ_NIL);
+#ifdef SRCDIFF_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = SrcDiff_New( );
         if (pOther) {
-            eRc = GenBase_Assign(this, pOther);
+            eRc = SrcDiff_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -497,11 +446,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            GenBase_Dealloc (
+    void            SrcDiff_Dealloc (
         OBJ_ID          objId
     )
     {
-        GENBASE_DATA   *this = objId;
+        SRCDIFF_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -509,7 +459,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -517,13 +467,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((GENBASE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((SRCDIFF_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        GenBase_setOutput(this, OBJ_NIL);
-        GenBase_setStr(this, OBJ_NIL);
-        GenBase_setTime(this, OBJ_NIL);
+        SrcDiff_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -537,6 +485,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        SrcDiff      *pDeepCopy = SrcDiff_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a SRCDIFF object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    SRCDIFF_DATA *     SrcDiff_DeepyCopy (
+        SRCDIFF_DATA       *this
+    )
+    {
+        SRCDIFF_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SrcDiff_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = SrcDiff_New( );
+        if (pOther) {
+            eRc = SrcDiff_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -546,27 +540,27 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         GenBase_Disable (
-        GENBASE_DATA		*this
+    ERESULT         SrcDiff_Disable (
+        SRCDIFF_DATA       *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!GenBase_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -581,69 +575,27 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         GenBase_Enable (
-        GENBASE_DATA		*this
+    ERESULT         SrcDiff_Enable (
+        SRCDIFF_DATA       *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!GenBase_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    ERESULT_DATA *  GenBase_GenHeader (
-        GENBASE_DATA    *this
-    )
-    {
-        ASTR_DATA       *pStr =  OBJ_NIL;
-        ASTR_DATA       *pWrk =  OBJ_NIL;
-
-            // Do initialization.
-        #ifdef NDEBUG
-        #else
-        if (!GenBase_Validate(this)) {
-            DEBUG_BREAK();
-            return eResult_NewStrA(ERESULT_INVALID_OBJECT, NULL);
-        }
-    #endif
-        
-        // Set up to generate Makefile entry.
-        pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            return eResult_NewStrA(ERESULT_OUT_OF_MEMORY, NULL);
-        }
-
-        AStr_AppendA(pStr,
-                     "# Generated file - Edits will be discarded by next generation!\n");
-        if (GenBase_getTime(this)) {
-            pWrk = DateTime_ToString(GenBase_getTime(this));
-            AStr_AppendPrint(pStr, "# (%s)\n", AStr_getData(pWrk));
-            obj_Release(pWrk);
-            pWrk = OBJ_NIL;
-        }
-        AStr_AppendA(pStr, "\n");
-        
-        GenBase_Output(this, pStr);
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        
-        // Return to caller.
-        return OBJ_NIL;
+        return eRc;
     }
 
 
@@ -652,11 +604,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    GENBASE_DATA *   GenBase_Init (
-        GENBASE_DATA       *this
+    SRCDIFF_DATA *   SrcDiff_Init (
+        SRCDIFF_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(GENBASE_DATA);
+        uint32_t        cbSize = sizeof(SRCDIFF_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -673,36 +625,46 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_GENBASE);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SRCDIFF);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&GenBase_Vtbl);
-        
-        this->pTime = DateTime_NewCurrent();
-        if (OBJ_NIL == this->pTime) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-
-    #ifdef NDEBUG
-    #else
-        if (!GenBase_Validate(this)) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-#ifdef __APPLE__
-        //fprintf(stderr, "GenBase::sizeof(GENBASE_DATA) = %lu\n", sizeof(GENBASE_DATA));
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SrcDiff_Vtbl);
+#ifdef  SRCDIFF_JSON_SUPPORT
+        JsonIn_RegisterClass(SrcDiff_Class());
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(GENBASE_DATA));
-    #endif
+        
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        */
+
+#ifdef NDEBUG
+#else
+        if (!SrcDiff_Validate(this)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "SrcDiff::sizeof(SRCDIFF_DATA) = %lu\n", 
+                sizeof(SRCDIFF_DATA)
+        );
+#endif
+        BREAK_NOT_BOUNDARY4(sizeof(SRCDIFF_DATA));
+#endif
 
         return this;
     }
@@ -713,8 +675,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         GenBase_IsEnabled (
-        GENBASE_DATA		*this
+    ERESULT         SrcDiff_IsEnabled (
+        SRCDIFF_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -722,7 +684,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -739,60 +701,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          O u t p u t
-    //---------------------------------------------------------------
-
-    ERESULT         GenBase_Output (
-        GENBASE_DATA    *this,
-        ASTR_DATA       *pStr
-    )
-    {
-        ERESULT         eRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!GenBase_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        GenBase_CheckOutput(this);
-        
-        eRc = TextOut_PutA(this->pOut, AStr_getData(pStr));
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-    ERESULT         GenBase_OutputA (
-        GENBASE_DATA    *this,
-        const
-        char            *pStrA
-    )
-    {
-        ERESULT         eRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!GenBase_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        GenBase_CheckOutput(this);
-        
-        eRc = TextOut_PutA(this->pOut, pStrA);
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -803,14 +711,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = GenBase_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = SrcDiff_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "GenBase", prefix,
+                        the object name, "SrcDiff", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -818,13 +726,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          GenBase_QueryInfo (
+    void *          SrcDiff_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        GENBASE_DATA     *this = objId;
+        SRCDIFF_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -833,7 +741,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -841,33 +749,29 @@ extern "C" {
         
         switch (type) {
                 
-        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(GENBASE_DATA);
-            break;
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(SRCDIFF_DATA);
+                break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)GenBase_Class();
+                return (void *)SrcDiff_Class();
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -876,23 +780,39 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return GenBase_Disable;
+                            return SrcDiff_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return GenBase_Enable;
+                            return SrcDiff_Enable;
                         }
+                        break;
+
+                    case 'P':
+#ifdef  SRCDIFF_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return SrcDiff_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return SrcDiff_ParseJsonObject;
+                        }
+#endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return GenBase_ToDebugString;
+                            return SrcDiff_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return GenBase_ToJSON;
+#ifdef  SRCDIFF_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return SrcDiff_ToJsonFields;
                         }
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return SrcDiff_ToJson;
+                        }
+#endif
                         break;
                         
                     default:
@@ -901,10 +821,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == GenBase_ToDebugString)
+                if (pData == SrcDiff_ToDebugString)
                     return "ToDebugString";
-                if (pData == GenBase_ToJSON)
-                    return "ToJSON";
+#ifdef  SRCDIFF_JSON_SUPPORT
+                if (pData == SrcDiff_ToJson)
+                    return "ToJson";
+#endif
                 break;
                 
             default:
@@ -917,45 +839,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-     ASTR_DATA *     GenBase_ToJSON (
-        GENBASE_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!GenBase_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -963,30 +846,31 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = GenBase_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SrcDiff_ToDebugString(this,4);
      @endcode 
-     @param     this    GENBASE object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     GenBase_ToDebugString (
-        GENBASE_DATA      *this,
+    ASTR_DATA *     SrcDiff_ToDebugString (
+        SRCDIFF_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!GenBase_Validate(this)) {
+        if (!SrcDiff_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1004,10 +888,11 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    GenBase_getSize(this)
+                    SrcDiff_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -1017,8 +902,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -1042,17 +929,17 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            GenBase_Validate (
-        GENBASE_DATA      *this
+#ifdef NDEBUG
+#else
+    bool            SrcDiff_Validate (
+        SRCDIFF_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_GENBASE))
+            if (obj_IsKindOf(this, OBJ_IDENT_SRCDIFF))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1068,20 +955,20 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(GENBASE_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(SRCDIFF_DATA))) {
             return false;
         }
 
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

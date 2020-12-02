@@ -61,6 +61,7 @@ int             tearDown(
     
     szTbl_SharedReset( );
     SrcErrors_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -723,7 +724,7 @@ int             test_SrcParse_Nodes01(
         }
         pStrC = NodePgm_getMain(pPgm);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"mainProgram.c")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"mainProgram.c")));
 
         // Validate Objects.
         pArray = SrcParse_getObjs(pPrs);
@@ -742,7 +743,7 @@ int             test_SrcParse_Nodes01(
         }
         pStrC = NodeObj_getName(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"AStr")));
         pObj = (NODEOBJ_DATA *)NodeArray_Get(pArray, 2);
         TINYTEST_FALSE( (OBJ_NIL == pObj) );
         if (fDumpNodes) {
@@ -754,7 +755,7 @@ int             test_SrcParse_Nodes01(
         }
         pStrC = NodeObj_getName(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"appl")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"appl")));
 
         // Validate Routines.
         pArray = SrcParse_getRtns(pPrs);
@@ -773,7 +774,7 @@ int             test_SrcParse_Nodes01(
         }
         pStrC = NodeRtn_getName(pRtn);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"dllist.c")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"dllist.c")));
 
         obj_Release(pNodes);
         pNodes = OBJ_NIL;
@@ -867,7 +868,7 @@ int             test_SrcParse_Nodes02(
         }
         pStrC = NodeLib_getName(pLib);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"Cmn")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"Cmn")));
 
         // Validate Objects.
         pArray = SrcParse_getObjs(pPrs);
@@ -886,7 +887,7 @@ int             test_SrcParse_Nodes02(
         }
         pStrC = NodeObj_getName(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"AStr")));
         pObj = (NODEOBJ_DATA *)NodeArray_Get(pArray, 2);
         TINYTEST_FALSE( (OBJ_NIL == pObj) );
         if (fDumpNodes) {
@@ -898,7 +899,7 @@ int             test_SrcParse_Nodes02(
         }
         pStrC = NodeObj_getName(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"appl")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"appl")));
 
         // Validate Routines.
         pArray = SrcParse_getRtns(pPrs);
@@ -917,7 +918,7 @@ int             test_SrcParse_Nodes02(
         }
         pStrC = NodeRtn_getName(pRtn);
         TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"dllist.c")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"dllist.c")));
 
         obj_Release(pNodes);
         pNodes = OBJ_NIL;

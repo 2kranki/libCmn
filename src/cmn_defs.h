@@ -489,6 +489,8 @@ extern "C" {
         OBJ_IDENT_SQLSTMT_CLASS,
         OBJ_IDENT_SRC,
         OBJ_IDENT_SRC_CLASS,
+        OBJ_IDENT_SRCDIFF,              //Source Difference Finder
+        OBJ_IDENT_SRCDIFF_CLASS,
         OBJ_IDENT_SRCERROR,             // Source Error Message
         OBJ_IDENT_SRCERROR_CLASS,
         OBJ_IDENT_SRCERRORS,            // Source Error Messages

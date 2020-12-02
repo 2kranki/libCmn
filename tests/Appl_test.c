@@ -59,6 +59,7 @@ CMDUTL_OPTION       pPgmArgs1[] = {
         'a',
         CMDUTL_ARG_OPTION_NONE,
         CMDUTL_TYPE_BOOL,
+        0,
         offsetof(ARGS, fArchive),
         NULL,
         "Set Archive Mode"
@@ -68,6 +69,7 @@ CMDUTL_OPTION       pPgmArgs1[] = {
         'l',
         CMDUTL_ARG_OPTION_REQUIRED,
         CMDUTL_TYPE_NUMBER,
+        0,
         offsetof(ARGS, pArgLen),
         NULL,
         "Set Argument Length"
@@ -77,6 +79,7 @@ CMDUTL_OPTION       pPgmArgs1[] = {
         'i',
         CMDUTL_ARG_OPTION_REQUIRED,
         CMDUTL_TYPE_PATH,
+        0,
         offsetof(ARGS, pInFilePath),
         NULL,
         "Set Input File Path"
@@ -86,11 +89,12 @@ CMDUTL_OPTION       pPgmArgs1[] = {
         'o',
         CMDUTL_ARG_OPTION_REQUIRED,
         CMDUTL_TYPE_PATH,
+        0,
         offsetof(ARGS, pOutFilePath),
         NULL,
         "Set Output File Path"
     },
-    {NULL,0,0,0,0,NULL,NULL}                    // End of Table
+    {NULL,0,0,0,0,0,NULL,NULL}                    // End of Table
 };
 
 

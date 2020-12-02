@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (11/27/2020 18:12:22.000)
+# (12/ 2/2020 15:43:33.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -32,8 +32,8 @@ else   #DEBUG
 LIB_FILENAME=$(LIBNAM)D.a
 OBJDIR = $(LIBOBJ)/o/d
 endif  #NDEBUG
-TEST_OBJ = $(OBJDIR)/tests
-TEST_BIN = $(OBJDIR)/tests
+TEST_OBJ = $(OBJDIR)/obj
+TEST_BIN = $(OBJDIR)/bin
 LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)
 
 .SUFFIXES:
@@ -942,6 +942,16 @@ $(OBJDIR)/SqlRowDef_json.o: $(SRCDIR)/SqlRowDef_json.c $(SRCDIR)/SqlRowDef.h $(S
 OBJS += $(OBJDIR)/SqlRowDef_object.o
 
 $(OBJDIR)/SqlRowDef_object.o: $(SRCDIR)/SqlRowDef_object.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SrcDiff.o
+
+$(OBJDIR)/SrcDiff.o: $(SRCDIR)/SrcDiff.c $(SRCDIR)/SrcDiff.h $(SRCDIR)/SrcDiff_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SrcDiff_object.o
+
+$(OBJDIR)/SrcDiff_object.o: $(SRCDIR)/SrcDiff_object.c $(SRCDIR)/SrcDiff.h $(SRCDIR)/SrcDiff_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SrcError.o
@@ -2402,6 +2412,12 @@ SqlRowDef_test: $(TEST_SRC)/SqlRowDef_test.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/Sql
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += SrcDiff_test
+
+SrcDiff_test: $(TEST_SRC)/SrcDiff_test.c $(SRCDIR)/SrcDiff.h $(SRCDIR)/SrcDiff_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += SrcError_test
 
 SrcError_test: $(TEST_SRC)/SrcError_test.c $(SRCDIR)/SrcError.h $(SRCDIR)/SrcError_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
@@ -2931,8 +2947,12 @@ $(LIB_PATH):  $(OBJS)
 	ar rc $(LIB_PATH) $(OBJS)
 
 
-.PHONY: test
-test: $(TESTS)
+.PHONY: all
+all:  clean create_dirs $(LIB_PATH)
+
+
+.PHONY: build
+build:  create_dirs $(LIB_PATH)
 
 
 .PHONY: check
@@ -2942,6 +2962,12 @@ check: $(TESTS)
 .PHONY: clean
 clean:
 	-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)
+
+
+.PHONY: create_dirs
+create_dirs:
+	[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)
+	[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)
 
 
 .PHONY: install
@@ -2955,12 +2981,7 @@ install:
 	fi
 
 
-.PHONY: create_dirs
-create_dirs:
-	[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests
-
-
-.PHONY: all
-all:  clean create_dirs $(LIB_PATH)
+.PHONY: test
+test: $(TESTS)
 
 

@@ -646,11 +646,11 @@ int         test_CmdUtl_ParseCommandLine04(
     OPTIONS         options = {0};
     CMDUTL_OPTION   longDefns1[4] = {
         {"debug",   'd', CMDUTL_ARG_OPTION_NONE, CMDUTL_TYPE_BOOL,
-            offsetof(OPTIONS, fDebug), NULL, NULL},
+            0, offsetof(OPTIONS, fDebug), NULL, NULL},
         {"file",    'f', CMDUTL_ARG_OPTION_REQUIRED, CMDUTL_TYPE_PATH,
-            offsetof(OPTIONS, pFilePath), NULL, NULL},
+            0, offsetof(OPTIONS, pFilePath), NULL, NULL},
         {"verbose", 'v', CMDUTL_ARG_OPTION_NONE, CMDUTL_TYPE_INCR,
-            offsetof(OPTIONS, fVerbose), NULL, NULL},
+            0, offsetof(OPTIONS, fVerbose), NULL, NULL},
         {0}
     };
     CMDUTL_OPTION   longDefns2[4] = {
@@ -757,13 +757,13 @@ int         test_CmdUtl_ParseCommandLine05(
     OPTIONS         options = {0};
     CMDUTL_OPTION   longDefns1[5] = {
         {"debug",   0, CMDUTL_ARG_OPTION_NONE, CMDUTL_TYPE_BOOL,
-            offsetof(OPTIONS, fDebug), NULL, NULL},
+            0, offsetof(OPTIONS, fDebug), NULL, NULL},
         {"define",    'f', CMDUTL_ARG_OPTION_REQUIRED, CMDUTL_TYPE_STRING,
-            offsetof(OPTIONS, pDefine), NULL, NULL},
+            0, offsetof(OPTIONS, pDefine), NULL, NULL},
         {"file",    'f', CMDUTL_ARG_OPTION_REQUIRED, CMDUTL_TYPE_PATH,
-            offsetof(OPTIONS, pFilePath), NULL, NULL},
+            0, offsetof(OPTIONS, pFilePath), NULL, NULL},
         {"verbose", 'v', CMDUTL_ARG_OPTION_NONE, CMDUTL_TYPE_INCR,
-            offsetof(OPTIONS, fVerbose), NULL, NULL},
+            0, offsetof(OPTIONS, fVerbose), NULL, NULL},
         {0}
     };
     CMDUTL_OPTION   longDefns2[4] = {
@@ -878,13 +878,13 @@ int         test_CmdUtl_ParseCommandLine06(
     OPTIONS         options = {0};
     CMDUTL_OPTION   longDefns1[5] = {
         {"debug",   0, CMDUTL_ARG_OPTION_NONE, CMDUTL_TYPE_BOOL,
-            offsetof(OPTIONS, fDebug), NULL, NULL},
+            0, offsetof(OPTIONS, fDebug), NULL, NULL},
         {"define",    'f', CMDUTL_ARG_OPTION_REQUIRED, CMDUTL_TYPE_STRING,
-            offsetof(OPTIONS, pDefine), NULL, NULL},
+            0, offsetof(OPTIONS, pDefine), NULL, NULL},
         {"file",    'f', CMDUTL_ARG_OPTION_REQUIRED, CMDUTL_TYPE_PATH,
-            offsetof(OPTIONS, pFilePath), NULL, NULL},
+            0, offsetof(OPTIONS, pFilePath), NULL, NULL},
         {"verbose", 'v', CMDUTL_ARG_OPTION_NONE, CMDUTL_TYPE_INCR,
-            offsetof(OPTIONS, fVerbose), NULL, NULL},
+            0, offsetof(OPTIONS, fVerbose), NULL, NULL},
         {0}
     };
     CMDUTL_OPTION   longDefns2[4] = {

@@ -611,28 +611,31 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         NodeRtnA_Compare (
+    int             NodeRtnA_Compare (
         NODERTNA_DATA   *this,
         NODERTNA_DATA   *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             iRc;
         
 #ifdef NDEBUG
 #else
         if (!NodeRtnA_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return 2;
         }
         if (!NodeRtnA_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return 2;
         }
 #endif
         
-        eRc = NodeBase_Compare(NodeRtnA_getNodeBase(this), NodeRtnA_getNodeBase(pOther));
+        iRc = NodeBase_Compare(NodeRtnA_getNodeBase(this), NodeRtnA_getNodeBase(pOther));
         
-        return eRc;
+        return iRc;
     }
     
    
@@ -870,10 +873,10 @@ extern "C" {
             AStrC_getData(NodeRtnA_getName(this))
         );
         
-        if ((AStrC_CompareA(pExt, "c") == ERESULT_SUCCESS_EQUAL)
-            || (AStrC_CompareA(pExt, "C") == ERESULT_SUCCESS_EQUAL)
-            || (AStrC_CompareA(pExt, "cpp") == ERESULT_SUCCESS_EQUAL)
-            || (AStrC_CompareA(pExt, "CPP") == ERESULT_SUCCESS_EQUAL)) {
+        if ((AStrC_CompareA(pExt, "c") == 0)
+            || (AStrC_CompareA(pExt, "C") == 0)
+            || (AStrC_CompareA(pExt, "cpp") == 0)
+            || (AStrC_CompareA(pExt, "CPP") == 0)) {
             // First prerequisite must be the Test Program Source.
             ASTR_DATA       *pWrk = AStr_New();
             if (AStrC_CharGetFirstW32(NodeRtnA_getName(this)) == '$') {

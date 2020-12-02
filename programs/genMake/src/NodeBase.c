@@ -240,7 +240,7 @@ extern "C" {
         NODEBASE_DATA   **ppBase
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         ERESULT_DATA    *pErr = OBJ_NIL;
         NODEARRAY_DATA  *pArray;
         NODEHASH_DATA   *pHash;
@@ -1468,11 +1468,12 @@ extern "C" {
         char            *pOS
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         uint32_t        i;
         uint32_t        iMax;
         bool            fFound;
         ASTRC_DATA      *pStrC;
+        int             iRc;
 
         // Do initialization.
     #ifdef NDEBUG
@@ -1490,8 +1491,8 @@ extern "C" {
                 for (i=0; i<iMax; i++) {
                     pStrC = AStrCArray_Get(this->pArches, i+1);
                     if (pStrC) {
-                        eRc = AStrC_CompareA(pStrC, pArch);
-                        if (ERESULT_SUCCESS_EQUAL == eRc) {
+                        iRc = AStrC_CompareA(pStrC, pArch);
+                        if (0 == iRc) {
                             fFound = true;
                             break;
                         }
@@ -1510,8 +1511,8 @@ extern "C" {
                 for (i=0; i<iMax; i++) {
                     pStrC = AStrCArray_Get(this->pOSs, i+1);
                     if (pStrC) {
-                        eRc = AStrC_CompareA(pStrC, pOS);
-                        if (ERESULT_SUCCESS_EQUAL == eRc) {
+                        iRc = AStrC_CompareA(pStrC, pOS);
+                        if (0 == iRc) {
                             fFound = true;
                             break;
                         }
@@ -1539,12 +1540,12 @@ extern "C" {
                 ERESULT_SUCCESS_LESS_THAN if this < other
                 ERESULT_SUCCESS_GREATER_THAN if this > other
      */
-    ERESULT         NodeBase_Compare (
-        NODEBASE_DATA     *this,
-        NODEBASE_DATA     *pOther
+    int             NodeBase_Compare (
+        NODEBASE_DATA   *this,
+        NODEBASE_DATA   *pOther
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             iRc = 0;
         ASTRC_DATA      *pName;
         ASTRC_DATA      *pNameOther;
         
@@ -1552,19 +1553,21 @@ extern "C" {
 #else
         if (!NodeBase_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return 2;
         }
         if (!NodeBase_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            //return ERESULT_INVALID_PARAMETER;
+            return 2;
         }
 #endif
 
         pName = NodeBase_getName(this);
         pNameOther = NodeBase_getName(pOther);
-        eRc = AStrC_Compare(pName, pNameOther);
+        iRc = AStrC_Compare(pName, pNameOther);
         
-        return eRc;
+        return iRc;
     }
     
    

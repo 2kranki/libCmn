@@ -641,66 +641,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      C o m p a r e
-    //---------------------------------------------------------------
-    
-    /*!
-     Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
-     */
-    ERESULT         NodeLib_Compare (
-        NODELIB_DATA     *this,
-        NODELIB_DATA     *pOther
-    )
-    {
-        int             i = 0;
-        ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
-#ifdef  xyzzy        
-        const
-        char            *pStr1;
-        const
-        char            *pStr2;
-#endif
-        
-#ifdef NDEBUG
-#else
-        if (!NodeLib_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (!NodeLib_Validate(pOther)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-#ifdef  xyzzy        
-        if (this->token == pOther->token) {
-            this->eRc = eRc;
-            return eRc;
-        }
-        
-        pStr1 = szTbl_TokenToString(OBJ_NIL, this->token);
-        pStr2 = szTbl_TokenToString(OBJ_NIL, pOther->token);
-        i = strcmp(pStr1, pStr2);
-#endif
-
-        
-        if (i < 0) {
-            eRc = ERESULT_SUCCESS_LESS_THAN;
-        }
-        if (i > 0) {
-            eRc = ERESULT_SUCCESS_GREATER_THAN;
-        }
-        
-        return eRc;
-    }
-    
-   
- 
-    //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     
@@ -958,8 +898,8 @@ extern "C" {
         AStr_AppendA(pStr, "LIB_FILENAME=$(LIBNAM)D.a\n");
         AStr_AppendA(pStr, "OBJDIR = $(LIBOBJ)/o/d\n");
         AStr_AppendA(pStr, "endif  #NDEBUG\n");
-        AStr_AppendA(pStr, "TEST_OBJ = $(OBJDIR)/tests\n");
-        AStr_AppendA(pStr, "TEST_BIN = $(OBJDIR)/tests\n");
+        AStr_AppendA(pStr, "TEST_OBJ = $(OBJDIR)/obj\n");
+        AStr_AppendA(pStr, "TEST_BIN = $(OBJDIR)/bin\n");
         AStr_AppendA(pStr, "LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)\n\n");
         
         AStr_AppendA(pStr, ".SUFFIXES:\n");
@@ -1006,15 +946,25 @@ extern "C" {
         AStr_AppendPrint(pStr, "\tar rc $(LIB_PATH) $(%s)\n\n\n",
                          Dict_GetA(pDict, objsVarID));
 
-        AStr_AppendA(pStr, ".PHONY: test\n");        
-        AStr_AppendPrint(pStr, "test: $(%s)\n\n\n", Dict_GetA(pDict, testsVarID));
-         
-        AStr_AppendA(pStr, ".PHONY: check\n");        
+        AStr_AppendA(pStr, ".PHONY: all\n");
+        AStr_AppendA(pStr, "all:  clean create_dirs $(LIB_PATH)\n\n\n");
+
+        AStr_AppendA(pStr, ".PHONY: build\n");
+        AStr_AppendA(pStr, "build:  create_dirs $(LIB_PATH)\n\n\n");
+
+        AStr_AppendA(pStr, ".PHONY: check\n");
         AStr_AppendPrint(pStr, "check: $(%s)\n\n\n", Dict_GetA(pDict, testsVarID));
          
         AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
         AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] "
                             "&& rm -fr $(LIBNAM)\n\n\n");
+
+        AStr_AppendA(pStr, ".PHONY: create_dirs\n");
+        AStr_AppendA(pStr, "create_dirs:\n");
+        AStr_AppendPrint(pStr,
+                         "\t[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)\n"
+                         "\t[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)\n\n\n"
+        );
 
         AStr_AppendA(pStr, ".PHONY: install\ninstall:\n");
         AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)\n");
@@ -1027,16 +977,9 @@ extern "C" {
         AStr_AppendA(pStr, "\t\tcp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \\\n");
         AStr_AppendA(pStr, "\tfi\n\n\n");
         
-        AStr_AppendA(pStr, ".PHONY: create_dirs\n");
-        AStr_AppendA(pStr, "create_dirs:\n");
-        AStr_AppendPrint(pStr,
-                     "\t[ ! -d $(%s) ] && mkdir -p $(%s)/tests\n\n\n",
-                      Dict_GetA(pDict, objDirVarID),
-                      Dict_GetA(pDict, objDirVarID)
-        );
-         
-        AStr_AppendA(pStr, ".PHONY: all\n");
-        AStr_AppendA(pStr, "all:  clean create_dirs $(LIB_PATH)\n\n\n");
+        AStr_AppendA(pStr, ".PHONY: test\n");
+        AStr_AppendPrint(pStr, "test: $(%s)\n\n\n", Dict_GetA(pDict, testsVarID));
+
 
         // Return to caller.
         return pStr;

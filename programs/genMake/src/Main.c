@@ -98,6 +98,7 @@ extern "C" {
             'n',
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_INCR,
+            0,
             offsetof(MAIN_DATA, fBackup),
             NULL,
             "Backup output file if it exists"
@@ -107,6 +108,7 @@ extern "C" {
             'f',
             CMDUTL_ARG_OPTION_REQUIRED,
             CMDUTL_TYPE_PATH,
+            0,
             offsetof(MAIN_DATA, pFilePath),
             NULL,
             "Input File Path"
@@ -117,6 +119,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_REQUIRED,
             CMDUTL_TYPE_PATH,
             0,
+            0,
             (void *)Main_ArgLibInclude,
             "Library Include Base Path"
         },
@@ -125,6 +128,7 @@ extern "C" {
             'X',
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_EXEC,
+            0,
             0,
             (void *)Main_ArgMacos32,
             "Generate MacOS Makefile (default)"
@@ -135,6 +139,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_ArgMacos64,
             "Generate MacOS Makefile (default)"
         },
@@ -143,6 +148,7 @@ extern "C" {
             'S',
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_EXEC,
+            0,
             0,
             (void *)Main_ArgMsc32,
             "Generate Win32 Makefile"
@@ -153,6 +159,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_ArgMsc64,
             "Generate Win64 Makefile"
         },
@@ -161,6 +168,7 @@ extern "C" {
             'o',
             CMDUTL_ARG_OPTION_REQUIRED,
             CMDUTL_TYPE_PATH,
+            0,
             offsetof(MAIN_DATA, pOutputPath),
             NULL,
             "Output File Path"
@@ -170,6 +178,7 @@ extern "C" {
             't',
             CMDUTL_ARG_OPTION_REQUIRED,
             CMDUTL_TYPE_PATH,
+            0,
             offsetof(MAIN_DATA, pOutputPath),
             NULL,
             "Temporary Directory Base Path"

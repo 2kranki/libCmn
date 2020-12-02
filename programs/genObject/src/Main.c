@@ -91,6 +91,11 @@ ERESULT         Main_SetOutputEmu(
     const
     char            *pStrA
 );
+ERESULT         Main_SetOutputFat(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
 ERESULT         Main_SetOutputGraph(
     MAIN_DATA       *this,
     const
@@ -141,6 +146,7 @@ extern "C" {
             'n',
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_BOOL,
+            0,
             offsetof(MAIN_DATA, fBackup),
             NULL,
             "Backup output files if they exist"
@@ -151,6 +157,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_SetOutput360,
             "Output to lib360"
         },
@@ -159,6 +166,7 @@ extern "C" {
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
+            0,
             0,
             (void *)Main_SetOutput8085,
             "Output to lib8085"
@@ -169,6 +177,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_SetOutput8086,
             "Output to lib8086"
         },
@@ -177,6 +186,7 @@ extern "C" {
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
+            0,
             0,
             (void *)Main_SetOutputAsm,
             "Output to libLL1"
@@ -187,6 +197,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_SetOutputCmn,
             "Output to libCmn"
         },
@@ -195,6 +206,7 @@ extern "C" {
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
+            0,
             0,
             (void *)Main_SetOutputCmn,
             "Output to libDisk"
@@ -205,6 +217,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_SetOutputEmu,
             "Output to libEmu"
         },
@@ -213,6 +226,7 @@ extern "C" {
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
+            0,
             0,
             (void *)Main_SetOutputGraph,
             "Output to libGraph"
@@ -223,6 +237,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_SetOutputLL1,
             "Output to libLL1"
         },
@@ -232,6 +247,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_SetOutputLnk,
             "Output to libLnk"
         },
@@ -240,6 +256,7 @@ extern "C" {
             'm',
             CMDUTL_ARG_OPTION_REQUIRED,
             CMDUTL_TYPE_PATH,
+            0,
             offsetof(MAIN_DATA, pOutputPath),
             NULL,
             "Model Drive+Directory Path"
@@ -250,6 +267,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_SetOutputObj,
             "Output to libObj"
         },
@@ -258,6 +276,7 @@ extern "C" {
             'o',
             CMDUTL_ARG_OPTION_REQUIRED,
             CMDUTL_TYPE_PATH,
+            0,
             offsetof(MAIN_DATA, pOutputPath),
             NULL,
             "Output Drive+Directory Path"
@@ -268,6 +287,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_SetOutputPrs,
             "Output to libPrs"
         },
@@ -277,6 +297,7 @@ extern "C" {
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
             0,
+            0,
             (void *)Main_SetOutputTbl,
             "Output to libTbl"
         },
@@ -285,6 +306,7 @@ extern "C" {
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
             CMDUTL_TYPE_EXEC,
+            0,
             0,
             (void *)Main_SetOutputVid,
             "Output to libVid"

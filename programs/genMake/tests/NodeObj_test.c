@@ -58,6 +58,7 @@ int             tearDown(
     
     szTbl_SharedReset( );
     SrcErrors_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(
@@ -235,7 +236,7 @@ int             test_NodeObj_Parse01(
     // Validate the output.
     pStrC = NodeObj_getName(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pStrC) );
-    TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC, "AStr")));
+    TINYTEST_TRUE((0 == AStrC_CompareA(pStrC, "AStr")));
     pStrCArray = NodeObj_getArches(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
     if (pStrCArray) {
@@ -255,19 +256,19 @@ int             test_NodeObj_Parse01(
         pStrC = AStrCArray_Get(pStrCArray, 1);
         fprintf(stderr, "dep1: %s\n", AStrC_getData(pStrC));
         eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/AStr.h");
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
+        TINYTEST_TRUE((0 == eRc));
         pStrC = AStrCArray_Get(pStrCArray, 2);
         fprintf(stderr, "dep2: %s\n", AStrC_getData(pStrC));
         eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/AStr_internal.h");
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
+        TINYTEST_TRUE((0 == eRc));
         pStrC = AStrCArray_Get(pStrCArray, 3);
         fprintf(stderr, "dep3: %s\n", AStrC_getData(pStrC));
         eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/array.h");
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
+        TINYTEST_TRUE((0 == eRc));
         pStrC = AStrCArray_Get(pStrCArray, 4);
         fprintf(stderr, "dep4: %s\n", AStrC_getData(pStrC));
         eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/cmn_defs.h");
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
+        TINYTEST_TRUE((0 == eRc));
     }
     pStrCArray = NodeObj_getSrcs(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pStrCArray) );
@@ -278,23 +279,23 @@ int             test_NodeObj_Parse01(
         pStrC = AStrCArray_Get(pStrCArray, 1);
         fprintf(stderr, "src1: %s\n", AStrC_getData(pStrC));
         eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/ascii.c");
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
+        TINYTEST_TRUE((0 == eRc));
         pStrC = AStrCArray_Get(pStrCArray, 2);
         fprintf(stderr, "src2: %s\n", AStrC_getData(pStrC));
         eRc = AStrC_CompareA(pStrC,"$(SRCDIR)/str.c");
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == eRc));
+        TINYTEST_TRUE((0 == eRc));
     }
     pJson = NodeObj_getJson(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pJson) );
     if (pJson) {
         pStrC = NodeRtn_getName(pJson);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr_json")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"AStr_json")));
     }
     pTest = NodeObj_getTest(pObj);
     TINYTEST_FALSE( (OBJ_NIL == pTest) );
     if (pTest) {
         pStrC = NodeTest_getName(pTest);
-        TINYTEST_TRUE((ERESULT_SUCCESS_EQUAL == AStrC_CompareA(pStrC,"AStr_test")));
+        TINYTEST_TRUE((0 == AStrC_CompareA(pStrC,"AStr_test")));
     }
 
     obj_Release(pNodes);

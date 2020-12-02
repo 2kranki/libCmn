@@ -520,11 +520,11 @@ extern "C" {
 
     /*!
      Compare the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if this == other
-                ERESULT_SUCCESS_LESS_THAN if this < other
-                ERESULT_SUCCESS_GREATER_THAN if this > other
+     @return    0 if this == other
+                -1 if this < other
+                1 if this > other
      */
-    ERESULT         NodeBase_Compare (
+    int             NodeBase_Compare (
         NODEBASE_DATA     *this,
         NODEBASE_DATA     *pOther
     );
