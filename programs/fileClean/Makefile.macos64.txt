@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (11/28/2020 15:02:21.000)
+# (12/ 7/2020  5:08:16.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -35,8 +35,8 @@ else   #DEBUG
 LIB_FILENAME=$(PGMNAM)D.a
 OBJDIR = $(LIBOBJ)/o/d
 endif  #NDEBUG
-TEST_OBJ = $(OBJDIR)/tests
-TEST_BIN = $(OBJDIR)/tests
+TEST_OBJ = $(OBJDIR)/obj
+TEST_BIN = $(OBJDIR)/bin
 LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)
 
 .SUFFIXES:
@@ -63,12 +63,12 @@ Main_test: $(TEST_SRC)/Main_test.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+.PHONY: all
+all:  clean create_dirs link
 
 
-.PHONY: test
-test: $(TESTS)
-
-
+.PHONY: build
+build:  create_dirs link
 
 
 .PHONY: check
@@ -78,6 +78,12 @@ check: $(TESTS)
 .PHONY: clean
 clean:
 	-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)
+
+
+.PHONY: create_dirs
+create_dirs:
+	[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)
+	[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)
 
 
 .PHONY: install
@@ -91,12 +97,7 @@ link: $(OBJS) $(SRCDIR)/mainProgram.c
 	CC -o $(OBJDIR)/$(PGMNAM) $(CFLAGS) $(CFLAGS_LIBS) $^
 
 
-.PHONY: create_dirs
-create_dirs:
-	[ ! -d $(OBJDIR) ] && mkdir -p $(OBJDIR)/tests
-
-
-.PHONY: all
-all:  clean create_dirs link
+.PHONY: test
+test: $(TESTS)
 
 

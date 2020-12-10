@@ -268,9 +268,17 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT             Main_CleanFile (
-        MAIN_DATA           *this,
-        PATH_DATA           *pPath
+    /*!
+     Open the given path for input, read the file, cleaning the data,
+     and writes the data back out.
+     @param     this    object pointer
+     @param     pPath   Input Path Object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Main_CleanFile (
+        MAIN_DATA       *this,
+        PATH_DATA       *pPath
     );
 
 

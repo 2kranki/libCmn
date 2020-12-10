@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/ 2/2020 15:43:33.000)
+# (12/ 6/2020 20:57:36.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -43,6 +43,26 @@ OBJS =
 
 TESTS =
 
+
+OBJS += $(OBJDIR)/ALU32.o
+
+$(OBJDIR)/ALU32.o: $(SRCDIR)/ALU32.c $(SRCDIR)/ALU32.h $(SRCDIR)/ALU32_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ALU32_object.o
+
+$(OBJDIR)/ALU32_object.o: $(SRCDIR)/ALU32_object.c $(SRCDIR)/ALU32.h $(SRCDIR)/ALU32_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ALU8.o
+
+$(OBJDIR)/ALU8.o: $(SRCDIR)/ALU8.c $(SRCDIR)/ALU8.h $(SRCDIR)/ALU8_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ALU8_object.o
+
+$(OBJDIR)/ALU8_object.o: $(SRCDIR)/ALU8_object.c $(SRCDIR)/ALU8.h $(SRCDIR)/ALU8_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/AStr.o
 
@@ -1973,6 +1993,18 @@ OBJS += $(OBJDIR)/utf8_object.o
 
 $(OBJDIR)/utf8_object.o: $(SRCDIR)/utf8_object.c $(SRCDIR)/utf8.h $(SRCDIR)/utf8_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+TESTS += ALU32_test
+
+ALU32_test: $(TEST_SRC)/ALU32_test.c $(SRCDIR)/ALU32.h $(SRCDIR)/ALU32_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += ALU8_test
+
+ALU8_test: $(TEST_SRC)/ALU8_test.c $(SRCDIR)/ALU8.h $(SRCDIR)/ALU8_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
 
 TESTS += AStrArray_test
 

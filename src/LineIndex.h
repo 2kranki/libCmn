@@ -7,10 +7,13 @@
  * Program
  *          Line Index into File or Buffer (LineIndex)
  * Purpose
- *          This object provides a standardized way of handling
- *          a separate LineIndex to run things without complications
- *          of interfering with the main LineIndex. A LineIndex may be 
- *          called a LineIndex on other O/S's.
+ *          This object provides a table of line numbers and offsets
+ *          used to index into a file of variable length records. It
+ *          provides for faster access to specific records than just
+ *          reading from the beginning of the file.
+ *
+ *          The table allows for overflow which just increases an
+ *          interval between records.
  *
  * Remarks
  *  1.      None

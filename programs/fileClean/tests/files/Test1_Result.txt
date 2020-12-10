@@ -1,0 +1,145 @@
+.fo Godbout 8085/8088 Hardware Configuration
+.he Introduction
+     The following describes the current system being operated by 
+myself  and documents almost all the various parameters necessary 
+to write a BIOS for the system.
+.pa
+.he S-100 Cards
+     This  section  describes the S-100 cards present in the  20-
+slot mother board.  Each card is described along with its options 
+that are set.
+
+             Godbout 8085(6mhz)/8088(6mhz) CPU Card
+
+                   Godbout System Support Card
+
+           Godbout Disk 1 Floppy Disk Controller Card
+
+            Godbout Disk 2 Hard Disk Controller Card
+
+                  Godbout Selector Channel Card
+
+                 Godbout Interfacer III I/O Card
+
+                 DC Hayes Micro-Modem (300 Baud)
+
+                 Certek UNIPROM EPROM Programmer
+
+              Godbout MPX Multiplexer Channel (16k)
+
+                      Godbout Ram 21 (128k)
+
+                      Godbout Ram 17 (64k)
+.he Port Assignments
+.pa
+     The  following lists each assigned ports being used  by  the 
+system.   For  compatibility between the 8085 and the 8088,  only 
+ports  00-FF  are utilized.   The 8088 is capable  of  addressing 
+0000-FFFF for ports.   If a port is not listed,  it is  currently 
+unassigned.
+
+Port      Description
+ 10       Godbout Interfacer III - 2651 (USART) Data
+ 11       Godbout Interfacer III - 2651 (USART) Status
+ 12       Godbout Interfacer III - 2651 (USART) Mode
+ 13       Godbout Interfacer III - 2651 (USART) Control
+ 14       Godbout Interfacer III - Transmit Interrupt Status
+ 15       Godbout Interfacer III - Receive Interrupt Status
+ 16       Godbout Interfacer III - **not used**
+ 17       Godbout Interfacer III - USART Selection
+ 50       Godbout System Support - 8259 Master Lower Port
+ 51       Godbout System Support - 8259 Master Higher Port
+ 52       Godbout System Support - 8259 Slave Lower Port
+ 53       Godbout System Support - 8259 Slave Higher Port
+ 54       Godbout System Support - Timer/Counter 0
+ 55       Godbout System Support - Timer/Counter 1
+ 56       Godbout System Support - Timer/Counter 2
+ 57       Godbout System Support - Timer/Counter Control
+ 58       Godbout System Support - 9511/9512 Data
+ 59       Godbout System Support - 9511/9512 Control
+ 5A       Godbout System Support - Clock/Calendar Control
+ 5B       Godbout System Support - Clock/Calendar Data
+ 5C       Godbout System Support - 2651 (Serial I/O) Data
+ 5D       Godbout System Support - 2651 (Serial I/O) Status
+ 5E       Godbout System Support - 2651 (Serial I/O) Mode
+ 5F       Godbout System Support - 2651 (Serial I/O) Control
+ 80       DC Hayes - Data/Control 1
+ 81       DC Hayes - Status/Control 2
+ 82       DC Hayes - Mode/Control 3
+ C0       Godbout Disk 1 - FDC Main Status
+ C1       Godbout Disk 1 - FDC Data
+ C2       Godbout Disk 1 - Status(I)/DMA Address(O)
+ C3       Godbout Disk 1 - Serial Port
+ C8       Godbout Disk 2 - Status(I)/Control(O)
+ C9       Godbout Disk 2 - Data Port
+ D0       Certek UNIPROM - Control
+ D1       Certek UNIPROM - Address (8755A)
+ D2       Certek UNIPROM - Data I/O
+ D3       Certek UNIPROM - Mode Word
+ F0       Godbout Selector Channel Control Port
+ F1       MPX(1) Attention
+ FD       8085/8088 Processor Swap(I)/Memory Manager(O)
+.he Vector Interrupt Assignments
+.pa
+     The  Vector  Interrupts are provided by the  Godbout  System 
+Support Card with two 8259A's.   One is a master and the other is 
+a slave.   Therefore, the initialization must utilize the special 
+fully nested mode for proper operation.
+
+  Interrupt    Description
+VI0  Master 0  **Unassigned**
+VI1  Master 1  **Unassigned**
+VI2  Master 2  Godbout Interfacer III (Receive)
+VI3  Master 3  Godbout Interfacer III (Transmit)
+VI4  Master 4  Godbout Disk 1 Controller
+VI5  Master 5  Godbout Disk 2 Controller
+VI6  Master 6  DC Hayes MicroModem (Receive)
+     Master 7  Godbout System Support - Slave Interrupt
+VI7  Slave  0  Godbout MPX Multiplexer Channel Completion
+     Slave  1  Godbout System Support - Timer 0 Completion
+     Slave  2  Godbout System Support - Timer 1 Completion
+     Slave  3  Godbout System Support - Timer 2 Completion
+     Slave  4  Godbout System Support - 9511/9512 Service Request
+     Slave  5  Godbout System Support - 9511/9512 Completion
+     Slave  6  Godbout System Support - 2651 TxRDY
+     Slave  7  Godbout System Support - 2651 RxRDY
+.he DMA Arbitration Assignments
+.pa
+     The  following  descibes the DMA Arbitration Priorities  and 
+their  assignments.   The priority is structured such that 00  is 
+the  lowest  and  0F  is the  highest  with  only  16  priorities 
+available.   All  the  priorities are set via hardware  switches.  
+According  to Godbout's documentation,  the disk I/O should  have 
+very high priority.
+
+  Number    Description
+    00      **Unassigned**
+    01      **Unassigned**
+    02      **Unassigned**
+    03      **Unassigned**
+    04      **Unassigned**
+    05      **Unassigned**
+    06      **Unassigned**
+    07      Godbout MPX Multiplexor Channel (1)
+    08      **Unassigned**
+    09      **Unassigned**
+    0A      **Unassigned**
+    0B      **Unassigned**
+    0C      **Unassigned**
+    0D      **Unassigned**
+    0E      Godbout Disk 1 Floppy Disk Controller
+    0F      Godbout Disk 2 Hard Disk Controller
+.he Godbout Interfacer III Port Usage and Options Taken
+.pa
+  Port    Description
+   00     9600 Baud Visual 200 using VT-100 Emulation
+   01     9600 Baud Visual 200 using VT-100 Emulation
+   02     9600 Baud Visual 200 using VT-100 Emulation
+   03     9600 Baud Visual 200 using VT-100 Emulation
+   04     1200 Baud Decwriter II (120cps)/Nec Spinwriter (55cps)
+          using XON/XOFF protocal
+   05     1200 Baud Decwriter II (120cps)/Nec Spinwriter (55cps)
+          using XON/XOFF protocal
+   06     1200 Baud Hayes SmartModem 1200
+   07     1200 Baud Hayes SmartModem 1200
+.pa

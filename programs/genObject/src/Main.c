@@ -208,7 +208,7 @@ extern "C" {
             CMDUTL_TYPE_EXEC,
             0,
             0,
-            (void *)Main_SetOutputCmn,
+            (void *)Main_SetOutputDisk,
             "Output to libDisk"
         },
         {

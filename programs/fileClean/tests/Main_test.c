@@ -55,6 +55,7 @@ int         tearDown(
     
     szTbl_SharedReset( );
     SrcErrors_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
@@ -104,7 +105,7 @@ int         test_Main_OpenClose(
 
 
 
-int         test_Main_Generation01(
+int         test_Main_Clean01(
     const
     char        *pTestName
 )
@@ -112,6 +113,7 @@ int         test_Main_Generation01(
     ERESULT         eRc;
     MAIN_DATA       *pObj = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
     //ASTR_DATA       *pWrk = OBJ_NIL;
     int             iRc;
     int             offset = 0;
@@ -119,31 +121,26 @@ int         test_Main_Generation01(
     uint32_t        i;
     const
     char            *pChr;
-    
+    const
+    //char            *pPathA = "~/git/libCmn/programs/fileClean/tests/files/Test.txt";
+    char            *pPathA = "~/git/libCmn/programs/fileClean/tests/files/HARDWARE.DOC.txt";
+    const
+    char            *pResultPathA = "~/git/libCmn/programs/fileClean/tests/files/TestResult.txt";
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pObj = Main_New();
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        /*
-        pObj->pOutput = TextOut_NewAStr();
-        TINYTEST_FALSE( (OBJ_NIL == pObj->pOutput) );
+        Appl_setDebug(Main_getAppl(pObj), true);
+        pPath = Path_NewA(pPathA);
+        TINYTEST_FALSE( (OBJ_NIL == pPath) );
 
-        //appl_setDebug((APPL_DATA *)pObj, true);
-        eRc = Main_ParseInputStr(pObj, pGoodJsonA);
+        eRc = Main_CleanFile(pObj, pPath);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        TINYTEST_FALSE( (OBJ_NIL == pObj->pParser) );
 
-        pLib = SrcParse_getLib(pObj->pParser);
-        TINYTEST_FALSE( (OBJ_NIL == pLib) );
-
-        pObj->osType = OSTYPE_MACOS64;
-        eRc = Main_SetupOsArch(pObj);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = Main_GenMakefile(pObj);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        
+/**************
         if (fDump) {
             pStr = Main_getStr(pObj);
             TINYTEST_FALSE( (OBJ_NIL == pStr) );
@@ -163,7 +160,10 @@ int         test_Main_Generation01(
         fprintf(stderr, "\tiRc=%d  offset=%04X\n", iRc, offset);
         TINYTEST_TRUE( (0 == iRc) );
          */
-        
+
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -176,7 +176,7 @@ int         test_Main_Generation01(
 
 
 TINYTEST_START_SUITE(test_Main);
-    //TINYTEST_ADD_TEST(test_Main_Generation01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Main_Clean01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

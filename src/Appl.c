@@ -726,9 +726,9 @@ extern "C" {
 #endif
 
         if (fValue)
-            this->fDebug = true;
+            this->fDebug = 1;
         else
-            this->fDebug = false;
+            this->fDebug = 0;
 
         return true;
     }

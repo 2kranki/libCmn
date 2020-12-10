@@ -66,6 +66,7 @@ extern "C" {
             'n',
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_INCR,
+            0,                              // Constant
             offsetof(MAIN_DATA, fBackup),
             NULL,
             "Backup output file if it exists"
@@ -75,6 +76,7 @@ extern "C" {
             'f',
             CMDUTL_ARG_OPTION_REQUIRED,
             CMDUTL_TYPE_PATH,
+            0,                              // Constant
             offsetof(MAIN_DATA, pFilePath),
             NULL,
             "Input File Path"
@@ -84,6 +86,7 @@ extern "C" {
             'o',
             CMDUTL_ARG_OPTION_REQUIRED,
             CMDUTL_TYPE_PATH,
+            0,                              // Constant
             offsetof(MAIN_DATA, pOutputPath),
             NULL,
             "Output File Path"
@@ -93,6 +96,7 @@ extern "C" {
             'r',
             CMDUTL_ARG_OPTION_NONE,
             CMDUTL_TYPE_INCR,
+            0,                              // Constant
             offsetof(MAIN_DATA, fBackup),
             NULL,
             "Backup output file if it exists"
@@ -754,7 +758,13 @@ extern "C" {
         }
 #endif
         eRc = Path_Clean(pPath);
+        if (ERESULT_FAILED(eRc)) {
+            goto Exit00;
+        }
         eRc = Path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
+        if (ERESULT_FAILED(eRc)) {
+            goto Exit00;
+        }
 
         // Open the input file.
         pFileIn = fopen(Path_getData(pPath), "rb");
@@ -768,8 +778,8 @@ extern "C" {
 
         // Open the output file.
         pPathOut =  Path_NewFromComponentsA(
-                                            AStr_getData(pDrive),
-                                            Path_getData(pDir),
+                                            pDrive ? AStr_getData(pDrive) : NULL,
+                                            pDir ? Path_getData(pDir) : NULL,
                                             pFileNameA,
                                             pFileExtA
                     );
@@ -789,16 +799,16 @@ extern "C" {
             goto Exit00;
         }
 
-        // Concatenate the file.
+        // Remove high order bits and insure Linux/Unix style EOL.
         for ( ;; ) {
 
             // Get the next byte.
             chrWrk = fgetc(pFileIn);
-            if (-1 == chrWrk)
+            if (-1 == chrWrk)               // EOF
                 break;
             ++TotalRead;
             chrWrk &= 0x7F;
-            if( chrWrk == 0x1A )                 //*** CP/M EOF ***
+            if( chrWrk == 0x1A )            //*** CP/M EOF ***
                 break;
             if( (chrWrk >= ' ') && (chrWrk < 0x7F) )
                 ;
@@ -1265,7 +1275,7 @@ extern "C" {
         MAIN_DATA       *this
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         uint32_t        cbSize = sizeof(MAIN_DATA);
         
         if (OBJ_NIL == this) {
@@ -1831,7 +1841,7 @@ extern "C" {
 
         fprintf(
                 pOutput, 
-                "  Clean up old CP/M text files to conform to\n"
+                "  Clean up old CP/M ascii text files to conform to\n"
                 "  Unix/MacOS standards.\n"
         );
         
@@ -1892,7 +1902,7 @@ extern "C" {
         }
 #endif
       
-        fprintf(pOutput, "  %s [options] input_path...\n", pNameA);
+        fprintf(pOutput, "  %s [options] input_path(s)...\n", pNameA);
         
         // Return to caller.
         return ERESULT_SUCCESS;

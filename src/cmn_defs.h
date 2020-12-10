@@ -147,6 +147,10 @@ extern "C" {
         OBJ_IDENT_MAIN_CLASS,
         OBJ_IDENT_EXEC,                 // Exec Object               (Used in Programs)
         OBJ_IDENT_EXEC_CLASS,
+        OBJ_IDENT_ALU8,                 // 8-bit Arithmetic Logic Unit
+        OBJ_IDENT_ALU8_CLASS,
+        OBJ_IDENT_ALU32,                // 32-bit Arithmetic Logic Unit
+        OBJ_IDENT_ALU32_CLASS,
         OBJ_IDENT_APPL,                 // Application Base Object
         OBJ_IDENT_APPL_CLASS,
         OBJ_IDENT_ARRAY,                // Expandable Array
@@ -650,7 +654,8 @@ extern "C" {
     typedef void        (*PUTCLRSET_SFR)(uint32_t);
 
     // Comparison Routine: returns 0 if *p0 == *p1,
-    // -n if *p0 < *p1 or +n if *p0 > *p1.
+    //                  -1 if *p0 < *p1 or 
+    //                  +1 if *p0 > *p1.
     typedef int         (*P_COMPARE)(void *p0, void *p1);
 
     typedef void        (*P_VOID_EXIT0)(void);

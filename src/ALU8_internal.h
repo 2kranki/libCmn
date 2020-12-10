@@ -1,10 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   SrcDiff_internal.h
- *  Generated 12/01/2020 15:31:46
+ * File:   ALU8_internal.h
+ *  Generated 12/06/2020 10:50:20
  *
  * Notes:
- *  --  https://blog.robertelder.org/diff-algorithm/
+ *  --  N/A
  *
  */
 
@@ -39,12 +39,12 @@
 
 
 
-#include        <SrcDiff.h>
+#include        <ALU8.h>
 #include        <JsonIn.h>
 
 
-#ifndef SRCDIFF_INTERNAL_H
-#define SRCDIFF_INTERNAL_H
+#ifndef ALU8_INTERNAL_H
+#define ALU8_INTERNAL_H
 
 
 
@@ -62,7 +62,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct SrcDiff_data_s  {
+struct ALU8_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -77,11 +77,11 @@ struct SrcDiff_data_s  {
 #pragma pack(pop)
 
     extern
-    struct SrcDiff_class_data_s  SrcDiff_ClassObj;
+    struct ALU8_class_data_s  ALU8_ClassObj;
 
     extern
     const
-    SRCDIFF_VTBL         SrcDiff_Vtbl;
+    ALU8_VTBL         ALU8_Vtbl;
 
 
 
@@ -89,13 +89,13 @@ struct SrcDiff_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  SRCDIFF_SINGLETON
-    SRCDIFF_DATA *     SrcDiff_getSingleton (
+#ifdef  ALU8_SINGLETON
+    ALU8_DATA *     ALU8_getSingleton (
         void
     );
 
-    bool            SrcDiff_setSingleton (
-     SRCDIFF_DATA       *pValue
+    bool            ALU8_setSingleton (
+     ALU8_DATA       *pValue
 );
 #endif
 
@@ -105,35 +105,35 @@ struct SrcDiff_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  SrcDiff_getSuperVtbl (
-        SRCDIFF_DATA     *this
+    OBJ_IUNKNOWN *  ALU8_getSuperVtbl (
+        ALU8_DATA     *this
     );
 
 
-    ERESULT         SrcDiff_Assign (
-        SRCDIFF_DATA    *this,
-        SRCDIFF_DATA    *pOther
+    ERESULT         ALU8_Assign (
+        ALU8_DATA    *this,
+        ALU8_DATA    *pOther
     );
 
 
-    SRCDIFF_DATA *       SrcDiff_Copy (
-        SRCDIFF_DATA     *this
+    ALU8_DATA *       ALU8_Copy (
+        ALU8_DATA     *this
     );
 
 
-    void            SrcDiff_Dealloc (
+    void            ALU8_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  SRCDIFF_JSON_SUPPORT
+#ifdef  ALU8_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SRCDIFF_DATA *       SrcDiff_ParseJsonObject (
+    ALU8_DATA *       ALU8_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -147,35 +147,35 @@ struct SrcDiff_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SrcDiff_ParseJsonFields (
+    ERESULT         ALU8_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SRCDIFF_DATA     *pObject
+        ALU8_DATA     *pObject
     );
 #endif
 
 
-    void *          SrcDiff_QueryInfo (
+    void *          ALU8_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  SRCDIFF_JSON_SUPPORT
+#ifdef  ALU8_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SrcDiff_ToJson(this);
+     ASTR_DATA      *pDesc = ALU8_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SrcDiff_ToJson (
-        SRCDIFF_DATA      *this
+    ASTR_DATA *     ALU8_ToJson (
+        ALU8_DATA      *this
     );
 
 
@@ -188,8 +188,8 @@ struct SrcDiff_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SrcDiff_ToJsonFields (
-        SRCDIFF_DATA     *this,
+    ERESULT         ALU8_ToJsonFields (
+        ALU8_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -199,8 +199,8 @@ struct SrcDiff_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            SrcDiff_Validate (
-        SRCDIFF_DATA       *this
+    bool            ALU8_Validate (
+        ALU8_DATA       *this
     );
 #endif
 
@@ -210,5 +210,5 @@ struct SrcDiff_data_s  {
 }
 #endif
 
-#endif  /* SRCDIFF_INTERNAL_H */
+#endif  /* ALU8_INTERNAL_H */
 
