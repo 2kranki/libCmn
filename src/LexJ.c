@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   lexj.c
- *	Generated 07/02/2017 09:15:13
+ * File:   LexJ.c
+ *  Generated 12/09/2020 23:26:59
  *
  */
 
@@ -41,21 +41,52 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include <lexj_internal.h>
-#include <ascii.h>
-#include <SrcErrors.h>
-#include <trace.h>
-#include <W32Str.h>
+#include        <LexJ_internal.h>
+#include        <ascii.h>
+#include        <JsonIn.h>
+#include        <SrcErrors.h>
+#include        <trace.h>
+#include        <utf8.h>
+#include        <W32Str.h>
 
 
 
-#ifdef	__cplusplus
+
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
-
+    typedef struct LexJ_Class2Str_s {
+        int32_t         cls;
+        const
+        char            *pStr;
+    } LEXJ_CLASS2STR;
     
-
+    LEXJ_CLASS2STR      Cls2Str[] = {
+        {LEXJ_CLASS_EOF,            "LEXJ_CLASS_EOF"},
+        {LEXJ_CONSTANT_CHAR,        "LEXJ_CONSTANT_CHAR"},
+        {LEXJ_CONSTANT_CHAR_WIDE,   "LEXJ_CONSTANT_CHAR_WIDE"},
+        {LEXJ_CONSTANT_FLOAT,       "LEXJ_CONSTANT_FLOAT"},
+        {LEXJ_CONSTANT_INTEGER,     "LEXJ_CONSTANT_INTEGER"},
+        {LEXJ_CONSTANT_STRING,      "LEXJ_CONSTANT_STRING"},
+        {LEXJ_CONSTANT_STRING_WIDE, "LEXJ_CONSTANT_STRING_WIDE"},
+        {LEXJ_SEP_COLON,            "LEXJ_SEP_COLON"},
+        {LEXJ_SEP_COMMA,            "LEXJ_SEP_COMMA"},
+        {LEXJ_SEP_EQUAL,            "LEXJ_SEP_EQUAL"},
+        {LEXJ_SEP_LBRACKET,         "LEXJ_SEP_LBRACKET"},
+        {LEXJ_SEP_LBRACE,           "LEXJ_SEP_LBRACE"},
+        {LEXJ_SEP_MINUS,            "LEXJ_SEP_MINUS"},
+        {LEXJ_SEP_PLUS,             "LEXJ_SEP_PLUS"},
+        {LEXJ_SEP_RBRACKET,         "LEXJ_SEP_RBRACKET"},
+        {LEXJ_SEP_RBRACE,           "LEXJ_SEP_RBRACE"},
+        {LEXJ_KWD_FALSE,            "LEXJ_KWD_FALSE"},
+        {LEXJ_KWD_NULL,             "LEXJ_KWD_NULL"},
+        {LEXJ_KWD_TRUE,             "LEXJ_KWD_TRUE"}
+    };
+    const
+    int             cCls2Str = sizeof(Cls2Str) / sizeof(LEXJ_CLASS2STR);
 
  
     /****************************************************************
@@ -63,28 +94,48 @@ extern "C" {
     ****************************************************************/
 
     //---------------------------------------------------------------
+    //              C l a s s  t o  S t r i n g
+    //---------------------------------------------------------------
+
+    const
+    char *          LexJ_Class2Str(
+        int32_t         cls
+    )
+    {
+        int             i;
+
+        for (i=0; i<cCls2Str; i++) {
+            if (Cls2Str[i].cls == cls) {
+                return Cls2Str[i].pStr;
+            }
+        }
+        return "LEXJ_UNKNOWN_CLASS";
+    }
+
+
+    //---------------------------------------------------------------
     //           P a r s e  Q u o t e l e s s  S t r i n g
     //---------------------------------------------------------------
-    
+
     // The first character of the string has already been parsed, but
     // not advanced. So, we just keep accumulating the proper letters
     // until there are no more that are acceptable.
-    
-    bool            lexj_ParseQuotelessString(
+
+    bool            LexJ_ParseQuotelessString(
         LEXJ_DATA       *this
     )
     {
         int32_t         cls;
         TOKEN_DATA      *pInput;
-        
+
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if( !LexJ_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         for (;;) {
             pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
             cls = Token_getClass(pInput);
@@ -98,12 +149,10 @@ extern "C" {
                 Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
             }
         }
-        
+
         return true;
     }
-    
-    
-    
+
 
 
 
@@ -116,7 +165,8 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    LEXJ_DATA *     lexj_Alloc(
+    LEXJ_DATA *     LexJ_Alloc (
+        void
     )
     {
         LEXJ_DATA       *this;
@@ -124,7 +174,7 @@ extern "C" {
         
         // Do initialization.
         
-        this = obj_Alloc( cbSize );
+         this = obj_Alloc( cbSize );
         
         // Return to caller.
         return this;
@@ -132,94 +182,191 @@ extern "C" {
 
 
 
-    LEXJ_DATA *     lexj_New(
+    LEXJ_DATA *     LexJ_New (
+        void
     )
     {
         LEXJ_DATA       *this;
         
-        this = lexj_Alloc( );
+        this = LexJ_Alloc( );
         if (this) {
-            this = lexj_Init(this);
+            this = LexJ_Init(this);
         } 
         return this;
     }
 
 
-    LEXJ_DATA *     lexj_NewA(
+    LEXJ_DATA *     LexJ_NewA (
         const
-        char            *pStr,
+        char            *pStrA,
         uint16_t        tabSize,        // Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
     )
     {
         LEXJ_DATA       *this = OBJ_NIL;
-        ASTR_DATA       *pStrA = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        bool            fRc;
 
-        pStrA = AStr_NewA(pStr);
-        if (pStrA) {
-            this = lexj_Alloc( );
+        pStr = AStr_NewA(pStrA);
+        if (pStr) {
+            this = LexJ_New( );
             if (this) {
-                this = lexj_InitAStr(this, pStrA, tabSize, fExpandTabs);
+                this->pInput = SrcFile_NewFromAStr(
+                                            OBJ_NIL,
+                                            pStr,
+                                            1,
+                                            tabSize
+                                );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+                if (OBJ_NIL == this->pInput) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+
+                fRc =   Lex_setSourceInput(
+                            (LEX_DATA *)this,
+                            (void *)SrcFile_InputAdvance,
+                            (void *)SrcFile_InputLookAhead,
+                            this->pInput
+                        );
+                if (!fRc) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+
             }
-            obj_Release(pStrA);
-            pStrA = OBJ_NIL;
         }
         return this;
     }
-    
-    
-    
-    LEXJ_DATA *     lexj_NewFromAStr(
+
+
+    LEXJ_DATA *     LexJ_NewFromAStr(
         ASTR_DATA       *pStr,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        uint16_t        tabSize,        // Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
     )
     {
-        LEXJ_DATA       *this;
-        
-        this = lexj_Alloc( );
-        if (this) {
-            this = lexj_InitAStr(this, pStr, tabSize, fExpandTabs);
+        LEXJ_DATA       *this = OBJ_NIL;
+        bool            fRc;
+
+        if (pStr) {
+            this = LexJ_New( );
+            if (this) {
+                this->pInput = SrcFile_NewFromAStr(
+                                            OBJ_NIL,
+                                            pStr,
+                                            1,
+                                            tabSize
+                                );
+                if (OBJ_NIL == this->pInput) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+
+                fRc =   Lex_setSourceInput(
+                            (LEX_DATA *)this,
+                            (void *)SrcFile_InputAdvance,
+                            (void *)SrcFile_InputLookAhead,
+                            this->pInput
+                        );
+                if (!fRc) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+
+            }
         }
         return this;
     }
-    
-    
-    
-    LEXJ_DATA *     lexj_NewFromFile(
+
+
+    LEXJ_DATA *     LexJ_NewFromFile(
         FILE            *pFile,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        uint16_t        tabSize,        // Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
     )
     {
-        LEXJ_DATA       *this;
-        
-        this = lexj_Alloc( );
-        if (this) {
-            this = lexj_InitFile(this, pFile, tabSize, fExpandTabs);
+        LEXJ_DATA       *this = OBJ_NIL;
+        bool            fRc;
+
+        if (pFile) {
+            this = LexJ_New( );
+            if (this) {
+                this->pInput = SrcFile_NewFromFile(
+                                            pFile,
+                                            1,
+                                            tabSize
+                                );
+                if (OBJ_NIL == this->pInput) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+
+                fRc =   Lex_setSourceInput(
+                            (LEX_DATA *)this,
+                            (void *)SrcFile_InputAdvance,
+                            (void *)SrcFile_InputLookAhead,
+                            this->pInput
+                        );
+                if (!fRc) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+
+            }
         }
         return this;
     }
-    
-    
-    
-    LEXJ_DATA *     lexj_NewFromPath(
+
+
+    LEXJ_DATA *     LexJ_NewFromPath(
         PATH_DATA       *pFilePath,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        uint16_t        tabSize,        // Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
     )
     {
-        LEXJ_DATA       *this;
-        
-        this = lexj_Alloc( );
-        if (this) {
-            this = lexj_InitPath(this, pFilePath, tabSize, fExpandTabs);
+        LEXJ_DATA       *this = OBJ_NIL;
+        bool            fRc;
+
+        if (pFilePath) {
+            this = LexJ_New( );
+            if (this) {
+                this->pInput = SrcFile_NewFromPath(
+                                            pFilePath,
+                                            1,
+                                            tabSize
+                                );
+                if (OBJ_NIL == this->pInput) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+
+                fRc =   Lex_setSourceInput(
+                            (LEX_DATA *)this,
+                            (void *)SrcFile_InputAdvance,
+                            (void *)SrcFile_InputLookAhead,
+                            this->pInput
+                        );
+                if (!fRc) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+
+            }
         }
         return this;
     }
-    
-    
-    
+
+
 
     
 
@@ -227,99 +374,58 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    SRCFILE_DATA *  lexj_getInput(
+    //---------------------------------------------------------------
+    //                          I n p u t
+    //---------------------------------------------------------------
+
+    SRCFILE_DATA *  LexJ_getInput (
         LEXJ_DATA       *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-        
-        lexj_setLastError(this, ERESULT_SUCCESS);
+
         return this->pInput;
     }
-    
-    
-    bool            lexj_setInput(
+
+
+    bool            LexJ_setInput (
         LEXJ_DATA       *this,
         SRCFILE_DATA    *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        
+
         obj_Retain(pValue);
         if (this->pInput) {
             obj_Release(this->pInput);
         }
         this->pInput = pValue;
-        
-        lexj_setLastError(this, ERESULT_SUCCESS);
+
         return true;
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                      L a s t  E r r o r
-    //---------------------------------------------------------------
-    
-    ERESULT         lexj_getLastError(
-        LEXJ_DATA       *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !lexj_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //this->eRc = ERESULT_SUCCESS;
-        return this->eRc;
-    }
 
 
-    bool            lexj_setLastError(
-        LEXJ_DATA       *this,
-        ERESULT         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !lexj_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-        
-        this->eRc = value;
-        
-        return true;
-    }
-    
-    
 
     //---------------------------------------------------------------
-    //               L e x i c a l  S c a n n e r
+    //                              L e x
     //---------------------------------------------------------------
 
     inline
-    LEX_DATA *      lexj_getLex(
+    LEX_DATA *      LexJ_getLex(
         LEXJ_DATA       *this
     )
     {
@@ -327,7 +433,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if( !LexJ_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -338,7 +444,11 @@ extern "C" {
 
 
 
-    uint16_t        lexj_getPriority(
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        LexJ_getPriority (
         LEXJ_DATA     *this
     )
     {
@@ -346,26 +456,25 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        lexj_setLastError(this, ERESULT_SUCCESS);
         //return this->priority;
         return 0;
     }
 
 
-    bool            lexj_setPriority(
+    bool            LexJ_setPriority (
         LEXJ_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -373,11 +482,55 @@ extern "C" {
 
         //this->priority = value;
 
-        lexj_setLastError(this, ERESULT_SUCCESS);
         return true;
     }
 
 
+
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        LexJ_getSize (
+        LEXJ_DATA       *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!LexJ_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return 0;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
+    
+    OBJ_IUNKNOWN *  LexJ_getSuperVtbl (
+        LEXJ_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!LexJ_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return this->pSuperVtbl;
+    }
+    
+  
 
     
 
@@ -395,32 +548,43 @@ extern "C" {
      this -> other).  Any objects in other will be released before 
      a copy of the object is performed.
      Example:
-     @code
-        ERESULT eRc = lexj__Assign(this,pOther);
-     @endcode
-     @param     this    LEXJ object pointer
+     @code 
+        ERESULT eRc = LexJ_Assign(this,pOther);
+     @endcode 
+     @param     this    object pointer
      @param     pOther  a pointer to another LEXJ object
-     @return    If successful, ERESULT_SUCCESS otherwise an
+     @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         lexj_Assign(
-        LEXJ_DATA		*this,
-        LEXJ_DATA      *pOther
+    ERESULT         LexJ_Assign (
+        LEXJ_DATA       *this,
+        LEXJ_DATA     *pOther
     )
     {
+        ERESULT     eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !lexj_Validate(pOther) ) {
+        if (!LexJ_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -445,19 +609,62 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        //pOther->x     = this->x; 
 
         // Return to caller.
-        lexj_setLastError(this, ERESULT_SUCCESS);
+        eRc = ERESULT_SUCCESS;
     eom:
         //FIXME: Implement the assignment.        
-        lexj_setLastError(this, ERESULT_NOT_IMPLEMENTED);
-        return lexj_getLastError(this);
+        eRc = ERESULT_NOT_IMPLEMENTED;
+        return eRc;
     }
     
     
     
+    //---------------------------------------------------------------
+    //                      C o m p a r e
+    //---------------------------------------------------------------
+    
+    /*!
+     Compare the two provided objects.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
+     */
+    int             LexJ_Compare (
+        LEXJ_DATA     *this,
+        LEXJ_DATA     *pOther
+    )
+    {
+        int             iRc = -1;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef NDEBUG
+#else
+        if (!LexJ_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
+        }
+        if (!LexJ_Validate(pOther)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
+        }
+#endif
+
+        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+     
+        return iRc;
+    }
+    
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -465,15 +672,15 @@ extern "C" {
     /*!
      Copy the current object creating a new object.
      Example:
-     @code
-        lexj      *pCopy = lexj_Copy(this);
-     @endcode
-     @param     this    LEXJ object pointer
-     @return    If successful, a LEXJ object which must be released,
-                otherwise OBJ_NIL.
-     @warning   Remember to release the returned the LEXJ object.
+     @code 
+        LexJ      *pCopy = LexJ_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a LEXJ object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    LEXJ_DATA *     lexj_Copy(
+    LEXJ_DATA *     LexJ_Copy (
         LEXJ_DATA       *this
     )
     {
@@ -483,24 +690,27 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = lexj_New( );
+#ifdef LEXJ_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = LexJ_New( );
         if (pOther) {
-            eRc = lexj_Assign(this, pOther);
+            eRc = LexJ_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
-        lexj_setLastError(this, ERESULT_SUCCESS);
         return pOther;
     }
     
@@ -510,11 +720,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            lexj_Dealloc(
+    void            LexJ_Dealloc (
         OBJ_ID          objId
     )
     {
         LEXJ_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -522,13 +733,19 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
 #endif
 
-        lexj_setInput(this, OBJ_NIL);
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((LEXJ_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+        }
+#endif
+
+        LexJ_setInput(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -542,34 +759,82 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        LexJ      *pDeepCopy = LexJ_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a LEXJ object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    LEXJ_DATA *     LexJ_DeepyCopy (
+        LEXJ_DATA       *this
+    )
+    {
+        LEXJ_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!LexJ_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = LexJ_New( );
+        if (pOther) {
+            eRc = LexJ_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         lexj_Disable(
-        LEXJ_DATA		*this
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         LexJ_Disable (
+        LEXJ_DATA       *this
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-        if (NULL == this) {
-            lexj_setLastError(this, ERESULT_INVALID_OBJECT);
+#ifdef NDEBUG
+#else
+        if (!LexJ_Validate(this)) {
+            DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #ifdef NDEBUG
-    #else
-        if( !lexj_Validate(this) ) {
-            DEBUG_BREAK();
-            return lexj_getLastError(this);
-        }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        lexj_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -578,27 +843,33 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         lexj_Enable(
-        LEXJ_DATA		*this
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         LexJ_Enable (
+        LEXJ_DATA       *this
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !lexj_Validate(this) ) {
+#ifdef NDEBUG
+#else
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        lexj_setLastError(this, ERESULT_SUCCESS);
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -607,11 +878,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    LEXJ_DATA *     lexj_Init(
+    LEXJ_DATA *   LexJ_Init (
         LEXJ_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(LEXJ_DATA);
+        //ERESULT         eRc;
         bool            fRc;
         
         if (OBJ_NIL == this) {
@@ -628,24 +900,23 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)Lex_Init((LEX_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)Lex_Init((LEX_DATA *)this);          // Needed for Inheritance
         //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_LEXJ);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&lexj_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&LexJ_Vtbl);
+#ifdef  LEXJ_JSON_SUPPORT
+        JsonIn_RegisterClass(LexJ_Class());
+#endif
         
-        lexj_setLastError(this, ERESULT_GENERAL_FAILURE);
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = ObjArray_New( );
-
         fRc =   Lex_setParserFunction(
                             (LEX_DATA *)this,
-                            (void *)lexj_ParseTokenJson,
+                            (void *)LexJ_ParseTokenJson,
                             this
                 );
         if (!fRc) {
@@ -653,221 +924,62 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-        
-    #ifdef NDEBUG
-    #else
-        if( !lexj_Validate(this) ) {
+                /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        BREAK_NOT_BOUNDARY4(&this->eRc);
+        */
+
+#ifdef NDEBUG
+#else
+        if (!LexJ_Validate(this)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "LexJ::sizeof(LEXJ_DATA) = %lu\n", 
+                sizeof(LEXJ_DATA)
+        );
+#endif
         BREAK_NOT_BOUNDARY4(sizeof(LEXJ_DATA));
-    #endif
+#endif
 
         return this;
     }
 
      
-    LEXJ_DATA *     lexj_InitAStr(
-        LEXJ_DATA       *this,
-        ASTR_DATA       *pStr,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs
-    )
-    {
-        bool            fRc;
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = (OBJ_ID)lexj_Init(this);
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        
-        this->pInput = SrcFile_NewFromAStr(
-                                    OBJ_NIL,
-                                    pStr,
-                                    1,
-                                    tabSize
-                        );
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        fRc =   Lex_setSourceInput(
-                    (LEX_DATA *)this,
-                    (void *)SrcFile_InputAdvance,
-                    (void *)SrcFile_InputLookAhead,
-                    this->pInput
-                );
-        if (!fRc) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-#ifdef NDEBUG
-#else
-        if( !lexj_Validate(this) ) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(LEXJ_DATA));
-#endif
-        
-        return this;
-    }
-    
-    
-    LEXJ_DATA *     lexj_InitFile(
-        LEXJ_DATA       *this,
-        FILE            *pFile,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs
-    )
-    {
-        bool            fRc;
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = (OBJ_ID)lexj_Init(this);
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        
-        this->pInput =  SrcFile_NewFromFile(
-                            pFile,
-                            1,
-                            tabSize
-                        );
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        fRc =   Lex_setSourceInput(
-                    (LEX_DATA *)this,
-                    (void *)SrcFile_InputAdvance,
-                    (void *)SrcFile_InputLookAhead,
-                    this->pInput
-                );
-        if (!fRc) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-#ifdef NDEBUG
-#else
-        if( !lexj_Validate(this) ) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(LEXJ_DATA));
-#endif
-        
-        return this;
-    }
-    
-    
-    LEXJ_DATA *     lexj_InitPath(
-        LEXJ_DATA       *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs
-    )
-    {
-        bool            fRc;
-        
-        if (OBJ_NIL == this) {
-            return OBJ_NIL;
-        }
-        
-        this = (OBJ_ID)lexj_Init(this);
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-        
-        this->pInput =  SrcFile_NewFromPath(
-                                        pFilePath,
-                                        1,
-                                        tabSize
-                        );
-        if (OBJ_NIL == this) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-        fRc =   Lex_setSourceInput(
-                                      (LEX_DATA *)this,
-                                      (void *)SrcFile_InputAdvance,
-                                      (void *)SrcFile_InputLookAhead,
-                                      this->pInput
-                                      );
-        if (!fRc) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        
-#ifdef NDEBUG
-#else
-        if( !lexj_Validate(this) ) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        BREAK_NOT_BOUNDARY4(&this->eRc);
-        BREAK_NOT_BOUNDARY4(sizeof(LEXJ_DATA));
-#endif
-        
-        return this;
-    }
-    
-    
-    
 
     //---------------------------------------------------------------
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         lexj_IsEnabled(
-        LEXJ_DATA		*this
+    ERESULT         LexJ_IsEnabled (
+        LEXJ_DATA       *this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            lexj_setLastError(this, ERESULT_SUCCESS_TRUE);
             return ERESULT_SUCCESS_TRUE;
         }
         
         // Return to caller.
-        lexj_setLastError(this, ERESULT_SUCCESS_FALSE);
         return ERESULT_SUCCESS_FALSE;
     }
     
@@ -876,43 +988,43 @@ extern "C" {
     //--------------------------------------------------------------
     //                      P a r s e  T o k e n
     //--------------------------------------------------------------
-    
-    TOKEN_DATA *    lexj_ParseToken(
+
+    TOKEN_DATA *    LexJ_ParseToken(
         LEXJ_DATA       *this
     )
     {
         bool            fRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if( !LexJ_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-        
-        fRc = lexj_ParseTokenJson(this, &this->super.token);
-        
+
+        fRc = LexJ_ParseTokenJson(this, &this->super.token);
+
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
             ASTR_DATA           *pStr = Token_ToDebugString(&this->super.token, 0);
-            TRC_OBJ( this, "lexj_ParseToken:  %s \n", AStr_getData(pStr) );
+            TRC_OBJ( this, "LexJ_ParseToken:  %s \n", AStr_getData(pStr) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
 #endif
-        
+
         // Return to caller.
         return &this->super.token;
     }
-    
-    
+
+
     //--------------------------------------------------------------
     //                      P a r s e  T o k e n
     //--------------------------------------------------------------
-    
+
     /* ParseToken() gets the next token from the source file. It
      * saves that token for the file/line/col numbers and then
      * proceeds to build upon it. It accumulates tokens until
@@ -927,8 +1039,8 @@ extern "C" {
      * This method does not use the Output Token, but uses lex_
      * functions to create the parsed token.
      */
-    
-    bool            lexj_ParseTokenJson(
+
+    bool            LexJ_ParseTokenJson(
         LEXJ_DATA       *this,
         TOKEN_DATA      *pTokenOut          // Optional Output Token
     )
@@ -940,17 +1052,17 @@ extern "C" {
         bool            fMore = true;
         bool            fSaveStr = true;
         ASTR_DATA       *pStr = OBJ_NIL;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if( !LexJ_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         TRC_OBJ(this, "%s:\n", __func__);
-        
+
         while (fMore) {
             pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
             if (pInput) {
@@ -967,9 +1079,9 @@ extern "C" {
                 newCls = LEX_CLASS_EOF;
                 break;
             }
-            
+
             switch (cls) {
-                    
+
                 case ASCII_LEXICAL_WHITESPACE:
                     for (;;) {
                         pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
@@ -981,7 +1093,7 @@ extern "C" {
                         }
                     }
                     break;
-                    
+
                 case ASCII_LEXICAL_EOL:
                     for (;;) {
                         pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
@@ -993,10 +1105,10 @@ extern "C" {
                         }
                     }
                     break;
-                    
+
                 case ASCII_LEXICAL_ALPHA_LOWER:
                 case ASCII_LEXICAL_ALPHA_UPPER:
-                    lexj_ParseQuotelessString(this);
+                    LexJ_ParseQuotelessString(this);
                     pStr = AStr_NewFromW32Str(this->super.pStr);
                     if (pStr) {
                         AStr_Trim(pStr);
@@ -1032,7 +1144,7 @@ extern "C" {
                             W32Str_getData(this->super.pStr)
                     );
                     break;
-                    
+
                 case ASCII_LEXICAL_NUMBER:
                 parseNumber:
                     newCls = Lex_ParseNumber((LEX_DATA *)this);
@@ -1048,7 +1160,7 @@ extern "C" {
                     );
                     fMore = false;
                     break;
-                    
+
                 case '"':           /*** '"' ***/
                     // Quoted String
                     //TODO: "..." {<white-space> "..."}
@@ -1077,7 +1189,7 @@ extern "C" {
                         );
                     }
                     break;
-                    
+
                 case '#':           /*** '#' ***/
                     // Comment
                     for (;;) {
@@ -1088,28 +1200,28 @@ extern "C" {
                         }
                     }
                     break;
-                    
+
                 case '+':           /*** '+' ***/
                     newCls = LEXJ_SEP_PLUS;
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: +\n");
                     break;
-                    
+
                 case ',':           /*** ',' ***/
                     newCls = LEXJ_SEP_COMMA;
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: ,\n");
                     break;
-                    
+
                 case '-':           /*** '-' ***/
                     newCls = LEXJ_SEP_MINUS;
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: -\n");
                     break;
-                    
+
                 case '/':           /*** '/' ***/
                     pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
                     cls = Token_getClass(pInput);
@@ -1166,18 +1278,18 @@ extern "C" {
                         }
                         break;
                     }
-                    lexj_ParseQuotelessString(this);
+                    LexJ_ParseQuotelessString(this);
                     newCls = LEX_CONSTANT_STRING;
                     fMore = false;
                     break;
-                    
+
                 case ':':           /*** ':' ***/
                     newCls = LEXJ_SEP_COLON;
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: :\n");
                     break;
-                    
+
                 case '=':           /*** '=' ***/
                     newCls = LEXJ_SEP_EQUAL;
                     Lex_InputAdvance((LEX_DATA *)this, 1);
@@ -1191,30 +1303,30 @@ extern "C" {
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: [\n");
                     break;
-                    
+
                 case ']':           /*** ']' ***/
                     newCls = LEXJ_SEP_RBRACKET;
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: ]\n");
                     break;
-                    
+
                 case '{':           /*** '{' ***/
                     newCls = LEXJ_SEP_LBRACE;
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: {\n");
                     break;
-                    
+
                 case '}':           /*** '}' ***/
                     newCls = LEXJ_SEP_RBRACE;
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: }\n");
                     break;
-                    
+
                 default:
-                    lexj_ParseQuotelessString(this);
+                    LexJ_ParseQuotelessString(this);
                     newCls = LEX_CONSTANT_STRING;
                     fMore = false;
                     TRC_OBJ(
@@ -1224,38 +1336,59 @@ extern "C" {
                     );
                     break;
             }
-            
+
         }
-        
+
         // Return to caller.
         eRc = Lex_ParseTokenFinalize((LEX_DATA *)this, newCls, fSaveStr);
         BREAK_FALSE(ERESULT_IS_SUCCESSFUL(eRc));
         return true;
     }
-    
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    void *          lexj_QueryInfo(
+    /*!
+     Return information about this object. This method can translate
+     methods to strings and vice versa, return the address of the
+     object information structure.
+     Example:
+     @code
+        // Return a method pointer for a string or NULL if not found. 
+        void        *pMethod = LexJ_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+     @endcode 
+     @param     objId   object pointer
+     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
+     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
+                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
+                        character string which represents the method name without
+                        the object name, "LexJ", prefix,
+                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
+                        address of the method to be found.
+     @return    If unsuccessful, NULL. Otherwise, for:
+                OBJ_QUERYINFO_TYPE_INFO: info pointer,
+                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
+                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     */
+    void *          LexJ_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        LEXJ_DATA       *this = objId;
+        LEXJ_DATA     *this = objId;
         const
         char            *pStr = pData;
-
+        
         if (OBJ_NIL == this) {
             return NULL;
         }
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1263,6 +1396,28 @@ extern "C" {
         
         switch (type) {
                 
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(LEXJ_DATA);
+                break;
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)LexJ_Class();
+                break;
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
             case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
@@ -1272,26 +1427,60 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return lexj_Disable;
+                            return LexJ_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return lexj_Enable;
+                            return LexJ_Enable;
                         }
                         break;
 
+                    case 'P':
+#ifdef  LEXJ_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return LexJ_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return LexJ_ParseJsonObject;
+                        }
+#endif
+                        break;
+
+                    case 'T':
+                        if (str_Compare("ToDebugString", (char *)pStr) == 0) {
+                            return LexJ_ToDebugString;
+                        }
+#ifdef  LEXJ_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return LexJ_ToJsonFields;
+                        }
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return LexJ_ToJson;
+                        }
+#endif
+                        break;
+                        
                     default:
                         break;
                 }
+                break;
+                
+            case OBJ_QUERYINFO_TYPE_PTR:
+                if (pData == LexJ_ToDebugString)
+                    return "ToDebugString";
+#ifdef  LEXJ_JSON_SUPPORT
+                if (pData == LexJ_ToJson)
+                    return "ToJson";
+#endif
                 break;
                 
             default:
                 break;
         }
         
-        return obj_QueryInfo(objId, type, pData);
+        return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
     
     
@@ -1299,57 +1488,57 @@ extern "C" {
     //--------------------------------------------------------------
     //                  T o k e n  A d v a n c e
     //--------------------------------------------------------------
-    
-    TOKEN_DATA *    lexj_TokenAdvance(
-        LEXJ_DATA		*this,
+
+    TOKEN_DATA *    LexJ_TokenAdvance(
+        LEXJ_DATA        *this,
         uint16_t        numChrs
     )
     {
         TOKEN_DATA      *pToken = OBJ_NIL;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if( !LexJ_Validate(this) ) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
-        
+
         pToken = Lex_TokenAdvance((LEX_DATA *)this, numChrs);
-        
+
         return pToken;
     }
-    
-    
-    
+
+
+
     //--------------------------------------------------------------
     //               T o k e n  L o o k  A h e a d
     //--------------------------------------------------------------
-    
-    TOKEN_DATA *    lexj_TokenLookAhead(
+
+    TOKEN_DATA *    LexJ_TokenLookAhead(
         LEXJ_DATA       *this,
         uint16_t        num
     )
     {
         TOKEN_DATA      *pToken;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if( !LexJ_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
-        
+
         pToken = Lex_TokenLookAhead((LEX_DATA *)this, num);
-        
+
         // Return to caller.
 #ifdef NDEBUG
 #else
         if( obj_Trace(this) ) {
-            fprintf(stderr, "\tlexj_TokenLookAhead(%d)\n", num);
+            fprintf(stderr, "\tLexJ_TokenLookAhead(%d)\n", num);
             if (pToken) {
                 ASTR_DATA       *pStr2 = Token_ToDataString(pToken);
                 fprintf(stderr, "\t\tToken Class  = %d\n", Token_getClass(pToken));
@@ -1364,33 +1553,33 @@ extern "C" {
 #endif
         return pToken;
     }
-    
-    
-    
+
+
+
     //--------------------------------------------------------------
     //                      T o k e n  P u s h
     //--------------------------------------------------------------
-    
+
     /*  This routine will save the current character on a queue
      *  where it will be retrieved by NextToken().
      */
-    ERESULT         lexj_TokenPush(
+    ERESULT         LexJ_TokenPush(
         LEXJ_DATA       *this,
         TOKEN_DATA      *pToken
     )
     {
         ERESULT         eRc;
-        
+
         // Do initialization.
-        
+
         eRc = Lex_TokenPush((LEX_DATA *)this, pToken);
-        
+
         // Return to caller.
         return eRc;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -1398,48 +1587,55 @@ extern "C" {
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = lexj_ToDebugString(this,4);
-     @endcode
-     @param     this    LEXJ object pointer
+     @code 
+        ASTR_DATA      *pDesc = LexJ_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
+     @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     lexj_ToDebugString(
+    ASTR_DATA *     LexJ_ToDebugString (
         LEXJ_DATA      *this,
         int             indent
     )
     {
-        char            str[256];
-        int             j;
+        ERESULT         eRc;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
+        const
+        OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !lexj_Validate(this) ) {
+        if (!LexJ_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
               
+        pInfo = obj_getInfo(this);
         pStr = AStr_New();
-        if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
         }
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{%p(lexj)\n",
-                     this
+        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "{%p(%s) size=%d retain=%d\n",
+                    this,
+                    pInfo->pClassName,
+                    LexJ_getSize(this),
+                    obj_getRetainCount(this)
             );
-        AStr_AppendA(pStr, str);
 
 #ifdef  XYZZY        
         if (this->pData) {
@@ -1448,19 +1644,24 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
         
         if (indent) {
-            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        j = snprintf(str, sizeof(str), " %p(lexj)}\n", this);
-        AStr_AppendA(pStr, str);
+        eRc =   AStr_AppendPrint(
+                    pStr,
+                    " %p(%s)}\n", 
+                    this, 
+                    pInfo->pClassName
+                );
         
-        lexj_setLastError(this, ERESULT_SUCCESS);
         return pStr;
     }
     
@@ -1470,17 +1671,17 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            lexj_Validate(
+#ifdef NDEBUG
+#else
+    bool            LexJ_Validate (
         LEXJ_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this,OBJ_IDENT_LEXJ) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_LEXJ))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1496,22 +1697,20 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(LEXJ_DATA)) ) {
-            this->eRc = ERESULT_INVALID_OBJECT;
+        if (!(obj_getSize(this) >= sizeof(LEXJ_DATA))) {
             return false;
         }
 
         // Return to caller.
-        this->eRc = ERESULT_SUCCESS;
         return true;
     }
-    #endif
+#endif
 
 
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

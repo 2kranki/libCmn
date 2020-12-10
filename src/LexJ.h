@@ -1,28 +1,29 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          HJSON Lexical Scanner (lexj) Header
+//                  HJSON Lexical Analyzer (LexJ) Header
 //****************************************************************
 /*
  * Program
- *			HJSON Lexical Scanner (lexj)
+ *          HJSON Lexical Analyzer (LexJ)
  * Purpose
- *			This object provides a HJSON Lexical Analyzer/Scanner.  
- *          The Scanner accepts a source input token stream and 
+ *          This object provides a HJSON Lexical Analyzer/Scanner.
+ *          The Scanner accepts a source input token stream and
  *          combines those character tokens into JSON sub-phrases
  *          such as numbers, strings, etc. It then emits an output
  *          token stream for use in a HJSON parser. It absorbs
  *          white-space and does not pass it on.
  *
  * Remarks
- *	1.      I changed the definition of the quoteless string to end
+ *    1.    I changed the definition of the quoteless string to end
  *          with '\n' and any of '{','}','[',']',':',','. This al-
  *          lows it to be used for object names as well as quote-
  *          less strings. If any of those characters needs to be
  *          added to a string, then simply quote the string.
  *
  * History
- *	07/02/2017 Generated
+ *  07/02/2017 Generated
+ *  12/09/2020 Regenerated
  */
 
 
@@ -67,8 +68,15 @@
 #define         LEXJ_H
 
 
+//#define   LEXJ_IS_IMMUTABLE     1
+//#define   LEXJ_JSON_SUPPORT     1
+//#define   LEXJ_SINGLETON        1
 
-#ifdef	__cplusplus
+
+
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -78,19 +86,29 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct lexj_data_s	LEXJ_DATA;      // Inherits from LEX.
+    typedef struct LexJ_data_s  LEXJ_DATA;            // Inherits from OBJ
+    typedef struct LexJ_class_data_s LEXJ_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct lexj_vtbl_s	{
-        OBJ_IUNKNOWN    iVtbl;                  // Inherited Vtbl.
+    typedef struct LexJ_vtbl_s  {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in lexj_object.c.
+        // method names to the vtbl definition in LexJ_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(LEXJ_DATA *);
     } LEXJ_VTBL;
 
+    typedef struct LexJ_class_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in LexJ_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(LEXJ_DATA *);
+    } LEXJ_CLASS_VTBL;
 
-    typedef enum lexj_class_e {
+
+    typedef enum LexJ_class_e {
         /* Values below 128 are a character by itself that makes
          * its own token class. All other classes for groups of
          * characters should be allocated in the range above
@@ -98,9 +116,9 @@ extern "C" {
          */
         LEXJ_CLASS_EOF=-1,
         LEXJ_CLASS_RESERVED=0,
-        
+
         LEXJ_CLASS_GROUP_LOWEST=128,
-        
+
         LEXJ_CLASS_CONSTANT_GROUP=LEX_CLASS_CONSTANT_GROUP,
         LEXJ_CONSTANT_CHAR,
         LEXJ_CONSTANT_CHAR_WIDE,
@@ -108,7 +126,7 @@ extern "C" {
         LEXJ_CONSTANT_INTEGER,
         LEXJ_CONSTANT_STRING,
         LEXJ_CONSTANT_STRING_WIDE,
-        
+
         LEXJ_SEP_LOWEST=LEX_CLASS_SEP_GROUP,
         LEXJ_SEP_COLON,                     // :
         LEXJ_SEP_COMMA,                     // ,
@@ -119,18 +137,19 @@ extern "C" {
         LEXJ_SEP_PLUS,                      // +
         LEXJ_SEP_RBRACKET,                  // ]
         LEXJ_SEP_RBRACE,                    // }
-        
+
         LEXJ_KWD_LOWEST=LEX_CLASS_KWD_GROUP,
         LEXJ_KWD_FALSE,                     // false
         LEXJ_KWD_NULL,                      // null
         LEXJ_KWD_TRUE,                      // true
-        
+
     } LEXJ_CLASS;
-    
-    
+
+
+
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -138,54 +157,81 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /*!
+#ifdef  LEXJ_SINGLETON
+    LEXJ_DATA *     LexJ_Shared (
+        void
+    );
+
+    void            LexJ_SharedReset (
+        void
+    );
+#endif
+
+
+   /*!
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return:   pointer to lexj object if successful, otherwise OBJ_NIL.
+     @return    pointer to LexJ object if successful, otherwise OBJ_NIL.
      */
-    LEXJ_DATA *     lexj_Alloc(
+    LEXJ_DATA *     LexJ_Alloc (
         void
     );
     
     
-    LEXJ_DATA *     lexj_NewA(
+    OBJ_ID          LexJ_Class (
+        void
+    );
+    
+    
+    LEXJ_DATA *     LexJ_New (
+        void
+    );
+    
+    LEXJ_DATA *     LexJ_NewA(
         const
         char            *pStr,
         uint16_t        tabSize,        // Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
     );
-    
-    LEXJ_DATA *     lexj_NewFromAStr(
+
+    LEXJ_DATA *     LexJ_NewFromAStr(
         ASTR_DATA       *pStr,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        uint16_t        tabSize,        // Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
     );
-    
-    LEXJ_DATA *     lexj_NewFromFile(
+
+    LEXJ_DATA *     LexJ_NewFromFile(
         FILE            *pFile,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        uint16_t        tabSize,        // Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
     );
-    
-    LEXJ_DATA *     lexj_NewFromPath(
+
+    LEXJ_DATA *     LexJ_NewFromPath(
         PATH_DATA       *pFilePath,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
+        uint16_t        tabSize,        // Tab Spacing if any (0 will default to 4)
         bool            fExpandTabs
     );
-    
-    
+
+
+#ifdef  LEXJ_JSON_SUPPORT
+    LEXJ_DATA *     LexJ_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    LEXJ_DATA *     LexJ_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ERESULT     lexj_getLastError(
-        LEXJ_DATA		*this
-    );
-
-
-    LEX_DATA *      lexj_getLex(
+    LEX_DATA *      LexJ_getLex(
         LEXJ_DATA       *this
     );
 
@@ -195,27 +241,44 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    LEXJ_DATA *     lexj_InitAStr(
-        LEXJ_DATA       *this,
-        ASTR_DATA       *pStr,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs
+    ERESULT         LexJ_Disable (
+        LEXJ_DATA       *this
+    );
+
+
+    ERESULT         LexJ_Enable (
+        LEXJ_DATA       *this
+    );
+
+   
+    LEXJ_DATA *     LexJ_Init (
+        LEXJ_DATA       *this
+    );
+
+
+    ERESULT         LexJ_IsEnabled (
+        LEXJ_DATA       *this
     );
     
-    LEXJ_DATA *     lexj_InitFile(
-        LEXJ_DATA       *this,
-        FILE            *pFile,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs
+ 
+#ifdef  LEXJ_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = LexJ_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     LexJ_ToJson (
+        LEXJ_DATA   *this
     );
-    
-    LEXJ_DATA *     lexj_InitPath(
-        LEXJ_DATA       *this,
-        PATH_DATA       *pFilePath,
-        uint16_t        tabSize,		// Tab Spacing if any (0 will default to 4)
-        bool            fExpandTabs
-    );
-    
+#endif
+
 
     /*!
      Advance in the output token stream num tokens, refilling the
@@ -223,24 +286,24 @@ extern "C" {
      @return:   If successful, a token which must NOT be released,
      otherwise OBJ_NIL.
      */
-    TOKEN_DATA *    lexj_TokenAdvance(
-        LEXJ_DATA		*this,
+    TOKEN_DATA *    LexJ_TokenAdvance(
+        LEXJ_DATA        *this,
         uint16_t        numChrs
     );
-    
-    
+
+
     /*!
      Look Ahead in the token stream to the num'th token in the
      parsed output queue.
      @return:   If successful, a token which must NOT be released,
      otherwise OBJ_NIL.
      */
-    TOKEN_DATA *    lexj_TokenLookAhead(
+    TOKEN_DATA *    LexJ_TokenLookAhead(
         LEXJ_DATA       *this,
         uint16_t        num
     );
-    
-    
+
+
     /*!
      This routine adds the given token onto the tail of the
      FIFO output queue. Both, InputAdvance() and InputLookAhead(),
@@ -249,35 +312,35 @@ extern "C" {
      @return:   If successful, ERESULT_SUCCESSFUL_COMPLETION,
      otherwise ERESULT_ERROR_???.
      */
-    ERESULT         lexj_TokenPush(
+    ERESULT         LexJ_TokenPush(
         LEXJ_DATA       *this,
         TOKEN_DATA      *pChr
     );
-    
-    
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code
-        ASTR_DATA      *pDesc = lexj_ToDebugString(this,4);
-     @endcode
-     @param     this    LEXJ object pointer
+     @code 
+        ASTR_DATA      *pDesc = LexJ_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     lexj_ToDebugString(
-        LEXJ_DATA       *this,
+    ASTR_DATA *     LexJ_ToDebugString (
+        LEXJ_DATA     *this,
         int             indent
     );
     
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* LEXJ_H */
+#endif  /* LEXJ_H */
 

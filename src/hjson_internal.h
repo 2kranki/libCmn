@@ -40,7 +40,7 @@
 
 
 #include    <hjson.h>
-#include    <lexj.h>
+#include    <LexJ.h>
 
 
 #ifndef HJSON_INTERNAL_H

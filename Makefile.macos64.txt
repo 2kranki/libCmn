@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/ 6/2020 20:57:36.000)
+# (12/10/2020 14:05:06.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -492,6 +492,16 @@ $(OBJDIR)/Lex07.o: $(SRCDIR)/Lex07.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex07.h $(SRCDIR)
 OBJS += $(OBJDIR)/Lex07_object.o
 
 $(OBJDIR)/Lex07_object.o: $(SRCDIR)/Lex07_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex07.h $(SRCDIR)/Lex07_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/LexJ.o
+
+$(OBJDIR)/LexJ.o: $(SRCDIR)/LexJ.c $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/LexJ_object.o
+
+$(OBJDIR)/LexJ_object.o: $(SRCDIR)/LexJ_object.c $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Lex_object.o
@@ -1594,16 +1604,6 @@ OBJS += $(OBJDIR)/hjson_object.o
 $(OBJDIR)/hjson_object.o: $(SRCDIR)/hjson_object.c $(SRCDIR)/hjson.h $(SRCDIR)/hjson_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/lexj.o
-
-$(OBJDIR)/lexj.o: $(SRCDIR)/lexj.c $(SRCDIR)/lexj.h $(SRCDIR)/lexj_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/lexj_object.o
-
-$(OBJDIR)/lexj_object.o: $(SRCDIR)/lexj_object.c $(SRCDIR)/lexj.h $(SRCDIR)/lexj_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/listdl.o
 
 $(OBJDIR)/listdl.o: $(SRCDIR)/listdl.c $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
@@ -2234,6 +2234,12 @@ Lex07_test: $(TEST_SRC)/Lex07_test.c $(SRCDIR)/Lex07.h $(SRCDIR)/Lex07_internal.
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += LexJ_test
+
+LexJ_test: $(TEST_SRC)/LexJ_test.c $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += Lex_test
 
 Lex_test: $(TEST_SRC)/Lex_test.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
@@ -2759,12 +2765,6 @@ hex_test: $(TEST_SRC)/hex_test.c $(SRCDIR)/hex.h $(SRCDIR)/hex_internal.h $(SRCD
 TESTS += hjson_test
 
 hjson_test: $(TEST_SRC)/hjson_test.c $(SRCDIR)/hjson.h $(SRCDIR)/hjson_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += lexj_test
-
-lexj_test: $(TEST_SRC)/lexj_test.c $(SRCDIR)/lexj.h $(SRCDIR)/lexj_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

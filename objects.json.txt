@@ -109,7 +109,7 @@
                         desc:"??? Lexical Scanner (Not Working)"},
         {name:"Lex07",  deps:["Token.h","TokenList.h", "Lex.h"], 
                         desc:"??? Lexical Scanner (Not Working)"},
-        {name:"lexj"},
+        {name:"LexJ"},
         {name:"LineIndex", deps:["SrcLoc.h"], json:true, desc:"Line Index into File or Buffer"},
         {name:"lru", deps:["listdl.h"]},
         {name:"md5ChkSum", deps:["md5_plumb.h"]},
