@@ -764,7 +764,7 @@ int             test_ALU8_ShiftLeft01 (
         );
         displayFlags(flags);
         TINYTEST_TRUE( (0x06 == result) );
-        TINYTEST_TRUE( (ALU8_FLAG_CARRY == flags) );
+        TINYTEST_TRUE( ((ALU8_FLAG_CARRY | ALU8_FLAG_PARITY) == flags) );
 
         eRc =   ALU8_Exec(
                             ALU8_OP_SHIFT_LEFT,
@@ -834,7 +834,7 @@ int             test_ALU8_ShiftRight01 (
         );
         displayFlags(flags);
         TINYTEST_TRUE( (0x41 == result) );
-        TINYTEST_TRUE( (ALU8_FLAG_CARRY == flags) );
+        TINYTEST_TRUE( ((ALU8_FLAG_CARRY | ALU8_FLAG_PARITY) == flags) );
 
         eRc =   ALU8_Exec(
                             ALU8_OP_SHIFT_RIGHT,
@@ -853,7 +853,7 @@ int             test_ALU8_ShiftRight01 (
         );
         displayFlags(flags);
         TINYTEST_TRUE( (0xC1 == result) );
-        TINYTEST_TRUE( (ALU8_FLAG_CARRY == flags) );
+        TINYTEST_TRUE( ((ALU8_FLAG_CARRY | ALU8_FLAG_SIGN) == flags) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

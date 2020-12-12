@@ -1,16 +1,20 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  32-bit Arithmetic Logic Unit (ALU32) Header
+//           32-bit Arithmetic Logic Unit (ALU32) Header
 //****************************************************************
 /*
  * Program
  *          32-bit Arithmetic Logic Unit (ALU32)
  * Purpose
- *          This object provides a standardized way of handling
- *          a separate ALU32 to run things without complications
- *          of interfering with the main ALU32. A ALU32 may be 
- *          called a ALU32 on other O/S's.
+ *          This object provides a 32-bit Arithmetic Logic Unit
+ *          for use in computer simulation.
+ *
+ *          The accumulator size for this ALU is 32 bits. Bit 0
+ *          is the highest order bit and bit 31 is the lowest
+ *          order bit. Normally the 32-bit value is considered
+ *          unsigned. If it is signed, then the sign bit is bit
+ *          0.
  *
  * Remarks
  *  1.      None
@@ -110,8 +114,22 @@ extern "C" {
         ALU32_OP_COMPLEMENT,        // pResult = 2s Complement of op1
         ALU32_OP_NOT,               // pResult = 1s Complement of op1
         ALU32_OP_OR,                // pResult = op1 | op2
-        ALU32_OP_SHIFT_LEFT,        // pResult = op1 << 1 + carry(in), carry(out)
-        ALU32_OP_SHIFT_RIGHT,       // pResult =  carry(in) + op1 >> 1, carry(out)
+        ALU32_OP_SHIFT_LEFT,        // pResult = (op1[1..31] << 1) + carry(in),
+        //                          // carry(out) <- op1[0] == overflow
+        ALU32_OP_SHIFT_RIGHT,       // pResult = carry(in) + (op1[0..30] >> 1),
+        //                          // carry(out) <- op1[31] == underflow
+        ALU32_OP_SHIFTA_LEFT,       // (arith) pResult = op1[0] | (op1[1..31] << 1) + 0,
+        //                          // carry(out) <- !(op1[0] == op1[1])
+        ALU32_OP_SHIFTA_RIGHT,      // (arith) pResult = op1[0] | (op1[0..30] >> 1),
+        //                          // carry(out) <- op1[31] == underflow
+        ALU32_OP_SHIFTL_LEFT,       // pResult = (op1[1..31] << 1) + 0,
+        //                          // carry(out) <- op1[0] == overflow
+        ALU32_OP_SHIFTL_RIGHT,      // pResult = 0 + (op1[0..30] >> 1),
+        //                          // carry(out) <- op1[31] == underflow
+        ALU32_OP_SHIFTR_LEFT,       // pResult = (op1[1..31] << 1) + op1[0],
+        //                          // carry(out) <- op1[0] == overflow
+        ALU32_OP_SHIFTR_RIGHT,      // pResult = op1[31] + (op1[0..30] >> 1),
+        //                          // carry(out) <- op1[31] == underflow
         ALU32_OP_SUB,               // pResult = op1 - op2
         ALU32_OP_XOR                // pResult = op1 ^ op2
     } ALU32_OPS;

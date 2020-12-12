@@ -112,16 +112,33 @@ extern "C" {
     // if present. No value is retained in the ALU.
     typedef enum ALU8_ops_e {
         ALU8_OP_UNKNOWN=0,
-        ALU8_OP_ADD,                // pResult = op1 + op2 + carry(input)
+        ALU8_OP_ADD,                // pResult = op1 + op2 + carry(in)
+        //                          // carry(out) == overflow
         ALU8_OP_AND,                // pResult = op1 & op2
         ALU8_OP_COMPLEMENT,         // pResult = 2s Complement of op1
         ALU8_OP_DEC_ADJUST,         // pResult = Decimal Adjust of op1,
-        //                          //          aux_carry(input), carry(input)
+        //                          //          aux_carry(in), carry(in)
+        //                          // carry(out) == overflow
         ALU8_OP_NOT,                // pResult = 1s Complement of op1
         ALU8_OP_OR,                 // pResult = op1 | op2
-        ALU8_OP_SHIFT_LEFT,         // pResult = op1 << 1, carry == overflow
-        ALU8_OP_SHIFT_RIGHT,        // pResult = op1 >> 1, carry == underflow
-        ALU8_OP_SUB,                // pResult = op1 - op2 - carry(input)
+        ALU8_OP_SHIFT_LEFT,         // pResult = (op1[1..7] << 1) + carry(in),
+        //                          // carry(out) <- op1[0] == overflow
+        ALU8_OP_SHIFT_RIGHT,        // pResult = carry(in) + (op1[0..6] >> 1),
+        //                          // carry(out) <- op1[7] == underflow
+        ALU8_OP_SHIFTA_LEFT,        // (arith) pResult = op1[0] | (op1[1..7] << 1) + 0,
+        //                          // carry(out) <- !(op1[0] == op1[1])
+        ALU8_OP_SHIFTA_RIGHT,       // (arith) pResult = op1[0] | (op1[0..6] >> 1),
+        //                          // carry(out) <- op1[7] == underflow
+        ALU8_OP_SHIFTL_LEFT,        // pResult = (op1[1..7] << 1) + 0,
+        //                          // carry(out) <- op1[0] == overflow
+        ALU8_OP_SHIFTL_RIGHT,       // pResult = 0 + (op1[0..6] >> 1),
+        //                          // carry(out) <- op1[7] == underflow
+        ALU8_OP_SHIFTR_LEFT,        // pResult = (op1[1..7] << 1) + op1[0],
+        //                          // carry(out) <- op1[0] == overflow
+        ALU8_OP_SHIFTR_RIGHT,       // pResult = op1[7] + (op1[0..6] >> 1),
+        //                          // carry(out) <- op1[7] == underflow
+        ALU8_OP_SUB,                // pResult = op1 - op2 - carry(in)
+        //                          // carry(out) == underflow
         ALU8_OP_XOR                 // pResult = op1 ^ op2
     } ALU8_OPS;
 

@@ -239,7 +239,7 @@ extern "C" {
                 if (result & 0xFF00) {
                     newFlags |= ALU8_FLAG_CARRY;
                 }
-                goto set;
+                //goto set;
                 break;
 
             case ALU8_OP_SHIFT_RIGHT:
@@ -248,7 +248,59 @@ extern "C" {
                 }
                 result = result >> 1;
                 result |= (flags & ALU8_FLAG_CARRY) ? 0x80 : 0;
-                goto set;
+                //goto set;
+                break;
+
+            case ALU8_OP_SHIFTA_LEFT:
+                if ((op1 & 0x80) == ((op1 & 0x40) << 1))
+                    ;
+                else
+                    newFlags |= ALU8_FLAG_CARRY;
+                result <<= 1;
+                //goto set;
+                break;
+
+            case ALU8_OP_SHIFTA_RIGHT:
+                if (op1 & 0x01) {
+                    newFlags |= ALU8_FLAG_CARRY;
+                }
+                result = result >> 1;
+                if (op1 & 0x80)
+                    result |= 0x80;
+                //goto set;
+                break;
+
+            case ALU8_OP_SHIFTL_LEFT:
+                if (op1 & 0x80)
+                    newFlags |= ALU8_FLAG_CARRY;
+                result <<= 1;
+                //goto set;
+                break;
+
+            case ALU8_OP_SHIFTL_RIGHT:
+                if (op1 & 0x01) {
+                    newFlags |= ALU8_FLAG_CARRY;
+                }
+                result = result >> 1;
+                //goto set;
+                break;
+
+            case ALU8_OP_SHIFTR_LEFT:
+                result <<= 1;
+                if (op1 & 0x80) {
+                    newFlags |= ALU8_FLAG_CARRY;
+                    result |= 1;
+                }
+                //goto set;
+                break;
+
+            case ALU8_OP_SHIFTR_RIGHT:
+                result = result >> 1;
+                if (op1 & 0x01) {
+                    newFlags |= ALU8_FLAG_CARRY;
+                    result |= 0x80;
+                }
+                //goto set;
                 break;
 
             case ALU8_OP_SUB:

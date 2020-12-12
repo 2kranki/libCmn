@@ -116,7 +116,7 @@ struct ALU32_data_s  {
     );
 
 
-    ALU32_DATA *       ALU32_Copy (
+    ALU32_DATA *    ALU32_Copy (
         ALU32_DATA     *this
     );
 

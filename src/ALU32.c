@@ -78,6 +78,55 @@ extern "C" {
 
 
 
+    // Arithmetic Shift Left
+    // result = bit0 + bit2..bit32 + 0
+    uint32_t        ALU32_Shift_Left_Arith (
+        uint32_t        x
+    )
+    {
+        int32_t         wrk = (int32_t)x;
+
+        wrk <<= 1;
+        return wrk;
+    }
+
+
+    // Arithmetic Shift Right
+    // result = bit0 + bit0..bit30
+    uint32_t        ALU32_Shift_Right_Arith (
+        uint32_t        x
+    )
+    {
+        int32_t         wrk = (int32_t)x;
+
+        wrk >>= 1;
+        return wrk;
+    }
+
+
+    // Logical Shift Left
+    // result = bit1..bit32 + 0
+    uint32_t        ALU32_Shift_Left_Logical (
+        uint32_t        x
+    )
+    {
+        x <<= 1;
+        return x;
+    }
+
+
+    // Logical Shift Right
+    // result = 0 + bit0..bit30
+    uint32_t        ALU32_Shift_Right_Logical (
+        uint32_t        x
+    )
+    {
+        x >>= 1;
+        return x;
+    }
+
+
+
 
 
     /****************************************************************
@@ -135,6 +184,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         uint64_t        result = op1;
         uint8_t         newFlags = 0;
+        int             i;
 
         // Do initialization.
 
@@ -172,10 +222,10 @@ extern "C" {
             case ALU32_OP_SHIFT_LEFT:
                 result <<= 1;
                 result |= (flags & ALU32_FLAG_CARRY) ? 1 : 0;
-                if (result & 0xFFFFFFFF00000000) {
+                if (op1 & 0x80000000) {
                     newFlags |= ALU32_FLAG_CARRY;
                 }
-                goto set;
+                //goto set;
                 break;
 
             case ALU32_OP_SHIFT_RIGHT:
@@ -183,8 +233,60 @@ extern "C" {
                     newFlags |= ALU32_FLAG_CARRY;
                 }
                 result = result >> 1;
-                result |= (flags & ALU32_FLAG_CARRY) ? 0x80 : 0;
-                goto set;
+                result |= (flags & ALU32_FLAG_CARRY) ? 0x80000000 : 0;
+                //goto set;
+                break;
+
+            case ALU32_OP_SHIFTA_LEFT:
+                if ((op1 & 0x80000000) == ((op1 & 0x40000000) << 1))
+                    ;
+                else
+                    newFlags |= ALU32_FLAG_CARRY;
+                result <<= 1;
+                //goto set;
+                break;
+
+            case ALU32_OP_SHIFTA_RIGHT:
+                if (op1 & 0x00000001) {
+                    newFlags |= ALU32_FLAG_CARRY;
+                }
+                result = result >> 1;
+                if (op1 & 0x80000000)
+                    result |= 0x80000000;
+                //goto set;
+                break;
+
+            case ALU32_OP_SHIFTL_LEFT:
+                if (op1 & 0x80000000)
+                    newFlags |= ALU32_FLAG_CARRY;
+                result <<= 1;
+                //goto set;
+                break;
+
+            case ALU32_OP_SHIFTL_RIGHT:
+                if (op1 & 0x00000001) {
+                    newFlags |= ALU32_FLAG_CARRY;
+                }
+                result = result >> 1;
+                //goto set;
+                break;
+
+            case ALU32_OP_SHIFTR_LEFT:
+                result <<= 1;
+                if (op1 & 0x80000000) {
+                    newFlags |= ALU32_FLAG_CARRY;
+                    result |= 0x00000001;
+                }
+                //goto set;
+                break;
+
+            case ALU32_OP_SHIFTR_RIGHT:
+                result = result >> 1;
+                if (op1 & 0x00000001) {
+                    newFlags |= ALU32_FLAG_CARRY;
+                    result |= 0x80000000;
+                }
+                //goto set;
                 break;
 
             case ALU32_OP_SUB:

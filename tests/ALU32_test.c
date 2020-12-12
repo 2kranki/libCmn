@@ -674,9 +674,9 @@ int             test_ALU32_ShiftLeft01 (
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
 
         eRc =   ALU32_Exec(
-                            ALU32_OP_SHIFT_LEFT,
-                            0x80000003,
-                            0x80,
+                            ALU32_OP_SHIFTA_LEFT,
+                            0xC0000003,
+                            1,
                             ALU32_FLAG_NONE,
                             &flags,
                             &result
@@ -684,18 +684,18 @@ int             test_ALU32_ShiftLeft01 (
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         fprintf(
                 stderr,
-                "\t(0x80000003 << 1) w/o carry: result=%02X flags=%02X\n",
+                "\tA (0xC0000003 << 1) w/o carry: result=%02X flags=%02X\n",
                 result,
                 flags
         );
         displayFlags(flags);
-        TINYTEST_TRUE( (0x06 == result) );
-        TINYTEST_TRUE( (ALU32_FLAG_CARRY == flags) );
+        TINYTEST_TRUE( (0x80000006 == result) );
+        TINYTEST_TRUE( (ALU32_FLAG_SIGN == flags) );
 
         eRc =   ALU32_Exec(
-                            ALU32_OP_SHIFT_LEFT,
+                            ALU32_OP_SHIFTA_LEFT,
                             0x80000003,
-                            0x80,
+                            1,
                             ALU32_FLAG_CARRY,
                             &flags,
                             &result
@@ -703,13 +703,51 @@ int             test_ALU32_ShiftLeft01 (
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         fprintf(
                 stderr,
-                "\t(0x80000003 << 1) w/carry: result=%02X flags=%02X\n",
+                "\tA (0x80000003 << 1) w/carry: result=%02X flags=%02X\n",
                 result,
                 flags
         );
         displayFlags(flags);
-        TINYTEST_TRUE( (0x07 == result) );
-        TINYTEST_TRUE( (ALU32_FLAG_CARRY == flags) );
+        TINYTEST_TRUE( (0x00000006 == result) );
+        TINYTEST_TRUE( ((ALU32_FLAG_CARRY | ALU32_FLAG_PARITY) == flags) );
+
+        eRc =   ALU32_Exec(
+                            ALU32_OP_SHIFTL_LEFT,
+                            0xC0000003,
+                            1,
+                            ALU32_FLAG_NONE,
+                            &flags,
+                            &result
+                );
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(
+                stderr,
+                "\tL (0xC0000003 << 1) w/o carry: result=%02X flags=%02X\n",
+                result,
+                flags
+        );
+        displayFlags(flags);
+        TINYTEST_TRUE( (0x80000006 == result) );
+        TINYTEST_TRUE( ((ALU32_FLAG_CARRY | ALU32_FLAG_SIGN) == flags) );
+
+        eRc =   ALU32_Exec(
+                            ALU32_OP_SHIFTL_LEFT,
+                            0x80000003,
+                            1,
+                            ALU32_FLAG_CARRY,
+                            &flags,
+                            &result
+                );
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(
+                stderr,
+                "\tL (0x80000003 << 1) w/carry: result=%02X flags=%02X\n",
+                result,
+                flags
+        );
+        displayFlags(flags);
+        TINYTEST_TRUE( (0x00000006 == result) );
+        TINYTEST_TRUE( ((ALU32_FLAG_CARRY | ALU32_FLAG_PARITY) == flags) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -744,9 +782,9 @@ int             test_ALU32_ShiftRight01 (
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
 
         eRc =   ALU32_Exec(
-                            ALU32_OP_SHIFT_RIGHT,
-                            0x83,
-                            0x80,
+                            ALU32_OP_SHIFTA_RIGHT,
+                            0x80000003,
+                            1,
                             ALU32_FLAG_NONE,
                             &flags,
                             &result
@@ -754,18 +792,18 @@ int             test_ALU32_ShiftRight01 (
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         fprintf(
                 stderr,
-                "\t(0x83 >> 1) w/o carry: result=%02X flags=%02X\n",
+                "\tA (0x80000003 >> 1) w/o carry: result=%02X flags=%02X\n",
                 result,
                 flags
         );
         displayFlags(flags);
-        TINYTEST_TRUE( (0x41 == result) );
-        TINYTEST_TRUE( (ALU32_FLAG_CARRY == flags) );
+        TINYTEST_TRUE( (0xC0000001 == result) );
+        TINYTEST_TRUE( ((ALU32_FLAG_CARRY | ALU32_FLAG_SIGN) == flags) );
 
         eRc =   ALU32_Exec(
-                            ALU32_OP_SHIFT_RIGHT,
-                            0x83,
-                            0x80,
+                            ALU32_OP_SHIFTA_RIGHT,
+                            0x00000001,
+                            1,
                             ALU32_FLAG_CARRY,
                             &flags,
                             &result
@@ -773,13 +811,51 @@ int             test_ALU32_ShiftRight01 (
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         fprintf(
                 stderr,
-                "\t(0x83 >> 1) w/carry: result=%02X flags=%02X\n",
+                "\tA (0x80000003 >> 1) w/carry: result=%02X flags=%02X\n",
                 result,
                 flags
         );
         displayFlags(flags);
-        TINYTEST_TRUE( (0xC1 == result) );
-        TINYTEST_TRUE( (ALU32_FLAG_CARRY == flags) );
+        TINYTEST_TRUE( (0x00000000 == result) );
+        TINYTEST_TRUE( ((ALU32_FLAG_CARRY | ALU32_FLAG_ZERO | ALU32_FLAG_PARITY) == flags) );
+
+        eRc =   ALU32_Exec(
+                            ALU32_OP_SHIFTL_RIGHT,
+                            0x80000003,
+                            1,
+                            ALU32_FLAG_NONE,
+                            &flags,
+                            &result
+                );
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(
+                stderr,
+                "\tL (0x80000003 >> 1) w/o carry: result=%02X flags=%02X\n",
+                result,
+                flags
+        );
+        displayFlags(flags);
+        TINYTEST_TRUE( (0x40000001 == result) );
+        TINYTEST_TRUE( ((ALU32_FLAG_CARRY | ALU32_FLAG_PARITY) == flags) );
+
+        eRc =   ALU32_Exec(
+                            ALU32_OP_SHIFTL_RIGHT,
+                            0x00000001,
+                            1,
+                            ALU32_FLAG_CARRY,
+                            &flags,
+                            &result
+                );
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(
+                stderr,
+                "\tL (0x80000003 >> 1) w/carry: result=%02X flags=%02X\n",
+                result,
+                flags
+        );
+        displayFlags(flags);
+        TINYTEST_TRUE( (0x00000000 == result) );
+        TINYTEST_TRUE( ((ALU32_FLAG_CARRY | ALU32_FLAG_ZERO | ALU32_FLAG_PARITY) == flags) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
