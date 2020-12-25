@@ -438,6 +438,21 @@ int             test_Scanner_ScanInteger01(
         pObj = OBJ_NIL;
     }
 
+    pTestString = " 0";
+    pObj = Scanner_NewA(pTestString);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        value = 0;
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TINYTEST_TRUE( (fRc) );
+        TINYTEST_TRUE( (2 == obj_getMisc(pObj)) );
+        TINYTEST_TRUE( (0 == value) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
     fprintf(stderr, "...%s completed.\n\n", pTestName);
     return 1;
 }

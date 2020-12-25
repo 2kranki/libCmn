@@ -346,7 +346,7 @@ extern "C" {
     //                        E x t r a
     //---------------------------------------------------------------
 
-    uint8_t *       Sym_getExtra (
+    uint8_t         Sym_getExtra1 (
         SYM_DATA        *this
     )
     {
@@ -360,7 +360,44 @@ extern "C" {
         }
 #endif
 
-        return (uint8_t *)Sym_getEntry(this)->extra;
+        return Sym_getEntry(this)->extra1;
+    }
+
+
+    bool            Sym_setExtra1 (
+        SYM_DATA        *this,
+        uint8_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->extra1 = value;
+
+        return true;
+    }
+
+
+    uint8_t *       Sym_getExtra2 (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return (uint8_t *)Sym_getEntry(this)->extra2;
     }
 
 
@@ -1896,8 +1933,8 @@ extern "C" {
 #endif
 
         // Set up Extra to be used by U8VlArray.
-        this->entry.extra[0] = sizeof(this->entry.extra);
-        this->entry.extra[1] = 2;
+        this->entry.extra2[0] = sizeof(this->entry.extra2);
+        this->entry.extra2[1] = 2;
 
         /*
         this->pArray = objArray_New( );

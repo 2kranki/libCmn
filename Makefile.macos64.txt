@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/12/2020  3:37:55.000)
+# (12/25/2020  4:17:10.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1804,16 +1804,6 @@ OBJS += $(OBJDIR)/scanReader_object.o
 $(OBJDIR)/scanReader_object.o: $(SRCDIR)/scanReader_object.c $(SRCDIR)/scanReader.h $(SRCDIR)/scanReader_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/screen.o
-
-$(OBJDIR)/screen.o: $(SRCDIR)/screen.c $(SRCDIR)/screen.h $(SRCDIR)/screen_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/screen_object.o
-
-$(OBJDIR)/screen_object.o: $(SRCDIR)/screen_object.c $(SRCDIR)/screen.h $(SRCDIR)/screen_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/shellSortPtrs.o
 
 $(OBJDIR)/shellSortPtrs.o: $(SRCDIR)/shellSortPtrs.c $(SRCDIR)/cmn_defs.h 
@@ -2873,12 +2863,6 @@ rrds_test: $(TEST_SRC)/rrds_test.c $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(
 TESTS += scanReader_test
 
 scanReader_test: $(TEST_SRC)/scanReader_test.c $(SRCDIR)/scanReader.h $(SRCDIR)/scanReader_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += screen_test
-
-screen_test: $(TEST_SRC)/screen_test.c $(SRCDIR)/screen.h $(SRCDIR)/screen_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

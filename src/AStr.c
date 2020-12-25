@@ -220,6 +220,35 @@ extern "C" {
     
     
     
+    ASTR_DATA *     AStr_NewFromHexData(
+        void            *pData,
+        int32_t         cData,
+        uint16_t        indent
+    )
+    {
+        ASTR_DATA       *this =  OBJ_NIL;
+        ERESULT         eRc;
+
+        // Do initialization.
+        if ((NULL == pData) || (0 == cData)) {
+            return this;
+        }
+
+        this = AStr_New();
+        if (this) {
+            eRc = AStr_AppendHexData(this, pData, cData, indent);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+
+        // Return to caller.
+        return this;
+    }
+
+
+
     ASTR_DATA *     AStr_NewFromInt64(
         int64_t         value
     )

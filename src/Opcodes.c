@@ -129,7 +129,7 @@ extern "C" {
 
 
 
-    int             NameCompare(
+    int             Opcodes_NameCompare(
         OPCODE_DATA     *pOpc1,
         OPCODE_DATA     *pOpc2
     )
@@ -774,6 +774,46 @@ extern "C" {
     //---------------------------------------------------------------
     //                          F i n d
     //---------------------------------------------------------------
+
+    OPCODE_DATA *   Opcodes_Find (
+        OPCODES_DATA    *this,
+        const
+        uint8_t         *pOpc
+    )
+    {
+        //ERESULT         eRc;
+        OPCODE_DATA     *pEntry = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
+        bool            fRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Opcodes_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        if (OBJ_NIL == this->pArray) {
+            return OBJ_NIL;
+        }
+
+        iMax = ObjArray_getSize(this->pArray);
+        for (i=0; i<iMax; i++) {
+            pEntry = ObjArray_Get(this->pArray, i+1);
+            if (pEntry) {
+                fRc = Opcode_CompareOpcode(pEntry, pOpc);
+            }
+        }
+        //FIXME: pOpc = (OPCODE_DATA *)szBT_FindA(this->pTree, pNameA);
+
+        // Return to caller.
+        return pEntry;
+    }
+
 
     OPCODE_DATA *   Opcodes_FindA (
         OPCODES_DATA    *this,

@@ -167,7 +167,7 @@
                 desc:"File-based Relative Record Dataset (ie Indexed by record number, Fixed size records)"},
         {name:"Scanner", json:true, desc:"String Scanner"},
         {name:"scanReader", desc:"Scanner UTF-32 Reader"},
-        {name:"screen"},
+        //{name:"Screen"},
         {name:"SqlCol",     json:true,  desc:"SQL Column Support"},
         {name:"SqlColDef",  json:true,  desc:"SQL Column Definition"},
         {name:"SQLite",     json:false, desc:"SQLite Interface"},

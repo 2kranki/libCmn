@@ -258,7 +258,7 @@ extern "C" {
      
             eRc = ${LNAME}_ToJsonFields(this, pStr);      
 
-            AStr_AppendA(pStr, "}\n");
+            AStr_AppendPrint(pStr, "}\t/* %s */\n", pInfo->pClassName);
         }
 
         return pStr;

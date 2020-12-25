@@ -463,6 +463,33 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                    T y p e  C o n v
+    //---------------------------------------------------------------
+
+    bool            Opcode_setTypeConv (
+        OPCODE_DATA     *this,
+        const
+        char *          (*pTypeDesc) (uint16_t),
+        uint16_t        (*pTypeValue) (const char *)
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pTypeDesc = pTypeDesc;
+        this->pTypeValue = pTypeValue;
+
+        return true;
+    }
+
+
+
 
 
     //===============================================================
@@ -590,7 +617,44 @@ extern "C" {
     }
     
    
- 
+    bool            Opcode_CompareOpcode (
+        OPCODE_DATA     *this,
+        const
+        uint8_t         *pOpcode
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             i = 0;
+        uint8_t         wrk;
+        bool            fRc = true;
+
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return false;
+        }
+        if (NULL == pOpcode) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return false;
+        }
+#endif
+
+        for (i=0; i<this->entry.cCode; i++) {
+            wrk = pOpcode[i] & this->entry.iMask[i];
+            if (!(wrk == this->entry.iCode[i])) {
+                fRc = false;
+                break;
+            }
+        }
+
+        return fRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------

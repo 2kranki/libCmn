@@ -122,7 +122,7 @@ extern "C" {
             pData = hex_ParseObject(pParser, &len);
             JsonIn_SubObjectEnd(pParser);
             if (pData) {
-                memmove(pObject->entry.extra, pData, sizeof(pObject->entry.extra));
+                memmove(pObject->entry.extra2, pData, sizeof(pObject->entry.extra2));
                 mem_Free(pData);
                 pData = NULL;
             }
@@ -318,7 +318,7 @@ extern "C" {
         (void)JsonOut_Append_u32("record",  this->entry.record, pStr);
         (void)JsonOut_Append_u16("scale",   this->entry.scale, pStr);
         (void)JsonOut_Append_i32("value",   this->entry.value, pStr);
-        pWrk = hex_DataToJSON(sizeof(this->entry.extra), this->entry.extra);
+        pWrk = hex_DataToJSON(sizeof(this->entry.extra2), this->entry.extra2);
         if (pWrk) {
             AStr_AppendA(pStr, "\t\"extra\":");
             AStr_Append(pStr, pWrk);

@@ -425,6 +425,7 @@ extern "C" {
         int32_t         chr1;
         int32_t         chr2;
         int32_t         chr3;
+        const
         char            *pszHome;
 
         // Do initialization.

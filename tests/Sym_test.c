@@ -215,8 +215,8 @@ int             test_Sym_Test01 (
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_SYM);
         TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (pObj->entry.extra[0] == sizeof(pObj->entry.extra)) );
-        TINYTEST_TRUE( (pObj->entry.extra[1] == 2) );
+        TINYTEST_TRUE( (pObj->entry.extra2[0] == sizeof(pObj->entry.extra2)) );
+        TINYTEST_TRUE( (pObj->entry.extra2[1] == 2) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

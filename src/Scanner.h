@@ -285,6 +285,16 @@ extern "C" {
 
 
     /*!
+     Check to see if there is more data to scan.
+     @param     this    object pointer
+     @return    If there is more to scan, true, otherwise false.
+     */
+    bool            Scanner_IsMore (
+        SCANNER_DATA    *this
+    );
+
+
+    /*!
      Return the character pointed at by the obj's Misc plus offset.
      @param     this    object pointer
      @param     offset  offset of lookahead (relative to 1)

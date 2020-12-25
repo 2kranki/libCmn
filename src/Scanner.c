@@ -1608,11 +1608,11 @@ Exit00:
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                       I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Scanner_IsEnabled (
-        SCANNER_DATA		*this
+    bool            Scanner_IsEnabled (
+        SCANNER_DATA	*this
     )
     {
         //ERESULT         eRc;
@@ -1622,20 +1622,57 @@ Exit00:
 #else
         if (!Scanner_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return false;
         }
 #endif
         
         if (obj_IsEnabled(this)) {
-            return ERESULT_SUCCESS_TRUE;
+            return true;
         }
         
         // Return to caller.
-        return ERESULT_SUCCESS_FALSE;
+        return false;
     }
     
     
     
+    //---------------------------------------------------------------
+    //                       I s  M o r e
+    //---------------------------------------------------------------
+
+    bool            Scanner_IsMore (
+        SCANNER_DATA    *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_FAILURE;
+        W32CHR_T        chr;
+        bool            fRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Scanner_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return false;
+        }
+#endif
+
+        fRc = Scanner_ScanWS(this);
+        if (fRc) {
+            chr = Scanner_LookAhead(this, 1);
+            if (chr) {
+                return true;
+            }
+        }
+
+        // Return to caller.
+        return false;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       L o o k  A h e a d
     //---------------------------------------------------------------
@@ -1997,19 +2034,18 @@ Exit00:
                     }
                 }
                 goto Exit;
-            }
-            else {
+            } else {
                 len += 1;
                 for (;;) {
                     chr = Scanner_LookAhead(this, len+1);
                     if( ('0' <= chr) && ('7' >= chr) ) {
                         value = (value << 3) + (chr - '0');
                         len += 1;
-                        fRc = true;
                     } else {
                         break;
                     }
                 }
+                fRc = true;
                 goto Exit;
             }
         } else {

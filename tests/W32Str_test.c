@@ -452,7 +452,7 @@ int         test_w32str_CompareW(
         XCTAssertTrue( (pData[9] == 0xFEFF) );
         XCTAssertTrue( (pData[10] == 0) );
         
-        eRc = W32Str_CompareW32( pObj, whiteSpace );
+        eRc = W32Str_CompareW32(pObj, whiteSpace, false, false);
         XCTAssertTrue( (0 == eRc) );
         
         pStr = W32Str_CStringA(pObj, &len);
@@ -469,7 +469,7 @@ int         test_w32str_CompareW(
         XCTAssertFalse( (OBJ_NIL == pObj) );
         XCTAssertTrue( (10 == W32Str_getLength(pObj)) );
 
-        eRc = W32Str_CompareW32( pObj, whiteSpace );
+        eRc = W32Str_CompareW32(pObj, whiteSpace, false, false);
         XCTAssertTrue( (0 == eRc) );
         
         obj_Release(pObj);
@@ -482,7 +482,7 @@ int         test_w32str_CompareW(
         XCTAssertFalse( (OBJ_NIL == pObj) );
         XCTAssertTrue( (10 == W32Str_getLength(pObj)) );
         
-        eRc = W32Str_CompareW32( pObj, whiteSpace );
+        eRc = W32Str_CompareW32(pObj, whiteSpace, false, false);
         XCTAssertTrue( (0 == eRc) );
         
         eRc = W32Str_Compare( pObj, pObj );

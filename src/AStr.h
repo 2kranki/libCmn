@@ -128,6 +128,13 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     AStr_NewFromHexData(
+        void            *pData,
+        int32_t         cData,
+        uint16_t        indent
+    );
+
+
     ASTR_DATA *    AStr_NewFromInt64(
         int64_t         value
     );

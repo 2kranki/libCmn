@@ -124,7 +124,7 @@ extern "C" {
         #define SYM_FLGS1_UNUSED11  0x04        // Unused Flag
         #define SYM_FLGS1_UNUSED12  0x02        // Unused Flag
         #define SYM_FLGS1_UNUSED13  0x01        // Unused Flag
-        int8_t          unused8;
+        uint8_t         extra1;             // Used as needed
         uint32_t        hash;               // Hash Code for name
         uint32_t        token;              // unique token for name
         int32_t         cls;                // User Defined Class
@@ -143,7 +143,8 @@ extern "C" {
         //                                  //  8 == 64 Bit Boundary
         //                                  // 16 == 128 Bit Boundary
         uint16_t        scale;              // Binary or Decimal Shift Amount
-        uint8_t         extra[66];          // Used as needed
+        uint8_t         extra2[66];         // Used as needed (Initialized
+        //                                  // for U8VlArray)
     } SYM_ENTRY;
 #pragma pack(pop)
 
@@ -263,11 +264,24 @@ extern "C" {
     );
 
 
-    /*! Property: Extra Data
+    /*! Property: Extra Data 1
+     1 byte of data that can be used as needed.
+     */
+    uint8_t         Sym_getExtra1 (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setExtra1 (
+        SYM_DATA        *this,
+        uint8_t         value
+    );
+
+
+    /*! Property: Extra Data 2
      64 byte data that can be used as needed, it
      is initialized for use by U8VlArray optionally.
      */
-    uint8_t *       Sym_getExtra (
+    uint8_t *       Sym_getExtra2 (
         SYM_DATA        *this
     );
 

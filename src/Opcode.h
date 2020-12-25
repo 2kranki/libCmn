@@ -269,6 +269,14 @@ extern "C" {
     );
 
 
+    bool            Opcode_setTypeConv (
+        OPCODE_DATA     *this,
+        const
+        char *          (*pTypeDesc) (uint16_t),
+        uint16_t        (*pTypeValue) (const char *)
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Methods ***
@@ -303,6 +311,18 @@ extern "C" {
     int             Opcode_Compare (
         OPCODE_DATA     *this,
         OPCODE_DATA     *pOther
+    );
+
+
+    /*!
+     Compare the provided binary opcode with
+     this entry.
+     @return    true if this == opcode; otherwise, false
+     */
+    bool             Opcode_CompareOpcode (
+        OPCODE_DATA     *this,
+        const
+        uint8_t         *pOpcode
     );
 
 

@@ -335,8 +335,10 @@ extern "C" {
     
 
     /*!
-     @param     pString
-        Pointer to nul-terminated wide char string
+     Compare the current string 
+     @param     pString     Pointer to nul-terminated wide char string
+     @param     fIgnoreCase if true, all comparisons exclude case
+     @param     fIgnoreWS   if true, white-space is skipped as part of comparison
      @return    0  if this == other
                 <0 if this < other
                 >0 if this > other
@@ -344,7 +346,9 @@ extern "C" {
     int             W32Str_CompareW32(
         W32STR_DATA		*this,
         const
-        W32CHR_T        *pString
+        W32CHR_T        *pString,
+        bool            fIgnoreCase,
+        bool            fIgnoreWS
     );
     
     

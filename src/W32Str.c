@@ -1164,7 +1164,7 @@ extern "C" {
             return 1;
         }
 
-        i = W32Str_CompareW32(cbp, array_Ptr((ARRAY_DATA *)pOther,1));
+        i = W32Str_CompareW32(cbp, array_Ptr((ARRAY_DATA *)pOther,1), false, false);
         
         // Return to caller.
         return i;
@@ -1245,7 +1245,9 @@ extern "C" {
     int             W32Str_CompareW32(
         W32STR_DATA		*this,
         const
-        W32CHR_T        *pString
+        W32CHR_T        *pString,
+        bool            fIgnoreCase,
+        bool            fIgnoreWS
     )
     {
         //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
@@ -1299,12 +1301,24 @@ extern "C" {
                     i = 1;
                 break;
             }
-            i = *pStr1 - *pStr2;
+            if (fIgnoreCase && ascii_isAlphaW32(*pStr1) && ascii_isAlphaW32(*pStr2))
+                i = ascii_toLowerW32(*pStr1) - ascii_toLowerW32(*pStr2);
+            else if (fIgnoreWS
+                  && (ascii_isWhiteSpaceW32(*pStr1) || ascii_isWhiteSpaceW32(*pStr2))) {
+                while (ascii_isWhiteSpaceW32(*pStr1)) {
+                    pStr1++;
+                }
+                while (ascii_isWhiteSpaceW32(*pStr2)) {
+                    pStr2++;
+                }
+                continue;
+            } else
+                i = *pStr1 - *pStr2;
             if( i ) {
                 break;
             }
-            ++pStr1;
-            ++pStr2;
+            pStr1++;
+            pStr2++;
         }
         if (i < 0)
             i = -1;
