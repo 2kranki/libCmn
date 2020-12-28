@@ -1,10 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   ObjBT_internal.h
- *	Generated 03/01/2020 21:30:29
+ * File:   Sects_internal.h
+ *  Generated 12/27/2020 14:57:52
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
 
@@ -39,53 +39,22 @@
 
 
 
-#include        <ObjBT.h>
-#include        <Blocks_internal.h>
+#include        <Sects.h>
 #include        <JsonIn.h>
-#include        <rbt_tree.h>
+#include        <Sect_internal.h>
+#include        <szBT_internal.h>
 
 
-#ifndef OBJBT_INTERNAL_H
-#define	OBJBT_INTERNAL_H
+#ifndef SECTS_INTERNAL_H
+#define SECTS_INTERNAL_H
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
-
-
-
-    //      Node Record Descriptor
-#pragma pack(push, 1)
-    typedef struct  ObjBT_record_s {
-        // RBT_NODE must be first field in this struct.
-        RBT_NODE        node;
-        uint32_t        unique;
-    } OBJBT_RECORD;
-#pragma pack(pop)
-
-
-
-#pragma pack(push, 1)
-    typedef struct  ObjBT_find_s {
-        uint32_t        unique;
-        OBJBT_RECORD    *pRecord;
-    } OBJBT_FIND;
-#pragma pack(pop)
-
-
-
-#pragma pack(push, 1)
-    typedef struct  ObjBT_visit_s {
-        OBJBT_RECORD    *pRecord;       // Current Record
-        P_ERESULT_EXIT3 pScan;
-        OBJ_ID          pObj;           // Used as first parameter of scan method
-        void            *pArg3;
-    } OBJBT_VISIT;
-#pragma pack(pop)
 
 
 
@@ -95,27 +64,24 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct ObjBT_data_s	{
+struct Sects_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
-    BLOCKS_DATA     super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    RBT_TREE        tree;
-    OBJBT_RECORD    *pRoot;
-    uint32_t        size;            // maximum number of elements
-    uint32_t        unique;
+    SZBT_DATA       *pTree;
 
 };
 #pragma pack(pop)
 
     extern
-    struct ObjBT_class_data_s  ObjBT_ClassObj;
+    struct Sects_class_data_s  Sects_ClassObj;
 
     extern
     const
-    OBJBT_VTBL         ObjBT_Vtbl;
+    SECTS_VTBL         Sects_Vtbl;
 
 
 
@@ -123,13 +89,13 @@ struct ObjBT_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  OBJBT_SINGLETON
-    OBJBT_DATA *    ObjBT_getSingleton (
+#ifdef  SECTS_SINGLETON
+    SECTS_DATA *     Sects_getSingleton (
         void
     );
 
-    bool            ObjBT_setSingleton (
-     OBJBT_DATA       *pValue
+    bool            Sects_setSingleton (
+     SECTS_DATA       *pValue
 );
 #endif
 
@@ -139,35 +105,35 @@ struct ObjBT_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  ObjBT_getSuperVtbl (
-        OBJBT_DATA     *this
+    OBJ_IUNKNOWN *  Sects_getSuperVtbl (
+        SECTS_DATA     *this
     );
 
 
-    ERESULT         ObjBT_Assign (
-        OBJBT_DATA    *this,
-        OBJBT_DATA    *pOther
+    ERESULT         Sects_Assign (
+        SECTS_DATA    *this,
+        SECTS_DATA    *pOther
     );
 
 
-    OBJBT_DATA *    ObjBT_Copy (
-        OBJBT_DATA     *this
+    SECTS_DATA *       Sects_Copy (
+        SECTS_DATA     *this
     );
 
 
-    void            ObjBT_Dealloc (
+    void            Sects_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  OBJBT_JSON_SUPPORT
+#ifdef  SECTS_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    OBJBT_DATA *       ObjBT_ParseJsonObject (
+    SECTS_DATA *       Sects_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -181,36 +147,35 @@ struct ObjBT_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ObjBT_ParseJsonFields (
+    ERESULT         Sects_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        OBJBT_DATA     *pObject
+        SECTS_DATA     *pObject
     );
 #endif
 
 
-    void *          ObjBT_QueryInfo (
+    void *          Sects_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  OBJBT_JSON_SUPPORT
+#ifdef  SECTS_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = ObjBT_ToJson(this);
+     ASTR_DATA      *pDesc = Sects_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
-                ERESULT_* error code.
+                JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ObjBT_ToJson (
-        OBJBT_DATA      *this
+    ASTR_DATA *     Sects_ToJson (
+        SECTS_DATA      *this
     );
 
 
@@ -223,8 +188,8 @@ struct ObjBT_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ObjBT_ToJsonFields (
-        OBJBT_DATA     *this,
+    ERESULT         Sects_ToJsonFields (
+        SECTS_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -234,16 +199,16 @@ struct ObjBT_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			ObjBT_Validate (
-        OBJBT_DATA       *this
+    bool            Sects_Validate (
+        SECTS_DATA       *this
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* OBJBT_INTERNAL_H */
+#endif  /* SECTS_INTERNAL_H */
 

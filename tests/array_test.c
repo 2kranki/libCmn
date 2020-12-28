@@ -94,7 +94,7 @@ int         test_array_OpenClose(
         XCTAssertTrue( (1 == i) );
         
         eRc = array_InsertData(pObj, 1, 4, "abc");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (4 == i) );
@@ -134,10 +134,10 @@ int         test_array_Insert01(
         XCTAssertTrue( (1 == i) );
         
         eRc = array_InsertData(pObj, 1, 4, "abc");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         eRc = array_InsertData(pObj, 1, 3, "def");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (7 == i) );
@@ -190,7 +190,7 @@ int         test_array_Insert02(
         XCTAssertTrue( (1 == i) );
         
         eRc = array_InsertData(pObj, 1, 4, "abc");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (4 == i) );
@@ -199,7 +199,7 @@ int         test_array_Insert02(
         XCTAssertTrue( (0 == strcmp("abc", pStr)) );
         
         eRc = array_InsertData(pObj, 3, 3, "def");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (7 == i) );
@@ -237,7 +237,7 @@ int         test_array_Insert03(
         XCTAssertTrue( (1 == i) );
         
         eRc = array_InsertData(pObj, 1, 4, "abc");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (4 == i) );
@@ -246,7 +246,7 @@ int         test_array_Insert03(
         XCTAssertTrue( (0 == strcmp("abc", pStr)) );
         
         eRc = array_InsertData(pObj, 4, 3, "def");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (7 == i) );
@@ -285,7 +285,7 @@ int         test_array_CopyAssign01(
         XCTAssertTrue( (1 == i) );
         
         eRc = array_InsertData(pObj, 1, 7, "abcdef");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (7 == i) );
@@ -294,7 +294,7 @@ int         test_array_CopyAssign01(
         XCTAssertTrue( (0 == strncmp("abcdef", pStr, 6)) );
         
         pOther = array_Copy(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (7 == i) );
@@ -303,7 +303,7 @@ int         test_array_CopyAssign01(
         XCTAssertTrue( (0 == strncmp("abcdef", pStr, 7)) );
         
         eRc = array_InsertData(pOther, 7, 3, "ghi");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pOther);
         XCTAssertTrue( (10 == i) );
@@ -312,7 +312,7 @@ int         test_array_CopyAssign01(
         XCTAssertTrue( (0 == strncmp("abcdefghi", pStr, 10)) );
         
         eRc = array_Assign(pOther, pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (10 == i) );
@@ -354,7 +354,7 @@ int         test_array_Get01(
         XCTAssertTrue( (1 == i) );
         
         eRc = array_InsertData(pObj, 1, 7, "abcdef");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (7 == i) );
@@ -363,26 +363,26 @@ int         test_array_Get01(
         XCTAssertTrue( (0 == strcmp("abcdef", pStr)) );
         
         eRc = array_Get(pObj, 1, 1, &chr);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         XCTAssertTrue( (chr == 'a') );
         
         eRc = array_Get(pObj, 3, 1, &chr);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         XCTAssertTrue( (chr == 'c') );
         
         eRc = array_Get(pObj, 6, 1, &chr);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         XCTAssertTrue( (chr == 'f') );
         
         eRc = array_Get(pObj, 8, 1, &chr);
-        XCTAssertFalse( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertFalse( (ERESULT_OK(eRc)) );
         
         for (i=0; i<7; ++i) {
             chrs[i] = '\0';
         }
         
         eRc = array_Get(pObj, 5, 2, &chrs);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         XCTAssertTrue( (0 == strcmp("ef", chrs)) );
         
         obj_Release(pObj);
@@ -419,7 +419,7 @@ int         test_array_Delete01(
         pStr = "abcdef";
         len = (uint32_t)(strlen(pStr) + 1);
         eRc = array_InsertData(pObj, 1, len, pStr);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (len == i) );
         pStr = array_Ptr(pObj, 1);
@@ -428,7 +428,7 @@ int         test_array_Delete01(
         XCTAssertTrue( (0 == memcmp("abcdef\x00\x00", pStr, array_getMax(pObj))) );
 
         eRc = array_Delete(pObj, 1, 1);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (6 == i) );
         pStr = array_Ptr(pObj, 1);
@@ -436,14 +436,14 @@ int         test_array_Delete01(
         XCTAssertTrue( (0 == memcmp("bcdef\x00\x00\x00", pStr, array_getMax(pObj))) );
 
         eRc = array_Delete(pObj, 4, 2);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (4 == i) );
         pStr = array_Ptr(pObj, 1);
         XCTAssertTrue( (0 == memcmp("bcd\x00", pStr, array_getSize(pObj))) );
         
         eRc = array_Delete(pObj, 2, 2);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (2 == i) );
         
@@ -481,21 +481,21 @@ int         test_array_Delete02(
         pStr = "cabbaadeee";
         len = (uint16_t)(strlen(pStr) + 1);
         eRc = array_InsertData(pObj, 1, len, pStr);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (len == i) );
         pStr = array_Ptr(pObj, 1);
         XCTAssertTrue( (0 == strcmp("cabbaadeee", pStr)) );
         
         eRc = array_Delete(pObj, 1, 1);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (10 == i) );
         pStr = array_Ptr(pObj, 1);
         XCTAssertTrue( (0 == strcmp("abbaadeee", pStr)) );
         
         eRc = array_Delete(pObj, 7, 3);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (7 == i) );
         pStr = array_Ptr(pObj, 1);
@@ -557,8 +557,7 @@ int         test_array_Xchg01(
     char            *pStr;
     uint32_t        i;
     char            chr;
-    char            chrs[7];
-    
+
     fprintf(stderr, "Performing: %s\n", pTestName);
     
     pObj = array_NewWithSize(1);
@@ -569,7 +568,7 @@ int         test_array_Xchg01(
         XCTAssertTrue( (1 == i) );
         
         eRc = array_InsertData(pObj, 1, 7, "abcdef");
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         
         i = array_getSize(pObj);
         XCTAssertTrue( (7 == i) );
@@ -578,22 +577,22 @@ int         test_array_Xchg01(
         XCTAssertTrue( (0 == strcmp("abcdef", pStr)) );
         
         eRc = array_Get(pObj, 1, 1, &chr);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         XCTAssertTrue( (chr == 'a') );
         
         eRc = array_Get(pObj, 3, 1, &chr);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         XCTAssertTrue( (chr == 'c') );
         
         eRc = array_Get(pObj, 6, 1, &chr);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         XCTAssertTrue( (chr == 'f') );
         
         eRc = array_Get(pObj, 8, 1, &chr);
-        XCTAssertFalse( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertFalse( (ERESULT_OK(eRc)) );
         
         eRc = array_Xchg(pObj, 1, 6);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
 
         pStr = array_Ptr(pObj, 1);
         XCTAssertTrue( (0 == strcmp("fbcdea", pStr)) );
@@ -636,14 +635,14 @@ int         test_array_DeleteOdd01(
         len = (uint16_t)(strlen(pStrA));
         XCTAssertTrue( (len == 6) );
         eRc = array_InsertData(pObj, 1, len, pStrA);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (len == i) );
         pStrA = array_Ptr(pObj, 1);
         XCTAssertTrue( (0 == strncmp("abcdef", pStrA, len)) );
         
         eRc = array_DeleteOdd(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( ((len >> 1) == i) );
         pStrA = array_Ptr(pObj, 1);
@@ -689,14 +688,14 @@ int         test_array_DeleteOdd02(
         len = (uint16_t)(strlen(pStrA));
         XCTAssertTrue( (len == 5) );
         eRc = array_InsertData(pObj, 1, len, pStrA);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (len == i) );
         pStrA = array_Ptr(pObj, 1);
         XCTAssertTrue( (0 == strncmp("abcde", pStrA, len)) );
         
         eRc = array_DeleteOdd(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( ((len >> 1) == i) );
         pStrA = array_Ptr(pObj, 1);
@@ -742,14 +741,14 @@ int         test_array_Zero01(
         len = (uint16_t)(strlen(pStrA));
         XCTAssertTrue( (len == 5) );
         eRc = array_InsertData(pObj, 1, len, pStrA);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = array_getSize(pObj);
         XCTAssertTrue( (len == i) );
         pStrA = array_Ptr(pObj, 1);
         XCTAssertTrue( (0 == strncmp("abcdefg", pStrA, len)) );
 
         eRc = array_ZeroAll(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         for (i=0; i<len; i++) {
             XCTAssertTrue( (pStrA[i] == 0) );
         }

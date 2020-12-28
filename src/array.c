@@ -1171,7 +1171,7 @@ extern "C" {
         if (0 == offset) {
             return ERESULT_INVALID_PARAMETER;
         }
-        if( ((offset-1) > this->size) ) {
+        if( this->size && ((offset-1) > this->size) ) {
             return ERESULT_INVALID_PARAMETER;
         }
         if (numElems) {
@@ -1197,7 +1197,7 @@ extern "C" {
         }
         
         // Move elements above insertion point if necessary.
-        if (offset <= this->size) {
+        if (this->size && (offset <= this->size)) {
             memmove(
                     array_Ptr(this, (offset + numElems)),
                     array_Ptr(this, offset),

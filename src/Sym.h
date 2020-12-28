@@ -129,7 +129,9 @@ extern "C" {
         uint32_t        token;              // unique token for name
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
-        uint32_t        section;            // Section/Struct Identifier (0 == none)
+        uint32_t        strct;              // Struct Identifier (0 == none)
+        uint32_t        section;            // Section Identifier (0 == none)
+        uint32_t        addr;               // Address within Section
         int32_t         value;
         uint32_t        record;             // Input Record Number
         uint16_t        prim;               // See SYM_PRIMITIVE;
@@ -143,7 +145,7 @@ extern "C" {
         //                                  //  8 == 64 Bit Boundary
         //                                  // 16 == 128 Bit Boundary
         uint16_t        scale;              // Binary or Decimal Shift Amount
-        uint8_t         extra2[66];         // Used as needed (Initialized
+        uint8_t         extra2[146];        // Used as needed (Initialized
         //                                  // for U8VlArray)
     } SYM_ENTRY;
 #pragma pack(pop)

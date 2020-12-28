@@ -47,7 +47,7 @@ struct objTest_class_data_s	{
     OBJ_DATA        super;
     
     // Common Data
-    //uint32_t        misc;
+    uint32_t        unique;
 };
 typedef struct objTest_class_data_s OBJTEST_CLASS_DATA;
 
@@ -117,10 +117,9 @@ OBJ_IUNKNOWN    obj_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-const
 OBJTEST_CLASS_DATA  objTest_ClassObj = {
     {&obj_Vtbl, sizeof(OBJ_DATA), OBJ_IDENT_OBJTEST_CLASS, 0, 1},
-	//0
+	0
 };
 
 
@@ -164,6 +163,14 @@ uint16_t		objTest_WhoAmI(
 )
 {
     return OBJ_IDENT_OBJTEST;
+}
+
+
+uint32_t		objTest_Unique(
+    void
+)
+{
+    return objTest_ClassObj.unique++;
 }
 
 

@@ -150,6 +150,7 @@ CMDUTL_OPTION       pPgmOpts[] = {
         this = objTest_Alloc( );
         if (this) {
             this = objTest_Init(this);
+            this->unique = objTest_Unique();
         } 
         return this;
     }

@@ -1,28 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Balanced Binary Tree for Objects (ObjBT) Header
+//                  Section Table (Sects) Header
 //****************************************************************
 /*
  * Program
- *			Balanced Binary Tree for Objects (ObjBT)
+ *          Section Table (Sects)
  * Purpose
- *			This object provides a Balanced Binary Tree for Objects.
- *          The objects stored in the tree must support the Compare()
- *          method.  It is accessed via the normal VTBL and is how
- *          the tree is maintained in a balanced form. The VTBL must
- *          also support Key() which creates an AStr object containing
- *          the key for the object. (See OBJBT_ENTRY_VTBL below).
+ *          This object provides a standardized way of handling
+ *          a separate Sects to run things without complications
+ *          of interfering with the main Sects. A Sects may be 
+ *          called a Sects on other O/S's.
  *
  * Remarks
- *    1.    The objects added to this table must support the
- *          compare() method. The compare() method must be able
- *          to compare its object against any other object in
- *          the table.  This method is part of the common VTBL
- *          for each object.
+ *  1.      None
  *
  * History
- *	03/01/2020 Generated
+ *  12/27/2020 Generated
  */
 
 
@@ -59,21 +53,23 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <ObjEnum.h>
+#include        <Sect.h>
 
 
-#ifndef         OBJBT_H
-#define         OBJBT_H
+#ifndef         SECTS_H
+#define         SECTS_H
 
 
-//#define   OBJBT_IS_IMMUTABLE     1
-#define   OBJBT_JSON_SUPPORT     1
-//#define   OBJBT_SINGLETON        1
+//#define   SECTS_IS_IMMUTABLE     1
+#define   SECTS_JSON_SUPPORT       1
+//#define   SECTS_SINGLETON        1
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -83,41 +79,32 @@ extern "C" {
     //****************************************************************
 
 
-    // Any object added to this tree must support this VTBL.
-    typedef struct ObjBT_Entry_vtbl_s    {
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        ASTR_DATA *     (*pKey)(OBJ_ID);    // Return the Object's
-        //                                  // record key in UTF-8 format.
-    } OBJBT_ENTRY_VTBL;
+    typedef struct Sects_data_s  SECTS_DATA;            // Inherits from OBJ
+    typedef struct Sects_class_data_s SECTS_CLASS_DATA;   // Inherits from OBJ
 
-
-
-    typedef struct ObjBT_data_s	OBJBT_DATA;            // Inherits from OBJ
-    typedef struct ObjBT_class_data_s OBJBT_CLASS_DATA;   // Inherits from OBJ
-
-    typedef struct ObjBT_vtbl_s	{
+    typedef struct Sects_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in ObjBT_object.c.
+        // method names to the vtbl definition in Sects_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(OBJBT_DATA *);
-    } OBJBT_VTBL;
+        //bool        (*pIsEnabled)(SECTS_DATA *);
+    } SECTS_VTBL;
 
-    typedef struct ObjBT_class_vtbl_s	{
+    typedef struct Sects_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in ObjBT_object.c.
+        // method names to the vtbl definition in Sects_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(OBJBT_DATA *);
-    } OBJBT_CLASS_VTBL;
+        //bool        (*pIsEnabled)(SECTS_DATA *);
+    } SECTS_CLASS_VTBL;
 
 
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -125,12 +112,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  OBJBT_SINGLETON
-    OBJBT_DATA *    ObjBT_Shared (
+#ifdef  SECTS_SINGLETON
+    SECTS_DATA *     Sects_Shared (
         void
     );
 
-    void            ObjBT_SharedReset (
+    void            Sects_SharedReset (
         void
     );
 #endif
@@ -140,29 +127,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to ObjBT object if successful, otherwise OBJ_NIL.
+     @return    pointer to Sects object if successful, otherwise OBJ_NIL.
      */
-    OBJBT_DATA *    ObjBT_Alloc (
+    SECTS_DATA *     Sects_Alloc (
         void
     );
     
     
-    OBJ_ID          ObjBT_Class (
+    OBJ_ID          Sects_Class (
         void
     );
     
     
-    OBJBT_DATA *     ObjBT_New (
+    SECTS_DATA *     Sects_New (
         void
     );
     
     
-#ifdef  OBJBT_JSON_SUPPORT
-    OBJBT_DATA *    ObjBT_NewFromJsonString (
+#ifdef  SECTS_JSON_SUPPORT
+    SECTS_DATA *   Sects_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    OBJBT_DATA *    ObjBT_NewFromJsonStringA (
+    SECTS_DATA *   Sects_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -182,61 +169,85 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Assign the contents of this object to the other object (ie
-     this -> other).  Any objects in other will be released before
-     a copy of the object is performed.
-     Example:
-     @code
-        ERESULT eRc = ObjBT_Assign(this,pOther);
-     @endcode
-     @param     this    object pointer
-     @param     pOther  a pointer to another OBJBT object
-     @return    If successful, ERESULT_SUCCESS otherwise an
-                ERESULT_* error
+     Add the given Symbol object to the Tree.
+     @param     this        Object Pointer
+     @param     pSym        Symbol Entry Object Pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
+                error code is returned.
      */
-    ERESULT         ObjBT_Assign (
-        OBJBT_DATA      *this,
-        OBJBT_DATA      *pOther
+    ERESULT         Sects_Add (
+        SECTS_DATA      *this,
+        SECT_DATA       *pSym
+    );
+
+    ERESULT         Sects_AddA (
+        SECTS_DATA      *this,
+        char            ident,
+        char            type,
+        uint32_t        addr,
+        uint32_t        offset,
+        uint32_t        len,
+        const
+        char            *pNameA
+    );
+
+
+    ERESULT         Sects_DeleteA (
+        SECTS_DATA      *this,
+        const
+        char            *pNameA
     );
 
 
     /*!
-     Copy the current object creating a new object.
-     Example:
-     @code
-        ObjBT      *pCopy = ObjBT_Copy(this);
-     @endcode
-     @param     this    object pointer
-     @return    If successful, a OBJBT object which must be
-                released, otherwise OBJ_NIL.
-     @warning   Remember to release the returned object.
+     Create an enumerator for the entries.
+     @return    If successful, an ENUM object is returned.  Otherwise,
+     OBJ_NIL.
+     @warning   Remember to release the returned ENUM object.
      */
-    OBJBT_DATA *    ObjBT_Copy (
-        OBJBT_DATA      *this
-    );
-
-   
-    OBJBT_DATA *    ObjBT_Init (
-        OBJBT_DATA      *this
+    OBJENUM_DATA *  Sects_Enum (
+        SECTS_DATA       *this
     );
 
 
-#ifdef  OBJBT_JSON_SUPPORT
+    /*!
+     Search the entries for a particular entry using the
+     the given name and the table entry's compare function.
+     @return    If successful, an SECT object is returned.
+                Otherwise, OBJ_NIL.
+     */
+    SECT_DATA *    Sects_FindA (
+        SECTS_DATA      *this,
+        const
+        char            *pNameA
+    );
+
+
+    SECTS_DATA *   Sects_Init (
+        SECTS_DATA     *this
+    );
+
+
+    ERESULT     Sects_IsEnabled (
+        SECTS_DATA       *this
+    );
+    
+ 
+#ifdef  SECTS_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = ObjBT_ToJson(this);
+     ASTR_DATA      *pDesc = Sects_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
-                ERESULT_* error code.
+                JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ObjBT_ToJson (
-        OBJBT_DATA   *this
+    ASTR_DATA *     Sects_ToJson (
+        SECTS_DATA   *this
     );
 #endif
 
@@ -245,7 +256,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = ObjBT_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Sects_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -253,17 +264,17 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    ObjBT_ToDebugString (
-        OBJBT_DATA     *this,
+    ASTR_DATA *     Sects_ToDebugString (
+        SECTS_DATA     *this,
         int             indent
     );
     
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* OBJBT_H */
+#endif  /* SECTS_H */
 

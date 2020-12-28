@@ -1045,6 +1045,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
+        uint32_t        size;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1057,13 +1058,23 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if (index <= array_getSize((ARRAY_DATA *)this)) {
-        }
-        else {
-            return ERESULT_OUT_OF_RANGE;
+        size = array_getSize((ARRAY_DATA *)this);
+        if (size) {
+            if (index <= size)
+                ;
+            else {
+                return ERESULT_OUT_OF_RANGE;
+            }
+        } else {
+            if (1 == index)
+                ;
+            else {
+                return ERESULT_OUT_OF_RANGE;
+            }
         }
 #endif
-        
+        size = array_getSize((ARRAY_DATA *)this);
+
         obj_Retain(pObject);
 
         eRc = array_InsertData((ARRAY_DATA *)this, index, 1, &pObject);

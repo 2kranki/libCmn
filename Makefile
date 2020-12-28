@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/25/2020  4:17:10.000)
+# (12/28/2020  2:25:30.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -927,6 +927,36 @@ $(OBJDIR)/Scanner_json.o: $(SRCDIR)/Scanner_json.c $(SRCDIR)/Scanner.h $(SRCDIR)
 OBJS += $(OBJDIR)/Scanner_object.o
 
 $(OBJDIR)/Scanner_object.o: $(SRCDIR)/Scanner_object.c $(SRCDIR)/Scanner.h $(SRCDIR)/Scanner_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Sect.o
+
+$(OBJDIR)/Sect.o: $(SRCDIR)/Sect.c $(SRCDIR)/Sect.h $(SRCDIR)/Sect_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Sect_json.o
+
+$(OBJDIR)/Sect_json.o: $(SRCDIR)/Sect_json.c $(SRCDIR)/Sect.h $(SRCDIR)/Sect_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Sect_object.o
+
+$(OBJDIR)/Sect_object.o: $(SRCDIR)/Sect_object.c $(SRCDIR)/Sect.h $(SRCDIR)/Sect_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Sects.o
+
+$(OBJDIR)/Sects.o: $(SRCDIR)/Sects.c $(SRCDIR)/NodeBT.h $(SRCDIR)/Sect.h $(SRCDIR)/Sects.h $(SRCDIR)/Sects_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Sects_json.o
+
+$(OBJDIR)/Sects_json.o: $(SRCDIR)/Sects_json.c $(SRCDIR)/Sects.h $(SRCDIR)/Sects_internal.h $(SRCDIR)/NodeBT.h $(SRCDIR)/Sect.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Sects_object.o
+
+$(OBJDIR)/Sects_object.o: $(SRCDIR)/Sects_object.c $(SRCDIR)/NodeBT.h $(SRCDIR)/Sect.h $(SRCDIR)/Sects.h $(SRCDIR)/Sects_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SqlCol.o
@@ -2419,6 +2449,18 @@ SQLite_test: $(TEST_SRC)/SQLite_test.c $(SRCDIR)/SQLite.h $(SRCDIR)/SQLite_inter
 TESTS += Scanner_test
 
 Scanner_test: $(TEST_SRC)/Scanner_test.c $(SRCDIR)/Scanner.h $(SRCDIR)/Scanner_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Sect_test
+
+Sect_test: $(TEST_SRC)/Sect_test.c $(SRCDIR)/Sect.h $(SRCDIR)/Sect_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Sects_test
+
+Sects_test: $(TEST_SRC)/Sects_test.c $(SRCDIR)/Sects.h $(SRCDIR)/Sects_internal.h $(SRCDIR)/NodeBT.h $(SRCDIR)/Sect.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

@@ -78,12 +78,12 @@ int addr2line(char const * const program_name, void const * const addr)
   char addr2line_cmd[512] = {0};
 
   /* have addr2line map the address to the relent line in the code */
-  #ifdef __APPLE__
+#ifdef __APPLE__
     /* apple does things differently... */
     sprintf(addr2line_cmd,"atos -o %.256s %p", program_name, addr); 
-  #else
+#else
     sprintf(addr2line_cmd,"addr2line -f -p -e %.256s %p", program_name, addr); 
-  #endif
+#endif
 
   return system(addr2line_cmd);
 }

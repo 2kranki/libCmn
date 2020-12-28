@@ -194,6 +194,48 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        A d d r e s s
+    //---------------------------------------------------------------
+
+    uint32_t        Sym_getAddr (
+        SYM_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->addr;
+    }
+
+
+    bool            Sym_setAddr (
+        SYM_DATA        *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->addr = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        A l i g n
     //---------------------------------------------------------------
 
@@ -1952,7 +1994,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-#if defined(__APPLE__) && defined(XYZZY)
+#if defined(__APPLE__)
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
@@ -1967,6 +2009,7 @@ extern "C" {
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(SYM_DATA));
         BREAK_NOT_BOUNDARY4(sizeof(SYM_ENTRY));
+        BREAK_NOT_ZERO(256 - sizeof(SYM_ENTRY));
 #endif
 
         return this;

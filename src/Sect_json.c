@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Sym_json.c
+ * File:   Sect_json.c
  *
- *	Generated 02/22/2020 20:18:12
+ *  Generated 12/27/2020 14:58:15
  *
  */
 
@@ -42,23 +42,23 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <Sym_internal.h>
+#include    <Sect_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
 #include    <AStr_internal.h>
 #include    <dec.h>
-#include    <hex_internal.h>
 #include    <JsonIn.h>
 #include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeHash.h>
+#include    <SrcErrors.h>
 #include    <utf8.h>
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -79,55 +79,42 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     Sym_ParseJsonFields (
+    ERESULT     Sect_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SYM_DATA     *pObject
+        SECT_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
+        //NODE_DATA       *pNode = OBJ_NIL;
+        //NODEARRAY_DATA  *pArray = OBJ_NIL;
+        //NODEHASH_DATA   *pHash = OBJ_NIL;
+        //uint32_t        i;
+        //uint32_t        iMax;
         //int64_t         intIn;
-        ASTR_DATA       *pWrk = OBJ_NIL;
-        uint32_t        len = 0;
-        //uint16_t        max = 0;
-        uint8_t         *pData;
+        //ASTR_DATA       *pWrk;
+        //uint8_t         *pData;
+        //uint32_t        len;
 
-        eRc = JsonIn_FindStringNodeInHashA(pParser, "name", &pWrk);
-        if (ERESULT_FAILED(eRc)) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Failed to find Name!\n\n\n");
-            exit(EXIT_FAILURE);
+        (void)JsonIn_FindU8NodeInHashA(pParser,  "ident",   (uint8_t *)&pObject->ident);
+        (void)JsonIn_FindU8NodeInHashA(pParser,  "type",    (uint8_t *)&pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "addr",    &pObject->addr);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "len",     &pObject->len);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "offset",  &pObject->offset);
+        (void)JsonIn_FindAStrNodeInHashA(pParser, "name",  &pObject->pName);
+
+#ifdef XYZZZY
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
+
+        eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
         }
-        if (AStr_getLength(pWrk) > sizeof(pObject->entry.name)-1) {
-            DEBUG_BREAK();
-            fprintf(stderr, "FATAL - Name was too big!\n\n\n");
-            exit(EXIT_FAILURE);
-        }
-        Sym_setNameA(pObject, AStr_getData(pWrk));
-        (void)JsonIn_FindU8NodeInHashA(pParser,  "fFlgs1",  &pObject->entry.fFlgs1);
-        (void)JsonIn_FindU8NodeInHashA(pParser,  "fFlgs2",  &pObject->entry.fFlgs2);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "hash",    &pObject->entry.hash);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "token",   &pObject->entry.token);
-        (void)JsonIn_FindI32NodeInHashA(pParser, "cls",     &pObject->entry.cls);
-        (void)JsonIn_FindI32NodeInHashA(pParser, "type",    &pObject->entry.type);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "section", &pObject->entry.section);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "addr",    &pObject->entry.addr);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "prim",    &pObject->entry.prim);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "len",     &pObject->entry.len);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "dup",     &pObject->entry.dup);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "align",   &pObject->entry.align);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "record",  &pObject->entry.record);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "scale",   &pObject->entry.scale);
-        (void)JsonIn_FindI32NodeInHashA(pParser, "value",   &pObject->entry.value);
-        eRc = JsonIn_SubObjectInHash(pParser,   "extra");
-        if (ERESULT_OK(eRc)) {
-            pData = hex_ParseObject(pParser, &len);
-            JsonIn_SubObjectEnd(pParser);
-            if (pData) {
-                memmove(pObject->entry.extra2, pData, sizeof(pObject->entry.extra2));
-                mem_Free(pData);
-                pData = NULL;
-            }
-        }
+        JsonIn_SubObjectEnd(pParser);
+#endif
 
         // Return to caller.
     exit00:
@@ -142,31 +129,32 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SYM_DATA * Sym_ParseJsonObject (
+    SECT_DATA * Sect_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        SYM_DATA   *pObject = OBJ_NIL;
+        SECT_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(Sym_Class());
-        
+        JsonIn_RegisterClass(Sect_Class());
+
+        pInfo = obj_getInfo(Sect_Class());
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
 
-        pObject = Sym_New( );
+        pObject = Sect_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  Sym_ParseJsonFields(pParser, pObject);
+        eRc =  Sect_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -188,21 +176,22 @@ extern "C" {
     //===============================================================
     
 
-    SYM_DATA *   Sym_NewFromJsonString (
+    SECT_DATA *   Sect_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        SYM_DATA   *pObject = OBJ_NIL;
+        SECT_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
+            SrcErrors_Print(OBJ_NIL, stderr);
             goto exit00;
         }
         
-        pObject = Sym_ParseJsonObject(pParser);
+        pObject = Sect_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -215,17 +204,17 @@ extern "C" {
     
     
 
-    SYM_DATA * Sym_NewFromJsonStringA (
+    SECT_DATA * Sect_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        SYM_DATA   *pObject = OBJ_NIL;
+        SECT_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = Sym_NewFromJsonString(pStr);
+            pObject = Sect_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -241,7 +230,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Sym_ToJson(this);
+     ASTR_DATA      *pDesc = Sect_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -249,8 +238,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Sym_ToJson (
-        SYM_DATA   *this
+    ASTR_DATA *     Sect_ToJson (
+        SECT_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -260,7 +249,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Sym_Validate(this) ) {
+        if( !Sect_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -270,11 +259,11 @@ extern "C" {
         pStr = AStr_New();
         if (pStr) {
              AStr_AppendPrint(pStr,
-                              "{ \"objectType\":\"%s\", ",
+                              "{ \"objectType\":\"%s\",\n",
                               pInfo->pClassName
              );
      
-            eRc = Sym_ToJsonFields(this, pStr);      
+            eRc = Sect_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -283,8 +272,17 @@ extern "C" {
     }
     
     
-    ERESULT         Sym_ToJsonFields (
-        SYM_DATA        *this,
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Sect_ToJsonFields (
+        SECT_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
@@ -299,35 +297,23 @@ extern "C" {
         );
         ASTR_DATA       *pWrkStr;
 #endif
-        char            NameA[256];
-        uint32_t        len;
-        ASTR_DATA       *pWrk;
 
-        len = utf8_Utf8ToChrConStr(0, this->entry.name, sizeof(NameA), NameA);
-        AStr_AppendPrint(pStr, "\tname:\"%s\",\n", NameA);
-        (void)JsonOut_Append_u8("fFlgs1",   this->entry.fFlgs1, pStr);
-        (void)JsonOut_Append_u8("fFlgs2",   this->entry.fFlgs2, pStr);
-        (void)JsonOut_Append_u32("hash",    this->entry.hash, pStr);
-        (void)JsonOut_Append_u32("token",   this->entry.token, pStr);
-        (void)JsonOut_Append_i32("cls",     this->entry.cls, pStr);
-        (void)JsonOut_Append_i32("type",    this->entry.type, pStr);
-        (void)JsonOut_Append_u32("section", this->entry.section, pStr);
-        (void)JsonOut_Append_u32("addr",    this->entry.addr, pStr);
-        (void)JsonOut_Append_u16("prim",    this->entry.prim, pStr);
-        (void)JsonOut_Append_u16("len",     this->entry.len, pStr);
-        (void)JsonOut_Append_u16("dup",     this->entry.dup, pStr);
-        (void)JsonOut_Append_u16("align",   this->entry.align, pStr);
-        (void)JsonOut_Append_u32("record",  this->entry.record, pStr);
-        (void)JsonOut_Append_u16("scale",   this->entry.scale, pStr);
-        (void)JsonOut_Append_i32("value",   this->entry.value, pStr);
-        pWrk = hex_DataToJSON(sizeof(this->entry.extra2), this->entry.extra2);
-        if (pWrk) {
-            AStr_AppendA(pStr, "\t\"extra\":");
-            AStr_Append(pStr, pWrk);
-            obj_Release(pWrk);
-            pWrk = OBJ_NIL;
+        JsonOut_Append_u8("ident",      this->ident,    pStr);
+        JsonOut_Append_u8("type",       this->type,     pStr);
+        JsonOut_Append_u32("addr",      this->addr,     pStr);
+        JsonOut_Append_u32("len",       this->len,      pStr);
+        JsonOut_Append_u32("offset",    this->offset,   pStr);
 
-        }
+#ifdef XYZZZY
+        JsonOut_Append_i32("x", this->x, pStr);
+        JsonOut_Append_i64("t", this->t, pStr);
+        JsonOut_Append_u32("o", this->o, pStr);
+        JsonOut_Append_utf8("n", pEntry->pN, pStr);
+        JsonOut_Append_Object("e", this->pE, pStr);
+        JsonOut_Append_AStr("d", this->pAStr, pStr);
+        JsonOut_Append_StrA("d", this->pStrA, pStr);
+        JsonOut_Append_StrW32("d", this->pStrW32, pStr);
+#endif
 
         return ERESULT_SUCCESS;
     }
@@ -336,7 +322,7 @@ extern "C" {
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

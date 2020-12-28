@@ -1,28 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Balanced Binary Tree for Objects (ObjBT) Header
+//                  Section Table Entry (Sect) Header
 //****************************************************************
 /*
  * Program
- *			Balanced Binary Tree for Objects (ObjBT)
+ *          Section Table Entry (Sect)
  * Purpose
- *			This object provides a Balanced Binary Tree for Objects.
- *          The objects stored in the tree must support the Compare()
- *          method.  It is accessed via the normal VTBL and is how
- *          the tree is maintained in a balanced form. The VTBL must
- *          also support Key() which creates an AStr object containing
- *          the key for the object. (See OBJBT_ENTRY_VTBL below).
+ *          This object provides support for a program section
+ *          or segment. It contains all the fields necessary
+ *          use in assemblers, compilers, dis-assemblers or
+ *          linkers.
  *
  * Remarks
- *    1.    The objects added to this table must support the
- *          compare() method. The compare() method must be able
- *          to compare its object against any other object in
- *          the table.  This method is part of the common VTBL
- *          for each object.
+ *  1.      None
  *
  * History
- *	03/01/2020 Generated
+ *  12/27/2020 Generated
  */
 
 
@@ -59,21 +53,22 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <u8Array.h>
 
 
-#ifndef         OBJBT_H
-#define         OBJBT_H
+#ifndef         SECT_H
+#define         SECT_H
 
 
-//#define   OBJBT_IS_IMMUTABLE     1
-#define   OBJBT_JSON_SUPPORT     1
-//#define   OBJBT_SINGLETON        1
+//#define   SECT_IS_IMMUTABLE     1
+#define   SECT_JSON_SUPPORT       1
+//#define   SECT_SINGLETON        1
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -83,41 +78,32 @@ extern "C" {
     //****************************************************************
 
 
-    // Any object added to this tree must support this VTBL.
-    typedef struct ObjBT_Entry_vtbl_s    {
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        ASTR_DATA *     (*pKey)(OBJ_ID);    // Return the Object's
-        //                                  // record key in UTF-8 format.
-    } OBJBT_ENTRY_VTBL;
+    typedef struct Sect_data_s  SECT_DATA;            // Inherits from OBJ
+    typedef struct Sect_class_data_s SECT_CLASS_DATA;   // Inherits from OBJ
 
-
-
-    typedef struct ObjBT_data_s	OBJBT_DATA;            // Inherits from OBJ
-    typedef struct ObjBT_class_data_s OBJBT_CLASS_DATA;   // Inherits from OBJ
-
-    typedef struct ObjBT_vtbl_s	{
+    typedef struct Sect_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in ObjBT_object.c.
+        // method names to the vtbl definition in Sect_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(OBJBT_DATA *);
-    } OBJBT_VTBL;
+        //bool        (*pIsEnabled)(SECT_DATA *);
+    } SECT_VTBL;
 
-    typedef struct ObjBT_class_vtbl_s	{
+    typedef struct Sect_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in ObjBT_object.c.
+        // method names to the vtbl definition in Sect_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(OBJBT_DATA *);
-    } OBJBT_CLASS_VTBL;
+        //bool        (*pIsEnabled)(SECT_DATA *);
+    } SECT_CLASS_VTBL;
 
 
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -125,12 +111,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  OBJBT_SINGLETON
-    OBJBT_DATA *    ObjBT_Shared (
+#ifdef  SECT_SINGLETON
+    SECT_DATA *     Sect_Shared (
         void
     );
 
-    void            ObjBT_SharedReset (
+    void            Sect_SharedReset (
         void
     );
 #endif
@@ -140,29 +126,40 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to ObjBT object if successful, otherwise OBJ_NIL.
+     @return    pointer to Sect object if successful, otherwise OBJ_NIL.
      */
-    OBJBT_DATA *    ObjBT_Alloc (
+    SECT_DATA *     Sect_Alloc (
         void
     );
     
     
-    OBJ_ID          ObjBT_Class (
+    OBJ_ID          Sect_Class (
         void
     );
     
     
-    OBJBT_DATA *     ObjBT_New (
+    SECT_DATA *     Sect_New (
         void
     );
     
     
-#ifdef  OBJBT_JSON_SUPPORT
-    OBJBT_DATA *    ObjBT_NewFromJsonString (
+    SECT_DATA *     Sect_NewFromDataA (
+        char            ident,
+        char            type,
+        uint32_t        addr,
+        uint32_t        offset,
+        uint32_t        len,
+        const
+        char            *pNameA
+    );
+
+
+#ifdef  SECT_JSON_SUPPORT
+    SECT_DATA *   Sect_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    OBJBT_DATA *    ObjBT_NewFromJsonStringA (
+    SECT_DATA *   Sect_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -174,6 +171,64 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        Sect_getAddr (
+        SECT_DATA       *this
+    );
+
+    bool            Sect_setAddr (
+        SECT_DATA       *this,
+        uint32_t        value
+    );
+
+
+    char            Sect_getIdent (
+        SECT_DATA       *this
+    );
+
+    bool            Sect_setIdent (
+        SECT_DATA       *this,
+        char            value
+    );
+
+
+    uint32_t        Sect_getLen (
+        SECT_DATA       *this
+    );
+
+    bool            Sect_setLen (
+        SECT_DATA       *this,
+        uint32_t        value
+    );
+
+
+    ASTR_DATA *     Sect_getName (
+        SECT_DATA       *this
+    );
+
+    bool            Sect_setName (
+        SECT_DATA       *this,
+        ASTR_DATA       *pValue
+    );
+
+
+    uint32_t        Sect_getOffset (
+        SECT_DATA       *this
+    );
+
+    bool            Sect_setOffset (
+        SECT_DATA       *this,
+        uint32_t        value
+    );
+
+
+    char            Sect_getType (
+        SECT_DATA       *this
+    );
+
+    bool            Sect_setType (
+        SECT_DATA       *this,
+        char            value
+    );
 
 
     
@@ -187,16 +242,28 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code
-        ERESULT eRc = ObjBT_Assign(this,pOther);
+        ERESULT eRc = Sect_Assign(this,pOther);
      @endcode
      @param     this    object pointer
-     @param     pOther  a pointer to another OBJBT object
+     @param     pOther  a pointer to another SECT object
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error
      */
-    ERESULT         ObjBT_Assign (
-        OBJBT_DATA      *this,
-        OBJBT_DATA      *pOther
+    ERESULT         Sect_Assign (
+        SECT_DATA       *this,
+        SECT_DATA       *pOther
+    );
+
+
+    /*!
+     Compare the two provided objects using their ident's.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
+     */
+    int             Sect_Compare (
+        SECT_DATA       *this,
+        SECT_DATA       *pOther
     );
 
 
@@ -204,39 +271,50 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code
-        ObjBT      *pCopy = ObjBT_Copy(this);
+        Sect      *pCopy = Sect_Copy(this);
      @endcode
      @param     this    object pointer
-     @return    If successful, a OBJBT object which must be
+     @return    If successful, a SECT object which must be
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    OBJBT_DATA *    ObjBT_Copy (
-        OBJBT_DATA      *this
-    );
-
-   
-    OBJBT_DATA *    ObjBT_Init (
-        OBJBT_DATA      *this
+    SECT_DATA *     Sect_Copy (
+        SECT_DATA       *this
     );
 
 
-#ifdef  OBJBT_JSON_SUPPORT
+    SECT_DATA *     Sect_Init (
+        SECT_DATA       *this
+    );
+
+
+    /*!
+     Create the key for this object.
+     @param     this    object pointer
+     @return    If successful, an AStr object which can be
+                use in an index; otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Sect_Key (
+        SECT_DATA       *this
+    );
+
+
+#ifdef  SECT_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = ObjBT_ToJson(this);
+     ASTR_DATA      *pDesc = Sect_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
-                ERESULT_* error code.
+                JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ObjBT_ToJson (
-        OBJBT_DATA   *this
+    ASTR_DATA *     Sect_ToJson (
+        SECT_DATA   *this
     );
 #endif
 
@@ -245,7 +323,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = ObjBT_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Sect_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -253,17 +331,17 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    ObjBT_ToDebugString (
-        OBJBT_DATA     *this,
+    ASTR_DATA *     Sect_ToDebugString (
+        SECT_DATA     *this,
         int             indent
     );
     
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* OBJBT_H */
+#endif  /* SECT_H */
 

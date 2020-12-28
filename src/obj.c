@@ -343,6 +343,57 @@ extern	"C" {
     //                      *** Properties ***
     //===============================================================
 
+    P_OBJ_ASSIGN    obj_getAssign(
+        OBJ_ID          objId
+    )
+    {
+        OBJ_DATA        *this = objId;
+
+        if (this == OBJ_NIL) {
+            return NULL;
+        }
+        if (this->pVtbl == NULL) {
+            return NULL;
+        }
+        return this->pVtbl->pAssign;
+    }
+
+
+
+    P_OBJ_COMPARE   obj_getCompare(
+        OBJ_ID          objId
+    )
+    {
+        OBJ_DATA        *this = objId;
+
+        if (this == OBJ_NIL) {
+            return NULL;
+        }
+        if (this->pVtbl == NULL) {
+            return NULL;
+        }
+        return this->pVtbl->pCompare;
+    }
+
+
+
+    P_OBJ_COPY      obj_getCopy(
+        OBJ_ID          objId
+    )
+    {
+        OBJ_DATA        *this = objId;
+
+        if (this == OBJ_NIL) {
+            return NULL;
+        }
+        if (this->pVtbl == NULL) {
+            return NULL;
+        }
+        return this->pVtbl->pCopy;
+    }
+
+
+
     OBJ_ID          obj_getClass(
         OBJ_ID          objId
     )

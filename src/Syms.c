@@ -325,7 +325,7 @@ extern "C" {
 
     ERESULT         Syms_Add (
         SYMS_DATA       *this,
-        SYM_DATA        *pSym
+        SYM_DATA        *pEntry
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -337,21 +337,21 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pSym) {
+        if (OBJ_NIL == pEntry) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if (obj_IsKindOf(pSym, OBJ_IDENT_SYM))
+        if (obj_IsKindOf(pEntry, OBJ_IDENT_SYM))
             ;
         else {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
-        obj_Retain(pSym);
-        eRc = szBT_AddA(this->pTree, Sym_getNameA(pSym), pSym);
+        obj_Retain(pEntry);
+        eRc = szBT_AddA(this->pTree, Sym_getNameA(pEntry), pEntry);
         if (ERESULT_FAILED(eRc)) {
-            obj_Release(pSym);
+            obj_Release(pEntry);
         }
 
         // Return to caller.

@@ -636,6 +636,7 @@ extern "C" {
         NAME_DATA       *pValue
     )
     {
+
 #ifdef NDEBUG
 #else
         if (!Node_Validate(this)) {

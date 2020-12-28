@@ -473,6 +473,10 @@ extern "C" {
         OBJ_IDENT_SCANREADER_CLASS,
         OBJ_IDENT_SCREEN,               // Terminal Screen Handler
         OBJ_IDENT_SCREEN_CLASS,
+        OBJ_IDENT_SECT,                 // Section Table Entry
+        OBJ_IDENT_SECT_CLASS,
+        OBJ_IDENT_SECTS,                // Section Table
+        OBJ_IDENT_SECTS_CLASS,
         OBJ_IDENT_SGRAPH,               // Simple Graph
         OBJ_IDENT_SGRAPH_CLASS,
         OBJ_IDENT_SQLCOL,               // SQL Column

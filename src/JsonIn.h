@@ -486,7 +486,7 @@ extern "C" {
                         is non-null.
      @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr
                 if ppStr is non-null. Otherwise, an ERESULT_* error code.
-     @warning   The rturned AStr object must be released.
+     @warning   The returned AStr object must be released.
      */
     ERESULT         JsonIn_FindAStrNodeInHashA (
         JSONIN_DATA     *this,

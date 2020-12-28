@@ -301,6 +301,21 @@ extern	"C" {
     );
     
 
+    P_OBJ_ASSIGN    obj_getAssign(
+        OBJ_ID          objId
+    );
+
+
+    P_OBJ_COMPARE   obj_getCompare(
+        OBJ_ID          objId
+    );
+
+
+    P_OBJ_COPY      obj_getCopy(
+        OBJ_ID          objId
+    );
+
+
     /*! Get the class object for any object.
      */
     OBJ_ID          obj_getClass(
@@ -313,12 +328,11 @@ extern	"C" {
     );
     
 
-#ifdef XYZZY
     bool            obj_IsKindOf(
-        uint16_t        classID
+        OBJ_ID          objId,
+        uint16_t        type
     );
-#endif
-    
+
     
     bool            obj_ClassEnable(
         OBJ_ID          objId

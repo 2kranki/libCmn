@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   ALU32.c
- *  Generated 12/06/2020 10:50:57
+ * File:   Sect.c
+ *  Generated 12/27/2020 14:58:15
  *
  */
 
@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <ALU32_internal.h>
+#include        <Sect_internal.h>
+#include        <ascii.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -64,68 +65,16 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    int             ALU32_even_parity (
-        uint32_t        x
+#ifdef XYZZY
+    static
+    void            Sect_task_body (
+        void            *pData
     )
     {
-        x ^= x >> 16;
-        x ^= x >> 8;
-        x ^= x >> 4;
-        x ^= x >> 2;
-        x ^= x >> 1;
-        return (~x) & 1;
+        //SECT_DATA  *this = pData;
+        
     }
-
-
-
-    // Arithmetic Shift Left
-    // result = bit0 + bit2..bit32 + 0
-    uint32_t        ALU32_Shift_Left_Arith (
-        uint32_t        x
-    )
-    {
-        int32_t         wrk = (int32_t)x;
-
-        wrk <<= 1;
-        return wrk;
-    }
-
-
-    // Arithmetic Shift Right
-    // result = bit0 + bit0..bit30
-    uint32_t        ALU32_Shift_Right_Arith (
-        uint32_t        x
-    )
-    {
-        int32_t         wrk = (int32_t)x;
-
-        wrk >>= 1;
-        return wrk;
-    }
-
-
-    // Logical Shift Left
-    // result = bit1..bit32 + 0
-    uint32_t        ALU32_Shift_Left_Logical (
-        uint32_t        x
-    )
-    {
-        x <<= 1;
-        return x;
-    }
-
-
-    // Logical Shift Right
-    // result = 0 + bit0..bit30
-    uint32_t        ALU32_Shift_Right_Logical (
-        uint32_t        x
-    )
-    {
-        x >>= 1;
-        return x;
-    }
-
-
+#endif
 
 
 
@@ -138,12 +87,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    ALU32_DATA *     ALU32_Alloc (
+    SECT_DATA *     Sect_Alloc (
         void
     )
     {
-        ALU32_DATA       *this;
-        uint32_t        cbSize = sizeof(ALU32_DATA);
+        SECT_DATA       *this;
+        uint32_t        cbSize = sizeof(SECT_DATA);
         
         // Do initialization.
         
@@ -155,212 +104,288 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                          E x e c
-    //---------------------------------------------------------------
-
-    /*!
-     Execute an ALU operation.
-     @param     oper        operation to perform, see E8085ALU_OPS.
-     @param     flags       The flags to be used for input especially
-                            the carry flag and the aux carray flag.
-     @param     op1         operand 1
-     @param     op2         operand 2
-     @param     pResult     If non-null, store result at this location.
-     @param     pFlags      if non-null, store the new flags at this
-                            location.
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         ALU32_Exec (
-        int             oper,
-        uint32_t        op1,
-        uint32_t        op2,
-        uint8_t         flags,
-        uint8_t         *pFlags,
-        uint32_t        *pResult
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        uint64_t        result = op1;
-        uint8_t         newFlags = 0;
-        //int             i;
-
-        // Do initialization.
-
-        switch (oper) {
-
-            case ALU32_OP_UNKNOWN:
-                result = 0;
-                break;
-
-            case ALU32_OP_ADD:
-                result += op2 + ((flags & ALU32_FLAG_CARRY) ? 1 : 0);
-                if (result & 0xFFFFFFFF00000000) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                break;
-
-            case ALU32_OP_AND:
-                result &= op2;
-                break;
-
-            case ALU32_OP_COMPLEMENT:
-                result = -op1;
-                goto set;
-                break;
-
-            case ALU32_OP_NOT:
-                result = ~op1;
-                goto set;
-                break;
-
-            case ALU32_OP_OR:
-                result |= op2;
-                break;
-
-            case ALU32_OP_SHIFT_LEFT:
-                result <<= 1;
-                result |= (flags & ALU32_FLAG_CARRY) ? 1 : 0;
-                if (op1 & 0x80000000) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFT_RIGHT:
-                if (result & 0x01) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                result = result >> 1;
-                result |= (flags & ALU32_FLAG_CARRY) ? 0x80000000 : 0;
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTA_LEFT:
-                if ((op1 & 0x80000000) == ((op1 & 0x40000000) << 1))
-                    ;
-                else
-                    newFlags |= ALU32_FLAG_CARRY;
-                result <<= 1;
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTA_RIGHT:
-                if (op1 & 0x00000001) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                result = result >> 1;
-                if (op1 & 0x80000000)
-                    result |= 0x80000000;
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTL_LEFT:
-                if (op1 & 0x80000000)
-                    newFlags |= ALU32_FLAG_CARRY;
-                result <<= 1;
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTL_RIGHT:
-                if (op1 & 0x00000001) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                result = result >> 1;
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTR_LEFT:
-                result <<= 1;
-                if (op1 & 0x80000000) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                    result |= 0x00000001;
-                }
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTR_RIGHT:
-                result = result >> 1;
-                if (op1 & 0x00000001) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                    result |= 0x80000000;
-                }
-                //goto set;
-                break;
-
-            case ALU32_OP_SUB:
-                result -= op2 + ((flags & ALU32_FLAG_CARRY) ? 1 : 0);
-                if (result & 0xFFFFFFFF00000000) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                break;
-
-            case ALU32_OP_XOR:
-                result ^= op2;
-                break;
-        }
-
-        // Set the flags.
-        if (0 == (result & 0x00000000FFFFFFFF)) {
-            newFlags |= ALU32_FLAG_ZERO;
-        }
-        if (ALU32_even_parity((uint32_t)result)) {
-            newFlags |= ALU32_FLAG_PARITY;
-        }
-        if (result & 0x80000000) {
-            newFlags |= ALU32_FLAG_SIGN;
-        }
-
-        // Update the external registers if needed.
-    set:
-        if (pFlags) {
-            *pFlags = newFlags;
-        }
-        if (pResult) {
-            *pResult = (uint32_t)result;
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    ALU32_DATA *     ALU32_New (
+    SECT_DATA *     Sect_New (
         void
     )
     {
-        ALU32_DATA       *this;
+        SECT_DATA       *this;
         
-        this = ALU32_Alloc( );
+        this = Sect_Alloc( );
         if (this) {
-            this = ALU32_Init(this);
+            this = Sect_Init(this);
         } 
         return this;
     }
 
 
 
-    
+    SECT_DATA *     Sect_NewFromDataA (
+        char            ident,
+        char            type,
+        uint32_t        addr,
+        uint32_t        offset,
+        uint32_t        len,
+        const
+        char            *pNameA
+    )
+    {
+        SECT_DATA       *this;
+
+        this = Sect_New( );
+        if (this) {
+            this->ident  = ident;
+            this->type   = type;
+            this->addr   = addr;
+            this->offset = offset;
+            this->len    = len;
+            this->pName  = AStr_NewA(pNameA);
+            if (OBJ_NIL == this->pName) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+
+        return this;
+    }
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          P r i o r i t y
+    //                       A d d r e s s
     //---------------------------------------------------------------
-    
-    uint16_t        ALU32_getPriority (
-        ALU32_DATA     *this
+
+    uint32_t        Sect_getAddr (
+        SECT_DATA       *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->addr;
+    }
+
+
+    bool            Sect_setAddr (
+        SECT_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->addr = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        D a t a
+    //---------------------------------------------------------------
+
+    U8ARRAY_DATA *  Sect_getData (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pData;
+    }
+
+
+    bool            Sect_setData (
+        SECT_DATA       *this,
+        U8ARRAY_DATA    *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pData) {
+            obj_Release(this->pData);
+        }
+        this->pData = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      I d e n t i f i e r
+    //---------------------------------------------------------------
+
+    char            Sect_getIdent (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->ident;
+    }
+
+
+    bool            Sect_setIdent (
+        SECT_DATA       *this,
+        char            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->ident = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       O f f s e t
+    //---------------------------------------------------------------
+
+    uint32_t        Sect_getOffset (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->offset;
+    }
+
+
+    bool            Sect_setOffset (
+        SECT_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->offset = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        N a m e
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     Sect_getName (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pName;
+    }
+
+
+    bool            Sect_setName (
+        SECT_DATA       *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pName) {
+            obj_Release(this->pName);
+        }
+        this->pName = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        Sect_getPriority (
+        SECT_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -371,14 +396,14 @@ extern "C" {
     }
 
 
-    bool            ALU32_setPriority (
-        ALU32_DATA     *this,
+    bool            Sect_setPriority (
+        SECT_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -395,13 +420,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        ALU32_getSize (
-        ALU32_DATA       *this
+    uint32_t        Sect_getSize (
+        SECT_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -413,64 +438,18 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * ALU32_getStr (
-        ALU32_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!ALU32_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        ALU32_setStr (
-        ALU32_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!ALU32_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  ALU32_getSuperVtbl (
-        ALU32_DATA     *this
+    OBJ_IUNKNOWN *  Sect_getSuperVtbl (
+        SECT_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -482,7 +461,49 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                          T y p e
+    //---------------------------------------------------------------
+
+    char            Sect_getType (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->type;
+    }
+
+
+    bool            Sect_setType (
+        SECT_DATA       *this,
+        char            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->type = value;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -499,16 +520,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = ALU32_Assign(this,pOther);
+        ERESULT eRc = Sect_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another ALU32 object
+     @param     pOther  a pointer to another SECT object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         ALU32_Assign (
-        ALU32_DATA       *this,
-        ALU32_DATA     *pOther
+    ERESULT         Sect_Assign (
+        SECT_DATA       *this,
+        SECT_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -516,11 +537,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!ALU32_Validate(pOther)) {
+        if (!Sect_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -537,35 +558,33 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
+        if (pOther->pName) {
+            obj_Release(pOther->pName);
+            pOther->pName = OBJ_NIL;
         }
-#endif
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
+        if (this->pName) {
+            if (obj_getVtbl(this->pName)->pCopy) {
+                pOther->pName = obj_getVtbl(this->pName)->pCopy(this->pName);
             }
             else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
+                obj_Retain(this->pName);
+                pOther->pName = this->pName;
             }
         }
-#endif
 
         // Copy other data from this object to other.
-        //pOther->x     = this->x; 
+        pOther->ident    = this->ident;
+        pOther->type     = this->type;
+        pOther->addr     = this->addr;
+        pOther->len      = this->len;
+        pOther->offset   = this->offset;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -581,9 +600,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             ALU32_Compare (
-        ALU32_DATA     *this,
-        ALU32_DATA     *pOther
+    int             Sect_Compare (
+        SECT_DATA     *this,
+        SECT_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -596,19 +615,19 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!ALU32_Validate(pOther)) {
+        if (!Sect_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
         }
 #endif
 
-        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+        iRc = utf8_StrCmp(&this->ident, &pOther->ident);
      
         return iRc;
     }
@@ -623,36 +642,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ALU32      *pCopy = ALU32_Copy(this);
+        Sect      *pCopy = Sect_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ALU32 object which must be 
+     @return    If successful, a SECT object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ALU32_DATA *     ALU32_Copy (
-        ALU32_DATA       *this
+    SECT_DATA *     Sect_Copy (
+        SECT_DATA       *this
     )
     {
-        ALU32_DATA       *pOther = OBJ_NIL;
+        SECT_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef ALU32_IS_IMMUTABLE
+#ifdef SECT_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = ALU32_New( );
+        pOther = Sect_New( );
         if (pOther) {
-            eRc = ALU32_Assign(this, pOther);
+            eRc = Sect_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -670,11 +689,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            ALU32_Dealloc (
+    void            Sect_Dealloc (
         OBJ_ID          objId
     )
     {
-        ALU32_DATA   *this = objId;
+        SECT_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -683,7 +702,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -691,11 +710,12 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((ALU32_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((SECT_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        ALU32_setStr(this, OBJ_NIL);
+        Sect_setData(this, OBJ_NIL);
+        Sect_setName(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -716,32 +736,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ALU32      *pDeepCopy = ALU32_Copy(this);
+        Sect      *pDeepCopy = Sect_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ALU32 object which must be 
+     @return    If successful, a SECT object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ALU32_DATA *     ALU32_DeepyCopy (
-        ALU32_DATA       *this
+    SECT_DATA *     Sect_DeepyCopy (
+        SECT_DATA       *this
     )
     {
-        ALU32_DATA       *pOther = OBJ_NIL;
+        SECT_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = ALU32_New( );
+        pOther = Sect_New( );
         if (pOther) {
-            eRc = ALU32_Assign(this, pOther);
+            eRc = Sect_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -764,8 +784,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ALU32_Disable (
-        ALU32_DATA       *this
+    ERESULT         Sect_Disable (
+        SECT_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -773,7 +793,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -799,8 +819,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ALU32_Enable (
-        ALU32_DATA       *this
+    ERESULT         Sect_Enable (
+        SECT_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -808,7 +828,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -828,11 +848,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    ALU32_DATA *   ALU32_Init (
-        ALU32_DATA       *this
+    SECT_DATA *   Sect_Init (
+        SECT_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(ALU32_DATA);
+        uint32_t        cbSize = sizeof(SECT_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -849,8 +869,8 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_ALU32);
+        //this = (OBJ_ID)Node_Init((NODE_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SECT);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -858,9 +878,9 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&ALU32_Vtbl);
-#ifdef  ALU32_JSON_SUPPORT
-        JsonIn_RegisterClass(ALU32_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Sect_Vtbl);
+#ifdef  SECT_JSON_SUPPORT
+        JsonIn_RegisterClass(Sect_Class());
 #endif
         
         /*
@@ -874,7 +894,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -883,11 +903,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "ALU32::sizeof(ALU32_DATA) = %lu\n", 
-                sizeof(ALU32_DATA)
+                "Sect::sizeof(SECT_DATA) = %lu\n", 
+                sizeof(SECT_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(ALU32_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(SECT_DATA));
 #endif
 
         return this;
@@ -899,8 +919,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         ALU32_IsEnabled (
-        ALU32_DATA       *this
+    ERESULT         Sect_IsEnabled (
+        SECT_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -908,7 +928,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -925,6 +945,46 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          K e y
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     Sect_Key (
+        SECT_DATA       *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        //uint32_t        i;
+        //uint32_t        j;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "%c",
+                    this->ident
+            );
+
+        return pStr;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -935,14 +995,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = ALU32_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Sect_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "ALU32", prefix,
+                        the object name, "Sect", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -950,13 +1010,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          ALU32_QueryInfo (
+    void *          Sect_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        ALU32_DATA     *this = objId;
+        SECT_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -965,7 +1025,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -974,11 +1034,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(ALU32_DATA);
+                return (void *)sizeof(SECT_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)ALU32_Class();
+                return (void *)Sect_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -1004,37 +1064,43 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return ALU32_Disable;
+                            return Sect_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return ALU32_Enable;
+                            return Sect_Enable;
+                        }
+                        break;
+
+                    case 'K':
+                        if (str_Compare("Key", (char *)pStr) == 0) {
+                            return Sect_Key;
                         }
                         break;
 
                     case 'P':
-#ifdef  ALU32_JSON_SUPPORT
+#ifdef  SECT_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return ALU32_ParseJsonFields;
+                            return Sect_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return ALU32_ParseJsonObject;
+                            return Sect_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return ALU32_ToDebugString;
+                            return Sect_ToDebugString;
                         }
-#ifdef  ALU32_JSON_SUPPORT
+#ifdef  SECT_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return ALU32_ToJsonFields;
+                            return Sect_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return ALU32_ToJson;
+                            return Sect_ToJson;
                         }
 #endif
                         break;
@@ -1045,10 +1111,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == ALU32_ToDebugString)
+                if (pData == Sect_Key)
+                    return "Key";
+                if (pData == Sect_ToDebugString)
                     return "ToDebugString";
-#ifdef  ALU32_JSON_SUPPORT
-                if (pData == ALU32_ToJson)
+#ifdef  SECT_JSON_SUPPORT
+                if (pData == Sect_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1070,7 +1138,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = ALU32_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Sect_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1078,8 +1146,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ALU32_ToDebugString (
-        ALU32_DATA      *this,
+    ASTR_DATA *     Sect_ToDebugString (
+        SECT_DATA      *this,
         int             indent
     )
     {
@@ -1094,7 +1162,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Sect_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1115,11 +1183,25 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    ALU32_getSize(this),
+                    Sect_getSize(this),
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "\tident=%c type=%c addr=%08X offset=%08X len=%08X name=%s\n",
+                    this->ident,
+                    this->type,
+                    this->addr,
+                    this->offset,
+                    this->len,
+                    this->pName ? AStr_getData(this->pName) : ""
+            );
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
@@ -1155,15 +1237,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            ALU32_Validate (
-        ALU32_DATA      *this
+    bool            Sect_Validate (
+        SECT_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_ALU32))
+            if (obj_IsKindOf(this, OBJ_IDENT_SECT))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1179,7 +1261,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(ALU32_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(SECT_DATA))) {
             return false;
         }
 

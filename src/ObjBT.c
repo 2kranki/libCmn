@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include        <ObjBT_internal.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
@@ -178,8 +179,30 @@ extern "C" {
     {
         int             iRc;
 
-        iRc = strcmp((char *)pKeyA, (char *)pKeyB);
+        iRc = utf8_StrCmp((char *)pKeyA, (char *)pKeyB);
         return iRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  O b j e c t s  E x i t
+    //---------------------------------------------------------------
+
+    ERESULT         ObjBT_ObjectsExit(
+        OBJBT_DATA      *this,
+        OBJBT_RECORD    *pRecord,
+        OBJARRAY_DATA   *pArray
+    )
+    {
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        OBJ_ID          *pNode = pRecord->node.pValue;
+
+        if (pNode && pArray) {
+            eRc = ObjArray_AppendObj(pArray, pNode, NULL);
+        }
+
+        return eRc;
     }
 
 
@@ -326,6 +349,75 @@ extern "C" {
     //===============================================================
     //                          M e t h o d s
     //===============================================================
+
+
+    //---------------------------------------------------------------
+    //                          A d d
+    //---------------------------------------------------------------
+
+    ERESULT         ObjBT_Add(
+        OBJBT_DATA      *this,
+        OBJ_ID          pNode,
+        bool            fReplace
+    )
+    {
+        OBJBT_RECORD    *pRecord = NULL;
+        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
+        int             iRc;
+        uint32_t        unique;
+        ASTR_DATA       *pKey = OBJ_NIL;
+        ASTR_DATA *     (*pKeyCreate)(OBJ_ID);
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ObjBT_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pNode) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        pKeyCreate =    obj_getVtbl(pNode)->pQueryInfo(
+                                                    pNode,
+                                                    OBJ_QUERYINFO_TYPE_METHOD,
+                                                    "Key"
+                        );
+        if (NULL == pKeyCreate) {
+            return ERESULT_FAILURE;
+        }
+        pKey = pKeyCreate(pNode);
+        if (pKey && obj_IsKindOf(pNode, OBJ_IDENT_ASTR_CLASS))
+            ;
+        else {
+            obj_Release(pKey);
+            pKey = OBJ_NIL;
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        pRecord = Blocks_RecordNew((BLOCKS_DATA *)this, &unique);
+        if (NULL == pRecord) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        pRecord->node.pKey = pKey;
+        pRecord->node.pValue = pNode;
+        pRecord->unique = unique;
+        pRecord->node.color = RBT_RED;
+
+        iRc = rbt_InsertNode(&this->tree, (RBT_NODE *)pRecord);
+        if (iRc) {
+            obj_Retain(pNode);
+            eRc = ERESULT_SUCCESS;
+        }
+        else
+            eRc = ERESULT_DATA_ALREADY_EXISTS;
+
+        // Return to caller.
+        return eRc;
+    }
 
 
     //---------------------------------------------------------------
@@ -546,6 +638,42 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          D e l e t e
+    //---------------------------------------------------------------
+
+    ERESULT         ObjBT_Delete (
+        OBJBT_DATA      *this,
+        OBJ_ID          pObj
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             iRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ObjBT_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pObj) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        iRc = rbt_Delete(&this->tree, pObj);
+        if (iRc)
+            eRc = ERESULT_SUCCESS;
+        else
+            eRc = ERESULT_DATA_NOT_FOUND;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    //---------------------------------------------------------------
     //                         D e e p  C o p y
     //---------------------------------------------------------------
     
@@ -662,6 +790,83 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         E n u m
+    //---------------------------------------------------------------
+
+    OBJENUM_DATA *  ObjBT_Enum (
+        OBJBT_DATA      *this
+    )
+    {
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjBT_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+
+        pEnum = ObjEnum_New();
+        if (pEnum) {
+            eRc =   Blocks_ForEach(
+                                   (BLOCKS_DATA *)this,
+                                   (void *)ObjBT_EnumExit,
+                                   this,
+                                   pEnum
+                                   );
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pEnum);
+                pEnum = OBJ_NIL;
+            }
+        }
+
+        // Return to caller.
+        return pEnum;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          F i n d
+    //---------------------------------------------------------------
+
+    OBJ_ID          ObjBT_Find (
+        OBJBT_DATA      *this,
+        OBJ_ID          pObj
+    )
+    {
+        OBJBT_RECORD    record = {.node.pKey = pObj};
+        OBJBT_RECORD    *pWork;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ObjBT_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if (OBJ_NIL == pObj) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+
+        pWork = (OBJBT_RECORD *)rbt_FindNode(&this->tree, (RBT_NODE *)&record);
+        if (pWork) {
+            return pWork->node.pValue;
+        }
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+    //---------------------------------------------------------------
     //                          F o r  E a c h
     //---------------------------------------------------------------
 
@@ -744,7 +949,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&ObjBT_Vtbl);
         
-        this->unique = 1;
         // Set up Blocks to hold tree data.
         eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(OBJBT_RECORD));
         if (ERESULT_FAILED(eRc)) {
@@ -825,6 +1029,50 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                         O b j e c t s
+    //---------------------------------------------------------------
+
+    OBJARRAY_DATA * NodeBT_Objects(
+        OBJBT_DATA      *this
+    )
+    {
+        OBJARRAY_DATA   *pNodes = OBJ_NIL;
+        ERESULT         eRc;
+        OBJ_ID          pNode = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjBT_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pNodes = ObjArray_New();
+        if (pNodes) {
+            eRc =   Blocks_ForEach(
+                                (BLOCKS_DATA *)this,
+                                (void *)ObjBT_ObjectsExit,
+                                this,
+                                pNodes
+                    );
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pNodes);
+                pNodes = OBJ_NIL;
+            }
+            else
+                ObjArray_SortAscending(pNodes, obj_getCompare(pNode));
+        }
+
+        // Return to caller.
+        return pNodes;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
