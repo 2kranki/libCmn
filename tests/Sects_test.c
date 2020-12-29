@@ -259,13 +259,13 @@ int             test_Sects_AddFind01 (
 
         eRc = Sects_AddA(pObj, 'a', 'c', 0x0001, 0x001, 1, "1");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = Sects_AddA(pObj, 'b', 'c', 0x0002, 0x002, 2, "2");
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         eRc = Sects_AddA(pObj, 'c', 'c', 0x0003, 0x003, 3, "3");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        eRc = Sects_AddA(pObj, 'd', 'c', 0x0004, 0x004, 4, "4");
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         eRc = Sects_AddA(pObj, 'e', 'c', 0x0005, 0x005, 5, "5");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = Sects_AddA(pObj, 'b', 'c', 0x0002, 0x002, 2, "2");
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = Sects_AddA(pObj, 'd', 'c', 0x0004, 0x004, 4, "4");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         eRc = Sects_AddA(pObj, 'b', 'c', 0x0002, 0x002, 2, "2");

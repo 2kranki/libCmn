@@ -791,7 +791,7 @@ extern "C" {
         if (pEnum) {
             eRc = szBT_ForEach(this->pTree, (void *)Sects_ScanExit, this, pEnum);
             if (pEnum->pArray) {
-                eRc = ObjArray_SortAscending(pEnum->pArray, NULL);
+                eRc = ObjArray_SortAscending(pEnum->pArray, (void *)Sect_Compare);
             }
         }
 

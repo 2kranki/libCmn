@@ -79,6 +79,7 @@ struct Sect_data_s  {
     uint32_t        offset;         //
     ASTR_DATA       *pName;
     U8ARRAY_DATA    *pData;
+    SYMS_DATA       *pExterns;
 
 };
 #pragma pack(pop)

@@ -279,19 +279,39 @@ extern "C" {
         ASTR_DATA       *pStr
     )
     {
-#ifdef XYZZZY 
-        void *          (*pQueryInfo)(
-            OBJ_ID          objId,
-            uint32_t        type,
-            void            *pData
-        );
-        ASTR_DATA *     (*pToJson)(
-            OBJ_ID          objId
-        );
-        ASTR_DATA       *pWrkStr;
-#endif
+        ERESULT         eRc;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
 
-#ifdef XYZZZY 
+        AStr_AppendPrint(
+                         pStr,
+                         "\t\"count\":%d,\n\t\"entries\":[\n\t\t",
+                         szBT_getSize(this->pTree)
+        );
+
+        pEnum = Sects_Enum(this);
+        if (pEnum) {
+            for (;;) {
+                SECT_DATA       *pEntry = OBJ_NIL;
+                ASTR_DATA       *pWrk = OBJ_NIL;
+                eRc = ObjEnum_Next(pEnum, 1, (OBJ_ID *)&pEntry, NULL);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
+                }
+                if (pEntry) {
+                    pWrk = Sect_ToJson(pEntry);
+                    if (pWrk) {
+                        AStr_Append(pStr, pWrk);
+                        obj_Release(pWrk);
+                    }
+                }
+            }
+            obj_Release(pEnum);
+            pEnum = OBJ_NIL;
+        }
+
+        AStr_AppendA(pStr, "\t]\n");
+
+#ifdef XYZZZY
         JsonOut_Append_i32("x", this->x, pStr);
         JsonOut_Append_i64("t", this->t, pStr);
         JsonOut_Append_u32("o", this->o, pStr);

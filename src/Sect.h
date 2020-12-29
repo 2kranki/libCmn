@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Syms.h>
 #include        <u8Array.h>
 
 
@@ -164,6 +165,11 @@ extern "C" {
         char            *pStringA
     );
 #endif
+
+
+    ASTR_DATA *     Sect_ToStringTitle (
+        int             indent
+    );
 
 
 
@@ -337,6 +343,12 @@ extern "C" {
     );
     
     
+    ASTR_DATA *     Sect_ToString (
+        SECT_DATA       *this,
+        int             indent
+    );
+
+
 
     
 #ifdef  __cplusplus

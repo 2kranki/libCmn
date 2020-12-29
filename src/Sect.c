@@ -150,6 +150,37 @@ extern "C" {
 
 
 
+    ASTR_DATA *     Sect_ToStringTitle (
+        int             indent
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        //uint32_t        i;
+        //uint32_t        j;
+
+        // Do initialization.
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    "Id Type    Addr       Offset       Len     Name\n"
+            );
+
+        return pStr;
+    }
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
@@ -237,6 +268,52 @@ extern "C" {
             obj_Release(this->pData);
         }
         this->pData = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      E x t e r n s
+    //---------------------------------------------------------------
+
+    SYMS_DATA *     Sect_getExterns (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pExterns;
+    }
+
+
+    bool            Sect_setExterns (
+        SECT_DATA       *this,
+        SYMS_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pExterns) {
+            obj_Release(this->pExterns);
+        }
+        this->pExterns = pValue;
 
         return true;
     }
@@ -715,6 +792,7 @@ extern "C" {
 #endif
 
         Sect_setData(this, OBJ_NIL);
+        Sect_setExterns(this, OBJ_NIL);
         Sect_setName(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -883,14 +961,12 @@ extern "C" {
         JsonIn_RegisterClass(Sect_Class());
 #endif
         
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
+        this->pExterns = Syms_New( );
+        if (OBJ_NIL == this->pExterns) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
 
 #ifdef NDEBUG
 #else
@@ -1230,7 +1306,52 @@ extern "C" {
     }
     
     
-    
+    ASTR_DATA *     Sect_ToString (
+        SECT_DATA       *this,
+        int             indent
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        //uint32_t        i;
+        //uint32_t        j;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+
+        eRc = AStr_AppendPrint(
+                    pStr,
+                    " %c  %c    %08X    %08X    %08X  %s\n",
+                    this->ident,
+                    this->type,
+                    this->addr,
+                    this->offset,
+                    this->len,
+                   (this->pName ? AStr_getData(this->pName) : "")
+            );
+
+        return pStr;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
