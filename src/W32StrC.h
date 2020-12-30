@@ -12,15 +12,15 @@
  *          its data remain constant since other programs rely
  *          on that.
  *
- *          Advance(), LookAhead() and Reset() provide a mechanism
- *          for scanning the string. It does use the obj's Misc
- *          field.
+ *          Advance(), LookAhead(), Match() and Reset() provide a
+ *          mechanism for scanning a string. They use the obj's
+ *          Misc field to track its current offset into the string.
  *
  * Remarks
  *	1.      OBJ_FLAG_USER1 is used by this object.
  *  2.      obj's Misc fields are not used by this object unless
- *          the scan methods (Advance, LookAhead or Reset) are
- *          used.
+ *          the scan methods (Advance, LookAhead, Match or Reset)
+ *          are used.
  *
  * History
  *  02/19/2016 Generated

@@ -1,90 +1,24 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Universal Expression Parser (Expr) Header
+//                  Command Processor (CmdProc) Header
 //****************************************************************
 /*
  * Program
- *			Universal Expression Parser (Expr)
+ *          Command Processor (CmdProc)
  * Purpose
- *			This object provides a Universal Expression Parser
- *          for the language described below. An optional symbol
- *          table can be used to provide values.
+ *          This object provides a standardized way of handling
+ *          a separate CmdProc to run things without complications
+ *          of interfering with the main CmdProc. A CmdProc may be 
+ *          called a CmdProc on other O/S's.
  *
  * Remarks
- *	1.      None
+ *  1.      None
  *
  * History
- *	03/03/2020 Generated
+ *  12/29/2020 Generated
  */
 
-/*                 * * *  Expression Grammar  * * *
-                                                Associativity
-expr        :   Logical_Or
-            ;
-
-Logical_Or  :   Logical_Or "||" Logical_And     # Left to Right
-            |   Logical_And
-            ;
-
-Logical_And :   Logical_And "&&" Bitwise_Or     # Left to Right
-            |   Bitwise_Or
-            ;
-
-Bitwise_Or  :   Bitwise_Or '|' Bitwise_Xor      # Left to Right
-            |   Bitwise_Xor
-            ;
-
-Bitwise_Xor :   Bitwise_Xor '^' Bitwise_And     # Left to Right
-            |   Bitwise_And
-            ;
-
-Bitwise_And :   Bitwise_And '&' Equal           # Left to Right
-            |   Equal
-            ;
-
-Equal       :   Equql "==" Rel                  # Left to Right
-            |   Equal "!=" Rel
-            |   Rel
-            ;
-
-Rel         :   Rel '<' Shift                   # Left to Right
-            |   Rel "<=" Shift
-            |   Rel '>' Shift
-            |   Rel ">=" Shift
-            |   Shift
-            ;
-
-Shift       :   Shift "<<" Add                  # Left to Right
-            |   Shift ">>" Add
-            |   Add
-            ;
-
- Add        :   Add '+' Mult                    # Left to Right
-            |   Add '-' Mult
-            |   Mult
-            ;
-
- Mult       :   Mult '*' Unary                  # Left to Right
-            |   Mult '/' Unary
-            |   Mult '%' Unary
-            |   Unary
-            ;
-
- Unary      :   '!' Prim                        # Right to Left
-            |   '+' Prim
-            |   '-' Prim
-            |   "++" Prim
-            |   "--" Prim
-            |   Prim
-            ;
-
- Prim       :   integer                         # Left to Right
-            |   symbol
-            |   '(' Expr ')'
-            ;
-
- */
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -119,22 +53,21 @@ Shift       :   Shift "<<" Add                  # Left to Right
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <Scanner.h>
 
 
-#ifndef         EXPR_H
-#define         EXPR_H
+#ifndef         CMDPROC_H
+#define         CMDPROC_H
 
 
-//#define   EXPR_IS_IMMUTABLE     1
-#define   EXPR_JSON_SUPPORT     1
-//#define   EXPR_SINGLETON        1
-
-
+//#define   CMDPROC_IS_IMMUTABLE     1
+#define   CMDPROC_JSON_SUPPORT       1
+//#define   CMDPROC_SINGLETON        1
 
 
 
-#ifdef	__cplusplus
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -144,32 +77,32 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Expr_data_s	EXPR_DATA;            // Inherits from OBJ
-    typedef struct Expr_class_data_s EXPR_CLASS_DATA;   // Inherits from OBJ
+    typedef struct CmdProc_data_s  CMDPROC_DATA;            // Inherits from OBJ
+    typedef struct CmdProc_class_data_s CMDPROC_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Expr_vtbl_s	{
+    typedef struct CmdProc_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Expr_object.c.
+        // method names to the vtbl definition in CmdProc_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(EXPR_DATA *);
-    } EXPR_VTBL;
+        //bool        (*pIsEnabled)(CMDPROC_DATA *);
+    } CMDPROC_VTBL;
 
-    typedef struct Expr_class_vtbl_s	{
+    typedef struct CmdProc_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Expr_object.c.
+        // method names to the vtbl definition in CmdProc_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(EXPR_DATA *);
-    } EXPR_CLASS_VTBL;
+        //bool        (*pIsEnabled)(CMDPROC_DATA *);
+    } CMDPROC_CLASS_VTBL;
 
 
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -177,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  EXPR_SINGLETON
-    EXPR_DATA *     Expr_Shared (
+#ifdef  CMDPROC_SINGLETON
+    CMDPROC_DATA *     CmdProc_Shared (
         void
     );
 
-    void            Expr_SharedReset (
+    void            CmdProc_SharedReset (
         void
     );
 #endif
@@ -192,29 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Expr object if successful, otherwise OBJ_NIL.
+     @return    pointer to CmdProc object if successful, otherwise OBJ_NIL.
      */
-    EXPR_DATA *     Expr_Alloc (
+    CMDPROC_DATA *     CmdProc_Alloc (
         void
     );
     
     
-    OBJ_ID          Expr_Class (
+    OBJ_ID          CmdProc_Class (
         void
     );
     
     
-    EXPR_DATA *     Expr_New (
+    CMDPROC_DATA *     CmdProc_New (
         void
     );
     
     
-#ifdef  EXPR_JSON_SUPPORT
-    EXPR_DATA *     Expr_NewFromJsonString (
+#ifdef  CMDPROC_JSON_SUPPORT
+    CMDPROC_DATA *   CmdProc_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    EXPR_DATA *     Expr_NewFromJsonStringA (
+    CMDPROC_DATA *   CmdProc_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -233,46 +166,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         Expr_Calc (
-        EXPR_DATA	    *this,
-        int32_t         *pAnswer
+    ERESULT     CmdProc_Disable (
+        CMDPROC_DATA       *this
     );
 
 
-    EXPR_DATA *     Expr_Init (
-        EXPR_DATA       *this
+    ERESULT     CmdProc_Enable (
+        CMDPROC_DATA       *this
+    );
+
+   
+    CMDPROC_DATA *   CmdProc_Init (
+        CMDPROC_DATA     *this
     );
 
 
-    /*!
-     Set up a Scanner object as the primary source of data and parsing
-     support.
-     @param     this    object pointer
-     @param     pScan   Scanner object pointer
-     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_* error.
-     */
-    ERESULT         Expr_SetupScanner (
-        EXPR_DATA		*this,
-        SCANNER_DATA    *pScan
+    ERESULT     CmdProc_IsEnabled (
+        CMDPROC_DATA       *this
     );
     
  
-#ifdef  EXPR_JSON_SUPPORT
+#ifdef  CMDPROC_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Expr_ToJson(this);
+     ASTR_DATA      *pDesc = CmdProc_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
-                ERESULT_* error code.
+                JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Expr_ToJson (
-        EXPR_DATA   *this
+    ASTR_DATA *     CmdProc_ToJson (
+        CMDPROC_DATA   *this
     );
 #endif
 
@@ -281,7 +209,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Expr_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = CmdProc_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -289,17 +217,17 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    Expr_ToDebugString (
-        EXPR_DATA     *this,
+    ASTR_DATA *     CmdProc_ToDebugString (
+        CMDPROC_DATA     *this,
         int             indent
     );
     
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* EXPR_H */
+#endif  /* CMDPROC_H */
 

@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/29/2020 12:17:34.000)
+# (12/30/2020 17:45:37.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -194,6 +194,26 @@ OBJS += $(OBJDIR)/Blocks_object.o
 $(OBJDIR)/Blocks_object.o: $(SRCDIR)/Blocks_object.c $(SRCDIR)/Blocks.h $(SRCDIR)/Blocks_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/Cmd.o
+
+$(OBJDIR)/Cmd.o: $(SRCDIR)/Cmd.c $(SRCDIR)/AStr.h $(SRCDIR)/Cmd.h $(SRCDIR)/Cmd_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/CmdProc.o
+
+$(OBJDIR)/CmdProc.o: $(SRCDIR)/CmdProc.c $(SRCDIR)/AStr.h $(SRCDIR)/CmdProc.h $(SRCDIR)/CmdProc_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/CmdProc_json.o
+
+$(OBJDIR)/CmdProc_json.o: $(SRCDIR)/CmdProc_json.c $(SRCDIR)/CmdProc.h $(SRCDIR)/CmdProc_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/CmdProc_object.o
+
+$(OBJDIR)/CmdProc_object.o: $(SRCDIR)/CmdProc_object.c $(SRCDIR)/AStr.h $(SRCDIR)/CmdProc.h $(SRCDIR)/CmdProc_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/CmdUtl.o
 
 $(OBJDIR)/CmdUtl.o: $(SRCDIR)/CmdUtl.c $(SRCDIR)/AStr.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/CmdUtl_internal.h $(SRCDIR)/cmn_defs.h 
@@ -202,6 +222,16 @@ $(OBJDIR)/CmdUtl.o: $(SRCDIR)/CmdUtl.c $(SRCDIR)/AStr.h $(SRCDIR)/CmdUtl.h $(SRC
 OBJS += $(OBJDIR)/CmdUtl_object.o
 
 $(OBJDIR)/CmdUtl_object.o: $(SRCDIR)/CmdUtl_object.c $(SRCDIR)/AStr.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/CmdUtl_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Cmd_json.o
+
+$(OBJDIR)/Cmd_json.o: $(SRCDIR)/Cmd_json.c $(SRCDIR)/Cmd.h $(SRCDIR)/Cmd_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Cmd_object.o
+
+$(OBJDIR)/Cmd_object.o: $(SRCDIR)/Cmd_object.c $(SRCDIR)/AStr.h $(SRCDIR)/Cmd.h $(SRCDIR)/Cmd_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Compiler.o
@@ -2098,9 +2128,21 @@ Blocks_test: $(TEST_SRC)/Blocks_test.c $(SRCDIR)/Blocks.h $(SRCDIR)/Blocks_inter
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += CmdProc_test
+
+CmdProc_test: $(TEST_SRC)/CmdProc_test.c $(SRCDIR)/CmdProc.h $(SRCDIR)/CmdProc_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += CmdUtl_test
 
 CmdUtl_test: $(TEST_SRC)/CmdUtl_test.c $(SRCDIR)/CmdUtl.h $(SRCDIR)/CmdUtl_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Cmd_test
+
+Cmd_test: $(TEST_SRC)/Cmd_test.c $(SRCDIR)/Cmd.h $(SRCDIR)/Cmd_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

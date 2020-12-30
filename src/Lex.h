@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Lex (Lex) Header
+//                  Lexical Scanner (Lex) Header
 //****************************************************************
 /*
  * Program
- *          Lex (Lex)
+ *          Lexical Scanner (Lex)
  * Purpose
  *          This object provides the basis for a Lexical Scanner. It
  *          supports creating an output token from the input and queueing

@@ -136,8 +136,8 @@ extern "C" {
     }   CMDUTL_TYPE;
 
 
-    // An option must have at a minimum either a short name or a long name,
-    // as well as both.  CmdUtl_ProcessOption() will correctly handle these
+    // An option must have at a minimum either a short name or a long name. Both
+    // may be provided.  CmdUtl_ProcessOption() will correctly handle these
     // three situations.
     // Note - The end of an option table is denoted by a pLongName of NULL
     // and a shortName of 0.

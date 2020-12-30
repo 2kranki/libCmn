@@ -45,7 +45,7 @@
 #include        <ascii.h>
 #include        <trace.h>
 
-
+// If debugging, provide trace of all look-aheads.
 #ifdef NDEBUG
 #   define  LOOKAHEAD(num)  this->pInputLookAhead(this->pObjInput, num);
 #else

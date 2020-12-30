@@ -207,6 +207,10 @@ extern "C" {
         OBJ_IDENT_CB32_CLASS,
         OBJ_IDENT_CFA,                  // C Fixed Array
         OBJ_IDENT_CFA_CLASS,
+        OBJ_IDENT_CMD,                  // Command Base
+        OBJ_IDENT_CMD_CLASS,
+        OBJ_IDENT_CMDPROC,              // Command Processor
+        OBJ_IDENT_CMDPROC_CLASS,
         OBJ_IDENT_CMDUTL,               // Command Line Parsing/Control Utilities
         OBJ_IDENT_CMDUTL_CLASS,
         OBJ_IDENT_COMPILER,

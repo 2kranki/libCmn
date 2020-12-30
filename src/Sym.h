@@ -130,8 +130,8 @@ extern "C" {
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
         uint32_t        strct;              // Struct Identifier (0 == none)
-        uint32_t        section;            // Section Identifier (0 == none)
-        uint32_t        addr;               // Address within Section
+        uint32_t        section;            // Section/Segment Identifier (0 == none)
+        uint32_t        addr;               // Address within Section/Segment
         int32_t         value;
         uint32_t        record;             // Input Record Number
         uint16_t        prim;               // See SYM_PRIMITIVE;

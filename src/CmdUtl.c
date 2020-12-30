@@ -1539,7 +1539,7 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                      P r o c e s s  O p t i o n
+    //                 P r o c e s s  O p t i o n
     //---------------------------------------------------------------
 
     ERESULT         CmdUtl_ProcessOption (
@@ -1601,7 +1601,7 @@ extern "C" {
                         option[1] = '\0';
                         iRc =   CmdUtl_CreateErrorMsg(
                                     this,
-                                    "option requires an argument",
+                                    "option requires a path argument",
                                     option
                                 );
                         return ERESULT_DATA_MISSING;
@@ -1618,7 +1618,7 @@ extern "C" {
                         option[1] = '\0';
                         iRc =   CmdUtl_CreateErrorMsg(
                                     this,
-                                    "option requires an argument",
+                                    "option requires a string argument",
                                     option
                                 );
                         return ERESULT_DATA_MISSING;
