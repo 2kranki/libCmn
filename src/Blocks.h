@@ -297,6 +297,12 @@ extern "C" {
     );
 
 
+    /*!
+     Return the address of the record given its unique number.
+     @param     this    Object Pointer
+     @param     unique  record's unique number
+     @return:   If successful, address of the record. Otherwise, NULL.
+     */
     void *          Blocks_RecordGetUnique (
         BLOCKS_DATA    *this,
         uint32_t       unique

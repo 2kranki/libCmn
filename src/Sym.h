@@ -99,6 +99,26 @@ extern "C" {
     } SYM_CLASS_VTBL;
 
 
+    // Primitive Types
+    /*
+     Note: Signed Types are even, unsigned types are odd.
+     */
+    typedef enum Sym_primative_e {
+        SYM_PRIM_UNKNOWN=0,
+        SYM_PRIM_CHAR,
+        SYM_PRIM_UCHAR,
+        SYM_PRIM_HALF,
+        SYM_PRIM_UHALF,
+        SYM_PRIM_WORD,
+        SYM_PRIM_UWORD,
+        SYM_PRIM_DBLWORD,
+        SYM_PRIM_UDBLWORD,
+        SYM_PRIM_VOID,
+        SYM_PRIM_POINTER,
+    } SYM_PRIMITIVE;
+
+
+
 // WARNING: Objects that inherit from this one cannot expand entry.
 //          Those fields must be added here.
 

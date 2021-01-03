@@ -70,7 +70,6 @@
         {name:"FileRef" deps:["AStrC.h","Path.h"]},
         {name:"genObj"},
         {name:"greg"},
-        {name:"hash32"},
         {name:"hex", json:true},
         {name:"hjson"},
         {name:"I16Array", deps:["array.h"], json:true},

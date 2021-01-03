@@ -1145,6 +1145,9 @@ extern "C" {
         }
 #endif
 
+        // Since we do not have an index for unique item numbers,
+        // we do a sequential search of the active list for the
+        // item.
         while ((pNode = listdl_Next(&this->activeList, pNode))) {
             if (pNode->unique == unique) {
                 return pNode->data;
