@@ -291,6 +291,8 @@ extern "C" {
         OBJ_IDENT_I32ARRAY_CLASS,
         OBJ_IDENT_I32MATRIX,            // Matrix of int32_t
         OBJ_IDENT_I32MATRIX_CLASS,
+        OBJ_IDENT_INTINDEX,             // Integer Index
+        OBJ_IDENT_INTINDEX_CLASS,
         OBJ_IDENT_IO,                   // I/O Interface
         OBJ_IDENT_IOBASE,               // I/O Base Logic
         OBJ_IDENT_IOBASE_CLASS,
