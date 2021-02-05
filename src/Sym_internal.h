@@ -41,6 +41,7 @@
 
 #include        <Sym.h>
 #include        <JsonIn.h>
+#include        <Node_internal.h>
 
 
 #ifndef SYM_INTERNAL_H
@@ -66,7 +67,7 @@ extern "C" {
 struct Sym_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    NODE_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
@@ -144,7 +145,7 @@ struct Sym_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SYM_DATA *       Sym_ParseJsonObject (
+    SYM_DATA *      Sym_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -160,7 +161,7 @@ struct Sym_data_s	{
      */
     ERESULT         Sym_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SYM_DATA     *pObject
+        SYM_DATA        *pObject
     );
 #endif
 

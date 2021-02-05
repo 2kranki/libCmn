@@ -41,6 +41,7 @@
 
 #include        <Blocks.h>
 #include        <JsonIn.h>
+#include        <U32Index.h>
 #include        <listdl.h>
 
 
@@ -110,6 +111,8 @@ struct Blocks_data_s	{
     uint32_t        cRecordsPerBlock;
     uint32_t        cBlocks;
     uint32_t        unique;
+    uint32_t        rsvd32;
+    U32INDEX_DATA   *pIndex;
 
     // Record Deletion Exit
     P_ERESULT_EXIT3 pDelete;

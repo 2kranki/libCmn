@@ -75,7 +75,7 @@ struct NodeTree_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    NODEARRAY_DATA  *pArray;        // Root is always at 1
+    OBJARRAY_DATA   *pArray;        // Root is always at 1
     uint32_t        size;           // Maximum number of elements
     NODELINK_DATA   *pOpen;
     NODELINK_DATA   *pClose;

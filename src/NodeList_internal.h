@@ -94,7 +94,7 @@ struct NodeList_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  NODELIST_SINGLETON
-    NODELIST_DATA *     NodeList_getSingleton (
+    NODELIST_DATA * NodeList_getSingleton (
         void
     );
 
@@ -120,7 +120,7 @@ struct NodeList_data_s	{
 
 
 #ifdef  NODELIST_JSON_SUPPORT
-    NODELIST_DATA *       NodeList_ParseJsonObject (
+    NODELIST_DATA * NodeList_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 #endif

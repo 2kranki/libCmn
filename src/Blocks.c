@@ -290,6 +290,52 @@ extern "C" {
     }
 
 
+    //---------------------------------------------------------------
+    //                         I n d e x
+    //---------------------------------------------------------------
+
+    U32INDEX_DATA * Blocks_getIndex (
+        BLOCKS_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Blocks_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pIndex;
+    }
+
+
+    bool            Blocks_setIndex (
+        BLOCKS_DATA     *this,
+        U32INDEX_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Blocks_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pIndex) {
+            obj_Release(this->pIndex);
+        }
+        this->pIndex = pValue;
+
+        return true;
+    }
+
+
+
     LISTDL_DATA *   Blocks_getList (
         BLOCKS_DATA     *this
     )
@@ -630,6 +676,7 @@ extern "C" {
         }
 #endif
 
+        Blocks_setIndex(this, OBJ_NIL);
         (void)Blocks_Reset(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -1075,6 +1122,7 @@ extern "C" {
         BLOCKS_NODE     *pNode = (BLOCKS_NODE *)((uint8_t *)pRecord - sizeof(BLOCKS_NODE));
         bool            fRc;
         ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        index;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1085,12 +1133,16 @@ extern "C" {
         }
 #endif
 
+        index = pNode->unique;
         fRc = listdl_Delete(&this->activeList, pNode);
         if (fRc) {
+            listdl_Add2Head(&this->freeList, pNode);
+            if (this->pIndex) {
+                eRc = U32Index_Delete(this->pIndex, index);
+            }
             if (this->pDelete) {
                 eRc = this->pDelete(this->pObj, pRecord, this->pArg3);
             }
-            listdl_Add2Head(&this->freeList, pNode);
         }
         else
             eRc = ERESULT_DATA_NOT_FOUND;
@@ -1145,12 +1197,15 @@ extern "C" {
         }
 #endif
 
-        // Since we do not have an index for unique item numbers,
-        // we do a sequential search of the active list for the
-        // item.
-        while ((pNode = listdl_Next(&this->activeList, pNode))) {
-            if (pNode->unique == unique) {
+        if (this->pIndex) {
+            pNode = U32Index_Find(this->pIndex, unique);
+            if (pNode)
                 return pNode->data;
+        } else {
+            while ((pNode = listdl_Next(&this->activeList, pNode))) {
+                if (pNode->unique == unique) {
+                    return pNode->data;
+                }
             }
         }
 
@@ -1165,6 +1220,7 @@ extern "C" {
         uint32_t        *pUnique
     )
     {
+        ERESULT         eRc;
         bool            fRc;
         //uint32_t        i;
         BLOCKS_NODE     *pNode;
@@ -1191,6 +1247,9 @@ extern "C" {
             listdl_Add2Head(&this->activeList, pNode);
         }
         pNode->unique = ++this->unique;
+        if (this->pIndex) {
+            eRc = U32Index_Add(this->pIndex, pNode->unique, pNode->data, false);
+        }
 
         // Return to caller.
         if (pUnique) {
@@ -1198,6 +1257,34 @@ extern "C" {
         }
         return pNode->data;
     }
+
+
+    uint32_t        Blocks_RecordUnique(
+        BLOCKS_DATA    *this,
+        int32_t        index                    // (relative to 1)
+    )
+    {
+        BLOCKS_NODE     *pNode;
+        uint32_t        unique = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        pNode = listdl_Index(&this->activeList, index);
+        if (pNode) {
+            unique = pNode->unique;
+        }
+
+        // Return to caller.
+        return unique;
+    }
+
 
 
 
@@ -1243,6 +1330,48 @@ extern "C" {
             pBlock = listdl_DeleteTail(&this->blocks);
             mem_Free(pBlock);
         }
+
+        // Delete and restart the unique index if present.
+        if (this->pIndex) {
+            Blocks_setIndex(this, OBJ_NIL);
+            Blocks_SetupIndex(this);
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       S e t u p  I n d e x
+    //---------------------------------------------------------------
+
+    ERESULT         Blocks_SetupIndex (
+        BLOCKS_DATA     *this
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Blocks_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pIndex) {
+            return ERESULT_DATA_ALREADY_EXISTS;
+        }
+        if (0 == Blocks_getNumActive(this)) {
+            this->pIndex = U32Index_New();
+            if (OBJ_NIL == this->pIndex) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        } else
+            return ERESULT_DATA_ALREADY_EXISTS;
 
         // Return to caller.
         return ERESULT_SUCCESS;

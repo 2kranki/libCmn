@@ -165,7 +165,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        NODE_DATA   *pObject = OBJ_NIL;
+        NODE_DATA       *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
@@ -212,7 +212,7 @@ extern "C" {
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        NODE_DATA   *pObject = OBJ_NIL;
+        NODE_DATA       *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -239,7 +239,7 @@ extern "C" {
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        NODE_DATA   *pObject = OBJ_NIL;
+        NODE_DATA       *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);

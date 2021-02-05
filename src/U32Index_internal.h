@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   IntIndex_internal.h
- *  Generated 01/03/2021 13:14:35
+ * File:   U32Index_internal.h
+ *  Generated 01/04/2021 10:35:59
  *
  * Notes:
  *  --  N/A
@@ -39,13 +39,13 @@
 
 
 
-#include        <IntIndex.h>
+#include        <U32Index.h>
 #include        <array.h>
 #include        <JsonIn.h>
 
 
-#ifndef INTINDEX_INTERNAL_H
-#define INTINDEX_INTERNAL_H
+#ifndef U32INDEX_INTERNAL_H
+#define U32INDEX_INTERNAL_H
 
 
 
@@ -56,10 +56,11 @@ extern "C" {
 #endif
 
 
-    typedef struct IntIdex_Node_s {
-        int             index;
+    typedef struct U32Index_Node_s {
+        uint32_t        index;
         void            *ptr;
-    } INTINDEX_NODE;
+    } U32INDEX_NODE;
+
 
 
 
@@ -68,26 +69,25 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct IntIndex_data_s  {
+struct U32Index_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    uint32_t        highest;        // Highest key in index
     ARRAY_DATA      *pArray;
-    uint8_t         fSigned;
-    uint8_t         rsvd8[3];
 
 };
 #pragma pack(pop)
 
     extern
-    struct IntIndex_class_data_s  IntIndex_ClassObj;
+    struct U32Index_class_data_s  U32Index_ClassObj;
 
     extern
     const
-    INTINDEX_VTBL         IntIndex_Vtbl;
+    U32INDEX_VTBL         U32Index_Vtbl;
 
 
 
@@ -95,13 +95,13 @@ struct IntIndex_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  INTINDEX_SINGLETON
-    INTINDEX_DATA * IntIndex_getSingleton (
+#ifdef  U32INDEX_SINGLETON
+    U32INDEX_DATA *     U32Index_getSingleton (
         void
     );
 
-    bool            IntIndex_setSingleton (
-     INTINDEX_DATA       *pValue
+    bool            U32Index_setSingleton (
+     U32INDEX_DATA       *pValue
 );
 #endif
 
@@ -111,35 +111,35 @@ struct IntIndex_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  IntIndex_getSuperVtbl (
-        INTINDEX_DATA   *this
+    OBJ_IUNKNOWN *  U32Index_getSuperVtbl (
+        U32INDEX_DATA     *this
     );
 
 
-    ERESULT         IntIndex_Assign (
-        INTINDEX_DATA   *this,
-        INTINDEX_DATA   *pOther
+    ERESULT         U32Index_Assign (
+        U32INDEX_DATA    *this,
+        U32INDEX_DATA    *pOther
     );
 
 
-    INTINDEX_DATA * IntIndex_Copy (
-        INTINDEX_DATA   *this
+    U32INDEX_DATA *       U32Index_Copy (
+        U32INDEX_DATA     *this
     );
 
 
-    void            IntIndex_Dealloc (
+    void            U32Index_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  INTINDEX_JSON_SUPPORT
+#ifdef  U32INDEX_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    INTINDEX_DATA * IntIndex_ParseJsonObject (
+    U32INDEX_DATA *       U32Index_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -153,35 +153,35 @@ struct IntIndex_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         IntIndex_ParseJsonFields (
+    ERESULT         U32Index_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        INTINDEX_DATA   *pObject
+        U32INDEX_DATA     *pObject
     );
 #endif
 
 
-    void *          IntIndex_QueryInfo (
+    void *          U32Index_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  INTINDEX_JSON_SUPPORT
+#ifdef  U32INDEX_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = IntIndex_ToJson(this);
+     ASTR_DATA      *pDesc = U32Index_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     IntIndex_ToJson (
-        INTINDEX_DATA   *this
+    ASTR_DATA *     U32Index_ToJson (
+        U32INDEX_DATA      *this
     );
 
 
@@ -194,8 +194,8 @@ struct IntIndex_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         IntIndex_ToJsonFields (
-        INTINDEX_DATA   *this,
+    ERESULT         U32Index_ToJsonFields (
+        U32INDEX_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -205,8 +205,8 @@ struct IntIndex_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            IntIndex_Validate (
-        INTINDEX_DATA   *this
+    bool            U32Index_Validate (
+        U32INDEX_DATA       *this
     );
 #endif
 
@@ -216,5 +216,5 @@ struct IntIndex_data_s  {
 }
 #endif
 
-#endif  /* INTINDEX_INTERNAL_H */
+#endif  /* U32INDEX_INTERNAL_H */
 

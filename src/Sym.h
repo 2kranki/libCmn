@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Node.h>
 
 
 #ifndef         SYM_H
@@ -113,6 +114,8 @@ extern "C" {
         SYM_PRIM_UWORD,
         SYM_PRIM_DBLWORD,
         SYM_PRIM_UDBLWORD,
+        SYM_PRIM_QUAD,
+        SYM_PRIM_UQUAD,
         SYM_PRIM_VOID,
         SYM_PRIM_POINTER,
     } SYM_PRIMITIVE;
@@ -127,23 +130,23 @@ extern "C" {
         char            name[65];           // NUL-terminated name
         // Note: Abs or Rel may not be valid in initial passes.
         uint8_t         fFlgs1;             // Flags
-        #define SYM_FLGS1_ABS       0x80        // Absolute Address
-        #define SYM_FLGS1_ACT       0x40        // Active Entry
+        #define SYM_FLGS1_ACT       0x80        // Active Entry
+        #define SYM_FLGS1_ABS       0x40        // Absolute Address
         #define SYM_FLGS1_REL       0x20        // Relocatable Address
-        #define SYM_FLGS1_UNUSED1   0x10        // Unused Flag
-        #define SYM_FLGS1_UNUSED2   0x08        // Unused Flag
-        #define SYM_FLGS1_UNUSED3   0x04        // Unused Flag
-        #define SYM_FLGS1_UNUSED4   0x02        // Unused Flag
-        #define SYM_FLGS1_UNUSED5   0x01        // Unused Flag
+        #define SYM_FLGS1_VOLATILE  0x10        // Asynchronously Accessed
+        #define SYM_FLGS1_REGISTER  0x08        // Symbol's value in register
+        #define SYM_FLGS1_UNUSED6   0x04        // Unused Flag 1
+        #define SYM_FLGS1_UNUSED7   0x02        // Unused Flag 2
+        #define SYM_FLGS1_UNUSED8   0x01        // Unused Flag 3
         uint8_t         fFlgs2;             // Flags
-        #define SYM_FLGS1_UNUSED6   0x10        // Unused Flag
-        #define SYM_FLGS1_UNUSED7   0x10        // Unused Flag
-        #define SYM_FLGS1_UNUSED8   0x10        // Unused Flag
-        #define SYM_FLGS1_UNUSED9   0x10        // Unused Flag
-        #define SYM_FLGS1_UNUSED10  0x08        // Unused Flag
-        #define SYM_FLGS1_UNUSED11  0x04        // Unused Flag
-        #define SYM_FLGS1_UNUSED12  0x02        // Unused Flag
-        #define SYM_FLGS1_UNUSED13  0x01        // Unused Flag
+        #define SYM_FLGS2_UNUSED1   0x10        // Unused Flag
+        #define SYM_FLGS2_UNUSED2   0x10        // Unused Flag
+        #define SYM_FLGS2_UNUSED3   0x10        // Unused Flag
+        #define SYM_FLGS2_UNUSED4   0x10        // Unused Flag
+        #define SYM_FLGS2_UNUSED5   0x08        // Unused Flag
+        #define SYM_FLGS2_UNUSED6   0x04        // Unused Flag
+        #define SYM_FLGS2_UNUSED7   0x02        // Unused Flag
+        #define SYM_FLGS2_UNUSED8   0x01        // Unused Flag
         uint8_t         extra1;             // Used as needed
         uint32_t        hash;               // Hash Code for name
         uint32_t        token;              // unique token for name
@@ -165,7 +168,11 @@ extern "C" {
         //                                  //  8 == 64 Bit Boundary
         //                                  // 16 == 128 Bit Boundary
         uint16_t        scale;              // Binary or Decimal Shift Amount
-        uint8_t         extra2[146];        // Used as needed (Initialized
+        uint16_t        reg;                // Register Number (SYM_FLGS1_REGISTER)
+        //                                  //  true  == Register Number Assignment
+        //                                  //  false == Base Register
+        uint32_t        disp;               // Displacement in Base Register
+        uint8_t         extra2[136];        // Used as needed (Initialized
         //                                  // for U8VlArray)
     } SYM_ENTRY;
 #pragma pack(pop)
@@ -238,6 +245,20 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! Property: Entry is Active.
+     This flag can be used to indicate that an entry has been defined
+     which allows usage of a variable/label prior to it being defined.
+     */
+    bool            Sym_getActive (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setActive (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
     /*! Property: Value is Absolute
      */
     bool            Sym_getAbs (
@@ -271,6 +292,18 @@ extern "C" {
     bool            Sym_setClass (
         SYM_DATA        *this,
         int32_t         value
+    );
+
+
+    /*! Property: Duplication Factor
+     */
+    uint32_t        Sym_getDisp (
+        SYM_DATA     *this
+    );
+
+    bool            Sym_setDisp (
+        SYM_DATA        *this,
+        uint32_t        value
     );
 
 
@@ -482,6 +515,13 @@ extern "C" {
     );
 
 
+    /*! Property: NodeLink
+     */
+    NODE_DATA *     Sym_getNode (
+        SYM_DATA        *this
+    );
+
+
     /*! Property: Primary
      */
     uint16_t        Sym_getPrim (
@@ -504,6 +544,30 @@ extern "C" {
     bool            Sym_setRecord (
         SYM_DATA        *this,
         uint32_t        value
+    );
+
+
+    /*! Property: Variable is allocated to a register
+     */
+    bool            Sym_getRegister (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setRegister (
+        SYM_DATA        *this,
+        bool            value
+    );
+
+
+    /*! Property: Base Register/Register
+     */
+    uint16_t        Sym_getReg (
+        SYM_DATA     *this
+    );
+
+    bool            Sym_setReg (
+        SYM_DATA        *this,
+        uint16_t        value
     );
 
 
@@ -543,6 +607,18 @@ extern "C" {
     );
 
 
+    /*! Property: Section
+     */
+    uint32_t        Sym_getStructID (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setStructID (
+        SYM_DATA        *this,
+        uint32_t        value
+    );
+
+
     /*! Property: Token
      */
     uint32_t        Sym_getToken (
@@ -576,6 +652,19 @@ extern "C" {
     bool            Sym_setValue (
         SYM_DATA        *this,
         int32_t         value
+    );
+
+
+    /*! Property: Value is volatile.
+     This is used if a variable is being used by multiple threads.
+     */
+    bool            Sym_getVolatile (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setVolatile (
+        SYM_DATA        *this,
+        bool            value
     );
 
 

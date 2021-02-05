@@ -492,9 +492,6 @@ OBJ_INFO        ${LNAME}_Info = {
     (OBJ_IUNKNOWN *)&${LNAME}_Vtbl,
     sizeof(${UNAME}_DATA)
 };
-#warning -- adjust super class object in Info above 
-//			if object inherits from another class
-//			Also, update description
 
 
 

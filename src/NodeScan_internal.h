@@ -98,7 +98,7 @@ struct NodeScan_data_s	{
     // Common Data
     uint32_t        index;      // Scan Index (relative to 0)
     uint32_t        start;      // Scan Start Index (relative to 0)
-    NODEARRAY_DATA  *pArray;    // linearalized Tree converted to an array with
+    OBJARRAY_DATA   *pArray;    // linearalized Tree converted to an array with
     //                          // up/down members.
     NODETREE_DATA   *pTree;     // Tree associated with linearized tree list
     NODELINK_DATA   *pClose;
@@ -116,7 +116,7 @@ struct NodeScan_data_s	{
     uint32_t        rsvd32_2;
     uint32_t        cLabels;        // Node Labels which are returned Node Pointers if
     //                              // matched
-    NODE_DATA       **ppLabels[MAX_SCANNER_LABELS];
+    NODELINK_DATA   **ppLabels[MAX_SCANNER_LABELS];
 
 };
 #pragma pack(pop)

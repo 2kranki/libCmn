@@ -173,6 +173,11 @@ extern "C" {
     );
     
     
+    OBJHASH_DATA *  ObjHash_NewWithSize (
+        uint16_t        cHash       // [in] Hash Table Size
+    );
+
+
 #ifdef  OBJHASH_JSON_SUPPORT
     OBJHASH_DATA *  ObjHash_NewFromJsonString (
         ASTR_DATA       *pString
@@ -183,11 +188,6 @@ extern "C" {
         char            *pStringA
     );
 #endif
-
-
-    OBJHASH_DATA *  ObjHash_NewWithSize (
-        uint16_t        cHash       // [in] Hash Table Size
-    );
 
 
 
@@ -333,8 +333,10 @@ extern "C" {
     );
 
 
-    /* Find() returns the data associated with the given object if
-     * found, otherwise OBJ_NIL is returned.
+    /*! Find searches the appropriate object chain for the first entry
+        which matches using the object's comparison routine.
+     @param     this    object pointer
+     @return    If successful, the object address. Otherwise, return OBJ_NIL.
      */
     OBJ_ID          ObjHash_Find (
         OBJHASH_DATA    *this,
@@ -343,11 +345,23 @@ extern "C" {
 
 
     /*! Find the object for the given index.
+     @param     this    object pointer
      @return    If successful, the object address. Otherwise, return OBJ_NIL.
      */
     OBJ_ID          ObjHash_FindIndex (
         OBJHASH_DATA    *this,
         uint32_t        index
+    );
+
+
+    /*! Find the n'th object for the given object.
+     @param     this    object pointer
+     @return    If successful, the object address. Otherwise, return OBJ_NIL.
+     */
+    OBJ_ID          ObjHash_Findth(
+        OBJHASH_DATA    *this,
+        OBJ_ID          pObject,
+        uint16_t        index           // 0..n th entry with same name
     );
 
 
@@ -358,7 +372,9 @@ extern "C" {
 
     /*!
      Rebuild the hash index with a different number of Hash Buckets.
-     This method allows you to grow the index dynamically as needed.
+     This method allows you to grow or shrink the index dynamically
+     as needed.
+     @param     this    object pointer
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */

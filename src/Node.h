@@ -394,7 +394,7 @@ extern "C" {
 
 
     /*!
-     Type is user defined and optional.
+     @property  Type is user defined and optional.
      */
     int32_t         Node_getType(
         NODE_DATA       *this
@@ -406,8 +406,19 @@ extern "C" {
     );
 
 
+    /*!
+     @property  Unique is normally used as an auxiliary
+     index for this object.  However, it can be user
+     defined and optional if its container does not
+     need it.
+     */
     uint32_t        Node_getUnique(
         NODE_DATA       *this
+    );
+
+    bool            Node_setUnique(
+        NODE_DATA       *this,
+        uint32_t        value
     );
 
 

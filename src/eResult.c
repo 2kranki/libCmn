@@ -635,7 +635,7 @@ void            eResult_ErrorFatalOn(
     
 
     void            eResult_ErrorFLC(
-        ERESULT_DATA   *cbp,
+        ERESULT_DATA   *this,
         const
         char            *pFileName,
         uint32_t		linnum,
@@ -647,7 +647,7 @@ void            eResult_ErrorFatalOn(
     {
         va_list 		argsp;
         
-        va_start( argsp, fmt );
+        va_start(argsp, fmt);
         
         fprintf(
                     stderr,
@@ -656,11 +656,11 @@ void            eResult_ErrorFatalOn(
                     linnum,
                     colnum
         );
-        vfprintf( stderr, fmt, argsp );
+        vfprintf(stderr, fmt, argsp);
         
-        ++cbp->numErrors;
-        if (cbp->numErrors > cbp->maxErrors) {
-            eResult_ErrorFatal(cbp, "Too many errors");
+        ++this->numErrors;
+        if (this->numErrors > this->maxErrors) {
+            eResult_ErrorFatal(this, "Too many errors");
         }
         
     }
@@ -668,7 +668,7 @@ void            eResult_ErrorFatalOn(
     
     
     void            eResult_ErrorFLCArg(
-        ERESULT_DATA   *cbp,
+        ERESULT_DATA   *this,
         const
         char            *pFileName,
         uint32_t		linnum,
@@ -686,11 +686,11 @@ void            eResult_ErrorFatalOn(
                     linnum,
                     colnum
         );
-        vfprintf( stderr, fmt, argsp );
+        vfprintf(stderr, fmt, argsp);
         
-        ++cbp->numErrors;
-        if (cbp->numErrors > cbp->maxErrors) {
-            eResult_ErrorFatal(cbp, "Too many errors");
+        ++this->numErrors;
+        if (this->numErrors > this->maxErrors) {
+            eResult_ErrorFatal(this, "Too many errors");
         }
         
     }

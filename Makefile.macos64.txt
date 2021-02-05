@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/30/2020 17:45:37.000)
+# ( 2/ 5/2021  1:48:44.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1264,6 +1264,16 @@ OBJS += $(OBJDIR)/U16Matrix_object.o
 $(OBJDIR)/U16Matrix_object.o: $(SRCDIR)/U16Matrix_object.c $(SRCDIR)/U16Array.h $(SRCDIR)/U16Matrix.h $(SRCDIR)/U16Matrix_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/U32Index.o
+
+$(OBJDIR)/U32Index.o: $(SRCDIR)/U32Index.c $(SRCDIR)/U32Index.h $(SRCDIR)/U32Index_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/U32Index_object.o
+
+$(OBJDIR)/U32Index_object.o: $(SRCDIR)/U32Index_object.c $(SRCDIR)/U32Index.h $(SRCDIR)/U32Index_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/Uri.o
 
 $(OBJDIR)/Uri.o: $(SRCDIR)/Uri.c $(SRCDIR)/Uri.h $(SRCDIR)/Uri_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1629,16 +1639,6 @@ OBJS += $(OBJDIR)/greg_object.o
 $(OBJDIR)/greg_object.o: $(SRCDIR)/greg_object.c $(SRCDIR)/greg.h $(SRCDIR)/greg_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/hash32.o
-
-$(OBJDIR)/hash32.o: $(SRCDIR)/hash32.c $(SRCDIR)/hash32.h $(SRCDIR)/hash32_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/hash32_object.o
-
-$(OBJDIR)/hash32_object.o: $(SRCDIR)/hash32_object.c $(SRCDIR)/hash32.h $(SRCDIR)/hash32_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/hex.o
 
 $(OBJDIR)/hex.o: $(SRCDIR)/hex.c $(SRCDIR)/hex.h $(SRCDIR)/hex_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1841,7 +1841,7 @@ $(OBJDIR)/rbt_tree.o: $(SRCDIR)/rbt_tree.c $(SRCDIR)/rbt_tree.h $(SRCDIR)/cmn_de
 
 OBJS += $(OBJDIR)/rrds.o
 
-$(OBJDIR)/rrds.o: $(SRCDIR)/rrds.c $(SRCDIR)/Path.h $(SRCDIR)/hash32.h $(SRCDIR)/listdl.h $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/rrds.o: $(SRCDIR)/rrds.c $(SRCDIR)/Path.h $(SRCDIR)/listdl.h $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/rrds_io.o
@@ -1851,7 +1851,7 @@ $(OBJDIR)/rrds_io.o: $(SRCDIR)/rrds_io.c $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h
 
 OBJS += $(OBJDIR)/rrds_object.o
 
-$(OBJDIR)/rrds_object.o: $(SRCDIR)/rrds_object.c $(SRCDIR)/Path.h $(SRCDIR)/hash32.h $(SRCDIR)/listdl.h $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/rrds_object.o: $(SRCDIR)/rrds_object.c $(SRCDIR)/Path.h $(SRCDIR)/listdl.h $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/scanReader.o
@@ -1927,16 +1927,6 @@ $(OBJDIR)/szTbl_json.o: $(SRCDIR)/szTbl_json.c $(SRCDIR)/szTbl.h $(SRCDIR)/szTbl
 OBJS += $(OBJDIR)/szTbl_object.o
 
 $(OBJDIR)/szTbl_object.o: $(SRCDIR)/szTbl_object.c $(SRCDIR)/ptrArray.h $(SRCDIR)/szHash.h $(SRCDIR)/szTbl.h $(SRCDIR)/szTbl_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/table.o
-
-$(OBJDIR)/table.o: $(SRCDIR)/table.c $(SRCDIR)/listdl.h $(SRCDIR)/table.h $(SRCDIR)/table_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/table_object.o
-
-$(OBJDIR)/table_object.o: $(SRCDIR)/table_object.c $(SRCDIR)/listdl.h $(SRCDIR)/table.h $(SRCDIR)/table_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/timer.o
@@ -2632,6 +2622,12 @@ U16Matrix_test: $(TEST_SRC)/U16Matrix_test.c $(SRCDIR)/U16Matrix.h $(SRCDIR)/U16
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += U32Index_test
+
+U32Index_test: $(TEST_SRC)/U32Index_test.c $(SRCDIR)/U32Index.h $(SRCDIR)/U32Index_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += Uri_test
 
 Uri_test: $(TEST_SRC)/Uri_test.c $(SRCDIR)/Uri.h $(SRCDIR)/Uri_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2824,12 +2820,6 @@ greg_test: $(TEST_SRC)/greg_test.c $(SRCDIR)/greg.h $(SRCDIR)/greg_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += hash32_test
-
-hash32_test: $(TEST_SRC)/hash32_test.c $(SRCDIR)/hash32.h $(SRCDIR)/hash32_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += hex_test
 
 hex_test: $(TEST_SRC)/hex_test.c $(SRCDIR)/hex.h $(SRCDIR)/hex_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2940,7 +2930,7 @@ rbt_tree_test: $(TEST_SRC)/rbt_tree_test.c $(SRCDIR)/rbt_tree.h $(SRCDIR)/cmn_de
 
 TESTS += rrds_test
 
-rrds_test: $(TEST_SRC)/rrds_test.c $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(SRCDIR)/Path.h $(SRCDIR)/hash32.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
+rrds_test: $(TEST_SRC)/rrds_test.c $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(SRCDIR)/Path.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2977,12 +2967,6 @@ szHash_test: $(TEST_SRC)/szHash_test.c $(SRCDIR)/szHash.h $(SRCDIR)/szHash_inter
 TESTS += szTbl_test
 
 szTbl_test: $(TEST_SRC)/szTbl_test.c $(SRCDIR)/szTbl.h $(SRCDIR)/szTbl_internal.h $(SRCDIR)/ptrArray.h $(SRCDIR)/szHash.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += table_test
-
-table_test: $(TEST_SRC)/table_test.c $(SRCDIR)/table.h $(SRCDIR)/table_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

@@ -223,12 +223,12 @@ extern "C" {
      Return the next arraySize of elements if available in ppVoidArray and set
      NumReturned to the number of elements returned. If the enumerator has gone
      past the end, zero will be returned in NumReturned.
-     @param     this    OBJENUM object pointer
-     @param     arraySize size of ppVoidArray
+     @param     this            OBJENUM object pointer
+     @param     arraySize       size of ppVoidArray
      @param     ppObjArray      an array of void pointers which are filled in by this
-     this method if any elements are left to enumerate.
+                                this method if any elements are left to enumerate.
      @param     pNumReturned    where the number of returned objected pointers is
-     to be put (optional);
+                                to be put (optional);
      @return    If successful ERESULT_SUCCESS and data returned in ppObjArray
      with the number of returned elements in pNumReturned, otherwise
      an ERESULT_* error and 0 in pNumReturned.
@@ -274,6 +274,16 @@ extern "C" {
     );
     
     
+    /*!
+     Sort the enumeration array in place and in ascending order.
+     @param     this    OBJENUM object pointer
+     @return    If successful ERESULT_SUCCESS, otherwise an ERESULT_* error.
+     */
+    ERESULT         NodeEnum_SortAscending (
+        NODEENUM_DATA   *this
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

@@ -569,6 +569,8 @@ extern "C" {
         OBJ_IDENT_U16MATRIX_CLASS,
         OBJ_IDENT_U32ARRAY,
         OBJ_IDENT_U32ARRAY_CLASS,
+        OBJ_IDENT_U32INDEX,             // uint32_t Integer Index
+        OBJ_IDENT_U32INDEX_CLASS,
         OBJ_IDENT_U32MATRIX,
         OBJ_IDENT_U32MATRIX_CLASS,
         OBJ_IDENT_U8ARRAY,

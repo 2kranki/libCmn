@@ -1204,6 +1204,7 @@ extern "C" {
                         this,               // 1st parameter
                         NULL                // 3rd parameter
         );
+        Blocks_SetupIndex((BLOCKS_DATA *)this);
 
         // Set up Red-Black tree to use Blocks to hold its data.
         rbt_Init(

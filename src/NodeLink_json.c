@@ -2,7 +2,7 @@
 /*
  * File:   NodeLink_json.c
  *
- *	Generated 01/12/2020 10:31:46
+ *  Generated 02/03/2021 18:58:16
  *
  */
 
@@ -49,14 +49,16 @@
 #include    <AStr_internal.h>
 #include    <dec.h>
 #include    <JsonIn.h>
-#include    <Node.h>
+#include    <JsonOut.h>
+#include    <Node_internal.h>
 #include    <NodeHash.h>
+#include    <SrcErrors.h>
 #include    <utf8.h>
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -70,54 +72,33 @@ extern "C" {
      ****************************************************************/
     
     /*!
-     Parse the fields for a given object from an established parser.
-     This is used by the normal object parser for this object type
-     and where this object is inherited by a different object.
+     Parse the object from an established parser.
      @param pParser     an established jsonIn Parser Object
-     @return    ERESULT_SUCCESS if successful, otherwise, an
-     ERESULT_* error code
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
      */
-    ERESULT         NodeLink_ParseJsonFields(
+    ERESULT     NodeLink_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        NODELINK_DATA   *pObject
+        NODELINK_DATA     *pObject
     )
     {
-        ERESULT         eRc;
-        const
-        OBJ_INFO        *pInfo;
-        uint32_t        uint32 = 0;
-        //OBJ_ID          pObj = OBJ_NIL;
-        //uint8_t         *pUtf8;
-        //SRCLOC_DATA     *pSrc = OBJ_NIL;
+        ERESULT         eRc = ERESULT_SUCCESS;
         NODE_DATA       *pNode = OBJ_NIL;
-        int64_t         intIn;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
+        //NODEHASH_DATA   *pHash = OBJ_NIL;
+        //uint32_t        i;
+        //uint32_t        iMax;
+        int64_t         intIn;
+        //ASTR_DATA       *pWrk;
+        //uint8_t         *pData;
+        //uint32_t        len;
+        uint32_t        uint32 = 0;
 
-        pInfo = obj_getInfo(Node_Class());
-
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(stderr, "ERROR - objectType is invalid!\n");
-            goto exit00;
-        }
-        if (pObject)
-            ;
-        else {
-            fprintf(stderr, "ERROR - object is missing!\n");
-            eRc = ERESULT_DATA_MISSING;
-            goto exit00;
-        }
-
-        eRc = JsonIn_SubObjectInHash(pParser, "node");
-        if (ERESULT_FAILED(eRc)) {
-            eRc = Node_ParseJsonFields(pParser, (NODE_DATA *)pObject);
-            JsonIn_SubObjectEnd(pParser);
-            if (pNode) {
-                obj_Release(pNode);
-                pNode = OBJ_NIL;
-            }
-        }
-
+        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
+        uint32  = (uint32_t)intIn;
+        obj_setMisc(pObject, uint32);
         eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "index", &intIn);
         uint32  = (uint32_t)intIn;
         NodeLink_setIndex(pObject, uint32);
@@ -143,20 +124,26 @@ extern "C" {
             }
         }
 
+        eRc = JsonIn_SubObjectInHash(pParser, "node");
+        if (ERESULT_OK(eRc)) {
+            pObject->pNode = Node_ParseJsonObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+        }
+
         // Return to caller.
     exit00:
         return eRc;
     }
-
-
-
+    
+    
+    
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NODELINK_DATA * NodeLink_ParseJsonObject(
+    NODELINK_DATA * NodeLink_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
@@ -167,8 +154,9 @@ extern "C" {
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
+        JsonIn_RegisterClass(NodeLink_Class());
+
         pInfo = obj_getInfo(NodeLink_Class());
-        
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
@@ -180,11 +168,7 @@ extern "C" {
             goto exit00;
         }
         
-        eRc = NodeLink_ParseJsonFields(pParser, pObject);
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(stderr, "ERROR - Parsing Fields failed!\n");
-            goto exit00;
-        }
+        eRc =  NodeLink_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -206,7 +190,7 @@ extern "C" {
     //===============================================================
     
 
-    NODELINK_DATA *   NodeLink_NewFromJsonString(
+    NODELINK_DATA *   NodeLink_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
@@ -217,6 +201,7 @@ extern "C" {
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
+            SrcErrors_Print(OBJ_NIL, stderr);
             goto exit00;
         }
         
@@ -233,16 +218,16 @@ extern "C" {
     
     
 
-    NODELINK_DATA * NodeLink_NewFromJsonStringA(
+    NODELINK_DATA * NodeLink_NewFromJsonStringA (
         const
-        char            *pString
+        char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
         NODELINK_DATA   *pObject = OBJ_NIL;
         
-        if (pString) {
-            pStr = AStr_NewA(pString);
+        if (pStringA) {
+            pStr = AStr_NewA(pStringA);
             pObject = NodeLink_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
@@ -267,24 +252,14 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NodeLink_ToJson(
+    ASTR_DATA *     NodeLink_ToJson (
         NODELINK_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
-#ifdef XYZZZY 
-        void *          (*pQueryInfo)(
-            OBJ_ID          objId,
-            uint32_t        type,
-            void            *pData
-        );
-        ASTR_DATA *     (*pToJson)(
-            OBJ_ID          objId
-        );
-#endif
-        ASTR_DATA       *pWrkStr;
+        ERESULT         eRc;
 
 #ifdef NDEBUG
 #else
@@ -298,42 +273,11 @@ extern "C" {
         pStr = AStr_New();
         if (pStr) {
              AStr_AppendPrint(pStr,
-                              "{ \"objectType\":\"%s\", ",
+                              "{ \"objectType\":\"%s\",\n",
                               pInfo->pClassName
              );
-            
-            AStr_AppendPrint(
-                             pStr,
-                             "\t\"index\":%d,"
-                             " \"leftIndex\":%d,"
-                             " \"middleIndex\":%d,"
-                             " \"parentIndex\":%d,"
-                             " \"rightIndex\":%d,\n",
-                             this->index,
-                             this->leftIndex,
-                             this->middleIndex,
-                             this->parentIndex,
-                             this->rightIndex
-            );
-            AStr_AppendA(pStr, "\tflags:[ ");
-            if (obj_Flag(this, NODELINK_LEFT_LINK)) {
-                AStr_AppendA(pStr, "\"LEFT\", ");
-            }
-            if (obj_Flag(this, NODELINK_RIGHT_LINK)) {
-                AStr_AppendA(pStr, "\"RIGHT\", ");
-            }
-            if (obj_Flag(this, NODELINK_RIGHT_CHILD)) {
-                AStr_AppendA(pStr, "\"RIGHT_CHILD\", ");
-            }
-            AStr_AppendA(pStr, "],\n");
-
-            if (this) {
-                pWrkStr = Node_ToJson((NODE_DATA *)this);
-                AStr_AppendA(pStr, "\t\"node\":");
-                AStr_Append(pStr, pWrkStr);\
-                obj_Release(pWrkStr);
-                pWrkStr = OBJ_NIL;
-            }
+     
+            eRc = NodeLink_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -342,10 +286,80 @@ extern "C" {
     }
     
     
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeLink_ToJsonFields (
+        NODELINK_DATA     *this,
+        ASTR_DATA       *pStr
+    )
+    {
+#ifdef XYZZZY 
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+#endif
+        ASTR_DATA       *pWrkStr;
+
+        AStr_AppendPrint(
+                         pStr,
+                         "\t\"index\":%d,"
+                         " \"leftIndex\":%d,"
+                         " \"middleIndex\":%d,"
+                         " \"parentIndex\":%d,"
+                         " \"rightIndex\":%d,\n",
+                         this->index,
+                         this->leftIndex,
+                         this->middleIndex,
+                         this->parentIndex,
+                         this->rightIndex
+        );
+        JsonOut_Append_u32("misc", obj_getMisc(this), pStr);
+
+        AStr_AppendA(pStr, "\tflags:[ ");
+        if (obj_Flag(this, NODELINK_LEFT_LINK)) {
+            AStr_AppendA(pStr, "\"LEFT\", ");
+        }
+        if (obj_Flag(this, NODELINK_RIGHT_LINK)) {
+            AStr_AppendA(pStr, "\"RIGHT\", ");
+        }
+        if (obj_Flag(this, NODELINK_RIGHT_CHILD)) {
+            AStr_AppendA(pStr, "\"RIGHT_CHILD\", ");
+        }
+        AStr_AppendA(pStr, "],\n");
+
+        JsonOut_Append_Object("node", this->pNode, pStr);
+
+#ifdef XYZZZY
+        JsonOut_Append_i32("x", this->x, pStr);
+        JsonOut_Append_i64("t", this->t, pStr);
+        JsonOut_Append_u32("o", this->o, pStr);
+        JsonOut_Append_utf8("n", pEntry->pN, pStr);
+        JsonOut_Append_Object("e", this->pE, pStr);
+        JsonOut_Append_AStr("d", this->pAStr, pStr);
+        JsonOut_Append_StrA("d", this->pStrA, pStr);
+        JsonOut_Append_StrW32("d", this->pStrW32, pStr);
+#endif
+
+        return ERESULT_SUCCESS;
+    }
     
     
     
-#ifdef	__cplusplus
+    
+    
+#ifdef  __cplusplus
 }
 #endif
 

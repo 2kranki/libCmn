@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *  Generated 01/03/2021 13:14:35
+ *  Generated 01/04/2021 10:35:59
  */
 
 
@@ -25,9 +25,9 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <trace.h>
-#include    <IntIndex_internal.h>
+#include    <U32Index_internal.h>
 #include    <JsonIn.h>
-#ifdef  INTINDEX_JSON_SUPPORT
+#ifdef  U32INDEX_JSON_SUPPORT
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
@@ -56,7 +56,7 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  INTINDEX_JSON_SUPPORT
+#ifdef  U32INDEX_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
@@ -84,25 +84,25 @@ int             tearDown (
 
 
 
-int             test_IntIndex_OpenClose (
+int             test_U32Index_OpenClose (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    INTINDEX_DATA       *pObj = OBJ_NIL;
+    U32INDEX_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = IntIndex_Alloc( );
+    pObj = U32Index_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = IntIndex_Init( pObj );
+    pObj = U32Index_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_INTINDEX);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_U32INDEX);
         TINYTEST_TRUE( (fRc) );
         
         // Test something.
@@ -118,38 +118,38 @@ int             test_IntIndex_OpenClose (
 
 
 
-int             test_IntIndex_Copy01 (
+int             test_U32Index_Copy01 (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    INTINDEX_DATA       *pObj1 = OBJ_NIL;
-    INTINDEX_DATA       *pObj2 = OBJ_NIL;
+    U32INDEX_DATA       *pObj1 = OBJ_NIL;
+    U32INDEX_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(INTINDEX_JSON_SUPPORT) && defined(XYZZY)
+#if defined(U32INDEX_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
 #endif
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = IntIndex_New( );
+    pObj1 = U32Index_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_INTINDEX);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_U32INDEX);
         TINYTEST_TRUE( (fRc) );
         
         // Test assign.
-        pObj2 = IntIndex_New();
+        pObj2 = U32Index_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        eRc = IntIndex_Assign(pObj1, pObj2);
+        eRc = U32Index_Assign(pObj1, pObj2);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_INTINDEX);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_U32INDEX);
         TINYTEST_TRUE( (fRc) );
-        //eRc = IntIndex_Compare(pObj1, pObj2);
+        //eRc = U32Index_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -157,12 +157,12 @@ int             test_IntIndex_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = IntIndex_Copy(pObj1);
+        pObj2 = U32Index_Copy(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_INTINDEX);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_U32INDEX);
         TINYTEST_TRUE( (fRc) );
-        //eRc = IntIndex_Compare(pObj1, pObj2);
+        //eRc = U32Index_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
 
@@ -170,17 +170,17 @@ int             test_IntIndex_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(INTINDEX_JSON_SUPPORT) && defined(XYZZY)
-        pStr = IntIndex_ToJson(pObj1);
+#if defined(U32INDEX_JSON_SUPPORT) && defined(XYZZY)
+        pStr = U32Index_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = IntIndex_NewFromJsonString(pStr);
+        pObj2 = U32Index_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_INTINDEX);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_U32INDEX);
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = IntIndex_Compare(pObj1, pObj2);
+        //eRc = U32Index_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
 
         obj_Release(pObj2);
@@ -197,31 +197,31 @@ int             test_IntIndex_Copy01 (
 
 
 
-int             test_IntIndex_Test01 (
+int             test_U32Index_Test01 (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    INTINDEX_DATA   *pObj = OBJ_NIL;
+    U32INDEX_DATA   *pObj = OBJ_NIL;
     bool            fRc;
     void            *ptr;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = IntIndex_New( );
+    pObj = U32Index_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_INTINDEX);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_U32INDEX);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         
-        eRc = IntIndex_Add(pObj, 3, (void *)3, false);
+        eRc = U32Index_Add(pObj, 3, (void *)3, false);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         {
-            ASTR_DATA       *pStr = IntIndex_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
             if (pStr) {
                 fprintf(stderr, "Added 3: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -229,10 +229,10 @@ int             test_IntIndex_Test01 (
             }
         }
 
-        eRc = IntIndex_Add(pObj, 2, (void *)2, false);
+        eRc = U32Index_Add(pObj, 2, (void *)2, false);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         {
-            ASTR_DATA       *pStr = IntIndex_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
             if (pStr) {
                 fprintf(stderr, "Added 2: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -240,20 +240,20 @@ int             test_IntIndex_Test01 (
             }
         }
 
-        eRc = IntIndex_Add(pObj, 5, (void *)5, false);
+        eRc = U32Index_Add(pObj, 5, (void *)5, false);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         {
-            ASTR_DATA       *pStr = IntIndex_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
             if (pStr) {
                 fprintf(stderr, "Added 5: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
         }
-        eRc = IntIndex_Add(pObj, 4, (void *)4, false);
+        eRc = U32Index_Add(pObj, 4, (void *)4, false);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         {
-            ASTR_DATA       *pStr = IntIndex_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
             if (pStr) {
                 fprintf(stderr, "Added 4: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -261,10 +261,10 @@ int             test_IntIndex_Test01 (
             }
         }
 
-        eRc = IntIndex_Add(pObj, 1, (void *)1, false);
+        eRc = U32Index_Add(pObj, 1, (void *)1, false);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         {
-            ASTR_DATA       *pStr = IntIndex_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
             if (pStr) {
                 fprintf(stderr, "Added 1: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -272,18 +272,27 @@ int             test_IntIndex_Test01 (
             }
         }
 
-        ptr = IntIndex_Find(pObj, 1);
+        ptr = U32Index_Find(pObj, 1);
         TINYTEST_TRUE( ((void *)1 == ptr) );
-        ptr = IntIndex_Find(pObj, 5);
+        ptr = U32Index_Find(pObj, 5);
         TINYTEST_TRUE( ((void *)5 == ptr) );
-        ptr = IntIndex_Find(pObj, 2);
+        ptr = U32Index_Find(pObj, 2);
         TINYTEST_TRUE( ((void *)2 == ptr) );
-        ptr = IntIndex_Find(pObj, 3);
+        ptr = U32Index_Find(pObj, 3);
         TINYTEST_TRUE( ((void *)3 == ptr) );
-        ptr = IntIndex_Find(pObj, 4);
+        ptr = U32Index_Find(pObj, 4);
         TINYTEST_TRUE( ((void *)4 == ptr) );
-        ptr = IntIndex_Find(pObj, 6);
+        ptr = U32Index_Find(pObj, 6);
         TINYTEST_TRUE( ((void *)0 == ptr) );
+
+        {
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -296,13 +305,13 @@ int             test_IntIndex_Test01 (
 
 
 
-TINYTEST_START_SUITE(test_IntIndex);
-    TINYTEST_ADD_TEST(test_IntIndex_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_IntIndex_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_IntIndex_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_U32Index);
+    TINYTEST_ADD_TEST(test_U32Index_Test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_U32Index_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_U32Index_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_IntIndex);
+TINYTEST_MAIN_SINGLE_SUITE(test_U32Index);
 
 
 

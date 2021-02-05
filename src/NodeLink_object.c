@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'NodeLink'
-//	Generated 01/12/2020 10:31:46
+//  Class Object Metods and Tables for 'NodeLink'
+//  Generated 02/03/2021 18:58:16
 
 
 /*
@@ -34,7 +34,7 @@
 
 
 
-#define			NODELINK_OBJECT_C	    1
+#define         NODELINK_OBJECT_C       1
 #include        <NodeLink_internal.h>
 #ifdef  NODELINK_SINGLETON
 #include        <psxLock.h>
@@ -46,7 +46,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct NodeLink_class_data_s	{
+struct NodeLink_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -85,7 +85,7 @@ OBJ_INFO        NodeLink_Info;            // Forward Reference
 
 static
 bool            NodeLinkClass_IsKindOf (
-    uint16_t		classID
+    uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
@@ -109,7 +109,7 @@ bool            NodeLinkClass_IsKindOf (
 
 
 static
-uint16_t		NodeLinkClass_WhoAmI (
+uint16_t        NodeLinkClass_WhoAmI (
     void
 )
 {
@@ -142,7 +142,7 @@ NODELINK_CLASS_VTBL    class_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						Class Object
+//                      Class Object
 //-----------------------------------------------------------
 
 NODELINK_CLASS_DATA  NodeLink_ClassObj = {
@@ -153,7 +153,7 @@ NODELINK_CLASS_DATA  NodeLink_ClassObj = {
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },
-	//0
+    //0
 };
 
 
@@ -163,6 +163,11 @@ NODELINK_CLASS_DATA  NodeLink_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  NODELINK_SINGLETON
+extern
+const
+NODELINK_VTBL       NodeLink_VtblShared;
+
+
 NODELINK_DATA *     NodeLink_getSingleton (
     void
 )
@@ -213,6 +218,7 @@ NODELINK_DATA *     NodeLink_Shared (
     
     if (NULL == this) {
         this = NodeLink_New( );
+        obj_setVtbl(this, (void *)&NodeLink_VtblShared);
         NodeLink_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
         // NodeLink_ClassObj.pSingleton = OBJ_NIL;
@@ -230,6 +236,7 @@ void            NodeLink_SharedReset (
     NODELINK_DATA       *this = (OBJ_ID)(NodeLink_ClassObj.pSingleton);
     
     if (this) {
+        obj_setVtbl(this, (void *)&NodeLink_Vtbl);
         obj_Release(this);
         NodeLink_ClassObj.pSingleton = OBJ_NIL;
     }
@@ -272,14 +279,18 @@ void *          NodeLinkClass_QueryInfo (
             break;
             
         // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
                         return (void *)&NodeLink_Info;
+                    }
+                    break;
+                    
+                case 'S':
+                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                        return (void *)&NodeLink_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -302,11 +313,27 @@ void *          NodeLinkClass_QueryInfo (
                     break;
                     
                 case 'P':
-                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return NodeLink_ParseJsonObject;
+#ifdef  NODELINK_JSON_SUPPORT
+                    if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                        return NodeLink_ParseJsonFields;
                     }
+                    if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                        return NodeLink_ParseJsonObject;
+                    }
+#endif
                     break;
- 
+
+                case 'T':
+#ifdef  NODELINK_JSON_SUPPORT
+                    if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                        return NodeLink_ToJsonFields;
+                    }
+                    if (str_Compare("ToJson", (char *)pStr) == 0) {
+                        return NodeLink_ToJson;
+                    }
+#endif
+                    break;
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
                         return NodeLinkClass_WhoAmI;
@@ -330,7 +357,7 @@ void *          NodeLinkClass_QueryInfo (
 
 static
 bool            NodeLink_IsKindOf (
-    uint16_t		classID
+    uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
@@ -372,7 +399,7 @@ OBJ_ID          NodeLink_Class (
 
 
 static
-uint16_t		NodeLink_WhoAmI (
+uint16_t        NodeLink_WhoAmI (
     void
 )
 {
@@ -387,30 +414,64 @@ uint16_t		NodeLink_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
+#ifdef  NODELINK_SINGLETON
+// A Shared object ignores Retain() and Release() except for
+// initialization and termination. So, there must be an
+// independent VTbl from the normal which does support Retain()
+// and Release().
 const
-NODELINK_VTBL     NodeLink_Vtbl = {
+NODELINK_VTBL     NodeLink_VtblShared = {
     {
         &NodeLink_Info,
         NodeLink_IsKindOf,
-#ifdef  NODELINK_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
-#else
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-#endif
         NodeLink_Dealloc,
         NodeLink_Class,
         NodeLink_WhoAmI,
         (P_OBJ_QUERYINFO)NodeLink_QueryInfo,
         (P_OBJ_TOSTRING)NodeLink_ToDebugString,
-        NULL,			// NodeLink_Enable,
-        NULL,			// NodeLink_Disable,
-        NULL,			// (P_OBJ_ASSIGN)NodeLink_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodeLink_Compare,
-        NULL, 			// (P_OBJ_PTR)NodeLink_Copy,
-        NULL, 			// (P_OBJ_PTR)NodeLink_DeepCopy,
-        NULL 			// (P_OBJ_HASH)NodeLink_Hash,
+        NULL,           // NodeLink_Enable,
+        NULL,           // NodeLink_Disable,
+        NULL,           // (P_OBJ_ASSIGN)NodeLink_Assign,
+        NULL,           // (P_OBJ_COMPARE)NodeLink_Compare,
+        NULL,           // (P_OBJ_PTR)NodeLink_Copy,
+        NULL,           // (P_OBJ_PTR)NodeLink_DeepCopy,
+        NULL            // (P_OBJ_HASH)NodeLink_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //NodeLink_IsEnabled,
+ 
+};
+#endif
+
+
+// This VTbl supports Retain() and Release() which is
+// used by objects other than the Shared object. These
+// objects can still be shared among other objects. It
+// just that they are deleted when their usage count
+// goes to zero.
+const
+NODELINK_VTBL     NodeLink_Vtbl = {
+    {
+        &NodeLink_Info,
+        NodeLink_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        NodeLink_Dealloc,
+        NodeLink_Class,
+        NodeLink_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeLink_QueryInfo,
+        (P_OBJ_TOSTRING)NodeLink_ToDebugString,
+        NULL,           // NodeLink_Enable,
+        NULL,           // NodeLink_Disable,
+        (P_OBJ_ASSIGN)NodeLink_Assign,
+        (P_OBJ_COMPARE)NodeLink_Compare,
+        (P_OBJ_PTR)NodeLink_Copy,
+        NULL,           // (P_OBJ_PTR)NodeLink_DeepCopy,
+        (P_OBJ_HASH)NodeLink_Hash,
     },
     // Put other object method names below this.
     // Properties:
@@ -425,9 +486,9 @@ static
 const
 OBJ_INFO        NodeLink_Info = {
     "NodeLink",
-    "A Node with Integer Links",
+    "Node with Integer Links",
     (OBJ_DATA *)&NodeLink_ClassObj,
-    (OBJ_DATA *)&Node_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&NodeLink_Vtbl,
     sizeof(NODELINK_DATA)
 };

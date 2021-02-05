@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//  Class Object Metods and Tables for 'IntIndex'
-//  Generated 01/03/2021 13:14:35
+//  Class Object Metods and Tables for 'U32Index'
+//  Generated 01/04/2021 10:35:59
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define         INTINDEX_OBJECT_C       1
-#include        <IntIndex_internal.h>
-#ifdef  INTINDEX_SINGLETON
+#define         U32INDEX_OBJECT_C       1
+#include        <U32Index_internal.h>
+#ifdef  U32INDEX_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct IntIndex_class_data_s    {
+struct U32Index_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  INTINDEX_SINGLETON
+#ifdef  U32INDEX_SINGLETON
     volatile
-    INTINDEX_DATA       *pSingleton;
+    U32INDEX_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct IntIndex_class_data_s    {
 
 
 static
-void *          IntIndexClass_QueryInfo (
+void *          U32IndexClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          IntIndexClass_QueryInfo (
 
 static
 const
-OBJ_INFO        IntIndex_Info;            // Forward Reference
+OBJ_INFO        U32Index_Info;            // Forward Reference
 
 
 
 
 static
-bool            IntIndexClass_IsKindOf (
+bool            U32IndexClass_IsKindOf (
     uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_INTINDEX_CLASS == classID) {
+    if (OBJ_IDENT_U32INDEX_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(IntIndex_Class())->pClassSuperObject;
+    pObj = obj_getInfo(U32Index_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            IntIndexClass_IsKindOf (
 
 
 static
-uint16_t        IntIndexClass_WhoAmI (
+uint16_t        U32IndexClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_INTINDEX_CLASS;
+    return OBJ_IDENT_U32INDEX_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t        IntIndexClass_WhoAmI (
 
 static
 const
-INTINDEX_CLASS_VTBL    class_Vtbl = {
+U32INDEX_CLASS_VTBL    class_Vtbl = {
     {
-        &IntIndex_Info,
-        IntIndexClass_IsKindOf,
+        &U32Index_Info,
+        U32IndexClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        IntIndex_Class,
-        IntIndexClass_WhoAmI,
-        (P_OBJ_QUERYINFO)IntIndexClass_QueryInfo,
-        NULL                        // IntIndexClass_ToDebugString
+        U32Index_Class,
+        U32IndexClass_WhoAmI,
+        (P_OBJ_QUERYINFO)U32IndexClass_QueryInfo,
+        NULL                        // U32IndexClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ INTINDEX_CLASS_VTBL    class_Vtbl = {
 //                      Class Object
 //-----------------------------------------------------------
 
-INTINDEX_CLASS_DATA  IntIndex_ClassObj = {
+U32INDEX_CLASS_DATA  U32Index_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(INTINDEX_CLASS_DATA),                  // cbSize
+        sizeof(U32INDEX_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,22 +162,22 @@ INTINDEX_CLASS_DATA  IntIndex_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  INTINDEX_SINGLETON
+#ifdef  U32INDEX_SINGLETON
 extern
 const
-INTINDEX_VTBL       IntIndex_VtblShared;
+U32INDEX_VTBL       U32Index_VtblShared;
 
 
-INTINDEX_DATA *     IntIndex_getSingleton (
+U32INDEX_DATA *     U32Index_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(IntIndex_ClassObj.pSingleton);
+    return (OBJ_ID)(U32Index_ClassObj.pSingleton);
 }
 
 
-bool            IntIndex_setSingleton (
-    INTINDEX_DATA       *pValue
+bool            U32Index_setSingleton (
+    U32INDEX_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -197,10 +197,10 @@ bool            IntIndex_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (IntIndex_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(IntIndex_ClassObj.pSingleton));
+    if (U32Index_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(U32Index_ClassObj.pSingleton));
     }
-    IntIndex_ClassObj.pSingleton = pValue;
+    U32Index_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -210,18 +210,18 @@ bool            IntIndex_setSingleton (
 
 
 
-INTINDEX_DATA *     IntIndex_Shared (
+U32INDEX_DATA *     U32Index_Shared (
     void
 )
 {
-    INTINDEX_DATA       *this = (OBJ_ID)(IntIndex_ClassObj.pSingleton);
+    U32INDEX_DATA       *this = (OBJ_ID)(U32Index_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = IntIndex_New( );
-        obj_setVtbl(this, (void *)&IntIndex_VtblShared);
-        IntIndex_setSingleton(this);
+        this = U32Index_New( );
+        obj_setVtbl(this, (void *)&U32Index_VtblShared);
+        U32Index_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // IntIndex_ClassObj.pSingleton = OBJ_NIL;
+        // U32Index_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -229,16 +229,16 @@ INTINDEX_DATA *     IntIndex_Shared (
 
 
 
-void            IntIndex_SharedReset (
+void            U32Index_SharedReset (
     void
 )
 {
-    INTINDEX_DATA       *this = (OBJ_ID)(IntIndex_ClassObj.pSingleton);
+    U32INDEX_DATA       *this = (OBJ_ID)(U32Index_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&IntIndex_Vtbl);
+        obj_setVtbl(this, (void *)&U32Index_Vtbl);
         obj_Release(this);
-        IntIndex_ClassObj.pSingleton = OBJ_NIL;
+        U32Index_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -254,13 +254,13 @@ void            IntIndex_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          IntIndexClass_QueryInfo (
+void *          U32IndexClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    INTINDEX_CLASS_DATA *this = objId;
+    U32INDEX_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -271,7 +271,7 @@ void *          IntIndexClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(INTINDEX_DATA);
+            return (void *)sizeof(U32INDEX_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -284,13 +284,13 @@ void *          IntIndexClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&IntIndex_Info;
+                        return (void *)&U32Index_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&IntIndex_Info.pClassSuperObject;
+                        return (void *)&U32Index_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -308,35 +308,35 @@ void *          IntIndexClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return IntIndex_New;
+                        return U32Index_New;
                     }
                     break;
                     
                 case 'P':
-#ifdef  INTINDEX_JSON_SUPPORT
+#ifdef  U32INDEX_JSON_SUPPORT
                     if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                        return IntIndex_ParseJsonFields;
+                        return U32Index_ParseJsonFields;
                     }
                     if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return IntIndex_ParseJsonObject;
+                        return U32Index_ParseJsonObject;
                     }
 #endif
                     break;
 
                 case 'T':
-#ifdef  INTINDEX_JSON_SUPPORT
+#ifdef  U32INDEX_JSON_SUPPORT
                     if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                        return IntIndex_ToJsonFields;
+                        return U32Index_ToJsonFields;
                     }
                     if (str_Compare("ToJson", (char *)pStr) == 0) {
-                        return IntIndex_ToJson;
+                        return U32Index_ToJson;
                     }
 #endif
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return IntIndexClass_WhoAmI;
+                        return U32IndexClass_WhoAmI;
                     }
                     break;
                     
@@ -356,7 +356,7 @@ void *          IntIndexClass_QueryInfo (
 
 
 static
-bool            IntIndex_IsKindOf (
+bool            U32Index_IsKindOf (
     uint16_t        classID
 )
 {
@@ -364,14 +364,14 @@ bool            IntIndex_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_INTINDEX == classID) {
+    if (OBJ_IDENT_U32INDEX == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(IntIndex_Class())->pClassSuperObject;
+    pObj = obj_getInfo(U32Index_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -385,25 +385,25 @@ bool            IntIndex_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            IntIndex_Dealloc (
+void            U32Index_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          IntIndex_Class (
+OBJ_ID          U32Index_Class (
     void
 )
 {
-    return (OBJ_ID)&IntIndex_ClassObj;
+    return (OBJ_ID)&U32Index_ClassObj;
 }
 
 
 static
-uint16_t        IntIndex_WhoAmI (
+uint16_t        U32Index_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_INTINDEX;
+    return OBJ_IDENT_U32INDEX;
 }
 
 
@@ -414,35 +414,35 @@ uint16_t        IntIndex_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  INTINDEX_SINGLETON
+#ifdef  U32INDEX_SINGLETON
 // A Shared object ignores Retain() and Release() except for
 // initialization and termination. So, there must be an
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-INTINDEX_VTBL     IntIndex_VtblShared = {
+U32INDEX_VTBL     U32Index_VtblShared = {
     {
-        &IntIndex_Info,
-        IntIndex_IsKindOf,
+        &U32Index_Info,
+        U32Index_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        IntIndex_Dealloc,
-        IntIndex_Class,
-        IntIndex_WhoAmI,
-        (P_OBJ_QUERYINFO)IntIndex_QueryInfo,
-        (P_OBJ_TOSTRING)IntIndex_ToDebugString,
-        NULL,           // IntIndex_Enable,
-        NULL,           // IntIndex_Disable,
-        NULL,           // (P_OBJ_ASSIGN)IntIndex_Assign,
-        NULL,           // (P_OBJ_COMPARE)IntIndex_Compare,
-        NULL,           // (P_OBJ_PTR)IntIndex_Copy,
-        NULL,           // (P_OBJ_PTR)IntIndex_DeepCopy,
-        NULL            // (P_OBJ_HASH)IntIndex_Hash,
+        U32Index_Dealloc,
+        U32Index_Class,
+        U32Index_WhoAmI,
+        (P_OBJ_QUERYINFO)U32Index_QueryInfo,
+        (P_OBJ_TOSTRING)U32Index_ToDebugString,
+        NULL,           // U32Index_Enable,
+        NULL,           // U32Index_Disable,
+        NULL,           // (P_OBJ_ASSIGN)U32Index_Assign,
+        NULL,           // (P_OBJ_COMPARE)U32Index_Compare,
+        NULL,           // (P_OBJ_PTR)U32Index_Copy,
+        NULL,           // (P_OBJ_PTR)U32Index_DeepCopy,
+        NULL            // (P_OBJ_HASH)U32Index_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //IntIndex_IsEnabled,
+    //U32Index_IsEnabled,
  
 };
 #endif
@@ -454,29 +454,29 @@ INTINDEX_VTBL     IntIndex_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-INTINDEX_VTBL     IntIndex_Vtbl = {
+U32INDEX_VTBL     U32Index_Vtbl = {
     {
-        &IntIndex_Info,
-        IntIndex_IsKindOf,
+        &U32Index_Info,
+        U32Index_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        IntIndex_Dealloc,
-        IntIndex_Class,
-        IntIndex_WhoAmI,
-        (P_OBJ_QUERYINFO)IntIndex_QueryInfo,
-        (P_OBJ_TOSTRING)IntIndex_ToDebugString,
-        NULL,           // IntIndex_Enable,
-        NULL,           // IntIndex_Disable,
-        NULL,           // (P_OBJ_ASSIGN)IntIndex_Assign,
-        NULL,           // (P_OBJ_COMPARE)IntIndex_Compare,
-        NULL,           // (P_OBJ_PTR)IntIndex_Copy,
-        NULL,           // (P_OBJ_PTR)IntIndex_DeepCopy,
-        NULL            // (P_OBJ_HASH)IntIndex_Hash,
+        U32Index_Dealloc,
+        U32Index_Class,
+        U32Index_WhoAmI,
+        (P_OBJ_QUERYINFO)U32Index_QueryInfo,
+        (P_OBJ_TOSTRING)U32Index_ToDebugString,
+        NULL,           // U32Index_Enable,
+        NULL,           // U32Index_Disable,
+        NULL,           // (P_OBJ_ASSIGN)U32Index_Assign,
+        NULL,           // (P_OBJ_COMPARE)U32Index_Compare,
+        NULL,           // (P_OBJ_PTR)U32Index_Copy,
+        NULL,           // (P_OBJ_PTR)U32Index_DeepCopy,
+        NULL            // (P_OBJ_HASH)U32Index_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //IntIndex_IsEnabled,
+    //U32Index_IsEnabled,
  
 };
 
@@ -484,13 +484,13 @@ INTINDEX_VTBL     IntIndex_Vtbl = {
 
 static
 const
-OBJ_INFO        IntIndex_Info = {
-    "IntIndex",
-    "Integer Index",
-    (OBJ_DATA *)&IntIndex_ClassObj,
+OBJ_INFO        U32Index_Info = {
+    "U32Index",
+    "uint32_t Integer Index",
+    (OBJ_DATA *)&U32Index_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&IntIndex_Vtbl,
-    sizeof(INTINDEX_DATA)
+    (OBJ_IUNKNOWN *)&U32Index_Vtbl,
+    sizeof(U32INDEX_DATA)
 };
 
 

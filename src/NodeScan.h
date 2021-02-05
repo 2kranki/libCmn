@@ -147,7 +147,7 @@ extern "C" {
     
     NODESCAN_DATA * NodeScan_NewFromArray(
         NODETREE_DATA   *pTree,
-        NODEARRAY_DATA  *pArray     // Tree converted to array with up/down members.
+        OBJARRAY_DATA   *pArray     // Tree converted to array with up/down members.
     );
 
 
@@ -170,13 +170,13 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    NODEARRAY_DATA * NodeScan_getArray(
-        NODESCAN_DATA    *this
+    OBJARRAY_DATA * NodeScan_getArray(
+        NODESCAN_DATA   *this
     );
 
     bool            NodeScan_setArray(
         NODESCAN_DATA   *this,
-        NODEARRAY_DATA  *pValue
+        OBJARRAY_DATA   *pValue
     );
 
 
@@ -237,7 +237,7 @@ extern "C" {
      @return    If successful, the current node, otherwise OBJ_NIL
                 and Last Error contains an error reason.
      */
-    NODE_DATA *     NodeScan_InputAdvance(
+    NODELINK_DATA * NodeScan_InputAdvance(
         NODESCAN_DATA   *this,
         uint32_t        numChrs
     );
@@ -251,25 +251,25 @@ extern "C" {
      @return    If successful, the node in advance of the current one, otherwise
                 OBJ_NIL and Last Error contains an error reason.
      */
-    NODE_DATA *     NodeScan_InputLookAhead(
+    NODELINK_DATA * NodeScan_InputLookAhead(
         NODESCAN_DATA   *this,
         uint32_t        num
     );
 
     
-    NODE_DATA *     NodeScan_MatchName(
-        NODESCAN_DATA    *this,
+    NODELINK_DATA * NodeScan_MatchName(
+        NODESCAN_DATA   *this,
         char            *pStr
     );
 
     
-    NODE_DATA *     NodeScan_MatchClass(
-        NODESCAN_DATA    *this,
+    NODELINK_DATA * NodeScan_MatchClass(
+        NODESCAN_DATA   *this,
         int32_t         cls
     );
 
     
-    NODE_DATA *     NodeScan_MatchClasses(
+    NODELINK_DATA * NodeScan_MatchClasses(
         NODESCAN_DATA   *this,
         int32_t         *pSet
     );
@@ -283,7 +283,7 @@ extern "C" {
      @return    If successful, a starting index of the match relative to 1,
                 otherwise 0.
      */
-    NODE_DATA *     NodeScan_MatchClassesRegex(
+    NODELINK_DATA * NodeScan_MatchClassesRegex(
         NODESCAN_DATA   *this,
         int32_t         *pRegex             // [in] Zero-terminated array of
                                             //      node types
@@ -298,7 +298,7 @@ extern "C" {
      @return    If successful, an index of the match relative to 1,
                 otherwise 0.
      */
-    NODE_DATA *     NodeScan_ScanClassUntil(
+    NODELINK_DATA * NodeScan_ScanClassUntil(
         NODESCAN_DATA   *this,
         int32_t         cls
     );

@@ -130,6 +130,7 @@ int             test_${LNAME}_Copy01 (
 #if defined(${UNAME}_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
+    //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -149,8 +150,8 @@ int             test_${LNAME}_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_${UNAME});
         TINYTEST_TRUE( (fRc) );
-        //eRc = ${LNAME}_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //iRc = ${LNAME}_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (0 == iRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -162,8 +163,8 @@ int             test_${LNAME}_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_${UNAME});
         TINYTEST_TRUE( (fRc) );
-        //eRc = ${LNAME}_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //iRc = ${LNAME}_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (0 == iRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -180,8 +181,8 @@ int             test_${LNAME}_Copy01 (
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = ${LNAME}_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //iRc = ${LNAME}_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;

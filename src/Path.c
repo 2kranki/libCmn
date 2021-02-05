@@ -1001,7 +1001,10 @@ extern "C" {
         }
 #endif
 
-        eRc = Path_CleanAStr(Path_getAStr(this));
+        eRc = Path_ExpandVars(this, NULL, NULL);
+        if (ERESULT_OK(eRc)) {
+            eRc = Path_CleanAStr(Path_getAStr(this));
+        }
 
         // Return to caller.
         return eRc;

@@ -1,21 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Integer Index (IntIndex) Header
+//                  uint32_t Integer Index (U32Index) Header
 //****************************************************************
 /*
  * Program
- *          Integer Index (IntIndex)
+ *          uint32_t Integer Index (U32Index)
  * Purpose
- *          This object provides an integer index with an associated
- *          data pointer. The index is maintained in order (either
- *          signed or unsigned(default)).
+ *          This object provides a standardized way of handling
+ *          a separate U32Index to run things without complications
+ *          of interfering with the main U32Index. A U32Index may be 
+ *          called a U32Index on other O/S's.
  *
  * Remarks
  *  1.      None
  *
  * History
- *  01/03/2021 Generated
+ *  01/04/2021 Generated
  */
 
 
@@ -54,13 +55,13 @@
 #include        <AStr.h>
 
 
-#ifndef         INTINDEX_H
-#define         INTINDEX_H
+#ifndef         U32INDEX_H
+#define         U32INDEX_H
 
 
-//#define   INTINDEX_IS_IMMUTABLE     1
-//#define   INTINDEX_JSON_SUPPORT     1
-//#define   INTINDEX_SINGLETON        1
+//#define   U32INDEX_IS_IMMUTABLE     1
+//#define   U32INDEX_JSON_SUPPORT     1
+//#define   U32INDEX_SINGLETON        1
 
 
 
@@ -76,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct IntIndex_data_s  INTINDEX_DATA;            // Inherits from OBJ
-    typedef struct IntIndex_class_data_s INTINDEX_CLASS_DATA;   // Inherits from OBJ
+    typedef struct U32Index_data_s  U32INDEX_DATA;            // Inherits from OBJ
+    typedef struct U32Index_class_data_s U32INDEX_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct IntIndex_vtbl_s  {
+    typedef struct U32Index_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in IntIndex_object.c.
+        // method names to the vtbl definition in U32Index_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(INTINDEX_DATA *);
-    } INTINDEX_VTBL;
+        //bool        (*pIsEnabled)(U32INDEX_DATA *);
+    } U32INDEX_VTBL;
 
-    typedef struct IntIndex_class_vtbl_s    {
+    typedef struct U32Index_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in IntIndex_object.c.
+        // method names to the vtbl definition in U32Index_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(INTINDEX_DATA *);
-    } INTINDEX_CLASS_VTBL;
+        //bool        (*pIsEnabled)(U32INDEX_DATA *);
+    } U32INDEX_CLASS_VTBL;
 
 
 
@@ -109,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  INTINDEX_SINGLETON
-    INTINDEX_DATA * IntIndex_Shared (
+#ifdef  U32INDEX_SINGLETON
+    U32INDEX_DATA *     U32Index_Shared (
         void
     );
 
-    void            IntIndex_SharedReset (
+    void            U32Index_SharedReset (
         void
     );
 #endif
@@ -124,29 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to IntIndex object if successful, otherwise OBJ_NIL.
+     @return    pointer to U32Index object if successful, otherwise OBJ_NIL.
      */
-    INTINDEX_DATA * IntIndex_Alloc (
+    U32INDEX_DATA *     U32Index_Alloc (
         void
     );
     
     
-    OBJ_ID          IntIndex_Class (
+    OBJ_ID          U32Index_Class (
         void
     );
     
     
-    INTINDEX_DATA * IntIndex_New (
+    U32INDEX_DATA *     U32Index_New (
         void
     );
     
     
-#ifdef  INTINDEX_JSON_SUPPORT
-    INTINDEX_DATA *   IntIndex_NewFromJsonString (
+#ifdef  U32INDEX_JSON_SUPPORT
+    U32INDEX_DATA *   U32Index_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    INTINDEX_DATA *   IntIndex_NewFromJsonStringA (
+    U32INDEX_DATA *   U32Index_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -157,15 +158,6 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
-
-    bool            IntIndex_getSigned (
-        INTINDEX_DATA   *this
-    );
-
-    bool            IntIndex_setSigned (
-        INTINDEX_DATA   *this,
-        bool            fValue
-    );
 
 
 
@@ -182,11 +174,24 @@ extern "C" {
      @return    if successful, the void pointer associated with the
                 index; otherwise, NULL;
      */
-    ERESULT         IntIndex_Add (
-        INTINDEX_DATA   *this,
+    ERESULT         U32Index_Add (
+        U32INDEX_DATA   *this,
         int             index,
         void            *ptr,
         bool            fUpdate
+    );
+
+
+    /*!
+     Delete the index number entry from the index if present.
+     @param     this    object pointer
+     @param     index   index number to search by
+     @return    if successful, the void pointer associated with the
+                index; otherwise, NULL;
+     */
+    ERESULT         U32Index_Delete (
+        U32INDEX_DATA   *this,
+        int             index
     );
 
 
@@ -198,37 +203,37 @@ extern "C" {
      @return    if successful, the void pointer associated with the
                 index; otherwise, NULL;
      */
-    void *         IntIndex_Find (
-        INTINDEX_DATA   *this,
+    void *         U32Index_Find (
+        U32INDEX_DATA   *this,
         int             index
     );
 
-   
-    INTINDEX_DATA * IntIndex_Init (
-        INTINDEX_DATA   *this
+
+    U32INDEX_DATA *   U32Index_Init (
+        U32INDEX_DATA     *this
     );
 
 
-    ERESULT         IntIndex_IsEnabled (
-        INTINDEX_DATA   *this
+    ERESULT     U32Index_IsEnabled (
+        U32INDEX_DATA       *this
     );
     
  
-#ifdef  INTINDEX_JSON_SUPPORT
+#ifdef  U32INDEX_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = IntIndex_ToJson(this);
+     ASTR_DATA      *pDesc = U32Index_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     IntIndex_ToJson (
-        INTINDEX_DATA   *this
+    ASTR_DATA *     U32Index_ToJson (
+        U32INDEX_DATA   *this
     );
 #endif
 
@@ -237,7 +242,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = IntIndex_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = U32Index_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -245,8 +250,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     IntIndex_ToDebugString (
-        INTINDEX_DATA     *this,
+    ASTR_DATA *     U32Index_ToDebugString (
+        U32INDEX_DATA     *this,
         int             indent
     );
     
@@ -257,5 +262,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* INTINDEX_H */
+#endif  /* U32INDEX_H */
 

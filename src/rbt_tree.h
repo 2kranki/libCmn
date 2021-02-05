@@ -5,6 +5,11 @@
 //
 // Modified by Mirek Rusin <http://github.com/mirek/rb_tree>.
 //
+// This tree only contains pointers. The actual data is created and destroyed
+// by the user of this tree.
+
+
+
 // This is free and unencumbered software released into the public domain.
 //
 // Anyone is free to copy, modify, publish, use, compile, sell, or

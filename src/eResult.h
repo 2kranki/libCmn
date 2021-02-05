@@ -355,8 +355,8 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT_DATA *     eResult_Init(
-        ERESULT_DATA       *this
+    ERESULT_DATA *  eResult_Init(
+        ERESULT_DATA    *this
     );
 
 

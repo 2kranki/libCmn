@@ -214,7 +214,8 @@ extern "C" {
     OBJHASH_NODE *  ObjHash_FindNode(
         OBJHASH_DATA    *this,
         uint32_t        hash,
-        OBJ_ID          pObject
+        OBJ_ID          pObject,
+        int32_t         index       // (0..n)th entry in chain
     )
     {
         LISTDL_DATA     *pNodeList;
@@ -232,7 +233,9 @@ extern "C" {
             if (pNode->hash == hash) {
                 iRc = pVtbl->pCompare(pObject, pNode->pObject);
                 if (0 == iRc) {
-                    return pNode;
+                    index--;
+                    if (index < 0)
+                        return pNode;
                 }
                 if (iRc < 0) {
                     break;
@@ -561,7 +564,7 @@ extern "C" {
 
     ERESULT         ObjHash_Add(
         OBJHASH_DATA    *this,
-        OBJ_ID            pObject,
+        OBJ_ID          pObject,
         uint32_t        *pIndex
     )
     {
@@ -586,7 +589,6 @@ extern "C" {
         if (!this->fDups) {
             pNode = ObjHash_Find(this, pObject);
             if (pNode) {
-                //fprintf( stderr, "Node Key = %s\n", pNode->pszKey);
                 return ERESULT_DATA_ALREADY_EXISTS;
             }
         }
@@ -984,7 +986,7 @@ extern "C" {
         hash = pVtbl->pHash(pObject);
         pNodeList = ObjHash_NodeListFromHash(this, hash);
 
-        pNode = ObjHash_FindNode(this, hash, pObject);
+        pNode = ObjHash_FindNode(this, hash, pObject, 0);
         if (pNode) {
             pReturn = ObjHash_DeleteNode(this, pNode);
         }
@@ -1206,7 +1208,7 @@ extern "C" {
 
         hash = pVtbl->pHash(pObject);
 
-        pNode = ObjHash_FindNode(this, hash, pObject);
+        pNode = ObjHash_FindNode(this, hash, pObject, 0);
         if (pNode) {
             return pNode->pObject;
         }
@@ -1233,6 +1235,39 @@ extern "C" {
 #endif
 
         pNode = ObjHash_FindUniqueInt(this, index);
+        if (pNode) {
+            return pNode->pObject;
+        }
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+    OBJ_ID          ObjHash_Findth(
+        OBJHASH_DATA    *this,
+        OBJ_ID          pObject,
+        uint16_t        index           // 0..n th entry with same name
+    )
+    {
+        OBJHASH_NODE    *pNode;
+        uint32_t        hash;
+        const
+        OBJ_IUNKNOWN    *pVtbl;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pVtbl = obj_getVtbl(pObject);
+
+        hash = pVtbl->pHash(pObject);
+
+        pNode = ObjHash_FindNode(this, hash, pObject, (int32_t)index);
         if (pNode) {
             return pNode->pObject;
         }

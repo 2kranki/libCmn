@@ -626,6 +626,8 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of ${LNAME}_object.c
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_${UNAME});
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -672,7 +674,7 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
     ERESULT         ${LNAME}_IsEnabled (

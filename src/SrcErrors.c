@@ -84,11 +84,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SRCERRORS_DATA *     SrcErrors_Alloc (
+    SRCERRORS_DATA * SrcErrors_Alloc (
         void
     )
     {
-        SRCERRORS_DATA       *this;
+        SRCERRORS_DATA  *this;
         uint32_t        cbSize = sizeof(SRCERRORS_DATA);
         
         // Do initialization.
@@ -101,11 +101,11 @@ extern "C" {
 
 
 
-    SRCERRORS_DATA *     SrcErrors_New (
+    SRCERRORS_DATA * SrcErrors_New (
         void
     )
     {
-        SRCERRORS_DATA       *this;
+        SRCERRORS_DATA  *this;
         
         this = SrcErrors_Alloc( );
         if (this) {

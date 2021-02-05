@@ -95,7 +95,7 @@ struct NodeHash_data_s	{
     uint32_t        size;
     uint32_t        cHash;          // Number of Hash Buckets
     RBT_TREE        *pHash;         // Main Hash Table (each bucket is an RBT to
-    //                              // accerate searches)
+    //                              // accellerate searches)
 
 };
 #pragma pack(pop)

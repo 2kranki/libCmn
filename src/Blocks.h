@@ -315,6 +315,17 @@ extern "C" {
     );
 
 
+    /*! Return the unique number for the given record index.
+     @param     this    Object Pointer
+     @param     index   number of item on the active list (relative to 1)
+     @return:   If successful, record unique number (> 0). Otherwise, 0.
+     */
+    uint32_t        Blocks_RecordUnique(
+        BLOCKS_DATA    *this,
+        int32_t        index                    // (relative to 1)
+    );
+
+
     /*!
      Reset this object to its beginning state.
      @param     this    object pointer
@@ -322,6 +333,18 @@ extern "C" {
                 error code.
      */
     ERESULT         Blocks_Reset (
+        BLOCKS_DATA     *this
+    );
+
+
+    /*!
+     If there are no active records, add an index for the unique identifier
+     in the record.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Blocks_SetupIndex (
         BLOCKS_DATA     *this
     );
 

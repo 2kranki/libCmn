@@ -7,22 +7,13 @@
  * Program
  *			an Unordered Tree of Nodes (NodeTree)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate NodeTree to run things without complications
- *          of interfering with the main NodeTree. A NodeTree may be 
- *          called a NodeTree on other O/S's.
- *
- * Remarks
- *	1.      None
- *
- * History
  *          This object provides for an un-ordered tree of nodes.
  *          Un-ordered means that the tree nodes are not in order
  *          by name (ie key). They are in order by placement.
  *
  *          This method of representation is called "The Binary
  *          Tree Representation of Trees", section 2.3.2 of
- *          "Fundamental Algorithms" (3rd Ed).
+ *          "Fundamental Algorithms" (3rd Ed), Donald Knuth.
  *
  * Remarks
  *  1,      The left pointer of nodeEntry is used for nextSibling
@@ -46,7 +37,7 @@
  *  07/01/2018  Changed base node to nodeLink for all the nodes of the
  *              tree.
  *  12/13/2018  Removed the inorder traversal of the tree. See p. 336
- *              of "Fundamental Algorithms", Knuth, 3rd Edition.
+ *              of "Fundamental Algorithms", Donald Knuth, 3rd Edition.
  *	01/10/2020  Regenerated
  */
 
@@ -86,6 +77,7 @@
 #include        <AStr.h>
 #include        <Node.h>
 #include        <NodeLink.h>
+#include        <ObjArray.h>
 #include        <szTbl.h>
 
 
@@ -400,7 +392,7 @@ extern "C" {
 
     ERESULT         NodeTree_Nodes (
         NODETREE_DATA   *this,
-        NODEARRAY_DATA  **ppNodes
+        OBJARRAY_DATA   **ppNodes
     );
 
 
@@ -510,26 +502,34 @@ extern "C" {
     
     
 
-    /* Convert the tree to an array with open/close nodes interjected to
-     * to show the tree structure. An open node is added if the current
-     * node has children. A close node is added after all the children
-     * are added. The tree is visited in post-order mode. This can be used
-     * to scan the tree as if it was an array looking for patterns.
+    /*! Convert the tree to an array with open/close nodes interjected to
+        to show the tree structure. An open node is added if the current
+        node has children. A close node is added after all the children
+        are added. The tree is visited in post-order mode. This can be used
+        to scan the tree as if it was an array looking for patterns.
+     @param     this    object pointer
+     @return    If successful, an ObjArray of NodeLink objects which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned ObjArray object.
      */
-    NODEARRAY_DATA * NodeTree_ToLinearizationPost (
+    OBJARRAY_DATA * NodeTree_ToLinearizationPost (
         NODETREE_DATA    *this
     );
 
 
-    /* Convert the tree to an array with open/close nodes interjected to
-     * to show the tree structure. An open node is added if the current
-     * node has children. A close node is added after all the children
-     * are added. The tree is visited in pre-order mode. This can be used
-     * to scan the tree as if it was an array looking for patterns.
-     * The other property of the node array contains a pointer to this
-     * tree.
+    /*! Convert the tree to an array with open/close nodes interjected to
+        to show the tree structure. An open node is added if the current
+        node has children. A close node is added after all the children
+        are added. The tree is visited in pre-order mode. This can be used
+        to scan the tree as if it was an array looking for patterns.
+        The other property of the node array contains a pointer to this
+        tree.
+     @param     this    object pointer
+     @return    If successful, an ObjArray of NodeLink objects which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned ObjArray object.
      */
-    NODEARRAY_DATA * NodeTree_ToLinearizationPre (
+    OBJARRAY_DATA * NodeTree_ToLinearizationPre (
         NODETREE_DATA    *this
     );
 

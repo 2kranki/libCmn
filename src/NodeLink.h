@@ -1,23 +1,38 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          A Node with Integer Links (NodeLink) Header
+//                  Node with Integer Links (NodeLink) Header
 //****************************************************************
 /*
  * Program
- *			A Node with Integer Links
+ *          Node with Integer Links (NodeLink)
  * Purpose
- *			This object provides a regular node with additional
+ *          This object provides a regular node with additional
  *          integer links that allow it to be easily used in lists,
  *          trees, etc.  Integer links allow the data to be written
- *          to disk.
+ *          to disk without worrying about memory addresses.
+ *
+ *          NodeLink provides 5 basic integer links:
+ *              index
+ *              left
+ *              middle
+ *              parent
+ *              right
+ *          The left and right links can have an optional bit set
+ *          for indicating threading or anything else needed.
+ *          Also, there is the object's misc field which can be
+ *          accessed as a 32-bit integer or two 16-bit integers
+ *          (misc1/misc2). Balance is a synonym for misc1.
  *
  * Remarks
- *	1.      This object uses OBJ_FLAG_USER5..OBJ_FLAG_USER7 internally.
+ *  1.      This object uses OBJ_FLAG_USER5..OBJ_FLAG_USER7 internally.
  *
  * History
- *  06/30/2018 Generated
- *	01/12/2020 Regenerated
+ *  06/30/2018  Generated
+ *  01/12/2020  Regenerated
+ *  02/03/2021  Regenerated and made node part of data rather than
+ *              inheriting from it allowing one node to be used in
+ *              multiple links.
  */
 
 
@@ -61,14 +76,15 @@
 #define         NODELINK_H
 
 
-#define   NODELINK_JSON_SUPPORT 1
-//#define   NODELINK_SINGLETON    1
+//#define   NODELINK_IS_IMMUTABLE     1
+#define   NODELINK_JSON_SUPPORT       1
+//#define   NODELINK_SINGLETON        1
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -78,10 +94,10 @@ extern "C" {
     //****************************************************************
 
 
-    //typedef struct NodeLink_data_s	NODELINK_DATA;            // Inherits from OBJ
-    //typedef struct NodeLink_class_data_s NODELINK_CLASS_DATA;   // Inherits from OBJ
+    typedef struct NodeLink_data_s  NODELINK_DATA;            // Inherits from OBJ
+    typedef struct NodeLink_class_data_s NODELINK_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct NodeLink_vtbl_s	{
+    typedef struct NodeLink_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in NodeLink_object.c.
@@ -90,7 +106,7 @@ extern "C" {
         //bool        (*pIsEnabled)(NODELINK_DATA *);
     } NODELINK_VTBL;
 
-    typedef struct NodeLink_class_vtbl_s	{
+    typedef struct NodeLink_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in NodeLink_object.c.
@@ -103,7 +119,7 @@ extern "C" {
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -143,6 +159,11 @@ extern "C" {
     );
     
     
+    NODELINK_DATA * NodeLink_NewWithNode (
+        NODE_DATA           *pNode
+    );
+
+
     NODELINK_DATA * NodeLink_NewWithUTF8AndClass(
         int32_t         cls,
         const
@@ -159,9 +180,16 @@ extern "C" {
     );
 
 
-    NODELINK_DATA *   NodeLink_NewFromJsonString(
+#ifdef  NODELINK_JSON_SUPPORT
+    NODELINK_DATA * NodeLink_NewFromJsonString (
         ASTR_DATA       *pString
     );
+
+    NODELINK_DATA * NodeLink_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
 
 
 
@@ -169,6 +197,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*!
+     @property  Balance is intended for containers such as a balanced
+                binary tree. It is actually a synonym for misc1 and
+                both should not be used at the same time.
+     */
     int16_t         NodeLink_getBalance(
         NODELINK_DATA   *this
     );
@@ -180,8 +213,8 @@ extern "C" {
 
 
     /*!
-     Child index property is used to point to the next child node
-     if needed.  Note that this uses the Left index internally.
+     @property  Child index property is used to point to the next child node
+                if needed.  Note that this uses the Left index internally.
      */
     uint32_t        NodeLink_getChild(
         NODELINK_DATA   *this
@@ -197,14 +230,29 @@ extern "C" {
         NODELINK_DATA   *this
     );
 
+    bool            NodeLink_setClass(
+        NODELINK_DATA   *this,
+        int32_t         value
+    );
+
 
     OBJ_ID          NodeLink_getData(
         NODELINK_DATA   *this
     );
 
+    bool            NodeLink_setData(
+        NODELINK_DATA   *this,
+        OBJ_ID          pValue
+    );
+
 
     OBJ_ID          NodeLink_getExtra(
         NODELINK_DATA   *this
+    );
+
+    bool            NodeLink_setExtra(
+        NODELINK_DATA   *this,
+        OBJ_ID          pValue
     );
 
 
@@ -267,11 +315,31 @@ extern "C" {
     );
 
 
+    uint32_t        NodeLink_getMisc(
+        NODELINK_DATA   *this
+    );
+
+    bool            NodeLink_setMisc(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    );
+
+
     uint16_t        NodeLink_getMisc1(
         NODELINK_DATA   *this
     );
 
     bool            NodeLink_setMisc1(
+        NODELINK_DATA   *this,
+        uint16_t        value
+    );
+
+
+    uint16_t        NodeLink_getMisc2(
+        NODELINK_DATA   *this
+    );
+
+    bool            NodeLink_setMisc2(
         NODELINK_DATA   *this,
         uint16_t        value
     );
@@ -298,6 +366,11 @@ extern "C" {
 
     OBJ_ID          NodeLink_getOther(
         NODELINK_DATA   *this
+    );
+
+    bool            NodeLink_setOther(
+        NODELINK_DATA   *this,
+        OBJ_ID          pValue
     );
 
 
@@ -374,8 +447,30 @@ extern "C" {
     );
 
 
+    /*!
+     Type is user defined and optional.
+     */
+    int32_t         NodeLink_getType(
+        NODELINK_DATA   *this
+    );
 
-    
+    bool            NodeLink_setType(
+        NODELINK_DATA   *this,
+        int32_t         value
+    );
+
+
+    uint32_t        NodeLink_getUnique(
+        NODELINK_DATA   *this
+    );
+
+    bool            NodeLink_setUnique(
+        NODELINK_DATA   *this,
+        uint32_t        value
+    );
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -434,6 +529,11 @@ extern "C" {
     );
 
 
+    uint32_t        NodeLink_Hash(
+        NODELINK_DATA   *this
+    );
+
+
     NODELINK_DATA * NodeLink_Init (
         NODELINK_DATA   *this
     );
@@ -464,6 +564,25 @@ extern "C" {
     );
 
 
+#ifdef  NODELINK_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = NodeLink_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     NodeLink_ToJson (
+        NODELINK_DATA   *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -476,7 +595,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    NodeLink_ToDebugString (
+    ASTR_DATA *     NodeLink_ToDebugString (
         NODELINK_DATA   *this,
         int             indent
     );
@@ -484,9 +603,9 @@ extern "C" {
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* NODELINK_H */
+#endif  /* NODELINK_H */
 

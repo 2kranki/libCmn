@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   IntIndex.c
- *  Generated 01/03/2021 13:14:35
+ * File:   U32Index.c
+ *  Generated 01/04/2021 10:35:59
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <IntIndex_internal.h>
+#include        <U32Index_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -64,14 +64,15 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    INTINDEX_NODE * IntIndex_Search (
-        INTINDEX_DATA   *this,
-        int             index
+    U32INDEX_NODE * U32Index_Search (
+        U32INDEX_DATA   *this,
+        int             index,
+        uint32_t        *pOffset
     )
     {
-        INTINDEX_NODE   *pNode;
+        U32INDEX_NODE   *pNode;
         uint32_t        max = array_getSize(this->pArray);
-        int             cmp;
+        int32_t         cmp;
         uint32_t        high;
         uint32_t        low;
         uint32_t        mid;
@@ -86,32 +87,31 @@ extern "C" {
         while (low < high) {
             mid = (low + high) / 2;
             pNode  = array_GetAddrOf(this->pArray, mid+1);
-            if (this->fSigned) {
-                cmp = index - pNode->index;
-            } else {
-                cmp = (unsigned int)index - (unsigned int)pNode->index;
-            }
+            cmp = index - pNode->index;
             if (0 > cmp)
                 high = mid;
-            if (0 == cmp)
+            if (0 == cmp) {
+                if (pOffset)
+                    *pOffset = mid + 1;
                 return pNode;
+            }
             if (0 < cmp)
                 low = mid + 1;
         }
         if (low == high) {
             pNode  = array_GetAddrOf(this->pArray, low+1);
-            if (this->fSigned) {
-                cmp = index - pNode->index;
-            } else {
-                cmp = (unsigned int)index - (unsigned int)pNode->index;
-            }
-            if (0 == cmp)
+            cmp = index - pNode->index;
+            if (0 == cmp) {
+                if (pOffset)
+                    *pOffset = low + 1;
                 return pNode;
+            }
 
         }
 
         return NULL;
     }
+
 
 
 
@@ -124,12 +124,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    INTINDEX_DATA *     IntIndex_Alloc (
+    U32INDEX_DATA *     U32Index_Alloc (
         void
     )
     {
-        INTINDEX_DATA       *this;
-        uint32_t        cbSize = sizeof(INTINDEX_DATA);
+        U32INDEX_DATA       *this;
+        uint32_t        cbSize = sizeof(U32INDEX_DATA);
         
         // Do initialization.
         
@@ -141,15 +141,15 @@ extern "C" {
 
 
 
-    INTINDEX_DATA *     IntIndex_New (
+    U32INDEX_DATA *     U32Index_New (
         void
     )
     {
-        INTINDEX_DATA       *this;
+        U32INDEX_DATA       *this;
         
-        this = IntIndex_Alloc( );
+        this = U32Index_Alloc( );
         if (this) {
-            this = IntIndex_Init(this);
+            this = U32Index_Init(this);
         } 
         return this;
     }
@@ -163,18 +163,18 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      A r r a y
+    //                        A r r a y
     //---------------------------------------------------------------
 
-    ARRAY_DATA *        IntIndex_getArray (
-        INTINDEX_DATA       *this
+    ARRAY_DATA *    U32Index_getArray (
+        U32INDEX_DATA   *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -184,14 +184,14 @@ extern "C" {
     }
 
 
-    bool                IntIndex_setArray (
-        INTINDEX_DATA       *this,
-        ARRAY_DATA          *pValue
+    bool            U32Index_setArray (
+        U32INDEX_DATA   *this,
+        ARRAY_DATA      *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -212,15 +212,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        IntIndex_getPriority (
-        INTINDEX_DATA     *this
+    uint16_t        U32Index_getPriority (
+        U32INDEX_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -231,14 +231,14 @@ extern "C" {
     }
 
 
-    bool            IntIndex_setPriority (
-        INTINDEX_DATA     *this,
+    bool            U32Index_setPriority (
+        U32INDEX_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -252,58 +252,16 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                        S i g n e d
-    //---------------------------------------------------------------
-
-    bool            IntIndex_getSigned (
-        INTINDEX_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!IntIndex_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->fSigned ? true : false;
-    }
-
-
-    bool            IntIndex_setSigned (
-        INTINDEX_DATA   *this,
-        bool            fValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!IntIndex_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        this->fSigned = fValue ? 1 : 0;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        IntIndex_getSize (
-        INTINDEX_DATA       *this
+    uint32_t        U32Index_getSize (
+        U32INDEX_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -318,15 +276,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  IntIndex_getSuperVtbl (
-        INTINDEX_DATA   *this
+    OBJ_IUNKNOWN *  U32Index_getSuperVtbl (
+        U32INDEX_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -349,17 +307,17 @@ extern "C" {
     //                          A d d
     //---------------------------------------------------------------
 
-    ERESULT          IntIndex_Add (
-        INTINDEX_DATA   *this,
+    ERESULT          U32Index_Add (
+        U32INDEX_DATA   *this,
         int             index,
         void            *ptr,
         bool            fUpdate
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        INTINDEX_NODE   *pNode;
-        INTINDEX_NODE   node;
-        int             cmp;
+        U32INDEX_NODE   *pNode;
+        U32INDEX_NODE   node;
+        int32_t         cmp;
         uint32_t        high;
         uint32_t        low;
         uint32_t        mid;
@@ -367,19 +325,20 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        if (array_getSize(this->pArray) == 0) {
-            node.index = index;
-            node.ptr = ptr;
-            eRc = array_AppendData(this->pArray, 1, &node);
-            return eRc;
-        }
         node.index = index;
         node.ptr = ptr;
+
+        // Just add the index if it is the highest.
+        if (index > this->highest) {
+            eRc = array_AppendData(this->pArray, 1, &node);
+            this->highest = node.index;
+            return eRc;
+        }
 
         // Do a binary search on the array.
         high = array_getSize(this->pArray) - 1;
@@ -387,13 +346,15 @@ extern "C" {
         while (low < high) {
             mid = (low + high) / 2;
             pNode  = array_GetAddrOf(this->pArray, mid+1);
-            if (this->fSigned) {
-                cmp = index - pNode->index;
-            } else {
-                cmp = (unsigned int)index - (unsigned int)pNode->index;
-            }
-            if (0 > cmp)
+            cmp = index - pNode->index;
+            if (0 > cmp) {
                 high = mid;
+                continue;
+            }
+            if (0 < cmp) {
+                low = mid + 1;
+                continue;
+            }
             if (0 == cmp) {
                 if (fUpdate) {
                     pNode->ptr = ptr;
@@ -402,16 +363,10 @@ extern "C" {
                     return ERESULT_DATA_ALREADY_EXISTS;
                 }
             }
-            if (0 < cmp)
-                low = mid + 1;
         }
         if (low == high) {
             pNode  = array_GetAddrOf(this->pArray, low+1);
-            if (this->fSigned) {
-                cmp = index - pNode->index;
-            } else {
-                cmp = (unsigned int)index - (unsigned int)pNode->index;
-            }
+            cmp = index - pNode->index;
             if (0 == cmp) {
                 if (fUpdate) {
                     pNode->ptr = ptr;
@@ -422,6 +377,7 @@ extern "C" {
             }
             if (0 < cmp) {
                 eRc = array_AppendData(this->pArray, 1, &node);
+                this->highest = node.index;
             } else {
                 eRc = array_InsertData(this->pArray, low+1, 1, &node);
             }
@@ -443,16 +399,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = IntIndex_Assign(this,pOther);
+        ERESULT eRc = U32Index_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another INTINDEX object
+     @param     pOther  a pointer to another U32INDEX object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         IntIndex_Assign (
-        INTINDEX_DATA       *this,
-        INTINDEX_DATA     *pOther
+    ERESULT         U32Index_Assign (
+        U32INDEX_DATA       *this,
+        U32INDEX_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -460,11 +416,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!IntIndex_Validate(pOther)) {
+        if (!U32Index_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -525,9 +481,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             IntIndex_Compare (
-        INTINDEX_DATA     *this,
-        INTINDEX_DATA     *pOther
+    int             U32Index_Compare (
+        U32INDEX_DATA     *this,
+        U32INDEX_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -540,12 +496,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!IntIndex_Validate(pOther)) {
+        if (!U32Index_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -567,36 +523,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        IntIndex      *pCopy = IntIndex_Copy(this);
+        U32Index      *pCopy = U32Index_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a INTINDEX object which must be 
+     @return    If successful, a U32INDEX object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    INTINDEX_DATA *     IntIndex_Copy (
-        INTINDEX_DATA       *this
+    U32INDEX_DATA *     U32Index_Copy (
+        U32INDEX_DATA       *this
     )
     {
-        INTINDEX_DATA       *pOther = OBJ_NIL;
+        U32INDEX_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef INTINDEX_IS_IMMUTABLE
+#ifdef U32INDEX_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = IntIndex_New( );
+        pOther = U32Index_New( );
         if (pOther) {
-            eRc = IntIndex_Assign(this, pOther);
+            eRc = U32Index_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -614,11 +570,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            IntIndex_Dealloc (
+    void            U32Index_Dealloc (
         OBJ_ID          objId
     )
     {
-        INTINDEX_DATA   *this = objId;
+        U32INDEX_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -627,7 +583,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -635,11 +591,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((INTINDEX_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((U32INDEX_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        IntIndex_setArray(this, OBJ_NIL);
+        U32Index_setArray(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -660,32 +616,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        IntIndex      *pDeepCopy = IntIndex_Copy(this);
+        U32Index      *pDeepCopy = U32Index_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a INTINDEX object which must be 
+     @return    If successful, a U32INDEX object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    INTINDEX_DATA *     IntIndex_DeepyCopy (
-        INTINDEX_DATA       *this
+    U32INDEX_DATA *     U32Index_DeepyCopy (
+        U32INDEX_DATA       *this
     )
     {
-        INTINDEX_DATA       *pOther = OBJ_NIL;
+        U32INDEX_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = IntIndex_New( );
+        pOther = U32Index_New( );
         if (pOther) {
-            eRc = IntIndex_Assign(this, pOther);
+            eRc = U32Index_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -699,6 +655,39 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       D e l e t e
+    //---------------------------------------------------------------
+
+    ERESULT          U32Index_Delete (
+        U32INDEX_DATA   *this,
+        int             index
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        U32INDEX_NODE   *pNode;
+        uint32_t        offset = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!U32Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pNode = U32Index_Search(this, index, &offset);
+        if (pNode && offset) {
+            eRc = array_Delete(this->pArray, offset, 1);
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -708,8 +697,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         IntIndex_Disable (
-        INTINDEX_DATA       *this
+    ERESULT         U32Index_Disable (
+        U32INDEX_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -717,7 +706,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -743,8 +732,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         IntIndex_Enable (
-        INTINDEX_DATA       *this
+    ERESULT         U32Index_Enable (
+        U32INDEX_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -752,7 +741,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -780,26 +769,26 @@ extern "C" {
      @return    if successful, the void pointer associated with the
                 index; otherwise, NULL;
      */
-    void *          IntIndex_Find (
-        INTINDEX_DATA   *this,
+    void *          U32Index_Find (
+        U32INDEX_DATA   *this,
         int             index
     )
     {
         //ERESULT         eRc = ERESULT_SUCCESS;
-        INTINDEX_NODE   *pNode;
+        U32INDEX_NODE   *pNode;
         void            *ptr = NULL;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return NULL;
         }
 #endif
 
-        pNode = IntIndex_Search(this, index);
+        pNode = U32Index_Search(this, index, NULL);
         if (pNode)
             ptr = pNode->ptr;
 
@@ -813,11 +802,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    INTINDEX_DATA *   IntIndex_Init (
-        INTINDEX_DATA       *this
+    U32INDEX_DATA *   U32Index_Init (
+        U32INDEX_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(INTINDEX_DATA);
+        uint32_t        cbSize = sizeof(U32INDEX_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -835,7 +824,7 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_INTINDEX);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_U32INDEX);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -843,12 +832,12 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&IntIndex_Vtbl);
-#ifdef  INTINDEX_JSON_SUPPORT
-        JsonIn_RegisterClass(IntIndex_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&U32Index_Vtbl);
+#ifdef  U32INDEX_JSON_SUPPORT
+        JsonIn_RegisterClass(U32Index_Class());
 #endif
         
-        this->pArray = array_NewWithSize(sizeof(INTINDEX_NODE));
+        this->pArray = array_NewWithSize(sizeof(U32INDEX_NODE));
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -857,7 +846,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -866,11 +855,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "IntIndex::sizeof(INTINDEX_DATA) = %lu\n", 
-                sizeof(INTINDEX_DATA)
+                "U32Index::sizeof(U32INDEX_DATA) = %lu\n", 
+                sizeof(U32INDEX_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(INTINDEX_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(U32INDEX_DATA));
 #endif
 
         return this;
@@ -882,8 +871,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         IntIndex_IsEnabled (
-        INTINDEX_DATA       *this
+    ERESULT         U32Index_IsEnabled (
+        U32INDEX_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -891,7 +880,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -918,14 +907,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = IntIndex_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = U32Index_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "IntIndex", prefix,
+                        the object name, "U32Index", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -933,13 +922,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          IntIndex_QueryInfo (
+    void *          U32Index_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        INTINDEX_DATA     *this = objId;
+        U32INDEX_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -948,7 +937,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -957,11 +946,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(INTINDEX_DATA);
+                return (void *)sizeof(U32INDEX_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)IntIndex_Class();
+                return (void *)U32Index_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -987,37 +976,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return IntIndex_Disable;
+                            return U32Index_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return IntIndex_Enable;
+                            return U32Index_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  INTINDEX_JSON_SUPPORT
+#ifdef  U32INDEX_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return IntIndex_ParseJsonFields;
+                            return U32Index_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return IntIndex_ParseJsonObject;
+                            return U32Index_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return IntIndex_ToDebugString;
+                            return U32Index_ToDebugString;
                         }
-#ifdef  INTINDEX_JSON_SUPPORT
+#ifdef  U32INDEX_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return IntIndex_ToJsonFields;
+                            return U32Index_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return IntIndex_ToJson;
+                            return U32Index_ToJson;
                         }
 #endif
                         break;
@@ -1028,10 +1017,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == IntIndex_ToDebugString)
+                if (pData == U32Index_ToDebugString)
                     return "ToDebugString";
-#ifdef  INTINDEX_JSON_SUPPORT
-                if (pData == IntIndex_ToJson)
+#ifdef  U32INDEX_JSON_SUPPORT
+                if (pData == U32Index_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1053,7 +1042,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = IntIndex_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = U32Index_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1061,8 +1050,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     IntIndex_ToDebugString (
-        INTINDEX_DATA      *this,
+    ASTR_DATA *     U32Index_ToDebugString (
+        U32INDEX_DATA      *this,
         int             indent
     )
     {
@@ -1074,12 +1063,12 @@ extern "C" {
         uint32_t        i;
         uint32_t        iMax;
         //uint32_t        j;
-        INTINDEX_NODE   *pNode;
+        U32INDEX_NODE   *pNode;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!IntIndex_Validate(this)) {
+        if (!U32Index_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1100,7 +1089,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    IntIndex_getSize(this),
+                    U32Index_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1114,8 +1103,8 @@ extern "C" {
                 AStr_AppendPrint(pStr, "%8d  %p\n", pNode->index, pNode->ptr);
             }
         }
-        
-#ifdef  XYZZY        
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
@@ -1151,15 +1140,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            IntIndex_Validate (
-        INTINDEX_DATA      *this
+    bool            U32Index_Validate (
+        U32INDEX_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_INTINDEX))
+            if (obj_IsKindOf(this, OBJ_IDENT_U32INDEX))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1175,7 +1164,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(INTINDEX_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(U32INDEX_DATA))) {
             return false;
         }
 

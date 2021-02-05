@@ -1,10 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   NodeLink_internal.h
- *	Generated 01/12/2020 10:31:46
+ *  Generated 02/03/2021 18:58:16
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
 
@@ -41,19 +41,16 @@
 
 #include        <NodeLink.h>
 #include        <JsonIn.h>
-#include        <Node_internal.h>
 
 
 #ifndef NODELINK_INTERNAL_H
-#define	NODELINK_INTERNAL_H
+#define NODELINK_INTERNAL_H
 
 
 
-#define     PROPERTY_STR_OWNED 1
 
 
-
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -65,16 +62,17 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct NodeLink_data_s	{
+struct NodeLink_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
-    NODE_DATA       super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-    #define NODELINK_LEFT_LINK   OBJ_FLAG_USER5
-    #define NODELINK_RIGHT_LINK  OBJ_FLAG_USER6
-    #define NODELINK_RIGHT_CHILD OBJ_FLAG_USER7
+#define NODELINK_LEFT_LINK   OBJ_FLAG_USER5
+#define NODELINK_RIGHT_LINK  OBJ_FLAG_USER6
+#define NODELINK_RIGHT_CHILD OBJ_FLAG_USER7
 
     // Common Data
+    NODE_DATA       *pNode;
     uint32_t        index;
     uint32_t        leftIndex;
     uint32_t        middleIndex;
@@ -98,7 +96,7 @@ struct NodeLink_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  NODELINK_SINGLETON
-    NODELINK_DATA *     NodeLink_getSingleton (
+    NODELINK_DATA * NodeLink_getSingleton (
         void
     );
 
@@ -113,8 +111,25 @@ struct NodeLink_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            NodeLink_setNode (
+        NODELINK_DATA   *this,
+        NODE_DATA       *pValue
+    );
+
+
     OBJ_IUNKNOWN *  NodeLink_getSuperVtbl (
-        NODELINK_DATA     *this
+        NODELINK_DATA   *this
+    );
+
+
+    ERESULT         NodeLink_Assign (
+        NODELINK_DATA   *this,
+        NODELINK_DATA   *pOther
+    );
+
+
+    NODELINK_DATA * NodeLink_Copy (
+        NODELINK_DATA   *this
     );
 
 
@@ -124,8 +139,29 @@ struct NodeLink_data_s	{
 
 
 #ifdef  NODELINK_JSON_SUPPORT
-    NODELINK_DATA *       NodeLink_ParseJsonObject (
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    NODELINK_DATA * NodeLink_ParseJsonObject (
         JSONIN_DATA     *pParser
+    );
+
+
+    /*!
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeLink_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        NODELINK_DATA   *pObject
     );
 #endif
 
@@ -138,8 +174,35 @@ struct NodeLink_data_s	{
 
 
 #ifdef  NODELINK_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = NodeLink_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
     ASTR_DATA *     NodeLink_ToJson (
-        NODELINK_DATA      *this
+        NODELINK_DATA   *this
+    );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NodeLink_ToJsonFields (
+        NODELINK_DATA   *this,
+        ASTR_DATA       *pStr
     );
 #endif
 
@@ -148,16 +211,16 @@ struct NodeLink_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			NodeLink_Validate (
-        NODELINK_DATA       *this
+    bool            NodeLink_Validate (
+        NODELINK_DATA   *this
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* NODELINK_INTERNAL_H */
+#endif  /* NODELINK_INTERNAL_H */
 

@@ -516,7 +516,7 @@ int         test_NodeScan_ScanPost01(
 {
     NODESCAN_DATA   *pObj = OBJ_NIL;
     NODETREE_DATA   *pTree = OBJ_NIL;
-    NODEARRAY_DATA  *pArray = OBJ_NIL;
+    OBJARRAY_DATA   *pArray = OBJ_NIL;
     //NODE_DATA       *pNode = OBJ_NIL;
     bool            fDump = true;
     uint32_t        i;
@@ -536,13 +536,13 @@ int         test_NodeScan_ScanPost01(
         pArray = NodeScan_getArray(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         if (pArray && fDump) {
-            iMax = NodeArray_getSize(pArray);
+            iMax = ObjArray_getSize(pArray);
             fprintf(stderr, "\nLinearization Postorder(%d):\n",iMax);
             XCTAssertTrue( (23 == iMax) );
             fprintf(stderr, "\tShould be: (((a(bc)/)+(d(ef)*2)-)*1)\n");
             fprintf(stderr, "\tFound:     ");
             for (i=1; i<=iMax; ++i) {
-                pStrA = Node_getNameUTF8(NodeArray_Get(pArray, i));
+                pStrA = NodeLink_getNameUTF8(ObjArray_Get(pArray, i));
                 fprintf(stderr, "%s", pStrA);
                 mem_Free((void *)pStrA);
             }
@@ -569,7 +569,7 @@ int         test_NodeScan_ScanPre01(
 {
     NODESCAN_DATA   *pObj = OBJ_NIL;
     NODETREE_DATA   *pTree = OBJ_NIL;
-    NODEARRAY_DATA  *pArray = OBJ_NIL;
+    OBJARRAY_DATA   *pArray = OBJ_NIL;
     //NODE_DATA       *pNode = OBJ_NIL;
     bool            fDump = true;
     uint32_t        i;
@@ -589,13 +589,13 @@ int         test_NodeScan_ScanPre01(
         pArray = NodeScan_getArray(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         if (pArray && fDump) {
-            iMax = NodeArray_getSize(pArray);
+            iMax = ObjArray_getSize(pArray);
             fprintf(stderr, "\nLinearization Preorder(%d):\n",iMax);
             XCTAssertTrue( (23 == iMax) );
             fprintf(stderr, "\tShould be: ( *1 ( + ( a / ( b c ) ) - ( d *2 ( e f ) ) ) )\n");
             fprintf(stderr, "\tFound:     ");
             for (i=1; i<=iMax; ++i) {
-                pStrA = Node_getNameUTF8(NodeArray_Get(pArray, i));
+                pStrA = NodeLink_getNameUTF8(ObjArray_Get(pArray, i));
                 fprintf(stderr, "%s ", pStrA);
                 mem_Free((void *)pStrA);
             }

@@ -8,7 +8,8 @@
  *			AStrC Reader (AStrCReader)
  * Purpose
  *			This object provides an AStrC Reader which allows an
- *          AStrC to read one UTF-8 character at a time.
+ *          AStrC to be read one UTF-8 character at a time as if
+ *          it was an input file.
  *
  * Remarks
  *	1.      None

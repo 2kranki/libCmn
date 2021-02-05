@@ -1039,6 +1039,7 @@ extern "C" {
                 pEnum = OBJ_NIL;
             }
         }
+        NodeEnum_SortAscending(pEnum);
 
         // Return to caller.
         return pEnum;
