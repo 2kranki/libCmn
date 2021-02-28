@@ -134,6 +134,28 @@ extern "C" {
         if (this) {
             Sym_setNameA(this, pNameA);
             Sym_getEntry(this)->cls = cls;
+            Sym_UpdateName(this);
+        }
+
+        return this;
+    }
+
+
+
+    SYM_DATA *     Sym_NewEntry(
+        SYM_ENTRY       *pEntry
+    )
+    {
+        SYM_DATA        *this;
+
+        if (OBJ_NIL == pEntry) {
+            return OBJ_NIL;
+        }
+
+        this = Sym_New( );
+        if (this) {
+            memmove(&this->entry, pEntry, sizeof(SYM_ENTRY));
+            Sym_UpdateName(this);
         }
 
         return this;
@@ -359,6 +381,7 @@ extern "C" {
 #endif
 
         Sym_getEntry(this)->cls = value;
+        Node_setClass(Sym_getNode(this), value);
 
         return true;
     }
@@ -1676,6 +1699,7 @@ extern "C" {
 #endif
 
         Sym_getEntry(this)->type = value;
+        Node_setType(Sym_getNode(this), value);
 
         return true;
     }
@@ -2189,8 +2213,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-#if defined(__APPLE__)
-//#if defined(__APPLE__)
+#if defined(__APPLE__) && defined(XYZZY)
         fprintf(
                 stderr, 
                 "Sym::sizeof(SYM_DATA) = %lu\n", 
@@ -2505,6 +2528,47 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                   U p d a t e  N a m e
+    //---------------------------------------------------------------
+
+    /*!
+     Update the Node's name to be that in the Sym entry.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Sym_UpdateName (
+        SYM_DATA        *this
+    )
+    {
+        //ERESULT         eRc;
+        NODE_DATA       *pNode;
+        NAME_DATA       *pName;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        pNode = Sym_getNode(this);
+
+        pName = Name_NewUTF8(this->entry.name);
+        if (pName) {
+            Node_setName(pNode, pName);
+            obj_Release(pName);
+            pName = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

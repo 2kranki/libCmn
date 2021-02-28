@@ -410,7 +410,7 @@ NODE_VTBL     Node_Vtbl = {
         (P_OBJ_COMPARE)Node_Compare,
         (P_OBJ_PTR)Node_Copy,
         NULL,           // (P_OBJ_PTR)Node_DeepCopy,
-        NULL,           // (P_OBJ_HASH)Node_Hash,
+        (P_OBJ_HASH)Node_Hash,
     },
     // Put other object method names below this.
     // Properties:

@@ -81,6 +81,9 @@ int         tearDown(
 {
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
+    //szTbl_SharedReset( );
+    JsonIn_RegisterReset();
+    //trace_SharedReset( );
 
     
     if (mem_Dump( ) ) {

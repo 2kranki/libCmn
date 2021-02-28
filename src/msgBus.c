@@ -165,11 +165,11 @@ extern "C" {
 
 
 
-    MSGBUS_DATA *     msgBus_New(
+    MSGBUS_DATA *   msgBus_New(
         uint16_t        messageCount        // Max Message Queue size
     )
     {
-        MSGBUS_DATA       *this;
+        MSGBUS_DATA     *this;
         
         this = msgBus_Alloc( );
         if (this) {
@@ -204,7 +204,7 @@ extern "C" {
     }
     
     
-    bool        msgBus_setRegistry(
+    bool            msgBus_setRegistry(
         MSGBUS_DATA     *this,
         NODEARRAY_DATA  *pValue
     )
@@ -314,7 +314,7 @@ extern "C" {
      */
     ERESULT         msgBus_Assign(
         MSGBUS_DATA		*this,
-        MSGBUS_DATA      *pOther
+        MSGBUS_DATA     *pOther
     )
     {
         ERESULT         eRc;
@@ -372,7 +372,7 @@ extern "C" {
     //                       B r o a d c a s t
     //---------------------------------------------------------------
     
-    ERESULT     msgBus_Broadcast(
+    ERESULT         msgBus_Broadcast(
         MSGBUS_DATA		*this,
         int32_t         msgOrigin,
         int32_t         msgDest,

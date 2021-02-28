@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 2/ 5/2021  1:48:44.000)
+# ( 2/28/2021 15:01:54.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -2853,6 +2853,12 @@ md5ChkSum_test: $(TEST_SRC)/md5ChkSum_test.c $(SRCDIR)/md5ChkSum.h $(SRCDIR)/md5
 TESTS += memFile_test
 
 memFile_test: $(TEST_SRC)/memFile_test.c $(SRCDIR)/memFile.h $(SRCDIR)/memFile_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += memMac64_test
+
+memMac64_test: $(TEST_SRC)/memMac64_test.c $(SRCDIR)/memMac64.h $(SRCDIR)/memMac64_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

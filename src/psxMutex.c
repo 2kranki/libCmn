@@ -190,7 +190,7 @@ extern "C" {
         }
         
         cbSize = obj_getSize(this);
-        this = (PSXMUTEX_DATA *)obj_Init( this, cbSize, OBJ_IDENT_PSXMUTEX );
+        this = (PSXMUTEX_DATA *)obj_Init(this, cbSize, OBJ_IDENT_PSXMUTEX);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);

@@ -220,7 +220,9 @@
 		C4753275247998EB001DEF19 /* Number_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4753270247998E8001DEF19 /* Number_object.c */; };
 		C4753276247998EB001DEF19 /* Number_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4753271247998E9001DEF19 /* Number_json.c */; };
 		C4753277247998EB001DEF19 /* Number.c in Sources */ = {isa = PBXBuildFile; fileRef = C4753273247998EA001DEF19 /* Number.c */; };
-		C47829ED25CCA33B00E68220 /* Sym_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C47829EC25CCA33B00E68220 /* Sym_test.c */; };
+		C4782A0025DB10BD00E68220 /* memMac64_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47829FD25DB10BC00E68220 /* memMac64_object.c */; };
+		C4782A0125DB10BD00E68220 /* memMac64.c in Sources */ = {isa = PBXBuildFile; fileRef = C47829FF25DB10BC00E68220 /* memMac64.c */; };
+		C4782A2625EBCDF400E68220 /* msgBus_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4782A2525EBCDF400E68220 /* msgBus_test.c */; };
 		C479BFEA23AC81060057A017 /* TRegex.c in Sources */ = {isa = PBXBuildFile; fileRef = C479BFE223AC81040057A017 /* TRegex.c */; };
 		C479BFEB23AC81060057A017 /* TRegex_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C479BFE523AC81050057A017 /* TRegex_object.c */; };
 		C479BFEC23AC81060057A017 /* TRegex32_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C479BFE723AC81050057A017 /* TRegex32_object.c */; };
@@ -351,8 +353,6 @@
 		C4D463812425261F00AF453D /* U8VlArray_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4637C2425261B00AF453D /* U8VlArray_json.c */; };
 		C4D463822425261F00AF453D /* U8VlArray_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4637E2425261D00AF453D /* U8VlArray_object.c */; };
 		C4D463832425261F00AF453D /* U8VlArray.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D463802425261E00AF453D /* U8VlArray.c */; };
-		C4E02E8821FA0E4C003DA92E /* memOSX_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E02E8321FA0E49003DA92E /* memOSX_object.c */; };
-		C4E02E8A21FA0E4C003DA92E /* memOSX.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E02E8721FA0E4B003DA92E /* memOSX.c */; };
 		C4E137A223B900C30095EABE /* SrcErrors_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E137A123B900C30095EABE /* SrcErrors_json.c */; };
 		C4E137AE23B985C40095EABE /* ObjArray_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E137AA23B985C20095EABE /* ObjArray_object.c */; };
 		C4E137AF23B985C40095EABE /* ObjArray_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E137AB23B985C30095EABE /* ObjArray_json.c */; };
@@ -849,7 +849,11 @@
 		C4753272247998EA001DEF19 /* Number_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Number_internal.h; sourceTree = "<group>"; };
 		C4753273247998EA001DEF19 /* Number.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Number.c; sourceTree = "<group>"; };
 		C4753274247998EA001DEF19 /* Number.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Number.h; sourceTree = "<group>"; };
-		C47829EC25CCA33B00E68220 /* Sym_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Sym_test.c; sourceTree = "<group>"; };
+		C47829FC25DB10BC00E68220 /* memMac64_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memMac64_internal.h; sourceTree = "<group>"; };
+		C47829FD25DB10BC00E68220 /* memMac64_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memMac64_object.c; sourceTree = "<group>"; };
+		C47829FE25DB10BC00E68220 /* memMac64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memMac64.h; sourceTree = "<group>"; };
+		C47829FF25DB10BC00E68220 /* memMac64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memMac64.c; sourceTree = "<group>"; };
+		C4782A2525EBCDF400E68220 /* msgBus_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = msgBus_test.c; sourceTree = "<group>"; };
 		C479BFE223AC81040057A017 /* TRegex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TRegex.c; sourceTree = "<group>"; };
 		C479BFE323AC81040057A017 /* TRegex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TRegex.h; sourceTree = "<group>"; };
 		C479BFE423AC81040057A017 /* TRegex32_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TRegex32_internal.h; sourceTree = "<group>"; };
@@ -1081,10 +1085,6 @@
 		C4D4637E2425261D00AF453D /* U8VlArray_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = U8VlArray_object.c; sourceTree = "<group>"; };
 		C4D4637F2425261E00AF453D /* U8VlArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = U8VlArray.h; sourceTree = "<group>"; };
 		C4D463802425261E00AF453D /* U8VlArray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = U8VlArray.c; sourceTree = "<group>"; };
-		C4E02E8321FA0E49003DA92E /* memOSX_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memOSX_object.c; sourceTree = "<group>"; };
-		C4E02E8421FA0E49003DA92E /* memOSX_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memOSX_internal.h; sourceTree = "<group>"; };
-		C4E02E8521FA0E4A003DA92E /* memOSX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memOSX.h; sourceTree = "<group>"; };
-		C4E02E8721FA0E4B003DA92E /* memOSX.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memOSX.c; sourceTree = "<group>"; };
 		C4E137A123B900C30095EABE /* SrcErrors_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcErrors_json.c; sourceTree = "<group>"; };
 		C4E137A923B985C20095EABE /* ObjArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjArray.h; sourceTree = "<group>"; };
 		C4E137AA23B985C20095EABE /* ObjArray_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ObjArray_object.c; sourceTree = "<group>"; };
@@ -1235,7 +1235,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C47829EC25CCA33B00E68220 /* Sym_test.c */,
+				C4782A2525EBCDF400E68220 /* msgBus_test.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -1252,13 +1252,13 @@
 				C43599511FC9C36100CA858E /* cmn_defs.h */,
 				C456276C2389B25E00603132 /* cmnMac64.c */,
 				C456276B2389B25D00603132 /* cmnMac64.h */,
-				C4E02E8421FA0E49003DA92E /* memOSX_internal.h */,
-				C4E02E8321FA0E49003DA92E /* memOSX_object.c */,
-				C4E02E8721FA0E4B003DA92E /* memOSX.c */,
-				C4E02E8521FA0E4A003DA92E /* memOSX.h */,
 				C4EBE27623C2CF5F008E9EE8 /* ioRrdsInterface.h */,
 				C4EC0622252ABE2F00C0F25A /* laInterface.h */,
 				C4EA0E3C22FF7C5A00DED0AF /* ioInterface.h */,
+				C47829FC25DB10BC00E68220 /* memMac64_internal.h */,
+				C47829FD25DB10BC00E68220 /* memMac64_object.c */,
+				C47829FF25DB10BC00E68220 /* memMac64.c */,
+				C47829FE25DB10BC00E68220 /* memMac64.h */,
 				C45A9F92230082AD00785895 /* w32Reader.h */,
 				C47E77C7257D39B40087C9F8 /* ALU8_internal.h */,
 				C47E77C8257D39B40087C9F8 /* ALU8_object.c */,
@@ -2124,7 +2124,6 @@
 				C42C553223CBC2FA00AA762C /* Node_object.c in Sources */,
 				C4EF2A3E245632710074544A /* SqlColDef_json.c in Sources */,
 				C4359AEE1FC9C3D800CA858E /* lru_object.c in Sources */,
-				C47829ED25CCA33B00E68220 /* Sym_test.c in Sources */,
 				C4B75F9024020A8C00701E77 /* Sym_object.c in Sources */,
 				C4B75F5823FD82E800701E77 /* I16Matrix.c in Sources */,
 				C4359BFC1FC9C48400CA858E /* trace.c in Sources */,
@@ -2296,6 +2295,7 @@
 				C4EBE2BE23C90143008E9EE8 /* NodeList_object.c in Sources */,
 				C43599AE1FC9C36800CA858E /* cb32_object.c in Sources */,
 				C4714375240CA7980073AADC /* ObjBT_object.c in Sources */,
+				C4782A2625EBCDF400E68220 /* msgBus_test.c in Sources */,
 				C42C553323CBC2FA00AA762C /* Node_json.c in Sources */,
 				C47E77D1257D39B50087C9F8 /* ALU32.c in Sources */,
 				C4C0504123745AB600D7BB36 /* AStrCArray.c in Sources */,
@@ -2366,6 +2366,7 @@
 				C41B751123A927CF00C7DEBD /* NodeScan.c in Sources */,
 				C4EF2A9E246CDE910074544A /* PsxExec.c in Sources */,
 				C4B045EF23E1480300162B4F /* DirEntry_json.c in Sources */,
+				C4782A0025DB10BD00E68220 /* memMac64_object.c in Sources */,
 				C4359BF01FC9C48400CA858E /* u32Array.c in Sources */,
 				C4359A421FC9C38800CA858E /* greg.c in Sources */,
 				C463898921EA71EC00DFCE35 /* bpt32idx.c in Sources */,
@@ -2383,7 +2384,6 @@
 				C4FF85C221590FE500264EE7 /* objTest.c in Sources */,
 				C4359B491FC9C42700CA858E /* psxSem.c in Sources */,
 				C4EBE1F523C19BF6008E9EE8 /* Compiler_object.c in Sources */,
-				C4E02E8A21FA0E4C003DA92E /* memOSX.c in Sources */,
 				C459802C21B02298001B8375 /* rbt_tree.c in Sources */,
 				C4359BD81FC9C48400CA858E /* szTbl_object.c in Sources */,
 				C4804608248BE39A008935B7 /* SrcFile_object.c in Sources */,
@@ -2451,6 +2451,7 @@
 				C480462A24A8DAD8008935B7 /* AudioWAV_object.c in Sources */,
 				C4AA73A51FE2B740001FACEC /* hjson_object.c in Sources */,
 				C41B752E23AA5AD100C7DEBD /* BitSet.c in Sources */,
+				C4782A0125DB10BD00E68220 /* memMac64.c in Sources */,
 				C4B7605F240A16F200701E77 /* Opcodes.c in Sources */,
 				C43599CC1FC9C36800CA858E /* AStr_object.c in Sources */,
 				C4359ADF1FC9C3D800CA858E /* msgBus.c in Sources */,
@@ -2464,7 +2465,6 @@
 				C4359AFD1FC9C3D800CA858E /* objMatrix.c in Sources */,
 				C435854E23B7A55D0069B103 /* SrcErrors_object.c in Sources */,
 				C4BED99B23009C40006DF1C1 /* scanReader.c in Sources */,
-				C4E02E8821FA0E4C003DA92E /* memOSX_object.c in Sources */,
 				C43204C1239170060078124D /* TextOut_object.c in Sources */,
 				C4B75FFD24056E3A00701E77 /* szBT.c in Sources */,
 				C43599B91FC9C36800CA858E /* block32_object.c in Sources */,

@@ -115,7 +115,7 @@
         {name:"lru", deps:["listdl.h"]},
         {name:"md5ChkSum", deps:["md5_plumb.h"]},
         {name:"memFile"},
-        {name:"memMac64", deps:["listdl.h"], test:false, os:["macos64"]},
+        {name:"memMac64", deps:["listdl.h"], os:["macos64"]},
         {name:"memrrds", desc:"Memory-based Relative Record Dataset (ie Fixed Size record indexed by record number)"},
         {name:"memWin32", deps:["memWin32.h","memWin32_internal.h"], os:["win32"], test:false},
         {name:"misc"},

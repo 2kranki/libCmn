@@ -97,7 +97,7 @@ struct ObjArray_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  OBJARRAY_SINGLETON
-    OBJARRAY_DATA *     ObjArray_getSingleton (
+    OBJARRAY_DATA * ObjArray_getSingleton (
         void
     );
 
@@ -123,7 +123,7 @@ struct ObjArray_data_s	{
 
 
 #ifdef  OBJARRAY_JSON_SUPPORT
-    OBJARRAY_DATA *       ObjArray_ParseJsonObject (
+    OBJARRAY_DATA * ObjArray_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 

@@ -1552,6 +1552,7 @@ extern "C" {
     {
         ERESULT         eRc;
         int             j;
+        int             jMax;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
@@ -1586,7 +1587,8 @@ extern "C" {
             );
 
         if (this->pArray) {
-            for (j=0; j<ObjArray_getSize(this->pArray); ++j) {
+            jMax = ObjArray_getSize(this->pArray);
+            for (j=0; j<jMax; ++j) {
                 NODE_DATA       *pNode = ObjArray_Get(this->pArray, j+1);
                 if (pNode) {
                     ASTR_DATA       *pWrk = Node_ToDebugString(pNode, indent+4);

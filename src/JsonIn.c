@@ -89,16 +89,250 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            JsonIn_task_body (
-        void            *pData
+    //---------------------------------------------------------------
+    //           T o  D e b u g  S t r i n g  E l e m e n t
+    //---------------------------------------------------------------
+
+    ERESULT         JsonIn_ToDebugStringElement (
+        JSONIN_DATA     *this,
+        ASTR_DATA       *pStr,
+        NODE_DATA       *pNode,
+        bool            fInArray,
+        int             indent
     )
     {
-        //JSONIN_DATA  *this = pData;
-        
-    }
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODE_DATA       *pWork = OBJ_NIL;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
+        NODEHASH_DATA   *pHash = OBJ_NIL;
+        FALSE_DATA      *pFalse = OBJ_NIL;
+        TRUE_DATA       *pTrue = OBJ_NIL;
+        NULL_DATA       *pNull = OBJ_NIL;
+        ASTR_DATA       *pWrkStr = OBJ_NIL;
+        int             i;
+        int             iMax;
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !JsonIn_Validate(this) ) {
+            DEBUG_BREAK();
+        }
 #endif
+
+        if (indent) {
+            AStr_AppendCharRepeatW32(pStr, indent, ' ');
+        }
+
+        if (fInArray) {
+
+            eRc = AStr_AppendPrint(pStr, "%p ", pNode);
+
+            pArray = JsonIn_CheckNodeForArray(pNode);
+            if (pArray) {
+                iMax = NodeArray_getSize(pArray);
+                eRc = AStr_AppendPrint(pStr, "array(%d) [\n", iMax);
+                for (i=0; i<iMax; i++) {
+                    pWork = NodeArray_Get(pArray, i+1);
+                    if (pWork) {
+                        eRc = JsonIn_ToDebugStringElement(
+                                                          this,
+                                                          pStr,
+                                                          pWork,
+                                                          true,
+                                                          indent+2
+                                                          );
+                    }
+                }
+                if (indent) {
+                    AStr_AppendCharRepeatW32(pStr, indent, ' ');
+                }
+                eRc = AStr_AppendPrint(pStr, "%p array ]\n", pNode);
+                pArray = OBJ_NIL;
+                goto exit00;
+            }
+
+            pHash = JsonIn_CheckNodeForHash(pNode);
+            if (pHash) {
+                pArray = NodeHash_Nodes(pHash);
+                if (pArray) {
+                    iMax = NodeArray_getSize(pArray);
+                    eRc = AStr_AppendPrint(pStr, "hash(%d) {\n", iMax);
+                    for (i=0; i<iMax; i++) {
+                        pWork = NodeArray_Get(pArray, i+1);
+                        if (pWork) {
+                            eRc = JsonIn_ToDebugStringElement(
+                                                              this,
+                                                              pStr,
+                                                              pWork,
+                                                              false,
+                                                              indent+2
+                                                              );
+                        }
+                    }
+                    if (indent) {
+                        AStr_AppendCharRepeatW32(pStr, indent, ' ');
+                    }
+                    eRc = AStr_AppendPrint(pStr, "%p hash }\n", pNode);
+                    obj_Release(pArray);
+                    pArray = OBJ_NIL;
+                }
+                goto exit00;
+            }
+
+            pFalse = JsonIn_CheckNodeForFalse(pNode);
+            if (pFalse) {
+                eRc = AStr_AppendPrint(pStr, "FALSE\n");
+                pFalse = OBJ_NIL;
+                goto exit00;
+            }
+
+            pNull = JsonIn_CheckNodeForNull(pNode);
+            if (pNull) {
+                eRc = AStr_AppendPrint(pStr, "NULL\n");
+                pNull = OBJ_NIL;
+                goto exit00;
+            }
+
+            pTrue = JsonIn_CheckNodeForTrue(pNode);
+            if (pTrue) {
+                eRc = AStr_AppendPrint(pStr, "TRUE\n");
+                pTrue = OBJ_NIL;
+                goto exit00;
+            }
+
+            pWrkStr = JsonIn_CheckNodeForFloat(pNode);
+            if (pWrkStr) {
+                eRc = AStr_AppendPrint(pStr, "float - %s\n", AStr_getData(pWrkStr));
+                pWrkStr = OBJ_NIL;
+                goto exit00;
+            }
+
+            pWrkStr = JsonIn_CheckNodeForInteger(pNode);
+            if (pWrkStr) {
+                eRc = AStr_AppendPrint(pStr, "integer - %s\n", AStr_getData(pWrkStr));
+                pWrkStr = OBJ_NIL;
+                goto exit00;
+            }
+
+            pWrkStr = JsonIn_CheckNodeForString(pNode);
+            if (pWrkStr) {
+                eRc = AStr_AppendPrint(pStr, "string - %s\n", AStr_getData(pWrkStr));
+                pWrkStr = OBJ_NIL;
+                goto exit00;
+            }
+
+        } else {
+
+            pWrkStr = Node_getNameStr(pNode);
+            eRc = AStr_AppendPrint(pStr, "%p %s: ", pNode, AStr_getData(pWrkStr));
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+
+            pArray = JsonIn_CheckNodeDataForArray(pNode);
+            if (pArray) {
+                iMax = NodeArray_getSize(pArray);
+                eRc = AStr_AppendPrint(pStr, "array(%d) [\n", iMax);
+                for (i=0; i<iMax; i++) {
+                    pWork = NodeArray_Get(pArray, i+1);
+                    if (pWork) {
+                        eRc = JsonIn_ToDebugStringElement(
+                                                          this,
+                                                          pStr,
+                                                          pWork,
+                                                          true,
+                                                          indent+2
+                                                          );
+                    }
+                }
+                if (indent) {
+                    AStr_AppendCharRepeatW32(pStr, indent, ' ');
+                }
+                eRc = AStr_AppendPrint(pStr, "%p array ]\n", pNode);
+                pArray = OBJ_NIL;
+                goto exit00;
+            }
+
+            pHash = JsonIn_CheckNodeDataForHash(pNode);
+            if (pHash) {
+                pArray = NodeHash_Nodes(pHash);
+                if (pArray) {
+                    iMax = NodeArray_getSize(pArray);
+                    eRc = AStr_AppendPrint(pStr, "hash(%d) {\n", iMax);
+                    for (i=0; i<iMax; i++) {
+                        pWork = NodeArray_Get(pArray, i+1);
+                        if (pWork) {
+                            eRc = JsonIn_ToDebugStringElement(
+                                                              this,
+                                                              pStr,
+                                                              pWork,
+                                                              false,
+                                                              indent+2
+                                                              );
+                        }
+                    }
+                    if (indent) {
+                        AStr_AppendCharRepeatW32(pStr, indent, ' ');
+                    }
+                    eRc = AStr_AppendPrint(pStr, "%p hash }\n", pNode);
+                    obj_Release(pArray);
+                    pArray = OBJ_NIL;
+                }
+                goto exit00;
+            }
+
+            pFalse = JsonIn_CheckNodeDataForFalse(pNode);
+            if (pFalse) {
+                eRc = AStr_AppendPrint(pStr, "FALSE\n");
+                pFalse = OBJ_NIL;
+                goto exit00;
+            }
+
+            pNull = JsonIn_CheckNodeDataForNull(pNode);
+            if (pNull) {
+                eRc = AStr_AppendPrint(pStr, "NULL\n");
+                pNull = OBJ_NIL;
+                goto exit00;
+            }
+
+            pTrue = JsonIn_CheckNodeDataForTrue(pNode);
+            if (pTrue) {
+                eRc = AStr_AppendPrint(pStr, "TRUE\n");
+                pTrue = OBJ_NIL;
+                goto exit00;
+            }
+
+            pWrkStr = JsonIn_CheckNodeDataForFloat(pNode);
+            if (pWrkStr) {
+                eRc = AStr_AppendPrint(pStr, "float - %s\n", AStr_getData(pWrkStr));
+                pWrkStr = OBJ_NIL;
+                goto exit00;
+            }
+
+            pWrkStr = JsonIn_CheckNodeDataForInteger(pNode);
+            if (pWrkStr) {
+                eRc = AStr_AppendPrint(pStr, "integer - %s\n", AStr_getData(pWrkStr));
+                pWrkStr = OBJ_NIL;
+                goto exit00;
+            }
+
+            pWrkStr = JsonIn_CheckNodeDataForString(pNode);
+            if (pWrkStr) {
+                eRc = AStr_AppendPrint(pStr, "string - %s\n", AStr_getData(pWrkStr));
+                pWrkStr = OBJ_NIL;
+                goto exit00;
+            }
+
+        }
+
+        eRc = AStr_AppendPrint(pStr, "Unsupported Node Type!\n");
+        DEBUG_BREAK();
+
+    exit00:
+        return eRc;
+    }
+
+
 
 
 
@@ -1482,6 +1716,52 @@ extern "C" {
 
 
 
+    ERESULT         JsonIn_FindNodePtrInHashA (
+        JSONIN_DATA     *this,
+        NODE_DATA       *pNode
+    )
+    {
+        ERESULT         eRc;
+        NODEARRAY_DATA  *pNodes;
+        NODEARRAY_DATA  *pArray;
+        NODEHASH_DATA   *pHash;
+        uint32_t        i;
+        uint32_t        iMax;
+        NODE_DATA       *pWrk;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pNodes = NodeHash_Nodes(this->pHash);
+        iMax = NodeArray_getSize(pNodes);
+        for (i=0; i<iMax; i++) {
+            pWrk = NodeArray_Get(pNodes, i+1);
+            if (pWrk) {
+                if (pWrk == pNode) {
+                    return ERESULT_SUCCESS;
+                }
+                pArray = JsonIn_CheckNodeForArray(pWrk);
+                if (pArray) {
+
+                }
+                pHash = JsonIn_CheckNodeForHash(pWrk);
+                if (pHash) {
+
+                }
+            }
+        }
+
+        return ERESULT_FAILURE;
+    }
+
+
+
     ERESULT         JsonIn_FindIntegerNodeInHashA (
         JSONIN_DATA     *this,
         const
@@ -2259,23 +2539,20 @@ extern "C" {
 #endif
 
         pNode = hjson_ParseFileHash(pParser);
+        obj_Release(pParser);
+        pParser = OBJ_NIL;
         if (OBJ_NIL == pNode) {
-            obj_Release(pParser);
             return ERESULT_PARSE_ERROR;
         }
 
         pHash = JsonIn_CheckNodeForHash(pNode);
         if (OBJ_NIL == pHash) {
             obj_Release(pNode);
-            obj_Release(pParser);
             return ERESULT_DATA_ERROR;
         }
         JsonIn_setHash(this, pHash);
-
         obj_Release(pNode);
         pNode = OBJ_NIL;
-        obj_Release(pParser);
-        pParser = OBJ_NIL;
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -2756,8 +3033,11 @@ extern "C" {
         //int             j;
         ASTR_DATA       *pStr;
         ASTR_DATA       *pWrkStr;
+        NODEARRAY_DATA  *pArray = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
+        int             i;
+        int             iMax;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -2788,13 +3068,32 @@ extern "C" {
             );
 
         if (this->pHash) {
-            if (((OBJ_DATA *)(this->pHash))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pHash))->pVtbl->pToDebugString(
-                                                    this->pHash,
-                                                    indent+3
-                            );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+            pArray = NodeHash_Nodes(this->pHash);
+            if (pArray) {
+                iMax = NodeArray_getSize(pArray);
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent+2, ' ');
+                }
+                eRc = AStr_AppendPrint(pStr, "%p hash(%d) {\n", this->pHash, iMax);
+                for (i=0; i<iMax; i++) {
+                    NODE_DATA       *pWork = OBJ_NIL;
+                    pWork = NodeArray_Get(pArray, i+1);
+                    if (pWork) {
+                        eRc = JsonIn_ToDebugStringElement(
+                                                          this,
+                                                          pStr,
+                                                          pWork,
+                                                          false,
+                                                          indent+4
+                                                          );
+                    }
+                }
+                if (indent) {
+                    AStr_AppendCharRepeatW32(pStr, indent+2, ' ');
+                }
+                eRc = AStr_AppendPrint(pStr, "%p hash }\n", this->pHash);
+                obj_Release(pArray);
+                pArray = OBJ_NIL;
             }
         }
 

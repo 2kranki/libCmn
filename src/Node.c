@@ -1484,6 +1484,37 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          H a s h
+    //---------------------------------------------------------------
+
+    uint32_t        Node_Hash (
+        NODE_DATA       *this
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        hash = 0;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!Node_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+    #endif
+
+        if (this->pName) {
+            hash = Name_Hash(this->pName);
+        }
+
+        // Return to caller.
+        return hash;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -1518,7 +1549,10 @@ extern "C" {
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Node_Vtbl);
-        
+#ifdef  NODE_JSON_SUPPORT
+        JsonIn_RegisterClass(Node_Class());
+#endif
+
         /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {
@@ -1916,7 +1950,7 @@ extern "C" {
             );
 
         if (indent) {
-            AStr_AppendCharRepeatA(pStr, indent, ' ');
+            AStr_AppendCharRepeatA(pStr, indent+2, ' ');
         }
         pName = Node_getNameUTF8(this);
         if (pName) {
@@ -1932,54 +1966,50 @@ extern "C" {
             pName = NULL;
         }
 
-        AStr_AppendCharRepeatA(pStr, indent, ' ');
         if (this->pData) {
-            AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+            AStr_AppendCharRepeatA(pStr, indent+2, ' ');
             AStr_AppendA(pStr, "Data:\n");
             pVtbl = obj_getVtbl(this->pData);
             if (pVtbl && pVtbl->pToDebugString) {
-                pWrkStr = pVtbl->pToDebugString(this->pData, indent+6);
+                pWrkStr = pVtbl->pToDebugString(this->pData, indent+4);
                 AStr_Append(pStr, pWrkStr);
                 obj_Release(pWrkStr);
             }
         }
 
-        AStr_AppendCharRepeatA(pStr, indent, ' ');
         if (this->pProperties) {
-            AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+            AStr_AppendCharRepeatA(pStr, indent+2, ' ');
             AStr_AppendA(pStr, "Properties:\n");
             if (this->pProperties) {
                 pVtbl = obj_getVtbl(this->pProperties);
                 if (pVtbl && pVtbl->pToDebugString) {
-                    pWrkStr = pVtbl->pToDebugString(this->pProperties, indent+6);
+                    pWrkStr = pVtbl->pToDebugString(this->pProperties, indent+4);
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
                 }
             }
         }
 
-        AStr_AppendCharRepeatA(pStr, indent, ' ');
         if (this->pExtra) {
-            AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+            AStr_AppendCharRepeatA(pStr, indent+2, ' ');
             AStr_AppendA(pStr, "Extra:\n");
             if (this->pExtra) {
                 pVtbl = obj_getVtbl(this->pExtra);
                 if (pVtbl && pVtbl->pToDebugString) {
-                    pWrkStr = pVtbl->pToDebugString(this->pExtra, indent+6);
+                    pWrkStr = pVtbl->pToDebugString(this->pExtra, indent+4);
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
                 }
             }
         }
 
-        AStr_AppendCharRepeatA(pStr, indent, ' ');
         if (this->pOther) {
-            AStr_AppendCharRepeatA(pStr, indent+3, ' ');
+            AStr_AppendCharRepeatA(pStr, indent+2, ' ');
             AStr_AppendA(pStr, "Other:\n");
             if (this->pOther) {
                 pVtbl = obj_getVtbl(this->pOther);
                 if (pVtbl && pVtbl->pToDebugString) {
-                    pWrkStr = pVtbl->pToDebugString(this->pOther, indent+6);
+                    pWrkStr = pVtbl->pToDebugString(this->pOther, indent+4);
                     AStr_Append(pStr, pWrkStr);
                     obj_Release(pWrkStr);
                 }

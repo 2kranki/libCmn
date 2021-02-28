@@ -142,6 +142,9 @@ int             test_Sym_Copy01 (
         TINYTEST_TRUE( (fRc) );
         TINYTEST_TRUE( (1 == Sym_getClass(pObj1)) );
         TINYTEST_TRUE( (0 == strcmp(Sym_getNameA(pObj1), "abc")) );
+        Sym_setFlg1(pObj1, true);
+        Sym_setFlg3(pObj1, true);
+        Sym_setFlg5(pObj1, true);
 
         // Test assign.
         pObj2 = Sym_New();

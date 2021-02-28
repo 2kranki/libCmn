@@ -51,8 +51,6 @@
 
 
 
-#define     PROPERTY_STR_OWNED 1
-
 
 
 #ifdef	__cplusplus

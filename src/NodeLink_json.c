@@ -88,8 +88,8 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         //NODEHASH_DATA   *pHash = OBJ_NIL;
-        //uint32_t        i;
-        //uint32_t        iMax;
+        uint32_t        i;
+        uint32_t        iMax;
         int64_t         intIn;
         //ASTR_DATA       *pWrk;
         //uint8_t         *pData;
@@ -99,35 +99,60 @@ extern "C" {
         eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
         uint32  = (uint32_t)intIn;
         obj_setMisc(pObject, uint32);
-        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "index", &intIn);
-        uint32  = (uint32_t)intIn;
-        NodeLink_setIndex(pObject, uint32);
-        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "leftIndex", &intIn);
-        uint32  = (uint32_t)intIn;
-        NodeLink_setLeftLink(pObject, uint32);
-        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "middleIndex", &intIn);
-        uint32  = (uint32_t)intIn;
-        NodeLink_setMiddle(pObject, uint32);
-        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "parentIndex", &intIn);
-        uint32  = (uint32_t)intIn;
-        NodeLink_setParent(pObject, uint32);
-        eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "rightIndex", &intIn);
-        uint32  = (uint32_t)intIn;
-        NodeLink_setRightLink(pObject, uint32);
+        eRc  = JsonIn_FindU32NodeInHashA(pParser, "index", &pObject->index);
+        eRc  = JsonIn_FindU32NodeInHashA(pParser, "leftIndex", &pObject->leftIndex);
+        eRc  = JsonIn_FindU32NodeInHashA(pParser, "middleIndex", &pObject->middleIndex);
+        eRc  = JsonIn_FindU32NodeInHashA(pParser, "parentIndex", &pObject->parentIndex);
+        eRc  = JsonIn_FindU32NodeInHashA(pParser, "rightIndex", &pObject->rightIndex);
 
         eRc = JsonIn_FindArrayNodeInHashA(pParser, "flags", &pArray);
         if (!ERESULT_FAILED(eRc)) {
-            ASTR_DATA       *pStr = NodeArray_ToDebugString(pArray, 0);
-            if (pStr) {
-                fprintf(stderr, "ARRAY= %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
+            iMax = NodeArray_getSize(pArray);
+            for (i=0; i<iMax; i++) {
+                NODE_DATA       *pNode = NodeArray_Get(pArray, i+1);
+                ASTR_DATA       *pName = OBJ_NIL;
+                pName = JsonIn_CheckNodeForString(pNode);
+                if (pName) {
+                    if (0 == AStr_CompareA(pName, "LEFT")) {
+                        obj_FlagSet(pObject, NODELINK_LEFT_LINK, true);
+                    }
+                    else if (0 == AStr_CompareA(pName, "RIGHT")) {
+                        obj_FlagSet(pObject, NODELINK_RIGHT_LINK, true);
+                    }
+                    else if (0 == AStr_CompareA(pName, "RIGHT_CHILD")) {
+                        obj_FlagSet(pObject, NODELINK_RIGHT_CHILD, true);
+                    }
+                    else {
+                        //TODO: Issue error message.
+                    }
+                }
             }
         }
 
+        {
+            ASTR_DATA       *pStr = JsonIn_ToDebugString(pParser, 0);
+            if (pStr) {
+                fprintf(stderr, "====> Before Scanning Node:\n%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
         eRc = JsonIn_SubObjectInHash(pParser, "node");
         if (ERESULT_OK(eRc)) {
-            pObject->pNode = Node_ParseJsonObject(pParser);
+            pNode = Node_ParseJsonObject(pParser);
+            if (pNode) {
+                NodeLink_setNode(pObject, pNode);
+                obj_Release(pNode);
+            }
             JsonIn_SubObjectEnd(pParser);
+            {
+                ASTR_DATA       *pStr = JsonIn_ToDebugString(pParser, 0);
+                if (pStr) {
+                    fprintf(stderr, "====> After Scanning Node: @%p\n%s\n", pNode, AStr_getData(pStr));
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
         }
 
         // Return to caller.
@@ -155,6 +180,7 @@ extern "C" {
         //ASTR_DATA       *pWrk;
 
         JsonIn_RegisterClass(NodeLink_Class());
+        JsonIn_RegisterClass(Node_Class());
 
         pInfo = obj_getInfo(NodeLink_Class());
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
@@ -310,7 +336,7 @@ extern "C" {
             OBJ_ID          objId
         );
 #endif
-        ASTR_DATA       *pWrkStr;
+        //ASTR_DATA       *pWrkStr;
 
         AStr_AppendPrint(
                          pStr,
@@ -340,17 +366,6 @@ extern "C" {
         AStr_AppendA(pStr, "],\n");
 
         JsonOut_Append_Object("node", this->pNode, pStr);
-
-#ifdef XYZZZY
-        JsonOut_Append_i32("x", this->x, pStr);
-        JsonOut_Append_i64("t", this->t, pStr);
-        JsonOut_Append_u32("o", this->o, pStr);
-        JsonOut_Append_utf8("n", pEntry->pN, pStr);
-        JsonOut_Append_Object("e", this->pE, pStr);
-        JsonOut_Append_AStr("d", this->pAStr, pStr);
-        JsonOut_Append_StrA("d", this->pStrA, pStr);
-        JsonOut_Append_StrW32("d", this->pStrW32, pStr);
-#endif
 
         return ERESULT_SUCCESS;
     }

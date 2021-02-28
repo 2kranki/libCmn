@@ -274,7 +274,7 @@ extern "C" {
     
     
     ERESULT         Name_ToJsonFields (
-        NAME_DATA     *this,
+        NAME_DATA       *this,
         ASTR_DATA       *pStr
     )
     {
@@ -290,23 +290,27 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
 
-        JsonOut_Append_u16("type", this->type, pStr);
         JsonOut_Append_u32("hash", this->hash, pStr);
+        JsonOut_Append_u16("type", this->type, pStr);
         switch (this->type) {
 
             case NAME_TYPE_INTEGER:
+                AStr_AppendA(pStr, "\t/* Integer */\n");
                 JsonOut_Append_i64("integer", this->integer, pStr);
                 break;
 
             case NAME_TYPE_ASTR:
+                AStr_AppendA(pStr, "\t/* AStr */\n");
                 JsonOut_Append_Object("object", this->pObj, pStr);
                 break;
 
             case NAME_TYPE_UTF8:
+                AStr_AppendA(pStr, "\t/* UTF-8 */\n");
                 JsonOut_Append_utf8("utf8", this->pChrs, pStr);
                 break;
 
             case NAME_TYPE_UTF8_CON:
+                AStr_AppendA(pStr, "\t/* UTF-8 Constant */\n");
                 JsonOut_Append_utf8("utf8", this->pChrs, pStr);
                 break;
 

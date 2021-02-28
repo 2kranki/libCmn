@@ -1850,6 +1850,7 @@ extern "C" {
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeLink_Vtbl);
 #ifdef  NODELINK_JSON_SUPPORT
         JsonIn_RegisterClass(NodeLink_Class());
+        JsonIn_RegisterClass(Node_Class());
 #endif
         
         /*

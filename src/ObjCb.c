@@ -581,6 +581,10 @@ extern "C" {
         }
         psxThread_Wait(1000);
 
+        ObjCb_setEmpty(this, OBJ_NIL);
+        ObjCb_setFull(this, OBJ_NIL);
+        ObjCb_setMutex(this, OBJ_NIL);          // Unlock and free mutex.
+
         for (i=0; i<this->cEntries; ++i) {
             pObj = this->pEntries[i];
             if (pObj) {
@@ -588,10 +592,6 @@ extern "C" {
                 this->pEntries[i] = OBJ_NIL;
             }
         }
-
-        ObjCb_setEmpty(this, OBJ_NIL);
-        ObjCb_setFull(this, OBJ_NIL);
-        ObjCb_setMutex(this, OBJ_NIL);          // Unlock and free mutex.
 
         if (this->pEntries) {
             mem_Free(this->pEntries);

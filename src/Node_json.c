@@ -85,7 +85,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        uint16_t        u16 = 0;
+        //uint16_t        u16 = 0;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
@@ -93,12 +93,6 @@ extern "C" {
         (void)JsonIn_FindI32NodeInHashA(pParser, "type", &pObject->type);
         (void)JsonIn_FindU32NodeInHashA(pParser, "unique", &pObject->unique);
         (void)JsonIn_FindU32NodeInHashA(pParser, "misc", &pObject->misc);
-        u16 = 0;
-        (void)JsonIn_FindU16NodeInHashA(pParser, "misc1", &u16);
-        Node_setMisc1(pObject, u16);
-        u16 = 0;
-        (void)JsonIn_FindU16NodeInHashA(pParser, "misc2", &u16);
-        Node_setMisc2(pObject, u16);
 
         eRc = JsonIn_SubObjectInHash(pParser, "name");
         if (ERESULT_FAILED(eRc)) {
@@ -183,8 +177,22 @@ extern "C" {
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
+        if (NULL == obj_getInfo(pObject)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            DEBUG_BREAK();
+            obj_Release(pObject);
+            pObject = OBJ_NIL;
+            goto exit00;
+        }
         
         eRc =  Node_ParseJsonFields(pParser, pObject);
+        if (NULL == obj_getInfo(pObject)) {
+            fprintf(stderr, "ERROR - objectType is invalid!\n");
+            DEBUG_BREAK();
+            obj_Release(pObject);
+            pObject = OBJ_NIL;
+            goto exit00;
+        }
 
         // Return to caller.
     exit00:
@@ -322,8 +330,6 @@ extern "C" {
         JsonOut_Append_i32("type", this->type, pStr);
         JsonOut_Append_u32("unique", this->unique, pStr);
         JsonOut_Append_u32("misc", this->misc, pStr);
-        JsonOut_Append_u16("misc1", Node_getMisc1(this), pStr);
-        JsonOut_Append_u16("misc2", Node_getMisc2(this), pStr);
         JsonOut_Append_Object("name", this->pName, pStr);
         if (this->pData) {
             JsonOut_Append_Object("data", this->pData, pStr);

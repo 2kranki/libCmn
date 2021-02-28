@@ -509,6 +509,17 @@ extern "C" {
     );
 
 
+    /*!
+     Create a hash for the name value. The name value is always
+     converted to a UTF-8 string and then that is hashed.
+     @param     this    object pointer
+     @return    Hash Code
+     */
+    uint32_t        Node_Hash (
+        NODE_DATA       *this
+    );
+
+
     NODE_DATA *     Node_Init (
         NODE_DATA       *this
     );

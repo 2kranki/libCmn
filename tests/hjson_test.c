@@ -865,6 +865,112 @@ int             test_hjson_Object01(
 
 
 
+int             test_hjson_Object02(
+    const
+    char            *pTestName
+)
+{
+    HJSON_DATA      *pObj = OBJ_NIL;
+    NODE_DATA       *pFileNode = OBJ_NIL;
+    NODEHASH_DATA   *pHash;
+    /*
+        {
+            "objectType":"NodeLink",
+            "index":0,
+            "leftIndex":1,
+            "middleIndex":0,
+            "parentIndex":3,
+            "rightIndex":2,
+            "misc": 0,
+            flags:[ "LEFT", "RIGHT", ],
+            "node": {
+                "objectType":"Node",
+                "class": 65,
+                "type": 0,
+                "unique": 0,
+                "misc": 0,
+                "name": {
+                    "objectType":"Name",
+                    "hash": 0,
+                    "type": 2,
+                    // UTF-8
+                    "utf8": {
+                        "objectType":"utf8",
+                        "len":3,
+                        "crc":891568578,
+                        "data":"abc"
+                    },
+                },
+            },
+        }
+    */
+    const
+    char            *JsonInput = "{\n"
+        "\t\"objectType\":\"NodeLink\",\n"
+        "\t\"index\":0,\n"
+        "\t\"leftIndex\":1,\n"
+        "\t\"middleIndex\":0,\n"
+        "\t\"parentIndex\":3,\n"
+        "\t\"rightIndex\":2,\n"
+        "\t\"misc\":0,\n"
+        "\tflags:[ \"LEFT\", \"RIGHT\", ],\n"
+        "\t\"node\":{"
+            "\t\t\"objectType\":\"Node\",\n"
+            "\t\t\"class\":65,\n"
+            "\t\t\"type\":0,\n"
+            "\t\t\"unique\":0,\n"
+            "\t\t\"misc\":0,\n"
+            "\t\t\"name\":{\n"
+                "\t\t\t\"objectType\":\"Name\",\n"
+                "\t\t\t\"hash\":0,\n"
+                "\t\t\t\"type\":2,\n"
+                "\t\t\t/* UTF-8 */\n"
+                "\t\t\t\"utf8\":{\n"
+                    "\t\t\t\t\"objectType\":\"utf8\",\n"
+                    "\t\t\t\t\"len\":3,\n"
+                    "\t\t\t\t\"crc\":891568578,"
+                    "\t\t\t\t\"data\":\"abc\" }\n"
+                "\t\t\t},\n"
+            "\t\t},\n"
+        "\t},\n"
+    "}\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = hjson_NewA(JsonInput, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFileHash(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pFileNode) );
+        TINYTEST_FALSE( (SrcErrors_getFatal(OBJ_NIL)) );
+
+        if (pFileNode) {
+            ASTR_DATA       *pWrk = OBJ_NIL;
+            pWrk = Node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "/n/n/n/n/n===> JsonInput:\n%s\n\n", AStr_getData(pWrk));
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+
+            pHash = Node_getData(pFileNode);
+            TINYTEST_FALSE( (OBJ_NIL == pHash) );
+            TINYTEST_TRUE( (obj_IsKindOf(pHash, OBJ_IDENT_NODEHASH)) );
+
+            obj_Release(pFileNode);
+            pFileNode = OBJ_NIL;
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 int             test_hjson_File01(
     const
     char            *pTestName
@@ -975,6 +1081,7 @@ int             test_hjson_File02(
 TINYTEST_START_SUITE(test_hjson);
     TINYTEST_ADD_TEST(test_hjson_File02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_File01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_hjson_Object02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Object01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Simple03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Simple02,setUp,tearDown);

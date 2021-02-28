@@ -140,6 +140,15 @@ struct JsonIn_data_s	{
     );
 
 
+    ERESULT         JsonIn_ToDebugStringElement (
+        JSONIN_DATA     *this,
+        ASTR_DATA       *pStr,
+        NODE_DATA       *pNode,
+        bool            fInArray,
+        int             indent
+    );
+
+
 #ifdef  JSONIN_JSON_SUPPORT
     ASTR_DATA *     JsonIn_ToJson (
         JSONIN_DATA      *this

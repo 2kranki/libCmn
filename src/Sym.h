@@ -767,6 +767,17 @@ extern "C" {
     );
     
     
+    /*!
+     Update the Node's name to be that in the Sym entry.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Sym_UpdateName (
+        SYM_DATA        *this
+    );
+
+
 
     
 #ifdef	__cplusplus

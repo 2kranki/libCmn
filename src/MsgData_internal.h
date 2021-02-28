@@ -84,7 +84,7 @@ struct MsgData_data_s	{
 
     extern
     const
-    MSGDATA_VTBL         MsgData_Vtbl;
+    MSGDATA_VTBL    MsgData_Vtbl;
 
 
 
@@ -93,7 +93,7 @@ struct MsgData_data_s	{
     //---------------------------------------------------------------
 
 #ifdef  MSGDATA_SINGLETON
-    MSGDATA_DATA *     MsgData_getSingleton (
+    MSGDATA_DATA *  MsgData_getSingleton (
         void
     );
 
@@ -119,7 +119,7 @@ struct MsgData_data_s	{
 
 
 #ifdef  MSGDATA_JSON_SUPPORT
-    MSGDATA_DATA *       MsgData_ParseJsonObject (
+    MSGDATA_DATA *  MsgData_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -132,7 +132,7 @@ struct MsgData_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     MsgData_ParseJsonFields (
+    ERESULT         MsgData_ParseJsonFields (
         JSONIN_DATA     *pParser,
         MSGDATA_DATA    *pObject
     );
@@ -162,7 +162,7 @@ struct MsgData_data_s	{
                 error code.
      */
     ERESULT         MsgData_ToJsonFields (
-        MSGDATA_DATA     *this,
+        MSGDATA_DATA    *this,
         ASTR_DATA       *pStr
     );
 #endif

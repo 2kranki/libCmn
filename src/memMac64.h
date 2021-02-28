@@ -1,25 +1,25 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          MEMOSX Console Transmit Task (memOSX) Header
+//                  MacOS 64-Bit Memory Debug (memMac64) Header
 //****************************************************************
 /*
  * Program
- *			Separate memOSX (memOSX)
+ *          MacOS 64-Bit Memory Debug (memMac64)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate memOSX to run things without complications
- *          of interfering with the main memOSX. A memOSX may be 
- *          called a memOSX on other O/S's.
+ *          This object provides a standardized way of handling
+ *          a separate memMac64 to run things without complications
+ *          of interfering with the main memMac64. A memMac64 may be 
+ *          called a memMac64 on other O/S's.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal memOSX. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *  1.      None
  *
  * History
- *	02/08/2016 Generated
+ *  02/08/2016 Generated
+ *  02/15/2021 Regenerated
+ *  02/21/2021 Added multi-tasking support
+ *  02/28/2021 Fixed several locking problems and Added bypass support
  */
 
 
@@ -54,15 +54,139 @@
 
 
 
-
 #include        <cmn_defs.h>
+#include        <AStr.h>
 
 
-#ifndef         MEMOSX_H
-#define         MEMOSX_H
+#ifndef         MEMMAC64_H
+#define         MEMMAC64_H
 
 
-#ifdef	__cplusplus
+//#define   MEMMAC64_IS_IMMUTABLE     1
+//#define   MEMMAC64_JSON_SUPPORT     1
+#define   MEMMAC64_SINGLETON        1
+
+
+
+#undef mem_Calloc
+#if        defined(NDEBUG)
+#    define    mem_Calloc( Num, Size )\
+    calloc( Num, Size )
+#else
+#    define    mem_Calloc( Num, Size )\
+    memMac64_DebugCalloc( memMac64_Shared(), Num, Size, __FILE__, __LINE__ )
+#endif
+
+#undef mem_CallocAbort
+#if        defined(NDEBUG)
+#    define    mem_CallocAbort( Num, Size )\
+    memMac64_CallocAbort( memMac64_Shared(), Num, Size, __FILE__, __LINE__ )
+#else
+#    define    mem_CallocAbort( Num, Size )\
+    memMac64_DebugCallocAbort( memMac64_Shared(), Num, Size, __FILE__, __LINE__ )
+#endif
+
+#undef mem_CheckArea
+#if        defined(NDEBUG)
+#    define    mem_CheckArea( pData )\
+/* */
+#else
+#    define    mem_CheckArea( pData )\
+memMac64_DebugCheckArea( memMac64_Shared(), pData, __FILE__, __LINE__ )
+#endif
+
+#undef mem_Dump
+#if        defined(NDEBUG)
+#    define    mem_Dump( )\
+    /* */
+#else
+#    define    mem_Dump( )\
+    memMac64_DebugDump( memMac64_Shared(), __FILE__, __LINE__ )
+#endif
+
+#undef mem_Free
+#if        defined(NDEBUG)
+#   define  mem_Free( ptr )  free( ptr )
+#else
+#   define  mem_Free( ptr ) \
+    memMac64_DebugFree( memMac64_Shared(), ptr, __FILE__, __LINE__ )
+#endif
+
+#undef mem_FreeObject
+#if        defined(NDEBUG)
+#   define  mem_FreeObject( ptr )  free( ptr )
+#else
+#   define  mem_FreeObject( ptr ) \
+    memMac64_DebugFreeObject( memMac64_Shared(), ptr, __FILE__, __LINE__ )
+#endif
+
+#undef mem_Init
+#if        defined(NDEBUG)
+#    define    mem_Init( )\
+    /* */
+#else
+#    define    mem_Init( )\
+    memMac64_Shared()
+#endif
+
+#undef mem_Malloc
+#if        defined(NDEBUG)
+#   define  mem_Malloc( size ) \
+malloc( size )
+#else
+#   define  mem_Malloc( size ) \
+    memMac64_DebugMalloc( memMac64_Shared(), size, __FILE__, __LINE__ )
+#endif
+
+#undef mem_MallocAbort
+#if        defined(NDEBUG)
+#   define  mem_MallocAbort( size ) \
+    memMac64_CallocAbort( memMac64_Shared(), 1, (size), __FILE__, __LINE__ )
+#else
+#   define  mem_MallocAbort( size ) \
+    memMac64_DebugCallocAbort( memMac64_Shared(), 1, (size), __FILE__, __LINE__ )
+#endif
+
+#undef mem_MallocObject
+#if        defined(NDEBUG)
+#   define  mem_MallocObject( size ) \
+    malloc( size )
+#else
+#   define  mem_MallocObject( size ) \
+    memMac64_DebugMallocObject( memMac64_Shared(), size, __FILE__, __LINE__ )
+#endif
+
+#undef mem_Realloc
+#if        defined(NDEBUG)
+#   define  mem_Realloc( ptr, size ) \
+    realloc( ptr, size )
+#else
+#   define  mem_Realloc( ptr, size ) \
+    memMac64_DebugRealloc( memMac64_Shared(), ptr, size, __FILE__, __LINE__ )
+#endif
+
+#undef mem_Release
+#if        defined(NDEBUG)
+#    define    mem_Release( )\
+/* */
+#else
+#    define    mem_Release( )\
+memMac64_SharedReset()
+#endif
+
+#undef mem_StrDup
+#if        defined(NDEBUG)
+#   define  mem_StrDup( ptr ) \
+    strdup( ptr )
+#else
+#   define  mem_StrDup( ptr ) \
+    memMac64_DebugStrDup( memMac64_Shared(), ptr, __FILE__, __LINE__ )
+#endif
+
+
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -72,370 +196,323 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct memOSX_data_s	MEMOSX_DATA;
+    typedef struct memMac64_data_s  MEMMAC64_DATA;            // Inherits from OBJ
+    typedef struct memMac64_class_data_s MEMMAC64_CLASS_DATA;   // Inherits from OBJ
+
+    typedef struct memMac64_vtbl_s  {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in memMac64_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(MEMMAC64_DATA *);
+    } MEMMAC64_VTBL;
+
+    typedef struct memMac64_class_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in memMac64_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(MEMMAC64_DATA *);
+    } MEMMAC64_CLASS_VTBL;
 
 
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
-#undef mem_Calloc
-#if		defined(NDEBUG)
-#	define	mem_Calloc( Num, Size )\
-    calloc( Num, Size )
-#else
-#	define	mem_Calloc( Num, Size )\
-    memOSX_DebugCalloc( memOSX_Shared(), Num, Size, __FILE__, __LINE__ )
-#endif
 
-#undef mem_CallocAbort
-#if		defined(NDEBUG)
-#	define	mem_CallocAbort( Num, Size )\
-    memOSX_CallocAbort( memOSX_Shared(), Num, Size, __FILE__, __LINE__ )
-#else
-#	define	mem_CallocAbort( Num, Size )\
-    memOSX_DebugCallocAbort( memOSX_Shared(), Num, Size, __FILE__, __LINE__ )
-#endif
-    
-#undef mem_CheckArea
-#if        defined(NDEBUG)
-#    define    mem_CheckArea( pData )\
-/* */
-#else
-#    define    mem_CheckArea( pData )\
-memOSX_DebugCheckArea( memOSX_Shared(), pData, __FILE__, __LINE__ )
-#endif
-    
-#undef mem_Dump
-#if		defined(NDEBUG)
-#	define	mem_Dump( )\
-    /* */
-#else
-#	define	mem_Dump( )\
-    memOSX_DebugDump( memOSX_Shared(), __FILE__, __LINE__ )
-#endif
-    
-#undef mem_Free
-#if		defined(NDEBUG)
-#   define  mem_Free( ptr )  free( ptr )
-#else
-#   define  mem_Free( ptr ) \
-    memOSX_DebugFree( memOSX_Shared(), ptr, __FILE__, __LINE__ )
-#endif
-    
-#undef mem_FreeObject
-#if		defined(NDEBUG)
-#   define  mem_FreeObject( ptr )  free( ptr )
-#else
-#   define  mem_FreeObject( ptr ) \
-    memOSX_DebugFreeObject( memOSX_Shared(), ptr, __FILE__, __LINE__ )
-#endif
-    
-#undef mem_Init
-#if		defined(NDEBUG)
-#	define	mem_Init( )\
-    /* */
-#else
-#	define	mem_Init( )\
-    memOSX_Shared()
-#endif
-    
-#undef mem_Malloc
-#if		defined(NDEBUG)
-#   define  mem_Malloc( size ) \
-malloc( size )
-#else
-#   define  mem_Malloc( size ) \
-    memOSX_DebugMalloc( memOSX_Shared(), size, __FILE__, __LINE__ )
-#endif
-    
-#undef mem_MallocAbort
-#if		defined(NDEBUG)
-#   define  mem_MallocAbort( size ) \
-    memOSX_CallocAbort( memOSX_Shared(), 1, (size), __FILE__, __LINE__ )
-#else
-#   define  mem_MallocAbort( size ) \
-    memOSX_DebugCallocAbort( memOSX_Shared(), 1, (size), __FILE__, __LINE__ )
-#endif
-    
-#undef mem_MallocObject
-#if		defined(NDEBUG)
-#   define  mem_MallocObject( size ) \
-    malloc( size )
-#else
-#   define  mem_MallocObject( size ) \
-    memOSX_DebugMallocObject( memOSX_Shared(), size, __FILE__, __LINE__ )
-#endif
-    
-#undef mem_Realloc
-#if		defined(NDEBUG)
-#   define  mem_Realloc( ptr, size ) \
-    realloc( ptr, size )
-#else
-#   define  mem_Realloc( ptr, size ) \
-    memOSX_DebugRealloc( memOSX_Shared(), ptr, size, __FILE__, __LINE__ )
-#endif
-    
-#undef mem_Release
-#if		defined(NDEBUG)
-#	define	mem_Release( )\
-/* */
-#else
-#	define	mem_Release( )\
-memOSX_SharedReset()
-#endif
-    
-#undef mem_StrDup
-#if		defined(NDEBUG)
-#   define  mem_StrDup( ptr ) \
-    strdup( ptr )
-#else
-#   define  mem_StrDup( ptr ) \
-    memOSX_DebugStrDup( memOSX_Shared(), ptr, __FILE__, __LINE__ )
-#endif
-    
-    
     //---------------------------------------------------------------
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    MEMOSX_DATA *     memOSX_Alloc(
+#ifdef  MEMMAC64_SINGLETON
+    MEMMAC64_DATA * memMac64_Shared (
+        void
+    );
+
+    void            memMac64_SharedReset (
+        void
+    );
+#endif
+
+
+    OBJ_ID          memMac64_Class (
         void
     );
     
     
-    MEMOSX_DATA *     memOSX_New(
+    MEMMAC64_DATA * memMac64_New (
         void
     );
     
     
-    MEMOSX_DATA *     memOSX_Shared(
-        void
+#ifdef  MEMMAC64_JSON_SUPPORT
+    MEMMAC64_DATA * memMac64_NewFromJsonString (
+        ASTR_DATA       *pString
     );
-    
-    MEMOSX_DATA *     memOSX_SharedReset(
-        void
+
+    MEMMAC64_DATA * memMac64_NewFromJsonStringA (
+        const
+        char            *pStringA
     );
-    
-    
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            memOSX_getDebug(
-        MEMOSX_DATA     *this
+    bool            memMac64_getBypass (
+        MEMMAC64_DATA   *this
     );
-    
-    bool            memOSX_setDebug(
-        MEMOSX_DATA     *this,
+
+    bool            memMac64_setBypass (
+        MEMMAC64_DATA   *this,
+        bool            fValue
+    );
+
+
+    bool            memMac64_getDebug(
+        MEMMAC64_DATA   *this
+    );
+
+    bool            memMac64_setDebug(
+        MEMMAC64_DATA   *this,
         bool            value
     );
-    
-    
-    bool            memOSX_setLeakExit(
-        MEMOSX_DATA     *this,
+
+
+    bool            memMac64_setLeakExit(
+        MEMMAC64_DATA   *this,
         P_VOID_EXIT1    rtn,
         void            *pObject
     );
-    
-    
+
+
     const
-    char *          memOSX_getTitle(
-        MEMOSX_DATA     *this
+    char *          memMac64_getTitle(
+        MEMMAC64_DATA   *this
     );
-    
-    bool            memOSX_setTitle(
-        MEMOSX_DATA     *this,
+
+    bool            memMac64_setTitle(
+        MEMMAC64_DATA   *this,
         const
         char            *pValue
     );
-    
-    
+
+
+
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    void *          memOSX_CallocAbort(
-        MEMOSX_DATA		*this,
-        size_t			cNum,
-        size_t			cSize,
+    void *          memMac64_CallocAbort(
+        MEMMAC64_DATA    *this,
+        size_t            cNum,
+        size_t            cSize,
         const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    void *          memOSX_DebugCalloc(
-        MEMOSX_DATA		*this,
-        size_t			cNum,
-        size_t			cSize,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    void *          memOSX_DebugCallocAbort(
-        MEMOSX_DATA		*this,
-        size_t			cNum,
-        size_t			cSize,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    bool			memOSX_DebugCheck(
-        MEMOSX_DATA		*this,
-        const
-        char			*pFilePath,
-        size_t			iLine
+        char            *pFilePath,
+        size_t            iLine
     );
 
 
-    bool			memOSX_DebugCheckArea(
-        MEMOSX_DATA		*this,
+    void *          memMac64_DebugCalloc(
+        MEMMAC64_DATA    *this,
+        size_t            cNum,
+        size_t            cSize,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    void *          memMac64_DebugCallocAbort(
+        MEMMAC64_DATA    *this,
+        size_t            cNum,
+        size_t            cSize,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    bool            memMac64_DebugCheck(
+        MEMMAC64_DATA    *this,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    bool            memMac64_DebugCheckArea(
+        MEMMAC64_DATA    *this,
         void            *pData,
         const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    bool			memOSX_DebugDidAlloc(
-        MEMOSX_DATA		*this,
-        void			*pData,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    bool			memOSX_DebugDump(
-        MEMOSX_DATA		*this,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    bool			memOSX_DebugFree(
-        MEMOSX_DATA		*this,
-        void			*pData,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    bool			memOSX_DebugFreeObject(
-        MEMOSX_DATA		*this,
-        void			*pData,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    size_t          memOSX_DebugGetSize(
-        MEMOSX_DATA		*this,
-        void			*pData,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    void *			memOSX_DebugMalloc(
-        MEMOSX_DATA		*this,
-        size_t			cbSize,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    void *			memOSX_DebugMallocAbort(
-        MEMOSX_DATA		*this,
-        size_t			cbSize,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    void *			memOSX_DebugMallocObject(
-        MEMOSX_DATA		*this,
-        size_t			cbSize,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    void *			memOSX_DebugRealloc(
-        MEMOSX_DATA		*this,
-        void			*pData,
-        size_t			cbSize,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    char *          memOSX_DebugStrDup(
-        MEMOSX_DATA		*this,
-        const
-        char			*pOldStr,
-        const
-        char			*pFilePath,
-        size_t			iLine
-    );
-    
-    
-    MEMOSX_DATA *   memOSX_Init(
-        MEMOSX_DATA     *this
+        char            *pFilePath,
+        size_t            iLine
     );
 
 
-    void *			memOSX_MallocAbort(
-        MEMOSX_DATA		*this,
-        size_t			cbSize,
+    bool            memMac64_DebugDidAlloc(
+        MEMMAC64_DATA    *this,
+        void            *pData,
         const
-        char			*pFilePath,
-        size_t			iLine
+        char            *pFilePath,
+        size_t            iLine
     );
-    
-    
+
+
+    bool            memMac64_DebugDump(
+        MEMMAC64_DATA    *this,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    bool            memMac64_DebugFree(
+        MEMMAC64_DATA    *this,
+        void            *pData,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    bool            memMac64_DebugFreeObject(
+        MEMMAC64_DATA    *this,
+        void            *pData,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    size_t          memMac64_DebugGetSize(
+        MEMMAC64_DATA    *this,
+        void            *pData,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    void *            memMac64_DebugMalloc(
+        MEMMAC64_DATA    *this,
+        size_t            cbSize,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    void *            memMac64_DebugMallocAbort(
+        MEMMAC64_DATA    *this,
+        size_t            cbSize,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    void *            memMac64_DebugMallocObject(
+        MEMMAC64_DATA    *this,
+        size_t            cbSize,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    void *            memMac64_DebugRealloc(
+        MEMMAC64_DATA    *this,
+        void            *pData,
+        size_t            cbSize,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
+    char *          memMac64_DebugStrDup(
+        MEMMAC64_DATA    *this,
+        const
+        char            *pOldStr,
+        const
+        char            *pFilePath,
+        size_t            iLine
+    );
+
+
     /*!
-     Create a string that describes this object and the
-     objects within it.
+     Allocate a memory area or abort if it does not work. No memory over-write
+     areas are added. This is only used if NDEBUG is set. This bypasses all
+     debugging mechanisms.
+     @param     this        object pointer
+     @param     cbSize      memory area size in bytes
+     @param     pFilePath   program file path
+     @param     iLine       line number within program file path
+     @return    If successful, memory pointer, otherwise NULL.
+     @warning   Remember to free the returned memory area.
+     */
+    void *          memMac64_MallocAbort(
+        MEMMAC64_DATA   *this,
+        size_t          cbSize,
+        const
+        char            *pFilePath,
+        size_t          iLine
+    );
+
+ 
+#ifdef  MEMMAC64_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = memOSX_ToDebugString(pObj,4);
+     ASTR_DATA      *pDesc = memMac64_ToJson(this);
      @endcode
      @param     this    object pointer
-     @param     indent  number of characters to indent every line of output, can be 0
-     @return    If successful, an AStr object which must be released,
-                 otherwise OBJ_NIL.
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    memOSX_ToDebugString(
-        MEMOSX_DATA     *this,
+    ASTR_DATA *     memMac64_ToJson (
+        MEMMAC64_DATA   *this
+    );
+#endif
+
+
+    /*!
+     Create a string that describes this object and the objects within it.
+     Example:
+     @code 
+        ASTR_DATA      *pDesc = memMac64_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
+     @param     indent  number of characters to indent every line of output, can be 0
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     memMac64_ToDebugString (
+        MEMMAC64_DATA     *this,
         int             indent
     );
     
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* MEMOSX_H */
+#endif  /* MEMMAC64_H */
 
