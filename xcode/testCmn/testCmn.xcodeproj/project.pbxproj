@@ -222,7 +222,6 @@
 		C4753277247998EB001DEF19 /* Number.c in Sources */ = {isa = PBXBuildFile; fileRef = C4753273247998EA001DEF19 /* Number.c */; };
 		C4782A0025DB10BD00E68220 /* memMac64_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47829FD25DB10BC00E68220 /* memMac64_object.c */; };
 		C4782A0125DB10BD00E68220 /* memMac64.c in Sources */ = {isa = PBXBuildFile; fileRef = C47829FF25DB10BC00E68220 /* memMac64.c */; };
-		C4782A2625EBCDF400E68220 /* msgBus_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4782A2525EBCDF400E68220 /* msgBus_test.c */; };
 		C479BFEA23AC81060057A017 /* TRegex.c in Sources */ = {isa = PBXBuildFile; fileRef = C479BFE223AC81040057A017 /* TRegex.c */; };
 		C479BFEB23AC81060057A017 /* TRegex_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C479BFE523AC81050057A017 /* TRegex_object.c */; };
 		C479BFEC23AC81060057A017 /* TRegex32_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C479BFE723AC81050057A017 /* TRegex32_object.c */; };
@@ -258,6 +257,7 @@
 		C48EA13923A7EAB300CCAF2B /* ObjEnum.c in Sources */ = {isa = PBXBuildFile; fileRef = C48EA13623A7EAB300CCAF2B /* ObjEnum.c */; };
 		C48EA14023A7FFE600CCAF2B /* NodeEnum.c in Sources */ = {isa = PBXBuildFile; fileRef = C48EA13C23A7FFE500CCAF2B /* NodeEnum.c */; };
 		C48EA14123A7FFE600CCAF2B /* NodeEnum_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C48EA13E23A7FFE600CCAF2B /* NodeEnum_object.c */; };
+		C48F1E6A25EC4819007315CD /* NodeLink_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C48F1E6925EC4819007315CD /* NodeLink_test.c */; };
 		C4917E0B210AACD100FE234E /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C4917E0A210AACD100FE234E /* libcurses.tbd */; };
 		C49D42592576DFED0059B0A3 /* SrcDiff.c in Sources */ = {isa = PBXBuildFile; fileRef = C49D42552576DFEC0059B0A3 /* SrcDiff.c */; };
 		C49D425A2576DFED0059B0A3 /* SrcDiff_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C49D42562576DFEC0059B0A3 /* SrcDiff_object.c */; };
@@ -853,7 +853,6 @@
 		C47829FD25DB10BC00E68220 /* memMac64_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memMac64_object.c; sourceTree = "<group>"; };
 		C47829FE25DB10BC00E68220 /* memMac64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memMac64.h; sourceTree = "<group>"; };
 		C47829FF25DB10BC00E68220 /* memMac64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memMac64.c; sourceTree = "<group>"; };
-		C4782A2525EBCDF400E68220 /* msgBus_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = msgBus_test.c; sourceTree = "<group>"; };
 		C479BFE223AC81040057A017 /* TRegex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TRegex.c; sourceTree = "<group>"; };
 		C479BFE323AC81040057A017 /* TRegex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TRegex.h; sourceTree = "<group>"; };
 		C479BFE423AC81040057A017 /* TRegex32_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TRegex32_internal.h; sourceTree = "<group>"; };
@@ -915,6 +914,7 @@
 		C48EA13D23A7FFE500CCAF2B /* NodeEnum_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeEnum_internal.h; sourceTree = "<group>"; };
 		C48EA13E23A7FFE600CCAF2B /* NodeEnum_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NodeEnum_object.c; sourceTree = "<group>"; };
 		C48EA13F23A7FFE600CCAF2B /* NodeEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeEnum.h; sourceTree = "<group>"; };
+		C48F1E6925EC4819007315CD /* NodeLink_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NodeLink_test.c; sourceTree = "<group>"; };
 		C4917E0A210AACD100FE234E /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
 		C49D42552576DFEC0059B0A3 /* SrcDiff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcDiff.c; sourceTree = "<group>"; };
 		C49D42562576DFEC0059B0A3 /* SrcDiff_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcDiff_object.c; sourceTree = "<group>"; };
@@ -1235,7 +1235,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C4782A2525EBCDF400E68220 /* msgBus_test.c */,
+				C48F1E6925EC4819007315CD /* NodeLink_test.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -2276,6 +2276,7 @@
 				C4359A5C1FC9C38800CA858E /* enum_object.c in Sources */,
 				C4EBE2DE23C95883008E9EE8 /* NodeTree.c in Sources */,
 				C4359A511FC9C38800CA858E /* fileio_object.c in Sources */,
+				C48F1E6A25EC4819007315CD /* NodeLink_test.c in Sources */,
 				C479BFEA23AC81060057A017 /* TRegex.c in Sources */,
 				C403339625991F6C007E0277 /* Sect_json.c in Sources */,
 				C4EBE27523C2BE6E008E9EE8 /* rrds_io.c in Sources */,
@@ -2295,7 +2296,6 @@
 				C4EBE2BE23C90143008E9EE8 /* NodeList_object.c in Sources */,
 				C43599AE1FC9C36800CA858E /* cb32_object.c in Sources */,
 				C4714375240CA7980073AADC /* ObjBT_object.c in Sources */,
-				C4782A2625EBCDF400E68220 /* msgBus_test.c in Sources */,
 				C42C553323CBC2FA00AA762C /* Node_json.c in Sources */,
 				C47E77D1257D39B50087C9F8 /* ALU32.c in Sources */,
 				C4C0504123745AB600D7BB36 /* AStrCArray.c in Sources */,

@@ -118,21 +118,6 @@ extern "C" {
 
 
 
-    NODELINK_DATA *     NodeLink_NewWithNode (
-        NODE_DATA           *pNode
-    )
-    {
-        NODELINK_DATA       *this;
-
-        this = NodeLink_New( );
-        if (this) {
-            NodeLink_setNode(this, pNode);
-        }
-        return this;
-    }
-
-
-
     NODELINK_DATA * NodeLink_NewWithUTF8AndClass(
         int32_t         cls,
         const
@@ -141,16 +126,20 @@ extern "C" {
     )
     {
         NODELINK_DATA   *this;
+        NAME_DATA       *pName = OBJ_NIL;
 
         this = NodeLink_Alloc( );
         if (this) {
             this = NodeLink_Init(this);
             if (this) {
-                this->pNode = Node_NewWithUTF8AndClass(cls, pNameA, pData);
-                if (OBJ_NIL == this->pNode) {
-                    obj_Release(this);
-                    this = OBJ_NIL;
+                if (pNameA) {
+                    pName = Name_NewUTF8(pNameA);
+                    Node_setName(NodeLink_getNode(this), pName);
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
                 }
+                Node_setClass(NodeLink_getNode(this), cls);
+                Node_setData(NodeLink_getNode(this), pData);
             }
         }
         return this;
@@ -165,16 +154,20 @@ extern "C" {
     )
     {
         NODELINK_DATA   *this;
+        NAME_DATA       *pName = OBJ_NIL;
 
         this = NodeLink_Alloc( );
         if (this) {
             this = NodeLink_Init(this);
             if (this) {
-                this->pNode = Node_NewWithUTF8ConAndClass(cls, pNameA, pData);
-                if (OBJ_NIL == this->pNode) {
-                    obj_Release(this);
-                    this = OBJ_NIL;
+                if (pNameA) {
+                    pName = Name_NewUTF8Con(pNameA);
+                    Node_setName(NodeLink_getNode(this), pName);
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
                 }
+                Node_setClass(NodeLink_getNode(this), cls);
+                Node_setData(NodeLink_getNode(this), pData);
             }
         }
         return this;
@@ -290,7 +283,7 @@ extern "C" {
         }
 #endif
 
-        return Node_getClass(this->pNode);
+        return Node_getClass(NodeLink_getNode(this));
     }
 
 
@@ -313,7 +306,7 @@ extern "C" {
         }
 #endif
 
-        return Node_getData(this->pNode);
+        return Node_getData(NodeLink_getNode(this));
     }
 
 
@@ -332,7 +325,7 @@ extern "C" {
         }
 #endif
 
-        return Node_setData(this->pNode, pValue);
+        return Node_setData(NodeLink_getNode(this), pValue);
     }
 
 
@@ -355,7 +348,7 @@ extern "C" {
         }
 #endif
 
-        return Node_getExtra(this->pNode);
+        return Node_getExtra(NodeLink_getNode(this));
     }
 
 
@@ -374,7 +367,7 @@ extern "C" {
         }
 #endif
 
-        return Node_setExtra(this->pNode, pValue);
+        return Node_setExtra(NodeLink_getNode(this), pValue);
     }
 
 
@@ -440,7 +433,7 @@ extern "C" {
             return hash;
         }
 #endif
-        pName = Node_getName(this->pNode);
+        pName = Node_getName(NodeLink_getNode(this));
 
         if (pName) {
             hash = Name_getHash(pName);
@@ -799,7 +792,7 @@ extern "C" {
         }
 #endif
 
-        return Node_getName(this->pNode);
+        return Node_getName(NodeLink_getNode(this));
     }
 
 
@@ -817,7 +810,7 @@ extern "C" {
         }
 #endif
 
-        return Node_getNameUTF8(this->pNode);
+        return Node_getNameUTF8(NodeLink_getNode(this));
     }
 
 
@@ -840,32 +833,8 @@ extern "C" {
         }
 #endif
 
-        return this->pNode;
+        return (NODE_DATA *)this;
     }
-
-
-    bool            NodeLink_setNode (
-        NODELINK_DATA   *this,
-        NODE_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NodeLink_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pNode) {
-            obj_Release(this->pNode);
-        }
-        this->pNode = pValue;
-
-        return true;
-    }
-
 
 
     //---------------------------------------------------------------
@@ -886,7 +855,7 @@ extern "C" {
         }
 #endif
 
-        return Node_getOther(this->pNode);
+        return Node_getOther(NodeLink_getNode(this));
     }
 
 
@@ -905,7 +874,7 @@ extern "C" {
         }
 #endif
 
-        return Node_setOther(this->pNode, pValue);
+        return Node_setOther(NodeLink_getNode(this), pValue);
     }
 
 
@@ -1013,7 +982,7 @@ extern "C" {
         }
 #endif
 
-        return Node_getProperties(this->pNode);
+        return Node_getProperties(NodeLink_getNode(this));
     }
 
 
@@ -1337,7 +1306,7 @@ extern "C" {
         }
 #endif
 
-        return Node_getType(this->pNode);
+        return Node_getType(NodeLink_getNode(this));
     }
 
 
@@ -1354,7 +1323,7 @@ extern "C" {
         }
 #endif
 
-        return Node_setType(this->pNode, value);
+        return Node_setType(NodeLink_getNode(this), value);
     }
 
 
@@ -1377,7 +1346,7 @@ extern "C" {
         }
 #endif
 
-        return Node_getUnique(this->pNode);
+        return Node_getUnique(NodeLink_getNode(this));
     }
 
 
@@ -1394,7 +1363,7 @@ extern "C" {
         }
 #endif
 
-        return Node_setUnique(this->pNode, value);
+        return Node_setUnique(NodeLink_getNode(this), value);
     }
 
 
@@ -1454,22 +1423,9 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-        if (pOther->pNode) {
-            obj_Release(pOther->pNode);
-            pOther->pNode = OBJ_NIL;
-        }
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-        if (this->pNode) {
-            if (obj_getVtbl(this->pNode)->pCopy) {
-                pOther->pNode = obj_getVtbl(this->pNode)->pCopy(this->pNode);
-            }
-            else {
-                obj_Retain(this->pNode);
-                pOther->pNode = this->pNode;
-            }
-        }
 
         // Copy other data from this object to other.
         if (obj_Flag(this, NODELINK_LEFT_LINK)) {
@@ -1538,7 +1494,7 @@ extern "C" {
         }
 #endif
 
-        iRc = Node_Compare(this->pNode, pOther->pNode);
+        iRc = Node_Compare(NodeLink_getNode(this), NodeLink_getNode(pOther));
      
         return iRc;
     }
@@ -1562,7 +1518,7 @@ extern "C" {
          }
  #endif
 
-         iRc = Node_CompareA(this->pNode, cls, pNameA);
+         iRc = Node_CompareA(NodeLink_getNode(this), cls, pNameA);
 
          return iRc;
      }
@@ -1648,8 +1604,6 @@ extern "C" {
             ((NODELINK_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
-
-        NodeLink_setNode(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1838,8 +1792,8 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODELINK);
+        this = (OBJ_ID)Node_Init((NODE_DATA *)this);            // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NODELINK);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1937,7 +1891,7 @@ extern "C" {
         }
 #endif
 
-        eRc = Node_PropertyAddA(this->pNode, pNameA, pData);
+        eRc = Node_PropertyAddA(NodeLink_getNode(this), pNameA, pData);
 
         // Return to caller.
         return eRc;
@@ -1964,7 +1918,7 @@ extern "C" {
         }
 #endif
 
-        num = Node_PropertyCount(this->pNode);
+        num = Node_PropertyCount(NodeLink_getNode(this));
 
         // Return to caller.
         return num;
@@ -1991,7 +1945,7 @@ extern "C" {
         }
 #endif
 
-        pArray = Node_Properties(this->pNode);
+        pArray = Node_Properties(NodeLink_getNode(this));
 
         // Return to caller.
         return pArray;
@@ -2195,7 +2149,7 @@ extern "C" {
             );
 
         if (indent) {
-            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+            AStr_AppendCharRepeatA(pStr, indent+2, ' ');
         }
         AStr_AppendPrint(
                          pStr,
@@ -2221,20 +2175,13 @@ extern "C" {
         );
 
         if (indent) {
-            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+            AStr_AppendCharRepeatA(pStr, indent+2, ' ');
         }
         AStr_AppendA(pStr, "Node");
-        if (this->pNode) {
-            if (((OBJ_DATA *)(this->pNode))->pVtbl->pToDebugString) {
-                pWrkStr =   ((OBJ_DATA *)(this->pNode))->pVtbl->pToDebugString(
-                                                    this->pNode,
-                                                    indent+4
-                            );
-                if (pWrkStr) {
-                    AStr_Append(pStr, pWrkStr);
-                    obj_Release(pWrkStr);
-                }
-            }
+        pWrkStr = Node_ToDebugString(NodeLink_getNode(this), indent+4);
+        if (pWrkStr) {
+            AStr_Append(pStr, pWrkStr);
+            obj_Release(pWrkStr);
         }
 
         if (indent) {

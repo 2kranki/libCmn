@@ -31,8 +31,12 @@
  *  06/30/2018  Generated
  *  01/12/2020  Regenerated
  *  02/03/2021  Regenerated and made node part of data rather than
+ *  02/03/2021  Regenerated and made node part of data rather than
  *              inheriting from it allowing one node to be used in
- *              multiple links.
+ *              multiple links.  This breaks using NodeLink in the
+ *              other containers such as NodeArray, NodeBT, etc.
+ *  02/28/2021  Reverted to inheriting from Node so that it can be
+ *              used in the various Node containers.
  */
 
 
@@ -159,11 +163,6 @@ extern "C" {
     );
     
     
-    NODELINK_DATA * NodeLink_NewWithNode (
-        NODE_DATA           *pNode
-    );
-
-
     NODELINK_DATA * NodeLink_NewWithUTF8AndClass(
         int32_t         cls,
         const

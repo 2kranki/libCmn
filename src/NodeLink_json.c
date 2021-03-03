@@ -85,7 +85,6 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        NODE_DATA       *pNode = OBJ_NIL;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         //NODEHASH_DATA   *pHash = OBJ_NIL;
         uint32_t        i;
@@ -95,6 +94,12 @@ extern "C" {
         //uint8_t         *pData;
         //uint32_t        len;
         uint32_t        uint32 = 0;
+
+        eRc = JsonIn_SubObjectInHash(pParser, "Node");
+        if (ERESULT_OK(eRc)) {
+            eRc = Node_ParseJsonFields(pParser, (NODE_DATA *)pObject);
+            JsonIn_SubObjectEnd(pParser);
+        }
 
         eRc  = JsonIn_FindIntegerNodeInHashA(pParser, "misc", &intIn);
         uint32  = (uint32_t)intIn;
@@ -135,23 +140,6 @@ extern "C" {
                 fprintf(stderr, "====> Before Scanning Node:\n%s\n", AStr_getData(pStr));
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
-            }
-        }
-        eRc = JsonIn_SubObjectInHash(pParser, "node");
-        if (ERESULT_OK(eRc)) {
-            pNode = Node_ParseJsonObject(pParser);
-            if (pNode) {
-                NodeLink_setNode(pObject, pNode);
-                obj_Release(pNode);
-            }
-            JsonIn_SubObjectEnd(pParser);
-            {
-                ASTR_DATA       *pStr = JsonIn_ToDebugString(pParser, 0);
-                if (pStr) {
-                    fprintf(stderr, "====> After Scanning Node: @%p\n%s\n", pNode, AStr_getData(pStr));
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
             }
         }
 
@@ -322,10 +310,11 @@ extern "C" {
                 error code.
      */
     ERESULT         NodeLink_ToJsonFields (
-        NODELINK_DATA     *this,
+        NODELINK_DATA   *this,
         ASTR_DATA       *pStr
     )
     {
+        ERESULT         eRc;
 #ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
@@ -365,7 +354,9 @@ extern "C" {
         }
         AStr_AppendA(pStr, "],\n");
 
-        JsonOut_Append_Object("node", this->pNode, pStr);
+        AStr_AppendA(pStr, "\tNode:{\n");
+        eRc = Node_ToJsonFields((NODE_DATA *)this, pStr);
+        AStr_AppendA(pStr, "\t},\n");
 
         return ERESULT_SUCCESS;
     }

@@ -41,6 +41,7 @@
 
 #include        <NodeLink.h>
 #include        <JsonIn.h>
+#include        <Node_internal.h>
 
 
 #ifndef NODELINK_INTERNAL_H
@@ -65,14 +66,13 @@ extern "C" {
 struct NodeLink_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    NODE_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 #define NODELINK_LEFT_LINK   OBJ_FLAG_USER5
 #define NODELINK_RIGHT_LINK  OBJ_FLAG_USER6
 #define NODELINK_RIGHT_CHILD OBJ_FLAG_USER7
 
     // Common Data
-    NODE_DATA       *pNode;
     uint32_t        index;
     uint32_t        leftIndex;
     uint32_t        middleIndex;
@@ -110,12 +110,6 @@ struct NodeLink_data_s  {
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
-
-    bool            NodeLink_setNode (
-        NODELINK_DATA   *this,
-        NODE_DATA       *pValue
-    );
-
 
     OBJ_IUNKNOWN *  NodeLink_getSuperVtbl (
         NODELINK_DATA   *this
