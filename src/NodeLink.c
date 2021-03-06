@@ -2108,7 +2108,7 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     NodeLink_ToDebugString (
-        NODELINK_DATA      *this,
+        NODELINK_DATA   *this,
         int             indent
     )
     {
@@ -2147,6 +2147,20 @@ extern "C" {
                     NodeLink_getSize(this),
                     obj_getRetainCount(this)
             );
+
+        pWrkStr = Node_ToDebugString(NodeLink_getNode(this), indent+4);
+        if (pWrkStr) {
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent+2, ' ');
+            }
+            eRc = AStr_AppendPrint(pStr, "Node:{\n%s", AStr_getData(pWrkStr));
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent+2, ' ');
+            }
+            eRc = AStr_AppendA(pStr, "}\n");
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+        }
 
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+2, ' ');
