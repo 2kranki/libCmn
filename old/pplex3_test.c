@@ -1,3 +1,5 @@
+// vi: nu:noai:ts=4:sw=4
+
 /*
  *	Generated 08/21/2017 13:03:31
  */

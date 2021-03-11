@@ -73,6 +73,7 @@ typedef enum TextIn_type_e {
     TEXTIN_TYPE_UNKNOWN=0,
     TEXTIN_TYPE_ASTR,
     TEXTIN_TYPE_FILE,
+    TEXTIN_TYPE_STRA,
     TEXTIN_TYPE_WSTR
 } TEXTIN_TYPE;
 
@@ -95,6 +96,7 @@ struct TextIn_data_s	{
     union {
         ASTR_DATA           *pAStr;
         FILE                *pFile;
+        char                *pStrA;
         W32STR_DATA         *pWStr;
     };
     uint16_t        type;               // see TEXTIN_TYPE

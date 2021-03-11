@@ -675,8 +675,65 @@ int             test_TextIn_GetLine06(
 
 
 
+int             test_TextIn_GetLine07(
+    const
+    char            *pTestName
+)
+{
+    TEXTIN_DATA     *pObj = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
+    ASTR_DATA       *pLine = OBJ_NIL;
+    ERESULT         eRc;
+    SRCLOC          loc = {0};
+    const
+    char            *pStrA = "abc\n\ndef\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = TextIn_NewFromStrA(OBJ_NIL, pStrA, 1, 4);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+
+        eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pLine) );
+        TINYTEST_TRUE( (0 == AStr_CompareA(pLine, "abc")) );
+        obj_Release(pLine);
+        pLine = OBJ_NIL;
+
+        eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pLine) );
+        TINYTEST_TRUE( (0 == AStr_getSize(pLine)) );
+        obj_Release(pLine);
+        pLine = OBJ_NIL;
+
+        eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_FALSE( (OBJ_NIL == pLine) );
+        TINYTEST_TRUE( (0 == AStr_CompareA(pLine, "def")) );
+        obj_Release(pLine);
+        pLine = OBJ_NIL;
+
+        eRc = TextIn_GetLineAStr(pObj, &pLine, &loc);
+        TINYTEST_TRUE( (ERESULT_EOF_ERROR == eRc) );
+        TINYTEST_TRUE( (OBJ_NIL == pLine) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_TextIn);
+    TINYTEST_ADD_TEST(test_TextIn_GetLine07,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TextIn_GetLine06,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TextIn_GetLine05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_TextIn_GetLine04,setUp,tearDown);

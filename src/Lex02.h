@@ -102,9 +102,10 @@ extern "C" {
 
     // The first eight flags are reserved for Lex.
     typedef enum Lex02_Flags_e {
-        LEX02_FLAG_RETURN_CM=0x00800000,            // Comments
-        LEX02_FLAG_RETURN_NL=0x00400000,            // New-Line
-        LEX02_FLAG_RETURN_WS=0x00200000,            // White-Space excluding New-Lines
+        LEX02_FLAG_RETURN_CM=0x00800000,            // Tokenize Comments
+        LEX02_FLAG_RETURN_NL=0x00400000,            // Tokenize New-Line(s)
+        LEX02_FLAG_RETURN_WS=0x00200000,            // Tokenize White-Space excluding
+        //                                          // New-Lines
     } LEX02_FLAGS;
 
 

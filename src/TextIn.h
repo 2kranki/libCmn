@@ -175,6 +175,15 @@ extern "C" {
     );
 
 
+    TEXTIN_DATA *   TextIn_NewFromStrA (
+        PATH_DATA       *pFilePath,
+        const
+        char            *pStrA,         // Buffer of file data
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
+
 #ifdef  TEXTIN_JSON_SUPPORT
     TEXTIN_DATA *   TextIn_NewFromJsonString(
         ASTR_DATA       *pString
@@ -370,6 +379,15 @@ extern "C" {
        PATH_DATA       *pFilePath,
        uint16_t        fileIndex,      // File Path Index for a separate path table
        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
+    ERESULT         TextIn_SetupStrA(
+        TEXTIN_DATA     *this,
+        PATH_DATA       *pFilePath,
+        const
+        char            *pStrA,       // Buffer of file data
+        uint16_t        fileIndex,    // File Path Index for a separate path table
+        uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
     );
 
     ERESULT         TextIn_SetupW32Str(

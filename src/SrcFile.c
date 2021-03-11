@@ -132,7 +132,13 @@ extern "C" {
 
         this = SrcFile_New( );
         if (this) {
-            eRc = TextIn_SetupAStr((TEXTIN_DATA *)this, pFilePath, pStr, fileIndex, tabSize);
+            eRc =   TextIn_SetupAStr(
+                                   (TEXTIN_DATA *)this,
+                                   pFilePath,
+                                   pStr,
+                                   fileIndex,
+                                   tabSize
+                    );
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 obj_Release(this);
@@ -200,6 +206,51 @@ extern "C" {
         this = SrcFile_New( );
         if (this) {
             eRc = TextIn_SetupPath((TEXTIN_DATA *)this, pFilePath, fileIndex, tabSize);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+
+            obj_setSize(&this->curchr, sizeof(TOKEN_DATA));
+            pToken = Token_Init(&this->curchr);
+            if (OBJ_NIL == pToken) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+            SrcFile_InputAdvance(this, this->sizeInputs);
+        }
+
+        return this;
+    }
+
+
+    SRCFILE_DATA *  SrcFile_NewFromStrA(
+        PATH_DATA       *pFilePath,
+        const
+        char            *pStrA,         // Buffer of file data
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        SRCFILE_DATA    *this = OBJ_NIL;
+        ERESULT         eRc;
+        TOKEN_DATA      *pToken;
+
+        if (NULL == pStrA) {
+            return OBJ_NIL;
+        }
+
+        this = SrcFile_New( );
+        if (this) {
+            eRc =   TextIn_SetupStrA(
+                                   (TEXTIN_DATA *)this,
+                                   pFilePath,
+                                   pStrA,
+                                   fileIndex,
+                                   tabSize
+                    );
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
                 obj_Release(this);

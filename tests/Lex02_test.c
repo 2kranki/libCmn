@@ -27,10 +27,10 @@
 #include    <JsonIn.h>
 #include    <trace.h>
 #include    <Lex02_internal.h>
-#ifdef  LEX02_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
+#include    <SrcErrors.h>
+#include    <szTbl.h>
+#include    <SrcFile.h>
+#include    <Token.h>
 
 
 
@@ -56,10 +56,8 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  LEX02_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
-#endif
     JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
@@ -203,10 +201,22 @@ int             test_Lex02_Test01 (
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    LEX02_DATA       *pObj = OBJ_NIL;
     bool            fRc;
-   
+    LEX02_DATA      *pObj = OBJ_NIL;
+    const
+    char            *pInputA = "unsigned int\t\ta;\n";
+    ASTR_DATA       *pInput = OBJ_NIL;
+    SRCFILE_DATA    *pSrc = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = Path_NewA("abc");
+    XCTAssertFalse( (OBJ_NIL == pPath) );
+    pInput = AStr_NewA(pInputA);
+    XCTAssertFalse( (OBJ_NIL == pInput) );
+    pSrc = SrcFile_NewFromAStr(pPath, pInput, 1, 4);
+    XCTAssertFalse( (OBJ_NIL == pSrc) );
 
     pObj = Lex02_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
@@ -217,6 +227,14 @@ int             test_Lex02_Test01 (
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         
+        fRc =   Lex_setSourceInput(
+                                      Lex02_getLex(pObj),
+                                      (void *)SrcFile_InputAdvance,
+                                      (void *)SrcFile_InputLookAhead,
+                                      pSrc
+                );
+        XCTAssertTrue( (fRc) );
+
         {
             ASTR_DATA       *pStr = Lex02_ToDebugString(pObj, 0);
             if (pStr) {
@@ -229,6 +247,13 @@ int             test_Lex02_Test01 (
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+
+    obj_Release(pSrc);
+    pSrc = OBJ_NIL;
+    obj_Release(pInput);
+    pInput = OBJ_NIL;
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;

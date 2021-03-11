@@ -1718,10 +1718,10 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Parser_SetupPPLexFromAStr (
+    ERESULT         Parser_SetupLexFromStrA (
         PARSER_DATA     *this,
         PATH_DATA       *pPath,
-        ASTR_DATA       *pStr,
+        char            *pStrA,
         bool            fLex1,
         bool            fLex3,
         bool            fNL,

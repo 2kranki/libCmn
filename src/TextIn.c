@@ -74,6 +74,7 @@ extern "C" {
     {
         //ERESULT         eRc;
         W32CHR_T        chr = EOF;
+        int16_t         chrLen;
 
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -103,6 +104,15 @@ extern "C" {
                 chr = AStr_CharGetW32(this->pAStr, (uint32_t)++this->offset);
                 if ((chr == ASCII_CPM_EOF) || (chr == EOF)){
                     this->curTok.src.offset = AStr_getLength(this->pAStr);
+                    chr = EOF;
+                }
+                break;
+
+            case TEXTIN_TYPE_STRA:
+                this->curTok.src.offset = this->offset;
+                chrLen = utf8_Utf8ToW32(this->pStrA + this->offset, &chr);
+                this->offset += chrLen;
+                if ((chr == ASCII_CPM_EOF) || (chr == '\0')){
                     chr = EOF;
                 }
                 break;
@@ -217,6 +227,26 @@ extern "C" {
         this = TextIn_New( );
         if (this) {
             eRc = TextIn_SetupPath(this, pFilePath, fileIndex, tabSize);
+        }
+
+        return this;
+    }
+
+
+    TEXTIN_DATA *   TextIn_NewFromStrA (
+        PATH_DATA       *pFilePath,
+        const
+        char            *pStrA,         // Buffer of file data
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        TEXTIN_DATA     *this = OBJ_NIL;
+        ERESULT         eRc;
+
+        this = TextIn_New( );
+        if (this) {
+            eRc = TextIn_SetupStrA(this, pFilePath, pStrA, fileIndex, tabSize);
         }
 
         return this;
@@ -792,6 +822,13 @@ extern "C" {
                         fclose(this->pFile);
                     }
                     this->pFile = NULL;
+                }
+                break;
+
+            case TEXTIN_TYPE_STRA:
+                if (this->pStrA) {
+                    mem_Free(this->pStrA);
+                    this->pStrA = NULL;
                 }
                 break;
 
@@ -2047,6 +2084,47 @@ extern "C" {
         }
 
         return eRc;
+    }
+
+
+    ERESULT         TextIn_SetupStrA(
+        TEXTIN_DATA     *this,
+        PATH_DATA       *pFilePath,
+        const
+        char            *pStrA,       // Buffer of file data
+        uint16_t        fileIndex,    // File Path Index for a separate path table
+        uint16_t        tabSize       // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !TextIn_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        this->pStrA = mem_StrDup(pStrA);
+        if (NULL == this->pStrA) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        eRc = TextIn_SetupBase(this, pFilePath, fileIndex, tabSize);
+        if (ERESULT_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eRc;
+        }
+
+        // Open the file.
+        this->type = TEXTIN_TYPE_STRA;
+        this->fAtEOF = 0;
+        this->fOpen = 1;
+        this->curTok.src.fileIndex = fileIndex;
+        this->curTok.src.offset = 1;    // AStr is relative to 1.
+
+        return ERESULT_SUCCESS;
     }
 
 
