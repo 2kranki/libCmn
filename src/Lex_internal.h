@@ -248,6 +248,65 @@ struct Lex_data_s  {
     );
 
 
+    /*!
+     Check for a match with the given character.
+     @return    If successful, true; otherwise, false.
+     */
+    bool            Lex_CheckInputChr(
+        LEX_DATA        *this,
+        W32CHR_T        chr
+    );
+
+
+    /*!
+     Check for a match with the given token class.
+     @return    If successful, true; otherwise, false.
+    */
+    bool            Lex_CheckInputCls (
+       LEX_DATA        *this,
+       int32_t         cls
+    );
+
+
+    /*!
+    Check for a match with the character classes (ie nul-terminated list
+    of character classes).
+     @return    If successful, true; otherwise, false.
+    */
+    bool            Lex_CheckInputClasses(
+       LEX_DATA        *this,
+       int32_t         *pClasses
+    );
+
+
+    /*** @protected
+    ***/
+    /*!
+    Check for a match with the character range (ie [chrBeg..chrEnd]
+    and if it does advance the input tokens before returning.
+    chrBeg must be <= chrEnd.
+     @return    If successful, true; otherwise, false.
+    */
+    bool            Lex_CheckInputRange (
+       LEX_DATA        *this,
+       W32CHR_T        chrBeg,
+       W32CHR_T        chrEnd
+    );
+
+
+    /*** @protected ***/
+    /*!
+    Check for a match with the character set (ie nul-terminated list
+    of characters) and if it does advance the input tokens before
+    returning.
+     @return    If successful, true; otherwise, false.
+    */
+    bool            Lex_CheckInputSet (
+       LEX_DATA        *this,
+       W32CHR_T        *pSet
+    );
+
+
     /*** @protected
      ***/
     /*!
@@ -273,6 +332,19 @@ struct Lex_data_s  {
     TOKEN_DATA *    Lex_MatchInputCls (
         LEX_DATA        *this,
         int32_t         cls
+    );
+
+
+    /*!
+    Check for a match with the character classes (ie nul-terminated list
+    of character classes) and if it does advance the input tokens before
+    returning.
+    @return    If successful, a token which must be released
+               with obj_Release(), otherwise OBJ_NIL.
+    */
+    TOKEN_DATA *    Lex_MatchInputClasses(
+        LEX_DATA        *this,
+        int32_t         *pClasses
     );
 
 
@@ -341,11 +413,6 @@ struct Lex_data_s  {
 
     bool            Lex_ParseDigitsOct (
         LEX_DATA        *this
-    );
-
-
-    TOKEN_DATA *    Lex_ParseEOF (
-        LEX_DATA        *cbp
     );
 
 
@@ -430,6 +497,17 @@ struct Lex_data_s  {
      @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
      */
     ERESULT         Lex_ParseTokenTruncate (
+        LEX_DATA        *this
+    );
+
+
+    /*** @protected ***/
+    /*!
+     Set up the internal token to represent EOF.
+     @param     this    LEX object pointer
+     @return    If successful, internal token pointer; otherwise, OBJ_NIL.
+     */
+    TOKEN_DATA *    Lex_SetupTokenEOF (
         LEX_DATA        *this
     );
 

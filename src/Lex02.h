@@ -215,6 +215,18 @@ extern "C" {
 #endif
 
 
+    TOKEN_DATA *    Lex02_TokenAdvance(
+        LEX02_DATA      *this,
+        uint16_t        numTokens
+    );
+
+
+    TOKEN_DATA *    Lex02_TokenLookAhead(
+        LEX02_DATA      *this,
+        uint16_t        numTokens
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

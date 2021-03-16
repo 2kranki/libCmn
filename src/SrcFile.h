@@ -202,16 +202,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            SrcFile_getExpandTabs (
-        SRCFILE_DATA    *this
-    );
-
-    bool            SrcFile_setExpandTabs (
-        SRCFILE_DATA    *this,
-        bool            fValue
-    );
-
-
     /*!
      The file index property is meant to index some table for the
      file path information.

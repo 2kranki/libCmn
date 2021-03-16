@@ -935,7 +935,7 @@ extern "C" {
 
         pToken = Lex_InputLookAhead((LEX_DATA *)this, 1);
         if (OBJ_NIL == pToken) {
-            pToken = Lex_ParseEOF((LEX_DATA *)this);
+            pToken = Lex_SetupTokenEOF((LEX_DATA *)this);
             DEBUG_BREAK();
         }
         cls = Token_getClass(pToken);

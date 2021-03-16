@@ -271,7 +271,7 @@ extern "C" {
         if (len) {
             AStr_AppendA(pStr, ", \"data\":\"");
             pChr = pData;
-            for (i=0; i<(len-1); ++i) {
+            for (i=0; i<len; ++i) {
                 pChrW = array_Ptr((ARRAY_DATA *)this, i+1);
                 chrW = *pChrW;
                 utf8_W32ToChrCon(*pChrW, str);

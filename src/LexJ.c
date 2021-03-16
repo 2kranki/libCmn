@@ -1069,7 +1069,7 @@ extern "C" {
                 cls = Token_getClass(pInput);
             }
             else {
-                pInput = Lex_ParseEOF(((LEX_DATA *)this));
+                pInput = Lex_SetupTokenEOF(((LEX_DATA *)this));
                 cls = Token_getClass(pInput);
                 DEBUG_BREAK();
             }

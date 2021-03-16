@@ -228,7 +228,7 @@ extern "C" {
         ASCII_LEXICAL_WHITESPACE,           // 08 - BS (backspace)
         ASCII_LEXICAL_WHITESPACE,           // 09 - HT (horizontal tab)
         ASCII_LEXICAL_EOL,                  // 0A - LF/NL (line feed | new line)
-        ASCII_LEXICAL_UNKNOWN,              // 0B - VT (vertical tab)
+        ASCII_LEXICAL_WHITESPACE,           // 0B - VT (vertical tab)
         ASCII_LEXICAL_WHITESPACE,           // 0C - FF (form feed)
         ASCII_LEXICAL_WHITESPACE,           // 0D - CR (carriage return)
         ASCII_LEXICAL_UNKNOWN,              // 0E - SO

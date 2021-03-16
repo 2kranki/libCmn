@@ -88,7 +88,7 @@ int             test_Lex02_OpenClose (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    LEX02_DATA       *pObj = OBJ_NIL;
+    LEX02_DATA      *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -122,8 +122,8 @@ int             test_Lex02_Copy01 (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    LEX02_DATA       *pObj1 = OBJ_NIL;
-    LEX02_DATA       *pObj2 = OBJ_NIL;
+    LEX02_DATA      *pObj1 = OBJ_NIL;
+    LEX02_DATA      *pObj2 = OBJ_NIL;
     bool            fRc;
 #if defined(LEX02_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
@@ -204,25 +204,22 @@ int             test_Lex02_Test01 (
     bool            fRc;
     LEX02_DATA      *pObj = OBJ_NIL;
     const
-    char            *pInputA = "unsigned int\t\ta;\n";
-    ASTR_DATA       *pInput = OBJ_NIL;
+    char            *pInputA = "unsigned int  a;";
     SRCFILE_DATA    *pSrc = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
+    TOKEN_DATA      *pToken;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "\tTokenizing: \"%s\"\n", pInputA);
 
-    pPath = Path_NewA("abc");
-    XCTAssertFalse( (OBJ_NIL == pPath) );
-    pInput = AStr_NewA(pInputA);
-    XCTAssertFalse( (OBJ_NIL == pInput) );
-    pSrc = SrcFile_NewFromAStr(pPath, pInput, 1, 4);
+    pSrc = SrcFile_NewFromStrA(pPath, pInputA, 1, 4);
     XCTAssertFalse( (OBJ_NIL == pSrc) );
 
     pObj = Lex02_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);       
+        //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_LEX02);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
@@ -235,14 +232,85 @@ int             test_Lex02_Test01 (
                 );
         XCTAssertTrue( (fRc) );
 
+        pToken = Lex_TokenAdvance(Lex02_getLex(pObj), 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
         {
-            ASTR_DATA       *pStr = Lex02_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
             if (pStr) {
-                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                fprintf(stderr, "Token 1 (unsigned): %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
         }
+        XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
+        {
+            char            *pStrA = Token_getTextA(pToken);
+            XCTAssertTrue( (0 == strcmp(pStrA, "unsigned")) );
+            mem_Free(pStrA);
+        }
+
+        pToken = Lex_TokenAdvance(Lex02_getLex(pObj), 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        {
+            ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
+            if (pStr) {
+                fprintf(stderr, "Token 2 (int): %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        XCTAssertFalse( (LEX_IDENTIFIER == Token_getClass(pToken)) );
+        {
+            char            *pStrA = Token_getTextA(pToken);
+            XCTAssertTrue( (0 == strcmp(pStrA, "int")) );
+            mem_Free(pStrA);
+        }
+
+        pToken = Lex_TokenAdvance(Lex02_getLex(pObj), 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        {
+            ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
+            if (pStr) {
+                fprintf(stderr, "Token 3 (a): %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        XCTAssertFalse( (LEX_IDENTIFIER == Token_getClass(pToken)) );
+        {
+            char            *pStrA = Token_getTextA(pToken);
+            XCTAssertTrue( (0 == strcmp(pStrA, "a")) );
+            mem_Free(pStrA);
+        }
+
+        pToken = Lex_TokenAdvance(Lex02_getLex(pObj), 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        {
+            ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
+            if (pStr) {
+                fprintf(stderr, "Token 4 (;): %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        XCTAssertFalse( (LEX_IDENTIFIER == Token_getClass(pToken)) );
+        {
+            char            *pStrA = Token_getTextA(pToken);
+            XCTAssertTrue( (0 == strcmp(pStrA, ";")) );
+            mem_Free(pStrA);
+        }
+
+        pToken = Lex_TokenAdvance(Lex02_getLex(pObj), 1);
+        XCTAssertFalse( (OBJ_NIL == pToken) );
+        {
+            ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
+            if (pStr) {
+                fprintf(stderr, "Token 4 (EOF): %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        XCTAssertFalse( (LEX_CLASS_EOF == Token_getClass(pToken)) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -250,10 +318,6 @@ int             test_Lex02_Test01 (
 
     obj_Release(pSrc);
     pSrc = OBJ_NIL;
-    obj_Release(pInput);
-    pInput = OBJ_NIL;
-    obj_Release(pPath);
-    pPath = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;

@@ -1721,6 +1721,7 @@ extern "C" {
     ERESULT         Parser_SetupLexFromStrA (
         PARSER_DATA     *this,
         PATH_DATA       *pPath,
+        const
         char            *pStrA,
         bool            fLex1,
         bool            fLex3,

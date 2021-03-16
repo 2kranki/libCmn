@@ -1221,6 +1221,7 @@ int         test_w32str_JSON01(
         fprintf(stderr, "\tJSON(\"abc\") = %s\n", AStr_getData(pJson));
         pJsonOut = W32Str_NewFromJSONString(pJson);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        XCTAssertFalse( (OBJ_NIL == pJsonOut) );
         if (pJsonOut) {
             XCTAssertFalse( (OBJ_NIL == pJsonOut) );
             XCTAssertTrue( (3 == W32Str_getLength(pJsonOut)) );

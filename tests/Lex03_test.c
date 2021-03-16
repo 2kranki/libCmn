@@ -27,10 +27,9 @@
 #include    <JsonIn.h>
 #include    <trace.h>
 #include    <Lex03_internal.h>
-#ifdef  LEX03_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
+#include    <SrcErrors.h>
+#include    <szTbl.h>
+#include    <SrcFile.h>
 
 
 
@@ -56,10 +55,8 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  LEX03_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
-#endif
     JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
@@ -203,16 +200,32 @@ int             test_Lex03_Test01 (
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    LEX03_DATA       *pObj = OBJ_NIL;
+    LEX03_DATA      *pObj = OBJ_NIL;
     bool            fRc;
-   
+    PATH_DATA       *pPath = OBJ_NIL;
+    SRCFILE_DATA    *pSrc = OBJ_NIL;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = Path_NewA("abc");
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    pSrc = SrcFile_NewFromStrA(pPath, "{oNe: +123}\n", 1, 4);
+    XCTAssertFalse( (OBJ_NIL == pSrc) );
+    fprintf( stderr, "\tpSrc = %p\n", pSrc );
 
     pObj = Lex03_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);       
+        fRc =   Lex_setSourceInput(
+                        Lex03_getLex(pObj),
+                        (void *)SrcFile_InputAdvance,
+                        (void *)SrcFile_InputLookAhead,
+                        pSrc
+                );
+        XCTAssertTrue( (fRc) );
+
+        //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_LEX03);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
@@ -229,6 +242,11 @@ int             test_Lex03_Test01 (
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+
+    obj_Release(pSrc);
+    pSrc = OBJ_NIL;
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;

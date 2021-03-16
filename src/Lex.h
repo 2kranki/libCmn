@@ -192,7 +192,7 @@ extern "C" {
         LEX_CLASS_DELETE,                   // ascii 127
         LEX_CLASS_NUMBER,                   // 0-9
         LEX_CLASS_EOL,                      // '\n'
-        LEX_CLASS_WHITESPACE,               // ' ', '\t', '\n', '\r', '\f'
+        LEX_CLASS_WHITESPACE,               // ' ', '\t', '\n', '\r', '\f', '\v'
         LEX_CLASS_UNICODE,                  //  Class for characters not in the
         //                                  //  range 1..255
 
@@ -458,7 +458,10 @@ extern "C" {
     // These flags are used with the Flags property:
     typedef enum Lex_Flags_e {
         LEX_FLAG_UNKNOWN=0,
-        LEX_FLAG_MULTICHRCON=0x80000000,            /* ??? */
+        LEX_FLAG_MULTICHRCON=0x80000000,            // Allow constants surrounded by
+        //                                          // single apostrophies to be
+        //                                          // multi-character same as those
+        //                                          // surrounded by double apostrophies
         LEX_FLAG_WS=0x40000000,                     /* Return Whitespace */
         LEX_FLAG_NL=0x20000000,                     /* Return NLs */
         LEX_FLAG_CMT=0x20000000,                    /* Return comments */
@@ -561,6 +564,11 @@ extern "C" {
     );
 
 
+    /*
+     If true, allow constants surrounded by single apostrophies to be
+     multi-character same as those surrounded by double apostrophies.
+     Default is false.
+     */
     bool            Lex_getMultiCharConstant (
         LEX_DATA        *this
     );
@@ -701,6 +709,18 @@ extern "C" {
         LEX_DATA        *this
     );
 #endif
+
+
+    TOKEN_DATA *    Lex_TokenAdvance(
+        LEX_DATA        *this,
+        uint16_t        numTokens
+    );
+
+
+    TOKEN_DATA *    Lex_TokenLookAhead(
+        LEX_DATA        *this,
+        uint16_t        numTokens
+    );
 
 
     /*!

@@ -916,7 +916,7 @@ extern "C" {
         if (pToken)
             ;
         else {
-            pToken = Lex_ParseEOF(Lex00_getLex(this));
+            pToken = Lex_SetupTokenEOF(Lex00_getLex(this));
             DEBUG_BREAK();          // This should never happen!
         }
         cls = Token_getClass(pToken);
@@ -949,7 +949,7 @@ extern "C" {
                         if (pToken)
                             ;
                         else {
-                            pToken = Lex_ParseEOF(Lex00_getLex(this));
+                            pToken = Lex_SetupTokenEOF(Lex00_getLex(this));
                             DEBUG_BREAK();          // This should never happen!
                         }
                         cls = Token_getClass(pToken);

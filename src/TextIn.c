@@ -110,6 +110,7 @@ extern "C" {
 
             case TEXTIN_TYPE_STRA:
                 this->curTok.src.offset = this->offset;
+                // Utf8ToW32() will return 0 len and 0 chr if input is '\0'.
                 chrLen = utf8_Utf8ToW32(this->pStrA + this->offset, &chr);
                 this->offset += chrLen;
                 if ((chr == ASCII_CPM_EOF) || (chr == '\0')){

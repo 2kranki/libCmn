@@ -719,7 +719,6 @@ extern "C" {
             for (i=0; i<len; ++i) {
                 *pData++ = chr;
             };
-            //*pData = '\0';
         }
         
         // Return to caller.
