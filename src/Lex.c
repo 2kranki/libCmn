@@ -3667,7 +3667,13 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+        if ((numTokens - 1) < this->sizeOutputs)
+            ;
+        else {
             DEBUG_BREAK();
             return NULL;
         }
@@ -3789,7 +3795,7 @@ extern "C" {
 #else
         if (obj_Trace(this)) {
             ASTR_DATA           *pStr = Token_ToString(pToken);
-            TRC_OBJ(this, "...Lex_InputLookAhead:  %s \n", AStr_getData(pStr));
+            TRC_OBJ(this, "...Lex_TokenLookAhead:  %s \n", AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -3833,7 +3839,7 @@ extern "C" {
         // methods to build the token and it should now reside
         // in this->token.
 
-        // Add the next char to the queue.
+        // Add the next token to the queue.
         pToken = &this->pOutputs[this->curOutputs];
         Token_Assign(&this->token, pToken);
 

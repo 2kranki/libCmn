@@ -219,7 +219,7 @@ int             test_Lex02_Test01 (
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);
+        obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_LEX02);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
@@ -232,7 +232,7 @@ int             test_Lex02_Test01 (
                 );
         XCTAssertTrue( (fRc) );
 
-        pToken = Lex_TokenAdvance(Lex02_getLex(pObj), 1);
+        pToken = Lex_TokenLookAhead(Lex02_getLex(pObj), 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
         {
             ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
@@ -248,8 +248,9 @@ int             test_Lex02_Test01 (
             XCTAssertTrue( (0 == strcmp(pStrA, "unsigned")) );
             mem_Free(pStrA);
         }
+        Lex_TokenAdvance(Lex02_getLex(pObj), 1);
 
-        pToken = Lex_TokenAdvance(Lex02_getLex(pObj), 1);
+        pToken = Lex_TokenLookAhead(Lex02_getLex(pObj), 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
         {
             ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
@@ -259,14 +260,15 @@ int             test_Lex02_Test01 (
                 pStr = OBJ_NIL;
             }
         }
-        XCTAssertFalse( (LEX_IDENTIFIER == Token_getClass(pToken)) );
+        XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
         {
             char            *pStrA = Token_getTextA(pToken);
             XCTAssertTrue( (0 == strcmp(pStrA, "int")) );
             mem_Free(pStrA);
         }
+        Lex_TokenAdvance(Lex02_getLex(pObj), 1);
 
-        pToken = Lex_TokenAdvance(Lex02_getLex(pObj), 1);
+        pToken = Lex_TokenLookAhead(Lex02_getLex(pObj), 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
         {
             ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
@@ -276,14 +278,15 @@ int             test_Lex02_Test01 (
                 pStr = OBJ_NIL;
             }
         }
-        XCTAssertFalse( (LEX_IDENTIFIER == Token_getClass(pToken)) );
+        XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
         {
             char            *pStrA = Token_getTextA(pToken);
             XCTAssertTrue( (0 == strcmp(pStrA, "a")) );
             mem_Free(pStrA);
         }
+        Lex_TokenAdvance(Lex02_getLex(pObj), 1);
 
-        pToken = Lex_TokenAdvance(Lex02_getLex(pObj), 1);
+        pToken = Lex_TokenLookAhead(Lex02_getLex(pObj), 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
         {
             ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
@@ -293,14 +296,15 @@ int             test_Lex02_Test01 (
                 pStr = OBJ_NIL;
             }
         }
-        XCTAssertFalse( (LEX_IDENTIFIER == Token_getClass(pToken)) );
+        XCTAssertTrue( (LEX_SEP_SEMICOLON == Token_getClass(pToken)) );
         {
             char            *pStrA = Token_getTextA(pToken);
             XCTAssertTrue( (0 == strcmp(pStrA, ";")) );
             mem_Free(pStrA);
         }
+        Lex_TokenAdvance(Lex02_getLex(pObj), 1);
 
-        pToken = Lex_TokenAdvance(Lex02_getLex(pObj), 1);
+        pToken = Lex_TokenLookAhead(Lex02_getLex(pObj), 1);
         XCTAssertFalse( (OBJ_NIL == pToken) );
         {
             ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
@@ -310,7 +314,8 @@ int             test_Lex02_Test01 (
                 pStr = OBJ_NIL;
             }
         }
-        XCTAssertFalse( (LEX_CLASS_EOF == Token_getClass(pToken)) );
+        XCTAssertTrue( (LEX_CLASS_EOF == Token_getClass(pToken)) );
+        Lex_TokenAdvance(Lex02_getLex(pObj), 1);
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

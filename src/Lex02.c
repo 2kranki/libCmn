@@ -1226,6 +1226,10 @@ extern "C" {
                 clsNew = LEX_SEP_COMMA;
                 break;
 
+            case ';':           /*** ';' ***/
+                clsNew = LEX_SEP_SEMICOLON;
+                break;
+
             default:
                 break;
         }

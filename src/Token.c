@@ -871,12 +871,12 @@ extern "C" {
         switch (this->data.type) {
 
             case TOKEN_TYPE_CHAR:
-                pStrA = strdup(this->data.chr);
+                pStrA = mem_StrDup(this->data.chr);
                 break;
 
             case TOKEN_TYPE_STRTOKEN:
                 pStrA2 = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
-                pStrA = strdup(pStrA2);
+                pStrA = mem_StrDup(pStrA2);
                 break;
 
             default:
