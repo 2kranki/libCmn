@@ -223,7 +223,7 @@ extern "C" {
         LEX_SEP_COMMA,                      // ,
         LEX_SEP_DOT,                        // .
         LEX_SEP_DOT_GT,                     // .>
-        LEX_SEP_LBRACKET,                   // [
+        LEX_SEP_LBRACK,                     // [
         LEX_SEP_LBRACE,                     // {
         LEX_SEP_LT_DOT,                     // <.
         LEX_SEP_LPAREN,                     // (
@@ -231,7 +231,7 @@ extern "C" {
         LEX_SEP_WS,                         // ' ' , '\n', '\r', '\t'
         LEX_SEP_LARROW,                     // <-
         LEX_SEP_RARROW,                     // ->
-        LEX_SEP_RBRACKET,                   // ]
+        LEX_SEP_RBRACK,                     // ]
         LEX_SEP_RBRACE,                     // }
         LEX_SEP_RPAREN,                     // )
         LEX_SEP_SEMICOLON,                  // ;
@@ -419,28 +419,28 @@ extern "C" {
         LEX_KWD_WXTRN,
 
         LEX_CLASS_SPCL_GROUP=1000,
-        LEX_SPCL_BRACK_COLON,               // [:
-        LEX_SPCL_CURL_COLON,                // {:
+        LEX_SPCL_LBRACK_COLON,              // [:
+        LEX_SPCL_LBRACE_COLON,              // {:
         LEX_SPCL_AT_LBRACK,                 // @[
-        LEX_SPCL_AT_LCURL,                  // @{
+        LEX_SPCL_AT_LBRACE,                 // @{
         LEX_SPCL_AT_LPAREN,                 // @(
         LEX_SPCL_PAREN_LEFT,                // (:
         LEX_SPCL_PAREN_RIGHT,               // :)
         LEX_SPCL_COLON,                     // :
-        LEX_SPCL_COLON_BRACK,               // :]
-        LEX_SPCL_COLON_CURL,                // :}
+        LEX_SPCL_COLON_RBRACK,              // :]
+        LEX_SPCL_COLON_RBRACE,              // :}
         LEX_SPCL_DBLCOLON,                  // ::
         LEX_SPCL_COLON_LEFT,                // <:
         LEX_SPCL_COLON_RIGHT,               // :>
-        LEX_SPCL_LBRACK,                    // %[
-        LEX_SPCL_LCURL,                     // %{
-        LEX_SPCL_LPAREN,                    // %(
+        LEX_SPCL_LBRACK,                    // [%
+        LEX_SPCL_LBRACE,                    // {%
+        LEX_SPCL_LPAREN,                    // (%
         LEX_SPCL_POUND,                     // #
         LEX_SPCL_2POUNDS,                   // ##
         LEX_SPCL_QUESTION,                  // ? (???)
         LEX_SPCL_RARROW,                    // =>
         LEX_SPCL_RBRACK,                    // %]
-        LEX_SPCL_RCURL,                     // %}
+        LEX_SPCL_RBRACE,                    // %}
         LEX_SPCL_RPAREN,                    // %)
         LEX_SPCL_SEPARATOR,                 // %%
 

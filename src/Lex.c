@@ -230,28 +230,28 @@ extern "C" {
         { LEX_SEP_AT,    "LEX_SEP_AT=700" },
         { LEX_SEP_COMMA,    "LEX_SEP_COMMA" },
         { LEX_SEP_DOT,    "LEX_SEP_DOT" },
-        { LEX_SEP_LBRACKET,    "LEX_SEP_LBRACKET" },
+        { LEX_SEP_LBRACK,    "LEX_SEP_LBRACK" },
         { LEX_SEP_LBRACE,    "LEX_SEP_LBRACE" },
         { LEX_SEP_LPAREN,    "LEX_SEP_LPAREN" },
         { LEX_SEP_NL,    "LEX_SEP_NL" },
         { LEX_SEP_RARROW,    "LEX_SEP_RARROW" },
-        { LEX_SEP_RBRACKET,    "LEX_SEP_RBRACKET" },
+        { LEX_SEP_RBRACK,    "LEX_SEP_RBRACK" },
         { LEX_SEP_RBRACE,    "LEX_SEP_RBRACE" },
         { LEX_SEP_RPAREN,    "LEX_SEP_RPAREN" },
         { LEX_SEP_SEMICOLON,    "LEX_SEP_SEMICOLON" },
         { LEX_SPCL_AT_LBRACK,    "LEX_SPCL_AT_LBRACK" },
-        { LEX_SPCL_AT_LCURL,    "LEX_SPCL_AT_LCURL" },
+        { LEX_SPCL_AT_LBRACE,    "LEX_SPCL_AT_LBRACE" },
         { LEX_SPCL_AT_LPAREN,    "LEX_SPCL_AT_LPAREN" },
         { LEX_SPCL_COLON,    "LEX_SPCL_COLON" },
         { LEX_SPCL_DBLCOLON,    "LEX_SPCL_DBLCOLON" },
         { LEX_SPCL_LBRACK,    "LEX_SPCL_LBRACK" },
-        { LEX_SPCL_LCURL,    "LEX_SPCL_LCURL" },
+        { LEX_SPCL_LBRACE,    "LEX_SPCL_LBRACE" },
         { LEX_SPCL_POUND,    "LEX_SPCL_POUND" },
         { LEX_SPCL_2POUNDS,    "LEX_SPCL_2POUNDS" },
         { LEX_SPCL_QUESTION,    "LEX_SPCL_QUESTION" },
         { LEX_SPCL_RARROW,    "LEX_SPCL_RARROW" },
         { LEX_SPCL_RBRACK,    "LEX_SPCL_RBRACK" },
-        { LEX_SPCL_RCURL,    "LEX_SPCL_RCURL" },
+        { LEX_SPCL_RBRACE,    "LEX_SPCL_RBRACE" },
         { LEX_SPCL_SEPARATOR,    "LEX_SPCL_SEPARATOR" },
         { LEX_TYPE_METHOD,    "LEX_TYPE_METHOD" },
         { LEX_TYPE_NAME,    "LEX_TYPE_NAME" },
@@ -832,7 +832,7 @@ extern "C" {
                 break;
 
             case '[':           /*** '[' ***/
-                clsNew = LEX_SEP_LBRACKET;
+                clsNew = LEX_SEP_LBRACK;
                 Lex_InputAdvance(this, 1);
                 fMore = false;
                 break;
@@ -842,7 +842,7 @@ extern "C" {
                  */
 
             case ']':           /*** ']' ***/
-                clsNew = LEX_SEP_RBRACKET;
+                clsNew = LEX_SEP_RBRACK;
                 Lex_InputAdvance(this, 1);
                 fMore = false;
                 break;

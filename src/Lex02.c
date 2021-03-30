@@ -46,6 +46,10 @@
 
 
 
+#define LEX_LANG_C      0x8000
+#define LEX_LANG_CPP    0x8000
+#define LEX_LANG_MSC    0x8000
+#define LEX_LANG_OBJC   0x8000
 
 
 
@@ -54,7 +58,110 @@ extern "C" {
 #endif
     
 
-    
+    // A binary search is performed on this table. So, it must
+    // be kept sorted by key word.
+    static
+    LEX_KWDTBL_ENTRY   kwdTbl[] = {
+        // Upper case keywords would go here!
+        {"%goal",               LEX_KWD_GOAL,               LEX_LANG_LL1},
+        {"%term",               LEX_KWD_TERM,               LEX_LANG_LL1},
+        {"@autoreleasepool",    LEX_KWD_AT_AUTO,            LEX_LANG_OBJC},
+        {"@catch",              LEX_KWD_AT_CATCH,           LEX_LANG_OBJC},
+        {"@class",              LEX_KWD_AT_CLASS,           LEX_LANG_OBJC},
+        {"@dynamic",            LEX_KWD_AT_DYNAMIC,         LEX_LANG_OBJC},
+        {"@encode",             LEX_KWD_AT_ENCODE,          LEX_LANG_OBJC},
+        {"@end",                LEX_KWD_AT_END,             LEX_LANG_OBJC},
+        {"@finally",            LEX_KWD_AT_FINALLY,         LEX_LANG_OBJC},
+        {"@implementation",     LEX_KWD_AT_IMPLEMENTATION,  LEX_LANG_OBJC},
+        {"@interface",          LEX_KWD_AT_INTERFACE,       LEX_LANG_OBJC},
+        {"@optional",           LEX_KWD_AT_OPTIONAL,        LEX_LANG_OBJC},
+        {"@package",            LEX_KWD_AT_PKG,             LEX_LANG_OBJC},
+        {"@private",            LEX_KWD_AT_PRIVATE,         LEX_LANG_OBJC},
+        {"@property",           LEX_KWD_AT_PROPERTY,        LEX_LANG_OBJC},
+        {"@protected",          LEX_KWD_AT_PROTECTED,       LEX_LANG_OBJC},
+        {"@protocol",           LEX_KWD_AT_PROTOCOL,        LEX_LANG_OBJC},
+        {"@public",             LEX_KWD_AT_PUBLIC,          LEX_LANG_OBJC},
+        {"@selector",           LEX_KWD_AT_SEL,             LEX_LANG_OBJC},
+        {"@synchronized",       LEX_KWD_AT_SYNC,            LEX_LANG_OBJC},
+        {"@synthesize",         LEX_KWD_AT_SYNTH,           LEX_LANG_OBJC},
+        {"@throw",              LEX_KWD_AT_THROW,           LEX_LANG_OBJC},
+        {"@try",                LEX_KWD_AT_TRY,             LEX_LANG_OBJC},
+        {"NS_ENUM",             LEX_KWD_NSENUM,             LEX_LANG_OBJC},
+        {"NS_OPTIONS",          LEX_KWD_NSOPTIONS,          LEX_LANG_OBJC},
+        {"_asm",                LEX_KWD_ASM,                LEX_LANG_MSC},
+        {"_cdecl",              LEX_KWD_CDECL,              LEX_LANG_MSC},
+        {"_emit",               LEX_KWD_EMIT,               LEX_LANG_MSC},
+        {"_entry",              LEX_KWD_ENTRY,              LEX_LANG_MSC},
+        {"_far",                LEX_KWD_FAR,                LEX_LANG_MSC},
+        {"_fortran",            LEX_KWD_FORTRAN,            LEX_LANG_MSC},
+        {"_near",               LEX_KWD_NEAR,               LEX_LANG_MSC},
+        {"_pascal",             LEX_KWD_PASCAL,             LEX_LANG_MSC},
+        {"auto",                LEX_KWD_AUTO,               LEX_LANG_C},
+        {"bool",                LEX_KWD_BOOL,               LEX_LANG_C},
+        {"break",               LEX_KWD_BREAK,              LEX_LANG_C},
+        {"case",                LEX_KWD_CASE,               LEX_LANG_C},
+        {"char",                LEX_KWD_CHAR,               LEX_LANG_C},
+        {"class",               LEX_KWD_CLASS,              LEX_LANG_CPP},
+        {"const",               LEX_KWD_CONST,              LEX_LANG_C},
+        {"continue",            LEX_KWD_CONTINUE,           LEX_LANG_C},
+        {"default",             LEX_KWD_DEFAULT,            LEX_LANG_C},
+        {"delete",              LEX_KWD_DELETE,             LEX_LANG_CPP},
+        {"do",                  LEX_KWD_DO,                 LEX_LANG_C},
+        {"double",              LEX_KWD_DOUBLE,             LEX_LANG_C},
+        {"else",                LEX_KWD_ELSE,               LEX_LANG_C},
+        {"end",                 LEX_KWD_END,                LEX_LANG_C},
+        {"enum",                LEX_KWD_ENUM,               LEX_LANG_C},
+        {"extern",              LEX_KWD_EXTERN,             LEX_LANG_C},
+        {"float",               LEX_KWD_FLOAT,              LEX_LANG_C},
+        {"for",                 LEX_KWD_FOR,                LEX_LANG_C},
+        {"friend",              LEX_KWD_FRIEND,             LEX_LANG_CPP},
+        {"goto",                LEX_KWD_GOTO,               LEX_LANG_C},
+        {"id",                  LEX_KWD_ID,                 LEX_LANG_OBJC},
+        {"if",                  LEX_KWD_IF,                 LEX_LANG_C},
+        {"inline",              LEX_KWD_INLINE,             LEX_LANG_C},
+        {"int",                 LEX_KWD_INT,                LEX_LANG_C},
+        {"int128_t",            LEX_KWD_INT128,             LEX_LANG_C},
+        {"int16_t",             LEX_KWD_INT16,              LEX_LANG_C},
+        {"int256_t",            LEX_KWD_INT256,             LEX_LANG_C},
+        {"int32_t",             LEX_KWD_INT32,              LEX_LANG_C},
+        {"int64_t",             LEX_KWD_INT64,              LEX_LANG_C},
+        {"int8_t",              LEX_KWD_INT8,               LEX_LANG_C},
+        {"long",                LEX_KWD_LONG,               LEX_LANG_C},
+        {"new",                 LEX_KWD_NEW,                LEX_LANG_CPP},
+        {"operator",            LEX_KWD_OPERATOR,           LEX_LANG_CPP},
+        {"overload",            LEX_KWD_OVERLOAD,           LEX_LANG_CPP},
+        {"public",              LEX_KWD_PUBLIC,             LEX_LANG_CPP},
+        {"register",            LEX_KWD_REGISTER,           LEX_LANG_C},
+        {"return",              LEX_KWD_RETURN,             LEX_LANG_C},
+        {"select",              LEX_KWD_SELECT,             LEX_LANG_C},
+        {"short",               LEX_KWD_SHORT,              LEX_LANG_C},
+        {"signed",              LEX_KWD_SIGNED,             LEX_LANG_C},
+        {"sizeof",              LEX_KWD_SIZEOF,             LEX_LANG_C},
+        {"static",              LEX_KWD_STATIC,             LEX_LANG_C},
+        {"struct",              LEX_KWD_STRUCT,             LEX_LANG_C},
+        {"switch",              LEX_KWD_SWITCH,             LEX_LANG_C},
+        {"this",                LEX_KWD_THIS,               LEX_LANG_CPP},
+        {"typedef",             LEX_KWD_TYPEDEF,            LEX_LANG_C},
+        {"uint128_t",           LEX_KWD_UINT128,            LEX_LANG_C},
+        {"uint16_t",            LEX_KWD_UINT16,             LEX_LANG_C},
+        {"uint256_t",           LEX_KWD_UINT256,            LEX_LANG_C},
+        {"uint32_t",            LEX_KWD_UINT32,             LEX_LANG_C},
+        {"uint64_t",            LEX_KWD_UINT64,             LEX_LANG_C},
+        {"uint8_t",             LEX_KWD_UINT8,              LEX_LANG_C},
+        {"union",               LEX_KWD_UNION,              LEX_LANG_C},
+        {"unsigned",            LEX_KWD_UNSIGNED,           LEX_LANG_C},
+        {"virtual",             LEX_KWD_VIRTUAL,            LEX_LANG_CPP},
+        {"void",                LEX_KWD_VOID,               LEX_LANG_C},
+        {"volatile",            LEX_KWD_VOLATILE,           LEX_LANG_C},
+        {"while",               LEX_KWD_WHILE,              LEX_LANG_C},
+    };
+
+    static
+    int         cKwdTbl = sizeof(kwdTbl)/sizeof(LEX_KWDTBL_ENTRY);
+
+
+
+
 
 
  
@@ -62,16 +169,46 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
+    // Perform a binary search on the keyword table. (Keyword table
+    // must be kept sorted!)
     static
-    void            Lex02_task_body (
-        void            *pData
+    LEX_KWDTBL_ENTRY * kwSearch(
+        const
+        char            *pName
     )
     {
-        //LEX02_DATA  *this = pData;
-        
+        LEX_KWDTBL_ENTRY
+                        *pEntry;
+        int             iRc;
+        uint32_t        high = cKwdTbl - 1;
+        uint32_t        low = 0;
+        uint32_t        mid;
+
+        while( low < high ) {
+            mid = (high + low) / 2;
+            pEntry = &kwdTbl[mid];
+            iRc = strcmp(pEntry->pKwd, pName);
+            if( iRc < 0 ) {
+                low = mid + 1;
+            }
+            else if( iRc == 0 ) {
+                return pEntry;
+            }
+            else {
+                high = mid;
+            }
+        }
+        if( high == low ) {
+            pEntry = &kwdTbl[low];
+            iRc = strcmp(pEntry->pKwd, pName);
+            if(iRc == 0) {
+                return pEntry;
+            }
+        }
+
+        return NULL;
     }
-#endif
+
 
 
 
@@ -105,7 +242,7 @@ extern "C" {
         void
     )
     {
-        LEX02_DATA       *this;
+        LEX02_DATA      *this;
         
         this = Lex02_Alloc( );
         if (this) {
@@ -116,7 +253,79 @@ extern "C" {
 
 
 
-    
+    LEX02_DATA *     Lex02_NewFromStrA (
+        PATH_DATA       *pPath,
+        const
+        char            *pStringA
+    )
+    {
+        bool            fRc;
+        LEX02_DATA      *this;
+        SRCFILE_DATA    *pSrc = OBJ_NIL;
+
+        this = Lex02_New( );
+        if (this) {
+
+            pSrc = SrcFile_NewFromStrA(pPath, pStringA, 1, 4);
+            if (OBJ_NIL == pSrc) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+
+            fRc =   Lex_setSourceInput(
+                                          Lex02_getLex(this),
+                                          (void *)SrcFile_InputAdvance,
+                                          (void *)SrcFile_InputLookAhead,
+                                          pSrc
+                    );
+            obj_Release(pSrc);
+            pSrc = OBJ_NIL;
+            if (!fRc) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                return OBJ_NIL;
+            }
+
+        }
+        return this;
+    }
+
+
+
+#ifdef NDEBUG
+#else
+    bool            Lex02_ValidateKeywords (
+        LEX02_DATA      *this
+    )
+    {
+        bool            fRc = true;
+        int             i;
+        int             iRc;
+
+#ifdef NDEBUG
+#else
+        if( !Lex02_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        for (i = 0; i < (cKwdTbl - 1); i++) {
+            iRc = strcmp(kwdTbl[i].pKwd, kwdTbl[i+1].pKwd);
+            if (iRc < 0)
+                ;
+            else {
+                fRc = false;
+                break;
+            }
+        }
+
+        return fRc;
+    }
+#endif
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
@@ -1226,11 +1435,353 @@ extern "C" {
                 clsNew = LEX_SEP_COMMA;
                 break;
 
+            case '-':           /*** '-' ***/
+                clsNew = LEX_OP_ADD;
+                if( '-' == cls2) {
+                    clsNew = LEX_OP_DEC;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( '=' == cls2) {
+                    clsNew = LEX_OP_ASSIGN_SUB;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( '>' == cls2) {
+                    clsNew = LEX_SEP_RARROW;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                break;
+
+            case '.':           /*** '.' ***/
+                clsNew = LEX_SEP_DOT;
+                if ( '.' == cls2) {
+                    TOKEN_DATA      *pToken2 = Lex_TokenLookAhead((LEX_DATA *)this, 2);
+                    int32_t         cls3;           // Input: 2 Lookahead
+
+                    cls3 = Token_getClass(pToken2);
+                    clsNew = LEX_OP_RANGE;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    if ( '.' == cls3) {
+                        clsNew = LEX_OP_ELIPSIS;
+                        Lex_ParseTokenAppendString((LEX_DATA *)this, pToken2);
+                        Lex_InputAdvance((LEX_DATA *)this, 1);
+                    }
+                    break;
+                }
+                if( '>' == cls2) {
+                    clsNew = LEX_SEP_DOT_GT;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                break;
+
+            case '/':           /*** '/' ***/
+                clsNew = LEX_OP_DIV;
+#ifdef NOT_IMPLEMENTED_YET
+                pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
+                cls = Token_getClass(pInput);
+                if( '/' == cls) {
+                    // Single Line Comment - LEX_COMMENT_SINGLE
+                    newCls = LEX_COMMENT_SINGLE;
+                    if (this->fComments) {
+                        Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                    }
+                    Lex_InputAdvance((LEX_DATA *)this, 2);
+                    for (;;) {
+                        pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 1);
+                        cls = Token_getClass(pInput);
+                        Lex_InputAdvance((LEX_DATA *)this, 1);
+                        if (cls == ASCII_LEXICAL_EOL) {
+                            break;
+                        }
+                        if (this->fComments) {
+                            Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                        }
+                    }
+//TODO: Finish implementing fComments and write Test for it.
+                    if (this->fComments) {
+                        fMore = false;
+                    }
+                    break;
+                }
+                if( '*' == cls2) {
+                    uint32_t        depth = 1;
+                    bool            fMore2 = true;
+                    // Multi-line comment - LEX_COMMENT_MULTI
+                    newCls = LEX_COMMENT_SINGLE;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+                    Lex_InputAdvance((LEX_DATA *)this, 2);
+                    while (fMore2) {
+                        pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 1);
+                        cls = Token_getClass(pInput);
+                        if (cls == '*') {
+                            pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
+                            cls = Token_getClass(pInput);
+                            if (cls == '/') {
+                                Lex_InputAdvance((LEX_DATA *)this, 2);
+                                --depth;
+                                if (0 == depth) {
+                                    fMore2 = false;
+                                }
+                                continue;
+                            }
+                        }
+                        if (cls == '/') {
+                            pInput = ((LEX_DATA *)this)->pSrcChrLookAhead(((LEX_DATA *)this)->pSrcObj, 2);
+                            cls = Token_getClass(pInput);
+                            if (cls == '*') {
+                                Lex_InputAdvance((LEX_DATA *)this, 2);
+                                ++depth;
+                                continue;
+                            }
+                        }
+                        Lex_InputAdvance((LEX_DATA *)this, 1);
+                    }
+                    break;
+                }
+#endif
+                if( '=' == cls2) {
+                    clsNew = LEX_OP_ASSIGN_DIV;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                break;
+
+            case ':':           /*** ':' ***/
+                if( ':' == cls2) {
+                    clsNew = LEX_SPCL_DBLCOLON;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( ')' == cls2) {
+                    clsNew = LEX_SPCL_PAREN_RIGHT;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( ']' == cls2) {
+                    clsNew = LEX_SPCL_COLON_RBRACK;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( '}' == cls2) {
+                    clsNew = LEX_SPCL_COLON_RBRACE;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( '>' == cls2) {
+                    clsNew = LEX_SPCL_COLON_RIGHT;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 2);
+                    break;
+                }
+                clsNew = LEX_SPCL_COLON;
+                break;
+
             case ';':           /*** ';' ***/
                 clsNew = LEX_SEP_SEMICOLON;
                 break;
 
-            default:
+            case '<':           /*** '<' ***/
+                if( '<' == cls2) {
+                    TOKEN_DATA      *pToken2 = Lex_TokenLookAhead((LEX_DATA *)this, 2);
+                    int32_t         cls3;           // Input: 2 Lookahead
+
+                    cls3 = Token_getClass(pToken2);
+                    clsNew = LEX_OP_LEFT;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    if( '=' == cls3) {
+                        clsNew = LEX_OP_ASSIGN_LEFT;
+                        Lex_ParseTokenAppendString((LEX_DATA *)this, pToken2);
+                        Lex_InputAdvance((LEX_DATA *)this, 1);
+                        break;
+                    }
+                    break;
+                }
+                if( '-' == cls2) {
+                    clsNew = LEX_SEP_LARROW;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( '=' == cls2) {
+                    clsNew = LEX_OP_LE;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+#ifdef NOT_IMPLEMENTED_YET
+                if( '.' == cls2) {
+                    if (this->kwdSel & LEX_LANG_LL1) {
+                        W32STR_DATA     *pStr;
+                        pStr = pplex2_SaveText(this,'.','>');
+                        if (pStr) {
+                            newCls = LEX_CONSTANT_TEXTD;
+                            Token_setStrW32(
+                                Lex_getToken((LEX_DATA *)this),
+                                W32Str_getData(pStr)
+                            );
+                            obj_Release(pStr);
+                            fSaveStr = false;
+                        }
+                    }
+                    clsNew = LEX_SEP_LT_DOT;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 2);
+                    fMore = false;
+                    break;
+                }
+                if( ':' == cls2) {
+                    clsNew = LEX_SPCL_COLON_LEFT;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 2);
+                    fMore = false;
+                    break;
+                }
+#endif
+                clsNew = LEX_OP_LT;
+                break;
+
+            case '=':           /*** '=' ***/
+                if( '>' == cls2) {
+                    clsNew = LEX_SPCL_RARROW;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( '=' == cls2) {
+                    clsNew = LEX_OP_EQ;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                clsNew = LEX_OP_ASSIGN;
+                break;
+
+            case '>':           /*** '>' ***/
+                if( '>' == cls2) {
+                    TOKEN_DATA      *pToken2 = Lex_TokenLookAhead((LEX_DATA *)this, 2);
+                    int32_t         cls3;           // Input: 2 Lookahead
+
+                    cls3 = Token_getClass(pToken2);
+                    clsNew = LEX_OP_RIGHT;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    if( '=' == cls3) {
+                        clsNew = LEX_OP_ASSIGN_RIGHT;
+                        Lex_ParseTokenAppendString((LEX_DATA *)this, pToken2);
+                        Lex_InputAdvance((LEX_DATA *)this, 1);
+                        break;
+                    }
+                    break;
+                }
+                if( '=' == cls2) {
+                    clsNew = LEX_OP_GE;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                clsNew = LEX_OP_GT;
+                break;
+
+            case '?':           /*** '?' ***/
+                clsNew = LEX_OP_QUESTION;
+                break;
+
+            case '@':           /*** '@' ***/
+                if( '(' == cls2) {
+                    clsNew = LEX_SPCL_AT_LPAREN;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( '[' == cls2) {
+                    clsNew = LEX_SPCL_AT_LBRACK;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( '{' == cls2) {
+                    clsNew = LEX_SPCL_AT_LBRACE;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                clsNew = LEX_SEP_AT;
+                break;
+
+            case '[':           /*** '[' ***/
+                if( '%' == cls2) {
+                    clsNew = LEX_SPCL_LBRACK;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( ':' == cls2) {
+                    clsNew = LEX_SPCL_LBRACK_COLON;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                clsNew = LEX_SEP_LBRACK;
+                break;
+
+            case ']':           /*** ']' ***/
+                clsNew = LEX_SEP_RBRACK;
+                break;
+
+            case '^':           /*** '^' ***/
+                if( '=' == cls2) {
+                    clsNew = LEX_OP_ASSIGN_XOR;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                clsNew = LEX_OP_XOR;
+                break;
+
+                /*
+                 '_',                               // 95 5F - '_' (See Identifier above)
+                 '`',                               // 96 60 - '`'
+                 */
+
+            case '{':           /*** '{' ***/
+                if( '%' == cls2) {
+                    clsNew = LEX_SPCL_LBRACE;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                if( ':' == cls2) {
+                    clsNew = LEX_SPCL_LBRACE_COLON;
+                    Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    break;
+                }
+                clsNew = LEX_SEP_LBRACE;
+                break;
+
+            case '}':           /*** '}' ***/
+                clsNew = LEX_SEP_RBRACE;
+                break;
+
+            case '~':           /*** '~' ***/
+                clsNew = LEX_OP_NEG;
+                break;
+
+           default:
                 break;
         }
 

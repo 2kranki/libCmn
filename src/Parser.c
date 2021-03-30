@@ -1713,8 +1713,16 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Enable operation of this object.
+     Set up a pplex object as the lexer.
      @param     this    object pointer
+     @param     pPath   optional path object pointer (used for error messages)
+     @param     pStrA   string pointer for input to parse
+     @param     fLex1   Add a pplex1 to the lexical chain
+     @param     fLex3   Add a pplex3 to the lexical chain
+     @param     fNL     true == pass NL lexical tokens to the parser
+     @param     fWS     true == pass White-space tokens (other than NL) to the parser
+     @param     tabSize define the tab-size for the lexical string so that column
+                        numbers are accurate
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */

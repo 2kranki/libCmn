@@ -133,12 +133,12 @@ struct Lex_data_s  {
     //---------------------------------------------------------------
 
 #ifdef  LEX_SINGLETON
-    LEX_DATA *     Lex_getSingleton (
+    LEX_DATA *      Lex_getSingleton (
         void
     );
 
     bool            Lex_setSingleton (
-     LEX_DATA       *pValue
+     LEX_DATA           *pValue
 );
 #endif
 
@@ -148,19 +148,19 @@ struct Lex_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  Lex_getSuperVtbl (
-        LEX_DATA     *this
+    OBJ_IUNKNOWN * Lex_getSuperVtbl (
+        LEX_DATA        *this
     );
 
 
     ERESULT         Lex_Assign (
-        LEX_DATA    *this,
-        LEX_DATA    *pOther
+        LEX_DATA        *this,
+        LEX_DATA        *pOther
     );
 
 
-    LEX_DATA *       Lex_Copy (
-        LEX_DATA     *this
+    LEX_DATA *      Lex_Copy (
+        LEX_DATA        *this
     );
 
 
@@ -176,7 +176,7 @@ struct Lex_data_s  {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    LEX_DATA *       Lex_ParseJsonObject (
+    LEX_DATA *      Lex_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 

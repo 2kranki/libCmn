@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Lex02_internal.h
- *  Generated 05/30/2020 14:52:09
+ * File:   RpgBase_internal.h
+ *  Generated 03/22/2021 07:15:24
  *
  * Notes:
  *  --  N/A
@@ -39,13 +39,12 @@
 
 
 
-#include        <Lex02.h>
+#include        <RpgBase.h>
 #include        <JsonIn.h>
-#include        <Lex_internal.h>
 
 
-#ifndef LEX02_INTERNAL_H
-#define LEX02_INTERNAL_H
+#ifndef RPGBASE_INTERNAL_H
+#define RPGBASE_INTERNAL_H
 
 
 
@@ -57,38 +56,16 @@ extern "C" {
 
 
 
-// Use uint32_t for these options.
-typedef enum lex_lang_e {
-    LEX_LANG_UNKNOWN=0,
-    LEX_LANG_ASM        = 0x80000000,       // Base Assembler
-    LEX_LANG_ASM86      = 0x40000000,       // -- Intel 8x86 Assembler Extension
-    LEX_LANG_ASM360     = 0x20000000,       // -- IBM 360 Assembler Keywords Extension
-    LEX_LANG_C          = 0x00800000,       // Base C Language
-    LEX_LANG_MSC        = 0x00400000,       // -- Microsoft C Extensions of C
-    LEX_LANG_CPP        = 0x00200000,       // -- C++ Keywords Extension of C
-    LEX_LANG_OBJC       = 0x00100000,       // -- Obj-C Keywords Extension
-    LEX_LANG_OOBJ       = 0x00080000,       // -- Our Object Keywords Extension
-    LEX_LANG_LL1        = 0x00010000,       // -- LL1 Extension
-} LEX_LANG;
-
-
-typedef struct lex_kwdtbl_entry_s {
-    char        *pKwd;                    /* Key Word */
-    int32_t     value;                    /* Lexical Scan Value */
-    uint32_t    flags;                    /* Flags */
-} LEX_KWDTBL_ENTRY;
-
-
 
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Lex02_data_s  {
+struct RpgBase_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
-    LEX_DATA        super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
@@ -100,11 +77,11 @@ struct Lex02_data_s  {
 #pragma pack(pop)
 
     extern
-    struct Lex02_class_data_s  Lex02_ClassObj;
+    struct RpgBase_class_data_s  RpgBase_ClassObj;
 
     extern
     const
-    LEX02_VTBL         Lex02_Vtbl;
+    RPGBASE_VTBL         RpgBase_Vtbl;
 
 
 
@@ -112,13 +89,13 @@ struct Lex02_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  LEX02_SINGLETON
-    LEX02_DATA *     Lex02_getSingleton (
+#ifdef  RPGBASE_SINGLETON
+    RPGBASE_DATA *     RpgBase_getSingleton (
         void
     );
 
-    bool            Lex02_setSingleton (
-     LEX02_DATA       *pValue
+    bool            RpgBase_setSingleton (
+     RPGBASE_DATA       *pValue
 );
 #endif
 
@@ -128,40 +105,35 @@ struct Lex02_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    LEX_DATA *      Lex02_getLex (
-        LEX02_DATA      *this
+    OBJ_IUNKNOWN *  RpgBase_getSuperVtbl (
+        RPGBASE_DATA     *this
     );
 
 
-    OBJ_IUNKNOWN *  Lex02_getSuperVtbl (
-        LEX02_DATA     *this
+    ERESULT         RpgBase_Assign (
+        RPGBASE_DATA    *this,
+        RPGBASE_DATA    *pOther
     );
 
 
-    ERESULT         Lex02_Assign (
-        LEX02_DATA    *this,
-        LEX02_DATA    *pOther
+    RPGBASE_DATA *       RpgBase_Copy (
+        RPGBASE_DATA     *this
     );
 
 
-    LEX02_DATA *    Lex02_Copy (
-        LEX02_DATA     *this
-    );
-
-
-    void            Lex02_Dealloc (
+    void            RpgBase_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  LEX02_JSON_SUPPORT
+#ifdef  RPGBASE_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    LEX02_DATA *       Lex02_ParseJsonObject (
+    RPGBASE_DATA *       RpgBase_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -175,41 +147,35 @@ struct Lex02_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex02_ParseJsonFields (
+    ERESULT         RpgBase_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        LEX02_DATA     *pObject
+        RPGBASE_DATA     *pObject
     );
 #endif
 
 
-    ERESULT         Lex02_ParseToken(
-        LEX02_DATA      *this,
-        TOKEN_DATA      *pTokenOut
-    );
-
-
-    void *          Lex02_QueryInfo (
+    void *          RpgBase_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  LEX02_JSON_SUPPORT
+#ifdef  RPGBASE_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Lex02_ToJson(this);
+     ASTR_DATA      *pDesc = RpgBase_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Lex02_ToJson (
-        LEX02_DATA      *this
+    ASTR_DATA *     RpgBase_ToJson (
+        RPGBASE_DATA      *this
     );
 
 
@@ -222,8 +188,8 @@ struct Lex02_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex02_ToJsonFields (
-        LEX02_DATA     *this,
+    ERESULT         RpgBase_ToJsonFields (
+        RPGBASE_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -233,13 +199,8 @@ struct Lex02_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            Lex02_Validate (
-        LEX02_DATA       *this
-    );
-
-
-    bool            Lex02_ValidateKeywords (
-        LEX02_DATA      *this
+    bool            RpgBase_Validate (
+        RPGBASE_DATA       *this
     );
 #endif
 
@@ -249,5 +210,5 @@ struct Lex02_data_s  {
 }
 #endif
 
-#endif  /* LEX02_INTERNAL_H */
+#endif  /* RPGBASE_INTERNAL_H */
 

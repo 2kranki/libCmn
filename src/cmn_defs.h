@@ -468,6 +468,8 @@ extern "C" {
         OBJ_IDENT_RESPONDER,
         OBJ_IDENT_RETRANSBUF,           // Protocol Retransmit Buffer
         OBJ_IDENT_RETRANSBUF_CLASS,
+        OBJ_IDENT_RPGBASE,              // Report Program Generator (RPG) Base
+        OBJ_IDENT_RPGBASE_CLASS,
         OBJ_IDENT_RRDS,                 // Relative Record Database
         OBJ_IDENT_RRDS_CLASS,
         OBJ_IDENT_RRDS32,               // Relative Record Database - 32 bit Logical

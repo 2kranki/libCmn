@@ -163,6 +163,7 @@
         {name:"psxThread", deps:["psxMutex.h","psxSem.h"]},
 
         {name:"ptrArray",   desc:"An Array of pointers"},
+        {name:"RpgBase",    desc:"Report Program Generator (RPG) Base"},
         {name:"rrds", deps:["listdl.h","Path.h"], 
                 desc:"File-based Relative Record Dataset (ie Indexed by record number, Fixed size records)"},
         {name:"Scanner", json:true, desc:"String Scanner"},

@@ -25,6 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <JsonIn.h>
+#include    <Lex02.h>
 #include    <trace.h>
 #include    <Parser_internal.h>
 
@@ -113,7 +114,7 @@ int         test_Parser_Properties01(
     char        *pTestName
 )
 {
-    PARSER_DATA    *pObj = OBJ_NIL;
+    PARSER_DATA     *pObj = OBJ_NIL;
     NODE_DATA       *pNode;
     NODE_DATA       *pNode2;
     ERESULT         eRc;
@@ -147,7 +148,6 @@ int         test_Parser_Properties01(
 
 
 
-#ifdef XYZZY
 /* This illustrates how to set up an external lexer and properly
     plug it into the Parser object.
  */
@@ -157,65 +157,70 @@ int         test_Parser_Lexer01(
 )
 {
     PARSER_DATA    *pObj = OBJ_NIL;
-    ERESULT         eRc;
-    LEX_DATA        *pLex = OBJ_NIL;
+    //ERESULT         eRc;
+    LEX02_DATA      *pLex = OBJ_NIL;
     PATH_DATA       *pPath = Path_NewA("abc");  // Used for error messages only
-    ASTR_DATA       *pBuf = OBJ_NIL;
-    //ASTR_DATA       *pStr = OBJ_NIL;
     TOKEN_DATA      *pToken = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pBuf = AStr_NewA("a = b + c;\n");
-    TINYTEST_FALSE( (OBJ_NIL == pBuf) );
-
-    pObj = Parser_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = Parser_Init(pObj);
+    pObj = Parser_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        pLex = (LEX_DATA *)pplex_New(4);
+        pLex = Lex02_NewFromStrA(pPath, "a = b + c;\n");
         XCTAssertFalse( (OBJ_NIL == pLex) );
 
-        pplex_setReturnNL((PPLEX_DATA *)pLex, true);
-        pplex_setReturnWS((PPLEX_DATA *)pLex, false);
-        //                                           pplex1 pplex3
-        eRc = pplex_CreateLexers((PPLEX_DATA *)pLex, false, true);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-
-        eRc =   pplex_CreateSourceFromAStr(
-                                      (PPLEX_DATA *)pLex,
-                                      pPath,
-                                      pBuf
-                );
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        Parser_setLex(pObj, pLex);
         Parser_setSourceFunction(
-                                pObj,
-                                (void *)pplex_InputAdvance,
-                                (void *)pplex_InputLookAhead,
+                                 pObj,
+                                (void *)Lex_TokenAdvance,
+                                (void *)Lex_TokenLookAhead,
                                 pLex
         );
+        Parser_setLex(pObj, Lex02_getLex(pLex));
         obj_Release(pLex);
         pLex = OBJ_NIL;
 
         // Now we can get some data.
         pToken = Parser_InputLookAhead(pObj, 1);
         TINYTEST_FALSE( (OBJ_NIL == pToken) );
-        TINYTEST_TRUE( (TOKEN_TYPE_STRTOKEN == Token_getType(pToken)) );
+        {
+            ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
+            if (pStr) {
+                fprintf(stderr, "Token 1 (a): %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TINYTEST_TRUE( (TOKEN_TYPE_CHAR == Token_getType(pToken)) );
         TINYTEST_TRUE( (LEX_IDENTIFIER == Token_getClass(pToken)) );
         Parser_InputAdvance(pObj, 1);
 
         pToken = Parser_InputLookAhead(pObj, 1);
         TINYTEST_FALSE( (OBJ_NIL == pToken) );
-        TINYTEST_TRUE( (TOKEN_TYPE_STRTOKEN == Token_getType(pToken)) );
-        TINYTEST_TRUE( (LEX_CLASS_OP_ASSIGN == Token_getClass(pToken)) );
+        {
+            ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
+            if (pStr) {
+                fprintf(stderr, "Token 2 (=): %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TINYTEST_TRUE( (TOKEN_TYPE_CHAR == Token_getType(pToken)) );
+        TINYTEST_TRUE( (LEX_OP_ASSIGN == Token_getClass(pToken)) );
         Parser_InputAdvance(pObj, 1);
 
         pToken = Parser_InputLookAhead(pObj, 1);
         TINYTEST_FALSE( (OBJ_NIL == pToken) );
-        TINYTEST_TRUE( (TOKEN_TYPE_STRTOKEN == Token_getType(pToken)) );
+        {
+            ASTR_DATA       *pStr = Token_ToDebugString(pToken, 0);
+            if (pStr) {
+                fprintf(stderr, "Token 3 (b): %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TINYTEST_TRUE( (TOKEN_TYPE_CHAR == Token_getType(pToken)) );
         TINYTEST_TRUE( (LEX_IDENTIFIER == Token_getClass(pToken)) );
         Parser_InputAdvance(pObj, 1);
 
@@ -223,8 +228,6 @@ int         test_Parser_Lexer01(
         pObj = OBJ_NIL;
     }
 
-    obj_Release(pBuf);
-    pBuf = OBJ_NIL;
     obj_Release(pPath);
     pPath = OBJ_NIL;
 
@@ -234,6 +237,7 @@ int         test_Parser_Lexer01(
 
 
 
+#ifdef XYZZY
 /* This illustrates how to set up a pplex object using a Parser
     method.
  */
@@ -301,7 +305,7 @@ int         test_Parser_Lexer02(
 
 TINYTEST_START_SUITE(test_Parser);
     //TINYTEST_ADD_TEST(test_Parser_Lexer02,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_Parser_Lexer01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Parser_Lexer01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Parser_Properties01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Parser_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
