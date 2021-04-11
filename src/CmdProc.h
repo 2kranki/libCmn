@@ -8,9 +8,17 @@
  *          Command Processor (CmdProc)
  * Purpose
  *          This object provides a standardized way of handling
- *          a separate CmdProc to run things without complications
- *          of interfering with the main CmdProc. A CmdProc may be 
- *          called a CmdProc on other O/S's.
+ *          a command from the console or input file.  The options
+ *          are parsed from the supplied command definition, CMDPROC_CMD,
+ *          using CmdUtl.
+ *
+ *          Undo/Redo is one of the nicest things to implement in
+ *          commands that cause changes.  To support this, a change
+ *          stack must be maintained which contains the before state
+ *          of what is being changed. JSON is easy to implement and
+ *          makes saving and restoring state relatively easy. We
+ *          define the state stack using NodeList objects so that
+ *          the state can be saved in Nodes maybe using JSON AStr's.
  *
  * Remarks
  *  1.      None
@@ -53,6 +61,10 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <CmdUtl.h>
+#include        <Node.h>
+#include        <NodeList.h>
+#include        <Value.h>
 
 
 #ifndef         CMDPROC_H
@@ -99,6 +111,53 @@ extern "C" {
     } CMDPROC_CLASS_VTBL;
 
 
+    // An option must have at a minimum either a short name or a long name. Both
+    // may be provided.  CmdUtl_ProcessOption() will correctly handle these
+    // three situations.
+    // Note - The end of an option table is denoted by a pLongName of NULL
+    // and a shortName of 0.
+    typedef struct CmdProc_option_s {
+        char            *pLongName;         // command full name (optional, may be NULL)
+        W32CHR_T        shortName;          // command short name (optional, may be '\0')
+        // Note - either a long or short name must be specified. Both may be specified.
+        CMDUTL_OPTION   *pOptions;          // Pointer to CMDUTL_OPTION list ended with
+        //                                  // an entry of NULL in pLongName and 0 in
+        //                                  // shortName.
+        uint16_t        optSize;            // Option Area Size
+        const
+        char            *pDesc;             // Command Description
+    } CMDPROC_CMD;
+
+
+    /*!         Execution Interface
+     This object is supplied externally and defines the execution
+     interface exit points that will be called at the appropriate
+     times in the RPG cycle.
+     */
+    typedef struct CmdProc_Exec_interface_s CMDPROC_EXEC_INTERFACE;
+
+    typedef struct CmdProc_Exec_vtbl_s  {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // All methods must be defined to return bool.
+        // Properties:
+        // Methods:
+        // LevelBreakN methods are called when a break for that
+        // level occurs or a higher level.
+        ERESULT     (*pExec)(CMDPROC_EXEC_INTERFACE *, void *pOptions);
+        ERESULT     (*pRedo)(CMDPROC_EXEC_INTERFACE *);
+        ERESULT     (*pUndo)(CMDPROC_EXEC_INTERFACE *);
+    } CMDPROC_EXEC_VTBL;
+
+#pragma pack(push, 1)
+    struct CmdProc_Exec_interface_s    {
+        CMDPROC_EXEC_VTBL   *pVtbl;
+    };
+#pragma pack(pop)
+
+#define Rpg_ExecVtbl(ptr)   ((RPGBASE_EXEC_INTERFACE *)ptr)->pVtbl
+
+
+
 
 
     /****************************************************************
@@ -111,7 +170,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  CMDPROC_SINGLETON
-    CMDPROC_DATA *     CmdProc_Shared (
+    CMDPROC_DATA *  CmdProc_Shared (
         void
     );
 
@@ -127,7 +186,7 @@ extern "C" {
      released.
      @return    pointer to CmdProc object if successful, otherwise OBJ_NIL.
      */
-    CMDPROC_DATA *     CmdProc_Alloc (
+    CMDPROC_DATA *  CmdProc_Alloc (
         void
     );
     
@@ -137,17 +196,17 @@ extern "C" {
     );
     
     
-    CMDPROC_DATA *     CmdProc_New (
+    CMDPROC_DATA *  CmdProc_New (
         void
     );
     
     
 #ifdef  CMDPROC_JSON_SUPPORT
-    CMDPROC_DATA *   CmdProc_NewFromJsonString (
+    CMDPROC_DATA *  CmdProc_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    CMDPROC_DATA *   CmdProc_NewFromJsonStringA (
+    CMDPROC_DATA *  CmdProc_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -159,6 +218,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    CMDPROC_EXEC_INTERFACE *
+                    CmdProc_getExec (
+        CMDPROC_DATA    *this
+    );
+
+    bool            CmdProc_setExec (
+        CMDPROC_DATA    *this,
+        CMDPROC_EXEC_INTERFACE
+                        *pValue
+    );
 
 
     
@@ -166,26 +235,70 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     CmdProc_Disable (
-        CMDPROC_DATA       *this
+    ERESULT         CmdProc_Disable (
+        CMDPROC_DATA    *this
     );
 
 
-    ERESULT     CmdProc_Enable (
-        CMDPROC_DATA       *this
-    );
-
-   
-    CMDPROC_DATA *   CmdProc_Init (
-        CMDPROC_DATA     *this
+    ERESULT         CmdProc_Enable (
+        CMDPROC_DATA    *this
     );
 
 
-    ERESULT     CmdProc_IsEnabled (
-        CMDPROC_DATA       *this
+    /*!
+     Perform the speficic command supported by this object. Insure
+     that the change state is pushed onto the undo stack before
+     actually making the changes if undo/redo is supported.
+     The Options for the command are parsed by CmdUtl and returned
+     in pOptions which needs to be freed by mem_Free().
+     @param     this        object pointer
+     @param     pOptions    Option Area pointer
+     @return    If successful, ERESULT_SUCCESS. Otherwise, return an
+                ERESULT_* error code.
+     */
+    ERESULT         CmdProc_Exec (
+        CMDPROC_DATA    *this,
+        void            *pOptions
+    );
+
+
+    /*!
+     Indicate whether this command support undo/redo.
+     @param     this    object pointer
+     @return    If this command supports undo, return true. Otherwise, return
+                false.
+     */
+    bool            CmdProc_HasUndo (
+        CMDPROC_DATA    *this
+    );
+
+
+    CMDPROC_DATA *  CmdProc_Init (
+        CMDPROC_DATA    *this
+    );
+
+
+    ERESULT         CmdProc_IsEnabled (
+        CMDPROC_DATA    *this
     );
     
  
+    ERESULT         CmdProc_Redo (
+        CMDPROC_DATA    *this
+    );
+
+
+    VALUE_DATA *    CmdProc_RedoPop (
+        CMDPROC_DATA    *this
+    );
+
+
+    ERESULT         CmdProc_RedoPush (
+        CMDPROC_DATA    *this,
+        VALUE_DATA      *pData
+    );
+
+
 #ifdef  CMDPROC_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
@@ -200,7 +313,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     CmdProc_ToJson (
-        CMDPROC_DATA   *this
+        CMDPROC_DATA    *this
     );
 #endif
 
@@ -218,11 +331,27 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     CmdProc_ToDebugString (
-        CMDPROC_DATA     *this,
+        CMDPROC_DATA    *this,
         int             indent
     );
     
     
+    ERESULT         CmdProc_Undo (
+        CMDPROC_DATA    *this
+    );
+
+
+    VALUE_DATA *     CmdProc_UndoPop (
+        CMDPROC_DATA    *this
+    );
+
+
+    ERESULT         CmdProc_UndoPush (
+        CMDPROC_DATA    *this,
+        VALUE_DATA      *pData
+    );
+
+
 
     
 #ifdef  __cplusplus

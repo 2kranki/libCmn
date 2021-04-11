@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   RpgBase.c
- *  Generated 03/22/2021 07:15:24
+ * File:   HtmlOut.c
+ *  Generated 03/30/2021 20:24:21
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <RpgBase_internal.h>
+#include        <HtmlOut_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -66,11 +66,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            RpgBase_task_body (
+    void            HtmlOut_task_body (
         void            *pData
     )
     {
-        //RPGBASE_DATA  *this = pData;
+        //HTMLOUT_DATA  *this = pData;
         
     }
 #endif
@@ -86,12 +86,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    RPGBASE_DATA *     RpgBase_Alloc (
+    HTMLOUT_DATA *     HtmlOut_Alloc (
         void
     )
     {
-        RPGBASE_DATA       *this;
-        uint32_t        cbSize = sizeof(RPGBASE_DATA);
+        HTMLOUT_DATA       *this;
+        uint32_t        cbSize = sizeof(HTMLOUT_DATA);
         
         // Do initialization.
         
@@ -103,114 +103,140 @@ extern "C" {
 
 
 
-    RPGBASE_DATA *     RpgBase_New (
+    HTMLOUT_DATA *     HtmlOut_New (
         void
     )
     {
-        RPGBASE_DATA       *this;
+        HTMLOUT_DATA       *this;
         
-        this = RpgBase_Alloc( );
+        this = HtmlOut_Alloc( );
         if (this) {
-            this = RpgBase_Init(this);
+            this = HtmlOut_Init(this);
         } 
         return this;
     }
 
 
 
-    
+    ASTR_DATA *     HtmlOut_ColorToStr (
+        const
+        char            *pColorA,
+        const
+        char            *pTextA
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (NULL == pColorA) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+        if (NULL == pTextA) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_NewFromPrint(
+                        "<span stype=\"color:%s;\">%s</span>",
+                        pColorA,
+                        pTextA
+                );
+
+        // Return to caller.
+        return pStr;
+    }
+
+
+    ASTR_DATA *     HtmlOut_RefToStr (
+        const
+        char            *pHRefA,
+        const
+        char            *pNameA
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (NULL == pHRefA) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr =  AStr_NewFromPrint(
+                        "<a href=\"%s\" target=\"_blank\">%s</a>",
+                        pHRefA,
+                        pNameA
+                );
+
+        // Return to caller.
+        return pStr;
+    }
+
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                            D a t a
+    //                              O u t
     //---------------------------------------------------------------
 
-    OBJ_ID          RpgBase_getData (
-        RPGBASE_DATA    *this
+    TEXTOUT_DATA *  HtmlOut_getOut (
+        HTMLOUT_DATA    *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
 
-        return this->pData;
+        return this->pOut;
     }
 
 
-    bool            RpgBase_setData (
-        RPGBASE_DATA    *this,
-        OBJ_ID          pValue
+    bool            HtmlOut_setOut (
+        HTMLOUT_DATA    *this,
+        TEXTOUT_DATA    *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
         obj_Retain(pValue);
-        if (this->pData) {
-            obj_Release(this->pData);
+        if (this->pOut) {
+            obj_Release(this->pOut);
         }
-        this->pData = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                           E x e c
-    //---------------------------------------------------------------
-
-    RPGBASE_EXEC_INTERFACE *  RpgBase_getExec (
-        RPGBASE_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!RpgBase_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pExec;
-    }
-
-
-    bool            RpgBase_setExec (
-        RPGBASE_DATA    *this,
-        RPGBASE_EXEC_INTERFACE
-                        *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!RpgBase_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pExec) {
-            obj_Release(this->pExec);
-        }
-        this->pExec = pValue;
+        this->pOut = pValue;
 
         return true;
     }
@@ -221,15 +247,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        RpgBase_getPriority (
-        RPGBASE_DATA     *this
+    uint16_t        HtmlOut_getPriority (
+        HTMLOUT_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -240,14 +266,14 @@ extern "C" {
     }
 
 
-    bool            RpgBase_setPriority (
-        RPGBASE_DATA     *this,
+    bool            HtmlOut_setPriority (
+        HTMLOUT_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -264,13 +290,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        RpgBase_getSize (
-        RPGBASE_DATA       *this
+    uint32_t        HtmlOut_getSize (
+        HTMLOUT_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -285,15 +311,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * RpgBase_getStr (
-        RPGBASE_DATA     *this
+    ASTR_DATA * HtmlOut_getStr (
+        HTMLOUT_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -303,14 +329,14 @@ extern "C" {
     }
     
     
-    bool        RpgBase_setStr (
-        RPGBASE_DATA     *this,
+    bool        HtmlOut_setStr (
+        HTMLOUT_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -331,15 +357,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  RpgBase_getSuperVtbl (
-        RPGBASE_DATA     *this
+    OBJ_IUNKNOWN *  HtmlOut_getSuperVtbl (
+        HTMLOUT_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -351,7 +377,50 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //               S k i p  W h i t e S p a c e
+    //---------------------------------------------------------------
+
+    bool            HtmlOut_getWS (
+        HTMLOUT_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!HtmlOut_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return this->fSkipWS ? true : false;
+    }
+
+
+    bool            HtmlOut_setWS (
+        HTMLOUT_DATA    *this,
+        bool            fValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!HtmlOut_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->fSkipWS = fValue ? true : false;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -368,16 +437,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = RpgBase_Assign(this,pOther);
+        ERESULT eRc = HtmlOut_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another RPGBASE object
+     @param     pOther  a pointer to another HTMLOUT object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         RpgBase_Assign (
-        RPGBASE_DATA       *this,
-        RPGBASE_DATA     *pOther
+    ERESULT         HtmlOut_Assign (
+        HTMLOUT_DATA       *this,
+        HTMLOUT_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -385,11 +454,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!RpgBase_Validate(pOther)) {
+        if (!HtmlOut_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -441,6 +510,54 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          C o l o r
+    //---------------------------------------------------------------
+
+    ERESULT         HtmlOut_Color (
+        HTMLOUT_DATA    *this,
+        const
+        char            *pColorA,
+        const
+        char            *pTextA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!HtmlOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pColorA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pTextA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == this->pOut) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+
+        eRc =   TextOut_Print(
+                        this->pOut,
+                        "<span stype=\"color:%s;\">%s</span>",
+                        pColorA,
+                        pTextA
+                );
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -450,9 +567,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             RpgBase_Compare (
-        RPGBASE_DATA     *this,
-        RPGBASE_DATA     *pOther
+    int             HtmlOut_Compare (
+        HTMLOUT_DATA     *this,
+        HTMLOUT_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -465,12 +582,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!RpgBase_Validate(pOther)) {
+        if (!HtmlOut_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -492,36 +609,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        RpgBase      *pCopy = RpgBase_Copy(this);
+        HtmlOut      *pCopy = HtmlOut_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a RPGBASE object which must be 
+     @return    If successful, a HTMLOUT object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    RPGBASE_DATA *     RpgBase_Copy (
-        RPGBASE_DATA       *this
+    HTMLOUT_DATA *     HtmlOut_Copy (
+        HTMLOUT_DATA       *this
     )
     {
-        RPGBASE_DATA       *pOther = OBJ_NIL;
+        HTMLOUT_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef RPGBASE_IS_IMMUTABLE
+#ifdef HTMLOUT_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = RpgBase_New( );
+        pOther = HtmlOut_New( );
         if (pOther) {
-            eRc = RpgBase_Assign(this, pOther);
+            eRc = HtmlOut_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -536,14 +653,49 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          D b l
+    //---------------------------------------------------------------
+
+    ERESULT         HtmlOut_Dbl (
+        HTMLOUT_DATA    *this,
+        double          dbl
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!HtmlOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == this->pOut) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+
+        eRc =   TextOut_Print(
+                        this->pOut,
+                        "<a href=\"%s\" target=\"_blank\">%s</a>"
+                );
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            RpgBase_Dealloc (
+    void            HtmlOut_Dealloc (
         OBJ_ID          objId
     )
     {
-        RPGBASE_DATA   *this = objId;
+        HTMLOUT_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -552,7 +704,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -560,13 +712,12 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((RPGBASE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((HTMLOUT_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        RpgBase_setData(this, OBJ_NIL);
-        RpgBase_setExec(this, OBJ_NIL);
-        RpgBase_setStr(this, OBJ_NIL);
+        HtmlOut_setOut(this, OBJ_NIL);
+        HtmlOut_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -587,32 +738,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        RpgBase      *pDeepCopy = RpgBase_Copy(this);
+        HtmlOut      *pDeepCopy = HtmlOut_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a RPGBASE object which must be 
+     @return    If successful, a HTMLOUT object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    RPGBASE_DATA *     RpgBase_DeepyCopy (
-        RPGBASE_DATA       *this
+    HTMLOUT_DATA *     HtmlOut_DeepyCopy (
+        HTMLOUT_DATA       *this
     )
     {
-        RPGBASE_DATA       *pOther = OBJ_NIL;
+        HTMLOUT_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = RpgBase_New( );
+        pOther = HtmlOut_New( );
         if (pOther) {
-            eRc = RpgBase_Assign(this, pOther);
+            eRc = HtmlOut_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -635,8 +786,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         RpgBase_Disable (
-        RPGBASE_DATA    *this
+    ERESULT         HtmlOut_Disable (
+        HTMLOUT_DATA    *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -644,7 +795,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -670,8 +821,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         RpgBase_Enable (
-        RPGBASE_DATA    *this
+    ERESULT         HtmlOut_Enable (
+        HTMLOUT_DATA    *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -679,7 +830,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -699,11 +850,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    RPGBASE_DATA *  RpgBase_Init (
-        RPGBASE_DATA    *this
+    HTMLOUT_DATA *   HtmlOut_Init (
+        HTMLOUT_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(RPGBASE_DATA);
+        uint32_t        cbSize = sizeof(HTMLOUT_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -721,7 +872,7 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_RPGBASE);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_HTMLOUT);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -729,13 +880,13 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&RpgBase_Vtbl);
-#ifdef  RPGBASE_JSON_SUPPORT
-        JsonIn_RegisterClass(RpgBase_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&HtmlOut_Vtbl);
+#ifdef  HTMLOUT_JSON_SUPPORT
+        JsonIn_RegisterClass(HtmlOut_Class());
 #endif
         
-        this->pData = (OBJ_ID)NodeBT_New( );
-        if (OBJ_NIL == this->pData) {
+        this->pOut = TextOut_NewAStr( );
+        if (OBJ_NIL == this->pOut) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -743,7 +894,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -752,11 +903,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "RpgBase::sizeof(RPGBASE_DATA) = %lu\n", 
-                sizeof(RPGBASE_DATA)
+                "HtmlOut::sizeof(HTMLOUT_DATA) = %lu\n", 
+                sizeof(HTMLOUT_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(RPGBASE_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(HTMLOUT_DATA));
 #endif
 
         return this;
@@ -768,8 +919,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         RpgBase_IsEnabled (
-        RPGBASE_DATA    *this
+    ERESULT         HtmlOut_IsEnabled (
+        HTMLOUT_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -777,7 +928,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -794,42 +945,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  L e v e l  C h e c k
-    //---------------------------------------------------------------
-
-    /*!
-     Disable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         RpgBase_LevelCheck (
-        RPGBASE_DATA    *this
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        bool            fRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!RpgBase_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //FIXME: fRc = this->pExec && this->pExec->pLevelCheck9(this->pExec, this);
-
-        obj_Disable(this);
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -840,14 +955,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = RpgBase_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = HtmlOut_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "RpgBase", prefix,
+                        the object name, "HtmlOut", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -855,13 +970,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          RpgBase_QueryInfo (
+    void *          HtmlOut_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        RPGBASE_DATA     *this = objId;
+        HTMLOUT_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -870,7 +985,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -879,11 +994,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(RPGBASE_DATA);
+                return (void *)sizeof(HTMLOUT_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)RpgBase_Class();
+                return (void *)HtmlOut_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -909,37 +1024,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return RpgBase_Disable;
+                            return HtmlOut_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return RpgBase_Enable;
+                            return HtmlOut_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  RPGBASE_JSON_SUPPORT
+#ifdef  HTMLOUT_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return RpgBase_ParseJsonFields;
+                            return HtmlOut_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return RpgBase_ParseJsonObject;
+                            return HtmlOut_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return RpgBase_ToDebugString;
+                            return HtmlOut_ToDebugString;
                         }
-#ifdef  RPGBASE_JSON_SUPPORT
+#ifdef  HTMLOUT_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return RpgBase_ToJsonFields;
+                            return HtmlOut_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return RpgBase_ToJson;
+                            return HtmlOut_ToJson;
                         }
 #endif
                         break;
@@ -950,10 +1065,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == RpgBase_ToDebugString)
+                if (pData == HtmlOut_ToDebugString)
                     return "ToDebugString";
-#ifdef  RPGBASE_JSON_SUPPORT
-                if (pData == RpgBase_ToJson)
+#ifdef  HTMLOUT_JSON_SUPPORT
+                if (pData == HtmlOut_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -968,6 +1083,266 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          R e f
+    //---------------------------------------------------------------
+
+    ERESULT         HtmlOut_Ref (
+        HTMLOUT_DATA    *this,
+        const
+        char            *pHRefA,
+        const
+        char            *pNameA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!HtmlOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pHRefA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == this->pOut) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+
+        eRc =   TextOut_Print(
+                        this->pOut,
+                        "<a href=\"%s\" target=\"_blank\">%s</a>",
+                        pHRefA,
+                        pNameA
+                );
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S e p
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this obje
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         HtmlOut_Sep (
+        HTMLOUT_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!HtmlOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == this->pOut) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+
+        eRc = TextOut_PutA(this->pOut, "<p/><p/><p/>\n");
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          T a b l e
+    //---------------------------------------------------------------
+
+    ERESULT         HtmlOut_TableBegin (
+        HTMLOUT_DATA    *this,
+        const
+        char            *pCaptionA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!HtmlOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == this->pOut) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+
+        eRc =   TextOut_PutA(
+                           this->pOut,
+                           "<table border=\"0\" cellspacing=\"3\" cellpadding=\"0\">\n"
+                );
+        if (pCaptionA) {
+            eRc =   TextOut_Print(
+                                 this->pOut,
+                                 "<caption>%s</caption>\n",
+                                 pCaptionA
+                    );
+        }
+        this->fHeadData = false;
+        this->fNeedTableBody = true;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         HtmlOut_TableRow(
+        HTMLOUT_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !HtmlOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->fNeedTableBody) {
+            eRc =   TextOut_PutA(
+                               this->pOut,
+                               "<tbody>\n"
+                    );
+            this->fNeedTableBody = false;
+        }
+        eRc =   TextOut_PutA(
+                           this->pOut,
+                           "<tr>\n"
+                );
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         HtmlOut_TableRowData(
+        HTMLOUT_DATA    *this,
+        const
+        char            *pStyle,
+        const
+        char            *pTextA
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !HtmlOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (pStyle) {
+            eRc =   TextOut_Print(
+                                this->pOut,
+                                "<td style=\"%s\">",
+                                pStyle
+                    );
+        } else {
+            eRc =   TextOut_PutA(
+                               this->pOut,
+                               "<td>\n"
+                    );
+        }
+        if (pTextA) {
+            eRc =   TextOut_PutA(
+                               this->pOut,
+                               pTextA
+                    );
+        }
+        eRc =   TextOut_PutA(
+                           this->pOut,
+                           "<\td>\n"
+                );
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         HtmlOut_TableRowEnd(
+        HTMLOUT_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !HtmlOut_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc =   TextOut_PutA(
+                           this->pOut,
+                           "</tr>\n"
+                );
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         HtmlOut_TableEnd (
+        HTMLOUT_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!HtmlOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == this->pOut) {
+            DEBUG_BREAK();
+            return ERESULT_GENERAL_FAILURE;
+        }
+#endif
+
+        eRc = TextOut_PutA(this->pOut, "</tbody></table>\n");
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -975,7 +1350,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = RpgBase_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = HtmlOut_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -983,8 +1358,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     RpgBase_ToDebugString (
-        RPGBASE_DATA    *this,
+    ASTR_DATA *     HtmlOut_ToDebugString (
+        HTMLOUT_DATA      *this,
         int             indent
     )
     {
@@ -999,7 +1374,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!HtmlOut_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1020,7 +1395,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    RpgBase_getSize(this),
+                    HtmlOut_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1060,15 +1435,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            RpgBase_Validate (
-        RPGBASE_DATA    *this
+    bool            HtmlOut_Validate (
+        HTMLOUT_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_RPGBASE))
+            if (obj_IsKindOf(this, OBJ_IDENT_HTMLOUT))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1084,7 +1459,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(RPGBASE_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(HTMLOUT_DATA))) {
             return false;
         }
 

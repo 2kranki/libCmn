@@ -125,6 +125,54 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                         E x e c
+    //---------------------------------------------------------------
+
+    CMDPROC_EXEC_INTERFACE *
+                    CmdProc_getExec (
+        CMDPROC_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pExec;
+    }
+
+
+    bool            CmdProc_setExec (
+        CMDPROC_DATA    *this,
+        CMDPROC_EXEC_INTERFACE
+                        *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pExec) {
+            obj_Release(this->pExec);
+        }
+        this->pExec = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -471,6 +519,7 @@ extern "C" {
         }
 #endif
 
+        CmdProc_setExec(this, OBJ_NIL);
         CmdProc_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -541,7 +590,7 @@ extern "C" {
                 error code.
      */
     ERESULT         CmdProc_Disable (
-        CMDPROC_DATA       *this
+        CMDPROC_DATA    *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -576,7 +625,7 @@ extern "C" {
                 error code.
      */
     ERESULT         CmdProc_Enable (
-        CMDPROC_DATA       *this
+        CMDPROC_DATA    *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -594,6 +643,46 @@ extern "C" {
 
         // Put code here...
         
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          E x e c
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         CmdProc_Exec (
+        CMDPROC_DATA    *this,
+        void            *pOptions
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pExec && this->pExec->pVtbl && this->pExec->pVtbl->pExec) {
+            eRc = this->pExec->pVtbl->pExec(this->pExec, pOptions);
+        }
+        if (pOptions) {
+            mem_Free(pOptions);
+            pOptions = NULL;
+        }
+
         // Return to caller.
         return eRc;
     }
@@ -801,6 +890,12 @@ extern "C" {
 #endif
                         break;
 
+                    case 'R':
+                        if (str_Compare("Redo", (char *)pStr) == 0) {
+                            return CmdProc_Redo;
+                        }
+                        break;
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return CmdProc_ToDebugString;
@@ -815,6 +910,12 @@ extern "C" {
 #endif
                         break;
                         
+                    case 'U':
+                        if (str_Compare("Undo", (char *)pStr) == 0) {
+                            return CmdProc_Undo;
+                        }
+                        break;
+
                     default:
                         break;
                 }
@@ -838,6 +939,113 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      R e d o
+    //---------------------------------------------------------------
+
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         CmdProc_Redo (
+        CMDPROC_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Put code here...
+
+        obj_Disable(this);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       R e d o  P o p
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    VALUE_DATA *    CmdProc_RedoPop (
+        CMDPROC_DATA    *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        obj_Enable(this);
+
+        // Put code here...
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       R e d o  P u s h
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         CmdProc_RedoPush (
+        CMDPROC_DATA    *this,
+        VALUE_DATA      *pData
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        obj_Enable(this);
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -925,6 +1133,113 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      U n d o
+    //---------------------------------------------------------------
+
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         CmdProc_Undo (
+        CMDPROC_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Put code here...
+
+        obj_Disable(this);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       U n d o  P o p
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    VALUE_DATA *    CmdProc_UndoPop (
+        CMDPROC_DATA    *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        obj_Enable(this);
+
+        // Put code here...
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       U n d o  P u s h
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         CmdProc_UndoPush (
+        CMDPROC_DATA    *this,
+        VALUE_DATA      *pData
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        obj_Enable(this);
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

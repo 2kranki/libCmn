@@ -7,13 +7,12 @@
  * Program
  *          C Lexical Scanner (Lex02)
  * Purpose
- *          This object provides a standardized way of handling
- *          a separate Lex02 to run things without complications
- *          of interfering with the main Lex02. A Lex02 may be 
- *          called a Lex02 on other O/S's.
+ *          This object provides a basic C/C++ style lexical
+ *          scanner.
  *
  * Remarks
- *  1.      None
+ *  1.      This lexical scanner differs from the ANSI standard in
+ *          that embedded multi-line comments are allowed.
  *
  * History
  *  05/30/2020 Generated
@@ -54,6 +53,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Lex.h>
+#include        <SrcErrors.h>
 #include        <SrcFile.h>
 
 
@@ -187,26 +187,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Lex02_Disable (
-        LEX02_DATA       *this
-    );
-
-
-    ERESULT     Lex02_Enable (
-        LEX02_DATA       *this
-    );
-
-   
     LEX02_DATA *   Lex02_Init (
         LEX02_DATA     *this
     );
 
 
-    ERESULT     Lex02_IsEnabled (
-        LEX02_DATA       *this
-    );
-    
- 
 #ifdef  LEX02_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
@@ -226,15 +211,31 @@ extern "C" {
 #endif
 
 
+    /*!
+     Advance in the output token stream num tokens, refilling the
+     empty positions in the parsed output queue.
+     @param     this    object pointer
+     @param     num     number of tokens to advance
+     @return:   If successful, a token which must NOT be released,
+                otherwise OBJ_NIL.
+     */
     TOKEN_DATA *    Lex02_TokenAdvance(
         LEX02_DATA      *this,
-        uint16_t        numTokens
+        uint16_t        num
     );
 
 
+    /*!
+     Look Ahead in the output token stream to the num'th token in the
+     parsed output queue.
+     @param     this    object pointer
+     @param     num     number of tokens to lookahead to
+     @return:   If successful, a token which must NOT be released,
+                otherwise OBJ_NIL.
+     */
     TOKEN_DATA *    Lex02_TokenLookAhead(
         LEX02_DATA      *this,
-        uint16_t        numTokens
+        uint16_t        num
     );
 
 

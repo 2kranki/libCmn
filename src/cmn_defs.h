@@ -283,6 +283,8 @@ extern "C" {
         OBJ_IDENT_HEX_CLASS,
         OBJ_IDENT_HJSON,                // HJSON (loose JSON) Parser
         OBJ_IDENT_HJSON_CLASS,
+        OBJ_IDENT_HTMLOUT,              // HTML Output Helper
+        OBJ_IDENT_HTMLOUT_CLASS,
         OBJ_IDENT_I16ARRAY,             // Array of int16_t
         OBJ_IDENT_I16ARRAY_CLASS,
         OBJ_IDENT_I16MATRIX,            // Matrix of int16_t
@@ -323,6 +325,8 @@ extern "C" {
         OBJ_IDENT_LEX07_CLASS,
         OBJ_IDENT_LEXJ,                 // Simple Lexical Scanner for HJSON
         OBJ_IDENT_LEXJ_CLASS,
+        OBJ_IDENT_LEXKW,                // Keyword Lexical Scanner
+        OBJ_IDENT_LEXKW_CLASS,
         OBJ_IDENT_LEXS,                 // Simple Lexical Scanner for JSON, CSV, etc
         OBJ_IDENT_LEXS_CLASS,
         OBJ_IDENT_LINEINDEX,            // Line Index into File or Buffer

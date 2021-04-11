@@ -858,6 +858,7 @@ extern "C" {
         char            *pStrA = NULL;
         const
         char            *pStrA2 = NULL;
+        char            wrkchrs[9];
 
         // Validate the input parameters.
 #ifdef NDEBUG

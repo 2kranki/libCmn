@@ -221,6 +221,7 @@ extern "C" {
         { LEX_OP_NOT,    "LEX_OP_NOT" },
         { LEX_OP_OR,    "LEX_OP_OR" },
         { LEX_OP_POUND,    "LEX_OP_POUND" },
+        { LEX_OP_2POUNDS,    "LEX_OP_2POUNDS" },
         { LEX_OP_PTR,    "LEX_OP_PTR" },
         { LEX_OP_QUESTION,    "LEX_OP_QUESTION" },
         { LEX_OP_RANGE,    "LEX_OP_RANGE" },
@@ -246,9 +247,6 @@ extern "C" {
         { LEX_SPCL_DBLCOLON,    "LEX_SPCL_DBLCOLON" },
         { LEX_SPCL_LBRACK,    "LEX_SPCL_LBRACK" },
         { LEX_SPCL_LBRACE,    "LEX_SPCL_LBRACE" },
-        { LEX_SPCL_POUND,    "LEX_SPCL_POUND" },
-        { LEX_SPCL_2POUNDS,    "LEX_SPCL_2POUNDS" },
-        { LEX_SPCL_QUESTION,    "LEX_SPCL_QUESTION" },
         { LEX_SPCL_RARROW,    "LEX_SPCL_RARROW" },
         { LEX_SPCL_RBRACK,    "LEX_SPCL_RBRACK" },
         { LEX_SPCL_RBRACE,    "LEX_SPCL_RBRACE" },
@@ -471,7 +469,7 @@ extern "C" {
                 pToken = Lex_InputLookAhead(this, 2);
                 cls = Token_getClass(pToken);
                 if( '#' == cls) {
-                    clsNew = LEX_SPCL_2POUNDS;
+                    clsNew = LEX_OP_2POUNDS;
                     Lex_ParseTokenAppendString(this, pToken);
                     Lex_InputAdvance(this, 1);
                 }
@@ -3246,23 +3244,28 @@ extern "C" {
             case TOKEN_TYPE_CHAR:
             case TOKEN_TYPE_W32CHAR:
                 chr = Token_getChrW32(pToken);
-                if (chr == '\n') {
-                    W32Str_AppendA(this->pStr, "\\n");
-                }
-                else if (chr == '\f') {
-                    W32Str_AppendA(this->pStr, "\\f");
-                }
-                else if (chr == '\r') {
-                    W32Str_AppendA(this->pStr, "\\r");
-                }
-                else if (chr == '\t') {
-                    W32Str_AppendA(this->pStr, "\\t");
-                }
-                else if (chr == '\v') {
-                    W32Str_AppendA(this->pStr, "\\v");
-                }
-                else {
-                    W32Str_AppendW32(this->pStr, 1, &chr);
+                switch (chr) {
+                    case '\b':
+                        W32Str_AppendA(this->pStr, "\\b");
+                        break;
+                    case '\f':
+                        W32Str_AppendA(this->pStr, "\\f");
+                        break;
+                    case '\n':
+                        W32Str_AppendA(this->pStr, "\\n");
+                        break;
+                    case '\r':
+                        W32Str_AppendA(this->pStr, "\\r");
+                        break;
+                    case '\t':
+                        W32Str_AppendA(this->pStr, "\\t");
+                        break;
+                    case '\v':
+                        W32Str_AppendA(this->pStr, "\\v");
+                        break;
+                    default:
+                        W32Str_AppendW32(this->pStr, 1, &chr);
+                        break;
                 }
                 break;
 

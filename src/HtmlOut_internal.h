@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   RpgBase_internal.h
- *  Generated 03/22/2021 07:15:24
+ * File:   HtmlOut_internal.h
+ *  Generated 03/30/2021 20:24:21
  *
  * Notes:
  *  --  N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <RpgBase.h>
+#include        <HtmlOut.h>
 #include        <JsonIn.h>
 
 
-#ifndef RPGBASE_INTERNAL_H
-#define RPGBASE_INTERNAL_H
+#ifndef HTMLOUT_INTERNAL_H
+#define HTMLOUT_INTERNAL_H
 
 
 
@@ -62,44 +62,29 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct RpgBase_data_s  {
+struct HtmlOut_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;           // maximum number of elements
-    uint16_t        rsvd16;
+    uint8_t         fHeadData;
+    uint8_t         fNeedTableBody;
+    uint8_t         fSkipWS;        // Skip extra White-Space such as tabs and NLs.
+    uint8_t         rsvd8;
     ASTR_DATA       *pStr;
-    OBJ_ID          *pData;
-    RPGBASE_EXEC_INTERFACE
-                    *pExec;
-    uint8_t         *pRcdCur;
-    uint8_t         *pRcdNxt;
-
-    uint8_t         lvlbrk1;
-    uint8_t         lvlbrk2;
-    uint8_t         lvlbrk3;
-    uint8_t         lvlbrk4;
-    uint8_t         lvlbrk5;
-    uint8_t         lvlbrk6;
-    uint8_t         lvlbrk7;
-    uint8_t         lvlbrk8;
-    uint8_t         lvlbrk9;
-    uint8_t         rcdMatch;
-    uint8_t         pg1;
-    uint8_t         pgBrk;
+    TEXTOUT_DATA    *pOut;
 
 };
 #pragma pack(pop)
 
     extern
-    struct RpgBase_class_data_s  RpgBase_ClassObj;
+    struct HtmlOut_class_data_s  HtmlOut_ClassObj;
 
     extern
     const
-    RPGBASE_VTBL         RpgBase_Vtbl;
+    HTMLOUT_VTBL         HtmlOut_Vtbl;
 
 
 
@@ -107,13 +92,13 @@ struct RpgBase_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  RPGBASE_SINGLETON
-    RPGBASE_DATA *     RpgBase_getSingleton (
+#ifdef  HTMLOUT_SINGLETON
+    HTMLOUT_DATA *     HtmlOut_getSingleton (
         void
     );
 
-    bool            RpgBase_setSingleton (
-     RPGBASE_DATA       *pValue
+    bool            HtmlOut_setSingleton (
+     HTMLOUT_DATA       *pValue
 );
 #endif
 
@@ -123,35 +108,35 @@ struct RpgBase_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  RpgBase_getSuperVtbl (
-        RPGBASE_DATA     *this
+    OBJ_IUNKNOWN *  HtmlOut_getSuperVtbl (
+        HTMLOUT_DATA     *this
     );
 
 
-    ERESULT         RpgBase_Assign (
-        RPGBASE_DATA    *this,
-        RPGBASE_DATA    *pOther
+    ERESULT         HtmlOut_Assign (
+        HTMLOUT_DATA    *this,
+        HTMLOUT_DATA    *pOther
     );
 
 
-    RPGBASE_DATA *       RpgBase_Copy (
-        RPGBASE_DATA     *this
+    HTMLOUT_DATA *       HtmlOut_Copy (
+        HTMLOUT_DATA     *this
     );
 
 
-    void            RpgBase_Dealloc (
+    void            HtmlOut_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  RPGBASE_JSON_SUPPORT
+#ifdef  HTMLOUT_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    RPGBASE_DATA *       RpgBase_ParseJsonObject (
+    HTMLOUT_DATA *       HtmlOut_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -165,35 +150,35 @@ struct RpgBase_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         RpgBase_ParseJsonFields (
+    ERESULT         HtmlOut_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        RPGBASE_DATA     *pObject
+        HTMLOUT_DATA     *pObject
     );
 #endif
 
 
-    void *          RpgBase_QueryInfo (
+    void *          HtmlOut_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  RPGBASE_JSON_SUPPORT
+#ifdef  HTMLOUT_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = RpgBase_ToJson(this);
+     ASTR_DATA      *pDesc = HtmlOut_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     RpgBase_ToJson (
-        RPGBASE_DATA      *this
+    ASTR_DATA *     HtmlOut_ToJson (
+        HTMLOUT_DATA      *this
     );
 
 
@@ -206,8 +191,8 @@ struct RpgBase_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         RpgBase_ToJsonFields (
-        RPGBASE_DATA     *this,
+    ERESULT         HtmlOut_ToJsonFields (
+        HTMLOUT_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -217,8 +202,8 @@ struct RpgBase_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            RpgBase_Validate (
-        RPGBASE_DATA       *this
+    bool            HtmlOut_Validate (
+        HTMLOUT_DATA       *this
     );
 #endif
 
@@ -228,5 +213,5 @@ struct RpgBase_data_s  {
 }
 #endif
 
-#endif  /* RPGBASE_INTERNAL_H */
+#endif  /* HTMLOUT_INTERNAL_H */
 

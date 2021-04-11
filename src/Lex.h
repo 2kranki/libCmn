@@ -207,9 +207,9 @@ extern "C" {
         LEX_CONSTANT_INTEGER,
         LEX_CONSTANT_STRING,
         LEX_CONSTANT_STRING_WIDE,
-        LEX_CONSTANT_TEXT,                  // Text surrounded by "%{" ... "%}"
-        LEX_CONSTANT_TEXTB,                 // Text surrounded by "%[" ... "%]"
-        LEX_CONSTANT_TEXTC,                 // Text surrounded by "%(" ... "%)"
+        LEX_CONSTANT_TEXT,                  // Text surrounded by "{%" ... "%}"
+        LEX_CONSTANT_TEXTB,                 // Text surrounded by "[%" ... "%]"
+        LEX_CONSTANT_TEXTC,                 // Text surrounded by "(%" ... "%)"
         LEX_CONSTANT_TEXTD,                 // Text surrounded by "<." ... ".>"
         LEX_CONSTANT_TEXTE,                 // Text surrounded by "{." ... ".}"
         LEX_CONSTANT_TEXTF,                 // Text surrounded by "[." ... ".]"
@@ -272,6 +272,7 @@ extern "C" {
         LEX_OP_NOT,                         // !    (1s complement)
         LEX_OP_OR,                          // |
         LEX_OP_POUND,                       // #
+        LEX_OP_2POUNDS,                     // ##
         LEX_OP_PTR,                         // *    (???)
         LEX_OP_QUESTION,                    // ?
         LEX_OP_RANGE,                       // ..
@@ -435,9 +436,6 @@ extern "C" {
         LEX_SPCL_LBRACK,                    // [%
         LEX_SPCL_LBRACE,                    // {%
         LEX_SPCL_LPAREN,                    // (%
-        LEX_SPCL_POUND,                     // #
-        LEX_SPCL_2POUNDS,                   // ##
-        LEX_SPCL_QUESTION,                  // ? (???)
         LEX_SPCL_RARROW,                    // =>
         LEX_SPCL_RBRACK,                    // %]
         LEX_SPCL_RBRACE,                    // %}
@@ -711,18 +709,6 @@ extern "C" {
 #endif
 
 
-    TOKEN_DATA *    Lex_TokenAdvance(
-        LEX_DATA        *this,
-        uint16_t        numTokens
-    );
-
-
-    TOKEN_DATA *    Lex_TokenLookAhead(
-        LEX_DATA        *this,
-        uint16_t        numTokens
-    );
-
-
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -744,18 +730,22 @@ extern "C" {
     /*!
      Advance in the output token stream num tokens, refilling the
      empty positions in the parsed output queue.
+     @param     this    object pointer
+     @param     num     number of tokens to advance
      @return:   If successful, a token which must NOT be released,
                 otherwise OBJ_NIL.
      */
     TOKEN_DATA *    Lex_TokenAdvance (
         LEX_DATA        *this,
-        uint16_t        numChrs
+        uint16_t        num
     );
 
 
     /*!
      Look Ahead in the token stream to the num'th token in the
      parsed output queue.
+     @param     this    object pointer
+     @param     num     number of tokens to lookahead to
      @return:   If successful, a token which must NOT be released,
                 otherwise OBJ_NIL.
      */

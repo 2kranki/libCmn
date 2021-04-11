@@ -72,6 +72,10 @@ struct CmdProc_data_s  {
     uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
+    NODELIST_DATA   *pUndo;         // Saved change states.
+    NODELIST_DATA   *pRedo;         // Saved undo states.
+    CMDPROC_EXEC_INTERFACE
+                    *pExec;
 
 };
 #pragma pack(pop)

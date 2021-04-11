@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <NodeBT.h>
 
 
 #ifndef         RPGBASE_H
@@ -99,6 +100,73 @@ extern "C" {
     } RPGBASE_CLASS_VTBL;
 
 
+    /*!         Execution Interface
+     This object is supplied externally and defines the execution
+     interface exit points that will be called at the appropriate
+     times in the RPG cycle.
+     */
+    typedef struct RpgBase_Exec_interface_s RPGBASE_EXEC_INTERFACE;
+
+    typedef struct RpgBase_Exec_vtbl_s  {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // All methods must be defined to return bool.
+        // Properties:
+        // Methods:
+        // LevelBreakN methods are called when a break for that
+        // level occurs or a higher level.
+        bool        (*pLevelBreak1)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelBreak2)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelBreak3)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelBreak4)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelBreak5)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelBreak6)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelBreak7)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelBreak8)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelBreak9)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        // LevelCalcN methods performs the calculations for
+        // this level that are ?????
+        bool        (*pLevelCalc1)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCalc2)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCalc3)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCalc4)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCalc5)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCalc6)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCalc7)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCalc8)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCalc9)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        // LevelCheckN methods check to see if their level break has
+        // occurred and return true if so.
+        bool        (*pLevelCheck1)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCheck2)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCheck3)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCheck4)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCheck5)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCheck6)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCheck7)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCheck8)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        bool        (*pLevelCheck9)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
+        // LevelDataN methods stores the data from the current
+        // input record for use in checking future level breaks.
+        bool        (*pLevelData1)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
+        bool        (*pLevelData2)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
+        bool        (*pLevelData3)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
+        bool        (*pLevelData4)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
+        bool        (*pLevelData5)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
+        bool        (*pLevelData6)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
+        bool        (*pLevelData7)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
+        bool        (*pLevelData8)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
+        bool        (*pLevelData9)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
+    } RPGBASE_EXEC_VTBL;
+
+#pragma pack(push, 1)
+    struct RpgBase_Exec_interface_s    {
+        RPGBASE_EXEC_VTBL   *pVtbl;
+    };
+#pragma pack(pop)
+
+#define Rpg_ExecVtbl(ptr)   ((RPGBASE_EXEC_INTERFACE *)ptr)->pVtbl
+
+
 
 
     /****************************************************************
@@ -111,7 +179,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  RPGBASE_SINGLETON
-    RPGBASE_DATA *     RpgBase_Shared (
+    RPGBASE_DATA *  RpgBase_Shared (
         void
     );
 
@@ -127,7 +195,7 @@ extern "C" {
      released.
      @return    pointer to RpgBase object if successful, otherwise OBJ_NIL.
      */
-    RPGBASE_DATA *     RpgBase_Alloc (
+    RPGBASE_DATA *  RpgBase_Alloc (
         void
     );
     
@@ -137,17 +205,17 @@ extern "C" {
     );
     
     
-    RPGBASE_DATA *     RpgBase_New (
+    RPGBASE_DATA *  RpgBase_New (
         void
     );
     
     
 #ifdef  RPGBASE_JSON_SUPPORT
-    RPGBASE_DATA *   RpgBase_NewFromJsonString (
+    RPGBASE_DATA *  RpgBase_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    RPGBASE_DATA *   RpgBase_NewFromJsonStringA (
+    RPGBASE_DATA *  RpgBase_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -159,30 +227,59 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! @property   Data Object
+     Certain data must be stored in this object. The object defaults
+     to a NodeBT object. This can be easily changed. However, it must
+     conform to the ??? Interface.
+     */
+    OBJ_ID          RpgBase_getData (
+        RPGBASE_DATA    *this
+    );
+
+    bool            RpgBase_setData (
+        RPGBASE_DATA    *this,
+        OBJ_ID          pValue
+    );
 
 
-    
+    /*! @property   Execution Object
+     Certain data must be stored in this object. The object defaults
+     to a NodeBT object. This can be easily changed. However, it must
+     conform to the ??? Interface.
+     */
+RPGBASE_EXEC_INTERFACE *  RpgBase_getExec (
+        RPGBASE_DATA    *this
+    );
+
+    bool            RpgBase_setExec (
+        RPGBASE_DATA    *this,
+        RPGBASE_EXEC_INTERFACE
+                        *pValue
+    );
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     RpgBase_Disable (
-        RPGBASE_DATA       *this
+    ERESULT         RpgBase_Disable (
+        RPGBASE_DATA    *this
     );
 
 
-    ERESULT     RpgBase_Enable (
-        RPGBASE_DATA       *this
+    ERESULT         RpgBase_Enable (
+        RPGBASE_DATA    *this
     );
 
    
-    RPGBASE_DATA *   RpgBase_Init (
-        RPGBASE_DATA     *this
+    RPGBASE_DATA *  RpgBase_Init (
+        RPGBASE_DATA    *this
     );
 
 
-    ERESULT     RpgBase_IsEnabled (
-        RPGBASE_DATA       *this
+    ERESULT         RpgBase_IsEnabled (
+        RPGBASE_DATA    *this
     );
     
  
@@ -200,7 +297,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     RpgBase_ToJson (
-        RPGBASE_DATA   *this
+        RPGBASE_DATA    *this
     );
 #endif
 
@@ -218,7 +315,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     RpgBase_ToDebugString (
-        RPGBASE_DATA     *this,
+        RPGBASE_DATA    *this,
         int             indent
     );
     

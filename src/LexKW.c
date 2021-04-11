@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   RpgBase.c
- *  Generated 03/22/2021 07:15:24
+ * File:   LexKW.c
+ *  Generated 03/30/2021 20:19:39
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <RpgBase_internal.h>
+#include        <LexKW_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -57,6 +57,109 @@ extern "C" {
     
 
     
+    // A binary search is performed on this table. So, it must
+    // be kept sorted by key word.
+    static
+    LEX_KWDTBL_ENTRY   kwdTbl[] = {
+        // Upper case keywords would go here!
+        {"%goal",               LEX_KWD_GOAL,               LEX_LANG_LL1},
+        {"%term",               LEX_KWD_TERM,               LEX_LANG_LL1},
+        {"@autoreleasepool",    LEX_KWD_AT_AUTO,            LEX_LANG_OBJC},
+        {"@catch",              LEX_KWD_AT_CATCH,           LEX_LANG_OBJC},
+        {"@class",              LEX_KWD_AT_CLASS,           LEX_LANG_OBJC},
+        {"@dynamic",            LEX_KWD_AT_DYNAMIC,         LEX_LANG_OBJC},
+        {"@encode",             LEX_KWD_AT_ENCODE,          LEX_LANG_OBJC},
+        {"@end",                LEX_KWD_AT_END,             LEX_LANG_OBJC},
+        {"@finally",            LEX_KWD_AT_FINALLY,         LEX_LANG_OBJC},
+        {"@implementation",     LEX_KWD_AT_IMPLEMENTATION,  LEX_LANG_OBJC},
+        {"@interface",          LEX_KWD_AT_INTERFACE,       LEX_LANG_OBJC},
+        {"@optional",           LEX_KWD_AT_OPTIONAL,        LEX_LANG_OBJC},
+        {"@package",            LEX_KWD_AT_PKG,             LEX_LANG_OBJC},
+        {"@private",            LEX_KWD_AT_PRIVATE,         LEX_LANG_OBJC},
+        {"@property",           LEX_KWD_AT_PROPERTY,        LEX_LANG_OBJC},
+        {"@protected",          LEX_KWD_AT_PROTECTED,       LEX_LANG_OBJC},
+        {"@protocol",           LEX_KWD_AT_PROTOCOL,        LEX_LANG_OBJC},
+        {"@public",             LEX_KWD_AT_PUBLIC,          LEX_LANG_OBJC},
+        {"@selector",           LEX_KWD_AT_SEL,             LEX_LANG_OBJC},
+        {"@synchronized",       LEX_KWD_AT_SYNC,            LEX_LANG_OBJC},
+        {"@synthesize",         LEX_KWD_AT_SYNTH,           LEX_LANG_OBJC},
+        {"@throw",              LEX_KWD_AT_THROW,           LEX_LANG_OBJC},
+        {"@try",                LEX_KWD_AT_TRY,             LEX_LANG_OBJC},
+        {"NS_ENUM",             LEX_KWD_NSENUM,             LEX_LANG_OBJC},
+        {"NS_OPTIONS",          LEX_KWD_NSOPTIONS,          LEX_LANG_OBJC},
+        {"_asm",                LEX_KWD_ASM,                LEX_LANG_MSC},
+        {"_cdecl",              LEX_KWD_CDECL,              LEX_LANG_MSC},
+        {"_emit",               LEX_KWD_EMIT,               LEX_LANG_MSC},
+        {"_entry",              LEX_KWD_ENTRY,              LEX_LANG_MSC},
+        {"_far",                LEX_KWD_FAR,                LEX_LANG_MSC},
+        {"_fortran",            LEX_KWD_FORTRAN,            LEX_LANG_MSC},
+        {"_near",               LEX_KWD_NEAR,               LEX_LANG_MSC},
+        {"_pascal",             LEX_KWD_PASCAL,             LEX_LANG_MSC},
+        {"auto",                LEX_KWD_AUTO,               LEX_LANG_C},
+        {"bool",                LEX_KWD_BOOL,               LEX_LANG_C},
+        {"break",               LEX_KWD_BREAK,              LEX_LANG_C},
+        {"case",                LEX_KWD_CASE,               LEX_LANG_C},
+        {"char",                LEX_KWD_CHAR,               LEX_LANG_C},
+        {"class",               LEX_KWD_CLASS,              LEX_LANG_CPP},
+        {"const",               LEX_KWD_CONST,              LEX_LANG_C},
+        {"continue",            LEX_KWD_CONTINUE,           LEX_LANG_C},
+        {"default",             LEX_KWD_DEFAULT,            LEX_LANG_C},
+        {"delete",              LEX_KWD_DELETE,             LEX_LANG_CPP},
+        {"do",                  LEX_KWD_DO,                 LEX_LANG_C},
+        {"double",              LEX_KWD_DOUBLE,             LEX_LANG_C},
+        {"else",                LEX_KWD_ELSE,               LEX_LANG_C},
+        {"end",                 LEX_KWD_END,                LEX_LANG_C},
+        {"enum",                LEX_KWD_ENUM,               LEX_LANG_C},
+        {"extern",              LEX_KWD_EXTERN,             LEX_LANG_C},
+        {"float",               LEX_KWD_FLOAT,              LEX_LANG_C},
+        {"for",                 LEX_KWD_FOR,                LEX_LANG_C},
+        {"friend",              LEX_KWD_FRIEND,             LEX_LANG_CPP},
+        {"goto",                LEX_KWD_GOTO,               LEX_LANG_C},
+        {"id",                  LEX_KWD_ID,                 LEX_LANG_OBJC},
+        {"if",                  LEX_KWD_IF,                 LEX_LANG_C},
+        {"inline",              LEX_KWD_INLINE,             LEX_LANG_C},
+        {"int",                 LEX_KWD_INT,                LEX_LANG_C},
+        {"int128_t",            LEX_KWD_INT128,             LEX_LANG_C},
+        {"int16_t",             LEX_KWD_INT16,              LEX_LANG_C},
+        {"int256_t",            LEX_KWD_INT256,             LEX_LANG_C},
+        {"int32_t",             LEX_KWD_INT32,              LEX_LANG_C},
+        {"int64_t",             LEX_KWD_INT64,              LEX_LANG_C},
+        {"int8_t",              LEX_KWD_INT8,               LEX_LANG_C},
+        {"long",                LEX_KWD_LONG,               LEX_LANG_C},
+        {"new",                 LEX_KWD_NEW,                LEX_LANG_CPP},
+        {"operator",            LEX_KWD_OPERATOR,           LEX_LANG_CPP},
+        {"overload",            LEX_KWD_OVERLOAD,           LEX_LANG_CPP},
+        {"public",              LEX_KWD_PUBLIC,             LEX_LANG_CPP},
+        {"register",            LEX_KWD_REGISTER,           LEX_LANG_C},
+        {"return",              LEX_KWD_RETURN,             LEX_LANG_C},
+        {"select",              LEX_KWD_SELECT,             LEX_LANG_C},
+        {"short",               LEX_KWD_SHORT,              LEX_LANG_C},
+        {"signed",              LEX_KWD_SIGNED,             LEX_LANG_C},
+        {"sizeof",              LEX_KWD_SIZEOF,             LEX_LANG_C},
+        {"static",              LEX_KWD_STATIC,             LEX_LANG_C},
+        {"struct",              LEX_KWD_STRUCT,             LEX_LANG_C},
+        {"switch",              LEX_KWD_SWITCH,             LEX_LANG_C},
+        {"this",                LEX_KWD_THIS,               LEX_LANG_CPP},
+        {"typedef",             LEX_KWD_TYPEDEF,            LEX_LANG_C},
+        {"uint128_t",           LEX_KWD_UINT128,            LEX_LANG_C},
+        {"uint16_t",            LEX_KWD_UINT16,             LEX_LANG_C},
+        {"uint256_t",           LEX_KWD_UINT256,            LEX_LANG_C},
+        {"uint32_t",            LEX_KWD_UINT32,             LEX_LANG_C},
+        {"uint64_t",            LEX_KWD_UINT64,             LEX_LANG_C},
+        {"uint8_t",             LEX_KWD_UINT8,              LEX_LANG_C},
+        {"union",               LEX_KWD_UNION,              LEX_LANG_C},
+        {"unsigned",            LEX_KWD_UNSIGNED,           LEX_LANG_C},
+        {"virtual",             LEX_KWD_VIRTUAL,            LEX_LANG_CPP},
+        {"void",                LEX_KWD_VOID,               LEX_LANG_C},
+        {"volatile",            LEX_KWD_VOLATILE,           LEX_LANG_C},
+        {"while",               LEX_KWD_WHILE,              LEX_LANG_C},
+    };
+
+    static
+    int         cKwdTbl = sizeof(kwdTbl)/sizeof(LEX_KWDTBL_ENTRY);
+
+
+
 
 
  
@@ -64,16 +167,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            RpgBase_task_body (
-        void            *pData
-    )
-    {
-        //RPGBASE_DATA  *this = pData;
-        
-    }
-#endif
 
 
 
@@ -86,12 +179,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    RPGBASE_DATA *     RpgBase_Alloc (
+    LEXKW_DATA *     LexKW_Alloc (
         void
     )
     {
-        RPGBASE_DATA       *this;
-        uint32_t        cbSize = sizeof(RPGBASE_DATA);
+        LEXKW_DATA       *this;
+        uint32_t        cbSize = sizeof(LEXKW_DATA);
         
         // Do initialization.
         
@@ -103,133 +196,103 @@ extern "C" {
 
 
 
-    RPGBASE_DATA *     RpgBase_New (
+    LEXKW_DATA *     LexKW_New (
         void
     )
     {
-        RPGBASE_DATA       *this;
+        LEXKW_DATA       *this;
         
-        this = RpgBase_Alloc( );
+        this = LexKW_Alloc( );
         if (this) {
-            this = RpgBase_Init(this);
+            this = LexKW_Init(this);
         } 
         return this;
     }
 
 
 
-    
+    // Perform a binary search on the keyword table. (Keyword table
+    // must be kept sorted!)
+    LEX_KWDTBL_ENTRY * LexKW_Search(
+        const
+        char            *pNameA
+    )
+    {
+        LEX_KWDTBL_ENTRY
+                        *pEntry;
+        int             iRc;
+        uint32_t        high = cKwdTbl - 1;
+        uint32_t        low = 0;
+        uint32_t        mid;
+
+        while( low < high ) {
+            mid = (high + low) / 2;
+            pEntry = &kwdTbl[mid];
+            iRc = strcmp(pEntry->pKwd, pNameA);
+            if( iRc < 0 ) {
+                low = mid + 1;
+            }
+            else if( iRc == 0 ) {
+                return pEntry;
+            }
+            else {
+                high = mid;
+            }
+        }
+        if( high == low ) {
+            pEntry = &kwdTbl[low];
+            iRc = strcmp(pEntry->pKwd, pNameA);
+            if(iRc == 0) {
+                return pEntry;
+            }
+        }
+
+        return NULL;
+    }
+
+
+
+    bool            LexKW_ValidateKeywords (
+    )
+    {
+        bool            fRc = true;
+        int             i;
+        int             iRc;
+
+        for (i = 0; i < (cKwdTbl - 1); i++) {
+            iRc = strcmp(kwdTbl[i].pKwd, kwdTbl[i+1].pKwd);
+            if (iRc < 0)
+                ;
+            else {
+                fRc = false;
+                break;
+            }
+        }
+
+        return fRc;
+    }
+
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                            D a t a
-    //---------------------------------------------------------------
-
-    OBJ_ID          RpgBase_getData (
-        RPGBASE_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!RpgBase_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pData;
-    }
-
-
-    bool            RpgBase_setData (
-        RPGBASE_DATA    *this,
-        OBJ_ID          pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!RpgBase_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pData) {
-            obj_Release(this->pData);
-        }
-        this->pData = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                           E x e c
-    //---------------------------------------------------------------
-
-    RPGBASE_EXEC_INTERFACE *  RpgBase_getExec (
-        RPGBASE_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!RpgBase_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pExec;
-    }
-
-
-    bool            RpgBase_setExec (
-        RPGBASE_DATA    *this,
-        RPGBASE_EXEC_INTERFACE
-                        *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!RpgBase_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pExec) {
-            obj_Release(this->pExec);
-        }
-        this->pExec = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        RpgBase_getPriority (
-        RPGBASE_DATA     *this
+    uint16_t        LexKW_getPriority (
+        LEXKW_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -240,14 +303,14 @@ extern "C" {
     }
 
 
-    bool            RpgBase_setPriority (
-        RPGBASE_DATA     *this,
+    bool            LexKW_setPriority (
+        LEXKW_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -264,13 +327,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        RpgBase_getSize (
-        RPGBASE_DATA       *this
+    uint32_t        LexKW_getSize (
+        LEXKW_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -285,15 +348,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * RpgBase_getStr (
-        RPGBASE_DATA     *this
+    ASTR_DATA * LexKW_getStr (
+        LEXKW_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -303,14 +366,14 @@ extern "C" {
     }
     
     
-    bool        RpgBase_setStr (
-        RPGBASE_DATA     *this,
+    bool        LexKW_setStr (
+        LEXKW_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -331,15 +394,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  RpgBase_getSuperVtbl (
-        RPGBASE_DATA     *this
+    OBJ_IUNKNOWN *  LexKW_getSuperVtbl (
+        LEXKW_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -368,16 +431,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = RpgBase_Assign(this,pOther);
+        ERESULT eRc = LexKW_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another RPGBASE object
+     @param     pOther  a pointer to another LEXKW object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         RpgBase_Assign (
-        RPGBASE_DATA       *this,
-        RPGBASE_DATA     *pOther
+    ERESULT         LexKW_Assign (
+        LEXKW_DATA       *this,
+        LEXKW_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -385,11 +448,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!RpgBase_Validate(pOther)) {
+        if (!LexKW_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -450,9 +513,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             RpgBase_Compare (
-        RPGBASE_DATA     *this,
-        RPGBASE_DATA     *pOther
+    int             LexKW_Compare (
+        LEXKW_DATA     *this,
+        LEXKW_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -465,12 +528,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!RpgBase_Validate(pOther)) {
+        if (!LexKW_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -492,36 +555,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        RpgBase      *pCopy = RpgBase_Copy(this);
+        LexKW      *pCopy = LexKW_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a RPGBASE object which must be 
+     @return    If successful, a LEXKW object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    RPGBASE_DATA *     RpgBase_Copy (
-        RPGBASE_DATA       *this
+    LEXKW_DATA *     LexKW_Copy (
+        LEXKW_DATA       *this
     )
     {
-        RPGBASE_DATA       *pOther = OBJ_NIL;
+        LEXKW_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef RPGBASE_IS_IMMUTABLE
+#ifdef LEXKW_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = RpgBase_New( );
+        pOther = LexKW_New( );
         if (pOther) {
-            eRc = RpgBase_Assign(this, pOther);
+            eRc = LexKW_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -539,11 +602,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            RpgBase_Dealloc (
+    void            LexKW_Dealloc (
         OBJ_ID          objId
     )
     {
-        RPGBASE_DATA   *this = objId;
+        LEXKW_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -552,7 +615,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -560,13 +623,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((RPGBASE_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((LEXKW_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        RpgBase_setData(this, OBJ_NIL);
-        RpgBase_setExec(this, OBJ_NIL);
-        RpgBase_setStr(this, OBJ_NIL);
+        LexKW_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -587,32 +648,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        RpgBase      *pDeepCopy = RpgBase_Copy(this);
+        LexKW      *pDeepCopy = LexKW_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a RPGBASE object which must be 
+     @return    If successful, a LEXKW object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    RPGBASE_DATA *     RpgBase_DeepyCopy (
-        RPGBASE_DATA       *this
+    LEXKW_DATA *     LexKW_DeepyCopy (
+        LEXKW_DATA       *this
     )
     {
-        RPGBASE_DATA       *pOther = OBJ_NIL;
+        LEXKW_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = RpgBase_New( );
+        pOther = LexKW_New( );
         if (pOther) {
-            eRc = RpgBase_Assign(this, pOther);
+            eRc = LexKW_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -635,8 +696,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         RpgBase_Disable (
-        RPGBASE_DATA    *this
+    ERESULT         LexKW_Disable (
+        LEXKW_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -644,7 +705,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -670,8 +731,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         RpgBase_Enable (
-        RPGBASE_DATA    *this
+    ERESULT         LexKW_Enable (
+        LEXKW_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -679,7 +740,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -699,11 +760,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    RPGBASE_DATA *  RpgBase_Init (
-        RPGBASE_DATA    *this
+    LEXKW_DATA *   LexKW_Init (
+        LEXKW_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(RPGBASE_DATA);
+        uint32_t        cbSize = sizeof(LEXKW_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -721,7 +782,7 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_RPGBASE);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_LEXKW);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -729,21 +790,23 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&RpgBase_Vtbl);
-#ifdef  RPGBASE_JSON_SUPPORT
-        JsonIn_RegisterClass(RpgBase_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&LexKW_Vtbl);
+#ifdef  LEXKW_JSON_SUPPORT
+        JsonIn_RegisterClass(LexKW_Class());
 #endif
         
-        this->pData = (OBJ_ID)NodeBT_New( );
-        if (OBJ_NIL == this->pData) {
+        /*
+        this->pArray = objArray_New( );
+        if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
+        */
 
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -752,11 +815,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "RpgBase::sizeof(RPGBASE_DATA) = %lu\n", 
-                sizeof(RPGBASE_DATA)
+                "LexKW::sizeof(LEXKW_DATA) = %lu\n", 
+                sizeof(LEXKW_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(RPGBASE_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(LEXKW_DATA));
 #endif
 
         return this;
@@ -768,8 +831,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         RpgBase_IsEnabled (
-        RPGBASE_DATA    *this
+    ERESULT         LexKW_IsEnabled (
+        LEXKW_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -777,7 +840,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -794,42 +857,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                  L e v e l  C h e c k
-    //---------------------------------------------------------------
-
-    /*!
-     Disable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         RpgBase_LevelCheck (
-        RPGBASE_DATA    *this
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        bool            fRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!RpgBase_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //FIXME: fRc = this->pExec && this->pExec->pLevelCheck9(this->pExec, this);
-
-        obj_Disable(this);
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -840,14 +867,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = RpgBase_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = LexKW_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "RpgBase", prefix,
+                        the object name, "LexKW", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -855,13 +882,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          RpgBase_QueryInfo (
+    void *          LexKW_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        RPGBASE_DATA     *this = objId;
+        LEXKW_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -870,7 +897,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -879,11 +906,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(RPGBASE_DATA);
+                return (void *)sizeof(LEXKW_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)RpgBase_Class();
+                return (void *)LexKW_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -909,37 +936,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return RpgBase_Disable;
+                            return LexKW_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return RpgBase_Enable;
+                            return LexKW_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  RPGBASE_JSON_SUPPORT
+#ifdef  LEXKW_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return RpgBase_ParseJsonFields;
+                            return LexKW_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return RpgBase_ParseJsonObject;
+                            return LexKW_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return RpgBase_ToDebugString;
+                            return LexKW_ToDebugString;
                         }
-#ifdef  RPGBASE_JSON_SUPPORT
+#ifdef  LEXKW_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return RpgBase_ToJsonFields;
+                            return LexKW_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return RpgBase_ToJson;
+                            return LexKW_ToJson;
                         }
 #endif
                         break;
@@ -950,10 +977,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == RpgBase_ToDebugString)
+                if (pData == LexKW_ToDebugString)
                     return "ToDebugString";
-#ifdef  RPGBASE_JSON_SUPPORT
-                if (pData == RpgBase_ToJson)
+#ifdef  LEXKW_JSON_SUPPORT
+                if (pData == LexKW_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -975,7 +1002,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = RpgBase_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = LexKW_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -983,8 +1010,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     RpgBase_ToDebugString (
-        RPGBASE_DATA    *this,
+    ASTR_DATA *     LexKW_ToDebugString (
+        LEXKW_DATA      *this,
         int             indent
     )
     {
@@ -999,7 +1026,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!RpgBase_Validate(this)) {
+        if (!LexKW_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1020,7 +1047,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    RpgBase_getSize(this),
+                    LexKW_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1060,15 +1087,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            RpgBase_Validate (
-        RPGBASE_DATA    *this
+    bool            LexKW_Validate (
+        LEXKW_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_RPGBASE))
+            if (obj_IsKindOf(this, OBJ_IDENT_LEXKW))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1084,7 +1111,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(RPGBASE_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(LEXKW_DATA))) {
             return false;
         }
 

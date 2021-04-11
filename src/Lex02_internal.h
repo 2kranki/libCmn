@@ -57,29 +57,6 @@ extern "C" {
 
 
 
-// Use uint32_t for these options.
-typedef enum lex_lang_e {
-    LEX_LANG_UNKNOWN=0,
-    LEX_LANG_ASM        = 0x80000000,       // Base Assembler
-    LEX_LANG_ASM86      = 0x40000000,       // -- Intel 8x86 Assembler Extension
-    LEX_LANG_ASM360     = 0x20000000,       // -- IBM 360 Assembler Keywords Extension
-    LEX_LANG_C          = 0x00800000,       // Base C Language
-    LEX_LANG_MSC        = 0x00400000,       // -- Microsoft C Extensions of C
-    LEX_LANG_CPP        = 0x00200000,       // -- C++ Keywords Extension of C
-    LEX_LANG_OBJC       = 0x00100000,       // -- Obj-C Keywords Extension
-    LEX_LANG_OOBJ       = 0x00080000,       // -- Our Object Keywords Extension
-    LEX_LANG_LL1        = 0x00010000,       // -- LL1 Extension
-} LEX_LANG;
-
-
-typedef struct lex_kwdtbl_entry_s {
-    char        *pKwd;                    /* Key Word */
-    int32_t     value;                    /* Lexical Scan Value */
-    uint32_t    flags;                    /* Flags */
-} LEX_KWDTBL_ENTRY;
-
-
-
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------

@@ -1,36 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Command Base (Cmd) Header
+//                  Keyword Lexical Scanner (LexKW) Header
 //****************************************************************
 /*
  * Program
- *          Command Base (Cmd)
+ *          Keyword Lexical Scanner (LexKW)
  * Purpose
  *          This object provides a standardized way of handling
- *          command style applications.  It allows interaction
- *          with the console or an input file.  Each command is
- *          parsed using the standardized CmdUtl.
- *
- *          Part of command process support is the ability to
- *          undo/redo any command. If this is to be implemented,
- *          there are generally two techniques that can be used.
- *          The first is to implement the command with a "not"
- *          command name and implement that as a separate
- *          command. The other way is to implement a "not" flag
- *          within the command that tells it to undo/redo itself.
- *
- *          In the first case above, the undo/redo stacks need
- *          to be implemented within this object.  The latter
- *          technique allows the undo/redo stacks to be im-
- *          plemented within the command process object.
- *
+ *          a separate LexKW to run things without complications
+ *          of interfering with the main LexKW. A LexKW may be 
+ *          called a LexKW on other O/S's.
  *
  * Remarks
  *  1.      None
  *
  * History
- *  12/29/2020 Generated
+ *  03/30/2021 Generated
  */
 
 
@@ -67,15 +53,18 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Lex.h>
 
 
-#ifndef         CMD_H
-#define         CMD_H
+#ifndef         LEXKW_H
+#define         LEXKW_H
 
 
-//#define   CMD_IS_IMMUTABLE     1
-#define   CMD_JSON_SUPPORT       1
-//#define   CMD_SINGLETON        1
+//#define   LEXKW_IS_IMMUTABLE     1
+//#define   LEXKW_JSON_SUPPORT     1
+//#define   LEXKW_SINGLETON        1
+
+
 
 
 
@@ -91,31 +80,49 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Cmd_data_s  CMD_DATA;            // Inherits from OBJ
-    typedef struct Cmd_class_data_s CMD_CLASS_DATA;   // Inherits from OBJ
+    typedef struct LexKW_data_s  LEXKW_DATA;            // Inherits from OBJ
+    typedef struct LexKW_class_data_s LEXKW_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Cmd_vtbl_s  {
+    typedef struct LexKW_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Cmd_object.c.
+        // method names to the vtbl definition in LexKW_object.c.
         // Properties:
         // Methods:
-        ERESULT         (*p_Redo) (
-            OBJ_ID          this
-        );
-        ERESULT         (*p_Undo) (
-            OBJ_ID          this
-        );
-    } CMD_VTBL;
+        //bool        (*pIsEnabled)(LEXKW_DATA *);
+    } LEXKW_VTBL;
 
-    typedef struct Cmd_class_vtbl_s    {
+    typedef struct LexKW_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Cmd_object.c.
+        // method names to the vtbl definition in LexKW_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(CMD_DATA *);
-    } CMD_CLASS_VTBL;
+        //bool        (*pIsEnabled)(LEXKW_DATA *);
+    } LEXKW_CLASS_VTBL;
+
+
+    // Use uint32_t for these options.
+    typedef enum lex_lang_e {
+        LEX_LANG_UNKNOWN=0,
+        LEX_LANG_ASM        = 0x80000000,       // Base Assembler
+        LEX_LANG_ASM86      = 0x40000000,       // -- Intel 8x86 Assembler Extension
+        LEX_LANG_ASM360     = 0x20000000,       // -- IBM 360 Assembler Keywords Extension
+        LEX_LANG_C          = 0x00800000,       // Base C Language
+        LEX_LANG_MSC        = 0x00400000,       // -- Microsoft C Extensions of C
+        LEX_LANG_CPP        = 0x00200000,       // -- C++ Keywords Extension of C
+        LEX_LANG_OBJC       = 0x00100000,       // -- Obj-C Keywords Extension
+        LEX_LANG_OOBJ       = 0x00080000,       // -- Our Object Keywords Extension
+        LEX_LANG_LL1        = 0x00010000,       // -- LL1 Extension
+    } LEX_LANG;
+
+
+    typedef struct lex_kwdtbl_entry_s {
+        char        *pKwd;                    /* Key Word */
+        int32_t     value;                    /* Lexical Scan Value */
+        uint32_t    flags;                    /* Flags */
+    } LEX_KWDTBL_ENTRY;
+
 
 
 
@@ -129,12 +136,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  CMD_SINGLETON
-    CMD_DATA *      Cmd_Shared (
+#ifdef  LEXKW_SINGLETON
+    LEXKW_DATA *    LexKW_Shared (
         void
     );
 
-    void            Cmd_SharedReset (
+    void            LexKW_SharedReset (
         void
     );
 #endif
@@ -144,34 +151,45 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Cmd object if successful, otherwise OBJ_NIL.
+     @return    pointer to LexKW object if successful, otherwise OBJ_NIL.
      */
-    CMD_DATA *      Cmd_Alloc (
+    LEXKW_DATA *    LexKW_Alloc (
         void
     );
     
     
-    OBJ_ID          Cmd_Class (
+    OBJ_ID          LexKW_Class (
         void
     );
     
     
-    CMD_DATA *      Cmd_New (
+    LEXKW_DATA *    LexKW_New (
         void
     );
     
     
-#ifdef  CMD_JSON_SUPPORT
-    CMD_DATA *      Cmd_NewFromJsonString (
+#ifdef  LEXKW_JSON_SUPPORT
+    LEXKW_DATA *   LexKW_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    CMD_DATA *      Cmd_NewFromJsonStringA (
+    LEXKW_DATA *   LexKW_NewFromJsonStringA (
         const
         char            *pStringA
     );
 #endif
 
+
+    LEX_KWDTBL_ENTRY *
+                    LexKW_Search(
+        const
+        char            *pNameA
+    );
+
+
+    bool            LexKW_ValidateKeywords (
+        void
+    );
 
 
     //---------------------------------------------------------------
@@ -185,48 +203,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /*!
-     Execute the command.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Cmd_Exec (
-        CMD_DATA        *this
+    ERESULT     LexKW_Disable (
+        LEXKW_DATA       *this
     );
 
 
-    CMD_DATA *      Cmd_Init (
-        CMD_DATA        *this
+    ERESULT     LexKW_Enable (
+        LEXKW_DATA       *this
+    );
+
+   
+    LEXKW_DATA *   LexKW_Init (
+        LEXKW_DATA     *this
     );
 
 
-    /*!
-     Redo a previously undone command.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Cmd_Redo (
-        CMD_DATA        *this
+    ERESULT     LexKW_IsEnabled (
+        LEXKW_DATA       *this
     );
     
  
-#ifdef  CMD_JSON_SUPPORT
+#ifdef  LEXKW_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Cmd_ToJson(this);
+     ASTR_DATA      *pDesc = LexKW_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Cmd_ToJson (
-        CMD_DATA        *this
+    ASTR_DATA *     LexKW_ToJson (
+        LEXKW_DATA   *this
     );
 #endif
 
@@ -235,7 +246,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Cmd_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = LexKW_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -243,28 +254,17 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Cmd_ToDebugString (
-        CMD_DATA        *this,
+    ASTR_DATA *     LexKW_ToDebugString (
+        LEXKW_DATA     *this,
         int             indent
     );
     
     
-    /*!
-     Undo a previously executed command.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Cmd_Undo (
-        CMD_DATA        *this
-    );
-
-
 
     
 #ifdef  __cplusplus
 }
 #endif
 
-#endif  /* CMD_H */
+#endif  /* LEXKW_H */
 
