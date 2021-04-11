@@ -7,10 +7,14 @@
  * Program
  *          Command Base (Cmd)
  * Purpose
- *          This object provides a standardized way of handling
- *          command style applications.  It allows interaction
- *          with the console or an input file.  Each command is
- *          parsed using the standardized CmdUtl.
+ *          This object accepts command requests, creates the
+ *          appropriate command processor and optionally sup-
+ *          ports undo/redo. Command requests are made in
+ *          textual format.  It is assumed that they come from
+ *          a file or keyboard, but that processing is extraneous
+ *          to this object.  The command input is parsed using
+ *          CmdUtl and then delegated to the appropriate command
+ *          processor (CmdProc).
  *
  *          Part of command process support is the ability to
  *          undo/redo any command. If this is to be implemented,
@@ -67,6 +71,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <CmdUtl.h>
 
 
 #ifndef         CMD_H

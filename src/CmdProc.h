@@ -7,10 +7,9 @@
  * Program
  *          Command Processor (CmdProc)
  * Purpose
- *          This object provides a standardized way of handling
- *          a command from the console or input file.  The options
- *          are parsed from the supplied command definition, CMDPROC_CMD,
- *          using CmdUtl.
+ *          This object provides a standardized command base object
+ *          whose responsibility is to provide a uniform interface
+ *          for commands and optionally provide undo/redo support.
  *
  *          Undo/Redo is one of the nicest things to implement in
  *          commands that cause changes.  To support this, a change
@@ -154,7 +153,15 @@ extern "C" {
     };
 #pragma pack(pop)
 
-#define Rpg_ExecVtbl(ptr)   ((RPGBASE_EXEC_INTERFACE *)ptr)->pVtbl
+//#define Rpg_ExecVtbl(ptr)   ((RPGBASE_EXEC_INTERFACE *)ptr)->pVtbl
+
+
+    typedef enum CmdProc_states_e {
+        CMDPROC_STATE_UNKNOWN=0,
+        CMDPROC_STATE_COMPLETED,
+        CMDPROC_STATE_DEF,
+        CMDPROC_STATE_GHI,
+    } CMDPROC_STATES;
 
 
 
@@ -218,6 +225,16 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    CMDUTL_DATA *   CmdProc_getCmdUtl(
+        CMDPROC_DATA    *this
+    );
+
+    bool            CmdProc_setCmdUtl (
+        CMDPROC_DATA    *this,
+        CMDUTL_DATA     *pValue
+    );
+
+
     CMDPROC_EXEC_INTERFACE *
                     CmdProc_getExec (
         CMDPROC_DATA    *this
@@ -230,7 +247,16 @@ extern "C" {
     );
 
 
-    
+    uint16_t        CmdProc_getState (
+        CMDPROC_DATA    *this
+    );
+
+    bool            CmdProc_setState (
+        CMDPROC_DATA    *this,
+        uint16_t        value
+    );
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -263,7 +289,7 @@ extern "C" {
 
 
     /*!
-     Indicate whether this command support undo/redo.
+     Indicates whether this command supports undo/redo.
      @param     this    object pointer
      @return    If this command supports undo, return true. Otherwise, return
                 false.

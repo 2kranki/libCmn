@@ -125,6 +125,52 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                       C m d U t l
+    //---------------------------------------------------------------
+
+    CMDUTL_DATA *   CmdProc_getCmdUtl(
+        CMDPROC_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pCmdUtl;
+    }
+
+
+    bool            CmdProc_setCmdUtl (
+        CMDPROC_DATA    *this,
+        CMDUTL_DATA     *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pCmdUtl) {
+            obj_Release(this->pCmdUtl);
+        }
+        this->pCmdUtl = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                         E x e c
     //---------------------------------------------------------------
 
@@ -232,6 +278,48 @@ extern "C" {
 #endif
 
         return 0;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S t a t e
+    //---------------------------------------------------------------
+
+    uint16_t        CmdProc_getState (
+        CMDPROC_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->state;
+    }
+
+
+    bool            CmdProc_setState (
+        CMDPROC_DATA    *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->state = value;
+
+        return true;
     }
 
 
@@ -519,6 +607,7 @@ extern "C" {
         }
 #endif
 
+        CmdProc_setCmdUtl(this, OBJ_NIL);
         CmdProc_setExec(this, OBJ_NIL);
         CmdProc_setStr(this, OBJ_NIL);
 
@@ -685,6 +774,31 @@ extern "C" {
 
         // Return to caller.
         return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      H a s  U n d o
+    //---------------------------------------------------------------
+
+    bool            CmdProc_HasUndo (
+        CMDPROC_DATA    *this
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!CmdProc_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return false;
+        }
+#endif
+
+        // Return to caller.
+        return this->fUndo ? true : false;
     }
 
 
@@ -1137,12 +1251,6 @@ extern "C" {
     //                      U n d o
     //---------------------------------------------------------------
 
-    /*!
-     Disable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
     ERESULT         CmdProc_Undo (
         CMDPROC_DATA    *this
     )
@@ -1157,10 +1265,6 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-
-        // Put code here...
-
-        obj_Disable(this);
 
         // Return to caller.
         return eRc;

@@ -1,12 +1,13 @@
-// vi:nu:et:sts=4 ts=4 sw=4 tw=90
+// vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   AStrArray_internal.h
- *	Copied from NodeArray 09/25/2015
+ *  Generated 04/11/2021 10:41:38
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,25 +39,35 @@
 
 
 
+#include        <AStrArray.h>
+#include        <JsonIn.h>
+#include        <ObjArray_internal.h>
+
+
 #ifndef ASTRARRAY_INTERNAL_H
-#define	ASTRARRAY_INTERNAL_H
+#define ASTRARRAY_INTERNAL_H
 
 
-#include    <AStrArray.h>
-#include    <ObjArray.h>
 
 
-#ifdef	__cplusplus
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
 
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct AStrArray_data_s	{
+struct AStrArray_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     OBJARRAY_DATA   *pArray;
@@ -65,57 +76,138 @@ struct AStrArray_data_s	{
 #pragma pack(pop)
 
     extern
+    struct AStrArray_class_data_s  AStrArray_ClassObj;
+
+    extern
     const
-    ASTRARRAY_VTBL  AStrArray_Vtbl;
+    ASTRARRAY_VTBL         AStrArray_Vtbl;
 
 
 
-    // Internal Functions
-    void            AStrArray_Dealloc(
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  ASTRARRAY_SINGLETON
+    ASTRARRAY_DATA *     AStrArray_getSingleton (
+        void
+    );
+
+    bool            AStrArray_setSingleton (
+     ASTRARRAY_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  AStrArray_getSuperVtbl (
+        ASTRARRAY_DATA     *this
+    );
+
+
+    ERESULT         AStrArray_Assign (
+        ASTRARRAY_DATA    *this,
+        ASTRARRAY_DATA    *pOther
+    );
+
+
+    ASTRARRAY_DATA *       AStrArray_Copy (
+        ASTRARRAY_DATA     *this
+    );
+
+
+    void            AStrArray_Dealloc (
         OBJ_ID          objId
     );
 
+
+#ifdef  ASTRARRAY_JSON_SUPPORT
     /*!
-     Return information about this object. This method can translate
-     methods to strings and vice versa, return the address of the
-     object information structure.
-     Example:
-     @code
-     // Return a method pointer for a string or NULL if not found.
-     void        *pMethod = AStrArray_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
-     @endcode
-     @param     objId   ASTRARRAY_DATA object pointer
-     @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
-     @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
-                        for OBJ_QUERYINFO_TYPE_METHOD, this field points to a
-                        character string which represents the method name without
-                        the object name, "node", prefix,
-                        for OBJ_QUERYINFO_TYPE_PTR, this field contains the
-                        address of the method to be found.
-     @return    If unsuccessful, NULL. Otherwise, for:
-                OBJ_QUERYINFO_TYPE_INFO: info pointer,
-                OBJ_QUERYINFO_TYPE_METHOD: method pointer,
-                OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
      */
-    void *          AStrArray_QueryInfo(
+    ASTRARRAY_DATA *       AStrArray_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+
+
+    /*!
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         AStrArray_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        ASTRARRAY_DATA     *pObject
+    );
+#endif
+
+
+    void *          AStrArray_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
-    
-#ifdef NDEBUG
-#else
-    bool			AStrArray_Validate(
-        ASTRARRAY_DATA       *cbp
+
+
+#ifdef  ASTRARRAY_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = AStrArray_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     AStrArray_ToJson (
+        ASTRARRAY_DATA      *this
+    );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         AStrArray_ToJsonFields (
+        ASTRARRAY_DATA     *this,
+        ASTR_DATA       *pStr
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+
+#ifdef NDEBUG
+#else
+    bool            AStrArray_Validate (
+        ASTRARRAY_DATA       *this
+    );
+#endif
+
+
+
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* ASTRARRAY_INTERNAL_H */
+#endif  /* ASTRARRAY_INTERNAL_H */
 

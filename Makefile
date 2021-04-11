@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 3/18/2021 20:08:20.000)
+# ( 4/11/2021 15:41:25.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -72,6 +72,11 @@ $(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h $(
 OBJS += $(OBJDIR)/AStrArray.o
 
 $(OBJDIR)/AStrArray.o: $(SRCDIR)/AStrArray.c $(SRCDIR)/AStr.h $(SRCDIR)/AStrArray.h $(SRCDIR)/AStrArray_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/AStrArray_json.o
+
+$(OBJDIR)/AStrArray_json.o: $(SRCDIR)/AStrArray_json.c $(SRCDIR)/AStrArray.h $(SRCDIR)/AStrArray_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/AStrArray_object.o
@@ -344,6 +349,16 @@ OBJS += $(OBJDIR)/File_object.o
 $(OBJDIR)/File_object.o: $(SRCDIR)/File_object.c $(SRCDIR)/File.h $(SRCDIR)/File_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/HtmlOut.o
+
+$(OBJDIR)/HtmlOut.o: $(SRCDIR)/HtmlOut.c $(SRCDIR)/HtmlOut.h $(SRCDIR)/HtmlOut_internal.h $(SRCDIR)/TextOut.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/HtmlOut_object.o
+
+$(OBJDIR)/HtmlOut_object.o: $(SRCDIR)/HtmlOut_object.c $(SRCDIR)/HtmlOut.h $(SRCDIR)/HtmlOut_internal.h $(SRCDIR)/TextOut.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/I16Array.o
 
 $(OBJDIR)/I16Array.o: $(SRCDIR)/I16Array.c $(SRCDIR)/I16Array.h $(SRCDIR)/I16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
@@ -532,6 +547,16 @@ $(OBJDIR)/LexJ.o: $(SRCDIR)/LexJ.c $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(
 OBJS += $(OBJDIR)/LexJ_object.o
 
 $(OBJDIR)/LexJ_object.o: $(SRCDIR)/LexJ_object.c $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/LexKW.o
+
+$(OBJDIR)/LexKW.o: $(SRCDIR)/LexKW.c $(SRCDIR)/Lex.h $(SRCDIR)/LexKW.h $(SRCDIR)/LexKW_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/LexKW_object.o
+
+$(OBJDIR)/LexKW_object.o: $(SRCDIR)/LexKW_object.c $(SRCDIR)/Lex.h $(SRCDIR)/LexKW.h $(SRCDIR)/LexKW_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Lex_object.o
@@ -912,6 +937,21 @@ $(OBJDIR)/PsxExec.o: $(SRCDIR)/PsxExec.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_i
 OBJS += $(OBJDIR)/PsxExec_object.o
 
 $(OBJDIR)/PsxExec_object.o: $(SRCDIR)/PsxExec_object.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/RpgBase.o
+
+$(OBJDIR)/RpgBase.o: $(SRCDIR)/RpgBase.c $(SRCDIR)/RpgBase.h $(SRCDIR)/RpgBase_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/RpgBase_json.o
+
+$(OBJDIR)/RpgBase_json.o: $(SRCDIR)/RpgBase_json.c $(SRCDIR)/RpgBase.h $(SRCDIR)/RpgBase_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/RpgBase_object.o
+
+$(OBJDIR)/RpgBase_object.o: $(SRCDIR)/RpgBase_object.c $(SRCDIR)/RpgBase.h $(SRCDIR)/RpgBase_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SQLite.o
@@ -2190,6 +2230,12 @@ File_test: $(TEST_SRC)/File_test.c $(SRCDIR)/File.h $(SRCDIR)/File_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += HtmlOut_test
+
+HtmlOut_test: $(TEST_SRC)/HtmlOut_test.c $(SRCDIR)/HtmlOut.h $(SRCDIR)/HtmlOut_internal.h $(SRCDIR)/TextOut.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += I16Array_test
 
 I16Array_test: $(TEST_SRC)/I16Array_test.c $(SRCDIR)/I16Array.h $(SRCDIR)/I16Array_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
@@ -2289,6 +2335,12 @@ Lex07_test: $(TEST_SRC)/Lex07_test.c $(SRCDIR)/Lex07.h $(SRCDIR)/Lex07_internal.
 TESTS += LexJ_test
 
 LexJ_test: $(TEST_SRC)/LexJ_test.c $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += LexKW_test
+
+LexKW_test: $(TEST_SRC)/LexKW_test.c $(SRCDIR)/LexKW.h $(SRCDIR)/LexKW_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2457,6 +2509,12 @@ Path_test: $(TEST_SRC)/Path_test.c $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(
 TESTS += PsxExec_test
 
 PsxExec_test: $(TEST_SRC)/PsxExec_test.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += RpgBase_test
+
+RpgBase_test: $(TEST_SRC)/RpgBase_test.c $(SRCDIR)/RpgBase.h $(SRCDIR)/RpgBase_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

@@ -55,8 +55,6 @@ extern "C" {
 #endif
 
 
-
-
     //---------------------------------------------------------------
     //                  Object Data Description
     //---------------------------------------------------------------
@@ -69,13 +67,15 @@ struct CmdProc_data_s  {
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;           // maximum number of elements
-    uint16_t        rsvd16;
+    uint8_t         fUndo;          // true == has undo capability
+    uint8_t         rsvd8;
+    uint16_t        state;
     ASTR_DATA       *pStr;
     NODELIST_DATA   *pUndo;         // Saved change states.
     NODELIST_DATA   *pRedo;         // Saved undo states.
     CMDPROC_EXEC_INTERFACE
                     *pExec;
+    CMDUTL_DATA     *pCmdUtl;
 
 };
 #pragma pack(pop)
