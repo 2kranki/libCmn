@@ -23,7 +23,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <trace.h>
 #include    <SQLite_internal.h>
 #ifdef  SQLITE_JSON_SUPPORT
@@ -273,7 +273,7 @@ int             test_SQLite_Test01 (
     SQLITE_DATA     *pObj = OBJ_NIL;
     bool            fRc;
     const
-    char            *pDatabasePath = "~/git/libCmn/tests/files/chinook.db";
+    char            *pDatabasePath = TEST_FILES_DIR "/chinook.db";
     PATH_DATA       *pPath = OBJ_NIL;
     const
     char            *pSqlA = NULL;
@@ -335,7 +335,7 @@ int             test_SQLite_Table01 (
     SQLITE_DATA     *pObj = OBJ_NIL;
     bool            fRc;
     const
-    char            *pDatabasePath = "~/git/libCmn/tests/files/chinook.db";
+    char            *pDatabasePath = TEST_FILES_DIR "/chinook.db";
     PATH_DATA       *pPath = OBJ_NIL;
     ASTRCARRAY_DATA *pArray = OBJ_NIL;
     int             i;

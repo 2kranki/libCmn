@@ -131,19 +131,19 @@ extern "C" {
         const
         char                *pDescription;      // (Required)
         const
-        char                type;               // see DBFIELD_TYPES
+        char                type;               // see SQLCOLDEF_TYPES
         uint16_t            keySequence;
         //                          0 == not a key column
         //                          1+ == column is part of the key in order
         //                                specified by this number
-        int8_t              decimalPlaces;      // for DBFIELD_TYPE_REAL
+        int8_t              decimalPlaces;      // for SQLCOLDEF_TYPE_REAL
         uint8_t             seq;                // Column Sequence number for CSV
         //                                      // or other formats.
         int32_t             length;
-        //                          For DBFIELD_TYPE_TEXT and DBFIELD_TYPE_VARCHAR,
+        //                          For SQLCOLDEF_TYPE_TEXT and SQLCOLDEF_TYPE_VARCHAR,
         //                          a length of 0 just means that it is variable.
         int32_t             minimumLength;      // For use with TEXT, CHAR or VARCHAR
-        uint32_t            flags;              // see DBFIELD_FLAGS
+        uint32_t            flags;              // see SQLCOL_FLAGS
         char                *pDefaultValue;     // Value to be placed inside DEFAULT( )
         //                                      // (Optional)
         char                *pCheckExpression;  // Value to be placed inside CHECK( )
@@ -163,7 +163,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  SQLCOLDEF_SINGLETON
-    SQLCOLDEF_DATA *     SqlColDef_Shared (
+    SQLCOLDEF_DATA * SqlColDef_Shared (
         void
     );
 
@@ -179,7 +179,7 @@ extern "C" {
      released.
      @return    pointer to SqlColDef object if successful, otherwise OBJ_NIL.
      */
-    SQLCOLDEF_DATA *     SqlColDef_Alloc (
+    SQLCOLDEF_DATA * SqlColDef_Alloc (
         void
     );
     
@@ -189,17 +189,17 @@ extern "C" {
     );
     
     
-    SQLCOLDEF_DATA *     SqlColDef_New (
+    SQLCOLDEF_DATA * SqlColDef_New (
         void
     );
     
     
 #ifdef  SQLCOLDEF_JSON_SUPPORT
-    SQLCOLDEF_DATA *   SqlColDef_NewFromJsonString (
+    SQLCOLDEF_DATA * SqlColDef_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    SQLCOLDEF_DATA *   SqlColDef_NewFromJsonStringA (
+    SQLCOLDEF_DATA * SqlColDef_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -218,23 +218,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     SqlColDef_Disable (
-        SQLCOLDEF_DATA		*this
+    ERESULT         SqlColDef_Disable (
+        SQLCOLDEF_DATA  *this
     );
 
 
-    ERESULT     SqlColDef_Enable (
-        SQLCOLDEF_DATA		*this
+    ERESULT         SqlColDef_Enable (
+        SQLCOLDEF_DATA	*this
     );
 
    
-    SQLCOLDEF_DATA *   SqlColDef_Init (
-        SQLCOLDEF_DATA     *this
+    SQLCOLDEF_DATA * SqlColDef_Init (
+        SQLCOLDEF_DATA  *this
     );
 
 
-    ERESULT     SqlColDef_IsEnabled (
-        SQLCOLDEF_DATA		*this
+    ERESULT         SqlColDef_IsEnabled (
+        SQLCOLDEF_DATA	*this
     );
     
  
@@ -252,7 +252,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     SqlColDef_ToJson (
-        SQLCOLDEF_DATA   *this
+        SQLCOLDEF_DATA  *this
     );
 #endif
 
@@ -270,7 +270,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     SqlColDef_ToDebugString (
-        SQLCOLDEF_DATA     *this,
+        SQLCOLDEF_DATA  *this,
         int             indent
     );
     

@@ -1,3 +1,4 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   test_defs.h
  *
@@ -44,12 +45,16 @@
 extern "C" {
 #endif
     
-    
+
+#define TEST_FILES_DIR  "/Users/bob/git/libCmn/tests/files"    
     
     
     //****************************************************************
     //* * * * * * * * * * *  Data Definitions  * * * * * * * * * * * *
     //****************************************************************
+
+
+    
 
     typedef struct cmn_data_s   CMN_DATA;
 

@@ -23,7 +23,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <JsonIn.h>
 #include    <trace.h>
 #include    <Path_internal.h>
@@ -267,7 +267,7 @@ int         test_Path_DateLastUpdated(
     char            *pStrA;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = Path_NewA("/Users/bob/Support/testFiles/test_ebcdic.txt");
+    pObj = Path_NewA(TEST_FILES_DIR "/test_ebcdic.txt");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         

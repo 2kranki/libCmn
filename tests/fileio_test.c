@@ -22,7 +22,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <DateTime.h>
 #include    <File.h>
 #include    <JsonIn.h>
@@ -114,7 +114,7 @@ int         test_fileio_Read01(
     FILEIO_DATA     *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     const
-    char            *pPathA = "~/git/libCmn/tests/files/test_objects.json.txt";
+    char            *pPathA = TEST_FILES_DIR "/test_objects.json.txt";
     int64_t         fileSize = 0;
     uint8_t         buffer[256];
     uint8_t         *pBuffer = NULL;
@@ -279,7 +279,7 @@ int         test_fileio_IO_Read01(
     PATH_DATA       *pPath = OBJ_NIL;
     IO_INTERFACE    *pIO = OBJ_NIL;
     const
-    char            *pPathA = "~/git/libCmn/tests/files/test_objects.json.txt";
+    char            *pPathA = TEST_FILES_DIR "/test_objects.json.txt";
     off_t           fileSize = 0;
     uint8_t         buffer[256];
     uint8_t         *pBuffer = NULL;

@@ -22,7 +22,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <AStrArray.h>
 #include    <JsonIn.h>
 #include    <szTbl.h>
@@ -629,11 +629,13 @@ int         test_AStr_File(
     XCTAssertTrue( (0 == eRc) );
     obj_Release(pPath);
     pPath = OBJ_NIL;
+    obj_Release(pObj);
+    pObj = OBJ_NIL;
+
+    pObj = AStr_NewA(TEST_FILES_DIR "/test.txt");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         
-        eRc = AStr_AppendA(pObj, "/git/libCmn/tests/files/test.txt");
-        XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
-
         pPath = Path_NewFromAStr(pObj);
         XCTAssertFalse( (OBJ_NIL == pPath) );
         if (pPath) {

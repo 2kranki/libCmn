@@ -23,7 +23,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <JsonIn.h>
 #include    <trace.h>
 #include    <JsonOut_internal.h>

@@ -258,8 +258,8 @@
 		C48EA14023A7FFE600CCAF2B /* NodeEnum.c in Sources */ = {isa = PBXBuildFile; fileRef = C48EA13C23A7FFE500CCAF2B /* NodeEnum.c */; };
 		C48EA14123A7FFE600CCAF2B /* NodeEnum_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C48EA13E23A7FFE600CCAF2B /* NodeEnum_object.c */; };
 		C4917E0B210AACD100FE234E /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C4917E0A210AACD100FE234E /* libcurses.tbd */; };
-		C49AA1BC2623427F008B6182 /* AStrArray_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C49AA1BB2623427F008B6182 /* AStrArray_test.c */; };
 		C49AA1BF2623429C008B6182 /* AStrArray_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C49AA1BE2623429C008B6182 /* AStrArray_json.c */; };
+		C49AA1CC26238DD0008B6182 /* TextIn_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C49AA1CB26238DD0008B6182 /* TextIn_test.c */; };
 		C49D42592576DFED0059B0A3 /* SrcDiff.c in Sources */ = {isa = PBXBuildFile; fileRef = C49D42552576DFEC0059B0A3 /* SrcDiff.c */; };
 		C49D425A2576DFED0059B0A3 /* SrcDiff_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C49D42562576DFEC0059B0A3 /* SrcDiff_object.c */; };
 		C49D985323A6ACE9003A25FD /* ObjList_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C49D985023A6ACE8003A25FD /* ObjList_object.c */; };
@@ -923,8 +923,8 @@
 		C48EA13E23A7FFE600CCAF2B /* NodeEnum_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NodeEnum_object.c; sourceTree = "<group>"; };
 		C48EA13F23A7FFE600CCAF2B /* NodeEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeEnum.h; sourceTree = "<group>"; };
 		C4917E0A210AACD100FE234E /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
-		C49AA1BB2623427F008B6182 /* AStrArray_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AStrArray_test.c; sourceTree = "<group>"; };
 		C49AA1BE2623429C008B6182 /* AStrArray_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AStrArray_json.c; sourceTree = "<group>"; };
+		C49AA1CB26238DD0008B6182 /* TextIn_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TextIn_test.c; sourceTree = "<group>"; };
 		C49D42552576DFEC0059B0A3 /* SrcDiff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcDiff.c; sourceTree = "<group>"; };
 		C49D42562576DFEC0059B0A3 /* SrcDiff_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcDiff_object.c; sourceTree = "<group>"; };
 		C49D42572576DFEC0059B0A3 /* SrcDiff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SrcDiff.h; sourceTree = "<group>"; };
@@ -1257,7 +1257,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C49AA1BB2623427F008B6182 /* AStrArray_test.c */,
+				C49AA1CB26238DD0008B6182 /* TextIn_test.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -2161,7 +2161,6 @@
 				C4EF2A3E245632710074544A /* SqlColDef_json.c in Sources */,
 				C4359AEE1FC9C3D800CA858E /* lru_object.c in Sources */,
 				C4B75F9024020A8C00701E77 /* Sym_object.c in Sources */,
-				C49AA1BC2623427F008B6182 /* AStrArray_test.c in Sources */,
 				C4B75F5823FD82E800701E77 /* I16Matrix.c in Sources */,
 				C4359BFC1FC9C48400CA858E /* trace.c in Sources */,
 				C40F05642482E55A00D66F9B /* Lex03.c in Sources */,
@@ -2284,6 +2283,7 @@
 				C4B75F8E24020A8C00701E77 /* Syms_object.c in Sources */,
 				C48EA13923A7EAB300CCAF2B /* ObjEnum.c in Sources */,
 				C40F053724805B1000D66F9B /* Lex.c in Sources */,
+				C49AA1CC26238DD0008B6182 /* TextIn_test.c in Sources */,
 				C4B0467E23E71AAA00162B4F /* ObjHash_object.c in Sources */,
 				C4404DE1254349D100A6787F /* SQLiteStmt.c in Sources */,
 				C43599CD1FC9C36800CA858E /* AStrArray_object.c in Sources */,

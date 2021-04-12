@@ -88,6 +88,7 @@ extern "C" {
         switch (this->type) {
 
             case TEXTIN_TYPE_FILE:
+                BREAK_NULL(this->pFile);
                 this->curTok.src.offset = ftell(this->pFile);
                 chr = fgetwc(this->pFile);
                 if( chr == ASCII_CPM_EOF ) {
@@ -191,6 +192,10 @@ extern "C" {
         this = TextIn_New( );
         if (this) {
             eRc = TextIn_SetupAStr(this, pFilePath, pStr, fileIndex, tabSize);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
         }
 
         return this;
@@ -210,6 +215,10 @@ extern "C" {
         this = TextIn_New( );
         if (this) {
             eRc = TextIn_SetupFile(this, pFilePath, pFile, fileIndex, tabSize);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
         }
 
         return this;
@@ -228,6 +237,10 @@ extern "C" {
         this = TextIn_New( );
         if (this) {
             eRc = TextIn_SetupPath(this, pFilePath, fileIndex, tabSize);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
         }
 
         return this;
@@ -248,6 +261,10 @@ extern "C" {
         this = TextIn_New( );
         if (this) {
             eRc = TextIn_SetupStrA(this, pFilePath, pStrA, fileIndex, tabSize);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
         }
 
         return this;

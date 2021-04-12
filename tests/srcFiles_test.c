@@ -23,7 +23,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <JsonIn.h>
 #include    <trace.h>
 #include    <SrcFiles_internal.h>
@@ -245,7 +245,7 @@ int         test_SrcFiles_TestPath01(
     PATH_DATA       *pPath = OBJ_NIL;
     SRCFILES_DATA   *pObj = OBJ_NIL;
     const
-    char            *pPathA = "~/git/libCmn/tests/files/e360_ex1_bal.txt";
+    char            *pPathA = TEST_FILES_DIR "/e360_ex1_bal.txt";
     TOKEN_DATA      *pToken;
     int32_t         cls;
     ASTR_DATA       *pStr = OBJ_NIL;
@@ -300,7 +300,7 @@ int         test_SrcFiles_TestAStr01(
     PATH_DATA       *pPath = OBJ_NIL;
     SRCFILES_DATA   *pObj = OBJ_NIL;
     const
-    char            *pPathA = "~/git/libCmn/tests/files/e360_ex1_bal.txt";
+    char            *pPathA = TEST_FILES_DIR "/e360_ex1_bal.txt";
     TOKEN_DATA      *pToken;
     int32_t         cls;
     ASTR_DATA       *pStr = OBJ_NIL;

@@ -23,7 +23,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <trace.h>
 #include    <TextIns_internal.h>
 #include    <SrcErrors.h>
@@ -199,10 +199,10 @@ int             test_TextIns_Test01 (
     bool            fRc;
     SRCLOC          loc = {0};
     const
-    char            *pFilePath1A = "~/git/libCmn/tests/files/e360_ex1_bal.txt";
+    char            *pFilePath1A = TEST_FILES_DIR "/e360_ex1_bal.txt";
     PATH_DATA       *pFilePath1 = OBJ_NIL;
     const
-    char            *pFilePath2A = "~/git/libCmn/tests/files/e360_ex2_bal.txt";
+    char            *pFilePath2A = TEST_FILES_DIR "/e360_ex2_bal.txt";
     PATH_DATA       *pFilePath2 = OBJ_NIL;
     char            line[256];
 

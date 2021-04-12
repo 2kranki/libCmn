@@ -22,7 +22,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <dec.h>
 #include    <trace.h>
 #include    <rrds_internal.h>
@@ -115,7 +115,7 @@ int         test_rrds_Read01(
     uint32_t        i;
     //bool            fRc;
     const
-    char            *pPathA    = "~/git/libCmn/tests/files/regequ.asm.txt";
+    char            *pPathA    = TEST_FILES_DIR "/regequ.asm.txt";
     char            block[80]  = {0};
     char            block2[80] = {0};
     uint32_t        numRcds = 19;
@@ -215,7 +215,7 @@ int         test_rrds_Read02(
     uint32_t        i;
     //bool            fRc;
     const
-    char            *pPathA    = "~/git/libCmn/tests/files/mvsobj.object360";
+    char            *pPathA    = TEST_FILES_DIR "/mvsobj.object360";
     uint8_t         block[80]  = {0};
     uint8_t         block2[80] = {0};
     uint32_t        numRcds = 19;

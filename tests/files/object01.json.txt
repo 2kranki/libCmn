@@ -1,0 +1,15 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+/*
+	This should generate Test01.h, Test01.c, Test01_internal.h,
+	Test01_json.c, Test01_object.c and Test01_test.c.
+
+ */
+
+
+
+
+{
+    "objectType":"NodeClass",
+     "name":"Test01",
+     "json":true,
+}

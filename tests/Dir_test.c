@@ -23,7 +23,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <JsonIn.h>
 #include    <trace.h>
 #include    <Dir_internal.h>
@@ -301,7 +301,7 @@ int             test_Dir_Test01 (
 {
     ERESULT         eRc = ERESULT_SUCCESS;
     DIR_DATA	    *pObj = OBJ_NIL;
-    char            *pPathA = "~/git/libCmn/programs/fileClean";
+    char            *pPathA = TEST_FILES_DIR;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -519,7 +519,7 @@ int         test_Dir_Enum02(
     uint32_t        count;
     uint32_t        i;
     PATH_DATA       *pWrkPath = OBJ_NIL;
-    char            *pPathA = "~/git/libCmn/programs/fileClean";
+    char            *pPathA = TEST_FILES_DIR;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -590,7 +590,7 @@ int         test_Dir_Glob01(
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pPattern = NULL;
-    pDir = "~/git/libCmn/programs/fileClean/src/*.h";
+    pDir = TEST_FILES_DIR "/*.c";
     count = 1;
     pObj = Dir_New( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -627,7 +627,7 @@ int         test_Dir_Glob02(
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pPattern = NULL;
-    pDir = "~/git/libCmn/programs/fileClean/*.h";
+    pDir = TEST_FILES_DIR "/*.c";
     count = 1;
     pObj = Dir_New( );
     XCTAssertFalse( (OBJ_NIL == pObj) );

@@ -23,7 +23,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <JsonIn.h>
 #include    <trace.h>
 #include    <SrcFile_internal.h>
@@ -34,7 +34,7 @@
 
 static
 const
-char        *pFilePath = "${HOME}/git/libCmn/tests/files/test_objects.json.txt";
+char        *pFilePath = TEST_FILES_DIR "/test_objects.json.txt";
 // Currently 853 bytes
 
 

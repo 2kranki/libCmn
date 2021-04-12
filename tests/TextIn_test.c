@@ -23,7 +23,7 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <trace.h>
 #include    <TextIn_internal.h>
 #ifdef  TEXTIN_JSON_SUPPORT
@@ -400,7 +400,7 @@ int             test_TextIn_GetLine02(
     char            buffer[128];
     SRCLOC          loc = {0};
     const
-    char            *pFilePathA = "~/git/libCmn/tests/files/test_hjson_01.txt";
+    char            *pFilePathA = TEST_FILES_DIR "/test_hjson_01.txt";
     PATH_DATA       *pFilePath = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -559,7 +559,7 @@ int             test_TextIn_GetLine05(
     SRCLOC          loc = {0};
     const
     char            *pFileA =
-                    "~/git/libCmn/programs/genObject/tests/files/object01.json.txt";
+                    TEST_FILES_DIR "/object01.json.txt";
     PATH_DATA       *pPath = OBJ_NIL;
     uint32_t        cnt = 0;
 
@@ -615,8 +615,7 @@ int             test_TextIn_GetLine06(
     ERESULT         eRc;
     SRCLOC          loc = {0};
     const
-    char            *pFileA =
-                    "~/git/Support/genObject/model.obj._internal.h.txt";
+    char            *pFileA = TEST_FILES_DIR "/model.obj._internal.h.txt";
     PATH_DATA       *pPath = OBJ_NIL;
     uint32_t        cnt = 0;
 
