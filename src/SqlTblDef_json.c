@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   SqlCol_json.c
+ * File:   SqlTblDef_json.c
  *
- *	Generated 04/25/2020 18:28:59
+ *  Generated 04/12/2021 14:46:45
  *
  */
 
@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <SqlCol_internal.h>
+#include    <SqlTblDef_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -58,7 +58,7 @@
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -79,9 +79,9 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     SqlCol_ParseJsonFields (
+    ERESULT     SqlTblDef_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SQLCOL_DATA     *pObject
+        SQLTBLDEF_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -95,35 +95,7 @@ extern "C" {
         //uint8_t         *pData;
         //uint32_t        len;
 
-        eRc = JsonIn_SubObjectInHash(pParser, "name");
-        if (!ERESULT_FAILED(eRc)) {
-            pObject->pName = AStr_ParseJsonObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
-        }
-        eRc = JsonIn_SubObjectInHash(pParser, "desc");
-        if (!ERESULT_FAILED(eRc)) {
-            pObject->pDesc = AStr_ParseJsonObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
-        }
-        eRc = JsonIn_SubObjectInHash(pParser, "check_expr");
-        if (!ERESULT_FAILED(eRc)) {
-            pObject->pCheckExpr = AStr_ParseJsonObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
-        }
-        eRc = JsonIn_SubObjectInHash(pParser, "default_value");
-        if (!ERESULT_FAILED(eRc)) {
-            pObject->pDefVal = AStr_ParseJsonObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
-        }
-        (void)JsonIn_FindU8NodeInHashA(pParser, "type", &pObject->type);
-        (void)JsonIn_FindU8NodeInHashA(pParser, "dec", &pObject->decimalPlaces);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "colSeq", &pObject->colSeq);
-        (void)JsonIn_FindU16NodeInHashA(pParser, "keySeq", &pObject->keySeq);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "flags", &pObject->flags);
-        (void)JsonIn_FindI32NodeInHashA(pParser, "length", &pObject->length);
-        (void)JsonIn_FindI32NodeInHashA(pParser, "lengthMin", &pObject->lengthMin);
-
-#ifdef XYZZZY
+#ifdef XYZZZY 
         (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
         (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
         (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
@@ -150,31 +122,32 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SQLCOL_DATA * SqlCol_ParseJsonObject (
+    SQLTBLDEF_DATA * SqlTblDef_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        SQLCOL_DATA   *pObject = OBJ_NIL;
+        SQLTBLDEF_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(SqlCol_Class());
-        
+        JsonIn_RegisterClass(SqlTblDef_Class());
+
+        pInfo = obj_getInfo(SqlTblDef_Class());
         eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
 
-        pObject = SqlCol_New( );
+        pObject = SqlTblDef_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  SqlCol_ParseJsonFields(pParser, pObject);
+        eRc =  SqlTblDef_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -196,13 +169,13 @@ extern "C" {
     //===============================================================
     
 
-    SQLCOL_DATA *   SqlCol_NewFromJsonString (
+    SQLTBLDEF_DATA *   SqlTblDef_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        SQLCOL_DATA   *pObject = OBJ_NIL;
+        SQLTBLDEF_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -211,7 +184,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = SqlCol_ParseJsonObject(pParser);
+        pObject = SqlTblDef_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -224,17 +197,17 @@ extern "C" {
     
     
 
-    SQLCOL_DATA * SqlCol_NewFromJsonStringA (
+    SQLTBLDEF_DATA * SqlTblDef_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        SQLCOL_DATA   *pObject = OBJ_NIL;
+        SQLTBLDEF_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = SqlCol_NewFromJsonString(pStr);
+            pObject = SqlTblDef_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -250,7 +223,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SqlCol_ToJson(this);
+     ASTR_DATA      *pDesc = SqlTblDef_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -258,8 +231,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlCol_ToJson (
-        SQLCOL_DATA   *this
+    ASTR_DATA *     SqlTblDef_ToJson (
+        SQLTBLDEF_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -269,7 +242,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !SqlCol_Validate(this) ) {
+        if( !SqlTblDef_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -283,7 +256,7 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = SqlCol_ToJsonFields(this, pStr);      
+            eRc = SqlTblDef_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -301,8 +274,8 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SqlCol_ToJsonFields (
-        SQLCOL_DATA     *this,
+    ERESULT         SqlTblDef_ToJsonFields (
+        SQLTBLDEF_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
@@ -318,23 +291,16 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
 
-        JsonOut_Append_AStr("name", this->pName, pStr);
-        if (this->pDesc) {
-            JsonOut_Append_AStr("desc", this->pDesc, pStr);
-        }
-        if (this->pDesc) {
-            JsonOut_Append_AStr("check_expr", this->pCheckExpr, pStr);
-        }
-        if (this->pDesc) {
-            JsonOut_Append_AStr("default_value", this->pDefVal, pStr);
-        }
-        JsonOut_Append_u8("type", this->type, pStr);
-        JsonOut_Append_u8("dec", this->decimalPlaces, pStr);
-        JsonOut_Append_u16("colSeq", this->colSeq, pStr);
-        JsonOut_Append_u16("keySeq", this->keySeq, pStr);
-        JsonOut_Append_u32("flags", this->flags, pStr);
-        JsonOut_Append_i32("length", this->length, pStr);
-        JsonOut_Append_i32("lengthMin", this->lengthMin, pStr);
+#ifdef XYZZZY 
+        JsonOut_Append_i32("x", this->x, pStr);
+        JsonOut_Append_i64("t", this->t, pStr);
+        JsonOut_Append_u32("o", this->o, pStr);
+        JsonOut_Append_utf8("n", pEntry->pN, pStr);
+        JsonOut_Append_Object("e", this->pE, pStr);
+        JsonOut_Append_AStr("d", this->pAStr, pStr);
+        JsonOut_Append_StrA("d", this->pStrA, pStr);
+        JsonOut_Append_StrW32("d", this->pStrW32, pStr);
+#endif
 
         return ERESULT_SUCCESS;
     }
@@ -343,7 +309,7 @@ extern "C" {
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

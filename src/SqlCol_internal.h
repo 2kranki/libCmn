@@ -71,10 +71,9 @@ struct SqlCol_data_s	{
     // Common Data
     uint8_t         type;
     uint8_t         decimalPlaces;
-    uint8_t         seq;
-    uint8_t         rsvd8;
-    uint16_t        keySeq;
     uint16_t        rsvd16;
+    uint16_t        keySeq;
+    uint16_t        colSeq;
     uint32_t        flags;
     int32_t         length;
     int32_t         lengthMin;

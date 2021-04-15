@@ -493,8 +493,6 @@ extern "C" {
         OBJ_IDENT_SGRAPH_CLASS,
         OBJ_IDENT_SQLCOL,               // SQL Column
         OBJ_IDENT_SQLCOL_CLASS,
-        OBJ_IDENT_SQLCOLDEF,            // SQL Column Definition
-        OBJ_IDENT_SQLCOLDEF_CLASS,
         OBJ_IDENT_SQLCURS,              // SQL Cursor
         OBJ_IDENT_SQLCURS_CLASS,
         OBJ_IDENT_SQLITE,               // SQLite Interface
@@ -503,8 +501,10 @@ extern "C" {
         OBJ_IDENT_SQLITECURS_CLASS,
         OBJ_IDENT_SQLITESTMT,           // SQLite Statement Interface
         OBJ_IDENT_SQLITESTMT_CLASS,
-        OBJ_IDENT_SQLROWDEF,            // SQL Row Definition
-        OBJ_IDENT_SQLROWDEF_CLASS,
+        OBJ_IDENT_SQLROW,               // SQL Row Support
+        OBJ_IDENT_SQLROW_CLASS,
+        OBJ_IDENT_SQLTBL,               // SQL Table Support
+        OBJ_IDENT_SQLTBL_CLASS,
         OBJ_IDENT_SQLSTMT,              // SQL Statement
         OBJ_IDENT_SQLSTMT_CLASS,
         OBJ_IDENT_SRC,

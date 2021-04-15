@@ -824,7 +824,11 @@ extern "C" {
 #else
         if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_DATA_ALREADY_EXISTS;
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pCallback) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         if (NULL == this->pConn) {
@@ -892,7 +896,11 @@ extern "C" {
 #else
         if (!SQLite_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_DATA_ALREADY_EXISTS;
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pCallback) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
         if (NULL == this->pConn) {

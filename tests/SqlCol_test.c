@@ -26,10 +26,8 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <SqlCol_internal.h>
-#ifdef  SQLCOL_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
@@ -55,11 +53,10 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  SQLCOL_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
-#endif
-    trace_SharedReset( ); 
+    JsonIn_RegisterReset();
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -122,23 +119,57 @@ int             test_SqlCol_Copy01 (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
+    int             iRc;
     SQLCOL_DATA	    *pObj1 = OBJ_NIL;
     SQLCOL_DATA	    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(SQLCOL_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA	    *pStr = OBJ_NIL;
-#endif
-   
+    SQLCOL_STRUCT   ex1 = {
+        "ex_name",
+        "Example Name",
+        SQLCOL_TYPE_DECIMAL,
+        0,                  // Key Sequence
+        2,                  // Decimal Places
+        5,                  // Column Sequence
+        9,                  // Length
+        9,                  // Min Length
+        0,                  // Flags
+        "0.00",             // Default Value
+        NULL                // Check Expression
+    };
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = SqlCol_New( );
+    pObj1 = SqlCol_NewFromStruct(&ex1);
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_SQLCOL);
         TINYTEST_TRUE( (fRc) );
-        
+        // Verify new object.
+        pStr = SqlCol_getName(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "ex_name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDesc(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "Example Name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDefVal(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "0.00");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getCheckExpr(pObj1);
+        TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj1)) );
+        TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj1)) );
+        TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj1)) );
+        TINYTEST_TRUE( (5 == SqlCol_getColSeq(pObj1)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLength(pObj1)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLengthMin(pObj1)) );
+        TINYTEST_TRUE( (0 == SqlCol_getFlags(pObj1)) );
+
         // Test assign.
         pObj2 = SqlCol_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
@@ -147,9 +178,28 @@ int             test_SqlCol_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLCOL);
         TINYTEST_TRUE( (fRc) );
-        //eRc = SqlCol_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
-        //TODO: Add More tests here!
+        // Verify new object.
+        pStr = SqlCol_getName(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "ex_name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDesc(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "Example Name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDefVal(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "0.00");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getCheckExpr(pObj2);
+        TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj2)) );
+        TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj2)) );
+        TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj2)) );
+        TINYTEST_TRUE( (5 == SqlCol_getColSeq(pObj2)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLength(pObj2)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLengthMin(pObj2)) );
+        TINYTEST_TRUE( (0 == SqlCol_getFlags(pObj2)) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -160,15 +210,33 @@ int             test_SqlCol_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLCOL);
         TINYTEST_TRUE( (fRc) );
-        //eRc = SqlCol_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
-        //TODO: Add More tests here!
+        // Verify new object.
+        pStr = SqlCol_getName(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "ex_name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDesc(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "Example Name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDefVal(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "0.00");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getCheckExpr(pObj2);
+        TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj2)) );
+        TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj2)) );
+        TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj2)) );
+        TINYTEST_TRUE( (5 == SqlCol_getColSeq(pObj2)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLength(pObj2)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLengthMin(pObj2)) );
+        TINYTEST_TRUE( (0 == SqlCol_getFlags(pObj2)) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(SQLCOL_JSON_SUPPORT) && defined(XYZZY)
         pStr = SqlCol_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
@@ -178,12 +246,31 @@ int             test_SqlCol_Copy01 (
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = SqlCol_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
+        // Verify new object.
+        pStr = SqlCol_getName(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "ex_name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDesc(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "Example Name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDefVal(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "0.00");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getCheckExpr(pObj2);
+        TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj2)) );
+        TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj2)) );
+        TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj2)) );
+        TINYTEST_TRUE( (5 == SqlCol_getColSeq(pObj2)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLength(pObj2)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLengthMin(pObj2)) );
+        TINYTEST_TRUE( (0 == SqlCol_getFlags(pObj2)) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
-#endif
 
         obj_Release(pObj1);
         pObj1 = OBJ_NIL;
@@ -237,7 +324,7 @@ int             test_SqlCol_Test01 (
 
 TINYTEST_START_SUITE(test_SqlCol);
     TINYTEST_ADD_TEST(test_SqlCol_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_SqlCol_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SqlCol_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SqlCol_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

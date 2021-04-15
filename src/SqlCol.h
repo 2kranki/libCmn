@@ -105,6 +105,7 @@ extern "C" {
         SQLCOL_TYPE_BOOL,
         SQLCOL_TYPE_CHAR,
         SQLCOL_TYPE_DATE,
+        SQLCOL_TYPE_DECIMAL,
         SQLCOL_TYPE_FILLER,
         SQLCOL_TYPE_INTEGER,
         SQLCOL_TYPE_NUMBER,
@@ -130,22 +131,23 @@ extern "C" {
         char                *pName;             // (Required)
         const
         char                *pDescription;      // (Required)
-        const
-        char                type;               // see DBFIELD_TYPES
+        uint8_t             type;               // see SQLCOL_TYPES
         uint16_t            keySequence;
         //                          0 == not a key column
         //                          1+ == column is part of the key in order
         //                                specified by this number
-        int8_t              decimalPlaces;      // for DBFIELD_TYPE_REAL
-        uint8_t             seq;                // Column Sequence number for CSV
+        int8_t              decimalPlaces;      // for SQLCOL_TYPE_REAL
+        uint8_t             colSeq;             // Column Sequence number for CSV
         //                                      // or other formats.
         int32_t             length;
         //                          For DBFIELD_TYPE_TEXT and DBFIELD_TYPE_VARCHAR,
         //                          a length of 0 just means that it is variable.
         int32_t             minimumLength;      // For use with TEXT, CHAR or VARCHAR
-        uint32_t            flags;              // see DBFIELD_FLAGS
+        uint32_t            flags;              // see SQLCOL_FLAGS
+        const
         char                *pDefaultValue;     // Value to be placed inside DEFAULT( )
         //                                      // (Optional)
+        const
         char                *pCheckExpression;  // Value to be placed inside CHECK( )
         //                                      // (Optional)
     } SQLCOL_STRUCT;
@@ -194,7 +196,11 @@ extern "C" {
         void
     );
     
-    
+    SQLCOL_DATA *     SqlCol_NewFromStruct (
+        SQLCOL_STRUCT   *pStruct
+    );
+
+
 #ifdef  SQLCOL_JSON_SUPPORT
     SQLCOL_DATA *   SqlCol_NewFromJsonString (
         ASTR_DATA       *pString
@@ -211,6 +217,36 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    ASTR_DATA *     SqlCol_getCheckExpr (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setCheckExpr (
+        SQLCOL_DATA     *this,
+        ASTR_DATA       *pValue
+    );
+
+
+    uint16_t        SqlCol_getColSeq (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setColSeq (
+        SQLCOL_DATA     *this,
+        uint16_t        value
+    );
+
+
+    uint8_t         SqlCol_getDecimalPlaces (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setDecimalPlaces (
+        SQLCOL_DATA     *this,
+        uint8_t         value
+    );
+
 
     ASTR_DATA *     SqlCol_getDefVal (
         SQLCOL_DATA     *this
@@ -232,6 +268,46 @@ extern "C" {
     );
 
 
+    uint32_t        SqlCol_getFlags (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setFlags (
+        SQLCOL_DATA     *this,
+        uint32_t        value
+    );
+
+
+    uint16_t        SqlCol_getKeySeq (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setKeySeq (
+        SQLCOL_DATA     *this,
+        uint16_t        value
+    );
+
+
+    int32_t         SqlCol_getLength (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setLength (
+        SQLCOL_DATA     *this,
+        int32_t         value
+    );
+
+
+    int32_t         SqlCol_getLengthMin (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setLengthMin (
+        SQLCOL_DATA     *this,
+        int32_t         value
+    );
+
+
     ASTR_DATA *     SqlCol_getName (
         SQLCOL_DATA     *this
     );
@@ -242,10 +318,44 @@ extern "C" {
     );
 
 
+    uint8_t         SqlCol_getType (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setType (
+        SQLCOL_DATA     *this,
+        uint8_t         value
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Compare the two provided object's Key Sequence.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
+     */
+    int             SqlCol_CompareKeySeq (
+        SQLCOL_DATA     *this,
+        SQLCOL_DATA     *pOther
+    );
+
+
+    /*!
+     Compare the two provided object's Name.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
+     */
+    int             SqlCol_CompareName (
+        SQLCOL_DATA     *this,
+        SQLCOL_DATA     *pOther
+    );
+
 
     ERESULT         SqlCol_Disable (
         SQLCOL_DATA		*this

@@ -9,10 +9,13 @@
  * Purpose
  *          SQLite via its prep interface stores the statement
  *          internally. The common method of executing sql is
- *          to create the statement via prep, execute it via
- *          step and gather the results via a multitude of row
- *          functions which return the column data.
+ *          to create the statement via prep(), bind data to it,
+ *          execute it via step() and gather the results via a
+ *          multitude of row functions which return the column data.
  *
+ *          Error checking must be done at each level within the
+ *          execution transitions and appropriate actions taken
+ *          before moving to the next phase or terminating.
  * Remarks
  *  1.      None
  *
@@ -119,17 +122,18 @@ extern "C" {
               |
               V
             prep()
-              | <---------------+<----+
-              V                 ^     |
-           PREPARED  -> bind() -+     |
-              |                       |
-              | <-------------------+ |
-              V                     | |
-            step() -> ROW -> row() -+ |
-              +-------> reset() ------+
-              |                       ^
-              V                       |
-             DONE -> reset() ---------+
+              | <---------------+<-----+
+              |                 ^      ^
+              V                 |      |
+           PREPARED  -> bind() -+      |
+              |                        |
+              | <--------------------+ |
+              V                      | |
+            step() -> ROW -> row() ->+ |
+              +-------> reset() ------>+
+              |                        ^
+              V                        |
+             DONE -> reset() ----------+
               |
               V
             finalize()
@@ -248,11 +252,6 @@ extern "C" {
     );
 
 
-    ERESULT         SQLiteStmt_IsEnabled (
-        SQLITESTMT_DATA *this
-    );
-    
- 
     /*!
      Reset a prepared statement making it available for further
      execution.  This should follow Step().

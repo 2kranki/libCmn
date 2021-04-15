@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   SQLiteStmt_internal.h
- *  Generated 10/23/2020 12:24:56
+ * File:   SqlTblDef_internal.h
+ *  Generated 04/12/2021 14:46:45
  *
  * Notes:
  *  --  N/A
@@ -39,14 +39,12 @@
 
 
 
-#include        <SQLiteStmt.h>
+#include        <SqlTblDef.h>
 #include        <JsonIn.h>
-#include        <SQLite.h>
-#include        <sqlite3.h>
 
 
-#ifndef SQLITESTMT_INTERNAL_H
-#define SQLITESTMT_INTERNAL_H
+#ifndef SQLTBLDEF_INTERNAL_H
+#define SQLTBLDEF_INTERNAL_H
 
 
 
@@ -64,28 +62,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct SQLiteStmt_data_s  {
+struct SqlTblDef_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    sqlite3_stmt    *pSqlStmt;
-    ASTR_DATA       *pStmt;
-    SQLITE_DATA     *pDB;
-    uint32_t        state;
-    int             errorCode;
+    uint16_t        size;           // maximum number of elements
+    uint16_t        rsvd16;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct SQLiteStmt_class_data_s  SQLiteStmt_ClassObj;
+    struct SqlTblDef_class_data_s  SqlTblDef_ClassObj;
 
     extern
     const
-    SQLITESTMT_VTBL         SQLiteStmt_Vtbl;
+    SQLTBLDEF_VTBL         SqlTblDef_Vtbl;
 
 
 
@@ -93,13 +89,13 @@ struct SQLiteStmt_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  SQLITESTMT_SINGLETON
-    SQLITESTMT_DATA *     SQLiteStmt_getSingleton (
+#ifdef  SQLTBLDEF_SINGLETON
+    SQLTBLDEF_DATA *     SqlTblDef_getSingleton (
         void
     );
 
-    bool            SQLiteStmt_setSingleton (
-     SQLITESTMT_DATA       *pValue
+    bool            SqlTblDef_setSingleton (
+     SQLTBLDEF_DATA       *pValue
 );
 #endif
 
@@ -109,35 +105,35 @@ struct SQLiteStmt_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  SQLiteStmt_getSuperVtbl (
-        SQLITESTMT_DATA     *this
+    OBJ_IUNKNOWN *  SqlTblDef_getSuperVtbl (
+        SQLTBLDEF_DATA     *this
     );
 
 
-    ERESULT         SQLiteStmt_Assign (
-        SQLITESTMT_DATA    *this,
-        SQLITESTMT_DATA    *pOther
+    ERESULT         SqlTblDef_Assign (
+        SQLTBLDEF_DATA    *this,
+        SQLTBLDEF_DATA    *pOther
     );
 
 
-    SQLITESTMT_DATA *       SQLiteStmt_Copy (
-        SQLITESTMT_DATA     *this
+    SQLTBLDEF_DATA *       SqlTblDef_Copy (
+        SQLTBLDEF_DATA     *this
     );
 
 
-    void            SQLiteStmt_Dealloc (
+    void            SqlTblDef_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  SQLITESTMT_JSON_SUPPORT
+#ifdef  SQLTBLDEF_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SQLITESTMT_DATA *       SQLiteStmt_ParseJsonObject (
+    SQLTBLDEF_DATA *       SqlTblDef_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -151,35 +147,35 @@ struct SQLiteStmt_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SQLiteStmt_ParseJsonFields (
+    ERESULT         SqlTblDef_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SQLITESTMT_DATA     *pObject
+        SQLTBLDEF_DATA     *pObject
     );
 #endif
 
 
-    void *          SQLiteStmt_QueryInfo (
+    void *          SqlTblDef_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  SQLITESTMT_JSON_SUPPORT
+#ifdef  SQLTBLDEF_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SQLiteStmt_ToJson(this);
+     ASTR_DATA      *pDesc = SqlTblDef_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SQLiteStmt_ToJson (
-        SQLITESTMT_DATA      *this
+    ASTR_DATA *     SqlTblDef_ToJson (
+        SQLTBLDEF_DATA      *this
     );
 
 
@@ -192,8 +188,8 @@ struct SQLiteStmt_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SQLiteStmt_ToJsonFields (
-        SQLITESTMT_DATA     *this,
+    ERESULT         SqlTblDef_ToJsonFields (
+        SQLTBLDEF_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -203,8 +199,8 @@ struct SQLiteStmt_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            SQLiteStmt_Validate (
-        SQLITESTMT_DATA       *this
+    bool            SqlTblDef_Validate (
+        SQLTBLDEF_DATA       *this
     );
 #endif
 
@@ -214,5 +210,5 @@ struct SQLiteStmt_data_s  {
 }
 #endif
 
-#endif  /* SQLITESTMT_INTERNAL_H */
+#endif  /* SQLTBLDEF_INTERNAL_H */
 

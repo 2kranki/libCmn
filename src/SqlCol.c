@@ -53,9 +53,27 @@
 extern "C" {
 #endif
     
+    typedef struct SqlCol_Type_Expr_s {
+        const
+        char        *pNameA;
+        const
+        char        *pSqliteTypeA;
+        uint8_t     fHasDec;                // true == can have decimal value
+    } SQLCOL_TYPE_EXPR;
 
-    
-
+    // TypeExpr: type_name ['(' integer [',' decimal_integer] ')']
+    //         ;
+    SQLCOL_TYPE_EXPR    typeExprs[] = {
+        {"CHAR", "TEXT", 0},
+        {"DECIMAL", "REAL", 1},
+        {"INT", "INTEGER", 0},
+        {"INTEGER", "INTEGER", 0},
+        {"NCHAR", "TEXT", 0},
+        {"NVARCHAR", "TEXT", 0},
+        {"REAL", "REAL", 1},
+        {"VARCHAR", "TEXT", 0},
+    };
+    int                 cTypeExprs = sizeof(typeExprs)/sizeof(SQLCOL_TYPE_EXPR);
 
  
     /****************************************************************
@@ -115,6 +133,25 @@ extern "C" {
     }
 
 
+    SQLCOL_DATA *     SqlCol_NewFromStruct (
+        SQLCOL_STRUCT   *pStruct
+    )
+    {
+        SQLCOL_DATA     *this;
+        ERESULT         eRc;
+
+        this = SqlCol_New( );
+        if (this) {
+            eRc = SqlCol_FromStruct(this, pStruct);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return this;
+    }
+
+
 
     
 
@@ -162,6 +199,90 @@ extern "C" {
             obj_Release(this->pCheckExpr);
         }
         this->pCheckExpr = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          C o l  S e q
+    //---------------------------------------------------------------
+
+    uint16_t        SqlCol_getColSeq (
+        SQLCOL_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->colSeq;
+    }
+
+
+    bool            SqlCol_setColSeq (
+        SQLCOL_DATA     *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->colSeq = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  D e c i m a l  P l a c e s
+    //---------------------------------------------------------------
+
+    uint8_t         SqlCol_getDecimalPlaces (
+        SQLCOL_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->decimalPlaces;
+    }
+
+
+    bool            SqlCol_setDecimalPlaces (
+        SQLCOL_DATA     *this,
+        uint8_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->decimalPlaces = value;
 
         return true;
     }
@@ -254,6 +375,169 @@ extern "C" {
             obj_Release(this->pDesc);
         }
         this->pDesc = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         F l a g s
+    //---------------------------------------------------------------
+
+    uint32_t        SqlCol_getFlags (
+        SQLCOL_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->flags;
+    }
+
+
+    bool            SqlCol_setFlags (
+        SQLCOL_DATA     *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->flags = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          K e y  S e q
+    //---------------------------------------------------------------
+
+    uint16_t        SqlCol_getKeySeq (
+        SQLCOL_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->keySeq;
+    }
+
+
+    bool            SqlCol_setKeySeq (
+        SQLCOL_DATA     *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->keySeq = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          L e n g t h
+    //---------------------------------------------------------------
+
+    int32_t         SqlCol_getLength (
+        SQLCOL_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->length;
+    }
+
+
+    bool            SqlCol_setLength (
+        SQLCOL_DATA     *this,
+        int32_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->length = value;
+
+        return true;
+    }
+
+
+    int32_t         SqlCol_getLengthMin (
+        SQLCOL_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->lengthMin;
+    }
+
+
+    bool            SqlCol_setLengthMin (
+        SQLCOL_DATA     *this,
+        int32_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->lengthMin = value;
 
         return true;
     }
@@ -394,7 +678,49 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                         T y p e
+    //---------------------------------------------------------------
+
+    uint8_t         SqlCol_getType (
+        SQLCOL_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->type;
+    }
+
+
+    bool            SqlCol_setType (
+        SQLCOL_DATA     *this,
+        uint8_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->type = value;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -449,36 +775,40 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
-        }
-#endif
+        SqlCol_setCheckExpr(pOther, OBJ_NIL);
+        SqlCol_setDefVal(pOther, OBJ_NIL);
+        SqlCol_setDesc(pOther, OBJ_NIL);
+        SqlCol_setName(pOther, OBJ_NIL);
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
-            }
-            else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
-            }
+        if (this->pName) {
+            pOther->pName = AStr_Copy(this->pName);
         }
-#endif
+        if (this->pDesc) {
+            pOther->pDesc = AStr_Copy(this->pDesc);
+        }
+        if (this->pDefVal) {
+            pOther->pDefVal = AStr_Copy(this->pDefVal);
+        }
+        if (this->pCheckExpr) {
+            pOther->pCheckExpr = AStr_Copy(this->pCheckExpr);
+        }
 
         // Copy other data from this object to other.
-        
+        pOther->type            = this->type;
+        pOther->decimalPlaces   = this->decimalPlaces;
+        pOther->colSeq          = this->colSeq;
+        pOther->keySeq          = this->keySeq;
+        pOther->flags           = this->flags;
+        pOther->length          = this->length;
+        pOther->lengthMin       = this->lengthMin;
+
         //goto eom;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -526,7 +856,68 @@ extern "C" {
     }
 
    
- 
+    int             SqlCol_CompareKeySeq (
+        SQLCOL_DATA     *this,
+        SQLCOL_DATA     *pOther
+    )
+    {
+        int             iRc = 0;
+
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
+        }
+        if (!SqlCol_Validate(pOther)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
+        }
+#endif
+
+        if (this->keySeq == pOther->keySeq) {
+            return iRc;
+        }
+        if (this->keySeq < pOther->keySeq) {
+            iRc = -1;
+        } else {
+            iRc = 1;
+        }
+
+        return iRc;
+    }
+
+
+    int             SqlCol_CompareName (
+        SQLCOL_DATA     *this,
+        SQLCOL_DATA     *pOther
+    )
+    {
+        int             iRc = 0;
+
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
+        }
+        if (!SqlCol_Validate(pOther)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
+        }
+#endif
+
+        iRc = AStr_Compare(this->pName, pOther->pName);
+
+        return iRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -744,7 +1135,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         SqlCol_FromStruct (
-        SQLCOL_DATA        *this,
+        SQLCOL_DATA     *this,
         SQLCOL_STRUCT   *pStruct
     )
     {
@@ -796,7 +1187,7 @@ extern "C" {
         this->keySeq        = pStruct->keySequence;
         this->length        = pStruct->length;
         this->lengthMin     = pStruct->minimumLength;
-        this->seq           = pStruct->seq;
+        this->colSeq        = pStruct->colSeq;
         this->type          = pStruct->type;
 
         // Return to caller.
@@ -1107,19 +1498,19 @@ extern "C" {
                     "\tlength: %d\n\tlengthMin: %d\n"
                     "\tdecimal_places: %d\n"
                     "\tkeySeq: %d\n\tseq: %d\n"
-                    "\tflags: %s %s %s %s %s\n",
-                    AStr_getData(this->pName),
-                    AStr_getData(this->pDesc),
+                    "\tflags: %s%s%s%s%s\n",
+                    this->pName ? AStr_getData(this->pName) : "<NULL>",
+                    this->pDesc ? AStr_getData(this->pDesc) : "<NULL>",
                     this->length,
                     this->lengthMin,
                     this->decimalPlaces,
                     this->keySeq,
-                    this->seq,
-                    this->flags & SQLCOL_FLAG_UNIQUE ? "Unique" : "",
-                    this->flags & SQLCOL_FLAG_NOT_NULL ? "Not_NULL" : "",
-                    this->flags & SQLCOL_FLAG_AUTO_INC ? "Auto_Inc" : "",
-                    this->flags & SQLCOL_FLAG_PRIM_KEY ? "Primary_Key" : "",
-                    this->flags & SQLCOL_FLAG_NO_TRAIL ? "No_Trail" : ""
+                    this->colSeq,
+                    this->flags & SQLCOL_FLAG_UNIQUE ? "Unique " : "",
+                    this->flags & SQLCOL_FLAG_NOT_NULL ? "Not_NULL " : "",
+                    this->flags & SQLCOL_FLAG_AUTO_INC ? "Auto_Inc " : "",
+                    this->flags & SQLCOL_FLAG_PRIM_KEY ? "Primary_Key " : "",
+                    this->flags & SQLCOL_FLAG_NO_TRAIL ? "No_Trail " : ""
             );
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
