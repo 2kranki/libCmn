@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Node_json.c
+ * File:   SqlRowData_json.c
  *
- *	Generated 02/24/2020 08:50:49
+ *  Generated 04/14/2021 21:08:08
  *
  */
 
@@ -42,23 +42,23 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <Node_internal.h>
+#include    <SqlRowData_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
 #include    <AStr_internal.h>
-#include    <dec_internal.h>
+#include    <dec.h>
 #include    <JsonIn.h>
 #include    <JsonOut.h>
-#include    <Name_internal.h>
-#include    <NodeBT_internal.h>
+#include    <Node.h>
 #include    <NodeHash.h>
-#include    <utf8_internal.h>
+#include    <SrcErrors.h>
+#include    <utf8.h>
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -79,67 +79,35 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     Node_ParseJsonFields (
-        JSONIN_DATA   *pParser,
-        NODE_DATA     *pObject
+    ERESULT     SqlRowData_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        SQLROWDATA_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        //uint16_t        u16 = 0;
+        //NODE_DATA       *pNode = OBJ_NIL;
+        //NODEARRAY_DATA  *pArray = OBJ_NIL;
+        //NODEHASH_DATA   *pHash = OBJ_NIL;
+        //uint32_t        i;
+        //uint32_t        iMax;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
+        //uint8_t         *pData;
+        //uint32_t        len;
 
-        (void)JsonIn_FindI32NodeInHashA(pParser, "class", &pObject->cls);
-        (void)JsonIn_FindI32NodeInHashA(pParser, "type", &pObject->type);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "unique", &pObject->unique);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "misc", &pObject->misc);
+#ifdef XYZZZY 
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
 
-        eRc = JsonIn_SubObjectInHash(pParser, "name");
-        if (ERESULT_FAILED(eRc)) {
-            //TODO: Handle error.
-        } else {
-            pObject->pName = Name_ParseJsonObject(pParser);
-            if (OBJ_NIL == pObject->pName) {
-                //TODO: Handle error.
-            }
-            JsonIn_SubObjectEnd(pParser);
+        eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        pWrk = AStr_ParseJsonObject(pParser);
+        if (pWrk) {
+            pObject->pErrorStr = pWrk;
         }
-
-        eRc = JsonIn_SubObjectInHash(pParser, "data");
-        if (ERESULT_FAILED(eRc)) {
-            ;
-        }
-        else {
-            pObject->pData = JsonIn_ParseObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
-        }
-
-        eRc = JsonIn_SubObjectInHash(pParser, "other");
-        if (ERESULT_FAILED(eRc)) {
-            ;
-        }
-        else {
-            pObject->pOther = JsonIn_ParseObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
-        }
-
-        eRc = JsonIn_SubObjectInHash(pParser, "extra");
-        if (ERESULT_FAILED(eRc)) {
-            ;
-        }
-        else {
-            pObject->pExtra = JsonIn_ParseObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
-        }
-
-        eRc = JsonIn_SubObjectInHash(pParser, "properties");
-        if (ERESULT_FAILED(eRc)) {
-            ;
-        }
-        else {
-            pObject->pProperties = NodeBT_ParseJsonObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
-        }
+        JsonIn_SubObjectEnd(pParser);
+#endif
 
         // Return to caller.
     exit00:
@@ -154,45 +122,32 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NODE_DATA * Node_ParseJsonObject (
+    SQLROWDATA_DATA * SqlRowData_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        NODE_DATA       *pObject = OBJ_NIL;
+        SQLROWDATA_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(Node_Class());
-        
+        JsonIn_RegisterClass(SqlRowData_Class());
+
+        pInfo = obj_getInfo(SqlRowData_Class());
         eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
 
-        pObject = Node_New( );
+        pObject = SqlRowData_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
-        if (NULL == obj_getInfo(pObject)) {
-            fprintf(stderr, "ERROR - objectType is invalid!\n");
-            DEBUG_BREAK();
-            obj_Release(pObject);
-            pObject = OBJ_NIL;
-            goto exit00;
-        }
         
-        eRc =  Node_ParseJsonFields(pParser, pObject);
-        if (NULL == obj_getInfo(pObject)) {
-            fprintf(stderr, "ERROR - objectType is invalid!\n");
-            DEBUG_BREAK();
-            obj_Release(pObject);
-            pObject = OBJ_NIL;
-            goto exit00;
-        }
+        eRc =  SqlRowData_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -214,21 +169,22 @@ extern "C" {
     //===============================================================
     
 
-    NODE_DATA *   Node_NewFromJsonString (
+    SQLROWDATA_DATA *   SqlRowData_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        NODE_DATA       *pObject = OBJ_NIL;
+        SQLROWDATA_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
+            SrcErrors_Print(OBJ_NIL, stderr);
             goto exit00;
         }
         
-        pObject = Node_ParseJsonObject(pParser);
+        pObject = SqlRowData_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -241,17 +197,17 @@ extern "C" {
     
     
 
-    NODE_DATA * Node_NewFromJsonStringA (
+    SQLROWDATA_DATA * SqlRowData_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        NODE_DATA       *pObject = OBJ_NIL;
+        SQLROWDATA_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = Node_NewFromJsonString(pStr);
+            pObject = SqlRowData_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -267,7 +223,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Node_ToJson(this);
+     ASTR_DATA      *pDesc = SqlRowData_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -275,8 +231,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Node_ToJson (
-        NODE_DATA   *this
+    ASTR_DATA *     SqlRowData_ToJson (
+        SQLROWDATA_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -286,7 +242,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Node_Validate(this) ) {
+        if( !SqlRowData_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -296,11 +252,11 @@ extern "C" {
         pStr = AStr_New();
         if (pStr) {
              AStr_AppendPrint(pStr,
-                              "{ \"objectType\":\"%s\", ",
+                              "{ \"objectType\":\"%s\",\n",
                               pInfo->pClassName
              );
      
-            eRc = Node_ToJsonFields(this, pStr);      
+            eRc = SqlRowData_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
         }
@@ -309,8 +265,17 @@ extern "C" {
     }
     
     
-    ERESULT         Node_ToJsonFields (
-        NODE_DATA     *this,
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting 
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SqlRowData_ToJsonFields (
+        SQLROWDATA_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
@@ -326,23 +291,16 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
 
-        JsonOut_Append_i32("class", this->cls, pStr);
-        JsonOut_Append_i32("type", this->type, pStr);
-        JsonOut_Append_u32("unique", this->unique, pStr);
-        JsonOut_Append_u32("misc", this->misc, pStr);
-        JsonOut_Append_Object("name", this->pName, pStr);
-        if (this->pData) {
-            JsonOut_Append_Object("data", this->pData, pStr);
-        }
-        if (this->pOther) {
-            JsonOut_Append_Object("other", this->pOther, pStr);
-        }
-        if (this->pExtra) {
-            JsonOut_Append_Object("extra", this->pExtra, pStr);
-        }
-        if (this->pProperties) {
-            JsonOut_Append_Object("properties", this->pProperties, pStr);
-        }
+#ifdef XYZZZY 
+        JsonOut_Append_i32("x", this->x, pStr);
+        JsonOut_Append_i64("t", this->t, pStr);
+        JsonOut_Append_u32("o", this->o, pStr);
+        JsonOut_Append_utf8("n", pEntry->pN, pStr);
+        JsonOut_Append_Object("e", this->pE, pStr);
+        JsonOut_Append_AStr("d", this->pAStr, pStr);
+        JsonOut_Append_StrA("d", this->pStrA, pStr);
+        JsonOut_Append_StrW32("d", this->pStrW32, pStr);
+#endif
 
         return ERESULT_SUCCESS;
     }
@@ -351,7 +309,7 @@ extern "C" {
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

@@ -184,7 +184,7 @@ int             test_JsonIn_01(
         eRc = JsonIn_ParseAStr(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        eRc = JsonIn_ConfirmObjectType(pObj, "szTbl");
+        eRc = JsonIn_ConfirmObjectTypeA(pObj, "szTbl");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         eRc = JsonIn_FindIntegerNodeInHashA(pObj, "Count", &count);
@@ -409,7 +409,7 @@ int             test_JsonIn_Float01(
         eRc = JsonIn_ParseAStr(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        eRc = JsonIn_ConfirmObjectType(pObj, "Value");
+        eRc = JsonIn_ConfirmObjectTypeA(pObj, "Value");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         eRc = JsonIn_FindIntegerNodeInHashA(pObj, "type", &type);
@@ -467,7 +467,7 @@ int             test_JsonIn_Integers01(
         eRc = JsonIn_ParseAStr(pObj, pStr);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        eRc = JsonIn_ConfirmObjectType(pObj, "IntegerArray");
+        eRc = JsonIn_ConfirmObjectTypeA(pObj, "IntegerArray");
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         // This illustrates one way of parsing an Integer Array.

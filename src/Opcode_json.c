@@ -92,7 +92,7 @@ extern "C" {
         NODE_DATA       *pNode;
         uint32_t        i;
 
-        eRc = JsonIn_FindStringNodeInHashA(pParser, "Name", &pWrk);
+        eRc = JsonIn_FindStrNodeInHashA(pParser, "Name", &pWrk);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             fprintf(stderr, "FATAL - Failed to find Name!\n\n\n");
@@ -104,7 +104,7 @@ extern "C" {
             exit(EXIT_FAILURE);
         }
         Opcode_setNameA(pObject, AStr_getData(pWrk));
-        eRc = JsonIn_FindStringNodeInHashA(pParser, "Dis", &pWrk);
+        eRc = JsonIn_FindStrNodeInHashA(pParser, "Dis", &pWrk);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             fprintf(stderr, "FATAL - Failed to find Dis!\n\n\n");
@@ -163,7 +163,7 @@ extern "C" {
             }
         }
         // iType can be integer or string description.
-        eRc = JsonIn_FindStringNodeInHashA(pParser, "iType", &pWrk);
+        eRc = JsonIn_FindStrNodeInHashA(pParser, "iType", &pWrk);
         if (ERESULT_OK(eRc)) {
             if (pObject->pTypeValue) {
                 if (pWrk) {
@@ -282,7 +282,7 @@ extern "C" {
 
         pInfo = obj_getInfo(Opcode_Class());
         
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;

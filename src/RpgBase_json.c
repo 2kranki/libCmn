@@ -136,7 +136,7 @@ extern "C" {
         JsonIn_RegisterClass(RpgBase_Class());
 
         pInfo = obj_getInfo(RpgBase_Class());
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;

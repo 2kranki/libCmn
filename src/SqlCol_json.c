@@ -91,31 +91,51 @@ extern "C" {
         //uint32_t        i;
         //uint32_t        iMax;
         //int64_t         intIn;
-        //ASTR_DATA       *pWrk;
+        ASTR_DATA       *pWrk = OBJ_NIL;
+        ASTR_DATA       *pWrk2 = OBJ_NIL;
         //uint8_t         *pData;
         //uint32_t        len;
+        SQLCOL_TYPE_EXPR
+                        *pTypeExpr;
 
-        eRc = JsonIn_SubObjectInHash(pParser, "name");
-        if (!ERESULT_FAILED(eRc)) {
-            pObject->pName = AStr_ParseJsonObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "name", &pWrk);
+        if (ERESULT_OK(eRc)) {
+            pObject->pName = pWrk;
+            //obj_Release(pWrk);
+            //pWrk = OBJ_NIL;
         }
-        eRc = JsonIn_SubObjectInHash(pParser, "desc");
-        if (!ERESULT_FAILED(eRc)) {
-            pObject->pDesc = AStr_ParseJsonObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "desc", &pWrk);
+        if (ERESULT_OK(eRc)) {
+            pObject->pDesc = pWrk;
+            //obj_Release(pWrk);
+            //pWrk = OBJ_NIL;
         }
-        eRc = JsonIn_SubObjectInHash(pParser, "check_expr");
-        if (!ERESULT_FAILED(eRc)) {
-            pObject->pCheckExpr = AStr_ParseJsonObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "check_expr", &pWrk);
+        if (ERESULT_OK(eRc)) {
+            pObject->pCheckExpr = pWrk;
+            //obj_Release(pWrk);
+            //pWrk = OBJ_NIL;
         }
-        eRc = JsonIn_SubObjectInHash(pParser, "default_value");
-        if (!ERESULT_FAILED(eRc)) {
-            pObject->pDefVal = AStr_ParseJsonObject(pParser);
-            JsonIn_SubObjectEnd(pParser);
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "default_value", &pWrk);
+        if (ERESULT_OK(eRc)) {
+            pObject->pDefVal = pWrk;
+            //obj_Release(pWrk);
+            //pWrk = OBJ_NIL;
         }
-        (void)JsonIn_FindU8NodeInHashA(pParser, "type", &pObject->type);
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "type", &pWrk);
+        if (ERESULT_OK(eRc)) {
+            pWrk2 = AStr_ToUpper(pWrk);
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
+            pTypeExpr = SqlCol_FindByName(AStr_getData(pWrk2));
+            if (pTypeExpr) {
+                pObject->type = pTypeExpr->type;
+            } else {
+                pObject->type = SQLCOL_TYPE_UNKNOWN;
+            }
+            obj_Release(pWrk2);
+            pWrk2 = OBJ_NIL;
+        }
         (void)JsonIn_FindU8NodeInHashA(pParser, "dec", &pObject->decimalPlaces);
         (void)JsonIn_FindU16NodeInHashA(pParser, "colSeq", &pObject->colSeq);
         (void)JsonIn_FindU16NodeInHashA(pParser, "keySeq", &pObject->keySeq);
@@ -163,7 +183,7 @@ extern "C" {
 
         pInfo = obj_getInfo(SqlCol_Class());
         
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -279,10 +299,10 @@ extern "C" {
         pStr = AStr_New();
         if (pStr) {
              AStr_AppendPrint(pStr,
-                              "{ \"objectType\":\"%s\",\n",
+                              "{\n\t\"objectType\":\"%s\",\n",
                               pInfo->pClassName
              );
-     
+
             eRc = SqlCol_ToJsonFields(this, pStr);      
 
             AStr_AppendA(pStr, "}\n");
@@ -317,6 +337,10 @@ extern "C" {
         );
         ASTR_DATA       *pWrkStr;
 #endif
+        const
+        char            *pWrkStrA;
+        SQLCOL_TYPE_EXPR
+                        *pTypeExpr;
 
         JsonOut_Append_AStr("name", this->pName, pStr);
         if (this->pDesc) {
@@ -328,7 +352,13 @@ extern "C" {
         if (this->pDesc) {
             JsonOut_Append_AStr("default_value", this->pDefVal, pStr);
         }
-        JsonOut_Append_u8("type", this->type, pStr);
+        pTypeExpr = SqlCol_FindByType(this->type);
+        if (pTypeExpr) {
+            pWrkStrA = pTypeExpr->pNameA;
+        } else {
+            pWrkStrA = "==> UNKNOWN <==";
+        }
+        JsonOut_Append_StrA("type", pWrkStrA, pStr);
         JsonOut_Append_u8("dec", this->decimalPlaces, pStr);
         JsonOut_Append_u16("colSeq", this->colSeq, pStr);
         JsonOut_Append_u16("keySeq", this->keySeq, pStr);

@@ -117,7 +117,7 @@ extern "C" {
         }
 
 
-        (void)JsonIn_FindStringNodeInHashA(pParser, "type", &pWrk);
+        (void)JsonIn_FindStrNodeInHashA(pParser, "type", &pWrk);
         if (pWrk) {
             pObject->data.type = Token_StringToType(pObject, AStr_getData(pWrk));
         } else {
@@ -132,7 +132,7 @@ extern "C" {
                 break;
 
             case TOKEN_TYPE_STRTOKEN:
-                (void)JsonIn_FindAStrNodeInHashA(pParser, "data", &pWrk);
+                (void)JsonIn_FindStrNodeInHashA(pParser, "data", &pWrk);
                 pObject->data.strToken = szTbl_StringToToken(OBJ_NIL, AStr_getData(pWrk));
                 break;
 
@@ -172,7 +172,7 @@ extern "C" {
 
         pInfo = obj_getInfo(Token_Class());
         
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;

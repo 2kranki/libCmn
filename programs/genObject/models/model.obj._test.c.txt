@@ -219,7 +219,7 @@ int             test_${LNAME}_Test01 (
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         
         {
-            ASTR_DATA       *pStr = ${LNAME}_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = ${LNAME}_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);

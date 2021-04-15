@@ -100,7 +100,7 @@ extern "C" {
 
 
     typedef enum SqlCol_types_e  {
-        SQLCOL_TYPE_UNDEFINED=0,
+        SQLCOL_TYPE_UNKNOWN=0,
         SQLCOL_TYPE_BLOB,
         SQLCOL_TYPE_BOOL,
         SQLCOL_TYPE_CHAR,
@@ -108,7 +108,9 @@ extern "C" {
         SQLCOL_TYPE_DECIMAL,
         SQLCOL_TYPE_FILLER,
         SQLCOL_TYPE_INTEGER,
+        SQLCOL_TYPE_NCHAR,
         SQLCOL_TYPE_NUMBER,
+        SQLCOL_TYPE_NVARCHAR,
         SQLCOL_TYPE_REAL,
         SQLCOL_TYPE_TEXT,
         SQLCOL_TYPE_VARCHAR             // Same as TEXT
@@ -120,7 +122,6 @@ extern "C" {
         SQLCOL_FLAG_NOT_NULL=0x0002,
         SQLCOL_FLAG_AUTO_INC=0x0004,
         SQLCOL_FLAG_PRIM_KEY=0x0008,
-        SQLCOL_FLAG_NO_TRAIL=0x0010,    // Remove Trailing White Space
     } SQLCOL_FLAGS;
 
 
@@ -402,6 +403,18 @@ extern "C" {
         SQLCOL_DATA   *this
     );
 #endif
+
+
+    /*!
+     Convert the internal column definition to SQL.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                SQL, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SqlCol_ToSQL (
+        SQLCOL_DATA     *this
+    );
 
 
     /*!

@@ -124,7 +124,7 @@ extern "C" {
 
         pInfo = obj_getInfo(W32Str_Class());
         
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -143,7 +143,7 @@ extern "C" {
         }
         
         if (length && pObject) {
-            eRc = JsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
+            eRc = JsonIn_FindStrNodeInHashA(pParser, "data", &pWrk);
             pSrc = AStr_getData(pWrk);
             for (i=0; i<length; ++i) {
                 ch = utf8_ChrConToW32_Scan(&pSrc);

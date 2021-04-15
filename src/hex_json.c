@@ -102,7 +102,7 @@ extern "C" {
 
         pInfo = obj_getInfo(hex_Class());
         
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
@@ -120,7 +120,7 @@ extern "C" {
                 fprintf(stderr, "ERROR - Out of Memory!\n");
                 goto exit00;
             }
-            eRc = JsonIn_FindStringNodeInHashA(pParser, "data", &pWrk);
+            eRc = JsonIn_FindStrNodeInHashA(pParser, "data", &pWrk);
             //fprintf(stderr, "\tDATA=\"%s\"\n", AStr_getData(pWrk));
             pChr = AStr_getData(pWrk);
             pOut = pData;

@@ -96,7 +96,7 @@ extern "C" {
         eRc = Node_ParseJsonFields(pParser, (NODE_DATA *)pObject);
         JsonIn_SubObjectEnd(pParser);
 
-        eRc = JsonIn_FindStringNodeInHashA(pParser, "name", &pWrk);
+        eRc = JsonIn_FindStrNodeInHashA(pParser, "name", &pWrk);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             fprintf(stderr, "FATAL - Failed to find Name!\n\n\n");
@@ -166,7 +166,7 @@ extern "C" {
 
         pInfo = obj_getInfo(Sym_Class());
         
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;

@@ -1323,14 +1323,14 @@ extern "C" {
     //              C o n f i r m  O b j e c t  T y p e
     //---------------------------------------------------------------
 
-    ERESULT         JsonIn_ConfirmObjectType (
+    ERESULT         JsonIn_ConfirmObjectTypeA (
         JSONIN_DATA     *this,
         const
         char            *pType
     )
     {
         ERESULT         eRc;
-        ASTR_DATA       *pStr;
+        ASTR_DATA       *pStr = OBJ_NIL;
         int             iRc;
 
         // Do initialization.
@@ -1342,18 +1342,18 @@ extern "C" {
         }
 #endif
 
-        eRc = JsonIn_FindStringNodeInHashA(this, "objectType", &pStr);
-        if (OBJ_NIL == pStr) {
+        eRc = JsonIn_FindStrNodeInHashA(this, "objectType", &pStr);
+        if ((ERESULT_FAILED(eRc)) || (OBJ_NIL == pStr)) {
             return ERESULT_DATA_NOT_FOUND;
         }
 
         iRc = strcmp(pType, AStr_getData(pStr));
         if (!(0 == iRc)) {
-            return ERESULT_DATA_NOT_FOUND;
+            eRc = ERESULT_DATA_NOT_FOUND;
         }
-
+        
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -1632,6 +1632,10 @@ extern "C" {
         eRc = JsonIn_SubObjectInHash(this, pSectionA);
         if (ERESULT_OK(eRc)) {
             eRc = AStr_ParseJsonFields(this, pData);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pData);
+                pData = OBJ_NIL;
+            }
             JsonIn_SubObjectEnd(this);
         } else {
             obj_Release(pData);
@@ -1893,7 +1897,7 @@ extern "C" {
             return eRc;
         }
 
-        eRc = JsonIn_FindStringNodeInHashA(this, "type", &pData);
+        eRc = JsonIn_FindStrNodeInHashA(this, "type", &pData);
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             eRc = ERESULT_DATA_NOT_FOUND;
             goto eom;
@@ -2033,7 +2037,7 @@ extern "C" {
             return eRc;
         }
 
-        eRc = JsonIn_FindStringNodeInHashA(this, "type", &pData);
+        eRc = JsonIn_FindAStrNodeInHashA(this, "type", &pData);
         if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
             eRc = ERESULT_DATA_NOT_FOUND;
             goto eom;
@@ -2139,6 +2143,47 @@ extern "C" {
         }
         return ERESULT_SUCCESS;
     }
+
+
+    ERESULT         JsonIn_FindStrNodeInHashA (
+        JSONIN_DATA     *this,
+        const
+        char            *pSectionA,
+        ASTR_DATA       **ppStr
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!JsonIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        if (ppStr) {
+            *ppStr = OBJ_NIL;
+        }
+
+        eRc = NodeHash_FindNodeInHashA(
+                                       this->pHash, pSectionA, "string", (void **)&pStr);
+        if ((ERESULT_FAILED(eRc)) || (OBJ_NIL == pStr)) {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+        if (obj_IsKindOf(pStr, OBJ_IDENT_ASTR))
+            ;
+        else {
+            return ERESULT_DATA_NOT_FOUND;
+        }
+
+        if (ppStr) {
+            *ppStr = pStr;
+        }
+        return ERESULT_SUCCESS;
+    }
+
 
 
     ERESULT         JsonIn_FindU8NodeInHashA (
@@ -2297,37 +2342,6 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
 
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    ERESULT         JsonIn_FindStringNodeInHashA (
-        JSONIN_DATA     *this,
-        const
-        char            *pSectionA,
-        ASTR_DATA       **ppStr
-    )
-    {
-        ERESULT         eRc;
-        ASTR_DATA       *pData = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!JsonIn_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        eRc = NodeHash_FindNodeInHashA(this->pHash, pSectionA, "string", (void **)&pData);
-        if (ERESULT_FAILED(eRc) || (OBJ_NIL == pData)) {
-            return ERESULT_DATA_NOT_FOUND;
-        }
-
-        if (ppStr)
-            *ppStr = pData;
         return ERESULT_SUCCESS;
     }
 
@@ -2583,7 +2597,7 @@ extern "C" {
         pObj = ObjList_Head(JsonIn_RegisterList());
         while (pObj) {
             pInfo = obj_getInfo(obj_getClass(pObj));
-            eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+            eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
             if (ERESULT_OK(eRc)) {
                 OBJ_ID      pNewObj;
                 OBJ_ID      (*pMethod)(OBJ_ID) = NULL;
@@ -2600,112 +2614,112 @@ extern "C" {
             pObj = ObjList_Next(JsonIn_RegisterList());
         }
         pInfo = obj_getInfo(AStr_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)AStr_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(Name_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)Name_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(Node_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)Node_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(NodeArray_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)NodeArray_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(NodeBT_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)NodeBT_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(NodeHash_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)NodeHash_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(NodeLink_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)NodeLink_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(ObjArray_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)ObjArray_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(ObjHash_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)ObjHash_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(ObjList_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)ObjList_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(ObjMethod_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)ObjMethod_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(SrcError_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)SrcError_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(SrcErrors_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)SrcErrors_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(szData_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)szData_ParseObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(Token_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)Token_ParseJsonObject(this);
             return pObj;
         }
 
         pInfo = obj_getInfo(TokenList_Class());
-        eRc = JsonIn_ConfirmObjectType(this, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(this, pInfo->pClassName);
         if (ERESULT_IS_SUCCESSFUL(eRc)) {
             pObj = (OBJ_ID)TokenList_ParseJsonObject(this);
             return pObj;

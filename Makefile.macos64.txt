@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 4/12/2021 17:06:11.000)
+# ( 4/15/2021 19:14:22.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1034,19 +1034,19 @@ OBJS += $(OBJDIR)/SqlCol.o
 $(OBJDIR)/SqlCol.o: $(SRCDIR)/SqlCol.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/SqlColDef.o
+OBJS += $(OBJDIR)/SqlColData.o
 
-$(OBJDIR)/SqlColDef.o: $(SRCDIR)/SqlColDef.c $(SRCDIR)/SqlColDef.h $(SRCDIR)/SqlColDef_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/SqlColData.o: $(SRCDIR)/SqlColData.c $(SRCDIR)/SqlColData.h $(SRCDIR)/SqlColData_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/SqlColDef_json.o
+OBJS += $(OBJDIR)/SqlColData_json.o
 
-$(OBJDIR)/SqlColDef_json.o: $(SRCDIR)/SqlColDef_json.c $(SRCDIR)/SqlColDef.h $(SRCDIR)/SqlColDef_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/SqlColData_json.o: $(SRCDIR)/SqlColData_json.c $(SRCDIR)/SqlColData.h $(SRCDIR)/SqlColData_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/SqlColDef_object.o
+OBJS += $(OBJDIR)/SqlColData_object.o
 
-$(OBJDIR)/SqlColDef_object.o: $(SRCDIR)/SqlColDef_object.c $(SRCDIR)/SqlColDef.h $(SRCDIR)/SqlColDef_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/SqlColData_object.o: $(SRCDIR)/SqlColData_object.c $(SRCDIR)/SqlColData.h $(SRCDIR)/SqlColData_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SqlCol_json.o
@@ -1059,19 +1059,49 @@ OBJS += $(OBJDIR)/SqlCol_object.o
 $(OBJDIR)/SqlCol_object.o: $(SRCDIR)/SqlCol_object.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/SqlRowDef.o
+OBJS += $(OBJDIR)/SqlRow.o
 
-$(OBJDIR)/SqlRowDef.o: $(SRCDIR)/SqlRowDef.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/SqlRow.o: $(SRCDIR)/SqlRow.c $(SRCDIR)/SqlRow.h $(SRCDIR)/SqlRow_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/SqlRowDef_json.o
+OBJS += $(OBJDIR)/SqlRowData.o
 
-$(OBJDIR)/SqlRowDef_json.o: $(SRCDIR)/SqlRowDef_json.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/SqlRowData.o: $(SRCDIR)/SqlRowData.c $(SRCDIR)/SqlRowData.h $(SRCDIR)/SqlRowData_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/SqlRowDef_object.o
+OBJS += $(OBJDIR)/SqlRowData_json.o
 
-$(OBJDIR)/SqlRowDef_object.o: $(SRCDIR)/SqlRowDef_object.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/SqlRowData_json.o: $(SRCDIR)/SqlRowData_json.c $(SRCDIR)/SqlRowData.h $(SRCDIR)/SqlRowData_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlRowData_object.o
+
+$(OBJDIR)/SqlRowData_object.o: $(SRCDIR)/SqlRowData_object.c $(SRCDIR)/SqlRowData.h $(SRCDIR)/SqlRowData_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlRow_json.o
+
+$(OBJDIR)/SqlRow_json.o: $(SRCDIR)/SqlRow_json.c $(SRCDIR)/SqlRow.h $(SRCDIR)/SqlRow_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlRow_object.o
+
+$(OBJDIR)/SqlRow_object.o: $(SRCDIR)/SqlRow_object.c $(SRCDIR)/SqlRow.h $(SRCDIR)/SqlRow_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlTbl.o
+
+$(OBJDIR)/SqlTbl.o: $(SRCDIR)/SqlTbl.c $(SRCDIR)/SqlTbl.h $(SRCDIR)/SqlTbl_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlTbl_json.o
+
+$(OBJDIR)/SqlTbl_json.o: $(SRCDIR)/SqlTbl_json.c $(SRCDIR)/SqlTbl.h $(SRCDIR)/SqlTbl_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SqlTbl_object.o
+
+$(OBJDIR)/SqlTbl_object.o: $(SRCDIR)/SqlTbl_object.c $(SRCDIR)/SqlTbl.h $(SRCDIR)/SqlTbl_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SrcDiff.o
@@ -2554,9 +2584,9 @@ Sects_test: $(TEST_SRC)/Sects_test.c $(SRCDIR)/Sects.h $(SRCDIR)/Sects_internal.
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += SqlColDef_test
+TESTS += SqlColData_test
 
-SqlColDef_test: $(TEST_SRC)/SqlColDef_test.c $(SRCDIR)/SqlColDef.h $(SRCDIR)/SqlColDef_internal.h $(SRCDIR)/cmn_defs.h 
+SqlColData_test: $(TEST_SRC)/SqlColData_test.c $(SRCDIR)/SqlColData.h $(SRCDIR)/SqlColData_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -2566,9 +2596,21 @@ SqlCol_test: $(TEST_SRC)/SqlCol_test.c $(SRCDIR)/SqlCol.h $(SRCDIR)/SqlCol_inter
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += SqlRowDef_test
+TESTS += SqlRowData_test
 
-SqlRowDef_test: $(TEST_SRC)/SqlRowDef_test.c $(SRCDIR)/SqlRowDef.h $(SRCDIR)/SqlRowDef_internal.h $(SRCDIR)/cmn_defs.h 
+SqlRowData_test: $(TEST_SRC)/SqlRowData_test.c $(SRCDIR)/SqlRowData.h $(SRCDIR)/SqlRowData_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += SqlRow_test
+
+SqlRow_test: $(TEST_SRC)/SqlRow_test.c $(SRCDIR)/SqlRow.h $(SRCDIR)/SqlRow_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += SqlTbl_test
+
+SqlTbl_test: $(TEST_SRC)/SqlTbl_test.c $(SRCDIR)/SqlTbl.h $(SRCDIR)/SqlTbl_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

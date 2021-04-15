@@ -53,25 +53,20 @@
 extern "C" {
 #endif
     
-    typedef struct SqlCol_Type_Expr_s {
-        const
-        char        *pNameA;
-        const
-        char        *pSqliteTypeA;
-        uint8_t     fHasDec;                // true == can have decimal value
-    } SQLCOL_TYPE_EXPR;
-
     // TypeExpr: type_name ['(' integer [',' decimal_integer] ')']
     //         ;
     SQLCOL_TYPE_EXPR    typeExprs[] = {
-        {"CHAR", "TEXT", 0},
-        {"DECIMAL", "REAL", 1},
-        {"INT", "INTEGER", 0},
-        {"INTEGER", "INTEGER", 0},
-        {"NCHAR", "TEXT", 0},
-        {"NVARCHAR", "TEXT", 0},
-        {"REAL", "REAL", 1},
-        {"VARCHAR", "TEXT", 0},
+        {"BLOB", "TEXT", SQLCOL_TYPE_BLOB, 0},
+        {"BOOL", "INTEGER", SQLCOL_TYPE_BOOL, 0},
+        {"CHAR", "TEXT", SQLCOL_TYPE_CHAR, 0},
+        {"DECIMAL", "REAL", SQLCOL_TYPE_DECIMAL, 1},
+        {"INT", "INTEGER", SQLCOL_TYPE_INTEGER, 0},
+        {"INTEGER", "INTEGER", SQLCOL_TYPE_INTEGER, 0},
+        {"NCHAR", "TEXT", SQLCOL_TYPE_NCHAR, 0},
+        {"NVARCHAR", "TEXT", SQLCOL_TYPE_NVARCHAR, 0},
+        {"REAL", "REAL", SQLCOL_TYPE_REAL, 1},
+        {"TEXT", "TEXT", SQLCOL_TYPE_TEXT, 0},
+        {"VARCHAR", "TEXT", SQLCOL_TYPE_VARCHAR, 0},
     };
     int                 cTypeExprs = sizeof(typeExprs)/sizeof(SQLCOL_TYPE_EXPR);
 
@@ -80,16 +75,45 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            SqlCol_task_body (
-        void            *pData
+    SQLCOL_TYPE_EXPR * SqlCol_FindByName (
+        const
+        char        *pName
     )
     {
-        //SQLCOL_DATA  *this = pData;
-        
+        int         i;
+        int         iRc;
+        SQLCOL_TYPE_EXPR
+                    *pEntry;
+
+        for (i=0; i<cTypeExprs; i++) {
+            pEntry = &typeExprs[i];
+            iRc = strcmp(pName, pEntry->pNameA);
+            if (0 == iRc)
+                return pEntry;
+
+        }
+
+        return NULL;
     }
-#endif
+
+
+    SQLCOL_TYPE_EXPR * SqlCol_FindByType (
+        uint8_t     type                    // see SQLCOL_TYPES
+    )
+    {
+        int         i;
+        SQLCOL_TYPE_EXPR
+                    *pEntry;
+
+        for (i=0; i<cTypeExprs; i++) {
+            pEntry = &typeExprs[i];
+            if (pEntry->type == type)
+                return pEntry;
+
+        }
+
+        return NULL;
+    }
 
 
 
@@ -1434,6 +1458,175 @@ extern "C" {
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
+
+    /*!
+     Convert the internal column definition to SQL.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                SQL, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SqlCol_ToSQL (
+        SQLCOL_DATA     *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        const
+        OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
+        const
+        char            *pWrkStrA;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pInfo = obj_getInfo(this);
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        if (this->pName) {
+            eRc = AStr_Append(pStr, this->pName);
+            eRc = AStr_AppendA(pStr, " ");
+        }
+
+        switch (this->type) {
+            case SQLCOL_TYPE_BLOB:
+                eRc = AStr_AppendA(pStr, "BLOB ");
+                break;
+
+            case SQLCOL_TYPE_BOOL:
+                eRc = AStr_AppendA(pStr, "BOOL ");
+                break;
+
+            case SQLCOL_TYPE_CHAR:
+                if (this->length) {
+                    eRc = AStr_AppendPrint(pStr, "CHAR(%d) ", this->length);
+                } else {
+                    eRc = AStr_AppendA(pStr, "CHAR ");
+                }
+                break;
+
+            case SQLCOL_TYPE_DATE:
+                pWrkStrA = "DATE";
+                break;
+
+            case SQLCOL_TYPE_DECIMAL:
+                if (this->length) {
+                    eRc =   AStr_AppendPrint(
+                                             pStr,
+                                             "DECIMAL(%d,%d) ",
+                                             this->length,
+                                             this->decimalPlaces
+                            );
+                } else {
+                    eRc = AStr_AppendA(pStr, "DECIMAL ");
+                }
+                break;
+
+            case SQLCOL_TYPE_FILLER:
+                pWrkStrA = "FILLER";
+                break;
+
+            case SQLCOL_TYPE_INTEGER:
+                pWrkStrA = "INTEGER";
+                break;
+
+            case SQLCOL_TYPE_NCHAR:
+                if (this->length) {
+                    eRc = AStr_AppendPrint(pStr, "NCHAR(%d) ", this->length);
+                } else {
+                    eRc = AStr_AppendA(pStr, "NCHAR ");
+                }
+                break;
+
+            case SQLCOL_TYPE_NUMBER:
+                pWrkStrA = "NUMBER";
+                break;
+
+            case SQLCOL_TYPE_NVARCHAR:
+                if (this->length) {
+                    eRc = AStr_AppendPrint(pStr, "NVARCHAR(%d) ", this->length);
+                } else {
+                    eRc = AStr_AppendA(pStr, "NVARCHAR ");
+                }
+                break;
+
+            case SQLCOL_TYPE_REAL:
+                if (this->length) {
+                    eRc =   AStr_AppendPrint(
+                                             pStr,
+                                             "REAL(%d,%d) ",
+                                             this->length,
+                                             this->decimalPlaces
+                            );
+                } else {
+                    eRc = AStr_AppendA(pStr, "REAL ");
+                }
+                break;
+
+            case SQLCOL_TYPE_TEXT:
+                if (this->length) {
+                    eRc = AStr_AppendPrint(pStr, "TEXT(%d) ", this->length);
+                } else {
+                    eRc = AStr_AppendA(pStr, "TEXT ");
+                }
+                break;
+
+            case SQLCOL_TYPE_VARCHAR:
+                if (this->length) {
+                    eRc = AStr_AppendPrint(pStr, "VARCHAR(%d) ", this->length);
+                } else {
+                    eRc = AStr_AppendA(pStr, "VARCHAR ");
+                }
+                break;
+
+            default:
+                pWrkStrA = "==>UNKNOWN<==";
+                break;
+        }
+
+        // Primary key is always id INTEGER PRIMARY KEY. So, we will skip this
+        // but use it for indices.
+        //    if (this->flags & SQLCOL_FLAG_PRIM_KEY) {
+        //        eRc = AStr_AppendA(pStr, "PRIMARY KEY ");
+        //    }
+        if (this->flags & SQLCOL_FLAG_UNIQUE) {
+            eRc = AStr_AppendA(pStr, "UNIQUE ");
+        }
+        if (this->flags & SQLCOL_FLAG_NOT_NULL) {
+            eRc = AStr_AppendA(pStr, "NOT NULL ");
+        }
+        if (this->flags & SQLCOL_FLAG_AUTO_INC) {
+            eRc = AStr_AppendA(pStr, "AUTOINCREMENT ");
+        }
+
+        if (this->pDefVal) {
+            eRc = AStr_AppendPrint(pStr, "DEFAULT(%s) ", AStr_getData(this->pDefVal));
+        }
+        if (this->pCheckExpr) {
+            eRc = AStr_AppendPrint(pStr, "%s", AStr_getData(this->pDefVal));
+        }
+
+        return pStr;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       T o  S t r i n g
+    //---------------------------------------------------------------
     
     /*!
      Create a string that describes this object and the objects within it.
@@ -1461,6 +1654,8 @@ extern "C" {
         //uint32_t        j;
         const
         char            *pWrkStrA;
+        SQLCOL_TYPE_EXPR
+                        *pTypeExpr;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1494,11 +1689,16 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "\tname: %s\n\tdesc: %s\n"
-                    "\tlength: %d\n\tlengthMin: %d\n"
+                    "\tname: %s\n"
+                    "\tdesc: %s\n"
+                    "\tlength: %d\n"
+                    "\tlengthMin: %d\n"
                     "\tdecimal_places: %d\n"
-                    "\tkeySeq: %d\n\tseq: %d\n"
-                    "\tflags: %s%s%s%s%s\n",
+                    "\tkeySeq: %d\n"
+                    "\tcolSeq: %d\n"
+                    "\tflags: %s%s%s%s\n"
+                    "\tcheck: %s\n"
+                    "\tdefault: %s\n",
                     this->pName ? AStr_getData(this->pName) : "<NULL>",
                     this->pDesc ? AStr_getData(this->pDesc) : "<NULL>",
                     this->length,
@@ -1510,55 +1710,17 @@ extern "C" {
                     this->flags & SQLCOL_FLAG_NOT_NULL ? "Not_NULL " : "",
                     this->flags & SQLCOL_FLAG_AUTO_INC ? "Auto_Inc " : "",
                     this->flags & SQLCOL_FLAG_PRIM_KEY ? "Primary_Key " : "",
-                    this->flags & SQLCOL_FLAG_NO_TRAIL ? "No_Trail " : ""
+                    this->pCheckExpr ? AStr_getData(this->pCheckExpr) : "<NULL>",
+                    this->pDefVal ? AStr_getData(this->pDefVal) : "<NULL>"
             );
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
-        switch (this->type) {
-            case SQLCOL_TYPE_BLOB:
-                pWrkStrA = "BLOB";
-                break;
-
-            case SQLCOL_TYPE_BOOL:
-                pWrkStrA = "BOOL";
-                break;
-
-            case SQLCOL_TYPE_CHAR:
-                pWrkStrA = "CHAR";
-                break;
-
-            case SQLCOL_TYPE_DATE:
-                pWrkStrA = "DATE";
-                break;
-
-            case SQLCOL_TYPE_FILLER:
-                pWrkStrA = "FILLER";
-                break;
-
-            case SQLCOL_TYPE_INTEGER:
-                pWrkStrA = "INTEGER";
-                break;
-
-            case SQLCOL_TYPE_NUMBER:
-                pWrkStrA = "NUMBER";
-                break;
-
-            case SQLCOL_TYPE_REAL:
-                pWrkStrA = "REAL";
-                break;
-
-            case SQLCOL_TYPE_TEXT:
-                pWrkStrA = "TEXT";
-                break;
-
-            case SQLCOL_TYPE_VARCHAR:
-                pWrkStrA = "VARCHAR";
-                break;
-
-            default:
-                pWrkStrA = "==>UNKNOWN<==";
-                break;
+        pTypeExpr = SqlCol_FindByType(this->type);
+        if (pTypeExpr) {
+            pWrkStrA = pTypeExpr->pNameA;
+        } else {
+            pWrkStrA = "==> UNKNOWN <==";
         }
         eRc = AStr_AppendPrint(
                     pStr,

@@ -408,7 +408,7 @@ extern "C" {
      @return    If objectType contains the type name (ERESULT_SUCCESS);
                 otherwise, an ERESULT_* error code.
      */
-    ERESULT         JsonIn_ConfirmObjectType (
+    ERESULT         JsonIn_ConfirmObjectTypeA (
         JSONIN_DATA     *this,
         const
         char            *pTypeA
@@ -477,7 +477,7 @@ extern "C" {
 
     /*!
      Find a named string value in the JSON Hash Node tree. This is
-     normally used to parse JsonOut_Append_AStr(), JsonOut_Append_AStrA()
+     normally used to parse JsonOut_Append_AStr(), JsonOut_Append_StrA()
      or JsonOut_Append_AStrW32().
      @param     this    Object Pointer
      @param     pSectionA Name of integer value (required)
@@ -605,7 +605,8 @@ extern "C" {
 
     /*!
      Find a named string value in the JSON Hash Node tree. This is
-     normally used to parse JsonOut_Append_String();
+     normally used to parse strings that were added with AStr_AppendA()
+     or AStr_AppendPrint() where no CRC or lenght data are included.
      @param     this    Object Pointer
      @param     pSectionA Name of integer value (required)
      @param     ppStr   Pointer to an AStr pointer to be returned if
@@ -613,8 +614,10 @@ extern "C" {
                         is non-null.
      @return    If successful, ERESULT_SUCCESS and an sting value in *ppStr
                 if ppStr is non-null. Otherwise, an ERESULT_* error code.
+     @warning   The returned AStr object must NOT be released. It is
+                part of the internal Node Hash Structure.
      */
-    ERESULT         JsonIn_FindStringNodeInHashA (
+    ERESULT         JsonIn_FindStrNodeInHashA (
         JSONIN_DATA     *this,
         const
         char            *pSectionA,

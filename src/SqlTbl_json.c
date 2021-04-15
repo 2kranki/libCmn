@@ -136,7 +136,7 @@ extern "C" {
         JsonIn_RegisterClass(SqlTbl_Class());
 
         pInfo = obj_getInfo(SqlTbl_Class());
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;

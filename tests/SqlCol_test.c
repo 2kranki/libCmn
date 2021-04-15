@@ -103,6 +103,15 @@ int             test_SqlCol_OpenClose (
         // Test something.
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
+        {
+            ASTR_DATA       *pStr = SqlCol_ToDebugString(pObj, 0);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -290,20 +299,57 @@ int             test_SqlCol_Test01 (
     //ERESULT         eRc = ERESULT_SUCCESS;
     SQLCOL_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
-   
+    SQLCOL_STRUCT   ex1 = {
+        "ex_name",
+        "Example Name",
+        SQLCOL_TYPE_DECIMAL,
+        0,                  // Key Sequence
+        2,                  // Decimal Places
+        5,                  // Column Sequence
+        9,                  // Length
+        9,                  // Min Length
+        0,                  // Flags
+        "0.00",             // Default Value
+        "Check this!"       // Check Expression
+    };
+    ASTR_DATA       *pStr = OBJ_NIL;
+    int             iRc;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = SqlCol_New( );
+    pObj = SqlCol_NewFromStruct(&ex1);
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLCOL);
         TINYTEST_TRUE( (fRc) );
-        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-        
+        // Verify new object.
+        pStr = SqlCol_getName(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "ex_name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDesc(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "Example Name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDefVal(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "0.00");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getCheckExpr(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "Check this!");
+        TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj)) );
+        TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj)) );
+        TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj)) );
+        TINYTEST_TRUE( (5 == SqlCol_getColSeq(pObj)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLength(pObj)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLengthMin(pObj)) );
+        TINYTEST_TRUE( (0 == SqlCol_getFlags(pObj)) );
+
         {
-            ASTR_DATA       *pStr = SqlCol_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = SqlCol_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -321,8 +367,146 @@ int             test_SqlCol_Test01 (
 
 
 
+int             test_SqlCol_TestSQL01 (
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    SQLCOL_DATA     *pObj = OBJ_NIL;
+    bool            fRc;
+    SQLCOL_STRUCT   ex1 = {
+        "ex_name",
+        "Example Name",
+        SQLCOL_TYPE_DECIMAL,
+        0,                  // Key Sequence
+        2,                  // Decimal Places
+        5,                  // Column Sequence
+        9,                  // Length
+        9,                  // Min Length
+        0,                  // Flags
+        "0.00",             // Default Value
+        NULL                // Check Expression
+    };
+    ASTR_DATA       *pStr = OBJ_NIL;
+    int             iRc;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = SqlCol_NewFromStruct(&ex1);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLCOL);
+        TINYTEST_TRUE( (fRc) );
+        // Verify new object.
+        pStr = SqlCol_getName(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "ex_name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDesc(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "Example Name");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDefVal(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "0.00");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getCheckExpr(pObj);
+        TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj)) );
+        TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj)) );
+        TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj)) );
+        TINYTEST_TRUE( (5 == SqlCol_getColSeq(pObj)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLength(pObj)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLengthMin(pObj)) );
+        TINYTEST_TRUE( (0 == SqlCol_getFlags(pObj)) );
+
+        {
+            ASTR_DATA       *pStr = SqlCol_ToSQL(pObj);
+            if (pStr) {
+                fprintf(stderr, "SQL: %s\n", AStr_getData(pStr));
+                iRc = AStr_CompareA(pStr, "ex_name DECIMAL(9,2) DEFAULT(0.00) ");
+                TINYTEST_TRUE( (0 == iRc) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        pObj->type = SQLCOL_TYPE_REAL;
+        {
+            ASTR_DATA       *pStr = SqlCol_ToSQL(pObj);
+            if (pStr) {
+                fprintf(stderr, "SQL: %s\n", AStr_getData(pStr));
+                iRc = AStr_CompareA(pStr, "ex_name REAL(9,2) DEFAULT(0.00) ");
+                TINYTEST_TRUE( (0 == iRc) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        pObj->type = SQLCOL_TYPE_CHAR;
+        {
+            ASTR_DATA       *pStr = SqlCol_ToSQL(pObj);
+            if (pStr) {
+                fprintf(stderr, "SQL: %s\n", AStr_getData(pStr));
+                iRc = AStr_CompareA(pStr, "ex_name CHAR(9) DEFAULT(0.00) ");
+                TINYTEST_TRUE( (0 == iRc) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        pObj->type = SQLCOL_TYPE_NCHAR;
+        {
+            ASTR_DATA       *pStr = SqlCol_ToSQL(pObj);
+            if (pStr) {
+                fprintf(stderr, "SQL: %s\n", AStr_getData(pStr));
+                iRc = AStr_CompareA(pStr, "ex_name NCHAR(9) DEFAULT(0.00) ");
+                TINYTEST_TRUE( (0 == iRc) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        pObj->type = SQLCOL_TYPE_NVARCHAR;
+        {
+            ASTR_DATA       *pStr = SqlCol_ToSQL(pObj);
+            if (pStr) {
+                fprintf(stderr, "SQL: %s\n", AStr_getData(pStr));
+                iRc = AStr_CompareA(pStr, "ex_name NVARCHAR(9) DEFAULT(0.00) ");
+                TINYTEST_TRUE( (0 == iRc) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        pObj->type = SQLCOL_TYPE_VARCHAR;
+        {
+            ASTR_DATA       *pStr = SqlCol_ToSQL(pObj);
+            if (pStr) {
+                fprintf(stderr, "SQL: %s\n", AStr_getData(pStr));
+                iRc = AStr_CompareA(pStr, "ex_name VARCHAR(9) DEFAULT(0.00) ");
+                TINYTEST_TRUE( (0 == iRc) );
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_SqlCol);
+    TINYTEST_ADD_TEST(test_SqlCol_TestSQL01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SqlCol_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SqlCol_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SqlCol_OpenClose,setUp,tearDown);

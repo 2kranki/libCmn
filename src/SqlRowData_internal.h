@@ -1,10 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   SqlCol_internal.h
- *	Generated 04/25/2020 18:28:59
+ * File:   SqlRowData_internal.h
+ *  Generated 04/14/2021 21:08:08
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
 
@@ -39,30 +39,21 @@
 
 
 
-#include        <SqlCol.h>
+#include        <SqlRowData.h>
 #include        <JsonIn.h>
 
 
-#ifndef SQLCOL_INTERNAL_H
-#define	SQLCOL_INTERNAL_H
+#ifndef SQLROWDATA_INTERNAL_H
+#define SQLROWDATA_INTERNAL_H
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
-
-    typedef struct SqlCol_Type_Expr_s {
-        const
-        char        *pNameA;
-        const
-        char        *pSqliteTypeA;
-        uint8_t     type;                   // see SQLCOL_TYPES
-        uint8_t     fHasDec;                // true == can have decimal value
-    } SQLCOL_TYPE_EXPR;
 
 
 
@@ -71,35 +62,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct SqlCol_data_s	{
+struct SqlRowData_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint8_t         type;
-    uint8_t         decimalPlaces;
+    uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
-    uint16_t        keySeq;
-    uint16_t        colSeq;
-    uint32_t        flags;
-    int32_t         length;
-    int32_t         lengthMin;
-    ASTR_DATA       *pName;
-    ASTR_DATA       *pCheckExpr;
-    ASTR_DATA       *pDesc;
-    ASTR_DATA       *pDefVal;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct SqlCol_class_data_s  SqlCol_ClassObj;
+    struct SqlRowData_class_data_s  SqlRowData_ClassObj;
 
     extern
     const
-    SQLCOL_VTBL         SqlCol_Vtbl;
+    SQLROWDATA_VTBL         SqlRowData_Vtbl;
 
 
 
@@ -107,13 +89,13 @@ struct SqlCol_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  SQLCOL_SINGLETON
-    SQLCOL_DATA *     SqlCol_getSingleton (
+#ifdef  SQLROWDATA_SINGLETON
+    SQLROWDATA_DATA *     SqlRowData_getSingleton (
         void
     );
 
-    bool            SqlCol_setSingleton (
-     SQLCOL_DATA       *pValue
+    bool            SqlRowData_setSingleton (
+     SQLROWDATA_DATA       *pValue
 );
 #endif
 
@@ -123,45 +105,35 @@ struct SqlCol_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  SqlCol_getSuperVtbl (
-        SQLCOL_DATA     *this
+    OBJ_IUNKNOWN *  SqlRowData_getSuperVtbl (
+        SQLROWDATA_DATA     *this
     );
 
 
-    ERESULT         SqlCol_Assign (
-        SQLCOL_DATA    *this,
-        SQLCOL_DATA    *pOther
+    ERESULT         SqlRowData_Assign (
+        SQLROWDATA_DATA    *this,
+        SQLROWDATA_DATA    *pOther
     );
 
 
-    SQLCOL_DATA *   SqlCol_Copy (
-        SQLCOL_DATA     *this
+    SQLROWDATA_DATA *       SqlRowData_Copy (
+        SQLROWDATA_DATA     *this
     );
 
 
-    void            SqlCol_Dealloc (
+    void            SqlRowData_Dealloc (
         OBJ_ID          objId
     );
 
 
-    SQLCOL_TYPE_EXPR * SqlCol_FindByName (
-        const
-        char        *pName
-    );
-
-    SQLCOL_TYPE_EXPR * SqlCol_FindByType (
-        uint8_t     type                    // see SQLCOL_TYPES
-    );
-
-
-#ifdef  SQLCOL_JSON_SUPPORT
+#ifdef  SQLROWDATA_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SQLCOL_DATA *       SqlCol_ParseJsonObject (
+    SQLROWDATA_DATA *       SqlRowData_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -175,35 +147,35 @@ struct SqlCol_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SqlCol_ParseJsonFields (
+    ERESULT         SqlRowData_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SQLCOL_DATA     *pObject
+        SQLROWDATA_DATA     *pObject
     );
 #endif
 
 
-    void *          SqlCol_QueryInfo (
+    void *          SqlRowData_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  SQLCOL_JSON_SUPPORT
+#ifdef  SQLROWDATA_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SqlCol_ToJson(this);
+     ASTR_DATA      *pDesc = SqlRowData_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlCol_ToJson (
-        SQLCOL_DATA      *this
+    ASTR_DATA *     SqlRowData_ToJson (
+        SQLROWDATA_DATA      *this
     );
 
 
@@ -216,8 +188,8 @@ struct SqlCol_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SqlCol_ToJsonFields (
-        SQLCOL_DATA     *this,
+    ERESULT         SqlRowData_ToJsonFields (
+        SQLROWDATA_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -227,16 +199,16 @@ struct SqlCol_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			SqlCol_Validate (
-        SQLCOL_DATA       *this
+    bool            SqlRowData_Validate (
+        SQLROWDATA_DATA       *this
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* SQLCOL_INTERNAL_H */
+#endif  /* SQLROWDATA_INTERNAL_H */
 

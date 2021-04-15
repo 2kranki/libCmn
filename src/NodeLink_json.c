@@ -171,7 +171,7 @@ extern "C" {
         JsonIn_RegisterClass(Node_Class());
 
         pInfo = obj_getInfo(NodeLink_Class());
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;

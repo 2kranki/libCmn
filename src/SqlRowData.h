@@ -1,16 +1,16 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  SQL Row Support (SqlRow) Header
+//                  SQL Row Data (SqlRowData) Header
 //****************************************************************
 /*
  * Program
- *          SQL Row Support (SqlRow)
+ *          SQL Row Data (SqlRowData)
  * Purpose
  *          This object provides a standardized way of handling
- *          a separate SqlRow to run things without complications
- *          of interfering with the main SqlRow. A SqlRow may be 
- *          called a SqlRow on other O/S's.
+ *          a separate SqlRowData to run things without complications
+ *          of interfering with the main SqlRowData. A SqlRowData may be 
+ *          called a SqlRowData on other O/S's.
  *
  * Remarks
  *  1.      None
@@ -53,16 +53,16 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <SqlCol.h>
+#include        <SqlRow.h>
 
 
-#ifndef         SQLROW_H
-#define         SQLROW_H
+#ifndef         SQLROWDATA_H
+#define         SQLROWDATA_H
 
 
-//#define   SQLROW_IS_IMMUTABLE     1
-#define   SQLROW_JSON_SUPPORT       1
-//#define   SQLROW_SINGLETON        1
+//#define   SQLROWDATA_IS_IMMUTABLE     1
+#define   SQLROWDATA_JSON_SUPPORT       1
+//#define   SQLROWDATA_SINGLETON        1
 
 
 
@@ -78,26 +78,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct SqlRow_data_s  SQLROW_DATA;            // Inherits from OBJ
-    typedef struct SqlRow_class_data_s SQLROW_CLASS_DATA;   // Inherits from OBJ
+    typedef struct SqlRowData_data_s  SQLROWDATA_DATA;            // Inherits from OBJ
+    typedef struct SqlRowData_class_data_s SQLROWDATA_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct SqlRow_vtbl_s  {
+    typedef struct SqlRowData_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in SqlRow_object.c.
+        // method names to the vtbl definition in SqlRowData_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SQLROW_DATA *);
-    } SQLROW_VTBL;
+        //bool        (*pIsEnabled)(SQLROWDATA_DATA *);
+    } SQLROWDATA_VTBL;
 
-    typedef struct SqlRow_class_vtbl_s    {
+    typedef struct SqlRowData_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in SqlRow_object.c.
+        // method names to the vtbl definition in SqlRowData_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SQLROW_DATA *);
-    } SQLROW_CLASS_VTBL;
+        //bool        (*pIsEnabled)(SQLROWDATA_DATA *);
+    } SQLROWDATA_CLASS_VTBL;
 
 
 
@@ -111,12 +111,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  SQLROW_SINGLETON
-    SQLROW_DATA *     SqlRow_Shared (
+#ifdef  SQLROWDATA_SINGLETON
+    SQLROWDATA_DATA *     SqlRowData_Shared (
         void
     );
 
-    void            SqlRow_SharedReset (
+    void            SqlRowData_SharedReset (
         void
     );
 #endif
@@ -126,29 +126,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to SqlRow object if successful, otherwise OBJ_NIL.
+     @return    pointer to SqlRowData object if successful, otherwise OBJ_NIL.
      */
-    SQLROW_DATA *     SqlRow_Alloc (
+    SQLROWDATA_DATA *     SqlRowData_Alloc (
         void
     );
     
     
-    OBJ_ID          SqlRow_Class (
+    OBJ_ID          SqlRowData_Class (
         void
     );
     
     
-    SQLROW_DATA *     SqlRow_New (
+    SQLROWDATA_DATA *     SqlRowData_New (
         void
     );
     
     
-#ifdef  SQLROW_JSON_SUPPORT
-    SQLROW_DATA *   SqlRow_NewFromJsonString (
+#ifdef  SQLROWDATA_JSON_SUPPORT
+    SQLROWDATA_DATA *   SqlRowData_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    SQLROW_DATA *   SqlRow_NewFromJsonStringA (
+    SQLROWDATA_DATA *   SqlRowData_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -167,41 +167,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     SqlRow_Disable (
-        SQLROW_DATA       *this
+    ERESULT     SqlRowData_Disable (
+        SQLROWDATA_DATA       *this
     );
 
 
-    ERESULT     SqlRow_Enable (
-        SQLROW_DATA       *this
+    ERESULT     SqlRowData_Enable (
+        SQLROWDATA_DATA       *this
     );
 
    
-    SQLROW_DATA *   SqlRow_Init (
-        SQLROW_DATA     *this
+    SQLROWDATA_DATA *   SqlRowData_Init (
+        SQLROWDATA_DATA     *this
     );
 
 
-    ERESULT     SqlRow_IsEnabled (
-        SQLROW_DATA       *this
+    ERESULT     SqlRowData_IsEnabled (
+        SQLROWDATA_DATA       *this
     );
     
  
-#ifdef  SQLROW_JSON_SUPPORT
+#ifdef  SQLROWDATA_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SqlRow_ToJson(this);
+     ASTR_DATA      *pDesc = SqlRowData_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlRow_ToJson (
-        SQLROW_DATA   *this
+    ASTR_DATA *     SqlRowData_ToJson (
+        SQLROWDATA_DATA   *this
     );
 #endif
 
@@ -210,7 +210,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = SqlRow_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = SqlRowData_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -218,8 +218,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlRow_ToDebugString (
-        SQLROW_DATA     *this,
+    ASTR_DATA *     SqlRowData_ToDebugString (
+        SQLROWDATA_DATA     *this,
         int             indent
     );
     
@@ -230,5 +230,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* SQLROW_H */
+#endif  /* SQLROWDATA_H */
 
