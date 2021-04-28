@@ -27,10 +27,8 @@
 #include    <trace.h>
 #include    <SqlRow_internal.h>
 #include    <JsonIn.h>
-#ifdef  SQLROW_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
@@ -56,10 +54,8 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  SQLROW_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
-#endif
     JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
@@ -124,14 +120,71 @@ int             test_SqlRow_Copy01 (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SQLROW_DATA       *pObj1 = OBJ_NIL;
-    SQLROW_DATA       *pObj2 = OBJ_NIL;
+    SQLROW_DATA     *pObj1 = OBJ_NIL;
+    SQLROW_DATA     *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(SQLROW_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
-#endif
-   
+    SQLCOL_STRUCT   ex1 = {
+        "dec1",
+        "Decimal 1",
+        "table",            // Table Name
+        "database",         // Database Name
+        SQLCOL_TYPE_DECIMAL,
+        0,                  // Key Sequence
+        2,                  // Decimal Places
+        5,                  // Column Sequence
+        9,                  // Length
+        9,                  // Min Length
+        0,                  // Flags
+        "0.00",             // Default Value
+        NULL                // Check Expression
+    };
+    SQLCOL_DATA     *pCol1 = OBJ_NIL;
+    int             iRc;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pCol1 = SqlCol_NewFromStruct(&ex1);
+    TINYTEST_FALSE( (OBJ_NIL == pCol1) );
+    if (pCol1) {
+        // Verify new object.
+        pStr = SqlCol_getName(pCol1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "dec1");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDatabaseName(pCol1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "database");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDesc(pCol1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "Decimal 1");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDefVal(pCol1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "0.00");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getCheckExpr(pCol1);
+        TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        pStr = SqlCol_getTableName(pCol1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "table");
+        TINYTEST_TRUE( (0 == iRc) );
+        TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pCol1)) );
+        TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pCol1)) );
+        TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pCol1)) );
+        TINYTEST_TRUE( (5 == SqlCol_getColSeq(pCol1)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLength(pCol1)) );
+        TINYTEST_TRUE( (9 == SqlCol_getLengthMin(pCol1)) );
+        TINYTEST_TRUE( (0 == SqlCol_getFlags(pCol1)) );
+
+        pStr = SqlCol_FullName(pCol1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "database.table.dec1");
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+    }
 
     pObj1 = SqlRow_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
@@ -149,9 +202,11 @@ int             test_SqlRow_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SQLROW);
         TINYTEST_TRUE( (fRc) );
-        //eRc = SqlRow_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
-        //TODO: Add More tests here!
+        {
+            ASTR_DATA       *pStr = SqlRow_ToDebugString(pObj2, 4);
+            fprintf(stderr, "1 ASSIGN: %s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -165,12 +220,16 @@ int             test_SqlRow_Copy01 (
         //eRc = SqlRow_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
         //TODO: Add More tests here!
+        {
+            ASTR_DATA       *pStr = SqlRow_ToDebugString(pObj2, 4);
+            fprintf(stderr, "2 COPY: %s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(SQLROW_JSON_SUPPORT) && defined(XYZZY)
         pStr = SqlRow_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
@@ -182,14 +241,21 @@ int             test_SqlRow_Copy01 (
         pStr = OBJ_NIL;
         //eRc = SqlRow_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        {
+            ASTR_DATA       *pStr = SqlRow_ToDebugString(pObj2, 4);
+            fprintf(stderr, "3 JSON: %s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+        }
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
-#endif
 
         obj_Release(pObj1);
         pObj1 = OBJ_NIL;
     }
+
+    obj_Release(pCol1);
+    pCol1 = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
@@ -239,7 +305,7 @@ int             test_SqlRow_Test01 (
 
 TINYTEST_START_SUITE(test_SqlRow);
     TINYTEST_ADD_TEST(test_SqlRow_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_SqlRow_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SqlRow_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SqlRow_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

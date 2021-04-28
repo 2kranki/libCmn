@@ -1766,8 +1766,50 @@ int         test_AStr_Prepend(
 
 
 
+int         test_AStr_ToSQL(
+    const
+    char        *pTestName
+)
+{
+    ASTR_DATA   *pObj = OBJ_NIL;
+    ASTR_DATA   *pSQL = OBJ_NIL;
+    ERESULT     eRc;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = AStr_NewA("Hi there!");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        pSQL = AStr_ToSQL(pObj);
+        XCTAssertFalse( (OBJ_NIL == pSQL) );
+        XCTAssertTrue( (0 == AStr_CompareA(pSQL, "'Hi there!'")) );
+        obj_Release(pSQL);
+        pSQL = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    pObj = AStr_NewA("Hidden 'quotes'");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+        pSQL = AStr_ToSQL(pObj);
+        XCTAssertFalse( (OBJ_NIL == pSQL) );
+        XCTAssertTrue( (0 == AStr_CompareA(pSQL, "'Hidden ''quotes'''")) );
+        obj_Release(pSQL);
+        pSQL = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_AStr);
+    TINYTEST_ADD_TEST(test_AStr_ToSQL,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_Prepend,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_Find,setUp,tearDown);
     TINYTEST_ADD_TEST(test_AStr_LowerUpper,setUp,tearDown);

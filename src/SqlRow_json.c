@@ -52,6 +52,7 @@
 #include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeHash.h>
+#include    <ObjArray_internal.h>
 #include    <SrcErrors.h>
 #include    <utf8.h>
 
@@ -95,7 +96,14 @@ extern "C" {
         //uint8_t         *pData;
         //uint32_t        len;
 
-#ifdef XYZZZY 
+        eRc = JsonIn_SubObjectInHash(pParser, "array");
+        if (ERESULT_OK(eRc)) {
+            obj_Release(pObject->pArray);
+            pObject->pArray = ObjArray_ParseJsonObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+        }
+
+#ifdef XYZZZY
         (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
         (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
         (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
@@ -291,7 +299,9 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
 
-#ifdef XYZZZY 
+        JsonOut_Append_Object("array", this->pArray, pStr);
+
+#ifdef XYZZZY
         JsonOut_Append_i32("x", this->x, pStr);
         JsonOut_Append_i64("t", this->t, pStr);
         JsonOut_Append_u32("o", this->o, pStr);

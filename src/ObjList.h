@@ -173,6 +173,20 @@ extern "C" {
 
 
     /*!
+        Other is a property to hold any object that the user of this
+        object may want to put in it.
+     */
+    OBJ_ID          ObjList_getOther (
+        OBJLIST_DATA    *this
+    );
+
+    bool            ObjList_setOther (
+        OBJLIST_DATA    *this,
+        OBJ_ID          pValue
+    );
+
+
+    /*!
      Size property is the numbers of objects on the list.
      */
     uint32_t        ObjList_getSize (

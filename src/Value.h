@@ -109,6 +109,7 @@ extern "C" {
 
     typedef enum Value_type_e {
         VALUE_TYPE_UNKNOWN=0,
+        VALUE_TYPE_ASTR,            // AStr Object
         VALUE_TYPE_DOUBLE,          // 64-bit Float
         VALUE_TYPE_INT8,            // int8_t
         VALUE_TYPE_INT16,           // int16_t
@@ -171,6 +172,10 @@ extern "C" {
     );
     
     
+    VALUE_DATA *    Value_NewAStr (
+        ASTR_DATA       *pValue
+    );
+
     /*!
      Create a value object where the data will not be
      controlled by this object.
@@ -244,6 +249,16 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+    ASTR_DATA *     Value_getAStr (
+        VALUE_DATA      *this
+    );
+
+    bool            Value_setAStr (
+        VALUE_DATA      *this,
+        ASTR_DATA       *pValue
+    );
+
 
     uint8_t *       Value_getData (
         VALUE_DATA      *this
@@ -489,6 +504,22 @@ extern "C" {
     );
     
     
+    /*!
+     Create a string that describes this object's value.
+     Example:
+     @code
+        ASTR_DATA      *pDesc = Value_ToString(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Value_ToString (
+        VALUE_DATA      *this
+    );
+
+
 
     
 #ifdef	__cplusplus

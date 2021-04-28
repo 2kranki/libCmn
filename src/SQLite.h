@@ -54,6 +54,8 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <AStrCArray.h>
+#include        <SqlCol.h>
+#include        <SqlRow.h>
 #include        <sqlite3.h>
 
 

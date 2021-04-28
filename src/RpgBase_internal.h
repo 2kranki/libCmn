@@ -75,8 +75,8 @@ struct RpgBase_data_s  {
     OBJ_ID          *pData;
     RPGBASE_EXEC_INTERFACE
                     *pExec;
-    uint8_t         *pRcdCur;
-    uint8_t         *pRcdNxt;
+    OBJ_ID          *pRcdCur;
+    OBJ_ID          *pRcdNxt;
 
     uint8_t         lvlbrk1;
     uint8_t         lvlbrk2;

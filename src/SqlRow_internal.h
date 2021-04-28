@@ -41,6 +41,7 @@
 
 #include        <SqlRow.h>
 #include        <JsonIn.h>
+#include        <ObjArray.h>
 
 
 #ifndef SQLROW_INTERNAL_H
@@ -69,9 +70,7 @@ struct SqlRow_data_s  {
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;           // maximum number of elements
-    uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+    OBJARRAY_DATA   *pArray;
 
 };
 #pragma pack(pop)

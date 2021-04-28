@@ -102,11 +102,13 @@ extern "C" {
 
         eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
         eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
+        if (ERESULT_OK(eRc)) {
+            pWrk = AStr_ParseJsonObject(pParser);
+            if (pWrk) {
+                pObject->pErrorStr = pWrk;
+            }
+            JsonIn_SubObjectEnd(pParser);
         }
-        JsonIn_SubObjectEnd(pParser);
 #endif
 
         // Return to caller.

@@ -417,7 +417,7 @@ extern "C" {
     {
         va_list         pList;
         //NODELINK_DATA   *pNodeList;
-        uint32_t        nodeIndex;
+        //uint32_t        nodeIndex;
 
         // Do initialization.
 #ifdef NDEBUG

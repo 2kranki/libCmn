@@ -375,7 +375,7 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         SqlColData_Assign (
-        SQLCOLDATA_DATA       *this,
+        SQLCOLDATA_DATA     *this,
         SQLCOLDATA_DATA     *pOther
     )
     {
@@ -635,7 +635,7 @@ extern "C" {
                 error code.
      */
     ERESULT         SqlColData_Disable (
-        SQLCOLDATA_DATA       *this
+        SQLCOLDATA_DATA *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -670,7 +670,7 @@ extern "C" {
                 error code.
      */
     ERESULT         SqlColData_Enable (
-        SQLCOLDATA_DATA       *this
+        SQLCOLDATA_DATA *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -932,6 +932,118 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                       T o  S Q L
+    //---------------------------------------------------------------
+
+    /*!
+     Convert the internal column definition to SQL.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                SQL, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SqlColData_ToSQL (
+        SQLCOLDATA_DATA *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrk;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SqlColData_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        if ((OBJ_NIL == this->pCol) || (OBJ_NIL == this->pValue)) {
+            return pStr;
+        }
+
+        switch (SqlCol_getType(this->pCol)) {
+            case SQLCOL_TYPE_BLOB:
+                // BLOB literals are string literals containing hexadecimal data and
+                // preceeded by a single 'x' or 'X' (ie x'012345').
+                //TODO: Finish!
+                eRc = AStr_AppendA(pStr, "BLOB ");
+                break;
+
+            case SQLCOL_TYPE_BOOL:
+                //TODO: Finish!
+                eRc = AStr_AppendA(pStr, "BOOL ");
+                break;
+
+            case SQLCOL_TYPE_CHAR:
+            case SQLCOL_TYPE_TEXT:
+            case SQLCOL_TYPE_VARCHAR:
+                // A string constant is formed by enclosing the string in single quotes
+                // ('). A single quote within the string can be encoded by putting two
+                // single quotes in a row - as in Pascal.
+                //TODO: Finish!
+                pWrk = Value_getAStr(this->pValue);
+#ifdef XYZZY
+                if (this->length) {
+                    eRc = AStr_AppendPrint(pStr, "CHAR(%d) ", this->length);
+                } else {
+                    eRc = AStr_AppendA(pStr, "CHAR ");
+                }
+#endif
+                break;
+
+            case SQLCOL_TYPE_DATE:
+                //TODO: Finish!
+                //pWrkStrA = "DATE";
+                break;
+
+            case SQLCOL_TYPE_DECIMAL:
+            case SQLCOL_TYPE_REAL:
+                eRc =   AStr_AppendPrint(pStr, "%f", Value_getDouble(this->pValue));
+                break;
+
+            case SQLCOL_TYPE_FILLER:
+                eRc = AStr_AppendA(pStr, "NULL");
+                break;
+
+            case SQLCOL_TYPE_INTEGER:
+            case SQLCOL_TYPE_NUMBER:
+                eRc =   AStr_AppendPrint(pStr, "%d", Value_getI64(this->pValue));
+                break;
+
+            case SQLCOL_TYPE_NCHAR:
+            case SQLCOL_TYPE_NVARCHAR:
+                // A string constant is formed by enclosing the string in single quotes
+                // ('). A single quote within the string can be encoded by putting two
+                // single quotes in a row - as in Pascal.
+                //TODO: Finish!
+#ifdef XYZZY
+                if (this->length) {
+                    eRc = AStr_AppendPrint(pStr, "NCHAR(%d) ", this->length);
+                } else {
+                    eRc = AStr_AppendA(pStr, "NCHAR ");
+                }
+#endif
+                break;
+
+            default:
+                //pWrkStrA = "==>UNKNOWN<==";
+                break;
+        }
+
+        return pStr;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

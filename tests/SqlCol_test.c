@@ -136,6 +136,8 @@ int             test_SqlCol_Copy01 (
     SQLCOL_STRUCT   ex1 = {
         "ex_name",
         "Example Name",
+        "table",            // Table Name
+        "database",         // Database Name
         SQLCOL_TYPE_DECIMAL,
         0,                  // Key Sequence
         2,                  // Decimal Places
@@ -161,6 +163,10 @@ int             test_SqlCol_Copy01 (
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "ex_name");
         TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDatabaseName(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "database");
+        TINYTEST_TRUE( (0 == iRc) );
         pStr = SqlCol_getDesc(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "Example Name");
@@ -171,6 +177,10 @@ int             test_SqlCol_Copy01 (
         TINYTEST_TRUE( (0 == iRc) );
         pStr = SqlCol_getCheckExpr(pObj1);
         TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        pStr = SqlCol_getTableName(pObj1);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "table");
+        TINYTEST_TRUE( (0 == iRc) );
         TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj1)) );
         TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj1)) );
         TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj1)) );
@@ -192,6 +202,10 @@ int             test_SqlCol_Copy01 (
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "ex_name");
         TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDatabaseName(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "database");
+        TINYTEST_TRUE( (0 == iRc) );
         pStr = SqlCol_getDesc(pObj2);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "Example Name");
@@ -202,6 +216,10 @@ int             test_SqlCol_Copy01 (
         TINYTEST_TRUE( (0 == iRc) );
         pStr = SqlCol_getCheckExpr(pObj2);
         TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        pStr = SqlCol_getTableName(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "table");
+        TINYTEST_TRUE( (0 == iRc) );
         TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj2)) );
         TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj2)) );
         TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj2)) );
@@ -224,6 +242,10 @@ int             test_SqlCol_Copy01 (
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "ex_name");
         TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDatabaseName(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "database");
+        TINYTEST_TRUE( (0 == iRc) );
         pStr = SqlCol_getDesc(pObj2);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "Example Name");
@@ -234,6 +256,10 @@ int             test_SqlCol_Copy01 (
         TINYTEST_TRUE( (0 == iRc) );
         pStr = SqlCol_getCheckExpr(pObj2);
         TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        pStr = SqlCol_getTableName(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "table");
+        TINYTEST_TRUE( (0 == iRc) );
         TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj2)) );
         TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj2)) );
         TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj2)) );
@@ -260,6 +286,10 @@ int             test_SqlCol_Copy01 (
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "ex_name");
         TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDatabaseName(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "database");
+        TINYTEST_TRUE( (0 == iRc) );
         pStr = SqlCol_getDesc(pObj2);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "Example Name");
@@ -270,6 +300,10 @@ int             test_SqlCol_Copy01 (
         TINYTEST_TRUE( (0 == iRc) );
         pStr = SqlCol_getCheckExpr(pObj2);
         TINYTEST_TRUE( (OBJ_NIL == pStr) );
+        pStr = SqlCol_getTableName(pObj2);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "table");
+        TINYTEST_TRUE( (0 == iRc) );
         TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj2)) );
         TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj2)) );
         TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj2)) );
@@ -302,6 +336,8 @@ int             test_SqlCol_Test01 (
     SQLCOL_STRUCT   ex1 = {
         "ex_name",
         "Example Name",
+        "table",            // Table Name
+        "database",         // Database Name
         SQLCOL_TYPE_DECIMAL,
         0,                  // Key Sequence
         2,                  // Decimal Places
@@ -329,6 +365,10 @@ int             test_SqlCol_Test01 (
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "ex_name");
         TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getDatabaseName(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "database");
+        TINYTEST_TRUE( (0 == iRc) );
         pStr = SqlCol_getDesc(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "Example Name");
@@ -340,6 +380,11 @@ int             test_SqlCol_Test01 (
         pStr = SqlCol_getCheckExpr(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         iRc = AStr_CompareA(pStr, "Check this!");
+        TINYTEST_TRUE( (0 == iRc) );
+        pStr = SqlCol_getTableName(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "table");
+        TINYTEST_TRUE( (0 == iRc) );
         TINYTEST_TRUE( (SQLCOL_TYPE_DECIMAL == SqlCol_getType(pObj)) );
         TINYTEST_TRUE( (0 == SqlCol_getKeySeq(pObj)) );
         TINYTEST_TRUE( (2 == SqlCol_getDecimalPlaces(pObj)) );
@@ -347,6 +392,13 @@ int             test_SqlCol_Test01 (
         TINYTEST_TRUE( (9 == SqlCol_getLength(pObj)) );
         TINYTEST_TRUE( (9 == SqlCol_getLengthMin(pObj)) );
         TINYTEST_TRUE( (0 == SqlCol_getFlags(pObj)) );
+
+        pStr = SqlCol_FullName(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        iRc = AStr_CompareA(pStr, "database.table.ex_name");
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
 
         {
             ASTR_DATA       *pStr = SqlCol_ToDebugString(pObj, 4);
@@ -378,6 +430,8 @@ int             test_SqlCol_TestSQL01 (
     SQLCOL_STRUCT   ex1 = {
         "ex_name",
         "Example Name",
+        NULL,               // Table Name
+        NULL,               // Database Name
         SQLCOL_TYPE_DECIMAL,
         0,                  // Key Sequence
         2,                  // Decimal Places

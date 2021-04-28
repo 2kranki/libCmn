@@ -118,11 +118,75 @@ extern "C" {
 
 
 
-    
+    SQLROW_DATA *   SqlRow_NewFromColumnStructs (
+        int             num,
+        SQLCOL_STRUCT   *pStructs
+    )
+    {
+        ERESULT         eRc;
+        SQLROW_DATA     *this;
+
+        this = SqlRow_New( );
+        if (this) {
+            eRc = SqlRow_SetupFromColumnStructs(this, num, pStructs);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return this;
+    }
+
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //                          A r r a y
+    //---------------------------------------------------------------
+
+    OBJARRAY_DATA * SqlRow_getArray (
+        SQLROW_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlRow_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pArray;
+    }
+
+
+    bool            SqlRow_setArray (
+        SQLROW_DATA     *this,
+        OBJARRAY_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlRow_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pArray) {
+            obj_Release(this->pArray);
+        }
+        this->pArray = pValue;
+
+        return true;
+    }
+
+
 
     //---------------------------------------------------------------
     //                          P r i o r i t y
@@ -183,57 +247,15 @@ extern "C" {
         }
 #endif
 
+        if (this->pArray) {
+            return ObjArray_getSize(this->pArray);
+        }
+
         return 0;
     }
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * SqlRow_getStr (
-        SQLROW_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!SqlRow_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        SqlRow_setStr (
-        SQLROW_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!SqlRow_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -313,16 +335,10 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
-        }
-#endif
+        SqlRow_setArray(pOther, OBJ_NIL);
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
         if (this->pArray) {
             if (obj_getVtbl(this->pArray)->pCopy) {
                 pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
@@ -332,7 +348,6 @@ extern "C" {
                 pOther->pArray = this->pArray;
             }
         }
-#endif
 
         // Copy other data from this object to other.
         //pOther->x     = this->x; 
@@ -340,8 +355,6 @@ extern "C" {
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -471,7 +484,7 @@ extern "C" {
         }
 #endif
 
-        SqlRow_setStr(this, OBJ_NIL);
+        SqlRow_setArray(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -530,6 +543,38 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      D e l e t e
+    //---------------------------------------------------------------
+
+    SQLCOL_DATA *   SqlRow_Delete (
+        SQLROW_DATA     *this,
+        uint32_t        index
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        SQLCOL_DATA     *pCol = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SqlRow_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        if (this->pArray) {
+            pCol = ObjArray_Delete(this->pArray, index);
+        }
+
+        // Return to caller.
+        return pCol;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -601,6 +646,38 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          G e t
+    //---------------------------------------------------------------
+
+    SQLCOL_DATA *   SqlRow_Get (
+        SQLROW_DATA     *this,
+        uint32_t        index
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        SQLCOL_DATA     *pCol = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SqlRow_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        if (this->pArray) {
+            pCol = ObjArray_Get(this->pArray, index);
+        }
+
+        // Return to caller.
+        return pCol;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -639,14 +716,13 @@ extern "C" {
         JsonIn_RegisterClass(SqlRow_Class());
 #endif
         
-        /*
-        this->pArray = objArray_New( );
+        JsonIn_RegisterClass(ObjArray_Class());
+        this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
 
 #ifdef NDEBUG
 #else
@@ -839,6 +915,51 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      S e t u p
+    //---------------------------------------------------------------
+
+    /*!
+     Setup columns from Column Structs.
+     @param     this        object pointer
+     @param     num         number of structs in array
+     @param     pStructs    column struct array pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SqlRow_SetupFromColumnStructs (
+        SQLROW_DATA     *this,
+        int             num,
+        SQLCOL_STRUCT   *pStructs
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             i;
+        SQLCOL_DATA     *pCol;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SqlRow_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        for (i=0; i<num; i++) {
+            pCol = SqlCol_NewFromStruct(&pStructs[i]);
+            if (pCol) {
+                eRc = ObjArray_AppendObj(this->pArray, pCol, NULL);
+                obj_Release(pCol);
+            }
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -861,12 +982,14 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        //uint32_t        i;
+        uint32_t        i;
+        uint32_t        iMax;
         //uint32_t        j;
-        
+        SQLCOL_DATA     *pCol = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -888,12 +1011,24 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d retain=%d\n",
+                    "{%p(%s) size=%d retain=%d array=%p\n",
                     this,
                     pInfo->pClassName,
                     SqlRow_getSize(this),
-                    obj_getRetainCount(this)
+                    obj_getRetainCount(this),
+                    this->pArray
             );
+
+        iMax = SqlRow_getSize(this);
+        for (i=0; i<iMax; i++) {
+            pCol = ObjArray_Get(this->pArray, i+1);
+            if (pCol) {
+                pWrkStr = SqlCol_ToDebugString(pCol, indent+4);
+                AStr_Append(pStr, pWrkStr);
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+            }
+        }
 
 #ifdef  XYZZY        
         if (this->pData) {

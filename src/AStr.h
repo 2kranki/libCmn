@@ -798,6 +798,17 @@ extern "C" {
     
     
     /*!
+     Create a new string from the current one that is translated to
+     SQL single quote constant.
+     @return    If successful, an new AStr object which must be released,
+                otherwise OBJ_NIL.
+     */
+    ASTR_DATA *     AStr_ToSQL(
+        ASTR_DATA      *this
+    );
+
+
+    /*!
      Copy the string to stderr.
      @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
      */

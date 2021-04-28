@@ -86,10 +86,13 @@ struct SqlCol_data_s	{
     uint32_t        flags;
     int32_t         length;
     int32_t         lengthMin;
+    ASTR_DATA       *pDBName;
+    ASTR_DATA       *pTableName;
     ASTR_DATA       *pName;
     ASTR_DATA       *pCheckExpr;
     ASTR_DATA       *pDesc;
     ASTR_DATA       *pDefVal;
+    VALUE_DATA      *pValue;
 
 };
 #pragma pack(pop)

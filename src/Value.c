@@ -198,6 +198,25 @@ extern "C" {
 
 
 
+    VALUE_DATA *    Value_NewAStr (
+        ASTR_DATA       *pValue
+    )
+    {
+        VALUE_DATA      *this;
+        bool            fRc;
+
+        this = Value_New();
+        if (this) {
+            fRc = Value_setAStr(this, pValue);
+            if (!fRc) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return this;
+    }
+
+
     VALUE_DATA *    Value_NewData (
         int32_t         length,
         uint8_t         *pData
@@ -434,6 +453,56 @@ extern "C" {
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //                          A S t r
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     Value_getAStr (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        if (this->type == VALUE_TYPE_ASTR) {
+            return this->value.pObject;
+        }
+        else {
+            return OBJ_NIL;
+        }
+    }
+
+
+    bool            Value_setAStr (
+        VALUE_DATA      *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        Value_FreeData(this);
+        this->value.pObject = pValue;
+        this->type = VALUE_TYPE_ASTR;
+
+        return true;
+    }
+
+
 
     //---------------------------------------------------------------
     //                          D a t a
@@ -1797,6 +1866,9 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return Value_ToDebugString;
                         }
+                        if (str_Compare("ToString", (char *)pStr) == 0) {
+                            return Value_ToString;
+                        }
 #ifdef  VALUE_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
                             return Value_ToJsonFields;
@@ -1815,6 +1887,8 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == Value_ToDebugString)
                     return "ToDebugString";
+                if (pData == Value_ToString)
+                    return "ToString";
 #ifdef  VALUE_JSON_SUPPORT
                 if (pData == Value_ToJson)
                     return "ToJson";
@@ -1854,7 +1928,7 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         
@@ -1886,7 +1960,115 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-#ifdef  XYZZY        
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent, ' ');
+        }
+        switch (this->type) {
+            case VALUE_TYPE_ASTR:           // AStr Object
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\tASTR - \"%s\"\n",
+                            AStr_getData(this->value.pObject)
+                    );
+                break;
+
+            case VALUE_TYPE_DOUBLE:         // 64-bit Float
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\tDOUBLE - %f\n",
+                            this->value.flt
+                    );
+                break;
+
+            case VALUE_TYPE_INT8:           // int8_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\tI8 - %d\n",
+                            this->value.i8
+                    );
+                break;
+
+            case VALUE_TYPE_INT16:          // int16_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\tI16 - %d\n",
+                            this->value.i16
+                    );
+                break;
+
+            case VALUE_TYPE_INT32:          // int32_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\tI32 - %d\n",
+                            this->value.i32
+                    );
+                break;
+
+            case VALUE_TYPE_INT64:          // int64_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\tI64 - %d\n",
+                            this->value.i64
+                    );
+                break;
+
+            case VALUE_TYPE_UINT8:          // uint8_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\tU8 - %u\n",
+                            this->value.u8
+                    );
+                break;
+
+            case VALUE_TYPE_UINT16:         // uint16_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\tU16 - %u\n",
+                            this->value.u16
+                    );
+                break;
+
+            case VALUE_TYPE_UINT32:         // uint32_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\tU32 - %u\n",
+                            this->value.u32
+                    );
+                break;
+
+            case VALUE_TYPE_UINT64:         // uint64_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\tU64 - %u\n",
+                            this->value.u64
+                    );
+                break;
+
+            case VALUE_TYPE_OBJECT: // Any object that supports "ToDebugString" method
+                if (this->value.pObject) {
+                    OBJ_DATA        *pObj = this->value.pObject;
+                    if (pObj->pVtbl->pToDebugString) {
+                        pWrkStr = pObj->pVtbl->pToDebugString(pObj, indent+4);
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                    }
+                }
+                break;
+
+            case VALUE_TYPE_DATA:           // Any data (pointer and length) (pointer and length
+                //                          // must be valid for life of object)
+                break;
+
+            case VALUE_TYPE_DATA_FREE:      // Any data (pointer and length) which will be freed
+                //                          // using mem_Free() when no longer needed (pointer
+                //                          // and length must be valid for life of object)
+                break;
+
+            default:
+                break;
+        }
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
@@ -1913,7 +2095,151 @@ extern "C" {
     }
     
     
-    
+    /*!
+     Create a string that describes this object's value.
+     Example:
+     @code
+        ASTR_DATA      *pDesc = Value_ToString(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Value_ToString (
+        VALUE_DATA      *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrkStr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Value_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        switch (this->type) {
+            case VALUE_TYPE_ASTR:           // AStr Object
+                eRc = AStr_Append(pStr, this->value.pObject);
+                break;
+
+            case VALUE_TYPE_DOUBLE:         // 64-bit Float
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "%f",
+                            this->value.flt
+                    );
+                break;
+
+            case VALUE_TYPE_INT8:           // int8_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "%d",
+                            this->value.i8
+                    );
+                break;
+
+            case VALUE_TYPE_INT16:          // int16_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "%d",
+                            this->value.i16
+                    );
+                break;
+
+            case VALUE_TYPE_INT32:          // int32_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "%d",
+                            this->value.i32
+                    );
+                break;
+
+            case VALUE_TYPE_INT64:          // int64_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "%d",
+                            this->value.i64
+                    );
+                break;
+
+            case VALUE_TYPE_UINT8:          // uint8_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "%u",
+                            this->value.u8
+                    );
+                break;
+
+            case VALUE_TYPE_UINT16:         // uint16_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "%u",
+                            this->value.u16
+                    );
+                break;
+
+            case VALUE_TYPE_UINT32:         // uint32_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "%u",
+                            this->value.u32
+                    );
+                break;
+
+            case VALUE_TYPE_UINT64:         // uint64_t
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "%u",
+                            this->value.u64
+                    );
+                break;
+
+            case VALUE_TYPE_OBJECT:         // Any object that supports "ToStr" method
+                if (this->value.pObject) {
+                    ASTR_DATA * (*pToStr)(OBJ_ID);
+                    pToStr =    ((OBJ_DATA *)(this->value.pObject))->pVtbl->pQueryInfo(
+                                             this->value.pObject,
+                                             OBJ_QUERYINFO_TYPE_METHOD,
+                                             "ToStr"
+                                );
+                    if (pToStr) {
+                        pWrkStr = pToStr(this->value.pObject);
+                        AStr_Append(pStr, pWrkStr);
+                        obj_Release(pWrkStr);
+                    }
+                }
+                break;
+
+            case VALUE_TYPE_DATA:           // Any data (pointer and length) (pointer and length
+                //                          // must be valid for life of object)
+                break;
+
+            case VALUE_TYPE_DATA_FREE:      // Any data (pointer and length) which will be freed
+                //                          // using mem_Free() when no longer needed (pointer
+                //                          // and length must be valid for life of object)
+                break;
+
+            default:
+                break;
+        }
+
+        return pStr;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

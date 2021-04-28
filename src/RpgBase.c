@@ -808,7 +808,7 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        bool            fRc;
+        //bool            fRc;
 
         // Do initialization.
 #ifdef NDEBUG

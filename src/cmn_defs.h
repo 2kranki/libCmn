@@ -229,10 +229,6 @@ extern "C" {
         OBJ_IDENT_CSVFILE_CLASS,
         OBJ_IDENT_DATETIME,             // Date & Time
         OBJ_IDENT_DATETIME_CLASS,
-        OBJ_IDENT_DBF,                  // DBase III/IV
-        OBJ_IDENT_DBF_CLASS,
-        OBJ_IDENT_DBFIELD,              // DBase III/IV Field
-        OBJ_IDENT_DBFIELD_CLASS,
         OBJ_IDENT_DEC,                  // Decimal (Base 10)
         OBJ_IDENT_DEC_CLASS,
         OBJ_IDENT_DIR,

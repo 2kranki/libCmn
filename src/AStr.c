@@ -3108,9 +3108,7 @@ extern "C" {
         
         for (i=0; i<iMax; ++i) {
             wchr = AStr_CharGetW32(this, i+1);
-            if (wchr) {
-            }
-            else {
+            if (0 == wchr) {
                 break;
             }
             utf8_W32ToChrCon(wchr, work);
@@ -3269,6 +3267,52 @@ extern "C" {
     }
     
     
+
+    //---------------------------------------------------------------
+    //                       T o  S Q L
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     AStr_ToSQL(
+        ASTR_DATA       *this
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        W32CHR_T        wchr;
+        ASTR_DATA       *pStr;
+        char            work[16];
+
+        if (OBJ_NIL == this) {
+            return OBJ_NIL;
+        }
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            return pStr;
+        }
+        eRc = AStr_AppendA(pStr,"'");
+        iMax = AStr_getLength(this);
+
+        for (i=0; i<iMax; ++i) {
+            wchr = AStr_CharGetW32(this, i+1);
+            if (0 == wchr) {
+                break;
+            }
+            if ('\'' == wchr) {
+                eRc = AStr_AppendA(pStr,"''");
+            } else {
+                utf8_W32ToChrCon(wchr, work);
+                AStr_AppendA(pStr, work);
+            }
+        }
+        eRc = AStr_AppendA(pStr,"'");
+
+
+        return pStr;
+    }
+
+
 
     //---------------------------------------------------------------
     //                       T o  S t r i n g

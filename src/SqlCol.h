@@ -1,16 +1,14 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Separate SqlCol (SqlCol) Header
+//                  SQL Column Support (SqlCol) Header
 //****************************************************************
 /*
  * Program
- *			Separate SqlCol (SqlCol)
+ *          SQL Column Support (SqlCol)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate SqlCol to run things without complications
- *          of interfering with the main SqlCol. A SqlCol may be 
- *          called a SqlCol on other O/S's.
+ *			This object provides support for dealing with an SQL
+ *          column (of a table) and its data.
  *
  * Remarks
  *	1.      None
@@ -53,6 +51,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Value.h>
 
 
 #ifndef         SQLCOL_H
@@ -132,6 +131,10 @@ extern "C" {
         char                *pName;             // (Required)
         const
         char                *pDescription;      // (Required)
+        const
+        char                *pTableName;        // (Optional)
+        const
+        char                *pDatabaseName;     // (Optional)
         uint8_t             type;               // see SQLCOL_TYPES
         uint16_t            keySequence;
         //                          0 == not a key column
@@ -239,6 +242,16 @@ extern "C" {
     );
 
 
+    ASTR_DATA *     SqlCol_getDatabaseName (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setDatabaseName (
+        SQLCOL_DATA     *this,
+        ASTR_DATA       *pValue
+    );
+
+
     uint8_t         SqlCol_getDecimalPlaces (
         SQLCOL_DATA     *this
     );
@@ -319,6 +332,16 @@ extern "C" {
     );
 
 
+    ASTR_DATA *     SqlCol_getTableName (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setTableName (
+        SQLCOL_DATA     *this,
+        ASTR_DATA       *pValue
+    );
+
+
     uint8_t         SqlCol_getType (
         SQLCOL_DATA     *this
     );
@@ -326,6 +349,16 @@ extern "C" {
     bool            SqlCol_setType (
         SQLCOL_DATA     *this,
         uint8_t         value
+    );
+
+
+    VALUE_DATA *    SqlCol_getValue (
+        SQLCOL_DATA     *this
+    );
+
+    bool            SqlCol_setValue (
+        SQLCOL_DATA     *this,
+        VALUE_DATA      *pValue
     );
 
 
@@ -358,8 +391,15 @@ extern "C" {
     );
 
 
-    ERESULT         SqlCol_Disable (
-        SQLCOL_DATA		*this
+    /*!
+     Construct the full name from the database, table and column names.
+     @param     this    object pointer
+     @return    if successful, AStr object which must be released.
+                Otherwise, OBJ_NIL if an error occurred.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SqlCol_FullName (
+        SQLCOL_DATA     *this
     );
 
 

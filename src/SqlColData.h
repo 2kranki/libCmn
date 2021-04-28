@@ -226,6 +226,18 @@ extern "C" {
 
 
     /*!
+     Convert the internal column definition to SQL.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                SQL, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SqlColData_ToSQL (
+        SQLCOLDATA_DATA *this
+    );
+
+
+    /*!
      Create a string that describes this object and the objects within it.
      Example:
      @code 

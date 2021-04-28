@@ -272,6 +272,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                   D a t a b a s e  N a m e
+    //---------------------------------------------------------------
+
+    ASTR_DATA * SqlCol_getDatabaseName (
+        SQLCOL_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pDBName;
+    }
+
+
+    bool        SqlCol_setDatabaseName (
+        SQLCOL_DATA *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pDBName) {
+            obj_Release(this->pDBName);
+        }
+        this->pDBName = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                  D e c i m a l  P l a c e s
     //---------------------------------------------------------------
 
@@ -703,6 +749,52 @@ extern "C" {
   
 
     //---------------------------------------------------------------
+    //                      T a b l e  N a m e
+    //---------------------------------------------------------------
+
+    ASTR_DATA * SqlCol_getTableName (
+        SQLCOL_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pTableName;
+    }
+
+
+    bool        SqlCol_setTableName (
+        SQLCOL_DATA *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pTableName) {
+            obj_Release(this->pTableName);
+        }
+        this->pTableName = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                         T y p e
     //---------------------------------------------------------------
 
@@ -738,6 +830,52 @@ extern "C" {
 #endif
 
         this->type = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          V a l u e
+    //---------------------------------------------------------------
+
+    VALUE_DATA *    SqlCol_getValue (
+        SQLCOL_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pValue;
+    }
+
+
+    bool        SqlCol_setValue (
+        SQLCOL_DATA *this,
+        VALUE_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pValue) {
+            obj_Release(this->pValue);
+        }
+        this->pValue = pValue;
 
         return true;
     }
@@ -800,14 +938,20 @@ extern "C" {
 
         // Release objects and areas in other object.
         SqlCol_setCheckExpr(pOther, OBJ_NIL);
+        SqlCol_setDatabaseName(pOther, OBJ_NIL);
         SqlCol_setDefVal(pOther, OBJ_NIL);
         SqlCol_setDesc(pOther, OBJ_NIL);
         SqlCol_setName(pOther, OBJ_NIL);
+        SqlCol_setTableName(pOther, OBJ_NIL);
+        SqlCol_setValue(pOther, OBJ_NIL);
 
         // Create a copy of objects and areas in this object placing
         // them in other.
         if (this->pName) {
             pOther->pName = AStr_Copy(this->pName);
+        }
+        if (this->pDBName) {
+            pOther->pDBName = AStr_Copy(this->pDBName);
         }
         if (this->pDesc) {
             pOther->pDesc = AStr_Copy(this->pDesc);
@@ -817,6 +961,12 @@ extern "C" {
         }
         if (this->pCheckExpr) {
             pOther->pCheckExpr = AStr_Copy(this->pCheckExpr);
+        }
+        if (this->pTableName) {
+            pOther->pTableName = AStr_Copy(this->pTableName);
+        }
+        if (this->pValue) {
+            pOther->pValue = Value_Copy(this->pValue);
         }
 
         // Copy other data from this object to other.
@@ -1023,9 +1173,12 @@ extern "C" {
 #endif
 
         SqlCol_setCheckExpr(this, OBJ_NIL);
+        SqlCol_setDatabaseName(this, OBJ_NIL);
         SqlCol_setDefVal(this, OBJ_NIL);
         SqlCol_setDesc(this, OBJ_NIL);
         SqlCol_setName(this, OBJ_NIL);
+        SqlCol_setTableName(this, OBJ_NIL);
+        SqlCol_setValue(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1176,9 +1329,11 @@ extern "C" {
 
         // Release any prior data.
         SqlCol_setCheckExpr(this, OBJ_NIL);
+        SqlCol_setDatabaseName(this, OBJ_NIL);
         SqlCol_setDefVal(this, OBJ_NIL);
         SqlCol_setDesc(this, OBJ_NIL);
         SqlCol_setName(this, OBJ_NIL);
+        SqlCol_setTableName(this, OBJ_NIL);
 
         if (pStruct->pCheckExpression) {
             this->pCheckExpr = AStr_NewA(pStruct->pCheckExpression);
@@ -1199,6 +1354,18 @@ extern "C" {
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
+        if (pStruct->pDatabaseName) {
+            this->pDBName = AStr_NewA(pStruct->pDatabaseName);
+            if (OBJ_NIL == this->pDBName) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        if (pStruct->pTableName) {
+            this->pTableName = AStr_NewA(pStruct->pTableName);
+            if (OBJ_NIL == this->pTableName) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
         this->pDesc = AStr_NewA(pStruct->pDescription);
         if (OBJ_NIL == this->pDesc) {
             SqlCol_setCheckExpr(this, OBJ_NIL);
@@ -1216,6 +1383,53 @@ extern "C" {
 
         // Return to caller.
         return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      F u l l  N a m e
+    //---------------------------------------------------------------
+
+    /*!
+     Construct the full name from the database, table and column names.
+     @param     this    object pointer
+     @return    if successful, AStr object which must be released.
+                Otherwise, OBJ_NIL if an error occurred.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SqlCol_FullName (
+        SQLCOL_DATA     *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_New();
+        if (pStr) {
+            if (this->pDBName) {
+                eRc = AStr_Append(pStr, this->pDBName);
+                eRc = AStr_AppendA(pStr, ".");
+            }
+            if (this->pTableName) {
+                eRc = AStr_Append(pStr, this->pTableName);
+                eRc = AStr_AppendA(pStr, ".");
+            }
+            eRc = AStr_Append(pStr, this->pName);
+        }
+
+        // Return to caller.
+        return pStr;
     }
 
 

@@ -3821,7 +3821,7 @@ extern "C" {
     {
         TOKEN_DATA      *pToken;
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        bool            fRc;
+        //bool            fRc;
 
         // Do initialization.
 #ifdef NDEBUG

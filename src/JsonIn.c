@@ -1725,7 +1725,7 @@ extern "C" {
         NODE_DATA       *pNode
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         NODEARRAY_DATA  *pNodes;
         NODEARRAY_DATA  *pArray;
         NODEHASH_DATA   *pHash;
@@ -2431,6 +2431,7 @@ extern "C" {
     {
         uint32_t        cbSize = sizeof(JSONIN_DATA);
         //ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -2462,6 +2463,12 @@ extern "C" {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
+        }
+        pStr = AStr_NewA("JsonIn ObjArray");
+        if (pStr) {
+            ObjList_setOther(this->pList, pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
         }
 
     #ifdef NDEBUG
@@ -3046,7 +3053,7 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
+        //ASTR_DATA       *pWrkStr;
         NODEARRAY_DATA  *pArray = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;

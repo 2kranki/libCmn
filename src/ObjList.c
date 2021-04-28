@@ -230,6 +230,52 @@ int             ObjList_SortCompare (
 
         
     //---------------------------------------------------------------
+    //                           O t h e r
+    //---------------------------------------------------------------
+
+    OBJ_ID          ObjList_getOther (
+        OBJLIST_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ObjList_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pOther;
+    }
+
+
+    bool        ObjList_setOther (
+        OBJLIST_DATA    *this,
+        OBJ_ID          pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!ObjList_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pOther) {
+            obj_Release(this->pOther);
+        }
+        this->pOther = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -639,6 +685,7 @@ int             ObjList_SortCompare (
             }
             listdl_DeleteHead(&this->list);
         }
+        ObjList_setOther(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super

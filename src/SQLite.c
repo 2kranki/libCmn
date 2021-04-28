@@ -77,6 +77,7 @@ extern "C" {
     ****************************************************************/
 
     // int (*pCallback)(void*,int,char**,char**)
+    __attribute__((unused))
     static
     int             SQLite_dump_callback (
         void            *pData,
@@ -744,7 +745,7 @@ extern "C" {
                 error code.
      */
     ERESULT         SQLite_Disable (
-        SQLITE_DATA       *this
+        SQLITE_DATA     *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -779,7 +780,7 @@ extern "C" {
                 error code.
      */
     ERESULT         SQLite_Enable (
-        SQLITE_DATA       *this
+        SQLITE_DATA     *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -1225,6 +1226,92 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          R o w
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SQLite_Row (
+        SQLITE_DATA     *this,
+        sqlite3_stmt    *pStmt
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             cCols = 0;
+        int             i;
+        int             type;           // Sqlite native type
+        const
+        void            *pBlob;
+        double          dbl;
+        int64_t         int64;
+        const
+        uint8_t         *pText;
+        int             len;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        cCols = sqlite3_column_count(pStmt);
+        for (i=0; i<cCols; i++) {
+            const
+            char            *pDatabaseName = NULL;
+            const
+            char            *pTableName = NULL;
+            const
+            char            *pName = NULL;
+            SQLCOL_DATA     *pCol = SqlCol_New();
+            if (pCol) {
+                pDatabaseName = sqlite3_column_database_name(pStmt, i);
+                pTableName = sqlite3_column_table_name(pStmt, i);
+                pName = sqlite3_column_origin_name(pStmt, i);
+                type = sqlite3_column_type(pStmt, i);
+                switch (type) {
+                    case SQLITE_BLOB:
+                        pBlob = sqlite3_column_blob(pStmt, i);
+                        len = sqlite3_column_bytes(pStmt, i);
+                        break;
+                    case SQLITE_FLOAT:
+                        dbl = sqlite3_column_double(pStmt, i);
+                        break;
+                    case SQLITE_INTEGER:
+                        int64 = sqlite3_column_int64(pStmt, i);
+                        break;
+                    case SQLITE_NULL:
+                        // No further data is needed.
+                        break;
+                    case SQLITE_TEXT:
+                        pText = sqlite3_column_text(pStmt, i);
+                        // pText is UTF-8 and NUL terminated.
+                        break;
+                    default:
+                        break;
+                }
+                obj_Release(pCol);
+                pCol = OBJ_NIL;
+            }
+        }
+
+        obj_Enable(this);
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                  T a b l e  N a m e s
     //---------------------------------------------------------------

@@ -49,6 +49,7 @@
 #include    <AStr_internal.h>
 #include    <dec.h>
 #include    <JsonIn.h>
+#include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeHash.h>
 #include    <utf8.h>
@@ -109,6 +110,12 @@ extern "C" {
                 JsonIn_SubObjectEnd(pParser);
                 JsonIn_SubObjectEnd(pParser);
             }
+        }
+
+        eRc = JsonIn_SubObjectInHash(pParser, "other");
+        if (ERESULT_OK(eRc)) {
+            pObject->pOther = JsonIn_ParseObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
         }
 
         // Return to caller.
@@ -336,6 +343,7 @@ extern "C" {
                  }
              }
         }
+        JsonOut_Append_Object("other", this->pOther, pStr);
 
         AStr_AppendA(pStr, "]\n");
 

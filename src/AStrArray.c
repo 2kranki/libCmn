@@ -1138,7 +1138,7 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         uint32_t        i;

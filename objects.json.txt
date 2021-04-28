@@ -50,8 +50,6 @@
         {name:"crc", "test":null},
         {name:"CsvFile", deps:["ObjArray.h","Path.h","srcFile.h"]},
         {name:"DateTime", json:true},
-        {name:"dbf"},
-        {name:"dbField"},
         {name:"dec", json:true},
         {name:"Dir", deps:["dirEntry.h","Path.h"], json:true},
         {name:"DirEntry", deps:["dateTime.h","Path.h"], json:true},

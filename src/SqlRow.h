@@ -54,6 +54,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <SqlCol.h>
+#include        <SqlColData.h>
 
 
 #ifndef         SQLROW_H
@@ -112,7 +113,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  SQLROW_SINGLETON
-    SQLROW_DATA *     SqlRow_Shared (
+    SQLROW_DATA *   SqlRow_Shared (
         void
     );
 
@@ -128,21 +129,34 @@ extern "C" {
      released.
      @return    pointer to SqlRow object if successful, otherwise OBJ_NIL.
      */
-    SQLROW_DATA *     SqlRow_Alloc (
+    SQLROW_DATA *  SqlRow_Alloc (
         void
     );
     
     
-    OBJ_ID          SqlRow_Class (
+    OBJ_ID         SqlRow_Class (
         void
     );
     
     
-    SQLROW_DATA *     SqlRow_New (
+    SQLROW_DATA *  SqlRow_New (
         void
     );
     
     
+    /*!
+     Setup columns from Column Structs.
+     @param     num         number of structs in array
+     @param     pStructs    column struct array pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    SQLROW_DATA *  SqlRow_NewFromColumnStructs (
+        int             num,
+        SQLCOL_STRUCT   *pStructs
+    );
+
+
 #ifdef  SQLROW_JSON_SUPPORT
     SQLROW_DATA *   SqlRow_NewFromJsonString (
         ASTR_DATA       *pString
@@ -160,6 +174,9 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        SqlRow_getSize (
+        SQLROW_DATA       *this
+    );
 
 
     
@@ -167,26 +184,105 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     SqlRow_Disable (
+    /*!
+     Add the given column to the end of the row array.
+     @param     this    object pointer
+     @param     pCol    Column pointer
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         SqlRow_AppendCol (
+        SQLROW_DATA     *this,
+        SQLCOL_DATA     *pCol
+    );
+
+
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = SqlRow_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another SQLROW object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         SqlRow_Assign (
+        SQLROW_DATA     *this,
+        SQLROW_DATA     *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        SqlRow      *pCopy = SqlRow_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a SQLROW object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    SQLROW_DATA *     SqlRow_Copy (
         SQLROW_DATA       *this
     );
 
 
-    ERESULT     SqlRow_Enable (
-        SQLROW_DATA       *this
+    /*!
+     Remove the index'th column from the row array and return it.
+     @param     this    object pointer
+     @param     index   column array index
+     @return    If successful, an column pointer, otherwise OBJ_NIL.
+     @warning   Remember to release the returned column object.
+     */
+    SQLCOL_DATA *   SqlRow_Delete (
+        SQLROW_DATA     *this,
+        uint32_t        index
     );
 
-   
+
+    /*!
+     Find the index'th column in the row array.
+     @param     this    objArray object pointer
+     @param     index   column array index
+     @return    If successful, an columnobject pointer, otherwise OBJ_NIL.
+                The returned column object should not be released.
+     */
+    SQLCOL_DATA *   SqlRow_Get (
+        SQLROW_DATA     *this,
+        uint32_t        index
+    );
+
+
     SQLROW_DATA *   SqlRow_Init (
         SQLROW_DATA     *this
     );
 
 
-    ERESULT     SqlRow_IsEnabled (
-        SQLROW_DATA       *this
+    ERESULT         SqlRow_IsEnabled (
+        SQLROW_DATA     *this
     );
     
  
+    /*!
+     Setup columns from Column Structs.
+     @param     this        object pointer
+     @param     num         number of structs in array
+     @param     pStructs    column struct array pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SqlRow_SetupFromColumnStructs (
+        SQLROW_DATA     *this,
+        int             num,
+        SQLCOL_STRUCT   *pStructs
+    );
+
+
 #ifdef  SQLROW_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
@@ -201,7 +297,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     SqlRow_ToJson (
-        SQLROW_DATA   *this
+        SQLROW_DATA     *this
     );
 #endif
 

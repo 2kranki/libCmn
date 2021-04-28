@@ -88,6 +88,7 @@ struct ObjList_data_s	{
     LISTDL_DATA     list;           // Main List
     OBJLIST_RECORD  *pCur;
     uint32_t        unique;
+    OBJ_ID          pOther;
 
 };
 #pragma pack(pop)

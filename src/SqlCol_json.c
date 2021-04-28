@@ -54,6 +54,7 @@
 #include    <NodeHash.h>
 #include    <SrcErrors.h>
 #include    <utf8.h>
+#include    <Value_internal.h>
 
 
 
@@ -116,9 +117,26 @@ extern "C" {
             //obj_Release(pWrk);
             //pWrk = OBJ_NIL;
         }
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "database_name", &pWrk);
+        if (ERESULT_OK(eRc)) {
+            pObject->pDBName = pWrk;
+            //obj_Release(pWrk);
+            //pWrk = OBJ_NIL;
+        }
         eRc = JsonIn_FindAStrNodeInHashA(pParser, "default_value", &pWrk);
         if (ERESULT_OK(eRc)) {
             pObject->pDefVal = pWrk;
+            //obj_Release(pWrk);
+            //pWrk = OBJ_NIL;
+        }
+        eRc = JsonIn_SubObjectInHash(pParser, "value");
+        if (ERESULT_OK(eRc)) {
+            pObject->pValue = Value_ParseJsonObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+        }
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "table_name", &pWrk);
+        if (ERESULT_OK(eRc)) {
+            pObject->pTableName = pWrk;
             //obj_Release(pWrk);
             //pWrk = OBJ_NIL;
         }
@@ -343,14 +361,23 @@ extern "C" {
                         *pTypeExpr;
 
         JsonOut_Append_AStr("name", this->pName, pStr);
+        if (this->pDBName) {
+            JsonOut_Append_AStr("database_name", this->pDBName, pStr);
+        }
         if (this->pDesc) {
             JsonOut_Append_AStr("desc", this->pDesc, pStr);
         }
-        if (this->pDesc) {
+        if (this->pCheckExpr) {
             JsonOut_Append_AStr("check_expr", this->pCheckExpr, pStr);
         }
-        if (this->pDesc) {
+        if (this->pDefVal) {
             JsonOut_Append_AStr("default_value", this->pDefVal, pStr);
+        }
+        if (this->pTableName) {
+            JsonOut_Append_AStr("table_name", this->pTableName, pStr);
+        }
+        if (this->pValue) {
+            JsonOut_Append_Object("value", this->pValue, pStr);
         }
         pTypeExpr = SqlCol_FindByType(this->type);
         if (pTypeExpr) {
