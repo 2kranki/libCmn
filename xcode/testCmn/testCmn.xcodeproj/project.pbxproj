@@ -133,8 +133,6 @@
 		C4359B121FC9C3D800CA858E /* objMatrix_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4359AD81FC9C3D700CA858E /* objMatrix_object.c */; };
 		C4359B441FC9C42700CA858E /* psxCond_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4359B171FC9C42300CA858E /* psxCond_object.c */; };
 		C4359B451FC9C42700CA858E /* psxSem_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4359B191FC9C42300CA858E /* psxSem_object.c */; };
-		C4359B461FC9C42700CA858E /* prodcons_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4359B1B1FC9C42300CA858E /* prodcons_object.c */; };
-		C4359B481FC9C42700CA858E /* prodcons.c in Sources */ = {isa = PBXBuildFile; fileRef = C4359B211FC9C42400CA858E /* prodcons.c */; };
 		C4359B491FC9C42700CA858E /* psxSem.c in Sources */ = {isa = PBXBuildFile; fileRef = C4359B221FC9C42400CA858E /* psxSem.c */; };
 		C4359B4B1FC9C42700CA858E /* prt.c in Sources */ = {isa = PBXBuildFile; fileRef = C4359B271FC9C42500CA858E /* prt.c */; };
 		C4359B4C1FC9C42700CA858E /* psxThread.c in Sources */ = {isa = PBXBuildFile; fileRef = C4359B281FC9C42500CA858E /* psxThread.c */; };
@@ -690,13 +688,10 @@
 		C4359AD21FC9C3D700CA858E /* objMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objMatrix.h; sourceTree = "<group>"; };
 		C4359AD81FC9C3D700CA858E /* objMatrix_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = objMatrix_object.c; sourceTree = "<group>"; };
 		C4359B171FC9C42300CA858E /* psxCond_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxCond_object.c; sourceTree = "<group>"; };
-		C4359B181FC9C42300CA858E /* prodcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prodcons.h; sourceTree = "<group>"; };
 		C4359B191FC9C42300CA858E /* psxSem_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxSem_object.c; sourceTree = "<group>"; };
-		C4359B1B1FC9C42300CA858E /* prodcons_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = prodcons_object.c; sourceTree = "<group>"; };
 		C4359B1D1FC9C42400CA858E /* psxLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxLock.h; sourceTree = "<group>"; };
 		C4359B1F1FC9C42400CA858E /* ptrArray_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptrArray_internal.h; sourceTree = "<group>"; };
 		C4359B201FC9C42400CA858E /* ptrArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ptrArray.h; sourceTree = "<group>"; };
-		C4359B211FC9C42400CA858E /* prodcons.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = prodcons.c; sourceTree = "<group>"; };
 		C4359B221FC9C42400CA858E /* psxSem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxSem.c; sourceTree = "<group>"; };
 		C4359B251FC9C42400CA858E /* prt_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prt_internal.h; sourceTree = "<group>"; };
 		C4359B261FC9C42400CA858E /* prt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prt.h; sourceTree = "<group>"; };
@@ -712,7 +707,6 @@
 		C4359B341FC9C42600CA858E /* prt_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = prt_object.c; sourceTree = "<group>"; };
 		C4359B351FC9C42600CA858E /* psxMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxMutex.h; sourceTree = "<group>"; };
 		C4359B361FC9C42600CA858E /* psxThread_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxThread_internal.h; sourceTree = "<group>"; };
-		C4359B381FC9C42600CA858E /* prodcons_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prodcons_internal.h; sourceTree = "<group>"; };
 		C4359B391FC9C42600CA858E /* ptrArray_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ptrArray_object.c; sourceTree = "<group>"; };
 		C4359B3B1FC9C42700CA858E /* psxMutex_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxMutex_object.c; sourceTree = "<group>"; };
 		C4359B3C1FC9C42700CA858E /* ptrArray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ptrArray.c; sourceTree = "<group>"; };
@@ -1762,10 +1756,6 @@
 				C4B045F323E2047500162B4F /* Path_object.c */,
 				C4B045F523E2047700162B4F /* Path.c */,
 				C4B045F723E2047700162B4F /* Path.h */,
-				C4359B381FC9C42600CA858E /* prodcons_internal.h */,
-				C4359B1B1FC9C42300CA858E /* prodcons_object.c */,
-				C4359B211FC9C42400CA858E /* prodcons.c */,
-				C4359B181FC9C42300CA858E /* prodcons.h */,
 				C4359B251FC9C42400CA858E /* prt_internal.h */,
 				C4359B341FC9C42600CA858E /* prt_object.c */,
 				C4359B271FC9C42500CA858E /* prt.c */,
@@ -2361,7 +2351,6 @@
 				C4B0460023E2083800162B4F /* DateTime.c in Sources */,
 				C41B752D23AA5AD100C7DEBD /* BitSet_object.c in Sources */,
 				C4D463182419277600AF453D /* Null_object.c in Sources */,
-				C4359B461FC9C42700CA858E /* prodcons_object.c in Sources */,
 				C43599CA1FC9C36800CA858E /* ascii_object.c in Sources */,
 				C42C553423CBC2FA00AA762C /* Node.c in Sources */,
 				C435854B23B7A55D0069B103 /* SrcError_object.c in Sources */,
@@ -2403,7 +2392,6 @@
 				C40F05672482E55A00D66F9B /* Lex07.c in Sources */,
 				C4B045B123D7F39100162B4F /* TextIn_object.c in Sources */,
 				C456B61A2454F14C00EB541A /* SqlCol.c in Sources */,
-				C4359B481FC9C42700CA858E /* prodcons.c in Sources */,
 				C4AA73AB1FE2B740001FACEC /* hjson.c in Sources */,
 				C40F056A2482E55A00D66F9B /* Lex00.c in Sources */,
 				C44BF49D21E1BCD500175791 /* rrds_object.c in Sources */,

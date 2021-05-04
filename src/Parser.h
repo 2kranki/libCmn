@@ -377,6 +377,12 @@ extern "C" {
     );
     
     
+    ERESULT         Parser_SetupLex (
+        PARSER_DATA     *this,
+        LEX_DATA        *pLex
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

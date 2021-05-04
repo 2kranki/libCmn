@@ -1726,6 +1726,7 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
+#ifdef XYZZY
     ERESULT         Parser_SetupLexFromStrA (
         PARSER_DATA     *this,
         PATH_DATA       *pPath,
@@ -1751,7 +1752,6 @@ extern "C" {
     #endif
 
         //FIXME: Set up for LEX??.
-#ifdef XYZZY
         pLex = (LEX_DATA *)pplex_New(tabSize);
         if (OBJ_NIL == pLex) {
             return ERESULT_OUT_OF_MEMORY;
@@ -1793,13 +1793,49 @@ extern "C" {
                                 (void *)pplex_InputLookAhead,
                                 pLex
         );
-#endif
 
         // Return to caller.
         return ERESULT_SUCCESS;
     }
+#endif
 
 
+    ERESULT         Parser_SetupLex (
+        PARSER_DATA     *this,
+        LEX_DATA        *pLex
+    )
+    {
+        //ERESULT         eRc;
+        //LEX_DATA        *pLex = OBJ_NIL;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pLex) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+    #endif
+
+        Parser_setLex(this, pLex);
+        obj_Release(pLex);
+
+        // Now set up the lexer chain as the parser's input without
+        // ownership.
+        Parser_setSourceFunction(
+                                this,
+                                (void *)Lex_InputAdvance,
+                                (void *)Lex_InputLookAhead,
+                                pLex
+        );
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
 
     //---------------------------------------------------------------
     //                       T o  J S O N

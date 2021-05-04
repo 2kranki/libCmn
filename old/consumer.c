@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   ALU8.c
- *  Generated 12/06/2020 10:50:20
+ * File:   Consumer.c
+ *  Generated 05/04/2021 09:23:42
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <ALU8_internal.h>
+#include        <Consumer_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -57,27 +57,6 @@ extern "C" {
     
 
     
-    static
-    uint8_t         evenParityTable[256] = {
-        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
-        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
-        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
-        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
-        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
-        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
-        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
-        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
-        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
-        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
-        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
-        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
-        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
-        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
-        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
-        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1
-    };
-
-
 
 
  
@@ -85,18 +64,16 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
+#ifdef XYZZY
     static
-    int             ALU8_even_parity (
-        uint32_t         x
+    void            Consumer_task_body (
+        void            *pData
     )
     {
-        x ^= x >> 4;
-        x ^= x >> 2;
-        x ^= x >> 1;
-        return (~x) & 1;
+        //CONSUMER_DATA  *this = pData;
+        
     }
-
-
+#endif
 
 
 
@@ -109,12 +86,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    ALU8_DATA *     ALU8_Alloc (
+    CONSUMER_DATA *     Consumer_Alloc (
         void
     )
     {
-        ALU8_DATA       *this;
-        uint32_t        cbSize = sizeof(ALU8_DATA);
+        CONSUMER_DATA       *this;
+        uint32_t        cbSize = sizeof(CONSUMER_DATA);
         
         // Do initialization.
         
@@ -126,234 +103,15 @@ extern "C" {
 
 
 
-    ASTR_DATA *     ALU8_GenEvenParityTable (
+    CONSUMER_DATA *     Consumer_New (
         void
     )
     {
-        uint16_t        x = 0;
-        ASTR_DATA       *pStr = AStr_New();
-
-        if (OBJ_NIL == pStr )
-            ;
-        else {
-            for (x=0; x<256; ++x) {
-                if (ALU8_even_parity((uint8_t)x))
-                    AStr_AppendA(pStr, "1,");
-                else
-                    AStr_AppendA(pStr, "0,");
-            }
-        }
-
-        return pStr;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          E x e c
-    //---------------------------------------------------------------
-
-    /*!
-     Execute an ALU operation.
-     @param     oper        operation to perform, see E8085ALU_OPS.
-     @param     flags       The flags to be used for input especially
-                            the carry flag and the aux carray flag.
-     @param     op1         operand 1
-     @param     op2         operand 2
-     @param     pResult     If non-null, store result at this location.
-     @param     pFlags      if non-null, store the new flags at this
-                            location.
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         ALU8_Exec (
-        int             oper,
-        uint8_t         op1,
-        uint8_t         op2,
-        uint8_t         flags,
-        uint8_t         *pFlags,
-        uint8_t         *pResult
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        uint16_t        result = (op1 & 0xFF);
-        uint8_t         newFlags = 0;
-        uint8_t         tmp = 0;
-
-        // Do initialization.
-
-        switch (oper) {
-
-            case ALU8_OP_UNKNOWN:
-                result = 0;
-                break;
-
-            case ALU8_OP_ADD:
-                tmp = (flags & ALU8_FLAG_CARRY) ? 1 : 0;
-                result += op2 + tmp;
-                if (result & 0xFF00) {
-                    newFlags |= ALU8_FLAG_CARRY;
-                }
-                newFlags |= (((op1 & 0x0F) + (op2 & 0x0F) + tmp) > 15)
-                            ? ALU8_FLAG_AUX_CARRY : 0;
-                break;
-
-            case ALU8_OP_AND:
-                result &= op2;
-                break;
-
-            case ALU8_OP_COMPLEMENT:
-                result = -op1;
-                goto set;
-                break;
-
-            case ALU8_OP_DEC_ADJUST:
-                // If the low 4 bits have a value > 9 or Aux_Carry == true,
-                //      add 6 to lower 4 bits.
-                if (((result & 0x0F) > 9) || (flags & ALU8_FLAG_AUX_CARRY)
-                ) {
-                    if ((result & 0x0F) > 3)
-                        newFlags |= ALU8_FLAG_AUX_CARRY;
-                    result += 0x06;
-                }
-                if (((result & 0xF0) > 0x90) || (flags & ALU8_FLAG_CARRY)
-                ) {
-                    if ((result & 0x00F0) > 0x0030)
-                        newFlags |= ALU8_FLAG_CARRY;
-                    result += 0x60;
-                }
-                break;
-
-            case ALU8_OP_NOT:
-                result = ~op1;
-                goto set;
-                break;
-
-            case ALU8_OP_OR:
-                result |= op2;
-                break;
-
-            case ALU8_OP_SHIFT_LEFT:
-                result <<= 1;
-                result |= (flags & ALU8_FLAG_CARRY) ? 1 : 0;
-                if (result & 0xFF00) {
-                    newFlags |= ALU8_FLAG_CARRY;
-                }
-                //goto set;
-                break;
-
-            case ALU8_OP_SHIFT_RIGHT:
-                if (result & 0x01) {
-                    newFlags |= ALU8_FLAG_CARRY;
-                }
-                result = result >> 1;
-                result |= (flags & ALU8_FLAG_CARRY) ? 0x80 : 0;
-                //goto set;
-                break;
-
-            case ALU8_OP_SHIFTA_LEFT:
-                if ((op1 & 0x80) == ((op1 & 0x40) << 1))
-                    ;
-                else
-                    newFlags |= ALU8_FLAG_CARRY;
-                result <<= 1;
-                //goto set;
-                break;
-
-            case ALU8_OP_SHIFTA_RIGHT:
-                if (op1 & 0x01) {
-                    newFlags |= ALU8_FLAG_CARRY;
-                }
-                result = result >> 1;
-                if (op1 & 0x80)
-                    result |= 0x80;
-                //goto set;
-                break;
-
-            case ALU8_OP_SHIFTL_LEFT:
-                if (op1 & 0x80)
-                    newFlags |= ALU8_FLAG_CARRY;
-                result <<= 1;
-                //goto set;
-                break;
-
-            case ALU8_OP_SHIFTL_RIGHT:
-                if (op1 & 0x01) {
-                    newFlags |= ALU8_FLAG_CARRY;
-                }
-                result = result >> 1;
-                //goto set;
-                break;
-
-            case ALU8_OP_SHIFTR_LEFT:
-                result <<= 1;
-                if (op1 & 0x80) {
-                    newFlags |= ALU8_FLAG_CARRY;
-                    result |= 1;
-                }
-                //goto set;
-                break;
-
-            case ALU8_OP_SHIFTR_RIGHT:
-                result = result >> 1;
-                if (op1 & 0x01) {
-                    newFlags |= ALU8_FLAG_CARRY;
-                    result |= 0x80;
-                }
-                //goto set;
-                break;
-
-            case ALU8_OP_SUB:
-                result -= (flags & ALU8_FLAG_CARRY) ? 1 : 0;
-                result -= op2;
-                if (result & 0xFF00) {
-                    newFlags |= ALU8_FLAG_CARRY;
-                }
-                newFlags &= ~ALU8_FLAG_AUX_CARRY;
-                newFlags |= (((op1 & 0x0F) + (op2 & 0x0F)) > 15)
-                            ? ALU8_FLAG_AUX_CARRY : 0;
-                break;
-
-            case ALU8_OP_XOR:
-                result ^= op2;
-                break;
-        }
-
-        // Set the flags.
-        if (0 == (result & 0x00FF)) {
-            newFlags |= ALU8_FLAG_ZERO;
-        }
-        if (evenParityTable[result & 0x00FF]) {
-            newFlags |= ALU8_FLAG_PARITY;
-        }
-        if (result & 0x80) {
-            newFlags |= ALU8_FLAG_SIGN;
-        }
-
-        // Update the external registers if needed.
-    set:
-        if (pFlags) {
-            *pFlags = newFlags;
-        }
-        if (pResult) {
-            *pResult = result & 0xFF;
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    ALU8_DATA *     ALU8_New (
-        void
-    )
-    {
-        ALU8_DATA       *this;
+        CONSUMER_DATA       *this;
         
-        this = ALU8_Alloc( );
+        this = Consumer_Alloc( );
         if (this) {
-            this = ALU8_Init(this);
+            this = Consumer_Init(this);
         } 
         return this;
     }
@@ -370,15 +128,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        ALU8_getPriority (
-        ALU8_DATA     *this
+    uint16_t        Consumer_getPriority (
+        CONSUMER_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -389,14 +147,14 @@ extern "C" {
     }
 
 
-    bool            ALU8_setPriority (
-        ALU8_DATA     *this,
+    bool            Consumer_setPriority (
+        CONSUMER_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -413,13 +171,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        ALU8_getSize (
-        ALU8_DATA       *this
+    uint32_t        Consumer_getSize (
+        CONSUMER_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -434,15 +192,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * ALU8_getStr (
-        ALU8_DATA     *this
+    ASTR_DATA * Consumer_getStr (
+        CONSUMER_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -452,14 +210,14 @@ extern "C" {
     }
     
     
-    bool        ALU8_setStr (
-        ALU8_DATA     *this,
+    bool        Consumer_setStr (
+        CONSUMER_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -480,15 +238,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  ALU8_getSuperVtbl (
-        ALU8_DATA     *this
+    OBJ_IUNKNOWN *  Consumer_getSuperVtbl (
+        CONSUMER_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -517,16 +275,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = ALU8_Assign(this,pOther);
+        ERESULT eRc = Consumer_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another ALU8 object
+     @param     pOther  a pointer to another CONSUMER object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         ALU8_Assign (
-        ALU8_DATA       *this,
-        ALU8_DATA     *pOther
+    ERESULT         Consumer_Assign (
+        CONSUMER_DATA       *this,
+        CONSUMER_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -534,11 +292,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!ALU8_Validate(pOther)) {
+        if (!Consumer_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -599,9 +357,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             ALU8_Compare (
-        ALU8_DATA     *this,
-        ALU8_DATA     *pOther
+    int             Consumer_Compare (
+        CONSUMER_DATA     *this,
+        CONSUMER_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -614,12 +372,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!ALU8_Validate(pOther)) {
+        if (!Consumer_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -641,36 +399,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ALU8      *pCopy = ALU8_Copy(this);
+        Consumer      *pCopy = Consumer_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ALU8 object which must be 
+     @return    If successful, a CONSUMER object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ALU8_DATA *     ALU8_Copy (
-        ALU8_DATA       *this
+    CONSUMER_DATA *     Consumer_Copy (
+        CONSUMER_DATA       *this
     )
     {
-        ALU8_DATA       *pOther = OBJ_NIL;
+        CONSUMER_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef ALU8_IS_IMMUTABLE
+#ifdef CONSUMER_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = ALU8_New( );
+        pOther = Consumer_New( );
         if (pOther) {
-            eRc = ALU8_Assign(this, pOther);
+            eRc = Consumer_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -688,11 +446,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            ALU8_Dealloc (
+    void            Consumer_Dealloc (
         OBJ_ID          objId
     )
     {
-        ALU8_DATA   *this = objId;
+        CONSUMER_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -701,7 +459,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -709,11 +467,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((ALU8_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((CONSUMER_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        ALU8_setStr(this, OBJ_NIL);
+        Consumer_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -734,32 +492,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ALU8      *pDeepCopy = ALU8_Copy(this);
+        Consumer      *pDeepCopy = Consumer_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ALU8 object which must be 
+     @return    If successful, a CONSUMER object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ALU8_DATA *     ALU8_DeepyCopy (
-        ALU8_DATA       *this
+    CONSUMER_DATA *     Consumer_DeepyCopy (
+        CONSUMER_DATA       *this
     )
     {
-        ALU8_DATA       *pOther = OBJ_NIL;
+        CONSUMER_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = ALU8_New( );
+        pOther = Consumer_New( );
         if (pOther) {
-            eRc = ALU8_Assign(this, pOther);
+            eRc = Consumer_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -782,8 +540,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ALU8_Disable (
-        ALU8_DATA       *this
+    ERESULT         Consumer_Disable (
+        CONSUMER_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -791,7 +549,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -817,8 +575,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ALU8_Enable (
-        ALU8_DATA       *this
+    ERESULT         Consumer_Enable (
+        CONSUMER_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -826,7 +584,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -846,11 +604,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    ALU8_DATA *   ALU8_Init (
-        ALU8_DATA       *this
+    CONSUMER_DATA *   Consumer_Init (
+        CONSUMER_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(ALU8_DATA);
+        uint32_t        cbSize = sizeof(CONSUMER_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -868,7 +626,7 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_ALU8);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_CONSUMER);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -876,9 +634,9 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&ALU8_Vtbl);
-#ifdef  ALU8_JSON_SUPPORT
-        JsonIn_RegisterClass(ALU8_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Consumer_Vtbl);
+#ifdef  CONSUMER_JSON_SUPPORT
+        JsonIn_RegisterClass(Consumer_Class());
 #endif
         
         /*
@@ -892,7 +650,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -901,11 +659,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "ALU8::sizeof(ALU8_DATA) = %lu\n", 
-                sizeof(ALU8_DATA)
+                "Consumer::sizeof(CONSUMER_DATA) = %lu\n", 
+                sizeof(CONSUMER_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(ALU8_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(CONSUMER_DATA));
 #endif
 
         return this;
@@ -917,8 +675,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         ALU8_IsEnabled (
-        ALU8_DATA       *this
+    ERESULT         Consumer_IsEnabled (
+        CONSUMER_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -926,7 +684,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -953,14 +711,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = ALU8_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Consumer_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "ALU8", prefix,
+                        the object name, "Consumer", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -968,13 +726,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          ALU8_QueryInfo (
+    void *          Consumer_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        ALU8_DATA     *this = objId;
+        CONSUMER_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -983,7 +741,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -992,11 +750,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(ALU8_DATA);
+                return (void *)sizeof(CONSUMER_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)ALU8_Class();
+                return (void *)Consumer_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -1022,37 +780,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return ALU8_Disable;
+                            return Consumer_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return ALU8_Enable;
+                            return Consumer_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  ALU8_JSON_SUPPORT
+#ifdef  CONSUMER_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return ALU8_ParseJsonFields;
+                            return Consumer_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return ALU8_ParseJsonObject;
+                            return Consumer_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return ALU8_ToDebugString;
+                            return Consumer_ToDebugString;
                         }
-#ifdef  ALU8_JSON_SUPPORT
+#ifdef  CONSUMER_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return ALU8_ToJsonFields;
+                            return Consumer_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return ALU8_ToJson;
+                            return Consumer_ToJson;
                         }
 #endif
                         break;
@@ -1063,10 +821,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == ALU8_ToDebugString)
+                if (pData == Consumer_ToDebugString)
                     return "ToDebugString";
-#ifdef  ALU8_JSON_SUPPORT
-                if (pData == ALU8_ToJson)
+#ifdef  CONSUMER_JSON_SUPPORT
+                if (pData == Consumer_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1088,7 +846,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = ALU8_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Consumer_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1096,8 +854,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ALU8_ToDebugString (
-        ALU8_DATA      *this,
+    ASTR_DATA *     Consumer_ToDebugString (
+        CONSUMER_DATA      *this,
         int             indent
     )
     {
@@ -1112,7 +870,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU8_Validate(this)) {
+        if (!Consumer_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1133,7 +891,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    ALU8_getSize(this),
+                    Consumer_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1173,15 +931,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            ALU8_Validate (
-        ALU8_DATA      *this
+    bool            Consumer_Validate (
+        CONSUMER_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_ALU8))
+            if (obj_IsKindOf(this, OBJ_IDENT_CONSUMER))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1197,7 +955,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(ALU8_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(CONSUMER_DATA))) {
             return false;
         }
 

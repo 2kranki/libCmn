@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 4/15/2021 20:10:48.000)
+# ( 5/ 1/2021 16:49:28.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -43,26 +43,6 @@ OBJS =
 
 TESTS =
 
-
-OBJS += $(OBJDIR)/ALU32.o
-
-$(OBJDIR)/ALU32.o: $(SRCDIR)/ALU32.c $(SRCDIR)/ALU32.h $(SRCDIR)/ALU32_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/ALU32_object.o
-
-$(OBJDIR)/ALU32_object.o: $(SRCDIR)/ALU32_object.c $(SRCDIR)/ALU32.h $(SRCDIR)/ALU32_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/ALU8.o
-
-$(OBJDIR)/ALU8.o: $(SRCDIR)/ALU8.c $(SRCDIR)/ALU8.h $(SRCDIR)/ALU8_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/ALU8_object.o
-
-$(OBJDIR)/ALU8_object.o: $(SRCDIR)/ALU8_object.c $(SRCDIR)/ALU8.h $(SRCDIR)/ALU8_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/AStr.o
 
@@ -1559,26 +1539,6 @@ OBJS += $(OBJDIR)/crc_object.o
 $(OBJDIR)/crc_object.o: $(SRCDIR)/crc_object.c $(SRCDIR)/crc.h $(SRCDIR)/crc_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/dbField.o
-
-$(OBJDIR)/dbField.o: $(SRCDIR)/dbField.c $(SRCDIR)/dbField.h $(SRCDIR)/dbField_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/dbField_object.o
-
-$(OBJDIR)/dbField_object.o: $(SRCDIR)/dbField_object.c $(SRCDIR)/dbField.h $(SRCDIR)/dbField_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/dbf.o
-
-$(OBJDIR)/dbf.o: $(SRCDIR)/dbf.c $(SRCDIR)/dbf.h $(SRCDIR)/dbf_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/dbf_object.o
-
-$(OBJDIR)/dbf_object.o: $(SRCDIR)/dbf_object.c $(SRCDIR)/dbf.h $(SRCDIR)/dbf_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/dec.o
 
 $(OBJDIR)/dec.o: $(SRCDIR)/dec.c $(SRCDIR)/dec.h $(SRCDIR)/dec_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2103,18 +2063,6 @@ OBJS += $(OBJDIR)/utf8_object.o
 
 $(OBJDIR)/utf8_object.o: $(SRCDIR)/utf8_object.c $(SRCDIR)/utf8.h $(SRCDIR)/utf8_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-TESTS += ALU32_test
-
-ALU32_test: $(TEST_SRC)/ALU32_test.c $(SRCDIR)/ALU32.h $(SRCDIR)/ALU32_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += ALU8_test
-
-ALU8_test: $(TEST_SRC)/ALU8_test.c $(SRCDIR)/ALU8.h $(SRCDIR)/ALU8_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
 
 TESTS += AStrArray_test
 
@@ -2833,18 +2781,6 @@ consumer_test: $(TEST_SRC)/consumer_test.c $(SRCDIR)/consumer.h $(SRCDIR)/consum
 TESTS += crc_test
 
 crc_test: $(TEST_SRC)/crc_test.c $(SRCDIR)/crc.h $(SRCDIR)/crc_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += dbField_test
-
-dbField_test: $(TEST_SRC)/dbField_test.c $(SRCDIR)/dbField.h $(SRCDIR)/dbField_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += dbf_test
-
-dbf_test: $(TEST_SRC)/dbf_test.c $(SRCDIR)/dbf.h $(SRCDIR)/dbf_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

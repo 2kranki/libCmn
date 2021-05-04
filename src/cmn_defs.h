@@ -147,10 +147,6 @@ extern "C" {
         OBJ_IDENT_MAIN_CLASS,
         OBJ_IDENT_EXEC,                 // Exec Object               (Used in Programs)
         OBJ_IDENT_EXEC_CLASS,
-        OBJ_IDENT_ALU8,                 // 8-bit Arithmetic Logic Unit
-        OBJ_IDENT_ALU8_CLASS,
-        OBJ_IDENT_ALU32,                // 32-bit Arithmetic Logic Unit
-        OBJ_IDENT_ALU32_CLASS,
         OBJ_IDENT_APPL,                 // Application Base Object
         OBJ_IDENT_APPL_CLASS,
         OBJ_IDENT_ARRAY,                // Expandable Array
@@ -435,8 +431,8 @@ extern "C" {
         OBJ_IDENT_PPLEX2_CLASS,
         OBJ_IDENT_PPLEX3,               // Preprocessor Lexical Scanner - Phase 3
         OBJ_IDENT_PPLEX3_CLASS,
-        OBJ_IDENT_PRODCONS,             // Producer/Consumer Pattern
-        OBJ_IDENT_PRODCONS_CLASS,
+        //OBJ_IDENT_PRODCONS,             // Producer/Consumer Pattern
+        //OBJ_IDENT_PRODCONS_CLASS,
         OBJ_IDENT_PROTOCOL,             // Protocol LAYER which uses RECEIVE and TRANSMIT
         OBJ_IDENT_PROTOCOL_CLASS,
         OBJ_IDENT_PRT,

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   ALU32_internal.h
- *  Generated 12/06/2020 10:50:57
+ * File:   Producer_internal.h
+ *  Generated 05/04/2021 09:23:11
  *
  * Notes:
  *  --  N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <ALU32.h>
+#include        <Producer.h>
 #include        <JsonIn.h>
 
 
-#ifndef ALU32_INTERNAL_H
-#define ALU32_INTERNAL_H
+#ifndef PRODUCER_INTERNAL_H
+#define PRODUCER_INTERNAL_H
 
 
 
@@ -62,7 +62,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct ALU32_data_s  {
+struct Producer_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -77,11 +77,11 @@ struct ALU32_data_s  {
 #pragma pack(pop)
 
     extern
-    struct ALU32_class_data_s  ALU32_ClassObj;
+    struct Producer_class_data_s  Producer_ClassObj;
 
     extern
     const
-    ALU32_VTBL         ALU32_Vtbl;
+    PRODUCER_VTBL         Producer_Vtbl;
 
 
 
@@ -89,13 +89,13 @@ struct ALU32_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  ALU32_SINGLETON
-    ALU32_DATA *     ALU32_getSingleton (
+#ifdef  PRODUCER_SINGLETON
+    PRODUCER_DATA *     Producer_getSingleton (
         void
     );
 
-    bool            ALU32_setSingleton (
-     ALU32_DATA       *pValue
+    bool            Producer_setSingleton (
+     PRODUCER_DATA       *pValue
 );
 #endif
 
@@ -105,35 +105,35 @@ struct ALU32_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  ALU32_getSuperVtbl (
-        ALU32_DATA     *this
+    OBJ_IUNKNOWN *  Producer_getSuperVtbl (
+        PRODUCER_DATA     *this
     );
 
 
-    ERESULT         ALU32_Assign (
-        ALU32_DATA    *this,
-        ALU32_DATA    *pOther
+    ERESULT         Producer_Assign (
+        PRODUCER_DATA    *this,
+        PRODUCER_DATA    *pOther
     );
 
 
-    ALU32_DATA *    ALU32_Copy (
-        ALU32_DATA     *this
+    PRODUCER_DATA *       Producer_Copy (
+        PRODUCER_DATA     *this
     );
 
 
-    void            ALU32_Dealloc (
+    void            Producer_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  ALU32_JSON_SUPPORT
+#ifdef  PRODUCER_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    ALU32_DATA *       ALU32_ParseJsonObject (
+    PRODUCER_DATA *       Producer_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -147,35 +147,35 @@ struct ALU32_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ALU32_ParseJsonFields (
+    ERESULT         Producer_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        ALU32_DATA     *pObject
+        PRODUCER_DATA     *pObject
     );
 #endif
 
 
-    void *          ALU32_QueryInfo (
+    void *          Producer_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  ALU32_JSON_SUPPORT
+#ifdef  PRODUCER_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = ALU32_ToJson(this);
+     ASTR_DATA      *pDesc = Producer_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ALU32_ToJson (
-        ALU32_DATA      *this
+    ASTR_DATA *     Producer_ToJson (
+        PRODUCER_DATA      *this
     );
 
 
@@ -188,8 +188,8 @@ struct ALU32_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ALU32_ToJsonFields (
-        ALU32_DATA     *this,
+    ERESULT         Producer_ToJsonFields (
+        PRODUCER_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -199,8 +199,8 @@ struct ALU32_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            ALU32_Validate (
-        ALU32_DATA       *this
+    bool            Producer_Validate (
+        PRODUCER_DATA       *this
     );
 #endif
 
@@ -210,5 +210,5 @@ struct ALU32_data_s  {
 }
 #endif
 
-#endif  /* ALU32_INTERNAL_H */
+#endif  /* PRODUCER_INTERNAL_H */
 

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   ALU32.c
- *  Generated 12/06/2020 10:50:57
+ * File:   Producer.c
+ *  Generated 05/04/2021 09:23:11
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <ALU32_internal.h>
+#include        <Producer_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -64,68 +64,16 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    int             ALU32_even_parity (
-        uint32_t        x
+#ifdef XYZZY
+    static
+    void            Producer_task_body (
+        void            *pData
     )
     {
-        x ^= x >> 16;
-        x ^= x >> 8;
-        x ^= x >> 4;
-        x ^= x >> 2;
-        x ^= x >> 1;
-        return (~x) & 1;
+        //PRODUCER_DATA  *this = pData;
+        
     }
-
-
-
-    // Arithmetic Shift Left
-    // result = bit0 + bit2..bit32 + 0
-    uint32_t        ALU32_Shift_Left_Arith (
-        uint32_t        x
-    )
-    {
-        int32_t         wrk = (int32_t)x;
-
-        wrk <<= 1;
-        return wrk;
-    }
-
-
-    // Arithmetic Shift Right
-    // result = bit0 + bit0..bit30
-    uint32_t        ALU32_Shift_Right_Arith (
-        uint32_t        x
-    )
-    {
-        int32_t         wrk = (int32_t)x;
-
-        wrk >>= 1;
-        return wrk;
-    }
-
-
-    // Logical Shift Left
-    // result = bit1..bit32 + 0
-    uint32_t        ALU32_Shift_Left_Logical (
-        uint32_t        x
-    )
-    {
-        x <<= 1;
-        return x;
-    }
-
-
-    // Logical Shift Right
-    // result = 0 + bit0..bit30
-    uint32_t        ALU32_Shift_Right_Logical (
-        uint32_t        x
-    )
-    {
-        x >>= 1;
-        return x;
-    }
-
-
+#endif
 
 
 
@@ -138,12 +86,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    ALU32_DATA *     ALU32_Alloc (
+    PRODUCER_DATA *     Producer_Alloc (
         void
     )
     {
-        ALU32_DATA       *this;
-        uint32_t        cbSize = sizeof(ALU32_DATA);
+        PRODUCER_DATA       *this;
+        uint32_t        cbSize = sizeof(PRODUCER_DATA);
         
         // Do initialization.
         
@@ -155,187 +103,15 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                          E x e c
-    //---------------------------------------------------------------
-
-    /*!
-     Execute an ALU operation.
-     @param     oper        operation to perform, see E8085ALU_OPS.
-     @param     flags       The flags to be used for input especially
-                            the carry flag and the aux carray flag.
-     @param     op1         operand 1
-     @param     op2         operand 2
-     @param     pResult     If non-null, store result at this location.
-     @param     pFlags      if non-null, store the new flags at this
-                            location.
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         ALU32_Exec (
-        int             oper,
-        uint32_t        op1,
-        uint32_t        op2,
-        uint8_t         flags,
-        uint8_t         *pFlags,
-        uint32_t        *pResult
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        uint64_t        result = op1;
-        uint8_t         newFlags = 0;
-        //int             i;
-
-        // Do initialization.
-
-        switch (oper) {
-
-            case ALU32_OP_UNKNOWN:
-                result = 0;
-                break;
-
-            case ALU32_OP_ADD:
-                result += op2 + ((flags & ALU32_FLAG_CARRY) ? 1 : 0);
-                if (result & 0xFFFFFFFF00000000) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                break;
-
-            case ALU32_OP_AND:
-                result &= op2;
-                break;
-
-            case ALU32_OP_COMPLEMENT:
-                result = -op1;
-                goto set;
-                break;
-
-            case ALU32_OP_NOT:
-                result = ~op1;
-                goto set;
-                break;
-
-            case ALU32_OP_OR:
-                result |= op2;
-                break;
-
-            case ALU32_OP_SHIFT_LEFT:
-                result <<= 1;
-                result |= (flags & ALU32_FLAG_CARRY) ? 1 : 0;
-                if (op1 & 0x80000000) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFT_RIGHT:
-                if (result & 0x01) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                result = result >> 1;
-                result |= (flags & ALU32_FLAG_CARRY) ? 0x80000000 : 0;
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTA_LEFT:
-                if ((op1 & 0x80000000) == ((op1 & 0x40000000) << 1))
-                    ;
-                else
-                    newFlags |= ALU32_FLAG_CARRY;
-                result <<= 1;
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTA_RIGHT:
-                if (op1 & 0x00000001) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                result = result >> 1;
-                if (op1 & 0x80000000)
-                    result |= 0x80000000;
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTL_LEFT:
-                if (op1 & 0x80000000)
-                    newFlags |= ALU32_FLAG_CARRY;
-                result <<= 1;
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTL_RIGHT:
-                if (op1 & 0x00000001) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                result = result >> 1;
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTR_LEFT:
-                result <<= 1;
-                if (op1 & 0x80000000) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                    result |= 0x00000001;
-                }
-                //goto set;
-                break;
-
-            case ALU32_OP_SHIFTR_RIGHT:
-                result = result >> 1;
-                if (op1 & 0x00000001) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                    result |= 0x80000000;
-                }
-                //goto set;
-                break;
-
-            case ALU32_OP_SUB:
-                result -= op2 + ((flags & ALU32_FLAG_CARRY) ? 1 : 0);
-                if (result & 0xFFFFFFFF00000000) {
-                    newFlags |= ALU32_FLAG_CARRY;
-                }
-                break;
-
-            case ALU32_OP_XOR:
-                result ^= op2;
-                break;
-        }
-
-        // Set the flags.
-        if (0 == (result & 0x00000000FFFFFFFF)) {
-            newFlags |= ALU32_FLAG_ZERO;
-        }
-        if (ALU32_even_parity((uint32_t)result)) {
-            newFlags |= ALU32_FLAG_PARITY;
-        }
-        if (result & 0x80000000) {
-            newFlags |= ALU32_FLAG_SIGN;
-        }
-
-        // Update the external registers if needed.
-    set:
-        if (pFlags) {
-            *pFlags = newFlags;
-        }
-        if (pResult) {
-            *pResult = (uint32_t)result;
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    ALU32_DATA *     ALU32_New (
+    PRODUCER_DATA *     Producer_New (
         void
     )
     {
-        ALU32_DATA       *this;
+        PRODUCER_DATA       *this;
         
-        this = ALU32_Alloc( );
+        this = Producer_Alloc( );
         if (this) {
-            this = ALU32_Init(this);
+            this = Producer_Init(this);
         } 
         return this;
     }
@@ -352,15 +128,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        ALU32_getPriority (
-        ALU32_DATA     *this
+    uint16_t        Producer_getPriority (
+        PRODUCER_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -371,14 +147,14 @@ extern "C" {
     }
 
 
-    bool            ALU32_setPriority (
-        ALU32_DATA     *this,
+    bool            Producer_setPriority (
+        PRODUCER_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -395,13 +171,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        ALU32_getSize (
-        ALU32_DATA       *this
+    uint32_t        Producer_getSize (
+        PRODUCER_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -416,15 +192,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * ALU32_getStr (
-        ALU32_DATA     *this
+    ASTR_DATA * Producer_getStr (
+        PRODUCER_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -434,14 +210,14 @@ extern "C" {
     }
     
     
-    bool        ALU32_setStr (
-        ALU32_DATA     *this,
+    bool        Producer_setStr (
+        PRODUCER_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -462,15 +238,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  ALU32_getSuperVtbl (
-        ALU32_DATA     *this
+    OBJ_IUNKNOWN *  Producer_getSuperVtbl (
+        PRODUCER_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -499,16 +275,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = ALU32_Assign(this,pOther);
+        ERESULT eRc = Producer_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another ALU32 object
+     @param     pOther  a pointer to another PRODUCER object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         ALU32_Assign (
-        ALU32_DATA       *this,
-        ALU32_DATA     *pOther
+    ERESULT         Producer_Assign (
+        PRODUCER_DATA       *this,
+        PRODUCER_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -516,11 +292,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!ALU32_Validate(pOther)) {
+        if (!Producer_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -581,9 +357,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             ALU32_Compare (
-        ALU32_DATA     *this,
-        ALU32_DATA     *pOther
+    int             Producer_Compare (
+        PRODUCER_DATA     *this,
+        PRODUCER_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -596,12 +372,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!ALU32_Validate(pOther)) {
+        if (!Producer_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -623,36 +399,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ALU32      *pCopy = ALU32_Copy(this);
+        Producer      *pCopy = Producer_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ALU32 object which must be 
+     @return    If successful, a PRODUCER object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ALU32_DATA *     ALU32_Copy (
-        ALU32_DATA       *this
+    PRODUCER_DATA *     Producer_Copy (
+        PRODUCER_DATA       *this
     )
     {
-        ALU32_DATA       *pOther = OBJ_NIL;
+        PRODUCER_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef ALU32_IS_IMMUTABLE
+#ifdef PRODUCER_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = ALU32_New( );
+        pOther = Producer_New( );
         if (pOther) {
-            eRc = ALU32_Assign(this, pOther);
+            eRc = Producer_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -670,11 +446,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            ALU32_Dealloc (
+    void            Producer_Dealloc (
         OBJ_ID          objId
     )
     {
-        ALU32_DATA   *this = objId;
+        PRODUCER_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -683,7 +459,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -691,11 +467,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((ALU32_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((PRODUCER_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        ALU32_setStr(this, OBJ_NIL);
+        Producer_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -716,32 +492,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ALU32      *pDeepCopy = ALU32_Copy(this);
+        Producer      *pDeepCopy = Producer_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ALU32 object which must be 
+     @return    If successful, a PRODUCER object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ALU32_DATA *     ALU32_DeepyCopy (
-        ALU32_DATA       *this
+    PRODUCER_DATA *     Producer_DeepyCopy (
+        PRODUCER_DATA       *this
     )
     {
-        ALU32_DATA       *pOther = OBJ_NIL;
+        PRODUCER_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = ALU32_New( );
+        pOther = Producer_New( );
         if (pOther) {
-            eRc = ALU32_Assign(this, pOther);
+            eRc = Producer_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -764,8 +540,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ALU32_Disable (
-        ALU32_DATA       *this
+    ERESULT         Producer_Disable (
+        PRODUCER_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -773,7 +549,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -799,8 +575,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ALU32_Enable (
-        ALU32_DATA       *this
+    ERESULT         Producer_Enable (
+        PRODUCER_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -808,7 +584,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -828,11 +604,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    ALU32_DATA *   ALU32_Init (
-        ALU32_DATA       *this
+    PRODUCER_DATA *   Producer_Init (
+        PRODUCER_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(ALU32_DATA);
+        uint32_t        cbSize = sizeof(PRODUCER_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -850,7 +626,7 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_ALU32);
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_PRODUCER);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -858,9 +634,9 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&ALU32_Vtbl);
-#ifdef  ALU32_JSON_SUPPORT
-        JsonIn_RegisterClass(ALU32_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Producer_Vtbl);
+#ifdef  PRODUCER_JSON_SUPPORT
+        JsonIn_RegisterClass(Producer_Class());
 #endif
         
         /*
@@ -874,7 +650,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -883,11 +659,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "ALU32::sizeof(ALU32_DATA) = %lu\n", 
-                sizeof(ALU32_DATA)
+                "Producer::sizeof(PRODUCER_DATA) = %lu\n", 
+                sizeof(PRODUCER_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(ALU32_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(PRODUCER_DATA));
 #endif
 
         return this;
@@ -899,8 +675,8 @@ extern "C" {
     //                       I s E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         ALU32_IsEnabled (
-        ALU32_DATA       *this
+    ERESULT         Producer_IsEnabled (
+        PRODUCER_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -908,7 +684,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -935,14 +711,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = ALU32_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Producer_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "ALU32", prefix,
+                        the object name, "Producer", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -950,13 +726,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          ALU32_QueryInfo (
+    void *          Producer_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        ALU32_DATA     *this = objId;
+        PRODUCER_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -965,7 +741,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -974,11 +750,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(ALU32_DATA);
+                return (void *)sizeof(PRODUCER_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)ALU32_Class();
+                return (void *)Producer_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -1004,37 +780,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return ALU32_Disable;
+                            return Producer_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return ALU32_Enable;
+                            return Producer_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  ALU32_JSON_SUPPORT
+#ifdef  PRODUCER_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return ALU32_ParseJsonFields;
+                            return Producer_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return ALU32_ParseJsonObject;
+                            return Producer_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return ALU32_ToDebugString;
+                            return Producer_ToDebugString;
                         }
-#ifdef  ALU32_JSON_SUPPORT
+#ifdef  PRODUCER_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return ALU32_ToJsonFields;
+                            return Producer_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return ALU32_ToJson;
+                            return Producer_ToJson;
                         }
 #endif
                         break;
@@ -1045,10 +821,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == ALU32_ToDebugString)
+                if (pData == Producer_ToDebugString)
                     return "ToDebugString";
-#ifdef  ALU32_JSON_SUPPORT
-                if (pData == ALU32_ToJson)
+#ifdef  PRODUCER_JSON_SUPPORT
+                if (pData == Producer_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1070,7 +846,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = ALU32_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Producer_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1078,8 +854,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ALU32_ToDebugString (
-        ALU32_DATA      *this,
+    ASTR_DATA *     Producer_ToDebugString (
+        PRODUCER_DATA      *this,
         int             indent
     )
     {
@@ -1094,7 +870,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!ALU32_Validate(this)) {
+        if (!Producer_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1115,7 +891,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    ALU32_getSize(this),
+                    Producer_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1155,15 +931,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            ALU32_Validate (
-        ALU32_DATA      *this
+    bool            Producer_Validate (
+        PRODUCER_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_ALU32))
+            if (obj_IsKindOf(this, OBJ_IDENT_PRODUCER))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1179,7 +955,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(ALU32_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(PRODUCER_DATA))) {
             return false;
         }
 
