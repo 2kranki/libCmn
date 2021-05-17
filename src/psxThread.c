@@ -51,7 +51,21 @@ extern "C" {
 #endif
     
 
-    
+    static
+    const
+    char        *pStates[8] = {
+        "UNKNOWN",
+        "DELAYING",
+        "ENDED",
+        "ENDING",
+        "PAUSED",
+        "RUNNING",
+        "STOPPED",
+        "STARTING"
+    };
+
+
+
 
 
  
@@ -226,7 +240,18 @@ extern "C" {
     
     
     
-    
+    const
+    char *          psxThread_StateA(
+        uint32_t        state
+    )
+    {
+        if (state > 8)
+            state = 0;
+        return pStates[state];
+    }
+
+
+
     
 
     //===============================================================

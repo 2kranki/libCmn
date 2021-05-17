@@ -138,6 +138,12 @@ extern "C" {
     );
     
     
+    const
+    char *          psxThread_StateA(
+        uint32_t        state
+    );
+
+
     /*!
      Wait in the current thread for msWait milli-seconds.
      */

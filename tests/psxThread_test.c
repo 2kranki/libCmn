@@ -130,7 +130,10 @@ int         test_psxThread_OpenClose(
             obj_Release(pStr);
         }
         status = psxThread_getState(pObj);
-        XCTAssertTrue( (status == PSXTHREAD_STATE_RUNNING) );
+        fprintf(stderr, "\tState:  %s\n", psxThread_StateA(status));
+        XCTAssertTrue(
+            ((status == PSXTHREAD_STATE_RUNNING) || (status == PSXTHREAD_STATE_DELAYING))
+        );
         
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -166,6 +169,7 @@ int         test_psxThread_Run01(
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
 
+        psxThread_setWait(pObj, 0);
         fprintf(stderr, "Count = %d\n",count);
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         sleep(1);
