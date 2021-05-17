@@ -83,8 +83,10 @@ extern "C" {
         iRc = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 #endif
         for (;;) {
-            
+
+            psxLock_Lock(this->pWorkerVars);
             this->state = PSXTHREAD_STATE_RUNNING;
+            psxLock_Unlock(this->pWorkerVars);
 
             if( this->fPause ) {
                 //psxSem_Post(this->pOwnerWait);
@@ -98,48 +100,43 @@ extern "C" {
             }
             
             if( this->fTerminate ) {
+                psxLock_Lock(this->pWorkerVars);
                 this->state = PSXTHREAD_STATE_ENDING;
+                psxLock_Unlock(this->pWorkerVars);
                 break;
             }
             
-            if (this->threadBody) {
-                pReturn = (*this->threadBody)(this->threadData);
+            psxLock_Lock(this->pWorkerVars);
+            if (this->pThreadBody) {
+                pReturn = (*this->pThreadBody)(this->pThreadData);
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
                 iRc = (int)pReturn;
 #endif
                 if (this->fDone) {
-                    this->threadBody = NULL;
-                    this->threadData = OBJ_NIL;
+                    this->pThreadBody = NULL;
+                    this->pThreadData = OBJ_NIL;
                     this->fDone = false;
                 }
-                if (this->msWait) {
+            }
+            psxLock_Unlock(this->pWorkerVars);
+
+            if (this->pCalcWait) {
+                uint32_t        msWait;
+                psxLock_Lock(this->pWorkerVars);
+                msWait = this->pCalcWait(this->pCalcWaitData);
+                psxLock_Unlock(this->pWorkerVars);
+                if (msWait) {
                     this->state = PSXTHREAD_STATE_DELAYING;
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-                    usleep(this->msWait * 1000);
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-                    Sleep(this->msWait);
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-                    tn_task_sleep(this->msWait);
-#endif
+                    psxThread_Wait(msWait);
                     this->state = PSXTHREAD_STATE_RUNNING;
                 }
             }
-            else {
+            else if (this->msWait) {
                 this->state = PSXTHREAD_STATE_DELAYING;
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-                usleep(100);            // Sleep for 100us
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-                Sleep(100);             // Sleep for 100ms
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-                tn_task_sleep(TN_WAIT_INFINITE); // ???
-#endif
+                psxThread_Wait(this->msWait);
                 this->state = PSXTHREAD_STATE_RUNNING;
             }
-            
+
         }   // for (;;)
     
         this->state = PSXTHREAD_STATE_ENDED;
@@ -184,8 +181,8 @@ extern "C" {
 
 
     PSXTHREAD_DATA * psxThread_New(
-        void            *(*startRoutine)(void *),
-        void            *routineData,
+        void *          (*pStartRoutine)(void *),
+        void            *pRoutineData,
         uint32_t        stackSize
     )
     {
@@ -193,7 +190,7 @@ extern "C" {
         
         this = psxThread_Alloc(  );
         if (this) {
-            this = psxThread_Init( this, startRoutine, routineData, stackSize );
+            this = psxThread_Init( this, pStartRoutine, pRoutineData, stackSize );
         } 
         return( this );
     }
@@ -222,6 +219,9 @@ extern "C" {
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
         Sleep(msWait);
 #endif
+#if defined(__PIC32MX_TNEO_ENV__)
+        tn_task_sleep(msWait);
+#endif
     }
     
     
@@ -232,6 +232,31 @@ extern "C" {
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    bool        psxThread_setCalcWait(
+        PSXTHREAD_DATA  *this,
+        uint32_t        (*pCalcWait)(void *),
+        void            *pCalcWaitData
+    )
+    {
+
+#ifdef NDEBUG
+#else
+        if( !psxThread_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        psxLock_Lock(this->pWorkerVars);
+        this->pCalcWait = pCalcWait;
+        this->pCalcWaitData = pCalcWaitData;
+        psxLock_Unlock(this->pWorkerVars);
+
+        return true;
+    }
+
+
 
     uint32_t        psxThread_getErrno(
         PSXTHREAD_DATA  *this
@@ -301,8 +326,8 @@ extern "C" {
     
     bool        psxThread_setRoutine(
         PSXTHREAD_DATA	*this,
-        void            *(*startRoutine)(void *),
-        void            *routineData
+        void *          (*pStartRoutine)(void *),
+        void            *pRoutineData
     )
     {
         
@@ -314,9 +339,11 @@ extern "C" {
         }
 #endif
         
-        this->threadBody = startRoutine;
-        this->threadData = routineData;
-        
+        psxLock_Lock(this->pWorkerVars);
+        this->pThreadBody = pStartRoutine;
+        this->pThreadData = pRoutineData;
+        psxLock_Unlock(this->pWorkerVars);
+
         return true;
     }
     
@@ -597,8 +624,8 @@ extern "C" {
 
     PSXTHREAD_DATA *   psxThread_Init(
         PSXTHREAD_DATA  *this,
-        void            *(*startRoutine)(void *),
-        void            *routineData,
+        void *          (*pStartRoutine)(void *),
+        void            *pRoutineData,
         uint32_t        stackSize       // in Words
     )
     {
@@ -626,9 +653,6 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&psxThread_Vtbl);
 
-        this->threadBody = startRoutine;
-        this->threadData = routineData;
-        this->stackSize  = stackSize;
 #if defined(__PIC32MX_TNEO_ENV__)
         if (stackSize) {
             this->pStack = mem_Malloc(stackSize);
@@ -677,6 +701,9 @@ extern "C" {
         }
         
         this->state = PSXTHREAD_STATE_STARTING;
+        psxThread_setRoutine(this, pStartRoutine, pRoutineData);
+        this->stackSize  = stackSize;
+        this->msWait = 100;
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
         iRc = pthread_create(&this->worker, NULL, &thread_task_body, this);
         if (iRc) {
@@ -876,6 +903,35 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                       L o c k  V a r s
+    //---------------------------------------------------------------
+
+    bool            psxThread_LockVars(
+        PSXTHREAD_DATA  *this
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !psxThread_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (this->pWorkerVars == OBJ_NIL) {
+            return false;
+        }
+        psxLock_Lock(this->pWorkerVars);
+
+        // Return to caller.
+        return true;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          P a u s e
     //---------------------------------------------------------------
@@ -1098,7 +1154,7 @@ extern "C" {
                      (this->fDone ? 'T' : 'F'),
                      (this->fPause ? 'T' : 'F'),
                      (this->fTerminate ? 'T' : 'F'),
-                     this->threadBody
+                     this->pThreadBody
             );
         AStr_AppendA(pStr, str);
 
@@ -1123,6 +1179,35 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                       U n l o c k  V a r s
+    //---------------------------------------------------------------
+
+    bool            psxThread_UnlockVars(
+        PSXTHREAD_DATA  *this
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !psxThread_Validate( this ) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (this->pWorkerVars == OBJ_NIL) {
+            return false;
+        }
+        psxLock_Unlock(this->pWorkerVars);
+
+        // Return to caller.
+        return true;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

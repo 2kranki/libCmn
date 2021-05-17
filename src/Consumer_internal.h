@@ -41,6 +41,10 @@
 
 #include        <Consumer.h>
 #include        <JsonIn.h>
+#include        <ObjCb.h>
+#include        <psxMutex.h>
+#include        <psxSem.h>
+#include        <psxThread.h>
 
 
 #ifndef CONSUMER_INTERNAL_H
@@ -72,7 +76,33 @@ struct Consumer_data_s  {
     uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
+    OBJCB_DATA      *pQueue;
+    PSXTHREAD_DATA  *pThread;
+    OBJ_ID          pOther;
 
+    // Flags
+    volatile
+    uint8_t         fQuit;
+    volatile
+    uint8_t         fRunning;
+    volatile
+    uint8_t         fSkip;              // Stop processing messages
+    uint8_t         reserved;
+    volatile
+    uint32_t        msWaitTime;
+
+    // Support Routines
+    void            (*pTaskBody)(OBJ_ID);
+    OBJ_ID          pTaskObj;
+    void            (*pTimedOut)(OBJ_ID);
+    OBJ_ID          pTimedOutObj;
+    int             (*pService)(OBJ_ID, OBJ_ID);
+    void            *pServiceObj;       // 1st parameter for service routine
+
+    uint32_t        numHandled;         // Number of messages handled
+    uint32_t        numDiscard;         // Number of messages that could not be written
+    //                                  // into the queue or handled
+    uint32_t        numWritten;         // Number of messages written into the queue
 };
 #pragma pack(pop)
 
@@ -90,7 +120,7 @@ struct Consumer_data_s  {
     //---------------------------------------------------------------
 
 #ifdef  CONSUMER_SINGLETON
-    CONSUMER_DATA *     Consumer_getSingleton (
+    CONSUMER_DATA * Consumer_getSingleton (
         void
     );
 
@@ -116,7 +146,7 @@ struct Consumer_data_s  {
     );
 
 
-    CONSUMER_DATA *       Consumer_Copy (
+    CONSUMER_DATA * Consumer_Copy (
         CONSUMER_DATA     *this
     );
 
@@ -133,7 +163,7 @@ struct Consumer_data_s  {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    CONSUMER_DATA *       Consumer_ParseJsonObject (
+    CONSUMER_DATA * Consumer_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -149,7 +179,7 @@ struct Consumer_data_s  {
      */
     ERESULT         Consumer_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        CONSUMER_DATA     *pObject
+        CONSUMER_DATA   *pObject
     );
 #endif
 
@@ -158,6 +188,25 @@ struct Consumer_data_s  {
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
+    );
+
+
+    /*!
+     Send an object to the consumer FIFO's queue. Normally, this
+     would only be used by the Producer object. If fWait is true,
+     this will block until there is an empty slot in the queue
+     for the data object. If fWait is false, ERESULT_BUFFER_FULL
+     is returned and the object is not added to the queue.
+     @param     this    object pointer
+     @param     pObj    data object pointer to be added to queue
+     @param     fWait   Wait for queue to have an empty slot
+     @return    If successful, ERESULT_SUCCESS. Otherwise,
+                an ERESULT_* error code.
+     */
+    ERESULT         Consumer_Send (
+        CONSUMER_DATA   *this,
+        OBJ_ID          pObj,
+        bool            fWait           // true == Wait for queue to have an empty slot
     );
 
 

@@ -344,6 +344,73 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                       M a k e D i r
+    //---------------------------------------------------------------
+
+    ERESULT         Dir_MakeDir (
+        PATH_DATA       *pPath,
+        uint16_t        mode
+    )
+    {
+        char            *pStr = NULL;
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
+        int             iRc;
+#endif
+        ERESULT         eRc;
+        PATH_DATA       *pCleaned;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( OBJ_NIL == pPath ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if( mode & (0xFFFF - 0x01FF)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        pCleaned = Path_Copy(pPath);
+        if (OBJ_NIL == pCleaned) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        eRc = Path_Clean(pCleaned);
+
+        eRc = Path_IsExisting(pPath);
+        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+            obj_Release(pCleaned);
+            return ERESULT_PATH_ALREADY_EXISTS;
+        }
+
+        pStr = AStr_CStringA((ASTR_DATA *)pPath, NULL);
+        if (pStr) {
+#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
+            mode &= 0x01FF;                 // Remove
+            iRc = mkdir(pStr, mode);
+            if (0 == iRc) {
+                eRc = ERESULT_SUCCESS;
+            }
+            else {
+                eRc = ERESULT_CANNOT_MAKE_DIRECTORY;
+            }
+#endif
+            mem_Free(pStr);
+            pStr = NULL;
+        }
+        else {
+            eRc = ERESULT_DATA_ERROR;
+        }
+        obj_Release(pCleaned);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     DIR_DATA *     Dir_New (
         void
     )
@@ -1006,64 +1073,6 @@ extern "C" {
             }
             else {
                 eRc = ERESULT_PATH_NOT_FOUND;
-            }
-#endif
-            mem_Free(pStr);
-            pStr = NULL;
-        }
-        else {
-            eRc = ERESULT_DATA_ERROR;
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                       M a k e D i r
-    //---------------------------------------------------------------
-
-    ERESULT         Dir_MakeDir (
-        DIR_DATA        *this,
-        PATH_DATA       *pPath,
-        uint16_t        mode
-    )
-    {
-        char            *pStr = NULL;
-#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
-        int             iRc;
-#endif
-        ERESULT         eRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Dir_Validate(this) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( OBJ_NIL == pPath ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-        eRc = Path_IsExisting(pPath);
-        if (ERESULT_IS_SUCCESSFUL(eRc)) {
-            return ERESULT_PATH_ALREADY_EXISTS;
-        }
-
-        pStr = AStr_CStringA((ASTR_DATA *)pPath, NULL);
-        if (pStr) {
-#if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
-            iRc = mkdir(pStr, mode);
-            if (0 == iRc) {
-                eRc = ERESULT_SUCCESS;
-            }
-            else {
-                eRc = ERESULT_CANNOT_MAKE_DIRECTORY;
             }
 #endif
             mem_Free(pStr);

@@ -743,16 +743,8 @@ extern "C" {
                             OBJECT_DESC,
                             this->pDesc
                     );
-        } else {
-            ASTR_DATA           *pStr;
-            pStr = AStr_ToUpper(this->pName);
-            eRc = Dict_AddAStr(
-                            pDict,
-                            OBJECT_DESC,
-                            pStr
-                    );
-            obj_Release(pStr);
         }
+        // else is handled in pName section below.
         if (this->fImmutable) {
             eRc = Dict_AddA(
                             pDict,
@@ -805,6 +797,13 @@ extern "C" {
                             OBJECT_NAME_UPPER,
                             pStr
                     );
+            if (OBJ_NIL == this->pDesc) {
+                eRc = Dict_AddAStr(
+                                pDict,
+                                OBJECT_DESC,
+                                pStr
+                        );
+            }
             obj_Release(pStr);
         }
 

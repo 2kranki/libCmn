@@ -354,6 +354,7 @@ extern "C" {
     
     
     ERESULT         eResult_getSharedLastResult(
+        void
     )
     {
         ERESULT_DATA     *this = eResult_Shared();

@@ -56,47 +56,51 @@ extern "C" {
 
     typedef struct modelFileNames_s {
         const
-        char            *pFileName;
+        char            *pFileNameA;
         const
-        char            *pSubDir;
+        char            *pSubDirA;
+        const
+        char            *pSuffixA;
     } MODEL_FILE_NAME;
 
     static
     MODEL_FILE_NAME     ModelFileNames[] = {
-        {"model.obj._internal.h.txt", "src"},
-        {"model.obj._object.c.txt", "src"},
-        {"model.obj.h.txt", "src"},
-        {"model.obj.c.txt", "src"},
+        {"model.obj._internal.h.txt", "src", "_internal.h"},
+        {"model.obj._object.c.txt", "src", "_object.c"},
+        {"model.obj.h.txt", "src", ".h"},
+        {"model.obj.c.txt", "src", ".c"},
         {NULL}
     };
     static
     MODEL_FILE_NAME     JsonFileName = {
         "model.obj._json.c.txt",
-        "src"
+        "src",
+        "_json.c"
     };
     static
     MODEL_FILE_NAME     TestFileName = {
         "model.obj._test.c.txt",
-        "tests"
+        "tests",
+        "_test.c"
     };
 
 
 #if defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
     static
     const
-    char        *pModelDrvDir = "~/Support/genObject/";
+    char        *pModelDrvDirA = "~/Support/genObject/";
     static
     const
-    char        *pOutputDrvDir = "~/Support/x/";
+    char        *pOutputDrvDirA = "~/Support/x/";
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     //TODO: Change to fit
     static
     const
-    char        *pModelDrvDir = "~/Support/genObject/";
+    char        *pModelDrvDirA = "~/Support/genObject/";
     static
     const
-    char        *pOutputDrvDir = "~/Support/x/";
+    char        *pOutputDrvDirA = "~/Support/x/";
 #endif
 
 
@@ -223,7 +227,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     const
-    char *          Gen_getModelDrvDir (
+    char *          Gen_getModelDrvDirA (
         GEN_DATA        *this
     )
     {
@@ -237,11 +241,11 @@ extern "C" {
         }
 #endif
 
-        return this->pModelDrvDir;
+        return this->pModelDrvDirA;
     }
 
 
-    bool            Gen_setModelDrvDir (
+    bool            Gen_setModelDrvDirA (
         GEN_DATA        *this,
         const
         char            *pValue
@@ -255,7 +259,7 @@ extern "C" {
         }
 #endif
 
-        this->pModelDrvDir = pValue;
+        this->pModelDrvDirA = pValue;
 
         return true;
     }
@@ -267,7 +271,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     const
-    char *          Gen_getOutputDrvDir (
+    char *          Gen_getOutputDrvDirA (
         GEN_DATA        *this
     )
     {
@@ -281,11 +285,11 @@ extern "C" {
         }
 #endif
 
-        return this->pOutputDrvDir;
+        return this->pOutputDrvDirA;
     }
 
 
-    bool            Gen_setOutputDrvDir (
+    bool            Gen_setOutputDrvDirA (
         GEN_DATA        *this,
         const
         char            *pValue
@@ -299,7 +303,7 @@ extern "C" {
         }
 #endif
 
-        this->pOutputDrvDir = pValue;
+        this->pOutputDrvDirA = pValue;
 
         return true;
     }
@@ -601,11 +605,17 @@ extern "C" {
         }
 #endif
 
-        for (i=0; ModelFileNames[i].pFileName; i++) {
+        for (i=0; ModelFileNames[i].pFileNameA; i++) {
             ASTR_DATA       *pStr = OBJ_NIL;
-            pStr = AStr_NewA(ModelFileNames[i].pFileName);
+            pStr = AStr_NewA(ModelFileNames[i].pFileNameA);
             if (pStr) {
-                eRc = Gen_ExpandFile(this, ModelFileNames[i].pSubDir, pStr, fVerbose);
+                eRc =   Gen_ExpandFile(
+                                     this,
+                                     ModelFileNames[i].pSubDirA,
+                                     ModelFileNames[i].pSuffixA,
+                                     pStr,
+                                     fVerbose
+                        );
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
                 if (ERESULT_FAILED(eRc))
@@ -616,9 +626,15 @@ extern "C" {
         if (ERESULT_OK(eRc)) {
             ASTR_DATA       *pStr = OBJ_NIL;
             if (NodeClass_getJson(pClass)) {
-                pStr = AStr_NewA(JsonFileName.pFileName);
+                pStr = AStr_NewA(JsonFileName.pFileNameA);
                 if (pStr) {
-                    eRc = Gen_ExpandFile(this, JsonFileName.pSubDir, pStr, fVerbose);
+                    eRc =   Gen_ExpandFile(
+                                           this,
+                                           JsonFileName.pSubDirA,
+                                           JsonFileName.pSuffixA,
+                                           pStr,
+                                           fVerbose
+                            );
                     obj_Release(pStr);
                     pStr = OBJ_NIL;
                 }
@@ -628,9 +644,15 @@ extern "C" {
         if (ERESULT_OK(eRc)) {
             ASTR_DATA       *pStr = OBJ_NIL;
             if (NodeClass_getTest(pClass)) {
-                pStr = AStr_NewA(TestFileName.pFileName);
+                pStr = AStr_NewA(TestFileName.pFileNameA);
                 if (pStr) {
-                    eRc = Gen_ExpandFile(this, TestFileName.pSubDir, pStr, fVerbose);
+                    eRc =   Gen_ExpandFile(
+                                         this,
+                                         TestFileName.pSubDirA,
+                                         TestFileName.pSuffixA,
+                                         pStr,
+                                         fVerbose
+                            );
                     obj_Release(pStr);
                     pStr = OBJ_NIL;
                 }
@@ -649,9 +671,10 @@ extern "C" {
 
     PATH_DATA *     Gen_CreateOutputPath (
         GEN_DATA        *this,
-        ASTR_DATA       *pModelFileName,
         const
-        char            *pSubDir
+        char            *pSubDirA,
+        const
+        char            *pSuffixA
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -662,6 +685,7 @@ extern "C" {
         const
         char            *pOutputDirA = OBJ_NIL;
         PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pFileName = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -671,7 +695,7 @@ extern "C" {
             //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
-        if ((OBJ_NIL == pModelFileName) || (AStr_getSize(pModelFileName) < 15)) {
+        if ((NULL == pSubDirA) || (NULL == pSuffixA)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return OBJ_NIL;
@@ -684,40 +708,10 @@ extern "C" {
         );
         pOutputDriveA = Dict_GetA(this->pDict, OUTPUT_DRIVE);
         pOutputDirA   = Dict_GetA(this->pDict, OUTPUT_DIR);
+        pFileName = AStr_Copy(pObjName);
+        AStr_AppendA(pFileName, pSuffixA);
 
-        eRc = AStr_CompareLeftA(pModelFileName, "model.obj");
-        eResult_ErrorFatalOnBool(
-                        (eRc != 0),
-                        "Model Path is not \"model.obj.X.txt, %s!\n",
-                        AStr_getData(pModelFileName)
-        );
-        eRc = AStr_CompareRightA(pModelFileName, ".txt");
-        eResult_ErrorFatalOnBool(
-                        (eRc != 0),
-                        "Model Path is not \"model.obj.X.txt, %s!\n",
-                        AStr_getData(pModelFileName)
-        );
 
-        eRc =   AStr_Mid(
-                       pModelFileName,
-                       11,
-                       (AStr_getSize(pModelFileName) - 14),
-                       &pStr
-                );
-        eResult_ErrorFatalOnBool(
-                        (ERESULT_FAILED(eRc) || (pStr == OBJ_NIL)),
-                        "Model Path is not \"model.obj.X.txt, %s!\n",
-                        AStr_getData(pModelFileName)
-        );
-        if ('_' != AStr_CharGetW32(pStr, 1)) {
-            eRc = AStr_InsertA(pStr, 1, ".");
-        }
-        eRc = AStr_InsertA(pStr, 1, AStr_getData(pObjName));
-        eResult_ErrorFatalOn(
-                        eRc,
-                        "Failed to build output filename for %s!\n",
-                        AStr_getData(pModelFileName)
-        );
 
         pPath = Path_NewFromComponentsA(
                         pOutputDriveA,
@@ -729,14 +723,17 @@ extern "C" {
                         (pPath == OBJ_NIL),
                         "Output Path could not be created!\n"
         );
-        eRc = Path_AppendDirA(pPath, pSubDir);
-        if (ERESULT_OK(eRc))
-            eRc = Path_AppendFileName(pPath, pStr);
+        eRc = Path_AppendDirA(pPath, pSubDirA);
+        if (ERESULT_OK(eRc)) {
+            eRc = Path_AppendFileName(pPath, pFileName);
+        }
         eResult_ErrorFatalOnBool(
                         (ERESULT_FAILED(eRc)),
                         "Output Path could not be created!\n"
         );
 
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
@@ -834,6 +831,68 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //            C r e a t e  O b j e c t  F i l e s
+    //---------------------------------------------------------------
+
+    ERESULT         Gen_DeleteObjectFiles (
+        GEN_DATA        *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        i;
+        PATH_DATA       *pPath = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        for (i=0; ModelFileNames[i].pFileNameA; i++) {
+            pPath = Gen_CreateOutputPath(
+                                         this,
+                                         ModelFileNames[i].pSubDirA,
+                                         ModelFileNames[i].pSuffixA
+                    );
+            if (pPath) {
+                eRc = Path_Delete(pPath);
+                obj_Release(pPath);
+                pPath = OBJ_NIL;
+            }
+        }
+
+        pPath = Gen_CreateOutputPath(
+                                     this,
+                                     JsonFileName.pSubDirA,
+                                     JsonFileName.pSuffixA
+                );
+        if (pPath) {
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+
+        pPath = Gen_CreateOutputPath(
+                                     this,
+                                     TestFileName.pSubDirA,
+                                     TestFileName.pSuffixA
+                );
+        if (pPath) {
+            eRc = Path_Delete(pPath);
+            obj_Release(pPath);
+            pPath = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -977,7 +1036,9 @@ extern "C" {
     ERESULT         Gen_ExpandFile (
         GEN_DATA        *this,
         const
-        char            *pSubDir,
+        char            *pSubDirA,
+        const
+        char            *pSuffixA,
         ASTR_DATA       *pModel,
         bool            fVerbose
     )
@@ -1003,7 +1064,7 @@ extern "C" {
                         "Could not generate Model Path from %s!\n",
                         AStr_getData(pModel)
         );
-        pOutputPath = Gen_CreateOutputPath(this, pModel, pSubDir);
+        pOutputPath = Gen_CreateOutputPath(this, pSubDirA, pSuffixA);
         eResult_ErrorFatalOnBool(
                         (OBJ_NIL == pModelPath),
                         "Could not generate Output Path from %s!\n",
@@ -1086,8 +1147,8 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Gen_Vtbl);
 
-        this->pModelDrvDir  = pModelDrvDir;
-        this->pOutputDrvDir = pOutputDrvDir;
+        this->pModelDrvDirA  = pModelDrvDirA;
+        this->pOutputDrvDirA = pOutputDrvDirA;
         /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {
@@ -1352,7 +1413,7 @@ extern "C" {
             pStr = OBJ_NIL;
         }
 
-        pPath = Path_NewA(this->pModelDrvDir);
+        pPath = Path_NewA(this->pModelDrvDirA);
         if (pPath) {
             eRc = Path_Split(pPath, &pStr, &pStr2, OBJ_NIL, OBJ_NIL);
             if (pStr) {
@@ -1369,7 +1430,7 @@ extern "C" {
             pPath = OBJ_NIL;
         }
 
-        pPath = Path_NewA(this->pOutputDrvDir);
+        pPath = Path_NewA(this->pOutputDrvDirA);
         if (pPath) {
             eRc = Path_Split(pPath, &pStr, &pStr2, OBJ_NIL, OBJ_NIL);
             if (pStr) {

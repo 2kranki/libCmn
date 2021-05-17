@@ -346,7 +346,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/lib360/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/lib360/");
 
         // Put code here...
 
@@ -365,7 +365,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/lib8085/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/lib8085/");
 
         // Put code here...
 
@@ -384,7 +384,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/lib8086/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/lib8086/");
 
         // Put code here...
 
@@ -403,7 +403,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libAsm/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libAsm/");
 
         // Put code here...
 
@@ -422,7 +422,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libCmn/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libCmn/");
 
         // Put code here...
 
@@ -441,7 +441,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libDisk/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libDisk/");
 
         // Put code here...
 
@@ -460,7 +460,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libEmu/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libEmu/");
 
         // Put code here...
 
@@ -479,7 +479,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libGraph/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libGraph/");
 
         // Put code here...
 
@@ -498,7 +498,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libLL1/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libLL1/");
 
         // Put code here...
 
@@ -517,7 +517,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libLnk/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libLnk/");
 
         // Put code here...
 
@@ -536,7 +536,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libObj/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libObj/");
 
         // Put code here...
 
@@ -555,7 +555,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libPrs/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libPrs/");
 
         // Put code here...
 
@@ -574,7 +574,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libTbl/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libTbl/");
 
         // Put code here...
 
@@ -593,7 +593,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libTrade/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libTrade/");
 
         // Put code here...
 
@@ -612,7 +612,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDirA(this->pGen, "~/git/libVid/");
+        Gen_setOutputDrvDir(this->pGen, "~/git/libVid/");
 
         // Put code here...
 

@@ -809,6 +809,7 @@ extern "C" {
 
 
     HJSON_DATA *     hjson_New (
+        void
     )
     {
         HJSON_DATA       *this;

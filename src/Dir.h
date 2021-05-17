@@ -163,6 +163,14 @@ extern "C" {
     );
 
 
+    /*! Create a new directory if needed.
+     */
+    ERESULT         Dir_MakeDir (
+        PATH_DATA       *pPath,
+        uint16_t        mode
+    );
+
+
     DIR_DATA *      Dir_New (
         void
     );
@@ -239,15 +247,6 @@ extern "C" {
 
     DIR_DATA *      Dir_Init (
         DIR_DATA        *this
-    );
-
-
-    /*! Create a new directory if needed.
-     */
-    ERESULT         Dir_MakeDir (
-        DIR_DATA        *this,
-        PATH_DATA       *pPath,
-        uint16_t        mode
     );
 
 

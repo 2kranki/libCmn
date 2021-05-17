@@ -1,28 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//      Consumer side of Producer/Consumer (Consumer) Header
+//                  Main (Main) Header
 //****************************************************************
 /*
  * Program
- *          Consumer side of Producer/Consumer (Consumer)
+ *			Main (Main)
  * Purpose
- *          This object provides the Consumer side of the Producer/
- *          Consumer programming pattern. This object starts the
- *          Consumer process in a separate thread that can be con-
- *          trolled with this object. All data sent to the Consumer
- *          must be packaged as an object, because that is all that
- *          it understands.
- *
- *          It is assumed that this object is always setup with the
- *          proper support objects and methods since it does nothing
- *          by itself but absorb the objects sent to it.
+ *			This object provides a standardized way of handling
+ *          a separate Main to run things without complications
+ *          of interfering with the main Main. A Main may be 
+ *          called a Main on other O/S's.
  *
  * Remarks
- *  1.      None
+ *	1.      None
  *
  * History
- *  05/04/2021 Generated
+ *	04/28/2020 Generated
  */
 
 
@@ -57,23 +51,25 @@
 
 
 
-#include        <cmn_defs.h>
+#include        <genAll_defs.h>
 #include        <AStr.h>
+//#include        <Dict.h>
+//#include        <NodeClass.h>
 
 
-#ifndef         CONSUMER_H
-#define         CONSUMER_H
+#ifndef         MAIN_H
+#define         MAIN_H
 
 
-//#define   CONSUMER_IS_IMMUTABLE     1
-//#define   CONSUMER_JSON_SUPPORT     1
-//#define   CONSUMER_SINGLETON        1
+//#define   MAIN_IS_IMMUTABLE     1
+//#define   MAIN_JSON_SUPPORT     1
+#define   MAIN_SINGLETON        1
 
 
 
 
 
-#ifdef  __cplusplus
+#ifdef	__cplusplus
 extern "C" {
 #endif
     
@@ -83,32 +79,32 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Consumer_data_s  CONSUMER_DATA;            // Inherits from OBJ
-    typedef struct Consumer_class_data_s CONSUMER_CLASS_DATA;   // Inherits from OBJ
+    typedef struct Main_data_s	MAIN_DATA;            // Inherits from OBJ
+    typedef struct Main_class_data_s MAIN_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Consumer_vtbl_s  {
+    typedef struct Main_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Consumer_object.c.
+        // method names to the vtbl definition in Main_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(CONSUMER_DATA *);
-    } CONSUMER_VTBL;
+        //bool        (*pIsEnabled)(MAIN_DATA *);
+    } MAIN_VTBL;
 
-    typedef struct Consumer_class_vtbl_s    {
+    typedef struct Main_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Consumer_object.c.
+        // method names to the vtbl definition in Main_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(CONSUMER_DATA *);
-    } CONSUMER_CLASS_VTBL;
+        //bool        (*pIsEnabled)(MAIN_DATA *);
+    } MAIN_CLASS_VTBL;
 
 
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
     ****************************************************************/
 
 
@@ -116,12 +112,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  CONSUMER_SINGLETON
-    CONSUMER_DATA * Consumer_Shared (
+#ifdef  MAIN_SINGLETON
+    MAIN_DATA *     Main_Shared (
         void
     );
 
-    void            Consumer_SharedReset (
+    void            Main_SharedReset (
         void
     );
 #endif
@@ -131,29 +127,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Consumer object if successful, otherwise OBJ_NIL.
+     @return    pointer to Main object if successful, otherwise OBJ_NIL.
      */
-    CONSUMER_DATA * Consumer_Alloc (
+    MAIN_DATA *     Main_Alloc (
         void
     );
     
     
-    OBJ_ID          Consumer_Class (
+    OBJ_ID          Main_Class (
         void
     );
     
     
-    CONSUMER_DATA * Consumer_New (
+    MAIN_DATA *     Main_New (
         void
     );
     
     
-#ifdef  CONSUMER_JSON_SUPPORT
-    CONSUMER_DATA * Consumer_NewFromJsonString (
+#ifdef  MAIN_JSON_SUPPORT
+    MAIN_DATA *   Main_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    CONSUMER_DATA * Consumer_NewFromJsonStringA (
+    MAIN_DATA *   Main_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -165,53 +161,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    /* CalcWait() calculates the wait time that should be
-     * used when waiting for a new record from the input
-     * queue. If no routine is provided, then 100ms is used.
-     */
-    bool            Consumer_setCalcWait(
-        CONSUMER_DATA   *this,
-        uint32_t        (*pCalcWait)(
-                            void *              // Calculate Method (pObj)
-                        ),
-        OBJ_ID          *pCalcWaitObj           // Calculate Method's Object
-    );
-
-
-    /*! @property   other   Used to store any object the user wants. Generally,
-                            this object would be related somehow to the Consumer
-                            object, but does not have to be.
-     */
-    OBJ_ID          Consumer_getOther (
-        CONSUMER_DATA   *this
-    );
-
-    bool            Consumer_setOther (
-        CONSUMER_DATA   *this,
-        OBJ_ID          pValue
-    );
-
-
-    /* Service() handles the output object from the Consumer queue
-     * and must release it when it is done with the object.
-     */
-    bool            Consumer_setService(
-        CONSUMER_DATA   *this,
-        int             (*pService)(OBJ_ID, OBJ_ID),
-        OBJ_ID          *pServiceObj            // Service Method's Object
-    );
-
-
-    uint32_t        Consumer_getWait(
-        CONSUMER_DATA   *this
-    );
-
-    bool            Consumer_setWait(
-        CONSUMER_DATA   *this,
-        uint32_t        value
-    );
-
-
 
 
     
@@ -219,41 +168,64 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         Consumer_Disable (
-        CONSUMER_DATA   *this
+    int             Main_Exec(
+        MAIN_DATA       *this
     );
 
 
-    ERESULT         Consumer_Enable (
-        CONSUMER_DATA   *this
-    );
-
-   
-    CONSUMER_DATA * Consumer_Init (
-        CONSUMER_DATA   *this
+    MAIN_DATA *     Main_Init (
+        MAIN_DATA       *this
     );
 
 
-    ERESULT         Consumer_IsEnabled (
-        CONSUMER_DATA   *this
+    /*!
+     Parse the given input file resetting any prior parse data and
+     building the appropriate node tables from the JSON. The parser
+     and its tables will be saved internally for later phases of
+     the generation process.
+     @param     this        object pointer
+     @param     pPath       JSON Input File Path
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+                an ERESULT_* error code
+     */
+    ERESULT         Main_ParseInputFile(
+        MAIN_DATA       *this,
+        PATH_DATA       *pPath
     );
-    
- 
-#ifdef  CONSUMER_JSON_SUPPORT
+
+
+    /*!
+     Set up to parse the given input resetting any prior parse data.
+     @param     this        object pointer
+     @param     cArgs       number of charater strings in ppArgs
+     @param     ppArgV      pointer to a charater string array
+     @param     ppEnv       pointer to a charater string array
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+     an ERESULT_* error code
+     */
+    ERESULT         Main_SetupFromArgV(
+        MAIN_DATA       *this,
+        uint16_t        cArgs,
+        char            *ppArgV[],
+        char            **ppEnv
+    );
+
+
+#ifdef  MAIN_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Consumer_ToJson(this);
+     ASTR_DATA      *pDesc = Main_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Consumer_ToJson (
-        CONSUMER_DATA   *this
+    ASTR_DATA *     Main_ToJson (
+        MAIN_DATA   *this
     );
 #endif
 
@@ -262,7 +234,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Consumer_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Main_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -270,17 +242,17 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Consumer_ToDebugString (
-        CONSUMER_DATA     *this,
+    ASTR_DATA *     Main_ToDebugString (
+        MAIN_DATA     *this,
         int             indent
     );
     
     
 
     
-#ifdef  __cplusplus
+#ifdef	__cplusplus
 }
 #endif
 
-#endif  /* CONSUMER_H */
+#endif	/* MAIN_H */
 

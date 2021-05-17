@@ -7,15 +7,21 @@
  * Program
  *			POSIX Thread Object (psxThread)
  * Purpose
- *          This class tries to provide a Posix-like threads within
- *          a process for operating systems. Thus, it provides a
- *          standardized interface for those operating systems.
+ *          This class tries to provide a Posix-like thread within
+ *          a process for several operating systems. Thus, it provides
+ *          a consistent interface for those operating systems.
  *          It is primarily designed to manage threads which do a 
  *          small amount of work and then relinquish control in a
  *          loop.  However, it can be used for single process type
  *          threads as well.  Also, the thread's actual execution
  *          code can be changed after its creation allowing the 
  *          thread to perform a multitude of purposes.
+ *
+ *          A wait which defaults to 100ms is added to the end of
+ *          each execution cycle of the execution cycle. This can
+ *          be over-ridden with the Wait property or the CalcWait
+ *          property.  CalcWait allows the wait time to be dynamically
+ *          calculated each time.
  *
  * Remarks
  *	1.      We will call the thread created by this object, "worker"
@@ -127,7 +133,7 @@ extern "C" {
      */
     PSXTHREAD_DATA * psxThread_New(
         void  *         (*pStartRoutine)(void *),
-        void            *routineData,
+        void            *pRoutineData,
         uint32_t        stackSize           // Stack Size in Bytes (optional)
     );
     
@@ -146,6 +152,17 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! @property CalcWait if present is called when a wait between
+        execution of the Service routine is needed. It supercedes
+        the Wait time property.
+     */
+    bool        psxThread_setCalcWait(
+        PSXTHREAD_DATA  *this,
+        uint32_t        (*pCalcWait)(void *),
+        void            *pCalcWaitData
+    );
+
+
     uint32_t        psxThread_getErrno(
         PSXTHREAD_DATA	*this
     );
@@ -163,7 +180,7 @@ extern "C" {
     bool            psxThread_setRoutine(
         PSXTHREAD_DATA	*this,
         void *          (*pStartRoutine)(void *),
-        void            *routineData
+        void            *pRoutineData
     );
     
     
@@ -210,15 +227,15 @@ extern "C" {
      Initialize the Thread Object and set up for execution.
      @param     this pointer to object data area to be used. Normally, this would
                     point to an object that was allocated using psxThread_Alloc().
-     @param     startRoutine address of the routine to be executed in the thread
+     @param     pStartRoutine address of the routine to be executed in the thread
      @param     stackSize the size of the initial stack to be allocated in words.
             Currently, this is only needed for TNEO.
      @return    pointer to PSXThread object if successful, otherwise OBJ_NIL.
      */
     PSXTHREAD_DATA * psxThread_Init(
         PSXTHREAD_DATA  *this,
-        void            *(*startRoutine)(void *),
-        void            *routineData,
+        void *          (*pStartRoutine)(void *),
+        void            *pRoutineData,
         uint32_t        stackSize           // Stack Size in Words (optional)
     );
 
@@ -251,18 +268,32 @@ extern "C" {
                     this thread.
      @return    True if successful, otherwise False.
      */
-    bool        psxThread_Join(
+    bool            psxThread_Join(
         PSXTHREAD_DATA  *this,
         void            **ppReturn
     );
     
     
-    bool        psxThread_Pause(
+    /*!
+     The user of this thread object can lock the variables if it needs atomic
+     control of variables that might be shared with the service routine. This
+     should be called if multiple variables need to be altered at once.
+     UnlockVars() must be called when the variables are updated since this
+     blocks the service routine.
+     @param     this    object pointer
+     @return    true if lock is set, otherwise, false.
+     */
+    bool            psxThread_LockVars(
+        PSXTHREAD_DATA  *this
+    );
+
+
+    bool            psxThread_Pause(
         PSXTHREAD_DATA	*this
     );
     
     
-    bool        psxThread_Resume(
+    bool            psxThread_Resume(
         PSXTHREAD_DATA	*this
     );
 
@@ -271,7 +302,7 @@ extern "C" {
      Request the worker thread to stop its execution.
      @return    True if successful, otherwise False.
      */
-    bool        psxThread_Terminate(
+    bool            psxThread_Terminate(
         PSXTHREAD_DATA	*this
     );
     
@@ -282,12 +313,22 @@ extern "C" {
      @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA * psxThread_ToDebugString(
+    ASTR_DATA *     psxThread_ToDebugString(
         PSXTHREAD_DATA  *this,
         int             indent
     );
     
     
+    /*!
+     This method should only be called once a user is done updating variables
+     where the LockVars() successfully set the lock. It is important that the
+     lock be unlocked since it blocks the service thread from executing.
+     @param     this    object pointer
+     @return    true if lock is unset, otherwise, false.
+     */
+    bool            psxThread_UnlockVars(
+        PSXTHREAD_DATA  *this
+    );
 
     
 #ifdef	__cplusplus

@@ -492,9 +492,6 @@ OBJ_INFO        Producer_Info = {
     (OBJ_IUNKNOWN *)&Producer_Vtbl,
     sizeof(PRODUCER_DATA)
 };
-#warning -- adjust super class object in Info above 
-//          if object inherits from another class
-//          Also, update description
 
 
 

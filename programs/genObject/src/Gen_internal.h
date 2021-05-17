@@ -75,9 +75,9 @@ struct Gen_data_s	{
     uint16_t        rsvd16;
     DICT_DATA       *pDict;
     const
-    char            *pModelDrvDir;
+    char            *pModelDrvDirA;
     const
-    char            *pOutputDrvDir;
+    char            *pOutputDrvDirA;
 
 };
 #pragma pack(pop)
@@ -135,14 +135,26 @@ struct Gen_data_s	{
 
     PATH_DATA *     Gen_CreateOutputPath (
         GEN_DATA        *this,
-        ASTR_DATA       *pModelFileName,
         const
-        char            *pSubDir
+        char            *pSubDirA,
+        const
+        char            *pSuffixA
     );
 
 
     void            Gen_Dealloc (
         OBJ_ID          objId
+    );
+
+
+    /*!
+     Delete the output files if they exist.
+     @param this        Object Pointer
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Gen_DeleteObjectFiles (
+        GEN_DATA        *this
     );
 
 

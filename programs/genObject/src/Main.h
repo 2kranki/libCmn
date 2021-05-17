@@ -54,6 +54,7 @@
 #include        <genObject_defs.h>
 #include        <AStr.h>
 #include        <Dict.h>
+#include        <Gen.h>
 #include        <NodeClass.h>
 
 
@@ -161,6 +162,9 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    GEN_DATA *      Main_getGen (
+        MAIN_DATA       *this
+    );
 
 
     

@@ -137,12 +137,12 @@ struct Main_data_s	{
         char            *pOsNameA
     );
 
-    MAIN_DATA *    Main_Copy (
+    MAIN_DATA *     Main_Copy (
         MAIN_DATA       *this
     );
 
 
-    void          Main_Dealloc (
+    void            Main_Dealloc (
         OBJ_ID          objId
     );
 
@@ -172,9 +172,9 @@ struct Main_data_s	{
  @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
  error code.
  */
-ERESULT         Main_ParseInputFile (
-    MAIN_DATA       *this,
-    PATH_DATA       *pPath
+ERESULT             Main_ParseInputFile (
+    MAIN_DATA           *this,
+    PATH_DATA           *pPath
 );
 
 /*!
@@ -184,10 +184,10 @@ ERESULT         Main_ParseInputFile (
  @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
  error code.
  */
-ERESULT         Main_ParseInputStr (
-    MAIN_DATA       *this,
+ERESULT             Main_ParseInputStr (
+    MAIN_DATA           *this,
     const
-    char            *pStr
+    char                *pStr
 );
 
 #ifdef  MAIN_JSON_SUPPORT
@@ -197,7 +197,7 @@ ERESULT         Main_ParseInputStr (
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    MAIN_DATA *       Main_ParseJsonObject (
+    MAIN_DATA *     Main_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -236,6 +236,16 @@ ERESULT         Main_ParseInputStr (
         void            *pData
     );
 
+
+#ifdef NDEBUG
+#else
+    // This is used in external test programs.
+    ERESULT         Main_SetOutputTest(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    );
+#endif
 
 #ifdef  MAIN_JSON_SUPPORT
     /*!

@@ -1,0 +1,17 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+
+{
+    program:{
+        name:"genAll",
+        deps:["Cmn"],
+        hdrs:["genAll_defs.h"]
+        main:"mainProgram.c"
+    },
+    "objects":[
+        //{name:"Dict", desc:"Main Dictionary for Program"},
+        //{name:"Gen", desc:"Generate a file"},
+        {name:"Main"},
+        //{name:"NodeClass", json:true, desc:"Class Definition"},
+        //{name:"NodeProp", json:true, desc:"Class Property Definition"},
+    ],
+}

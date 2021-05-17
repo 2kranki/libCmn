@@ -860,7 +860,7 @@ extern "C" {
         // Return to caller.
     //Exit00:
         // Insure 4-byte alignment.
-        if (pRet && !(((int)pRet & 0x03) == 0) ) {
+        if (pRet && !(((uint64_t)pRet & 0x03) == 0) ) {
             DEBUG_BREAK();
         }
         return( pRet );
@@ -1428,7 +1428,7 @@ extern "C" {
         // Return to caller.
     Exit00:
         // Insure 4-byte alignment.
-        if (pActual && !(((int)pActual & 0x03) == 0) ) {
+        if (pActual && !(((uint64_t)pActual & 0x03) == 0) ) {
             DEBUG_BREAK();
         }
         return pActual;
@@ -1468,7 +1468,7 @@ extern "C" {
             fRc = true;
             goto Exit00;
         }
-        if( !(((int)pData & 0x03) == 0) ) {
+        if( !(((uint64_t)pData & 0x03) == 0) ) {
             DEBUG_BREAK();
             goto Exit00;
         }
@@ -1551,7 +1551,7 @@ extern "C" {
             fRc = true;
             goto Exit00;
         }
-        if( !(((int)pData & 0x03) == 0) ) {
+        if( !(((uint64_t)pData & 0x03) == 0) ) {
             DEBUG_BREAK();
             goto Exit00;
         }
@@ -1719,7 +1719,7 @@ extern "C" {
 
         // Return to caller.
     //Exit00:
-        if (pRet && !(((int)pRet & 0x03) == 0) ) {
+        if (pRet && !(((uint64_t)pRet & 0x03) == 0) ) {
             DEBUG_BREAK();
         }
         return( pRet );
@@ -1828,7 +1828,7 @@ extern "C" {
 
         // Return to caller.
         pRet = pActual->data;
-        if (pRet && !(((int)pRet & 0x03) == 0) ) {
+        if (pRet && !(((uint64_t)pRet & 0x03) == 0) ) {
             DEBUG_BREAK();
         }
         return pRet;
@@ -1933,7 +1933,7 @@ extern "C" {
 
         // Return to caller.
     //Exit00:
-        if (pRet && !(((int)pRet & 0x03) == 0) ) {
+        if (pRet && !(((uint64_t)pRet & 0x03) == 0) ) {
             DEBUG_BREAK();
         }
         return( pRet );

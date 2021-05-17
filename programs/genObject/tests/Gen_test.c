@@ -212,23 +212,36 @@ int             test_Gen_Test01 (
     ASTR_DATA       *pStr = OBJ_NIL;
     ASTR_DATA       *pStr2 = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
+    PATH_DATA       *pPathReal = OBJ_NIL;
     bool            fRc;
     int             iRc;
     const
     char            *pStrA;
-   
+    const
+    char            *pMdlDirA =
+                    "~/git/libCmn/programs/genObject/models/";
+    const
+    char            *pTestDirA =
+                    "~/git/libCmn/programs/genObject/tests/files/x/";
+    char            *pFileNameA;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = Gen_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);       
+        //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
         TINYTEST_TRUE( (fRc) );
         pDict = Dict_New( );
         TINYTEST_FALSE( (OBJ_NIL == pDict) );
         Gen_setDict(pObj, pDict);
+
+        // Override default file locations.
+        Gen_setModelDrvDirA(pObj, pMdlDirA);
+        Gen_setOutputDrvDirA(pObj, pTestDirA);
+        Gen_SetDefaults(pObj);
 
         pStr = AStr_NewA("Xyzzy");
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
@@ -248,47 +261,84 @@ int             test_Gen_Test01 (
         TINYTEST_TRUE( (NULL == pStrA) );
         pStrA = Dict_GetA(pObj->pDict, MODEL_DIR);
         TINYTEST_FALSE( (NULL == pStrA) );
-        iRc = strcmp(pStrA, "/Users/bob/Support/genObject");
+        pPathReal = Path_NewA(pMdlDirA);
+        TINYTEST_FALSE( (OBJ_NIL == pPathReal) );
+        Path_Clean(pPathReal);
+        iRc = Path_CompareA(pPathReal, pStrA);
         TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pPathReal);
+        pPathReal = OBJ_NIL;
         pStrA = Dict_GetA(pObj->pDict, OUTPUT_DRIVE);
         TINYTEST_TRUE( (NULL == pStrA) );
         pStrA = Dict_GetA(pObj->pDict, OUTPUT_DIR);
         TINYTEST_FALSE( (NULL == pStrA) );
-        iRc = strcmp(pStrA, "/Users/bob/Support/x");
+        pPathReal = Path_NewA(pTestDirA);
+        TINYTEST_FALSE( (OBJ_NIL == pPathReal) );
+        Path_Clean(pPathReal);
+        iRc = Path_CompareA(pPathReal, pStrA);
         TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pPathReal);
+        pPathReal = OBJ_NIL;
 
-        pStr2 = AStr_NewA("model.obj.h.txt");
+        pFileNameA = "model.obj.h.txt";
+        pStr2 = AStr_NewA(pFileNameA);
         pPath = Gen_CreateModelPath(pObj, pStr2);
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
+        pPathReal = Path_NewA(pMdlDirA);
+        TINYTEST_FALSE( (OBJ_NIL == pPathReal) );
+        eRc = Path_AppendFileNameA(pPathReal, pFileNameA);
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        Path_Clean(pPathReal);
         fprintf(stderr, "\tmodel: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
-        eRc = AStr_CompareA(Path_getAStr(pPath), "/Users/bob/Support/genObject/model.obj.h.txt");
-        TINYTEST_TRUE( (0 == eRc) );
+        iRc = Path_Compare(pPath, pPathReal);
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pPathReal);
+        pPathReal = OBJ_NIL;
         obj_Release(pPath);
         pPath = OBJ_NIL;
         obj_Release(pStr2);
         pStr2 = OBJ_NIL;
+        pFileNameA = NULL;
 
-        pStr2 = AStr_NewA("model.obj.h.txt");
-        pPath = Gen_CreateOutputPath(pObj, pStr2, "src");
+        pFileNameA = "src/Xyzzy.h";
+        pStr2 = AStr_NewA(pFileNameA);
+        pPath = Gen_CreateOutputPath(pObj, "src", ".h");
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
+        pPathReal = Path_NewA(pTestDirA);
+        TINYTEST_FALSE( (OBJ_NIL == pPathReal) );
+        eRc = Path_AppendFileNameA(pPathReal, pFileNameA);
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        Path_Clean(pPathReal);
         fprintf(stderr, "\toutput: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
-        eRc = AStr_CompareA(Path_getAStr(pPath), "/Users/bob/Support/x/src/Xyzzy.h");
-        TINYTEST_TRUE( (0 == eRc) );
+        iRc = Path_Compare(pPath, pPathReal);
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pPathReal);
+        pPathReal = OBJ_NIL;
         obj_Release(pPath);
         pPath = OBJ_NIL;
         obj_Release(pStr2);
         pStr2 = OBJ_NIL;
+        pFileNameA = NULL;
 
-        pStr2 = AStr_NewA("model.obj._internal.h.txt");
-        pPath = Gen_CreateOutputPath(pObj, pStr2, "src");
+        pFileNameA = "src/Xyzzy_internal.h";
+        pStr2 = AStr_NewA(pFileNameA);
+        pPath = Gen_CreateOutputPath(pObj, "src", "_internal.h");
         TINYTEST_FALSE( (OBJ_NIL == pPath) );
+        pPathReal = Path_NewA(pTestDirA);
+        TINYTEST_FALSE( (OBJ_NIL == pPathReal) );
+        eRc = Path_AppendFileNameA(pPathReal, pFileNameA);
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        Path_Clean(pPathReal);
         fprintf(stderr, "\toutput: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
-        eRc = AStr_CompareA(Path_getAStr(pPath), "/Users/bob/Support/x/src/Xyzzy_internal.h");
-        TINYTEST_TRUE( (0 == eRc) );
+        iRc = Path_Compare(pPath, pPathReal);
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pPathReal);
+        pPathReal = OBJ_NIL;
         obj_Release(pPath);
         pPath = OBJ_NIL;
         obj_Release(pStr2);
         pStr2 = OBJ_NIL;
+        pFileNameA = NULL;
 
         {
             ASTR_DATA       *pStr = Gen_ToDebugString(pObj, 0);
@@ -518,13 +568,14 @@ int             test_Gen_ExpandFile02 (
     TEXTOUT_DATA    *pOutput = OBJ_NIL;
     const
     char            *pPathA =
-                    "~/git/Support/genObject/model.obj._internal.h.txt";
+                    "~/git/libCmn/programs/genObject/models/model.obj._internal.h.txt";
     uint32_t        cnt = 0;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pPath = Path_NewA(pPathA);
     TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    Path_Clean(pPath);
     pInput = TextIn_NewFromPath(
                         pPath,          // Data File
                         1,              // FileNo for Doc

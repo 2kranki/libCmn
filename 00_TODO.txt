@@ -6,13 +6,37 @@ will depend upon time and resources.
 -- grep -rn --include="*.c" "ERESULT_SUCCESS_GREATER_THAN" .
 -- grep -rn --include="*.c" "ERESULT_SUCCESS_LESS_THAN" .
 
+-- Finish mkAll.
+
+-- Finish "Consumer" object w/testing.
+
+-- Finish "Producer" object w/testing.
+
 -- Finish SQLite interface.
 
 -- Convert python RPG object to C
 
 -- Packed Decimal support
+    -- See 8085 simulation or ALU8/ALU32
+    -- Write using uint64 for number adjusting on overflow/underflow (???)
+    -- dec64 and dec128 objects
+    -- Review packed decimal support in IBM 360 for dec64 and dec128 objects.
+        * add
+        * subtract
+        * zero and add
+        * compare
+        * multiply
+        * divide
+        * shift and round
+        * edit
+        * edit w/mark
+        * pack
+        * unpack
+        * move with offset
 
--- int128 support
+-- int128 Support
+
+-- int256 Support
 
 -- Write a Money package that is compatible with SQLite or add it
     to SQLite or Docker-M$_SQL

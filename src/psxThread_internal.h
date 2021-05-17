@@ -100,9 +100,11 @@ struct psxThread_data_s	{
     volatile
     sig_atomic_t    msWait;             // Thread Sleep Time between Iterations
     //                                  // (RO for worker)
-    void *          (*threadBody)(void *);
-    void            *threadData;
-    
+    void *          (*pThreadBody)(void *);
+    void            *pThreadData;
+    uint32_t        (*pCalcWait)(void *); // Calculate Wait Time between Iterations.
+    void            *pCalcWaitData;
+
     uint32_t        stackSize;
     uint8_t         *pStack;
 

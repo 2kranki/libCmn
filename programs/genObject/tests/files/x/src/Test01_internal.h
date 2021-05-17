@@ -1,10 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   ObjCb_internal.h
- *	Generated 02/21/2020 14:01:14
+ * File:   Test01_internal.h
+ *  Generated 05/16/2021 21:57:25
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
 
@@ -39,21 +39,18 @@
 
 
 
-#include        <ObjCb.h>
+#include        <Test01.h>
 #include        <JsonIn.h>
-#include        <psxCond.h>
-#include        <psxLock.h>
-#include        <psxSem.h>
 
 
-#ifndef OBJCB_INTERNAL_H
-#define	OBJCB_INTERNAL_H
+#ifndef TEST01_INTERNAL_H
+#define TEST01_INTERNAL_H
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -65,40 +62,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct ObjCb_data_s	{
+struct Test01_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    PSXCOND_DATA    *pEmpty;
-    PSXCOND_DATA    *pFull;
-    PSXMUTEX_DATA   *pMutex;
-    uint32_t        cEntries;    // maximum number of elements
-    volatile
-    uint8_t         fStop;
-    uint8_t         rsvd8;
+    uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
-    volatile
-    uint32_t        start;      // index of oldest element
-    volatile
-    uint32_t        end;        // index at which to write new element
-    volatile
-    uint32_t        numWritten;
-    volatile
-    uint32_t        numRead;
-    OBJ_ID          *pEntries;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct ObjCb_class_data_s  ObjCb_ClassObj;
+    struct Test01_class_data_s  Test01_ClassObj;
 
     extern
     const
-    OBJCB_VTBL         ObjCb_Vtbl;
+    TEST01_VTBL         Test01_Vtbl;
 
 
 
@@ -106,13 +89,13 @@ struct ObjCb_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  OBJCB_SINGLETON
-    OBJCB_DATA *     ObjCb_getSingleton (
+#ifdef  TEST01_SINGLETON
+    TEST01_DATA *     Test01_getSingleton (
         void
     );
 
-    bool            ObjCb_setSingleton (
-     OBJCB_DATA       *pValue
+    bool            Test01_setSingleton (
+     TEST01_DATA       *pValue
 );
 #endif
 
@@ -122,35 +105,35 @@ struct ObjCb_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  ObjCb_getSuperVtbl (
-        OBJCB_DATA     *this
+    OBJ_IUNKNOWN *  Test01_getSuperVtbl (
+        TEST01_DATA     *this
     );
 
 
-    ERESULT         ObjCb_Assign (
-        OBJCB_DATA    *this,
-        OBJCB_DATA    *pOther
+    ERESULT         Test01_Assign (
+        TEST01_DATA    *this,
+        TEST01_DATA    *pOther
     );
 
 
-    OBJCB_DATA *       ObjCb_Copy (
-        OBJCB_DATA     *this
+    TEST01_DATA *       Test01_Copy (
+        TEST01_DATA     *this
     );
 
 
-    void            ObjCb_Dealloc (
+    void            Test01_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  OBJCB_JSON_SUPPORT
+#ifdef  TEST01_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    OBJCB_DATA *       ObjCb_ParseJsonObject (
+    TEST01_DATA *       Test01_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -164,36 +147,35 @@ struct ObjCb_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ObjCb_ParseJsonFields (
+    ERESULT         Test01_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        OBJCB_DATA     *pObject
+        TEST01_DATA     *pObject
     );
 #endif
 
 
-    void *          ObjCb_QueryInfo (
+    void *          Test01_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  OBJCB_JSON_SUPPORT
+#ifdef  TEST01_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = ObjCb_ToJson(this);
+     ASTR_DATA      *pDesc = Test01_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
-                ERESULT_* error code.
+                JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ObjCb_ToJson (
-        OBJCB_DATA      *this
+    ASTR_DATA *     Test01_ToJson (
+        TEST01_DATA      *this
     );
 
 
@@ -206,8 +188,8 @@ struct ObjCb_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ObjCb_ToJsonFields (
-        OBJCB_DATA     *this,
+    ERESULT         Test01_ToJsonFields (
+        TEST01_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -217,16 +199,16 @@ struct ObjCb_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			ObjCb_Validate (
-        OBJCB_DATA       *this
+    bool            Test01_Validate (
+        TEST01_DATA       *this
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* OBJCB_INTERNAL_H */
+#endif  /* TEST01_INTERNAL_H */
 

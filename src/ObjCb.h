@@ -11,8 +11,12 @@
  *          routines to provide a Circular (FIFO) Buffer of
  *          size elements. The buffer is designed to work in
  *          multi-tasking environment with a single sender and
- *          receiver. It is not safe for multiple senders or
- *          receivers with proper locking.
+ *          receiver.
+ *
+ *          To avoid locking up the current thread, separate
+ *          threads should be used for getting and putting
+ *          object from/to the queue. Get() and Put(), both.
+ *          wait for data and/or an empty spot in the queue.
  *
  * Remarks
  *    1.    XC32 allows 4 register variables per function call.
@@ -124,7 +128,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  OBJCB_SINGLETON
-    OBJCB_DATA *     ObjCb_Shared (
+    OBJCB_DATA *    ObjCb_Shared (
         void
     );
 
@@ -140,7 +144,7 @@ extern "C" {
      released.
      @return    pointer to ObjCb object if successful, otherwise OBJ_NIL.
      */
-    OBJCB_DATA *     ObjCb_Alloc (
+    OBJCB_DATA *    ObjCb_Alloc (
         void
     );
     
@@ -161,11 +165,11 @@ extern "C" {
 
 
 #ifdef  OBJCB_JSON_SUPPORT
-    OBJCB_DATA *   ObjCb_NewFromJsonString (
+    OBJCB_DATA *    ObjCb_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    OBJCB_DATA *   ObjCb_NewFromJsonStringA (
+    OBJCB_DATA *    ObjCb_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -229,6 +233,15 @@ extern "C" {
     );
 
 
+    /*!
+     Add an object to the end of the FIFO queue. Retain the given object
+     only if it is appended to the queue..
+     @param     this    object pointer
+     @param     pValue  data object pointer
+     @return    true if data is appended, otherwise false.
+     @warning   If the queue is full, this method will wait until
+                an entry becomes available.
+     */
     // The object is retained when it is added to the circular
     // buffer.
     bool            ObjCb_Put (

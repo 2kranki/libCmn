@@ -169,11 +169,11 @@ extern "C" {
 
 
     const
-    char *          Gen_getModelDrvDir (
+    char *          Gen_getModelDrvDirA (
         GEN_DATA        *this
     );
 
-    bool            Gen_setModelDrvDir (
+    bool            Gen_setModelDrvDirA (
         GEN_DATA        *this,
         const
         char            *pValue
@@ -181,11 +181,11 @@ extern "C" {
 
 
     const
-    char *          Gen_getOutputDrvDir (
+    char *          Gen_getOutputDrvDirA (
         GEN_DATA        *this
     );
 
-    bool            Gen_setOutputDrvDir (
+    bool            Gen_setOutputDrvDirA (
         GEN_DATA        *this,
         const
         char            *pValue
@@ -216,7 +216,8 @@ extern "C" {
      Expand the variables (of the form ${...}) in the model file creating
      the output file.
      @param     this    object pointer
-     @param     pSubDir Subdirectory for file to be expanded into
+     @param     pSubDirA Subdirectory for file to be expanded into
+     @param     pSuffixA File Name suffix such as ".c"
      @param     pModel  Model File Path to be expanded
      @param     fVerbose true == display file generation information
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
@@ -225,7 +226,9 @@ extern "C" {
     ERESULT         Gen_ExpandFile (
         GEN_DATA		*this,
         const
-        char            *pSubDir,
+        char            *pSubDirA,
+        const
+        char            *pSuffixA,
         ASTR_DATA       *pModel,
         bool            fVerbose
     );

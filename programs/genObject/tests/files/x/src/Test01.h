@@ -1,28 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//      Consumer side of Producer/Consumer (Consumer) Header
+//                  A Good Test Object (Test01) Header
 //****************************************************************
 /*
  * Program
- *          Consumer side of Producer/Consumer (Consumer)
+ *          A Good Test Object (Test01)
  * Purpose
- *          This object provides the Consumer side of the Producer/
- *          Consumer programming pattern. This object starts the
- *          Consumer process in a separate thread that can be con-
- *          trolled with this object. All data sent to the Consumer
- *          must be packaged as an object, because that is all that
- *          it understands.
- *
- *          It is assumed that this object is always setup with the
- *          proper support objects and methods since it does nothing
- *          by itself but absorb the objects sent to it.
+ *          This object provides a standardized way of handling
+ *          a separate Test01 to run things without complications
+ *          of interfering with the main Test01. A Test01 may be 
+ *          called a Test01 on other O/S's.
  *
  * Remarks
  *  1.      None
  *
  * History
- *  05/04/2021 Generated
+ *  05/16/2021 Generated
  */
 
 
@@ -61,13 +55,13 @@
 #include        <AStr.h>
 
 
-#ifndef         CONSUMER_H
-#define         CONSUMER_H
+#ifndef         TEST01_H
+#define         TEST01_H
 
 
-//#define   CONSUMER_IS_IMMUTABLE     1
-//#define   CONSUMER_JSON_SUPPORT     1
-//#define   CONSUMER_SINGLETON        1
+//#define   TEST01_IS_IMMUTABLE     1
+#define   TEST01_JSON_SUPPORT       1
+//#define   TEST01_SINGLETON        1
 
 
 
@@ -83,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Consumer_data_s  CONSUMER_DATA;            // Inherits from OBJ
-    typedef struct Consumer_class_data_s CONSUMER_CLASS_DATA;   // Inherits from OBJ
+    typedef struct Test01_data_s  TEST01_DATA;            // Inherits from OBJ
+    typedef struct Test01_class_data_s TEST01_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Consumer_vtbl_s  {
+    typedef struct Test01_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Consumer_object.c.
+        // method names to the vtbl definition in Test01_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(CONSUMER_DATA *);
-    } CONSUMER_VTBL;
+        //bool        (*pIsEnabled)(TEST01_DATA *);
+    } TEST01_VTBL;
 
-    typedef struct Consumer_class_vtbl_s    {
+    typedef struct Test01_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Consumer_object.c.
+        // method names to the vtbl definition in Test01_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(CONSUMER_DATA *);
-    } CONSUMER_CLASS_VTBL;
+        //bool        (*pIsEnabled)(TEST01_DATA *);
+    } TEST01_CLASS_VTBL;
 
 
 
@@ -116,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  CONSUMER_SINGLETON
-    CONSUMER_DATA * Consumer_Shared (
+#ifdef  TEST01_SINGLETON
+    TEST01_DATA *     Test01_Shared (
         void
     );
 
-    void            Consumer_SharedReset (
+    void            Test01_SharedReset (
         void
     );
 #endif
@@ -131,29 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Consumer object if successful, otherwise OBJ_NIL.
+     @return    pointer to Test01 object if successful, otherwise OBJ_NIL.
      */
-    CONSUMER_DATA * Consumer_Alloc (
+    TEST01_DATA *     Test01_Alloc (
         void
     );
     
     
-    OBJ_ID          Consumer_Class (
+    OBJ_ID          Test01_Class (
         void
     );
     
     
-    CONSUMER_DATA * Consumer_New (
+    TEST01_DATA *     Test01_New (
         void
     );
     
     
-#ifdef  CONSUMER_JSON_SUPPORT
-    CONSUMER_DATA * Consumer_NewFromJsonString (
+#ifdef  TEST01_JSON_SUPPORT
+    TEST01_DATA *   Test01_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    CONSUMER_DATA * Consumer_NewFromJsonStringA (
+    TEST01_DATA *   Test01_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -165,53 +159,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    /* CalcWait() calculates the wait time that should be
-     * used when waiting for a new record from the input
-     * queue. If no routine is provided, then 100ms is used.
-     */
-    bool            Consumer_setCalcWait(
-        CONSUMER_DATA   *this,
-        uint32_t        (*pCalcWait)(
-                            void *              // Calculate Method (pObj)
-                        ),
-        OBJ_ID          *pCalcWaitObj           // Calculate Method's Object
-    );
-
-
-    /*! @property   other   Used to store any object the user wants. Generally,
-                            this object would be related somehow to the Consumer
-                            object, but does not have to be.
-     */
-    OBJ_ID          Consumer_getOther (
-        CONSUMER_DATA   *this
-    );
-
-    bool            Consumer_setOther (
-        CONSUMER_DATA   *this,
-        OBJ_ID          pValue
-    );
-
-
-    /* Service() handles the output object from the Consumer queue
-     * and must release it when it is done with the object.
-     */
-    bool            Consumer_setService(
-        CONSUMER_DATA   *this,
-        int             (*pService)(OBJ_ID, OBJ_ID),
-        OBJ_ID          *pServiceObj            // Service Method's Object
-    );
-
-
-    uint32_t        Consumer_getWait(
-        CONSUMER_DATA   *this
-    );
-
-    bool            Consumer_setWait(
-        CONSUMER_DATA   *this,
-        uint32_t        value
-    );
-
-
 
 
     
@@ -219,41 +166,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         Consumer_Disable (
-        CONSUMER_DATA   *this
+    ERESULT     Test01_Disable (
+        TEST01_DATA       *this
     );
 
 
-    ERESULT         Consumer_Enable (
-        CONSUMER_DATA   *this
+    ERESULT     Test01_Enable (
+        TEST01_DATA       *this
     );
 
    
-    CONSUMER_DATA * Consumer_Init (
-        CONSUMER_DATA   *this
+    TEST01_DATA *   Test01_Init (
+        TEST01_DATA     *this
     );
 
 
-    ERESULT         Consumer_IsEnabled (
-        CONSUMER_DATA   *this
+    ERESULT     Test01_IsEnabled (
+        TEST01_DATA       *this
     );
     
  
-#ifdef  CONSUMER_JSON_SUPPORT
+#ifdef  TEST01_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Consumer_ToJson(this);
+     ASTR_DATA      *pDesc = Test01_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Consumer_ToJson (
-        CONSUMER_DATA   *this
+    ASTR_DATA *     Test01_ToJson (
+        TEST01_DATA   *this
     );
 #endif
 
@@ -262,7 +209,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Consumer_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Test01_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -270,8 +217,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Consumer_ToDebugString (
-        CONSUMER_DATA     *this,
+    ASTR_DATA *     Test01_ToDebugString (
+        TEST01_DATA     *this,
         int             indent
     );
     
@@ -282,5 +229,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* CONSUMER_H */
+#endif  /* TEST01_H */
 

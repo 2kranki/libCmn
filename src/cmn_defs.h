@@ -215,7 +215,7 @@ extern "C" {
         OBJ_IDENT_CON_CLASS,
         OBJ_IDENT_CON_FIO,              // Console File I/O Object
         OBJ_IDENT_CON_FIO_CLASS,
-        OBJ_IDENT_CONSUMER,
+        OBJ_IDENT_CONSUMER,             // Producer/Consumer Pattern
         OBJ_IDENT_CONSUMER_CLASS,
         OBJ_IDENT_CONXMT,
         OBJ_IDENT_CONXMT_CLASS,
@@ -431,8 +431,8 @@ extern "C" {
         OBJ_IDENT_PPLEX2_CLASS,
         OBJ_IDENT_PPLEX3,               // Preprocessor Lexical Scanner - Phase 3
         OBJ_IDENT_PPLEX3_CLASS,
-        //OBJ_IDENT_PRODCONS,             // Producer/Consumer Pattern
-        //OBJ_IDENT_PRODCONS_CLASS,
+        OBJ_IDENT_PRODUCER,             // Producer/Consumer Pattern
+        OBJ_IDENT_PRODUCER_CLASS,
         OBJ_IDENT_PROTOCOL,             // Protocol LAYER which uses RECEIVE and TRANSMIT
         OBJ_IDENT_PROTOCOL_CLASS,
         OBJ_IDENT_PRT,

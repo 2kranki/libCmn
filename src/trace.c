@@ -92,6 +92,7 @@ extern "C" {
 
 
     TRACE_DATA *    trace_New(
+        void
     )
     {
         TRACE_DATA      *this;

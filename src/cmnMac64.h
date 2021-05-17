@@ -64,10 +64,10 @@ extern "C" {
 #define BREAK_NOT_NULL(n)  if(!(NULL == (n)))  { DEBUG_BREAK(); }
 #define BREAK_ZERO(n)  if(0 == (n))  { DEBUG_BREAK(); }
 #define BREAK_NOT_ZERO(n)  if(!(0 == (n)))  { DEBUG_BREAK(); }
-#define BREAK_NOT_WORD_BOUNDARY(n)  if(!(0 == ((uint32_t)n)&0x3))  { DEBUG_BREAK(); }
-#define BREAK_NOT_BOUNDARY2(n)  if(!(0 == (((uint32_t)n)&0x1)))  { DEBUG_BREAK(); }
-#define BREAK_NOT_BOUNDARY4(n)  if(!(0 == (((uint32_t)n)&0x3)))  { DEBUG_BREAK(); }
-#define BREAK_NOT_BOUNDARY8(n)  if(!(0 == (((uint32_t)n)&0x7)))  { DEBUG_BREAK(); }
+#define BREAK_NOT_WORD_BOUNDARY(n)  if(!(0 == ((uint64_t)n) & 0x3))  { DEBUG_BREAK(); }
+#define BREAK_NOT_BOUNDARY2(n)  if (!(0 == (((uint64_t)n) & 0x1)))  { DEBUG_BREAK(); }
+#define BREAK_NOT_BOUNDARY4(n)  if (!(0 == (((uint64_t)n) & 0x3)))  { DEBUG_BREAK(); }
+#define BREAK_NOT_BOUNDARY8(n)  if (!(0 == (((uint64_t)n) & 0x7)))  { DEBUG_BREAK(); }
     
 
 

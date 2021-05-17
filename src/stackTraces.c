@@ -211,7 +211,7 @@ int addr2line(char const * const program_name, void const * const addr)
 
   #define MAX_STACK_FRAMES 64
   static void *stack_traces[MAX_STACK_FRAMES];
-  void posix_print_stack_trace()
+  void posix_print_stack_trace(void)
   {
     int i, trace_size = 0;
     char **messages = (char **)NULL;
@@ -321,7 +321,7 @@ int addr2line(char const * const program_name, void const * const addr)
   }
 
   static uint8_t alternate_stack[SIGSTKSZ];
-  void set_signal_handler()
+  void set_signal_handler(void)
   {
     /* setup alternate stack */
     {

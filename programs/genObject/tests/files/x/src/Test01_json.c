@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   NodeProp_json.c
+ * File:   Test01_json.c
  *
- *	Generated 04/26/2020 17:31:56
+ *  Generated 05/16/2021 21:57:25
  *
  */
 
@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <NodeProp_internal.h>
+#include    <Test01_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -58,7 +58,7 @@
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -79,9 +79,9 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     NodeProp_ParseJsonFields (
+    ERESULT     Test01_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        NODEPROP_DATA     *pObject
+        TEST01_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -94,40 +94,21 @@ extern "C" {
         //ASTR_DATA       *pWrk;
         //uint8_t         *pData;
         //uint32_t        len;
-        ASTR_DATA       *pStr = OBJ_NIL;
 
-        (void)JsonIn_FindAStrNodeInHashA(pParser, "external", &pObject->pExternal);
-        (void)JsonIn_FindAStrNodeInHashA(pParser, "init", &pObject->pInit);
-        (void)JsonIn_FindAStrNodeInHashA(pParser, "internal", &pObject->pInternal);
-        (void)JsonIn_FindAStrNodeInHashA(pParser, "long", &pObject->pLong);
-        (void)JsonIn_FindAStrNodeInHashA(pParser, "name", &pObject->pName);
-        (void)JsonIn_FindAStrNodeInHashA(pParser, "short", &pObject->pShort);
-        (void)JsonIn_FindAStrNodeInHashA(pParser, "typedef", &pObject->pTypeDef);
-        (void)JsonIn_FindU8NodeInHashA(pParser, "object", &pObject->fObj);
-        (void)JsonIn_FindAStrNodeInHashA(pParser, "vis", &pStr);
-        if (pStr) {
-            if (0 == AStr_CompareA(pStr, "PUBLIC")) {
-                pObject->vis = NODEPROP_VIS_PUBLIC;
-            }
-            else if (0 == AStr_CompareA(pStr, "READ_ONLY")) {
-                pObject->vis = NODEPROP_VIS_READ_ONLY;
-            }
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-
-#ifdef XYZZZY
+#ifdef XYZZZY 
         (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
         (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
         (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
 
         eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
         eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
+        if (ERESULT_OK(eRc)) {
+            pWrk = AStr_ParseJsonObject(pParser);
+            if (pWrk) {
+                pObject->pErrorStr = pWrk;
+            }
+            JsonIn_SubObjectEnd(pParser);
         }
-        JsonIn_SubObjectEnd(pParser);
 #endif
 
         // Return to caller.
@@ -143,31 +124,32 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NODEPROP_DATA * NodeProp_ParseJsonObject (
+    TEST01_DATA * Test01_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        NODEPROP_DATA   *pObject = OBJ_NIL;
+        TEST01_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        pInfo = obj_getInfo(NodeProp_Class());
-        
+        JsonIn_RegisterClass(Test01_Class());
+
+        pInfo = obj_getInfo(Test01_Class());
         eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
 
-        pObject = NodeProp_New( );
+        pObject = Test01_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  NodeProp_ParseJsonFields(pParser, pObject);
+        eRc =  Test01_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -189,13 +171,13 @@ extern "C" {
     //===============================================================
     
 
-    NODEPROP_DATA *   NodeProp_NewFromJsonString (
+    TEST01_DATA *   Test01_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        NODEPROP_DATA   *pObject = OBJ_NIL;
+        TEST01_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -204,7 +186,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = NodeProp_ParseJsonObject(pParser);
+        pObject = Test01_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -217,17 +199,17 @@ extern "C" {
     
     
 
-    NODEPROP_DATA * NodeProp_NewFromJsonStringA (
+    TEST01_DATA * Test01_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        NODEPROP_DATA   *pObject = OBJ_NIL;
+        TEST01_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = NodeProp_NewFromJsonString(pStr);
+            pObject = Test01_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -243,7 +225,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = NodeProp_ToJson(this);
+     ASTR_DATA      *pDesc = Test01_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -251,8 +233,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NodeProp_ToJson (
-        NODEPROP_DATA   *this
+    ASTR_DATA *     Test01_ToJson (
+        TEST01_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -262,7 +244,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !NodeProp_Validate(this) ) {
+        if( !Test01_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -276,9 +258,9 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = NodeProp_ToJsonFields(this, pStr);      
+            eRc = Test01_ToJsonFields(this, pStr);      
 
-            AStr_AppendA(pStr, "}\n");
+            AStr_AppendPrint(pStr, "}\t/* %s */\n", pInfo->pClassName);
         }
 
         return pStr;
@@ -294,11 +276,12 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeProp_ToJsonFields (
-        NODEPROP_DATA     *this,
+    ERESULT         Test01_ToJsonFields (
+        TEST01_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
+        //ERESULT         eRc = ERESULT_SUCCESS;
 #ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
@@ -311,42 +294,15 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
 
-        if (this->pExternal) {
-            JsonOut_Append_StrA("external", AStr_getData(this->pExternal), pStr);
-        }
-        if (this->pInit) {
-            JsonOut_Append_StrA("init", AStr_getData(this->pInit), pStr);
-        }
-        if (this->pInternal) {
-            JsonOut_Append_StrA("internal", AStr_getData(this->pInternal), pStr);
-        }
-        if (this->pLong) {
-            JsonOut_Append_StrA("long", AStr_getData(this->pLong), pStr);
-        }
-        JsonOut_Append_StrA("name", AStr_getData(this->pName), pStr);
-        if (this->pShort) {
-            JsonOut_Append_StrA("short", AStr_getData(this->pShort), pStr);
-        }
-        JsonOut_Append_u8("object", this->fObj, pStr);
-        JsonOut_Append_StrA("typedef", AStr_getData(this->pTypeDef), pStr);
-        switch (this->vis) {
-            case NODEPROP_VIS_PUBLIC:
-                JsonOut_Append_StrA("vis", "PUBLIC", pStr);
-                break;
-            case NODEPROP_VIS_READ_ONLY:
-                JsonOut_Append_StrA("vis", "READ_ONLY", pStr);
-                break;
-        }
-
-#ifdef XYZZZY
+#ifdef XYZZZY 
         JsonOut_Append_i32("x", this->x, pStr);
         JsonOut_Append_i64("t", this->t, pStr);
         JsonOut_Append_u32("o", this->o, pStr);
         JsonOut_Append_utf8("n", pEntry->pN, pStr);
         JsonOut_Append_Object("e", this->pE, pStr);
         JsonOut_Append_AStr("d", this->pAStr, pStr);
-        JsonOut_Append_StringA("d", this->pStrA, pStr);
-        JsonOut_Append_StringW32("d", this->pStrW32, pStr);
+        JsonOut_Append_StrA("d", this->pStrA, pStr);
+        JsonOut_Append_StrW32("d", this->pStrW32, pStr);
 #endif
 
         return ERESULT_SUCCESS;
@@ -356,7 +312,7 @@ extern "C" {
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

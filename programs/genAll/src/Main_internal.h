@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   ObjCb_internal.h
- *	Generated 02/21/2020 14:01:14
+ * File:   Main_internal.h
+ *	Generated 04/28/2020 23:01:38
  *
  * Notes:
  *  --	N/A
@@ -39,15 +39,15 @@
 
 
 
-#include        <ObjCb.h>
+#include        <Main.h>
+#include        <Appl_internal.h>
+//#include        <Gen.h>
 #include        <JsonIn.h>
-#include        <psxCond.h>
-#include        <psxLock.h>
-#include        <psxSem.h>
+#include        <TextOut.h>
 
 
-#ifndef OBJCB_INTERNAL_H
-#define	OBJCB_INTERNAL_H
+#ifndef MAIN_INTERNAL_H
+#define	MAIN_INTERNAL_H
 
 
 
@@ -65,40 +65,32 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct ObjCb_data_s	{
+struct Main_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    OBJ_DATA        super;
+    APPL_DATA       super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    PSXCOND_DATA    *pEmpty;
-    PSXCOND_DATA    *pFull;
-    PSXMUTEX_DATA   *pMutex;
-    uint32_t        cEntries;    // maximum number of elements
-    volatile
-    uint8_t         fStop;
-    uint8_t         rsvd8;
-    uint16_t        rsvd16;
-    volatile
-    uint32_t        start;      // index of oldest element
-    volatile
-    uint32_t        end;        // index at which to write new element
-    volatile
-    uint32_t        numWritten;
-    volatile
-    uint32_t        numRead;
-    OBJ_ID          *pEntries;
+    ASTR_DATA       *pStr;
+    //PATH_DATA       *pFilePath;     // JSON Input File Path
+    //GEN_DATA        *pGen;
+    ASTR_DATA       *pOut;
+    //PATH_DATA       *pOutputPath;
+    //NODECLASS_DATA  *pClass;
+    //DICT_DATA       *pDict;
+    uint16_t        fBackup;
+    uint16_t        unused16;
 
 };
 #pragma pack(pop)
 
     extern
-    struct ObjCb_class_data_s  ObjCb_ClassObj;
+    struct Main_class_data_s  Main_ClassObj;
 
     extern
     const
-    OBJCB_VTBL         ObjCb_Vtbl;
+    MAIN_VTBL        Main_Vtbl;
 
 
 
@@ -106,13 +98,13 @@ struct ObjCb_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  OBJCB_SINGLETON
-    OBJCB_DATA *     ObjCb_getSingleton (
+#ifdef  MAIN_SINGLETON
+    MAIN_DATA *     Main_getSingleton (
         void
     );
 
-    bool            ObjCb_setSingleton (
-     OBJCB_DATA       *pValue
+    bool            Main_setSingleton (
+     MAIN_DATA       *pValue
 );
 #endif
 
@@ -122,35 +114,90 @@ struct ObjCb_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  ObjCb_getSuperVtbl (
-        OBJCB_DATA     *this
+    OBJ_IUNKNOWN *  Main_getSuperVtbl (
+        MAIN_DATA     *this
     );
 
 
-    ERESULT         ObjCb_Assign (
-        OBJCB_DATA    *this,
-        OBJCB_DATA    *pOther
+    ERESULT         Main_Assign (
+        MAIN_DATA    *this,
+        MAIN_DATA    *pOther
     );
 
 
-    OBJCB_DATA *       ObjCb_Copy (
-        OBJCB_DATA     *this
+    PATH_DATA *     Main_CheckInputPath (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    );
+
+    PATH_DATA *     Main_CreateOutputPath (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr,
+        const
+        char            *pOsNameA
+    );
+
+    MAIN_DATA *    Main_Copy (
+        MAIN_DATA       *this
     );
 
 
-    void            ObjCb_Dealloc (
+    void          Main_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  OBJCB_JSON_SUPPORT
+    ERESULT         Main_ParseArgsDefault (
+        MAIN_DATA        *this
+    );
+
+    int             Main_ParseArgsLong (
+        MAIN_DATA       *this,
+        int             *pArgC,
+        const
+        char            ***pppArgV
+    );
+
+    int             Main_ParseArgsShort (
+        MAIN_DATA       *this,
+        int             *pArgC,
+        const
+        char            ***pppArgV
+    );
+
+/*!
+ Parse the given file into a JSON Node structure and
+ perform some cursory checks on the structure.
+ @param     this    object pointer
+ @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+ error code.
+ */
+ERESULT         Main_ParseInputFile (
+    MAIN_DATA       *this,
+    PATH_DATA       *pPath
+);
+
+/*!
+ Parse the given string into a JSON Node structure and
+ perform some cursory checks on the structure.
+ @param     this    object pointer
+ @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+ error code.
+ */
+ERESULT         Main_ParseInputStr (
+    MAIN_DATA       *this,
+    const
+    char            *pStr
+);
+
+#ifdef  MAIN_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    OBJCB_DATA *       ObjCb_ParseJsonObject (
+    MAIN_DATA *       Main_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -164,36 +211,47 @@ struct ObjCb_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ObjCb_ParseJsonFields (
+    ERESULT         Main_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        OBJCB_DATA     *pObject
+        MAIN_DATA       *pObject
     );
 #endif
 
 
-    void *          ObjCb_QueryInfo (
+    /*!
+     Process each command line argument, parsing the HJSON file and
+     generating the Makefile.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         Main_ProcessArg (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pStr
+    );
+
+    void *          Main_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  OBJCB_JSON_SUPPORT
+#ifdef  MAIN_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = ObjCb_ToJson(this);
+     ASTR_DATA      *pDesc = Main_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
-                ERESULT_* error code.
+                JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ObjCb_ToJson (
-        OBJCB_DATA      *this
+    ASTR_DATA *     Main_ToJson (
+        MAIN_DATA      *this
     );
 
 
@@ -206,19 +264,41 @@ struct ObjCb_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ObjCb_ToJsonFields (
-        OBJCB_DATA     *this,
+    ERESULT         Main_ToJsonFields (
+        MAIN_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
+
+
+    ERESULT         Main_UsageDesc (
+        MAIN_DATA       *this,
+        FILE            *pOutput,
+        PATH_DATA       *pProgramPath
+    );
+
+
+    ERESULT         Main_UsageProgLine (
+        MAIN_DATA       *this,
+        FILE            *pOutput,
+        PATH_DATA       *pProgramPath,
+        const
+        char            *pNameA
+    );
+
+
+    ERESULT         Main_UsageOptions (
+        MAIN_DATA       *this,
+        FILE            *pOutput
+    );
 
 
 
 
 #ifdef NDEBUG
 #else
-    bool			ObjCb_Validate (
-        OBJCB_DATA       *this
+    bool			Main_Validate (
+        MAIN_DATA       *this
     );
 #endif
 
@@ -228,5 +308,5 @@ struct ObjCb_data_s	{
 }
 #endif
 
-#endif	/* OBJCB_INTERNAL_H */
+#endif	/* MAIN_INTERNAL_H */
 

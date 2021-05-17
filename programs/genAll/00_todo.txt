@@ -1,0 +1,8 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+
+which compiles all libs and programs within them. Use a 666_avoid.txt file to skip.  We need this so that all programs and libs are kept up-to-date with latest changes.
+
+*   Need Main_GatherPaths() which looks for mkLib.py or mkPgm.py and adds the path to an array.
+
+*   Execute mkLib.py or mkPgm.py from their local directory, then do install if requested.
+

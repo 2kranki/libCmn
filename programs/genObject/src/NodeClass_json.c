@@ -95,11 +95,11 @@ extern "C" {
         //uint8_t         *pData;
         //uint32_t        len;
 
-        (void)JsonIn_FindStringNodeInHashA(pParser, "name", &pObject->pName);
+        (void)JsonIn_FindStrNodeInHashA(pParser, "name", &pObject->pName);
         obj_Retain(pObject->pName);
-        (void)JsonIn_FindStringNodeInHashA(pParser, "desc", &pObject->pDesc);
+        (void)JsonIn_FindStrNodeInHashA(pParser, "desc", &pObject->pDesc);
         obj_Retain(pObject->pDesc);
-        (void)JsonIn_FindStringNodeInHashA(pParser, "super", &pObject->pSuper);
+        (void)JsonIn_FindStrNodeInHashA(pParser, "super", &pObject->pSuper);
         obj_Retain(pObject->pSuper);
         eRc = JsonIn_FindTrueNodeInHashA(pParser, "immutable");
         if (ERESULT_OK(eRc))
@@ -140,7 +140,7 @@ extern "C" {
 
         pInfo = obj_getInfo(NodeClass_Class());
         
-        eRc = JsonIn_ConfirmObjectType(pParser, pInfo->pClassName);
+        eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;

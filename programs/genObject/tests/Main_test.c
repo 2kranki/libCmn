@@ -26,6 +26,7 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <Main_internal.h>
+#include    <Gen_internal.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
 
@@ -244,6 +245,10 @@ int             test_Main_ParseArg01 (
     const
     char            *pTestFileA =
                     "~/git/libCmn/programs/genObject/tests/files/object01.json.txt";
+    const
+    char            *pTestDirA =
+                    "~/git/libCmn/programs/genObject/tests/files/x/";
+    GEN_DATA        *pGen = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -256,42 +261,12 @@ int             test_Main_ParseArg01 (
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
 
-        pPath = Path_NewA("/Users/bob/Support/x/src/Test01.h");
-        if (pPath) {
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        pPath = Path_NewA("/Users/bob/Support/x/src/Test01.c");
-        if (pPath) {
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_internal.h");
-        if (pPath) {
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_json.c");
-        if (pPath) {
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_object.c");
-        if (pPath) {
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        pPath = Path_NewA("/Users/bob/Support/x/tests/Test01_test.c");
-        if (pPath) {
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
+        // Override default file locations.
+        pGen = Main_getGen(pObj);
+        Gen_setModelDrvDirA(pGen, "~/git/libCmn/programs/genObject/models/");
+        Gen_setOutputDrvDirA(pGen, pTestDirA);
+        //Gen_SetDefaults(pGen);
+        //Gen_DeleteObjectFiles(pGen);
 
         pStr = AStr_NewA(pTestFileA);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
@@ -300,55 +275,6 @@ int             test_Main_ParseArg01 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
-        pPath = Path_NewA("/Users/bob/Support/x/src/Test01.h");
-        if (pPath) {
-            eRc = Path_IsFile(pPath);
-            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        pPath = Path_NewA("/Users/bob/Support/x/src/Test01.c");
-        if (pPath) {
-            eRc = Path_IsFile(pPath);
-            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_internal.h");
-        if (pPath) {
-            eRc = Path_IsFile(pPath);
-            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_json.c");
-        if (pPath) {
-            eRc = Path_IsFile(pPath);
-            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        pPath = Path_NewA("/Users/bob/Support/x/src/Test01_object.c");
-        if (pPath) {
-            eRc = Path_IsFile(pPath);
-            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        pPath = Path_NewA("/Users/bob/Support/x/tests/Test01_test.c");
-        if (pPath) {
-            eRc = Path_IsFile(pPath);
-            TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-            eRc = Path_Delete(pPath);
-            obj_Release(pPath);
-            pPath = OBJ_NIL;
-        }
-        
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -402,7 +328,7 @@ int             test_Main_TestHelp01 (
 
 
 TINYTEST_START_SUITE(test_Main);
-    //TINYTEST_ADD_TEST(test_Main_TestHelp01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Main_TestHelp01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_ParseArg01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Main_Test01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_Main_Copy01,setUp,tearDown);
