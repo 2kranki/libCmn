@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   PsxExec_internal.h
- *  Generated 05/13/21 21:59:46
+ * File:   psxExec_internal.h
+ *  Generated 05/28/2021 13:56:42
  *
  * Notes:
  *  --  N/A
@@ -39,7 +39,7 @@
 
 
 
-#include        <PsxExec.h>
+#include        <psxExec.h>
 #include        <JsonIn.h>
 
 
@@ -62,7 +62,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct PsxExec_data_s  {
+struct psxExec_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -77,11 +77,11 @@ struct PsxExec_data_s  {
 #pragma pack(pop)
 
     extern
-    struct PsxExec_class_data_s  PsxExec_ClassObj;
+    struct psxExec_class_data_s  psxExec_ClassObj;
 
     extern
     const
-    PSXEXEC_VTBL         PsxExec_Vtbl;
+    PSXEXEC_VTBL         psxExec_Vtbl;
 
 
 
@@ -90,11 +90,11 @@ struct PsxExec_data_s  {
     //---------------------------------------------------------------
 
 #ifdef  PSXEXEC_SINGLETON
-    PSXEXEC_DATA *     PsxExec_getSingleton (
+    PSXEXEC_DATA *     psxExec_getSingleton (
         void
     );
 
-    bool            PsxExec_setSingleton (
+    bool            psxExec_setSingleton (
      PSXEXEC_DATA       *pValue
 );
 #endif
@@ -105,23 +105,23 @@ struct PsxExec_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  PsxExec_getSuperVtbl (
+    OBJ_IUNKNOWN *  psxExec_getSuperVtbl (
         PSXEXEC_DATA     *this
     );
 
 
-    ERESULT         PsxExec_Assign (
+    ERESULT         psxExec_Assign (
         PSXEXEC_DATA    *this,
         PSXEXEC_DATA    *pOther
     );
 
 
-    PSXEXEC_DATA *       PsxExec_Copy (
+    PSXEXEC_DATA *       psxExec_Copy (
         PSXEXEC_DATA     *this
     );
 
 
-    void            PsxExec_Dealloc (
+    void            psxExec_Dealloc (
         OBJ_ID          objId
     );
 
@@ -133,7 +133,7 @@ struct PsxExec_data_s  {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    PSXEXEC_DATA *       PsxExec_ParseJsonObject (
+    PSXEXEC_DATA *       psxExec_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -147,14 +147,14 @@ struct PsxExec_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         PsxExec_ParseJsonFields (
+    ERESULT         psxExec_ParseJsonFields (
         JSONIN_DATA     *pParser,
         PSXEXEC_DATA     *pObject
     );
 #endif
 
 
-    void *          PsxExec_QueryInfo (
+    void *          psxExec_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -167,14 +167,14 @@ struct PsxExec_data_s  {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = PsxExec_ToJson(this);
+     ASTR_DATA      *pDesc = psxExec_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     PsxExec_ToJson (
+    ASTR_DATA *     psxExec_ToJson (
         PSXEXEC_DATA      *this
     );
 
@@ -188,7 +188,7 @@ struct PsxExec_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         PsxExec_ToJsonFields (
+    ERESULT         psxExec_ToJsonFields (
         PSXEXEC_DATA     *this,
         ASTR_DATA       *pStr
     );
@@ -199,7 +199,7 @@ struct PsxExec_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            PsxExec_Validate (
+    bool            psxExec_Validate (
         PSXEXEC_DATA       *this
     );
 #endif

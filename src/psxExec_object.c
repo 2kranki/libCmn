@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//  Class Object Metods and Tables for 'PsxExec'
-//  Generated 05/13/21 21:59:46
+//  Class Object Metods and Tables for 'psxExec'
+//  Generated 05/28/2021 13:56:42
 
 
 /*
@@ -35,7 +35,7 @@
 
 
 #define         PSXEXEC_OBJECT_C       1
-#include        <PsxExec_internal.h>
+#include        <psxExec_internal.h>
 #ifdef  PSXEXEC_SINGLETON
 #include        <psxLock.h>
 #endif
@@ -46,7 +46,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct PsxExec_class_data_s    {
+struct psxExec_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -69,7 +69,7 @@ struct PsxExec_class_data_s    {
 
 
 static
-void *          PsxExecClass_QueryInfo (
+void *          psxExecClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,13 +78,13 @@ void *          PsxExecClass_QueryInfo (
 
 static
 const
-OBJ_INFO        PsxExec_Info;            // Forward Reference
+OBJ_INFO        psxExec_Info;            // Forward Reference
 
 
 
 
 static
-bool            PsxExecClass_IsKindOf (
+bool            psxExecClass_IsKindOf (
     uint16_t        classID
 )
 {
@@ -97,7 +97,7 @@ bool            PsxExecClass_IsKindOf (
        return true;
     }
     
-    pObj = obj_getInfo(PsxExec_Class())->pClassSuperObject;
+    pObj = obj_getInfo(psxExec_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,7 +109,7 @@ bool            PsxExecClass_IsKindOf (
 
 
 static
-uint16_t        PsxExecClass_WhoAmI (
+uint16_t        psxExecClass_WhoAmI (
     void
 )
 {
@@ -127,15 +127,15 @@ static
 const
 PSXEXEC_CLASS_VTBL    class_Vtbl = {
     {
-        &PsxExec_Info,
-        PsxExecClass_IsKindOf,
+        &psxExec_Info,
+        psxExecClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        PsxExec_Class,
-        PsxExecClass_WhoAmI,
-        (P_OBJ_QUERYINFO)PsxExecClass_QueryInfo,
-        NULL                        // PsxExecClass_ToDebugString
+        psxExec_Class,
+        psxExecClass_WhoAmI,
+        (P_OBJ_QUERYINFO)psxExecClass_QueryInfo,
+        NULL                        // psxExecClass_ToDebugString
     },
 };
 
@@ -145,7 +145,7 @@ PSXEXEC_CLASS_VTBL    class_Vtbl = {
 //                      Class Object
 //-----------------------------------------------------------
 
-PSXEXEC_CLASS_DATA  PsxExec_ClassObj = {
+PSXEXEC_CLASS_DATA  psxExec_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
         sizeof(PSXEXEC_CLASS_DATA),                  // cbSize
@@ -165,18 +165,18 @@ PSXEXEC_CLASS_DATA  PsxExec_ClassObj = {
 #ifdef  PSXEXEC_SINGLETON
 extern
 const
-PSXEXEC_VTBL       PsxExec_VtblShared;
+PSXEXEC_VTBL       psxExec_VtblShared;
 
 
-PSXEXEC_DATA *     PsxExec_getSingleton (
+PSXEXEC_DATA *     psxExec_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(PsxExec_ClassObj.pSingleton);
+    return (OBJ_ID)(psxExec_ClassObj.pSingleton);
 }
 
 
-bool            PsxExec_setSingleton (
+bool            psxExec_setSingleton (
     PSXEXEC_DATA       *pValue
 )
 {
@@ -197,10 +197,10 @@ bool            PsxExec_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (PsxExec_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(PsxExec_ClassObj.pSingleton));
+    if (psxExec_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(psxExec_ClassObj.pSingleton));
     }
-    PsxExec_ClassObj.pSingleton = pValue;
+    psxExec_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -210,18 +210,18 @@ bool            PsxExec_setSingleton (
 
 
 
-PSXEXEC_DATA *     PsxExec_Shared (
+PSXEXEC_DATA *     psxExec_Shared (
     void
 )
 {
-    PSXEXEC_DATA       *this = (OBJ_ID)(PsxExec_ClassObj.pSingleton);
+    PSXEXEC_DATA       *this = (OBJ_ID)(psxExec_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = PsxExec_New( );
-        obj_setVtbl(this, (void *)&PsxExec_VtblShared);
-        PsxExec_setSingleton(this);
+        this = psxExec_New( );
+        obj_setVtbl(this, (void *)&psxExec_VtblShared);
+        psxExec_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // PsxExec_ClassObj.pSingleton = OBJ_NIL;
+        // psxExec_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -229,16 +229,16 @@ PSXEXEC_DATA *     PsxExec_Shared (
 
 
 
-void            PsxExec_SharedReset (
+void            psxExec_SharedReset (
     void
 )
 {
-    PSXEXEC_DATA       *this = (OBJ_ID)(PsxExec_ClassObj.pSingleton);
+    PSXEXEC_DATA       *this = (OBJ_ID)(psxExec_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&PsxExec_Vtbl);
+        obj_setVtbl(this, (void *)&psxExec_Vtbl);
         obj_Release(this);
-        PsxExec_ClassObj.pSingleton = OBJ_NIL;
+        psxExec_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -254,7 +254,7 @@ void            PsxExec_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          PsxExecClass_QueryInfo (
+void *          psxExecClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -284,13 +284,13 @@ void *          PsxExecClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&PsxExec_Info;
+                        return (void *)&psxExec_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&PsxExec_Info.pClassSuperObject;
+                        return (void *)&psxExec_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -308,17 +308,17 @@ void *          PsxExecClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return PsxExec_New;
+                        return psxExec_New;
                     }
                     break;
                     
                 case 'P':
 #ifdef  PSXEXEC_JSON_SUPPORT
                     if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                        return PsxExec_ParseJsonFields;
+                        return psxExec_ParseJsonFields;
                     }
                     if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return PsxExec_ParseJsonObject;
+                        return psxExec_ParseJsonObject;
                     }
 #endif
                     break;
@@ -326,17 +326,17 @@ void *          PsxExecClass_QueryInfo (
                 case 'T':
 #ifdef  PSXEXEC_JSON_SUPPORT
                     if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                        return PsxExec_ToJsonFields;
+                        return psxExec_ToJsonFields;
                     }
                     if (str_Compare("ToJson", (char *)pStr) == 0) {
-                        return PsxExec_ToJson;
+                        return psxExec_ToJson;
                     }
 #endif
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return PsxExecClass_WhoAmI;
+                        return psxExecClass_WhoAmI;
                     }
                     break;
                     
@@ -356,7 +356,7 @@ void *          PsxExecClass_QueryInfo (
 
 
 static
-bool            PsxExec_IsKindOf (
+bool            psxExec_IsKindOf (
     uint16_t        classID
 )
 {
@@ -371,7 +371,7 @@ bool            PsxExec_IsKindOf (
        return true;
     }
 
-    pObj = obj_getInfo(PsxExec_Class())->pClassSuperObject;
+    pObj = obj_getInfo(psxExec_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -385,21 +385,21 @@ bool            PsxExec_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            PsxExec_Dealloc (
+void            psxExec_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          PsxExec_Class (
+OBJ_ID          psxExec_Class (
     void
 )
 {
-    return (OBJ_ID)&PsxExec_ClassObj;
+    return (OBJ_ID)&psxExec_ClassObj;
 }
 
 
 static
-uint16_t        PsxExec_WhoAmI (
+uint16_t        psxExec_WhoAmI (
     void
 )
 {
@@ -420,29 +420,29 @@ uint16_t        PsxExec_WhoAmI (
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-PSXEXEC_VTBL     PsxExec_VtblShared = {
+PSXEXEC_VTBL     psxExec_VtblShared = {
     {
-        &PsxExec_Info,
-        PsxExec_IsKindOf,
+        &psxExec_Info,
+        psxExec_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        PsxExec_Dealloc,
-        PsxExec_Class,
-        PsxExec_WhoAmI,
-        (P_OBJ_QUERYINFO)PsxExec_QueryInfo,
-        (P_OBJ_TOSTRING)PsxExec_ToDebugString,
-        NULL,           // PsxExec_Enable,
-        NULL,           // PsxExec_Disable,
-        NULL,           // (P_OBJ_ASSIGN)PsxExec_Assign,
-        NULL,           // (P_OBJ_COMPARE)PsxExec_Compare,
-        NULL,           // (P_OBJ_PTR)PsxExec_Copy,
-        NULL,           // (P_OBJ_PTR)PsxExec_DeepCopy,
-        NULL            // (P_OBJ_HASH)PsxExec_Hash,
+        psxExec_Dealloc,
+        psxExec_Class,
+        psxExec_WhoAmI,
+        (P_OBJ_QUERYINFO)psxExec_QueryInfo,
+        (P_OBJ_TOSTRING)psxExec_ToDebugString,
+        NULL,           // psxExec_Enable,
+        NULL,           // psxExec_Disable,
+        NULL,           // (P_OBJ_ASSIGN)psxExec_Assign,
+        NULL,           // (P_OBJ_COMPARE)psxExec_Compare,
+        NULL,           // (P_OBJ_PTR)psxExec_Copy,
+        NULL,           // (P_OBJ_PTR)psxExec_DeepCopy,
+        NULL            // (P_OBJ_HASH)psxExec_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //PsxExec_IsEnabled,
+    //psxExec_IsEnabled,
  
 };
 #endif
@@ -454,29 +454,29 @@ PSXEXEC_VTBL     PsxExec_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-PSXEXEC_VTBL     PsxExec_Vtbl = {
+PSXEXEC_VTBL     psxExec_Vtbl = {
     {
-        &PsxExec_Info,
-        PsxExec_IsKindOf,
+        &psxExec_Info,
+        psxExec_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        PsxExec_Dealloc,
-        PsxExec_Class,
-        PsxExec_WhoAmI,
-        (P_OBJ_QUERYINFO)PsxExec_QueryInfo,
-        (P_OBJ_TOSTRING)PsxExec_ToDebugString,
-        NULL,           // PsxExec_Enable,
-        NULL,           // PsxExec_Disable,
-        NULL,           // (P_OBJ_ASSIGN)PsxExec_Assign,
-        NULL,           // (P_OBJ_COMPARE)PsxExec_Compare,
-        NULL,           // (P_OBJ_PTR)PsxExec_Copy,
-        NULL,           // (P_OBJ_PTR)PsxExec_DeepCopy,
-        NULL            // (P_OBJ_HASH)PsxExec_Hash,
+        psxExec_Dealloc,
+        psxExec_Class,
+        psxExec_WhoAmI,
+        (P_OBJ_QUERYINFO)psxExec_QueryInfo,
+        (P_OBJ_TOSTRING)psxExec_ToDebugString,
+        NULL,           // psxExec_Enable,
+        NULL,           // psxExec_Disable,
+        NULL,           // (P_OBJ_ASSIGN)psxExec_Assign,
+        NULL,           // (P_OBJ_COMPARE)psxExec_Compare,
+        NULL,           // (P_OBJ_PTR)psxExec_Copy,
+        NULL,           // (P_OBJ_PTR)psxExec_DeepCopy,
+        NULL            // (P_OBJ_HASH)psxExec_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //PsxExec_IsEnabled,
+    //psxExec_IsEnabled,
  
 };
 
@@ -484,12 +484,12 @@ PSXEXEC_VTBL     PsxExec_Vtbl = {
 
 static
 const
-OBJ_INFO        PsxExec_Info = {
-    "PsxExec",
-    "Execute Posix Shell Command",
-    (OBJ_DATA *)&PsxExec_ClassObj,
+OBJ_INFO        psxExec_Info = {
+    "psxExec",
+    "Execute Posix Shell Commands",
+    (OBJ_DATA *)&psxExec_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&PsxExec_Vtbl,
+    (OBJ_IUNKNOWN *)&psxExec_Vtbl,
     sizeof(PSXEXEC_DATA)
 };
 

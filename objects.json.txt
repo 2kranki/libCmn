@@ -156,11 +156,11 @@
             various O/S's to simulate the Posix functionality.
          */
         {name:"psxCond"},
-        {name:"PsxExec", desc:"Execute Batch Tasks"},
+        {name:"psxExec",    desc:"Execute Posix Shell Commands"},
         {name:"psxLock"},
         {name:"psxMutex"},
         {name:"psxSem"},
-        {name:"psxThread", deps:["psxMutex.h","psxSem.h"]},
+        {name:"psxThread",  deps:["psxMutex.h","psxSem.h"]},
 
         {name:"ptrArray",   desc:"An Array of pointers"},
         {name:"RpgBase",    desc:"Report Program Generator (RPG) Base", json:true},

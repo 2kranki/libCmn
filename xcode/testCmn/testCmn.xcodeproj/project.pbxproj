@@ -228,7 +228,9 @@
 		C47D7BE9265A13E200E2A280 /* RpgLvl.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7BE4265A13E100E2A280 /* RpgLvl.c */; };
 		C47D7BEA265A13E200E2A280 /* RpgLvl_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7BE5265A13E200E2A280 /* RpgLvl_json.c */; };
 		C47D7BEB265A13E200E2A280 /* RpgLvl_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7BE6265A13E200E2A280 /* RpgLvl_object.c */; };
-		C47D7C13266125C500E2A280 /* Dir_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C12266125C500E2A280 /* Dir_test.c */; };
+		C47D7C15266166DD00E2A280 /* psxExec_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C14266166DD00E2A280 /* psxExec_test.c */; };
+		C47D7C1A2661671200E2A280 /* psxExec_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C162661671200E2A280 /* psxExec_object.c */; };
+		C47D7C1B2661671200E2A280 /* psxExec.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C172661671200E2A280 /* psxExec.c */; };
 		C47DD28A238D887600EA9388 /* SrcLoc_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C47DD285238D887500EA9388 /* SrcLoc_json.c */; };
 		C47DD28B238D887600EA9388 /* SrcLoc_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47DD286238D887500EA9388 /* SrcLoc_object.c */; };
 		C47DD28C238D887600EA9388 /* SrcLoc.c in Sources */ = {isa = PBXBuildFile; fileRef = C47DD289238D887600EA9388 /* SrcLoc.c */; };
@@ -860,7 +862,11 @@
 		C47D7BE6265A13E200E2A280 /* RpgLvl_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = RpgLvl_object.c; sourceTree = "<group>"; };
 		C47D7BE7265A13E200E2A280 /* RpgLvl_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RpgLvl_internal.h; sourceTree = "<group>"; };
 		C47D7BE8265A13E200E2A280 /* RpgLvl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RpgLvl.h; sourceTree = "<group>"; };
-		C47D7C12266125C500E2A280 /* Dir_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Dir_test.c; sourceTree = "<group>"; };
+		C47D7C14266166DD00E2A280 /* psxExec_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec_test.c; sourceTree = "<group>"; };
+		C47D7C162661671200E2A280 /* psxExec_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec_object.c; sourceTree = "<group>"; };
+		C47D7C172661671200E2A280 /* psxExec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec.c; sourceTree = "<group>"; };
+		C47D7C182661671200E2A280 /* psxExec_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxExec_internal.h; sourceTree = "<group>"; };
+		C47D7C192661671200E2A280 /* psxExec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxExec.h; sourceTree = "<group>"; };
 		C47DD285238D887500EA9388 /* SrcLoc_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcLoc_json.c; sourceTree = "<group>"; };
 		C47DD286238D887500EA9388 /* SrcLoc_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcLoc_object.c; sourceTree = "<group>"; };
 		C47DD287238D887500EA9388 /* SrcLoc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SrcLoc.h; sourceTree = "<group>"; };
@@ -1239,7 +1245,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C47D7C12266125C500E2A280 /* Dir_test.c */,
+				C47D7C14266166DD00E2A280 /* psxExec_test.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -1736,6 +1742,10 @@
 				C4359B171FC9C42300CA858E /* psxCond_object.c */,
 				C4359B321FC9C42600CA858E /* psxCond.c */,
 				C4359B3F1FC9C42700CA858E /* psxCond.h */,
+				C47D7C182661671200E2A280 /* psxExec_internal.h */,
+				C47D7C162661671200E2A280 /* psxExec_object.c */,
+				C47D7C172661671200E2A280 /* psxExec.c */,
+				C47D7C192661671200E2A280 /* psxExec.h */,
 				C4359B2A1FC9C42500CA858E /* psxLock_internal.h */,
 				C4359B431FC9C42700CA858E /* psxLock_object.c */,
 				C4359B2F1FC9C42500CA858E /* psxLock.c */,
@@ -2227,6 +2237,7 @@
 				C4359C031FC9C48400CA858E /* scandec32.c in Sources */,
 				C403339925991F6C007E0277 /* Sect_object.c in Sources */,
 				C4359A611FC9C38800CA858E /* enum.c in Sources */,
+				C47D7C1B2661671200E2A280 /* psxExec.c in Sources */,
 				C4359BD61FC9C48400CA858E /* trace_object.c in Sources */,
 				C4359B121FC9C3D800CA858E /* objMatrix_object.c in Sources */,
 				C4B0464C23E4A73700162B4F /* Appl.c in Sources */,
@@ -2289,6 +2300,7 @@
 				C479BFEA23AC81060057A017 /* TRegex.c in Sources */,
 				C403339625991F6C007E0277 /* Sect_json.c in Sources */,
 				C4EBE27523C2BE6E008E9EE8 /* rrds_io.c in Sources */,
+				C47D7C1A2661671200E2A280 /* psxExec_object.c in Sources */,
 				C45A9F902300827500785895 /* AStrCReader_object.c in Sources */,
 				C47D7BE9265A13E200E2A280 /* RpgLvl.c in Sources */,
 				C4753277247998EB001DEF19 /* Number.c in Sources */,
@@ -2363,7 +2375,6 @@
 				C4B045B123D7F39100162B4F /* TextIn_object.c in Sources */,
 				C456B61A2454F14C00EB541A /* SqlCol.c in Sources */,
 				C4AA73AB1FE2B740001FACEC /* hjson.c in Sources */,
-				C47D7C13266125C500E2A280 /* Dir_test.c in Sources */,
 				C40F056A2482E55A00D66F9B /* Lex00.c in Sources */,
 				C44BF49D21E1BCD500175791 /* rrds_object.c in Sources */,
 				C47DD28A238D887600EA9388 /* SrcLoc_json.c in Sources */,
@@ -2432,6 +2443,7 @@
 				C435855423B7CE810069B103 /* SrcError_json.c in Sources */,
 				C4EC06362535FE7A00C0F25A /* Uri.c in Sources */,
 				C4359A3E1FC9C38800CA858E /* dec_object.c in Sources */,
+				C47D7C15266166DD00E2A280 /* psxExec_test.c in Sources */,
 				C40F055E2482E55A00D66F9B /* Lex06_object.c in Sources */,
 				C47DD28C238D887600EA9388 /* SrcLoc.c in Sources */,
 				C4B045D723DD340900162B4F /* JsonOut.c in Sources */,

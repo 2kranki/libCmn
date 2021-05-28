@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//     Execute Posix Shell Command (PsxExec) Header
+//                  Execute Posix Shell Commands (psxExec) Header
 //****************************************************************
 /*
  * Program
- *          Execute Posix Shell Command (PsxExec)
+ *          Execute Posix Shell Commands (psxExec)
  * Purpose
  *          This object provides a standardized way of executing
  *          separate Posix tasks (ie scipts, programs, etc.)
@@ -16,6 +16,7 @@
  * History
  *  06/14/2018 Generated
  *  05/13/2020 Regenerated
+ *  05/28/2021 Regenerated
  */
 
 
@@ -76,22 +77,22 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct PsxExec_data_s  PSXEXEC_DATA;            // Inherits from OBJ
-    typedef struct PsxExec_class_data_s PSXEXEC_CLASS_DATA;   // Inherits from OBJ
+    typedef struct psxExec_data_s  PSXEXEC_DATA;            // Inherits from OBJ
+    typedef struct psxExec_class_data_s PSXEXEC_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct PsxExec_vtbl_s  {
+    typedef struct psxExec_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in PsxExec_object.c.
+        // method names to the vtbl definition in psxExec_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(PSXEXEC_DATA *);
     } PSXEXEC_VTBL;
 
-    typedef struct PsxExec_class_vtbl_s    {
+    typedef struct psxExec_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in PsxExec_object.c.
+        // method names to the vtbl definition in psxExec_object.c.
         // Properties:
         // Methods:
         //bool        (*pIsEnabled)(PSXEXEC_DATA *);
@@ -110,11 +111,11 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  PSXEXEC_SINGLETON
-    PSXEXEC_DATA *  PsxExec_Shared (
+    PSXEXEC_DATA *  psxExec_Shared (
         void
     );
 
-    void            PsxExec_SharedReset (
+    void            psxExec_SharedReset (
         void
     );
 #endif
@@ -124,29 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to PsxExec object if successful, otherwise OBJ_NIL.
+     @return    pointer to psxExec object if successful, otherwise OBJ_NIL.
      */
-    PSXEXEC_DATA *  PsxExec_Alloc (
+    PSXEXEC_DATA *  psxExec_Alloc (
         void
     );
     
     
-    OBJ_ID          PsxExec_Class (
+    OBJ_ID          psxExec_Class (
         void
     );
     
     
-    PSXEXEC_DATA *  PsxExec_New (
+    PSXEXEC_DATA *  psxExec_New (
         void
     );
     
     
 #ifdef  PSXEXEC_JSON_SUPPORT
-    PSXEXEC_DATA *  PsxExec_NewFromJsonString (
+    PSXEXEC_DATA *  psxExec_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    PSXEXEC_DATA *  PsxExec_NewFromJsonStringA (
+    PSXEXEC_DATA *  psxExec_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -158,7 +159,7 @@ extern "C" {
      @param     pCommand    command to be executed
      @return    If successful, the comand's return code.
      */
-    int             PsxExec_System(
+    int             psxExec_System(
         ASTR_DATA       *pCommand
     );
 
@@ -173,7 +174,7 @@ extern "C" {
                 Otherwise EOF and ppOutput set to OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    int             PsxExec_SystemWithOutput(
+    int             psxExec_SystemWithOutput(
         ASTR_DATA       *pCommand,
         ASTR_DATA       **ppOutput
     );
@@ -191,7 +192,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    PSXEXEC_DATA *  PsxExec_Init (
+    PSXEXEC_DATA *  psxExec_Init (
         PSXEXEC_DATA    *this
     );
 
@@ -202,15 +203,15 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = PsxExec_ToJson(this);
+     ASTR_DATA      *pDesc = psxExec_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     PsxExec_ToJson (
-        PSXEXEC_DATA   *this
+    ASTR_DATA *     psxExec_ToJson (
+        PSXEXEC_DATA    *this
     );
 #endif
 
@@ -219,7 +220,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = PsxExec_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = psxExec_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -227,7 +228,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     PsxExec_ToDebugString (
+    ASTR_DATA *     psxExec_ToDebugString (
         PSXEXEC_DATA    *this,
         int             indent
     );

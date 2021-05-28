@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *  Generated 05/13/21 21:59:46
+ *  Generated 05/28/2021 13:56:42
  */
 
 
@@ -23,9 +23,10 @@
 
 
 #include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
 #include    <trace.h>
-#include    <PsxExec_internal.h>
+#include    <psxExec_internal.h>
+#include    <JsonIn.h>
 #ifdef  PSXEXEC_JSON_SUPPORT
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
@@ -59,6 +60,7 @@ int             tearDown (
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(
@@ -82,7 +84,7 @@ int             tearDown (
 
 
 
-int             test_PsxExec_OpenClose (
+int             test_psxExec_OpenClose (
     const
     char            *pTestName
 )
@@ -93,9 +95,9 @@ int             test_PsxExec_OpenClose (
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = PsxExec_Alloc( );
+    pObj = psxExec_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = PsxExec_Init( pObj );
+    pObj = psxExec_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -116,7 +118,7 @@ int             test_PsxExec_OpenClose (
 
 
 
-int             test_PsxExec_Copy01 (
+int             test_psxExec_Copy01 (
     const
     char            *pTestName
 )
@@ -128,10 +130,11 @@ int             test_PsxExec_Copy01 (
 #if defined(PSXEXEC_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
 #endif
+    //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = PsxExec_New( );
+    pObj1 = psxExec_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
@@ -140,28 +143,28 @@ int             test_PsxExec_Copy01 (
         TINYTEST_TRUE( (fRc) );
         
         // Test assign.
-        pObj2 = PsxExec_New();
+        pObj2 = psxExec_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        eRc = PsxExec_Assign(pObj1, pObj2);
+        eRc = psxExec_Assign(pObj1, pObj2);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PSXEXEC);
         TINYTEST_TRUE( (fRc) );
-        //eRc = PsxExec_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
+        //iRc = psxExec_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (0 == iRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = PsxExec_Copy(pObj1);
+        pObj2 = psxExec_Copy(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PSXEXEC);
         TINYTEST_TRUE( (fRc) );
-        //eRc = PsxExec_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
+        //iRc = psxExec_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (0 == iRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -169,17 +172,17 @@ int             test_PsxExec_Copy01 (
 
         // Test json support.
 #if defined(PSXEXEC_JSON_SUPPORT) && defined(XYZZY)
-        pStr = PsxExec_ToJson(pObj1);
+        pStr = psxExec_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = PsxExec_NewFromJsonString(pStr);
+        pObj2 = psxExec_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PSXEXEC);
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = PsxExec_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
+        //iRc = psxExec_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -195,7 +198,7 @@ int             test_PsxExec_Copy01 (
 
 
 
-int             test_PsxExec_Test01 (
+int             test_psxExec_Test01 (
     const
     char            *pTestName
 )
@@ -206,7 +209,7 @@ int             test_PsxExec_Test01 (
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = PsxExec_New( );
+    pObj = psxExec_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -216,7 +219,7 @@ int             test_PsxExec_Test01 (
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         
         {
-            ASTR_DATA       *pStr = PsxExec_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = psxExec_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -234,7 +237,7 @@ int             test_PsxExec_Test01 (
 
 
 
-int             test_PsxExec_System01(
+int             test_psxExec_System01(
     const
     char            *pTestName
 )
@@ -249,7 +252,7 @@ int             test_PsxExec_System01(
 
     pCommand = AStr_NewA("echo \"just a test\"");
     TINYTEST_FALSE( (OBJ_NIL == pCommand) );
-    iRc = PsxExec_SystemWithOutput(pCommand, &pOutput);
+    iRc = psxExec_SystemWithOutput(pCommand, &pOutput);
     if (pOutput) {
         fprintf(stderr, "\tiRc=%d  output=\"%s\"\n\n", iRc, AStr_getData(pOutput));
     }
@@ -268,14 +271,14 @@ int             test_PsxExec_System01(
 
 
 
-TINYTEST_START_SUITE(test_PsxExec);
-    TINYTEST_ADD_TEST(test_PsxExec_System01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_PsxExec_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_PsxExec_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_PsxExec_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_psxExec);
+    TINYTEST_ADD_TEST(test_psxExec_System01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_psxExec_Test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_psxExec_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_psxExec_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_PsxExec);
+TINYTEST_MAIN_SINGLE_SUITE(test_psxExec);
 
 
 
