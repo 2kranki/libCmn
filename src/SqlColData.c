@@ -235,52 +235,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * SqlColData_getStr (
-        SQLCOLDATA_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!SqlColData_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        SqlColData_setStr (
-        SQLCOLDATA_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!SqlColData_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
@@ -564,7 +518,6 @@ extern "C" {
 #endif
 
         SqlColData_setCol(this, OBJ_NIL);
-        SqlColData_setStr(this, OBJ_NIL);
         SqlColData_setValue(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);

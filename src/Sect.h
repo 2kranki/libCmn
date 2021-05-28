@@ -9,7 +9,7 @@
  * Purpose
  *          This object provides support for a program section
  *          or segment. It contains all the fields necessary
- *          use in assemblers, compilers, dis-assemblers or
+ *          for use in assemblers, compilers, dis-assemblers or
  *          linkers.
  *
  * Remarks

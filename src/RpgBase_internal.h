@@ -41,6 +41,7 @@
 
 #include        <RpgBase.h>
 #include        <JsonIn.h>
+#include        <ObjArray.h>
 
 
 #ifndef RPGBASE_INTERNAL_H
@@ -73,10 +74,9 @@ struct RpgBase_data_s  {
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
     OBJ_ID          *pData;
-    RPGBASE_EXEC_INTERFACE
-                    *pExec;
     OBJ_ID          *pRcdCur;
     OBJ_ID          *pRcdNxt;
+    OBJARRAY_DATA   *pLevels;
 
     uint8_t         lvlbrk1;
     uint8_t         lvlbrk2;

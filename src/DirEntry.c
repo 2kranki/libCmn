@@ -1310,7 +1310,7 @@ extern "C" {
         }
 #endif
 
-        for( pNext=this; pNext->pNext; pNext=pNext->pNext)
+        for(pNext=this; pNext->pNext; pNext=pNext->pNext)
             ;
         
         if (DIRENTRY_TYPE_DIR == pNext->type) {

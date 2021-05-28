@@ -164,6 +164,7 @@
 
         {name:"ptrArray",   desc:"An Array of pointers"},
         {name:"RpgBase",    desc:"Report Program Generator (RPG) Base", json:true},
+        {name:"RpgLvl",     desc:"Report Program Generator (RPG) Level handler", json:true},
         {name:"rrds", deps:["listdl.h","Path.h"], 
                 desc:"File-based Relative Record Dataset (ie Indexed by record number, Fixed size records)"},
         {name:"Scanner", json:true, desc:"String Scanner"},

@@ -275,6 +275,48 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       E S I D
+    //---------------------------------------------------------------
+
+    uint32_t        Sect_getESID (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->esid;
+    }
+
+
+    bool            Sect_setESID (
+        SECT_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->esid = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      E x t e r n s
     //---------------------------------------------------------------
 
@@ -1268,12 +1310,13 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "\tident=%c type=%c addr=%08X offset=%08X len=%08X name=%s\n",
+                    "\tident=%c type=%c addr=%08X offset=%08X len=%08X esid=%d name=%s\n",
                     this->ident,
                     this->type,
                     this->addr,
                     this->offset,
                     this->len,
+                    this->esid,
                     this->pName ? AStr_getData(this->pName) : ""
             );
 

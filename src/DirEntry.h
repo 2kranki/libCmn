@@ -8,7 +8,7 @@
  *			Disk Directory Entry (DirEntry)
  * Purpose
  *          This object encapsulates Directory Entries from many
- *          different operating system for a common interface. Each
+ *          different operating systems for a common interface. Each
  *          DirEntry represents one file.  However, this entry is
  *          a link as supported by POSIX, then it contains a singly-
  *          linked list for the entire link chain.

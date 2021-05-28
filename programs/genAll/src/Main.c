@@ -256,6 +256,7 @@ extern "C" {
             (void *)Main_SetOutputLnk,
             "Output to libLnk"
         },
+#ifdef XYZZY
         {
             "mdldir",
             'm',
@@ -266,6 +267,7 @@ extern "C" {
             NULL,
             "Model Drive+Directory Path"
         },
+#endif
         {
             "obj",
             '\0',
@@ -276,6 +278,7 @@ extern "C" {
             (void *)Main_SetOutputObj,
             "Output to libObj"
         },
+#ifdef XYZZY
         {
             "outdir",
             'o',
@@ -286,6 +289,7 @@ extern "C" {
             NULL,
             "Output Drive+Directory Path"
         },
+#endif
         {
             "prs",
             '\0',
@@ -346,7 +350,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/lib360/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/lib360/");
 
         // Put code here...
 
@@ -365,7 +369,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/lib8085/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/lib8085/");
 
         // Put code here...
 
@@ -384,7 +388,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/lib8086/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/lib8086/");
 
         // Put code here...
 
@@ -403,7 +407,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libAsm/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libAsm/");
 
         // Put code here...
 
@@ -422,7 +426,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libCmn/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libCmn/");
 
         // Put code here...
 
@@ -441,7 +445,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libDisk/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libDisk/");
 
         // Put code here...
 
@@ -460,7 +464,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libEmu/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libEmu/");
 
         // Put code here...
 
@@ -479,7 +483,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libGraph/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libGraph/");
 
         // Put code here...
 
@@ -498,7 +502,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libLL1/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libLL1/");
 
         // Put code here...
 
@@ -517,7 +521,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libLnk/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libLnk/");
 
         // Put code here...
 
@@ -536,7 +540,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libObj/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libObj/");
 
         // Put code here...
 
@@ -555,7 +559,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libPrs/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libPrs/");
 
         // Put code here...
 
@@ -574,7 +578,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libTbl/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libTbl/");
 
         // Put code here...
 
@@ -593,7 +597,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libTrade/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libTrade/");
 
         // Put code here...
 
@@ -612,7 +616,7 @@ extern "C" {
 
         // Do initialization.
 
-        Gen_setOutputDrvDir(this->pGen, "~/git/libVid/");
+        //Gen_setOutputDrvDir(this->pGen, "~/git/libVid/");
 
         // Put code here...
 
@@ -673,52 +677,6 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                    N o d e  C l a s s
-    //---------------------------------------------------------------
-
-    NODECLASS_DATA * Main_getClass (
-        MAIN_DATA       *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !Main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pClass;
-    }
-
-
-    bool            Main_setClass (
-        MAIN_DATA       *this,
-        NODECLASS_DATA  *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pClass) {
-            obj_Release(this->pClass);
-        }
-        this->pClass = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                            D i c t
     //---------------------------------------------------------------
 
@@ -758,52 +716,6 @@ extern "C" {
             obj_Release(this->pDict);
         }
         this->pDict = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                      G e n e r a t e
-    //---------------------------------------------------------------
-
-    GEN_DATA *      Main_getGen (
-        MAIN_DATA       *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !Main_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pGen;
-    }
-
-
-    bool            Main_setGen (
-        MAIN_DATA       *this,
-        GEN_DATA        *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Main_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pGen) {
-            obj_Release(this->pGen);
-        }
-        this->pGen = pValue;
 
         return true;
     }
@@ -1166,8 +1078,6 @@ extern "C" {
 #endif
 
         Main_setDict(this, OBJ_NIL);
-        Main_setGen(this, OBJ_NIL);
-        Main_setGen(this, OBJ_NIL);
         Main_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -1401,14 +1311,6 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this->pGen = Gen_New( );
-        if (OBJ_NIL == this->pGen) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        Gen_setDict(this->pGen, this->pDict);
-
         Appl_setUsage(
                           (APPL_DATA *)this,
                           this,
@@ -1540,7 +1442,6 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         PATH_DATA       *pPath = OBJ_NIL;
         ASTR_DATA       *pInput;
-        NODECLASS_DATA  *pClass;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1571,6 +1472,7 @@ extern "C" {
                     "FATAL - Failed to read data from &s\n",
                     Path_getData(pPath)
         );
+#ifdef XYZZY
         pClass = NodeClass_NewFromJsonString(pInput);
         Appl_ErrorFatalOnBool(
                     (OBJ_NIL == pClass),
@@ -1600,13 +1502,12 @@ extern "C" {
                     "FATAL - Failed to create expansion entries from &s\n",
                     Path_getData(pPath)
         );
+#endif
         if (!Appl_getQuiet((APPL_DATA *)this)) {
             fprintf(stderr, "\t\tCreated object from %s.\n", Path_getData(pPath));
         }
 
         // Return to caller.
-        obj_Release(pClass);
-        pClass = OBJ_NIL;
         obj_Release(pInput);
         pInput = OBJ_NIL;
         obj_Release(pPath);

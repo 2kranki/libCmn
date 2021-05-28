@@ -41,7 +41,6 @@
 
 #include        <Main.h>
 #include        <Appl_internal.h>
-//#include        <Gen.h>
 #include        <JsonIn.h>
 #include        <TextOut.h>
 
@@ -74,11 +73,10 @@ struct Main_data_s	{
     // Common Data
     ASTR_DATA       *pStr;
     //PATH_DATA       *pFilePath;     // JSON Input File Path
-    //GEN_DATA        *pGen;
     ASTR_DATA       *pOut;
     //PATH_DATA       *pOutputPath;
     //NODECLASS_DATA  *pClass;
-    //DICT_DATA       *pDict;
+    DICT_DATA       *pDict;
     uint16_t        fBackup;
     uint16_t        unused16;
 
@@ -165,30 +163,30 @@ struct Main_data_s	{
         char            ***pppArgV
     );
 
-/*!
- Parse the given file into a JSON Node structure and
- perform some cursory checks on the structure.
- @param     this    object pointer
- @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
- error code.
- */
-ERESULT         Main_ParseInputFile (
-    MAIN_DATA       *this,
-    PATH_DATA       *pPath
-);
+    /*!
+     Parse the given file into a JSON Node structure and
+     perform some cursory checks on the structure.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         Main_ParseInputFile (
+        MAIN_DATA       *this,
+        PATH_DATA       *pPath
+    );
 
-/*!
- Parse the given string into a JSON Node structure and
- perform some cursory checks on the structure.
- @param     this    object pointer
- @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
- error code.
- */
-ERESULT         Main_ParseInputStr (
-    MAIN_DATA       *this,
-    const
-    char            *pStr
-);
+    /*!
+     Parse the given string into a JSON Node structure and
+     perform some cursory checks on the structure.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         Main_ParseInputStr (
+        MAIN_DATA       *this,
+        const
+        char            *pStr
+    );
 
 #ifdef  MAIN_JSON_SUPPORT
     /*!

@@ -1165,8 +1165,8 @@ extern "C" {
         }
 #endif
 
+        Main_setClass(this, OBJ_NIL);
         Main_setDict(this, OBJ_NIL);
-        Main_setGen(this, OBJ_NIL);
         Main_setGen(this, OBJ_NIL);
         Main_setStr(this, OBJ_NIL);
 

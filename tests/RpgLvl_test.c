@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *  Generated 05/04/2021 09:23:11
+ *  Generated 05/23/2021 00:37:45
  */
 
 
@@ -25,9 +25,9 @@
 #include    <tinytest.h>
 #include    <test_defs.h>
 #include    <trace.h>
-#include    <Producer_internal.h>
+#include    <RpgLvl_internal.h>
 #include    <JsonIn.h>
-#ifdef  PRODUCER_JSON_SUPPORT
+#ifdef  RPGLVL_JSON_SUPPORT
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
@@ -56,7 +56,7 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  PRODUCER_JSON_SUPPORT
+#ifdef  RPGLVL_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
@@ -84,25 +84,25 @@ int             tearDown (
 
 
 
-int             test_Producer_OpenClose (
+int             test_RpgLvl_OpenClose (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    PRODUCER_DATA       *pObj = OBJ_NIL;
+    RPGLVL_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Producer_Alloc( );
+    pObj = RpgLvl_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = Producer_Init( pObj );
+    pObj = RpgLvl_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_PRODUCER);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_RPGLVL);
         TINYTEST_TRUE( (fRc) );
         
         // Test something.
@@ -118,70 +118,71 @@ int             test_Producer_OpenClose (
 
 
 
-int             test_Producer_Copy01 (
+int             test_RpgLvl_Copy01 (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    PRODUCER_DATA       *pObj1 = OBJ_NIL;
-    PRODUCER_DATA       *pObj2 = OBJ_NIL;
+    RPGLVL_DATA       *pObj1 = OBJ_NIL;
+    RPGLVL_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(PRODUCER_JSON_SUPPORT) && defined(XYZZY)
+#if defined(RPGLVL_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
 #endif
+    //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = Producer_New( );
+    pObj1 = RpgLvl_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_PRODUCER);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_RPGLVL);
         TINYTEST_TRUE( (fRc) );
         
         // Test assign.
-        pObj2 = Producer_New();
+        pObj2 = RpgLvl_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        eRc = Producer_Assign(pObj1, pObj2);
+        eRc = RpgLvl_Assign(pObj1, pObj2);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PRODUCER);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_RPGLVL);
         TINYTEST_TRUE( (fRc) );
-        //eRc = Producer_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //iRc = RpgLvl_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (0 == iRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = Producer_Copy(pObj1);
+        pObj2 = RpgLvl_Copy(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PRODUCER);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_RPGLVL);
         TINYTEST_TRUE( (fRc) );
-        //eRc = Producer_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //iRc = RpgLvl_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (0 == iRc) );
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(PRODUCER_JSON_SUPPORT) && defined(XYZZY)
-        pStr = Producer_ToJson(pObj1);
+#if defined(RPGLVL_JSON_SUPPORT) && defined(XYZZY)
+        pStr = RpgLvl_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = Producer_NewFromJsonString(pStr);
+        pObj2 = RpgLvl_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PRODUCER);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_RPGLVL);
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = Producer_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //iRc = RpgLvl_Compare(pObj1, pObj2);
+        //TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -197,28 +198,28 @@ int             test_Producer_Copy01 (
 
 
 
-int             test_Producer_Test01 (
+int             test_RpgLvl_Test01 (
     const
     char            *pTestName
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    PRODUCER_DATA       *pObj = OBJ_NIL;
+    RPGLVL_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Producer_New( );
+    pObj = RpgLvl_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_PRODUCER);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_RPGLVL);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
         
         {
-            ASTR_DATA       *pStr = Producer_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = RpgLvl_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -237,13 +238,13 @@ int             test_Producer_Test01 (
 
 
 
-TINYTEST_START_SUITE(test_Producer);
-    TINYTEST_ADD_TEST(test_Producer_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_Producer_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Producer_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_RpgLvl);
+    TINYTEST_ADD_TEST(test_RpgLvl_Test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_RpgLvl_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_RpgLvl_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_Producer);
+TINYTEST_MAIN_SINGLE_SUITE(test_RpgLvl);
 
 
 

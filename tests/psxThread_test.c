@@ -102,7 +102,7 @@ int         test_psxThread_OpenClose(
 )
 {
     PSXTHREAD_DATA	*pObj = OBJ_NIL;
-    bool            fRc;
+    //bool            fRc;
     uint32_t        status;
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
     uint32_t        start;

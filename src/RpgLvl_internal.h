@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Producer_internal.h
- *  Generated 05/04/2021 09:23:11
+ * File:   RpgLvl_internal.h
+ *  Generated 05/23/2021 00:37:45
  *
  * Notes:
  *  --  N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <Producer.h>
+#include        <RpgLvl.h>
 #include        <JsonIn.h>
 
 
-#ifndef PRODUCER_INTERNAL_H
-#define PRODUCER_INTERNAL_H
+#ifndef RPGLVL_INTERNAL_H
+#define RPGLVL_INTERNAL_H
 
 
 
@@ -62,14 +62,14 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Producer_data_s  {
+struct RpgLvl_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint16_t        size;           // maximum number of elements
+    uint16_t        level;          // maximum number of elements
     uint16_t        rsvd16;
     ASTR_DATA       *pStr;
 
@@ -77,11 +77,11 @@ struct Producer_data_s  {
 #pragma pack(pop)
 
     extern
-    struct Producer_class_data_s  Producer_ClassObj;
+    struct RpgLvl_class_data_s  RpgLvl_ClassObj;
 
     extern
     const
-    PRODUCER_VTBL         Producer_Vtbl;
+    RPGLVL_VTBL         RpgLvl_Vtbl;
 
 
 
@@ -89,13 +89,13 @@ struct Producer_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  PRODUCER_SINGLETON
-    PRODUCER_DATA *     Producer_getSingleton (
+#ifdef  RPGLVL_SINGLETON
+    RPGLVL_DATA *   RpgLvl_getSingleton (
         void
     );
 
-    bool            Producer_setSingleton (
-     PRODUCER_DATA       *pValue
+    bool            RpgLvl_setSingleton (
+     RPGLVL_DATA       *pValue
 );
 #endif
 
@@ -105,35 +105,35 @@ struct Producer_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  Producer_getSuperVtbl (
-        PRODUCER_DATA     *this
+    OBJ_IUNKNOWN *  RpgLvl_getSuperVtbl (
+        RPGLVL_DATA     *this
     );
 
 
-    ERESULT         Producer_Assign (
-        PRODUCER_DATA    *this,
-        PRODUCER_DATA    *pOther
+    ERESULT         RpgLvl_Assign (
+        RPGLVL_DATA    *this,
+        RPGLVL_DATA    *pOther
     );
 
 
-    PRODUCER_DATA *       Producer_Copy (
-        PRODUCER_DATA     *this
+    RPGLVL_DATA *       RpgLvl_Copy (
+        RPGLVL_DATA     *this
     );
 
 
-    void            Producer_Dealloc (
+    void            RpgLvl_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  PRODUCER_JSON_SUPPORT
+#ifdef  RPGLVL_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    PRODUCER_DATA *       Producer_ParseJsonObject (
+    RPGLVL_DATA *       RpgLvl_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -147,35 +147,35 @@ struct Producer_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Producer_ParseJsonFields (
+    ERESULT         RpgLvl_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        PRODUCER_DATA     *pObject
+        RPGLVL_DATA     *pObject
     );
 #endif
 
 
-    void *          Producer_QueryInfo (
+    void *          RpgLvl_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  PRODUCER_JSON_SUPPORT
+#ifdef  RPGLVL_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Producer_ToJson(this);
+     ASTR_DATA      *pDesc = RpgLvl_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Producer_ToJson (
-        PRODUCER_DATA      *this
+    ASTR_DATA *     RpgLvl_ToJson (
+        RPGLVL_DATA      *this
     );
 
 
@@ -188,8 +188,8 @@ struct Producer_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Producer_ToJsonFields (
-        PRODUCER_DATA     *this,
+    ERESULT         RpgLvl_ToJsonFields (
+        RPGLVL_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -199,8 +199,8 @@ struct Producer_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            Producer_Validate (
-        PRODUCER_DATA       *this
+    bool            RpgLvl_Validate (
+        RPGLVL_DATA       *this
     );
 #endif
 
@@ -210,5 +210,5 @@ struct Producer_data_s  {
 }
 #endif
 
-#endif  /* PRODUCER_INTERNAL_H */
+#endif  /* RPGLVL_INTERNAL_H */
 

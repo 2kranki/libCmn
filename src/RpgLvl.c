@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Consumer.c
- *  Generated 05/04/2021 09:30:56
+ * File:   RpgLvl.c
+ *  Generated 05/23/2021 00:37:45
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <Consumer_internal.h>
+#include        <RpgLvl_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -64,190 +64,16 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    //---------------------------------------------------------------
-    //                  S e r v i c e  E x e c u t i o n
-    //---------------------------------------------------------------
-
-    void            defaultTaskExec(
-        void            *pData
-    )
-    {
-        CONSUMER_DATA  *this = pData;
-        void            *pMsg;
-        uint32_t        msWaitTime;
-        uint32_t        msCurrent;
 #ifdef XYZZY
-        enum TN_RCode   tn_rc;
-#endif
-        bool            fRc;
-
-#ifdef XYZZY
-        msCurrent = tn_sys_time_get();
-        if (cbp->calcWait) {
-            msWaitTime = (*cbp->calcWait)(cbp->calcWaitData,msCurrent);
-        }
-        else {
-            msWaitTime = TN_WAIT_INFINITE;
-        }
-#endif
-
-        // Wait for next message.
-#ifdef XYZZY
-        tn_rc = tn_queue_receive(
-                        &cbp->dque,
-                        (void *)&pMsg,
-                        msWaitTime
-                );
-
-        if (TN_RC_TIMEOUT == tn_rc) {
-            if (cbp->timedOut) {
-                (*cbp->timedOut)(cbp->timedOutData);
-            }
-        }
-        else if (TN_RC_OK == tn_rc) {
-            do {
-
-                // Process the message if needed.
-                if( cbp->fSkip ) {
-                    ++cbp->numDiscard;
-                }
-                else {
-                    if( cbp->pSrvcRtn ) {
-                        fRc = (*cbp->pSrvcRtn)(cbp->pSrvcData, canmsg_getEid(pMsg), pMsg);
-                        if (fRc) {
-                            ++cbp->numHandled;
-                        }
-                        else {
-                            ++cbp->numDiscard;
-                        }
-                    }
-                    else {
-                        ++cbp->numDiscard;
-                    }
-                }
-
-                // Free the message.
-                tn_rc = tn_fmem_release( &cbp->fmem, (void *)pMsg );
-                if (tn_rc == TN_RC_OK) {
-                }
-                else {
-                    DEBUG_BREAK();
-                }
-
-                // Try another message if already present.
-                tn_rc = tn_queue_receive(
-                            &cbp->dque,
-                            (void *)&pMsg,
-                            0
-                        );
-
-            } while (TN_RC_OK == tn_rc);
-        }
-#endif
-
-
-    }
-
-
-
-    //---------------------------------------------------------------
-    //              S i m p l e  T a s k  B o d y
-    //---------------------------------------------------------------
-
-    void            simpleTaskBody(
-        void            *pData
-    )
-    {
-        CONSUMER_DATA  *this = pData;
-        void            *pMsg;
-#ifdef XYZZY
-        enum TN_RCode   tn_rc;
-#endif
-        bool            fRc;
-
-#ifdef XYZZY
-        // Wait for next message.
-        tn_rc = tn_queue_receive(
-                        &cbp->dque,
-                        (void *)&pMsg,
-                        cbp->msWaitTime
-                );
-
-        if (TN_RC_TIMEOUT == tn_rc) {
-            if( cbp->pSrvcRtn ) {
-                fRc = (*cbp->pSrvcRtn)(cbp->pSrvcData, 0, NULL);
-            }
-        }
-        else if (TN_RC_OK == tn_rc) {
-            do {
-
-                // Process the message if needed.
-                if( cbp->fSkip ) {
-                    ++cbp->numDiscard;
-                }
-                else {
-                    if( cbp->pSrvcRtn ) {
-                        fRc = (*cbp->pSrvcRtn)(cbp->pSrvcData, canmsg_getEid(pMsg), pMsg);
-                        if (fRc) {
-                            ++cbp->numHandled;
-                        }
-                        else {
-                            ++cbp->numDiscard;
-                        }
-                    }
-                    else {
-                        ++cbp->numDiscard;
-                    }
-                }
-
-                // Free the message.
-                tn_rc = tn_fmem_release( &cbp->fmem, (void *)pMsg );
-                if (tn_rc == TN_RC_OK) {
-                }
-                else {
-                    DEBUG_BREAK();
-                }
-
-                // Try another message if already present.
-                tn_rc = tn_queue_receive(
-                                         &cbp->dque,
-                                         (void *)&pMsg,
-                                         0
-                                         );
-
-            } while (TN_RC_OK == tn_rc);
-        }
-#endif
-
-    }
-
-
-
-    //---------------------------------------------------------------
-    //              C o n s u m e r  T a s k  B o d y
-    //---------------------------------------------------------------
-
     static
-    void            Consumer_Task(
-        void            *pObject
+    void            RpgLvl_task_body (
+        void            *pData
     )
     {
-        CONSUMER_DATA  *this = pObject;
-
-        if (OBJ_NIL == this)
-            return;
-
-        if (this->pTaskBody) {
-            (*this->pTaskBody)(this->pTaskObj);
-        }
-        else {
-            psxThread_Wait(100);
-        }
-
+        //RPGLVL_DATA  *this = pData;
+        
     }
-
-
-
+#endif
 
 
 
@@ -260,12 +86,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    CONSUMER_DATA *     Consumer_Alloc (
+    RPGLVL_DATA *     RpgLvl_Alloc (
         void
     )
     {
-        CONSUMER_DATA       *this;
-        uint32_t        cbSize = sizeof(CONSUMER_DATA);
+        RPGLVL_DATA       *this;
+        uint32_t        cbSize = sizeof(RPGLVL_DATA);
         
         // Do initialization.
         
@@ -277,16 +103,35 @@ extern "C" {
 
 
 
-    CONSUMER_DATA *     Consumer_New (
+    RPGLVL_DATA *   RpgLvl_New (
         void
     )
     {
-        CONSUMER_DATA       *this;
+        RPGLVL_DATA       *this;
         
-        this = Consumer_Alloc( );
+        this = RpgLvl_Alloc( );
         if (this) {
-            this = Consumer_Init(this);
+            this = RpgLvl_Init(this);
         } 
+        return this;
+    }
+
+
+    RPGLVL_DATA *   RpgLvl_NewLevel (
+        uint16_t        level
+    )
+    {
+        RPGLVL_DATA     *this;
+        bool            fRc;
+
+        this = RpgLvl_New( );
+        if (this) {
+            fRc = RpgLvl_setLevel(this, level);
+            if (!fRc) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
         return this;
     }
 
@@ -299,193 +144,43 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //         C a l c  W a i t  T i m e  R o u t i n e
-    //---------------------------------------------------------------
-
-    bool            Consumer_setCalcWait(
-        CONSUMER_DATA   *this,
-        uint32_t        (*pFunction)(void *),
-        OBJ_ID          *pData
-        )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !Consumer_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        psxThread_setCalcWait(this->pThread, pFunction, pData);
-
-        // Return to caller.
-        return( true );
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          O t h e r
-    //---------------------------------------------------------------
-
-    OBJ_ID          Consumer_getOther (
-        CONSUMER_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Consumer_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pOther;
-    }
-
-
-    bool            Consumer_setOther (
-        CONSUMER_DATA   *this,
-        OBJ_ID          pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Consumer_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pOther) {
-            obj_Release(this->pOther);
-        }
-        this->pOther = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          P r i o r i t y
+    //                         L e v e l
     //---------------------------------------------------------------
     
-    uint16_t        Consumer_getPriority (
-        CONSUMER_DATA     *this
+    uint16_t        RpgLvl_getLevel (
+        RPGLVL_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        //return this->priority;
-        return 0;
+        return this->level;
     }
 
 
-    bool            Consumer_setPriority (
-        CONSUMER_DATA     *this,
+    bool            RpgLvl_setLevel (
+        RPGLVL_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        //this->priority = value;
+        this->level = value;
 
         return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                     Q u e u e
-    //---------------------------------------------------------------
-
-    OBJCB_DATA *    Consumer_getQueue (
-        CONSUMER_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Consumer_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pQueue;
-    }
-
-
-    bool            Consumer_setQueue (
-        CONSUMER_DATA   *this,
-        OBJCB_DATA      *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Consumer_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pQueue) {
-            obj_Release(this->pQueue);
-        }
-        this->pQueue = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                  S e r v i c e  R o u t i n e
-    //---------------------------------------------------------------
-
-    bool            Consumer_setService(
-        CONSUMER_DATA   *this,
-        int             (*pService)(OBJ_ID, OBJ_ID),
-        OBJ_ID          *pServiceObj            // Service Method's Object
-        )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !Consumer_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        this->pService = pService;
-        this->pServiceObj = pServiceObj;
-
-        // Return to caller.
-        return( true );
     }
 
 
@@ -494,13 +189,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        Consumer_getSize (
-        CONSUMER_DATA       *this
+    uint32_t        RpgLvl_getSize (
+        RPGLVL_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -515,15 +210,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * Consumer_getStr (
-        CONSUMER_DATA     *this
+    ASTR_DATA * RpgLvl_getStr (
+        RPGLVL_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -533,14 +228,14 @@ extern "C" {
     }
     
     
-    bool        Consumer_setStr (
-        CONSUMER_DATA     *this,
+    bool        RpgLvl_setStr (
+        RPGLVL_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -561,15 +256,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Consumer_getSuperVtbl (
-        CONSUMER_DATA     *this
+    OBJ_IUNKNOWN *  RpgLvl_getSuperVtbl (
+        RPGLVL_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -581,96 +276,7 @@ extern "C" {
     
   
 
-    //---------------------------------------------------------------
-    //                        T h r e a d
-    //---------------------------------------------------------------
-
-    PSXTHREAD_DATA * Consumer_getThread (
-        CONSUMER_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Consumer_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pThread;
-    }
-
-
-    bool            Consumer_setThread (
-        CONSUMER_DATA   *this,
-        PSXTHREAD_DATA  *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Consumer_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pThread) {
-            obj_Release(this->pThread);
-        }
-        this->pThread = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                         W a i t
-    //---------------------------------------------------------------
-
-    uint32_t        Consumer_getWait (
-        CONSUMER_DATA   *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Consumer_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        //return this->priority;
-        return psxThread_getWait(this->pThread);
-    }
-
-
-    bool            Consumer_setWait (
-        CONSUMER_DATA   *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Consumer_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        //this->priority = value;
-
-        return psxThread_setWait(this->pThread, value);
-    }
-
-
-
-
+    
 
     //===============================================================
     //                          M e t h o d s
@@ -687,16 +293,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = Consumer_Assign(this,pOther);
+        ERESULT eRc = RpgLvl_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another CONSUMER object
+     @param     pOther  a pointer to another RPGLVL object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         Consumer_Assign (
-        CONSUMER_DATA       *this,
-        CONSUMER_DATA     *pOther
+    ERESULT         RpgLvl_Assign (
+        RPGLVL_DATA       *this,
+        RPGLVL_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -704,11 +310,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Consumer_Validate(pOther)) {
+        if (!RpgLvl_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -769,9 +375,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             Consumer_Compare (
-        CONSUMER_DATA     *this,
-        CONSUMER_DATA     *pOther
+    int             RpgLvl_Compare (
+        RPGLVL_DATA     *this,
+        RPGLVL_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -784,12 +390,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!Consumer_Validate(pOther)) {
+        if (!RpgLvl_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -811,36 +417,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Consumer      *pCopy = Consumer_Copy(this);
+        RpgLvl      *pCopy = RpgLvl_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a CONSUMER object which must be 
+     @return    If successful, a RPGLVL object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    CONSUMER_DATA *     Consumer_Copy (
-        CONSUMER_DATA       *this
+    RPGLVL_DATA *     RpgLvl_Copy (
+        RPGLVL_DATA       *this
     )
     {
-        CONSUMER_DATA       *pOther = OBJ_NIL;
+        RPGLVL_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef CONSUMER_IS_IMMUTABLE
+#ifdef RPGLVL_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = Consumer_New( );
+        pOther = RpgLvl_New( );
         if (pOther) {
-            eRc = Consumer_Assign(this, pOther);
+            eRc = RpgLvl_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -858,11 +464,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            Consumer_Dealloc (
+    void            RpgLvl_Dealloc (
         OBJ_ID          objId
     )
     {
-        CONSUMER_DATA   *this = objId;
+        RPGLVL_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -871,7 +477,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -879,14 +485,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((CONSUMER_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((RPGLVL_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        Consumer_setOther(this, OBJ_NIL);
-        Consumer_setQueue(this, OBJ_NIL);
-        Consumer_setStr(this, OBJ_NIL);
-        Consumer_setThread(this, OBJ_NIL);
+        RpgLvl_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -907,32 +510,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Consumer      *pDeepCopy = Consumer_Copy(this);
+        RpgLvl      *pDeepCopy = RpgLvl_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a CONSUMER object which must be 
+     @return    If successful, a RPGLVL object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    CONSUMER_DATA *     Consumer_DeepyCopy (
-        CONSUMER_DATA       *this
+    RPGLVL_DATA *     RpgLvl_DeepyCopy (
+        RPGLVL_DATA       *this
     )
     {
-        CONSUMER_DATA       *pOther = OBJ_NIL;
+        RPGLVL_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = Consumer_New( );
+        pOther = RpgLvl_New( );
         if (pOther) {
-            eRc = Consumer_Assign(this, pOther);
+            eRc = RpgLvl_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -955,8 +558,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Consumer_Disable (
-        CONSUMER_DATA   *this
+    ERESULT         RpgLvl_Disable (
+        RPGLVL_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -964,7 +567,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -990,8 +593,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Consumer_Enable (
-        CONSUMER_DATA       *this
+    ERESULT         RpgLvl_Enable (
+        RPGLVL_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -999,7 +602,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1019,11 +622,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    CONSUMER_DATA *   Consumer_Init (
-        CONSUMER_DATA       *this
+    RPGLVL_DATA *   RpgLvl_Init (
+        RPGLVL_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(CONSUMER_DATA);
+        uint32_t        cbSize = sizeof(RPGLVL_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -1041,7 +644,9 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_CONSUMER);
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of RpgLvl_object.c
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_RPGLVL);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1049,30 +654,23 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Consumer_Vtbl);
-#ifdef  CONSUMER_JSON_SUPPORT
-        JsonIn_RegisterClass(Consumer_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&RpgLvl_Vtbl);
+#ifdef  RPGLVL_JSON_SUPPORT
+        JsonIn_RegisterClass(RpgLvl_Class());
 #endif
         
-        // Allocate the FIFO Queue.
-        this->pQueue = ObjCb_NewWithSize(16);
-        if (OBJ_NIL == this->pQueue) {
+        /*
+        this->pArray = ObjArray_New( );
+        if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-
-        // Allocate the thread and set it up.
-        this->pThread = psxThread_New((void *)Consumer_Task, this, 0);
-        if (OBJ_NIL == this->pQueue) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
+        */
 
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -1081,11 +679,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "Consumer::sizeof(CONSUMER_DATA) = %lu\n", 
-                sizeof(CONSUMER_DATA)
+                "RpgLvl::sizeof(RPGLVL_DATA) = %lu\n", 
+                sizeof(RPGLVL_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(CONSUMER_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(RPGLVL_DATA));
 #endif
 
         return this;
@@ -1094,11 +692,11 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Consumer_IsEnabled (
-        CONSUMER_DATA       *this
+    ERESULT         RpgLvl_IsEnabled (
+        RPGLVL_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -1106,7 +704,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1133,14 +731,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = Consumer_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = RpgLvl_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "Consumer", prefix,
+                        the object name, "RpgLvl", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1148,13 +746,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          Consumer_QueryInfo (
+    void *          RpgLvl_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        CONSUMER_DATA     *this = objId;
+        RPGLVL_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1163,7 +761,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1172,11 +770,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(CONSUMER_DATA);
+                return (void *)sizeof(RPGLVL_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)Consumer_Class();
+                return (void *)RpgLvl_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -1202,37 +800,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return Consumer_Disable;
+                            return RpgLvl_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return Consumer_Enable;
+                            return RpgLvl_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  CONSUMER_JSON_SUPPORT
+#ifdef  RPGLVL_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return Consumer_ParseJsonFields;
+                            return RpgLvl_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return Consumer_ParseJsonObject;
+                            return RpgLvl_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return Consumer_ToDebugString;
+                            return RpgLvl_ToDebugString;
                         }
-#ifdef  CONSUMER_JSON_SUPPORT
+#ifdef  RPGLVL_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return Consumer_ToJsonFields;
+                            return RpgLvl_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return Consumer_ToJson;
+                            return RpgLvl_ToJson;
                         }
 #endif
                         break;
@@ -1243,10 +841,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == Consumer_ToDebugString)
+                if (pData == RpgLvl_ToDebugString)
                     return "ToDebugString";
-#ifdef  CONSUMER_JSON_SUPPORT
-                if (pData == Consumer_ToJson)
+#ifdef  RPGLVL_JSON_SUPPORT
+                if (pData == RpgLvl_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1261,103 +859,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          S e n d
-    //---------------------------------------------------------------
-
-    ERESULT         Consumer_Send (
-        CONSUMER_DATA   *this,
-        OBJ_ID          pObj,
-        bool            fWait           // Wait for queue to have an empty slot
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        bool            fRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Consumer_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pObj) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        if (!fWait && ObjCb_IsFull(this->pQueue)) {
-            return ERESULT_BUFFER_FULL;
-        }
-
-        fRc = ObjCb_Put(this->pQueue, pObj);
-        if (!fRc) {
-            eRc = ERESULT_FAILURE;
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                     S e t u p
-    //---------------------------------------------------------------
-
-    /*!
-     Set up the run-timne parameters.
-     @param     this        object pointer
-     @param     queueSize   Consumer FIFO Queue Size
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Consumer_Setup (
-        CONSUMER_DATA   *this,
-        uint16_t        queueSize,
-        int             (*pService)(OBJ_ID, OBJ_ID),
-        void            *pServiceObj        // 1st parameter for service routine
-
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Consumer_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        // Release prior objects.
-        Consumer_setQueue(this, OBJ_NIL);
-        Consumer_setThread(this, OBJ_NIL);
-
-        // Allocate the FIFO Queue.
-        if (0 == queueSize)
-            queueSize = 16;
-        this->pQueue = ObjCb_NewWithSize(queueSize);
-        if (OBJ_NIL == this->pQueue) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-
-        // Allocate the thread and set it up.
-        this->pService = pService;
-        this->pServiceObj = pServiceObj;
-        this->pThread = psxThread_New((void *)Consumer_Task, this, 0);
-        if (OBJ_NIL == this->pQueue) {
-            Consumer_setQueue(this, OBJ_NIL);
-            return ERESULT_OUT_OF_MEMORY;
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1365,7 +866,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Consumer_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = RpgLvl_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1373,8 +874,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Consumer_ToDebugString (
-        CONSUMER_DATA      *this,
+    ASTR_DATA *     RpgLvl_ToDebugString (
+        RPGLVL_DATA      *this,
         int             indent
     )
     {
@@ -1389,7 +890,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Consumer_Validate(this)) {
+        if (!RpgLvl_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1407,10 +908,10 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d retain=%d\n",
+                    "{%p(%s) level=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    Consumer_getSize(this),
+                    RpgLvl_getLevel(this),
                     obj_getRetainCount(this)
             );
 
@@ -1450,15 +951,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            Consumer_Validate (
-        CONSUMER_DATA      *this
+    bool            RpgLvl_Validate (
+        RPGLVL_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_CONSUMER))
+            if (obj_IsKindOf(this, OBJ_IDENT_RPGLVL))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1474,7 +975,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(CONSUMER_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(RPGLVL_DATA))) {
             return false;
         }
 

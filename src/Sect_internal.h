@@ -74,12 +74,14 @@ struct Sect_data_s  {
     uint8_t         rsvd8_1;        // Used to make type a c string
     char            type;
     uint8_t         rsvd8_2;        // Used to make type a c string
+    uint32_t        esid;           // Internal Identifier
     uint32_t        addr;           // address
     uint32_t        len;            //
     uint32_t        offset;         //
     ASTR_DATA       *pName;
     U8ARRAY_DATA    *pData;
     SYMS_DATA       *pExterns;
+    //???_DATA        *pReloc;        // Relocation Dictionary
 
 };
 #pragma pack(pop)

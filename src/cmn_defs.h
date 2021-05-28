@@ -215,8 +215,6 @@ extern "C" {
         OBJ_IDENT_CON_CLASS,
         OBJ_IDENT_CON_FIO,              // Console File I/O Object
         OBJ_IDENT_CON_FIO_CLASS,
-        OBJ_IDENT_CONSUMER,             // Producer/Consumer Pattern
-        OBJ_IDENT_CONSUMER_CLASS,
         OBJ_IDENT_CONXMT,
         OBJ_IDENT_CONXMT_CLASS,
         OBJ_IDENT_CRC,                  // CRC Calculations
@@ -431,8 +429,6 @@ extern "C" {
         OBJ_IDENT_PPLEX2_CLASS,
         OBJ_IDENT_PPLEX3,               // Preprocessor Lexical Scanner - Phase 3
         OBJ_IDENT_PPLEX3_CLASS,
-        OBJ_IDENT_PRODUCER,             // Producer/Consumer Pattern
-        OBJ_IDENT_PRODUCER_CLASS,
         OBJ_IDENT_PROTOCOL,             // Protocol LAYER which uses RECEIVE and TRANSMIT
         OBJ_IDENT_PROTOCOL_CLASS,
         OBJ_IDENT_PRT,
@@ -466,6 +462,8 @@ extern "C" {
         OBJ_IDENT_RETRANSBUF_CLASS,
         OBJ_IDENT_RPGBASE,              // Report Program Generator (RPG) Base
         OBJ_IDENT_RPGBASE_CLASS,
+        OBJ_IDENT_RPGLVL,               // Report Program Generator (RPG) Level Handler
+        OBJ_IDENT_RPGLVL_CLASS,
         OBJ_IDENT_RRDS,                 // Relative Record Database
         OBJ_IDENT_RRDS_CLASS,
         OBJ_IDENT_RRDS32,               // Relative Record Database - 32 bit Logical
@@ -619,6 +617,9 @@ extern "C" {
         OBJ_IDENT_LNK_ENTRIES=OBJ_IDENT_ASM_ENTRIES+64,             //  32 Objects
         OBJ_IDENT_360_ENTRIES=OBJ_IDENT_LNK_ENTRIES+64,             //  32 Objects
         OBJ_IDENT_8085_ENTRIES=OBJ_IDENT_360_ENTRIES+64,            //  32 Objects
+        OBJ_IDENT_TRADE_ENTRIES=OBJ_IDENT_8085_ENTRIES+64,          //  32 Objects
+        OBJ_IDENT_COCOA_ENTRIES=OBJ_IDENT_8085_ENTRIES+64,          //  64 Objects
+        OBJ_IDENT_XYZZY_ENTRIES=OBJ_IDENT_8085_ENTRIES+128,         //  ?? Objects
         OBJ_IDENT_USER_ENTRIES=16384
     } OBJ_IDENTS;
 #endif

@@ -7,11 +7,10 @@
  * Program
  *			Posix Protected Object Circular Buffer (ObjCb)
  * Purpose
- *          These subroutines provide a general purpose set of
- *          routines to provide a Circular (FIFO) Buffer of
- *          size elements. The buffer is designed to work in
- *          multi-tasking environment with a single sender and
- *          receiver.
+ *          These subroutines provide a protected Cirvular
+ *          (FIFO) fixed-size queue of objects. This works
+ *          in a multi-tasking environment with a single
+ *          sender and receiver.
  *
  *          To avoid locking up the current thread, separate
  *          threads should be used for getting and putting

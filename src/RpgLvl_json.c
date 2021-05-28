@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Sect_json.c
+ * File:   RpgLvl_json.c
  *
- *  Generated 12/27/2020 14:58:15
+ *  Generated 05/23/2021 00:37:45
  *
  */
 
@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <Sect_internal.h>
+#include    <RpgLvl_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -79,9 +79,9 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     Sect_ParseJsonFields (
+    ERESULT     RpgLvl_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SECT_DATA     *pObject
+        RPGLVL_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -95,26 +95,20 @@ extern "C" {
         //uint8_t         *pData;
         //uint32_t        len;
 
-        (void)JsonIn_FindU8NodeInHashA(pParser,  "ident",   (uint8_t *)&pObject->ident);
-        (void)JsonIn_FindU8NodeInHashA(pParser,  "type",    (uint8_t *)&pObject->type);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "addr",    &pObject->addr);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "esid",    &pObject->esid);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "len",     &pObject->len);
-        (void)JsonIn_FindU32NodeInHashA(pParser, "offset",  &pObject->offset);
-        (void)JsonIn_FindAStrNodeInHashA(pParser, "name",  &pObject->pName);
-
-#ifdef XYZZZY
+#ifdef XYZZZY 
         (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
         (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
         (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
 
         eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
         eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
+        if (ERESULT_OK(eRc)) {
+            pWrk = AStr_ParseJsonObject(pParser);
+            if (pWrk) {
+                pObject->pErrorStr = pWrk;
+            }
+            JsonIn_SubObjectEnd(pParser);
         }
-        JsonIn_SubObjectEnd(pParser);
 #endif
 
         // Return to caller.
@@ -130,32 +124,32 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SECT_DATA * Sect_ParseJsonObject (
+    RPGLVL_DATA * RpgLvl_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        SECT_DATA   *pObject = OBJ_NIL;
+        RPGLVL_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        JsonIn_RegisterClass(Sect_Class());
+        JsonIn_RegisterClass(RpgLvl_Class());
 
-        pInfo = obj_getInfo(Sect_Class());
+        pInfo = obj_getInfo(RpgLvl_Class());
         eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
 
-        pObject = Sect_New( );
+        pObject = RpgLvl_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  Sect_ParseJsonFields(pParser, pObject);
+        eRc =  RpgLvl_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -177,13 +171,13 @@ extern "C" {
     //===============================================================
     
 
-    SECT_DATA *   Sect_NewFromJsonString (
+    RPGLVL_DATA *   RpgLvl_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        SECT_DATA   *pObject = OBJ_NIL;
+        RPGLVL_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -192,7 +186,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = Sect_ParseJsonObject(pParser);
+        pObject = RpgLvl_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -205,17 +199,17 @@ extern "C" {
     
     
 
-    SECT_DATA * Sect_NewFromJsonStringA (
+    RPGLVL_DATA * RpgLvl_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        SECT_DATA   *pObject = OBJ_NIL;
+        RPGLVL_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = Sect_NewFromJsonString(pStr);
+            pObject = RpgLvl_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -231,7 +225,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Sect_ToJson(this);
+     ASTR_DATA      *pDesc = RpgLvl_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -239,8 +233,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Sect_ToJson (
-        SECT_DATA   *this
+    ASTR_DATA *     RpgLvl_ToJson (
+        RPGLVL_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -250,7 +244,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Sect_Validate(this) ) {
+        if( !RpgLvl_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -264,9 +258,9 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = Sect_ToJsonFields(this, pStr);      
+            eRc = RpgLvl_ToJsonFields(this, pStr);      
 
-            AStr_AppendA(pStr, "}\n");
+            AStr_AppendPrint(pStr, "}\t/* %s */\n", pInfo->pClassName);
         }
 
         return pStr;
@@ -282,11 +276,12 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Sect_ToJsonFields (
-        SECT_DATA     *this,
+    ERESULT         RpgLvl_ToJsonFields (
+        RPGLVL_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
+        //ERESULT         eRc = ERESULT_SUCCESS;
 #ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
@@ -299,14 +294,7 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
 
-        JsonOut_Append_u8("ident",      this->ident,    pStr);
-        JsonOut_Append_u8("type",       this->type,     pStr);
-        JsonOut_Append_u32("addr",      this->addr,     pStr);
-        JsonOut_Append_u32("esid",      this->esid,     pStr);
-        JsonOut_Append_u32("len",       this->len,      pStr);
-        JsonOut_Append_u32("offset",    this->offset,   pStr);
-
-#ifdef XYZZZY
+#ifdef XYZZZY 
         JsonOut_Append_i32("x", this->x, pStr);
         JsonOut_Append_i64("t", this->t, pStr);
         JsonOut_Append_u32("o", this->o, pStr);

@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 5/17/2021 13:05:59.000)
+# ( 5/27/2021 15:46:49.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -932,6 +932,21 @@ $(OBJDIR)/RpgBase_json.o: $(SRCDIR)/RpgBase_json.c $(SRCDIR)/RpgBase.h $(SRCDIR)
 OBJS += $(OBJDIR)/RpgBase_object.o
 
 $(OBJDIR)/RpgBase_object.o: $(SRCDIR)/RpgBase_object.c $(SRCDIR)/RpgBase.h $(SRCDIR)/RpgBase_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/RpgLvl.o
+
+$(OBJDIR)/RpgLvl.o: $(SRCDIR)/RpgLvl.c $(SRCDIR)/RpgLvl.h $(SRCDIR)/RpgLvl_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/RpgLvl_json.o
+
+$(OBJDIR)/RpgLvl_json.o: $(SRCDIR)/RpgLvl_json.c $(SRCDIR)/RpgLvl.h $(SRCDIR)/RpgLvl_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/RpgLvl_object.o
+
+$(OBJDIR)/RpgLvl_object.o: $(SRCDIR)/RpgLvl_object.c $(SRCDIR)/RpgLvl.h $(SRCDIR)/RpgLvl_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/SQLite.o
@@ -2483,6 +2498,12 @@ PsxExec_test: $(TEST_SRC)/PsxExec_test.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_i
 TESTS += RpgBase_test
 
 RpgBase_test: $(TEST_SRC)/RpgBase_test.c $(SRCDIR)/RpgBase.h $(SRCDIR)/RpgBase_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += RpgLvl_test
+
+RpgLvl_test: $(TEST_SRC)/RpgLvl_test.c $(SRCDIR)/RpgLvl.h $(SRCDIR)/RpgLvl_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

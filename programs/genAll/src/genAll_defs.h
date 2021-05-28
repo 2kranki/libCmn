@@ -172,6 +172,8 @@ extern "C" {
 #define OBJECT_NAME_UPPER   "UNAME"
 #define OUTPUT_DRIVE        "OUTPUT_DRIVE"
 #define OUTPUT_DIR          "OUTPUT_DIR"
+#define SCAN_DRIVE          "SCAN_DRIVE"
+#define SCAN_DIR            "SCAN_DIR"
 
 
 

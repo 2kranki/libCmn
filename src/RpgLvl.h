@@ -1,22 +1,26 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Producer side of Producer/Consumer (Producer) Header
+//                  Rpg Level Handler (RpgLvl) Header
 //****************************************************************
 /*
  * Program
- *          Producer side of Producer/Consumer (Producer)
+ *          Rpg Level Handler (RpgLvl)
  * Purpose
- *          This object provides a standardized way of handling
- *          a separate Producer to run things without complications
- *          of interfering with the main Producer. A Producer may be 
- *          called a Producer on other O/S's.
+ *          This object provides a base for each level in the Report
+ *          Program Generatorr (RPG) system. It is designed to be
+ *          inherited.  The inheriting class would provide data
+ *          storage and support specific level support for the level
+ *          that it was created for. There are 9 levels with 1 being
+ *          the most important and 9 being the least.  There is
+ *          also a detail and summary levels which are required.
+ *          See RPGBASE_LEVELS in RpgBase.h.
  *
  * Remarks
  *  1.      None
  *
  * History
- *  05/04/2021 Generated
+ *  05/23/2021 Generated
  */
 
 
@@ -53,15 +57,16 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <RpgBase.h>
 
 
-#ifndef         PRODUCER_H
-#define         PRODUCER_H
+#ifndef         RPGLVL_H
+#define         RPGLVL_H
 
 
-//#define   PRODUCER_IS_IMMUTABLE     1
-//#define   PRODUCER_JSON_SUPPORT     1
-//#define   PRODUCER_SINGLETON        1
+//#define   RPGLVL_IS_IMMUTABLE     1
+#define   RPGLVL_JSON_SUPPORT       1
+//#define   RPGLVL_SINGLETON        1
 
 
 
@@ -77,26 +82,14 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Producer_data_s  PRODUCER_DATA;            // Inherits from OBJ
-    typedef struct Producer_class_data_s PRODUCER_CLASS_DATA;   // Inherits from OBJ
+    // RPGLVL_DATA is defined in RpgBase.h
+    typedef struct RpgLvl_class_data_s RPGLVL_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Producer_vtbl_s  {
-        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Producer_object.c.
-        // Properties:
-        // Methods:
-        //bool        (*pIsEnabled)(PRODUCER_DATA *);
-    } PRODUCER_VTBL;
+    // RPGLVL_VTBL is defined in RpgBase.h
 
-    typedef struct Producer_class_vtbl_s    {
+    typedef struct RpgLvl_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Producer_object.c.
-        // Properties:
-        // Methods:
-        //bool        (*pIsEnabled)(PRODUCER_DATA *);
-    } PRODUCER_CLASS_VTBL;
+    } RPGLVL_CLASS_VTBL;
 
 
 
@@ -110,12 +103,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  PRODUCER_SINGLETON
-    PRODUCER_DATA *     Producer_Shared (
+#ifdef  RPGLVL_SINGLETON
+    RPGLVL_DATA *     RpgLvl_Shared (
         void
     );
 
-    void            Producer_SharedReset (
+    void            RpgLvl_SharedReset (
         void
     );
 #endif
@@ -125,29 +118,34 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Producer object if successful, otherwise OBJ_NIL.
+     @return    pointer to RpgLvl object if successful, otherwise OBJ_NIL.
      */
-    PRODUCER_DATA *     Producer_Alloc (
+    RPGLVL_DATA *     RpgLvl_Alloc (
         void
     );
     
     
-    OBJ_ID          Producer_Class (
+    OBJ_ID          RpgLvl_Class (
         void
     );
     
     
-    PRODUCER_DATA *     Producer_New (
+    RPGLVL_DATA *   RpgLvl_New (
         void
     );
     
     
-#ifdef  PRODUCER_JSON_SUPPORT
-    PRODUCER_DATA *   Producer_NewFromJsonString (
+    RPGLVL_DATA *   RpgLvl_NewLevel (
+        uint16_t        value
+    );
+
+
+#ifdef  RPGLVL_JSON_SUPPORT
+    RPGLVL_DATA *   RpgLvl_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    PRODUCER_DATA *   Producer_NewFromJsonStringA (
+    RPGLVL_DATA *   RpgLvl_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -159,48 +157,55 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint16_t        RpgLvl_getLevel (
+        RPGLVL_DATA     *this
+    );
 
+    bool            RpgLvl_setLevel (
+        RPGLVL_DATA     *this,
+        uint16_t        value
+    );
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Producer_Disable (
-        PRODUCER_DATA       *this
+    ERESULT     RpgLvl_Disable (
+        RPGLVL_DATA       *this
     );
 
 
-    ERESULT     Producer_Enable (
-        PRODUCER_DATA       *this
+    ERESULT     RpgLvl_Enable (
+        RPGLVL_DATA       *this
     );
 
    
-    PRODUCER_DATA *   Producer_Init (
-        PRODUCER_DATA     *this
+    RPGLVL_DATA *   RpgLvl_Init (
+        RPGLVL_DATA     *this
     );
 
 
-    ERESULT     Producer_IsEnabled (
-        PRODUCER_DATA       *this
+    ERESULT     RpgLvl_IsEnabled (
+        RPGLVL_DATA       *this
     );
     
  
-#ifdef  PRODUCER_JSON_SUPPORT
+#ifdef  RPGLVL_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Producer_ToJson(this);
+     ASTR_DATA      *pDesc = RpgLvl_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Producer_ToJson (
-        PRODUCER_DATA   *this
+    ASTR_DATA *     RpgLvl_ToJson (
+        RPGLVL_DATA   *this
     );
 #endif
 
@@ -209,7 +214,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Producer_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = RpgLvl_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -217,8 +222,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Producer_ToDebugString (
-        PRODUCER_DATA     *this,
+    ASTR_DATA *     RpgLvl_ToDebugString (
+        RPGLVL_DATA     *this,
         int             indent
     );
     
@@ -229,5 +234,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* PRODUCER_H */
+#endif  /* RPGLVL_H */
 

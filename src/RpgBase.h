@@ -79,8 +79,8 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct RpgBase_data_s  RPGBASE_DATA;            // Inherits from OBJ
-    typedef struct RpgBase_class_data_s RPGBASE_CLASS_DATA;   // Inherits from OBJ
+    typedef struct RpgBase_data_s       RPGBASE_DATA;           // Inherits from OBJ
+    typedef struct RpgBase_class_data_s RPGBASE_CLASS_DATA;     // Inherits from OBJ
 
     typedef struct RpgBase_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
@@ -134,8 +134,7 @@ extern "C" {
         ERESULT         (*pUpdate)(RPGBASE_RECORD_INTERFACE *this, void *);
     } RPGBASE_RECORD_VTBL;
 
-
-    /*!             Execution Interface
+    /*!             Level Interface
      This object is supplied externally and defines the execution
      interface exit points that will be called at the appropriate
      times in the RPG cycle.
@@ -148,97 +147,53 @@ extern "C" {
      are for grand totals. Note that Dtl and Sum entries are not
      included in all the groupings.
      */
-    typedef struct RpgBase_Exec_interface_s RPGBASE_EXEC_INTERFACE;
 
-    typedef struct RpgBase_Exec_vtbl_s  {
+    /*!     Definitions from RpgLvl.h
+     */
+    typedef struct RpgLvl_data_s  RPGLVL_DATA;            // Inherits from OBJ
+
+    typedef struct RpgLvl_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // All methods must be defined to return bool.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in RpgLvl_object.c.
         // Properties:
         // Methods:
-        // Break methods are called when a break for that level occurs
+        //bool        (*pIsEnabled)(RPGLVL_DATA *);
+        // Break() methods are called when a break for that level occurs
         // or a higher level.
-        bool        (*pL1Break)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL2Break)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL3Break)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL4Break)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL5Break)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL6Break)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL7Break)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL8Break)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL9Break)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        // LNCalc methods performs the calculations for
+        bool        (*pBreak)(RPGLVL_DATA *, RPGBASE_DATA *);
+        // Calc() methods performs the calculations for
         // this level that are ?????
-        bool        (*pL1Calc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL2Calc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL3Calc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL4Calc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL5Calc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL6Calc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL7Calc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL8Calc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL9Calc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pDtlCalc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pSumCalc)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        // LNCheck methods check to see if their level break has
+        bool        (*pCalc)(RPGLVL_DATA *, RPGBASE_DATA *);
+        // Check() methods check to see if their level break has
         // occurred and return true if so.  They are not responsible
         // for saving the level data since that occurs later in the
         // RPG cycle.
-        bool        (*pL1Check)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL2Check)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL3Check)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL4Check)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL5Check)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL6Check)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL7Check)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL8Check)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL9Check)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        // LNData methods stores the data from the current
+        bool        (*pCheck)(RPGLVL_DATA *, RPGBASE_DATA *, void *pRecord);
+        // Data() methods stores the data from the current
         // input record for use in checking future level breaks.
-        bool        (*pL1Data)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL2Data)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL3Data)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL4Data)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL5Data)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL6Data)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL7Data)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL8Data)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pL9Data)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pDtlData)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        bool        (*pSumData)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *, void *pRecord);
-        // LNZero methods establishes or zeroes the accumulation data
+        bool        (*pData)(RPGLVL_DATA *, RPGBASE_DATA *, void *pRecord);
+        // Out() methods performs the output for the particular level.
+        bool        (*pOut)(RPGLVL_DATA *, RPGBASE_DATA *);
+        // Zero() methods establishes or zeroes the accumulation data
         // which is used at the given level.
-        bool        (*pL1Zero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL2Zero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL3Zero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL4Zero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL5Zero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL6Zero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL7Zero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL8Zero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL9Zero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pDtlZero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pSumZero)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        // LNOut methods performs the output for the particular level.
-        bool        (*pL1Out)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL2Out)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL3Out)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL4Out)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL5Out)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL6Out)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL7Out)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL8Out)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pL9Out)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pDtlOut)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-        bool        (*pSumOut)(RPGBASE_EXEC_INTERFACE *, RPGBASE_DATA *);
-    } RPGBASE_EXEC_VTBL;
+        bool        (*pZero)(RPGLVL_DATA *, RPGBASE_DATA *);
+    } RPGLVL_VTBL;
 
-#pragma pack(push, 1)
-    struct RpgBase_Exec_interface_s    {
-        RPGBASE_EXEC_VTBL   *pVtbl;
-    };
-#pragma pack(pop)
+    typedef enum RpgBase_Levels_e {
+        RPGBASE_LEVEL_1=0,              // Most important level
+        RPGBASE_LEVEL_2,
+        RPGBASE_LEVEL_3,
+        RPGBASE_LEVEL_4,
+        RPGBASE_LEVEL_5,
+        RPGBASE_LEVEL_6,
+        RPGBASE_LEVEL_7,
+        RPGBASE_LEVEL_8,
+        RPGBASE_LEVEL_9,                // Least importand level
+        RPGBASE_LEVEL_DETAIL,           // Required
+        RPGBASE_LEVEL_SUM               // Required
+    } RPGBASE_LEVELS;
 
-#define Rpg_ExecVtbl(ptr)   ((RPGBASE_EXEC_INTERFACE *)ptr)->pVtbl
 
 
 
@@ -315,21 +270,6 @@ extern "C" {
         OBJ_ID          pValue
     );
 
-
-    /*! @property   Execution Object
-     Certain data must be stored in this object. The object defaults
-     to a NodeBT object. This can be easily changed. However, it must
-     conform to the ??? Interface.
-     */
-RPGBASE_EXEC_INTERFACE *  RpgBase_getExec (
-        RPGBASE_DATA    *this
-    );
-
-    bool            RpgBase_setExec (
-        RPGBASE_DATA    *this,
-        RPGBASE_EXEC_INTERFACE
-                        *pValue
-    );
 
 
 

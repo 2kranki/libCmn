@@ -171,10 +171,10 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                           E x e c
+    //                           L e v e l s
     //---------------------------------------------------------------
 
-    RPGBASE_EXEC_INTERFACE *  RpgBase_getExec (
+    OBJ_ID          RpgBase_getLevels (
         RPGBASE_DATA    *this
     )
     {
@@ -188,14 +188,13 @@ extern "C" {
         }
 #endif
 
-        return this->pExec;
+        return this->pLevels;
     }
 
 
-    bool            RpgBase_setExec (
+    bool            RpgBase_setLevels (
         RPGBASE_DATA    *this,
-        RPGBASE_EXEC_INTERFACE
-                        *pValue
+        OBJ_ID          pValue
     )
     {
 #ifdef NDEBUG
@@ -207,10 +206,10 @@ extern "C" {
 #endif
 
         obj_Retain(pValue);
-        if (this->pExec) {
-            obj_Release(this->pExec);
+        if (this->pLevels) {
+            obj_Release(this->pLevels);
         }
-        this->pExec = pValue;
+        this->pLevels = pValue;
 
         return true;
     }
@@ -565,7 +564,7 @@ extern "C" {
 #endif
 
         RpgBase_setData(this, OBJ_NIL);
-        RpgBase_setExec(this, OBJ_NIL);
+        RpgBase_setLevels(this, OBJ_NIL);
         RpgBase_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -736,6 +735,13 @@ extern "C" {
         
         this->pData = (OBJ_ID)NodeBT_New( );
         if (OBJ_NIL == this->pData) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+
+        this->pLevels = ObjArray_New();
+        if (OBJ_NIL == this->pLevels) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;

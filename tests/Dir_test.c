@@ -65,7 +65,7 @@ bool            globScanner(void *pObject, DIRENTRY_DATA *pEntry, void *pData)
                 stderr,
                 "\t%2d name: %s  type: %d\n",
                 count++,
-                Path_getData(DirEntry_getFullPath(pEntry)),
+                Path_getData(pPath),
                 DirEntry_getType(pEntry)
         );
         DirEntry_Complete(pEntry);
@@ -590,7 +590,7 @@ int         test_Dir_Glob01(
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pPattern = NULL;
-    pDir = TEST_FILES_DIR "/*.c";
+    pDir = TEST_FILES_DIR "/*.txt";
     count = 1;
     pObj = Dir_New( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -602,7 +602,9 @@ int         test_Dir_Glob01(
         eRc = Dir_GlobMatch(pObj, pPath, false, (void *)&globScanner, NULL, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
-        XCTAssertTrue( (4 == count) );
+        // Count will be 1 more than what was found.
+        fprintf(stderr, "%s Count: %d\n", pDir, count);
+        XCTAssertTrue( (22 == count) );
 
 
         obj_Release(pObj);
@@ -627,7 +629,7 @@ int         test_Dir_Glob02(
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pPattern = NULL;
-    pDir = TEST_FILES_DIR "/*.c";
+    pDir = TEST_FILES_DIR "/*.txt";
     count = 1;
     pObj = Dir_New( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -639,8 +641,9 @@ int         test_Dir_Glob02(
         eRc = Dir_GlobMatch(pObj, pPath, true, (void *)&globScanner, NULL, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
-        fprintf(stderr, "Count: %d\n", count);
-        XCTAssertTrue( (5 == count) );
+        // Count will be 1 more than what was found.
+        fprintf(stderr, "%s Count: %d\n", pDir, count);
+        XCTAssertTrue( (22 == count) );
 
 
         obj_Release(pObj);
@@ -655,8 +658,8 @@ int         test_Dir_Glob02(
 
 
 TINYTEST_START_SUITE(test_Dir);
-    //TINYTEST_ADD_TEST(test_Dir_Glob02,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_Dir_Glob01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Dir_Glob02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Dir_Glob01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dir_Enum02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dir_Enum01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dir_Scan03,setUp,tearDown);
