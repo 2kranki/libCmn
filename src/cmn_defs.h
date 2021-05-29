@@ -94,6 +94,8 @@
 #   include        <unistd.h>
 #   include        <sys/dirent.h>
 #   include        <sys/time.h>
+#   define      int128_t    __int128_t
+#   define      uint128_t   __uint128_t
 #endif
 #if             defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
 #   define         STRICT
@@ -577,8 +579,6 @@ extern "C" {
         OBJ_IDENT_U8ARRAY_CLASS,
         OBJ_IDENT_U8VLARRAY,            // uint8_t variable length array
         OBJ_IDENT_U8VLARRAY_CLASS,
-        OBJ_IDENT_UINT128,
-        OBJ_IDENT_UINT128_CLASS,
         OBJ_IDENT_URI,                  // Uniform Resource Identifier (RFC 3986)
         OBJ_IDENT_URI_CLASS,
         OBJ_IDENT_UTF8,
@@ -618,8 +618,9 @@ extern "C" {
         OBJ_IDENT_360_ENTRIES=OBJ_IDENT_LNK_ENTRIES+64,             //  32 Objects
         OBJ_IDENT_8085_ENTRIES=OBJ_IDENT_360_ENTRIES+64,            //  32 Objects
         OBJ_IDENT_TRADE_ENTRIES=OBJ_IDENT_8085_ENTRIES+64,          //  32 Objects
-        OBJ_IDENT_COCOA_ENTRIES=OBJ_IDENT_8085_ENTRIES+64,          //  64 Objects
-        OBJ_IDENT_XYZZY_ENTRIES=OBJ_IDENT_8085_ENTRIES+128,         //  ?? Objects
+        OBJ_IDENT_COCOA_ENTRIES=OBJ_IDENT_TRADE_ENTRIES+64,         //  64 Objects
+        OBJ_IDENT_ACCTS_ENTRIES=OBJ_IDENT_COCOA_ENTRIES+128,        //  32 Objects
+        OBJ_IDENT_XYZZY_ENTRIES=OBJ_IDENT_ACCTS_ENTRIES+64,         //  ?? Objects
         OBJ_IDENT_USER_ENTRIES=16384
     } OBJ_IDENTS;
 #endif
