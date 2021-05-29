@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 5/27/2021 15:46:49.000)
+# ( 5/28/2021 18:22:53.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -909,16 +909,6 @@ OBJS += $(OBJDIR)/Path_object.o
 $(OBJDIR)/Path_object.o: $(SRCDIR)/Path_object.c $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/PsxExec.o
-
-$(OBJDIR)/PsxExec.o: $(SRCDIR)/PsxExec.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/PsxExec_object.o
-
-$(OBJDIR)/PsxExec_object.o: $(SRCDIR)/PsxExec_object.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/RpgBase.o
 
 $(OBJDIR)/RpgBase.o: $(SRCDIR)/RpgBase.c $(SRCDIR)/RpgBase.h $(SRCDIR)/RpgBase_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1819,6 +1809,16 @@ OBJS += $(OBJDIR)/psxCond_object.o
 $(OBJDIR)/psxCond_object.o: $(SRCDIR)/psxCond_object.c $(SRCDIR)/psxCond.h $(SRCDIR)/psxCond_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/psxExec.o
+
+$(OBJDIR)/psxExec.o: $(SRCDIR)/psxExec.c $(SRCDIR)/psxExec.h $(SRCDIR)/psxExec_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/psxExec_object.o
+
+$(OBJDIR)/psxExec_object.o: $(SRCDIR)/psxExec_object.c $(SRCDIR)/psxExec.h $(SRCDIR)/psxExec_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/psxLock.o
 
 $(OBJDIR)/psxLock.o: $(SRCDIR)/psxLock.c $(SRCDIR)/psxLock.h $(SRCDIR)/psxLock_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2489,12 +2489,6 @@ Path_test: $(TEST_SRC)/Path_test.c $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += PsxExec_test
-
-PsxExec_test: $(TEST_SRC)/PsxExec_test.c $(SRCDIR)/PsxExec.h $(SRCDIR)/PsxExec_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += RpgBase_test
 
 RpgBase_test: $(TEST_SRC)/RpgBase_test.c $(SRCDIR)/RpgBase.h $(SRCDIR)/RpgBase_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2936,6 +2930,12 @@ prt_test: $(TEST_SRC)/prt_test.c $(SRCDIR)/prt.h $(SRCDIR)/prt_internal.h $(SRCD
 TESTS += psxCond_test
 
 psxCond_test: $(TEST_SRC)/psxCond_test.c $(SRCDIR)/psxCond.h $(SRCDIR)/psxCond_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += psxExec_test
+
+psxExec_test: $(TEST_SRC)/psxExec_test.c $(SRCDIR)/psxExec.h $(SRCDIR)/psxExec_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

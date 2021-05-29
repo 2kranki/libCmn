@@ -71,6 +71,11 @@ ERESULT         Main_SetOutput8086(
     const
     char            *pStrA
 );
+ERESULT         Main_SetOutputAccts(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
 ERESULT         Main_SetOutputAsm(
     MAIN_DATA       *this,
     const
@@ -185,6 +190,16 @@ extern "C" {
             0,
             (void *)Main_SetOutput8086,
             "Output to lib8086"
+        },
+        {
+            "accts",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            0,
+            (void *)Main_SetOutputAccts,
+            "Output to libAccts"
         },
         {
             "asm",
@@ -385,6 +400,25 @@ extern "C" {
         // Do initialization.
 
         Gen_setOutputDrvDirA(this->pGen, "~/git/lib8086/");
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutputAccts(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDirA(this->pGen, "~/git/libAccts/");
 
         // Put code here...
 

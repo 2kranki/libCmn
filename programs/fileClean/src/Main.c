@@ -737,8 +737,14 @@ extern "C" {
         ASTR_DATA           *pDrive = OBJ_NIL;
         PATH_DATA           *pDir = OBJ_NIL;
         PATH_DATA           *pFileName = OBJ_NIL;
+#if defined(__MACOS_ENV__) || defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         const
-        char                *pFileNameA = "file_clean_temp";
+        char                *pFileNameA = "${TMPDIR}/file_clean_temp.tmp";
+#endif
+#if defined(__WIN_ENV__) || defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        const
+        char                *pFileNameA = "${TEMP}/file_clean_temp.tmp";
+#endif
         const
         char                *pFileExtA = "txt";
         uint32_t            TotalRead = 0;
