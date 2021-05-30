@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 5/28/2021 18:22:53.000)
+# ( 5/30/2021 15:10:38.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -557,6 +557,21 @@ $(OBJDIR)/LineIndex_json.o: $(SRCDIR)/LineIndex_json.c $(SRCDIR)/LineIndex.h $(S
 OBJS += $(OBJDIR)/LineIndex_object.o
 
 $(OBJDIR)/LineIndex_object.o: $(SRCDIR)/LineIndex_object.c $(SRCDIR)/LineIndex.h $(SRCDIR)/LineIndex_internal.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Money64.o
+
+$(OBJDIR)/Money64.o: $(SRCDIR)/Money64.c $(SRCDIR)/Money64.h $(SRCDIR)/Money64_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Money64_json.o
+
+$(OBJDIR)/Money64_json.o: $(SRCDIR)/Money64_json.c $(SRCDIR)/Money64.h $(SRCDIR)/Money64_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Money64_object.o
+
+$(OBJDIR)/Money64_object.o: $(SRCDIR)/Money64_object.c $(SRCDIR)/Money64.h $(SRCDIR)/Money64_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/MsgData.o
@@ -2044,16 +2059,6 @@ OBJS += $(OBJDIR)/u8VlArray_object.o
 $(OBJDIR)/u8VlArray_object.o: $(SRCDIR)/u8VlArray_object.c $(SRCDIR)/u8VlArray.h $(SRCDIR)/u8VlArray_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/uint128.o
-
-$(OBJDIR)/uint128.o: $(SRCDIR)/uint128.c $(SRCDIR)/uint128.h $(SRCDIR)/uint128_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/uint128_object.o
-
-$(OBJDIR)/uint128_object.o: $(SRCDIR)/uint128_object.c $(SRCDIR)/uint128.h $(SRCDIR)/uint128_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/utf8.o
 
 $(OBJDIR)/utf8.o: $(SRCDIR)/utf8.c $(SRCDIR)/utf8.h $(SRCDIR)/utf8_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2336,6 +2341,12 @@ Lex_test: $(TEST_SRC)/Lex_test.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCD
 TESTS += LineIndex_test
 
 LineIndex_test: $(TEST_SRC)/LineIndex_test.c $(SRCDIR)/LineIndex.h $(SRCDIR)/LineIndex_internal.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Money64_test
+
+Money64_test: $(TEST_SRC)/Money64_test.c $(SRCDIR)/Money64.h $(SRCDIR)/Money64_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -3056,12 +3067,6 @@ u8Array_test: $(TEST_SRC)/u8Array_test.c $(SRCDIR)/u8Array.h $(SRCDIR)/u8Array_i
 TESTS += u8VlArray_test
 
 u8VlArray_test: $(TEST_SRC)/u8VlArray_test.c $(SRCDIR)/u8VlArray.h $(SRCDIR)/u8VlArray_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += uint128_test
-
-uint128_test: $(TEST_SRC)/uint128_test.c $(SRCDIR)/uint128.h $(SRCDIR)/uint128_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

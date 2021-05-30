@@ -215,7 +215,6 @@
         {name:"u32Array", deps:["array.h"]},
         {name:"U32Index",  desc:"uint32_t Integer Index", json:false},
         {name:"u32Matrix"},
-        {name:"uint128"},
         {name:"Uri", json:true, desc:"Uniform Resource Identifier (RFC 3986)"},
         {name:"utf8", json:true, desc:"UTF-8/16/32 Conversion"},
         {name:"Value", json:true, desc:"Generic Value (Multiple Types Supported)"},
