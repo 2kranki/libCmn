@@ -107,9 +107,10 @@ extern "C" {
         //bool        (*pIsEnabled)(MONEY64_DATA *);
     } MONEY64_CLASS_VTBL;
 
+    // ISO-4217 Compatible Currency Types
     typedef enum Money64_Types_e {
         MONEY64_TYPE_UNKNOWN=0,         // Defaults to US Dollar
-        MONEY64_TYPE_USDOLLAR,
+        MONEY64_TYPE_USD=840,
     } MONEY64_TYPES;
 
 

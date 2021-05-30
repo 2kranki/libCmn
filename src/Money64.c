@@ -1035,7 +1035,8 @@ extern "C" {
 #ifdef  MONEY64_JSON_SUPPORT
         JsonIn_RegisterClass(Money64_Class());
 #endif
-        
+
+        this->type = MONEY64_TYPE_USD;      // Default
         /*
         this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
