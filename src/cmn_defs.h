@@ -339,6 +339,8 @@ extern "C" {
         OBJ_IDENT_MEMRRDS_CLASS,
         OBJ_IDENT_MISC,                 // Miscellaneous Functions
         OBJ_IDENT_MISC_CLASS,
+        OBJ_IDENT_MONEY64,              // Monetary Amounts based on 64-bit Signed Integer
+        OBJ_IDENT_MONEY64_CLASS,
         OBJ_IDENT_MSGBUS,               // Message Broadcast
         OBJ_IDENT_MSGBUS_CLASS,
         OBJ_IDENT_MSGDATA,              // Message Data

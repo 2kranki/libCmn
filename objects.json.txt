@@ -119,6 +119,7 @@
         {name:"memrrds", desc:"Memory-based Relative Record Dataset (ie Fixed Size record indexed by record number)"},
         {name:"memWin32", deps:["memWin32.h","memWin32_internal.h"], os:["win32"], test:false},
         {name:"misc"},
+        {name:"Money64", desc:"Monetary Amounts based on 64-bit Signed Integer", json:true},
         {name:"msgBus", test:{"srcs":[objTest.c, objTest_object.c]}},
         {name:"MsgData", json:true},
         {name:"Name", deps:["str.h"], json:true},

@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- *  Generated 05/28/2021 13:56:42
+ *  Generated 05/29/2021 13:57:23
  */
 
 
@@ -25,9 +25,9 @@
 #include    <tinytest.h>
 #include    <test_defs.h>
 #include    <trace.h>
-#include    <psxExec_internal.h>
+#include    <Money64_internal.h>
 #include    <JsonIn.h>
-#ifdef  PSXEXEC_JSON_SUPPORT
+#ifdef  MONEY64_JSON_SUPPORT
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
@@ -56,7 +56,7 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  PSXEXEC_JSON_SUPPORT
+#ifdef  MONEY64_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
 #endif
@@ -84,25 +84,25 @@ int             tearDown (
 
 
 
-int             test_psxExec_OpenClose (
+int             test_Money64_OpenClose (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    PSXEXEC_DATA       *pObj = OBJ_NIL;
+    MONEY64_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = psxExec_Alloc( );
+    pObj = Money64_Alloc( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = psxExec_Init( pObj );
+    pObj = Money64_Init( pObj );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_PSXEXEC);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_MONEY64);
         TINYTEST_TRUE( (fRc) );
         
         // Test something.
@@ -118,39 +118,37 @@ int             test_psxExec_OpenClose (
 
 
 
-int             test_psxExec_Copy01 (
+int             test_Money64_Copy01 (
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    PSXEXEC_DATA       *pObj1 = OBJ_NIL;
-    PSXEXEC_DATA       *pObj2 = OBJ_NIL;
+    MONEY64_DATA       *pObj1 = OBJ_NIL;
+    MONEY64_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(PSXEXEC_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
-#endif
     //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = psxExec_New( );
+    pObj1 = Money64_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_PSXEXEC);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_MONEY64);
         TINYTEST_TRUE( (fRc) );
         
         // Test assign.
-        pObj2 = psxExec_New();
+        pObj2 = Money64_New();
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        eRc = psxExec_Assign(pObj1, pObj2);
+        eRc = Money64_Assign(pObj1, pObj2);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PSXEXEC);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_MONEY64);
         TINYTEST_TRUE( (fRc) );
-        //iRc = psxExec_Compare(pObj1, pObj2);
+        //iRc = Money64_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (0 == iRc) );
         //TODO: Add More tests here!
 
@@ -158,12 +156,12 @@ int             test_psxExec_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = psxExec_Copy(pObj1);
+        pObj2 = Money64_Copy(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PSXEXEC);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_MONEY64);
         TINYTEST_TRUE( (fRc) );
-        //iRc = psxExec_Compare(pObj1, pObj2);
+        //iRc = Money64_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (0 == iRc) );
         //TODO: Add More tests here!
 
@@ -171,22 +169,20 @@ int             test_psxExec_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(PSXEXEC_JSON_SUPPORT) && defined(XYZZY)
-        pStr = psxExec_ToJson(pObj1);
+        pStr = Money64_ToJson(pObj1);
         TINYTEST_FALSE( (OBJ_NIL == pStr) );
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = psxExec_NewFromJsonString(pStr);
+        pObj2 = Money64_NewFromJsonString(pStr);
         TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_PSXEXEC);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_MONEY64);
         TINYTEST_TRUE( (fRc) );
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //iRc = psxExec_Compare(pObj1, pObj2);
+        //iRc = Money64_Compare(pObj1, pObj2);
         //TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
-#endif
 
         obj_Release(pObj1);
         pObj1 = OBJ_NIL;
@@ -198,28 +194,69 @@ int             test_psxExec_Copy01 (
 
 
 
-int             test_psxExec_Test01 (
+int             test_Money64_Test01 (
     const
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
-    PSXEXEC_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    MONEY64_DATA    *pObj = OBJ_NIL;
     bool            fRc;
+    int             iRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = psxExec_New( );
+    pObj = Money64_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_PSXEXEC);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_MONEY64);
         TINYTEST_TRUE( (fRc) );
         //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        pObj->amt = 1234567890001;
+        pStr = Money64_ToAStr(pObj);
+        fprintf(stderr, " 1234567890001: %s\n", AStr_getData(pStr));
+        iRc = AStr_CompareA(pStr, " 123,456,789.0001");
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        pObj->amt = -1234567890001;
+        pStr = Money64_ToAStr(pObj);
+        fprintf(stderr, "-1234567890001: %s\n", AStr_getData(pStr));
+        iRc = AStr_CompareA(pStr, "-123,456,789.0001");
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
         
+        pObj->amt = 1234567890055;
+        pStr = Money64_ToAStrDec2(pObj);
+        fprintf(stderr, " 1234567890055: %s\n", AStr_getData(pStr));
+        iRc = AStr_CompareA(pStr, " 123,456,789.01");
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        pObj->amt = -1234567890055;
+        pStr = Money64_ToAStrDec2(pObj);
+        fprintf(stderr, "-1234567890055: %s\n", AStr_getData(pStr));
+        iRc = AStr_CompareA(pStr, "-123,456,789.01");
+        TINYTEST_TRUE( (0 == iRc) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        pStr = AStr_NewA("-123,456,789.0001");
+        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        eRc = Money64_FromAStr(pObj, pStr);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "-1234567890001: %lld\n", pObj->amt);
+        TINYTEST_TRUE( (-1234567890001 == pObj->amt) );
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
         {
-            ASTR_DATA       *pStr = psxExec_ToDebugString(pObj, 4);
+            ASTR_DATA       *pStr = Money64_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -237,48 +274,55 @@ int             test_psxExec_Test01 (
 
 
 
-int             test_psxExec_System01(
+int             test_Money64_Add01 (
     const
     char            *pTestName
 )
 {
-    ERESULT         eRc;
-    //PSXEXEC_DATA    *pObj = OBJ_NIL;
-    int             iRc;
-    ASTR_DATA       *pCommand = OBJ_NIL;
-    ASTR_DATA       *pOutput = OBJ_NIL;
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    MONEY64_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pCommand = AStr_NewA("echo \"just a test\"");
-    TINYTEST_FALSE( (OBJ_NIL == pCommand) );
-    iRc = psxExec_SystemWithOutput(pCommand, &pOutput);
-    if (pOutput) {
-        fprintf(stderr, "\tiRc=%d  output=\"%s\"\n\n", iRc, AStr_getData(pOutput));
+    pObj = Money64_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_MONEY64);
+        TINYTEST_TRUE( (fRc) );
+        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+
+
+        {
+            ASTR_DATA       *pStr = Money64_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
     }
-    eRc = AStr_CompareA(pOutput, "just a test\n");
-    TINYTEST_TRUE( (0 == eRc) );
 
-    obj_Release(pOutput);
-    pOutput = OBJ_NIL;
-    obj_Release(pCommand);
-    pCommand = OBJ_NIL;
-
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_psxExec);
-    TINYTEST_ADD_TEST(test_psxExec_System01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_psxExec_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_psxExec_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_psxExec_OpenClose,setUp,tearDown);
+TINYTEST_START_SUITE(test_Money64);
+    TINYTEST_ADD_TEST(test_Money64_Test01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Money64_Copy01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Money64_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 
-TINYTEST_MAIN_SINGLE_SUITE(test_psxExec);
+TINYTEST_MAIN_SINGLE_SUITE(test_Money64);
 
 
 

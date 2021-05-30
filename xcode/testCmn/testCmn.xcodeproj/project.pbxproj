@@ -226,9 +226,12 @@
 		C47D7BE9265A13E200E2A280 /* RpgLvl.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7BE4265A13E100E2A280 /* RpgLvl.c */; };
 		C47D7BEA265A13E200E2A280 /* RpgLvl_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7BE5265A13E200E2A280 /* RpgLvl_json.c */; };
 		C47D7BEB265A13E200E2A280 /* RpgLvl_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7BE6265A13E200E2A280 /* RpgLvl_object.c */; };
-		C47D7C15266166DD00E2A280 /* psxExec_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C14266166DD00E2A280 /* psxExec_test.c */; };
 		C47D7C1A2661671200E2A280 /* psxExec_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C162661671200E2A280 /* psxExec_object.c */; };
 		C47D7C1B2661671200E2A280 /* psxExec.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C172661671200E2A280 /* psxExec.c */; };
+		C47D7C312662B8E500E2A280 /* Money64_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C2C2662B8E400E2A280 /* Money64_json.c */; };
+		C47D7C322662B8E500E2A280 /* Money64_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C2D2662B8E400E2A280 /* Money64_object.c */; };
+		C47D7C332662B8E500E2A280 /* Money64.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C2F2662B8E500E2A280 /* Money64.c */; };
+		C47D7C352662E4D100E2A280 /* Money64_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7C342662E4D100E2A280 /* Money64_test.c */; };
 		C47DD28A238D887600EA9388 /* SrcLoc_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C47DD285238D887500EA9388 /* SrcLoc_json.c */; };
 		C47DD28B238D887600EA9388 /* SrcLoc_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47DD286238D887500EA9388 /* SrcLoc_object.c */; };
 		C47DD28C238D887600EA9388 /* SrcLoc.c in Sources */ = {isa = PBXBuildFile; fileRef = C47DD289238D887600EA9388 /* SrcLoc.c */; };
@@ -856,11 +859,16 @@
 		C47D7BE6265A13E200E2A280 /* RpgLvl_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = RpgLvl_object.c; sourceTree = "<group>"; };
 		C47D7BE7265A13E200E2A280 /* RpgLvl_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RpgLvl_internal.h; sourceTree = "<group>"; };
 		C47D7BE8265A13E200E2A280 /* RpgLvl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RpgLvl.h; sourceTree = "<group>"; };
-		C47D7C14266166DD00E2A280 /* psxExec_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec_test.c; sourceTree = "<group>"; };
 		C47D7C162661671200E2A280 /* psxExec_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec_object.c; sourceTree = "<group>"; };
 		C47D7C172661671200E2A280 /* psxExec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = psxExec.c; sourceTree = "<group>"; };
 		C47D7C182661671200E2A280 /* psxExec_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxExec_internal.h; sourceTree = "<group>"; };
 		C47D7C192661671200E2A280 /* psxExec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = psxExec.h; sourceTree = "<group>"; };
+		C47D7C2C2662B8E400E2A280 /* Money64_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Money64_json.c; sourceTree = "<group>"; };
+		C47D7C2D2662B8E400E2A280 /* Money64_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Money64_object.c; sourceTree = "<group>"; };
+		C47D7C2E2662B8E500E2A280 /* Money64_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Money64_internal.h; sourceTree = "<group>"; };
+		C47D7C2F2662B8E500E2A280 /* Money64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Money64.c; sourceTree = "<group>"; };
+		C47D7C302662B8E500E2A280 /* Money64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Money64.h; sourceTree = "<group>"; };
+		C47D7C342662E4D100E2A280 /* Money64_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Money64_test.c; sourceTree = "<group>"; };
 		C47DD285238D887500EA9388 /* SrcLoc_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcLoc_json.c; sourceTree = "<group>"; };
 		C47DD286238D887500EA9388 /* SrcLoc_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SrcLoc_object.c; sourceTree = "<group>"; };
 		C47DD287238D887500EA9388 /* SrcLoc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SrcLoc.h; sourceTree = "<group>"; };
@@ -1239,7 +1247,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C47D7C14266166DD00E2A280 /* psxExec_test.c */,
+				C47D7C342662E4D100E2A280 /* Money64_test.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -1598,6 +1606,11 @@
 				C4359A9E1FC9C3D200CA858E /* misc_object.c */,
 				C4359AB51FC9C3D400CA858E /* misc.c */,
 				C4359A951FC9C3D100CA858E /* misc.h */,
+				C47D7C2E2662B8E500E2A280 /* Money64_internal.h */,
+				C47D7C2C2662B8E400E2A280 /* Money64_json.c */,
+				C47D7C2D2662B8E400E2A280 /* Money64_object.c */,
+				C47D7C2F2662B8E500E2A280 /* Money64.c */,
+				C47D7C302662B8E500E2A280 /* Money64.h */,
 				C4359A901FC9C3D100CA858E /* msgBus_internal.h */,
 				C4359A961FC9C3D100CA858E /* msgBus_object.c */,
 				C4359A711FC9C3CE00CA858E /* msgBus.c */,
@@ -2085,6 +2098,7 @@
 				C4E1383123BE91570095EABE /* TokenList.c in Sources */,
 				C4359B041FC9C3D800CA858E /* misc.c in Sources */,
 				C43599CE1FC9C36800CA858E /* cb_object.c in Sources */,
+				C47D7C332662B8E500E2A280 /* Money64.c in Sources */,
 				C4EBE2CA23C927E2008E9EE8 /* NodeBT.c in Sources */,
 				C4B75F4723FC4E1300701E77 /* U16Array.c in Sources */,
 				C4714377240CA7980073AADC /* ObjBT_json.c in Sources */,
@@ -2186,7 +2200,9 @@
 				C4D463122419275C00AF453D /* False.c in Sources */,
 				C40F05682482E55A00D66F9B /* Lex06.c in Sources */,
 				C4EBE1F423C19BF6008E9EE8 /* Compiler.c in Sources */,
+				C47D7C322662B8E500E2A280 /* Money64_object.c in Sources */,
 				C40F056B2482E55A00D66F9B /* Lex07_object.c in Sources */,
+				C47D7C312662B8E500E2A280 /* Money64_json.c in Sources */,
 				C47DD28B238D887600EA9388 /* SrcLoc_object.c in Sources */,
 				C479C00223ADB9310057A017 /* szTbl_json.c in Sources */,
 				C49AA1EC2627397E008B6182 /* SqlRow.c in Sources */,
@@ -2431,9 +2447,9 @@
 				C435855423B7CE810069B103 /* SrcError_json.c in Sources */,
 				C4EC06362535FE7A00C0F25A /* Uri.c in Sources */,
 				C4359A3E1FC9C38800CA858E /* dec_object.c in Sources */,
-				C47D7C15266166DD00E2A280 /* psxExec_test.c in Sources */,
 				C40F055E2482E55A00D66F9B /* Lex06_object.c in Sources */,
 				C47DD28C238D887600EA9388 /* SrcLoc.c in Sources */,
+				C47D7C352662E4D100E2A280 /* Money64_test.c in Sources */,
 				C4B045D723DD340900162B4F /* JsonOut.c in Sources */,
 				C4A0968C2613F7C2005E97F0 /* LexKW.c in Sources */,
 				C4E137CA23BAEBBB0095EABE /* JsonIn.c in Sources */,
