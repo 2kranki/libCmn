@@ -51,6 +51,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Money64.h>
 #include        <Value.h>
 
 
@@ -100,18 +101,22 @@ extern "C" {
 
     typedef enum SqlCol_types_e  {
         SQLCOL_TYPE_UNKNOWN=0,
+        SQLCOL_TYPE_BIGINT,             // int64_t
         SQLCOL_TYPE_BLOB,
         SQLCOL_TYPE_BOOL,
         SQLCOL_TYPE_CHAR,
         SQLCOL_TYPE_DATE,
         SQLCOL_TYPE_DECIMAL,
         SQLCOL_TYPE_FILLER,
-        SQLCOL_TYPE_INTEGER,
+        SQLCOL_TYPE_INTEGER,            // int32_t
+        SQLCOL_TYPE_MONEY64,
         SQLCOL_TYPE_NCHAR,
         SQLCOL_TYPE_NUMBER,
         SQLCOL_TYPE_NVARCHAR,
         SQLCOL_TYPE_REAL,
+        SQLCOL_TYPE_SMALLINT,           // int16_t
         SQLCOL_TYPE_TEXT,
+        SQLCOL_TYPE_TINYINT,            // int8_t
         SQLCOL_TYPE_VARCHAR             // Same as TEXT
     } SQLCOL_TYPES;
 
@@ -142,7 +147,7 @@ extern "C" {
         //                                specified by this number
         int8_t              decimalPlaces;      // for SQLCOL_TYPE_REAL
         uint8_t             colSeq;             // Column Sequence number for CSV
-        //                                      // or other formats.
+        //                                      // or other formats (1+).
         int32_t             length;
         //                          For DBFIELD_TYPE_TEXT and DBFIELD_TYPE_VARCHAR,
         //                          a length of 0 just means that it is variable.
@@ -201,6 +206,7 @@ extern "C" {
     );
     
     SQLCOL_DATA *     SqlCol_NewFromStruct (
+        const
         SQLCOL_STRUCT   *pStruct
     );
 
@@ -391,6 +397,13 @@ extern "C" {
     );
 
 
+    int             SqlCol_CompareNameA (
+        SQLCOL_DATA     *this,
+        const
+        char            *pNameA
+    );
+
+
     /*!
      Construct the full name from the database, table and column names.
      @param     this    object pointer
@@ -412,6 +425,7 @@ extern "C" {
      */
     ERESULT         SqlCol_FromStruct (
         SQLCOL_DATA		*this,
+        const
         SQLCOL_STRUCT   *pStruct
     );
 

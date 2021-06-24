@@ -301,19 +301,18 @@ int             test_Dir_Test01 (
 {
     ERESULT         eRc = ERESULT_SUCCESS;
     DIR_DATA	    *pObj = OBJ_NIL;
-    char            *pPathA = TEST_FILES_DIR;
-   
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = Dir_New( );
-    pDir = pPathA;
+    pDir = strdup(TEST_FILES_DIR);
     count = 1;
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         PATH_DATA   *pPath;
 
         count = 1;
-        pPath = Path_NewA(pPathA);
+        pPath = Path_NewA(pDir);
         eRc = Dir_ScanDir(pObj, pPath, true, (void *)&scanner, NULL, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
@@ -321,6 +320,8 @@ int             test_Dir_Test01 (
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+    free(pDir);
+    pDir = NULL;
 
 
     fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
@@ -341,7 +342,7 @@ int         test_Dir_Scan01(
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     //pPattern = "*.wav";
-    pDir = getenv("HOME");
+    pDir = strdup(TEST_FILES_DIR);
     pObj = Dir_New( );
     count = 1;
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -356,6 +357,8 @@ int         test_Dir_Scan01(
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+    free(pDir);
+    pDir = NULL;
 
     fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
@@ -374,8 +377,8 @@ int         test_Dir_Scan02(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pPattern = "*.wav";
-    pDir = getenv("HOME");
+    pPattern = "*.txt";
+    pDir = strdup(TEST_FILES_DIR);
     count = 1;
     pObj = Dir_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -392,6 +395,8 @@ int         test_Dir_Scan02(
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+    free(pDir);
+    pDir = NULL;
 
     fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
@@ -411,7 +416,7 @@ int         test_Dir_Scan03(
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pPattern = NULL;
-    pDir = ".";
+    pDir = strdup(TEST_FILES_DIR);
     count = 1;
     pObj = Dir_Alloc( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -428,6 +433,8 @@ int         test_Dir_Scan03(
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+    free(pDir);
+    pDir = NULL;
 
     fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
@@ -451,11 +458,7 @@ int         test_Dir_Enum01(
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pDir = NULL;
-    pDir = getenv("HOME");
-    if (pDir) {
-        pDir = strdup(pDir);
-    }
+    pDir = strdup(TEST_FILES_DIR);
     fprintf(stderr, "\tDir: %s\n", pDir);
     XCTAssertFalse( (NULL == pDir) );
     pObj = Dir_Alloc( );
@@ -519,15 +522,13 @@ int         test_Dir_Enum02(
     uint32_t        count;
     uint32_t        i;
     PATH_DATA       *pWrkPath = OBJ_NIL;
+    const
     char            *pPathA = TEST_FILES_DIR;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pDir = NULL;
-    pDir = pPathA;
-    if (pDir) {
-        pDir = strdup(pDir);
-    }
+    pDir = strdup(pPathA);
     fprintf(stderr, "\tDir: %s\n", pDir);
     XCTAssertFalse( (NULL == pDir) );
     pObj = Dir_Alloc( );
@@ -643,7 +644,7 @@ int         test_Dir_Glob02(
         pPath = OBJ_NIL;
         // Count will be 1 more than what was found.
         fprintf(stderr, "%s Count: %d\n", pDir, count);
-        XCTAssertTrue( (22 == count) );
+        XCTAssertTrue( (24 == count) );
 
 
         obj_Release(pObj);

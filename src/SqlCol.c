@@ -158,6 +158,7 @@ extern "C" {
 
 
     SQLCOL_DATA *     SqlCol_NewFromStruct (
+        const
         SQLCOL_STRUCT   *pStruct
     )
     {
@@ -182,6 +183,52 @@ extern "C" {
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //                         A m o u n t
+    //---------------------------------------------------------------
+
+    MONEY64_DATA * SqlCol_getAmount (
+        SQLCOL_DATA *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pValue;
+    }
+
+
+    bool        SqlCol_setAmount (
+        SQLCOL_DATA *this,
+        MONEY64_DATA *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pValue) {
+            obj_Release(this->pValue);
+        }
+        this->pValue = pValue;
+
+        return true;
+    }
+
+
 
     //---------------------------------------------------------------
     //              C h e c k  E x p r e s s i o n
@@ -1091,6 +1138,34 @@ extern "C" {
     }
 
 
+    int             SqlCol_CompareNameA (
+        SQLCOL_DATA     *this,
+        const
+        char            *pNameA
+    )
+    {
+        int             iRc = 0;
+
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
+        }
+#endif
+
+        iRc = AStr_CompareA(this->pName, pNameA);
+
+        return iRc;
+    }
+
+
 
     //---------------------------------------------------------------
     //                          C o p y
@@ -1172,13 +1247,9 @@ extern "C" {
         }
 #endif
 
-        SqlCol_setCheckExpr(this, OBJ_NIL);
-        SqlCol_setDatabaseName(this, OBJ_NIL);
-        SqlCol_setDefVal(this, OBJ_NIL);
-        SqlCol_setDesc(this, OBJ_NIL);
-        SqlCol_setName(this, OBJ_NIL);
-        SqlCol_setTableName(this, OBJ_NIL);
-        SqlCol_setValue(this, OBJ_NIL);
+        // Note: Amount and Value share the same parameter right now. So, we
+        //      really do not need to release both.
+        SqlCol_ReleaseData(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1313,6 +1384,7 @@ extern "C" {
 
     ERESULT         SqlCol_FromStruct (
         SQLCOL_DATA     *this,
+        const
         SQLCOL_STRUCT   *pStruct
     )
     {
@@ -1328,12 +1400,7 @@ extern "C" {
 #endif
 
         // Release any prior data.
-        SqlCol_setCheckExpr(this, OBJ_NIL);
-        SqlCol_setDatabaseName(this, OBJ_NIL);
-        SqlCol_setDefVal(this, OBJ_NIL);
-        SqlCol_setDesc(this, OBJ_NIL);
-        SqlCol_setName(this, OBJ_NIL);
-        SqlCol_setTableName(this, OBJ_NIL);
+        SqlCol_ReleaseData(this);
 
         if (pStruct->pCheckExpression) {
             this->pCheckExpr = AStr_NewA(pStruct->pCheckExpression);
@@ -1669,6 +1736,41 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                   R e l e a s e  D a t a
+    //---------------------------------------------------------------
+
+    ERESULT         SqlCol_ReleaseData (
+        SQLCOL_DATA     *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SqlCol_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Release any prior data.
+        SqlCol_setAmount(this, OBJ_NIL);
+        SqlCol_setCheckExpr(this, OBJ_NIL);
+        SqlCol_setDatabaseName(this, OBJ_NIL);
+        SqlCol_setDefVal(this, OBJ_NIL);
+        SqlCol_setDesc(this, OBJ_NIL);
+        SqlCol_setName(this, OBJ_NIL);
+        SqlCol_setTableName(this, OBJ_NIL);
+        SqlCol_setValue(this, OBJ_NIL);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

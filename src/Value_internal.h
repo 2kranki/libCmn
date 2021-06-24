@@ -74,7 +74,7 @@ struct Value_data_s	{
     uint16_t        type;           // Value Type (see VALUE_TYPE)
     uint16_t        misc16;
     uint32_t        user;           // User Specified
-    ASTR_DATA       *pStr;
+    OBJ_ID          pOther;
     union {
         int8_t          i8;
         int16_t         i16;

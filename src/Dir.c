@@ -101,21 +101,6 @@ extern "C" {
         PATH_DATA       *pPath;
         bool            fRc = false;
 
-        // Recurse through the directories if needed.
-        pPath = DirEntry_getFullPath(pDirent);
-        if (pData->fRecurse && DirEntry_IsDir(pDirent)
-        ) {
-            eRc =   Dir_GlobMatch(
-                                this,
-                                pPath,
-                                pData->fRecurse,
-                                (void *)pData->pScanner,
-                                pData->pObject,
-                                pData->pData
-                    );
-
-        }
-
         // The directory scan just passes all the directory
         // entries.  So, we will be do a match.
         if (pData->pPatternA) {
@@ -125,6 +110,7 @@ extern "C" {
             }
         }
 
+        pPath = DirEntry_getFullPath(pDirent);
         if (pPath && Path_getSize(pPath)
             && (DIRENTRY_TYPE_REG == DirEntry_getType(pDirent))
         ) {

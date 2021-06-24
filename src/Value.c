@@ -237,6 +237,34 @@ extern "C" {
     }
 
 
+    VALUE_DATA *    Value_NewDataCopy (
+        int32_t         length,
+        uint8_t         *pData
+    )
+    {
+        VALUE_DATA      *this;
+        bool            fRc;
+        uint8_t         *pData2;
+
+        this = Value_New();
+        if (this) {
+            pData2 = mem_Malloc(length);
+            if (pData2) {
+                memmove(pData2, pData, length);
+                fRc = Value_setDataFree(this, length, pData2);
+                if (!fRc) {
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                }
+            } else {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return this;
+    }
+
+
     VALUE_DATA *    Value_NewDataFree (
         int32_t         length,
         uint8_t         *pData
@@ -343,6 +371,25 @@ extern "C" {
         this = Value_New();
         if (this) {
             fRc = Value_setI64(this, value);
+            if (!fRc) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return this;
+    }
+
+
+    VALUE_DATA *    Value_NewMoney64 (
+        MONEY64_DATA    *pValue
+    )
+    {
+        VALUE_DATA      *this;
+        bool            fRc;
+
+        this = Value_New();
+        if (this) {
+            fRc = Value_setMoney64(this, pValue);
             if (!fRc) {
                 obj_Release(this);
                 this = OBJ_NIL;
@@ -802,6 +849,7 @@ extern "C" {
         VALUE_DATA      *this
     )
     {
+        int32_t         i = 0;
 
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -812,12 +860,16 @@ extern "C" {
         }
 #endif
 
-        if (this->type == VALUE_TYPE_INT32) {
-            return this->value.i32;
+        switch (this->type) {
+            case VALUE_TYPE_INT8:
+                i = this->value.i8;
+            case VALUE_TYPE_INT16:
+                i = this->value.i16;
+            case VALUE_TYPE_INT32:
+                i = this->value.i32;
         }
-        else {
-            return 0;
-        }
+
+        return i;
     }
 
 
@@ -893,6 +945,56 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        M o n e y 6 4
+    //---------------------------------------------------------------
+
+    MONEY64_DATA *  Value_getMoney64 (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        if (this->type == VALUE_TYPE_MONEY64) {
+            return this->value.pObject;
+        }
+        else {
+            return OBJ_NIL;
+        }
+    }
+
+
+    bool            Value_setMoney64 (
+        VALUE_DATA      *this,
+        MONEY64_DATA    *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        Value_FreeData(this);
+        this->value.pObject = pValue;
+        this->type = VALUE_TYPE_MONEY64;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          O b j e c t
     //---------------------------------------------------------------
 
@@ -936,6 +1038,52 @@ extern "C" {
         Value_FreeData(this);
         this->value.pObject = pValue;
         this->type = VALUE_TYPE_OBJECT;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          O t h e r
+    //---------------------------------------------------------------
+
+    OBJ_ID          Value_getOther (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pOther;
+    }
+
+
+    bool            Value_setOther (
+        VALUE_DATA      *this,
+        OBJ_ID          pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pOther) {
+            obj_Release(this->pOther);
+        }
+        this->pOther = pValue;
 
         return true;
     }
@@ -1135,6 +1283,7 @@ extern "C" {
         VALUE_DATA      *this
     )
     {
+        uint32_t        i = 0;
 
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -1145,12 +1294,16 @@ extern "C" {
         }
 #endif
 
-        if (this->type == VALUE_TYPE_UINT32) {
-            return this->value.u16;
+        switch (this->type) {
+            case VALUE_TYPE_UINT8:
+                i = this->value.u8;
+            case VALUE_TYPE_UINT16:
+                i = this->value.u16;
+            case VALUE_TYPE_UINT32:
+                i = this->value.u32;
         }
-        else {
-            return 0;
-        }
+
+        return i;
     }
 
 
@@ -1354,6 +1507,8 @@ extern "C" {
                 pOther->value.u64 = this->value.u64;
                 break;
 
+            case VALUE_TYPE_ASTR:
+            case VALUE_TYPE_MONEY64:
             case VALUE_TYPE_OBJECT:
                 if (this->value.pObject) {
                     if (obj_getVtbl(this->value.pObject)->pCopy) {
@@ -1472,6 +1627,8 @@ extern "C" {
                 iRc = (int)(this->value.u64 - pOther->value.u64);
                 break;
 
+            case VALUE_TYPE_ASTR:
+            case VALUE_TYPE_MONEY64:
             case VALUE_TYPE_OBJECT:
                 if (this->value.pObject) {
                     if (obj_getVtbl(this->value.pObject)->pCompare
@@ -1586,6 +1743,7 @@ extern "C" {
         }
 #endif
 
+        Value_setOther(this, OBJ_NIL);
         Value_FreeData(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -1761,6 +1919,85 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                     T o  M o n e y
+    //---------------------------------------------------------------
+
+    MONEY64_DATA *  Value_ToMoney64 (
+        VALUE_DATA     *this
+    )
+    {
+        int64_t         i64 = 0;
+        MONEY64_DATA    *pMoney = OBJ_NIL;
+
+#ifdef NDEBUG
+#else
+        if (!Value_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        switch (this->type) {
+            case VALUE_TYPE_DOUBLE:
+                i64 = (int64_t)this->value.flt;
+                break;
+            case VALUE_TYPE_INT8:
+                i64 = (int64_t)this->value.i8;
+                break;
+            case VALUE_TYPE_INT16:
+                i64 = (int64_t)this->value.i16;
+                break;
+            case VALUE_TYPE_INT32:
+                i64 = (int64_t)this->value.i32;
+                break;
+
+            case VALUE_TYPE_INT64:
+                i64 = this->value.i64;
+                break;
+
+            case VALUE_TYPE_UINT8:
+                i64 = (int64_t)this->value.u8;
+                break;
+
+            case VALUE_TYPE_UINT16:
+                i64 = (int64_t)this->value.u16;
+                break;
+
+            case VALUE_TYPE_UINT32:
+                i64 = (int64_t)this->value.u32;
+                break;
+
+            case VALUE_TYPE_UINT64:
+                i64 = (int64_t)this->value.u64;
+                break;
+
+            case VALUE_TYPE_MONEY64:
+                return this->value.pObject;
+
+            case VALUE_TYPE_ASTR:
+            case VALUE_TYPE_DATA:
+            case VALUE_TYPE_DATA_FREE:
+            case VALUE_TYPE_OBJECT:
+            default:
+                DEBUG_BREAK();
+                return OBJ_NIL;
+                break;
+        }
+
+        pMoney = Money64_New();
+        if (OBJ_NIL == pMoney) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        Money64_setAmount(pMoney, i64);
+
+        return pMoney;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------

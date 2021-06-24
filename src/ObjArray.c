@@ -1385,7 +1385,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     ERESULT         ObjArray_SortAscending (
-        OBJARRAY_DATA    *this,
+        OBJARRAY_DATA   *this,
         OBJ_COMPARE     pCompare
     )
     {

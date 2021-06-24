@@ -41,6 +41,7 @@
 
 #include        <SQLite.h>
 #include        <JsonIn.h>
+#include        <ObjList.h>
 #include        <sqlite3.h>
 
 
@@ -93,12 +94,12 @@ struct SQLite_data_s  {
     //---------------------------------------------------------------
 
 #ifdef  SQLITE_SINGLETON
-    SQLITE_DATA *     SQLite_getSingleton (
+    SQLITE_DATA *   SQLite_getSingleton (
         void
     );
 
     bool            SQLite_setSingleton (
-     SQLITE_DATA       *pValue
+     SQLITE_DATA        *pValue
 );
 #endif
 
@@ -114,12 +115,48 @@ struct SQLite_data_s  {
 
 
     ERESULT         SQLite_Assign (
-        SQLITE_DATA    *this,
-        SQLITE_DATA    *pOther
+        SQLITE_DATA     *this,
+        SQLITE_DATA     *pOther
     );
 
 
-    SQLITE_DATA *       SQLite_Copy (
+    /*!
+     Bind the given Value object to the given SQLite statement.
+     @param     this    object pointer
+     @param     pStmt   SQLite Statement pointer
+     @param     idx     index into the statement for the value to be
+                        assigned to
+     @param     pValue  Value object pointer containing data to be
+                        bound to the statement
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SQLite_BindValue (
+        SQLITE_DATA     *this,
+        sqlite3_stmt    *pStmt,
+        int             idx,
+        VALUE_DATA      *pValue
+    );
+
+
+    /*!
+     Convert SQLite column data to SqlCol object.
+     SQLite allows any column to contain any type of data regardless
+     of the original table definition. We impose a stricter interpre-
+     tation and require that data from SQLite conform to the type
+     of data that we are expecting from the column definition.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    SQLCOL_DATA *   SQLite_ColDataToCol (
+        SQLITE_DATA     *this,
+        sqlite3_stmt    *pStmt,
+        int             idx
+    );
+
+
+    SQLITE_DATA *   SQLite_Copy (
         SQLITE_DATA     *this
     );
 
@@ -136,7 +173,7 @@ struct SQLite_data_s  {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SQLITE_DATA *       SQLite_ParseJsonObject (
+    SQLITE_DATA *   SQLite_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -178,7 +215,7 @@ struct SQLite_data_s  {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     SQLite_ToJson (
-        SQLITE_DATA      *this
+        SQLITE_DATA     *this
     );
 
 
@@ -203,7 +240,7 @@ struct SQLite_data_s  {
 #ifdef NDEBUG
 #else
     bool            SQLite_Validate (
-        SQLITE_DATA       *this
+        SQLITE_DATA     *this
     );
 #endif
 

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   SqlRow.c
- *  Generated 04/14/2021 10:28:06
+ * File:   ValueArray.c
+ *  Generated 06/17/2021 14:31:59
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <SqlRow_internal.h>
+#include        <ValueArray_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -66,11 +66,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            SqlRow_task_body (
+    void            ValueArray_task_body (
         void            *pData
     )
     {
-        //SQLROW_DATA  *this = pData;
+        //VALUEARRAY_DATA  *this = pData;
         
     }
 #endif
@@ -86,12 +86,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SQLROW_DATA *     SqlRow_Alloc (
+    VALUEARRAY_DATA *     ValueArray_Alloc (
         void
     )
     {
-        SQLROW_DATA       *this;
-        uint32_t        cbSize = sizeof(SQLROW_DATA);
+        VALUEARRAY_DATA       *this;
+        uint32_t        cbSize = sizeof(VALUEARRAY_DATA);
         
         // Do initialization.
         
@@ -103,58 +103,40 @@ extern "C" {
 
 
 
-    SQLROW_DATA *     SqlRow_New (
+    VALUEARRAY_DATA *     ValueArray_New (
         void
     )
     {
-        SQLROW_DATA       *this;
+        VALUEARRAY_DATA       *this;
         
-        this = SqlRow_Alloc( );
+        this = ValueArray_Alloc( );
         if (this) {
-            this = SqlRow_Init(this);
+            this = ValueArray_Init(this);
         } 
         return this;
     }
 
 
 
-    SQLROW_DATA *   SqlRow_NewFromColumnStructs (
-        int             num,
-        SQLCOL_STRUCT   *pStructs
-    )
-    {
-        ERESULT         eRc;
-        SQLROW_DATA     *this;
-
-        this = SqlRow_New( );
-        if (this) {
-            eRc = SqlRow_SetupFromColumnStructs(this, num, pStructs);
-            if (ERESULT_FAILED(eRc)) {
-                obj_Release(this);
-                this = OBJ_NIL;
-            }
-        }
-        return this;
-    }
-
+    
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          A r r a y
+    //                         A r r a y
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * SqlRow_getArray (
-        SQLROW_DATA     *this
+    OBJARRAY_DATA *     ValueArray_getArray (
+        VALUEARRAY_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -164,14 +146,14 @@ extern "C" {
     }
 
 
-    bool            SqlRow_setArray (
-        SQLROW_DATA     *this,
+    bool            ValueArray_setArray (
+        VALUEARRAY_DATA *this,
         OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -192,15 +174,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        SqlRow_getPriority (
-        SQLROW_DATA     *this
+    uint16_t        ValueArray_getPriority (
+        VALUEARRAY_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -211,14 +193,14 @@ extern "C" {
     }
 
 
-    bool            SqlRow_setPriority (
-        SQLROW_DATA     *this,
+    bool            ValueArray_setPriority (
+        VALUEARRAY_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -235,40 +217,82 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        SqlRow_getSize (
-        SQLROW_DATA       *this
+    uint32_t        ValueArray_getSize (
+        VALUEARRAY_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        if (this->pArray) {
-            return ObjArray_getSize(this->pArray);
-        }
-
-        return 0;
+        return ObjArray_getSize(this->pArray);
     }
 
 
 
     //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA * ValueArray_getStr (
+        VALUEARRAY_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ValueArray_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool        ValueArray_setStr (
+        VALUEARRAY_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!ValueArray_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  SqlRow_getSuperVtbl (
-        SQLROW_DATA     *this
+    OBJ_IUNKNOWN *  ValueArray_getSuperVtbl (
+        VALUEARRAY_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -291,9 +315,9 @@ extern "C" {
     //                          A p p e n d
     //---------------------------------------------------------------
 
-    ERESULT         SqlRow_AppendCol (
-        SQLROW_DATA     *this,
-        SQLCOL_DATA     *pCol
+    ERESULT         ValueArray_Append (
+        VALUEARRAY_DATA *this,
+        VALUEARRAY_DATA *pOther
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -301,24 +325,45 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if ((OBJ_NIL == pCol) || !obj_IsA(pCol, OBJ_IDENT_SQLCOL)) {
+        if (!ValueArray_Validate(pOther)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        if (OBJ_NIL == this->pArray) {
-            this->pArray = ObjArray_New();
-            if (OBJ_NIL == this->pArray) {
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-        eRc =  ObjArray_Append(this->pArray, (OBJ_ID)pCol);
+        eRc = ObjArray_Append(ValueArray_getArray(this), ValueArray_getArray(pOther));
 
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         ValueArray_AppendValue (
+        VALUEARRAY_DATA *this,
+        VALUE_DATA      *pValue,
+        uint32_t        *pIndex
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ValueArray_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!Value_Validate(pValue)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = ObjArray_AppendObj(ValueArray_getArray(this), pValue, pIndex);
 
         // Return to caller.
         return eRc;
@@ -336,16 +381,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = SqlRow_Assign(this,pOther);
+        ERESULT eRc = ValueArray_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another SQLROW object
+     @param     pOther  a pointer to another VALUEARRAY object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         SqlRow_Assign (
-        SQLROW_DATA       *this,
-        SQLROW_DATA     *pOther
+    ERESULT         ValueArray_Assign (
+        VALUEARRAY_DATA       *this,
+        VALUEARRAY_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -353,11 +398,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!SqlRow_Validate(pOther)) {
+        if (!ValueArray_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -374,7 +419,10 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-        SqlRow_setArray(pOther, OBJ_NIL);
+        if (pOther->pArray) {
+            obj_Release(pOther->pArray);
+            pOther->pArray = OBJ_NIL;
+        }
 
         // Create a copy of objects and areas in this object placing
         // them in other.
@@ -393,7 +441,6 @@ extern "C" {
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
-    eom:
         return eRc;
     }
     
@@ -409,9 +456,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             SqlRow_Compare (
-        SQLROW_DATA     *this,
-        SQLROW_DATA     *pOther
+    int             ValueArray_Compare (
+        VALUEARRAY_DATA     *this,
+        VALUEARRAY_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -424,12 +471,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!SqlRow_Validate(pOther)) {
+        if (!ValueArray_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -451,36 +498,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        SqlRow      *pCopy = SqlRow_Copy(this);
+        ValueArray      *pCopy = ValueArray_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a SQLROW object which must be 
+     @return    If successful, a VALUEARRAY object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SQLROW_DATA *     SqlRow_Copy (
-        SQLROW_DATA       *this
+    VALUEARRAY_DATA *     ValueArray_Copy (
+        VALUEARRAY_DATA       *this
     )
     {
-        SQLROW_DATA       *pOther = OBJ_NIL;
+        VALUEARRAY_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef SQLROW_IS_IMMUTABLE
+#ifdef VALUEARRAY_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = SqlRow_New( );
+        pOther = ValueArray_New( );
         if (pOther) {
-            eRc = SqlRow_Assign(this, pOther);
+            eRc = ValueArray_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -498,11 +545,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            SqlRow_Dealloc (
+    void            ValueArray_Dealloc (
         OBJ_ID          objId
     )
     {
-        SQLROW_DATA   *this = objId;
+        VALUEARRAY_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -511,7 +558,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -519,11 +566,12 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((SQLROW_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((VALUEARRAY_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        SqlRow_setArray(this, OBJ_NIL);
+        ValueArray_setArray(this, OBJ_NIL);
+        ValueArray_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -544,32 +592,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        SqlRow      *pDeepCopy = SqlRow_Copy(this);
+        ValueArray      *pDeepCopy = ValueArray_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a SQLROW object which must be 
+     @return    If successful, a VALUEARRAY object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SQLROW_DATA *     SqlRow_DeepyCopy (
-        SQLROW_DATA       *this
+    VALUEARRAY_DATA *     ValueArray_DeepyCopy (
+        VALUEARRAY_DATA       *this
     )
     {
-        SQLROW_DATA       *pOther = OBJ_NIL;
+        VALUEARRAY_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = SqlRow_New( );
+        pOther = ValueArray_New( );
         if (pOther) {
-            eRc = SqlRow_Assign(this, pOther);
+            eRc = ValueArray_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -583,38 +631,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      D e l e t e
-    //---------------------------------------------------------------
-
-    SQLCOL_DATA *   SqlRow_Delete (
-        SQLROW_DATA     *this,
-        uint32_t        index
-    )
-    {
-        //ERESULT         eRc = ERESULT_SUCCESS;
-        SQLCOL_DATA     *pCol = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!SqlRow_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-
-        if (this->pArray) {
-            pCol = ObjArray_Delete(this->pArray, index);
-        }
-
-        // Return to caller.
-        return pCol;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -624,8 +640,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SqlRow_Disable (
-        SQLROW_DATA       *this
+    ERESULT         ValueArray_Disable (
+        VALUEARRAY_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -633,7 +649,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -659,8 +675,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SqlRow_Enable (
-        SQLROW_DATA       *this
+    ERESULT         ValueArray_Enable (
+        VALUEARRAY_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -668,7 +684,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -685,87 +701,43 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          F i n d
-    //---------------------------------------------------------------
-
-    SQLCOL_DATA *   SqlRow_FindNameA (
-        SQLROW_DATA     *this,
-        const
-        char            *pNameA
-    )
-    {
-        //ERESULT         eRc = ERESULT_SUCCESS;
-        uint32_t        i;
-        uint32_t        iMax;
-        SQLCOL_DATA     *pCol = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!SqlRow_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-
-        if (this->pArray) {
-            iMax = ObjArray_getSize(this->pArray);
-            for (i=0; i<iMax; i++) {
-                pCol = ObjArray_Get(this->pArray, i+1);
-                if (0 == SqlCol_CompareNameA(pCol, pNameA))
-                    break;
-                pCol = OBJ_NIL;
-            }
-        }
-
-        // Return to caller.
-        return pCol;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                          G e t
     //---------------------------------------------------------------
 
-    SQLCOL_DATA *   SqlRow_Get (
-        SQLROW_DATA     *this,
-        uint32_t        index
+    VALUE_DATA *    ValueArray_Get (
+        VALUEARRAY_DATA *this,
+        uint32_t        index       // Relative to 1
     )
     {
         //ERESULT         eRc = ERESULT_SUCCESS;
-        SQLCOL_DATA     *pCol = OBJ_NIL;
+        VALUE_DATA      *pVal = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return OBJ_NIL;
         }
 #endif
 
-        if (this->pArray) {
-            pCol = ObjArray_Get(this->pArray, index);
-        }
+        pVal = ObjArray_Get(ValueArray_getArray(this), index);
 
         // Return to caller.
-        return pCol;
+        return pVal;
     }
-
 
 
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    SQLROW_DATA *   SqlRow_Init (
-        SQLROW_DATA       *this
+    VALUEARRAY_DATA *   ValueArray_Init (
+        VALUEARRAY_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(SQLROW_DATA);
+        uint32_t        cbSize = sizeof(VALUEARRAY_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -783,7 +755,9 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SQLROW);
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of ValueArray_object.c
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_VALUEARRAY);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -791,12 +765,11 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&SqlRow_Vtbl);
-#ifdef  SQLROW_JSON_SUPPORT
-        JsonIn_RegisterClass(SqlRow_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&ValueArray_Vtbl);
+#ifdef  VALUEARRAY_JSON_SUPPORT
+        JsonIn_RegisterClass(ValueArray_Class());
 #endif
         
-        JsonIn_RegisterClass(ObjArray_Class());
         this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
@@ -806,7 +779,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -815,11 +788,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "SqlRow::sizeof(SQLROW_DATA) = %lu\n", 
-                sizeof(SQLROW_DATA)
+                "ValueArray::sizeof(VALUEARRAY_DATA) = %lu\n", 
+                sizeof(VALUEARRAY_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(SQLROW_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(VALUEARRAY_DATA));
 #endif
 
         return this;
@@ -828,11 +801,11 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         SqlRow_IsEnabled (
-        SQLROW_DATA       *this
+    ERESULT         ValueArray_IsEnabled (
+        VALUEARRAY_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -840,7 +813,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -867,14 +840,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = SqlRow_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = ValueArray_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "SqlRow", prefix,
+                        the object name, "ValueArray", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -882,13 +855,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          SqlRow_QueryInfo (
+    void *          ValueArray_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SQLROW_DATA     *this = objId;
+        VALUEARRAY_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -897,7 +870,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -906,11 +879,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(SQLROW_DATA);
+                return (void *)sizeof(VALUEARRAY_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)SqlRow_Class();
+                return (void *)ValueArray_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -936,37 +909,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return SqlRow_Disable;
+                            return ValueArray_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return SqlRow_Enable;
+                            return ValueArray_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  SQLROW_JSON_SUPPORT
+#ifdef  VALUEARRAY_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return SqlRow_ParseJsonFields;
+                            return ValueArray_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return SqlRow_ParseJsonObject;
+                            return ValueArray_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return SqlRow_ToDebugString;
+                            return ValueArray_ToDebugString;
                         }
-#ifdef  SQLROW_JSON_SUPPORT
+#ifdef  VALUEARRAY_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return SqlRow_ToJsonFields;
+                            return ValueArray_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return SqlRow_ToJson;
+                            return ValueArray_ToJson;
                         }
 #endif
                         break;
@@ -977,10 +950,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == SqlRow_ToDebugString)
+                if (pData == ValueArray_ToDebugString)
                     return "ToDebugString";
-#ifdef  SQLROW_JSON_SUPPORT
-                if (pData == SqlRow_ToJson)
+#ifdef  VALUEARRAY_JSON_SUPPORT
+                if (pData == ValueArray_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -995,85 +968,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      S e t u p
-    //---------------------------------------------------------------
-
-    /*!
-     Setup columns from Column Structs.
-     @param     this        object pointer
-     @param     num         number of structs in array
-     @param     pStructs    column struct array pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         SqlRow_SetupFromColumnStructs (
-        SQLROW_DATA     *this,
-        int             num,
-        const
-        SQLCOL_STRUCT   *pStructs
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int             i;
-        SQLCOL_DATA     *pCol;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!SqlRow_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        for (i=0; i<num; i++) {
-            pCol = SqlCol_NewFromStruct(&pStructs[i]);
-            if (pCol) {
-                eRc = ObjArray_AppendObj(this->pArray, pCol, NULL);
-                obj_Release(pCol);
-            }
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          S o r t
-    //---------------------------------------------------------------
-
-    /*!
-     Sort Column array by column name.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         SqlRow_SortAscending (
-        SQLROW_DATA     *this
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!SqlRow_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        eRc = ObjArray_SortAscending(this->pArray, (void *)SqlCol_CompareName);
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1081,7 +975,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = SqlRow_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = ValueArray_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1089,25 +983,23 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlRow_ToDebugString (
-        SQLROW_DATA      *this,
+    ASTR_DATA *     ValueArray_ToDebugString (
+        VALUEARRAY_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        uint32_t        i;
-        uint32_t        iMax;
+        //uint32_t        i;
         //uint32_t        j;
-        SQLCOL_DATA     *pCol = OBJ_NIL;
-
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!SqlRow_Validate(this)) {
+        if (!ValueArray_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1125,24 +1017,12 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d retain=%d array=%p\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    SqlRow_getSize(this),
-                    obj_getRetainCount(this),
-                    this->pArray
+                    ValueArray_getSize(this),
+                    obj_getRetainCount(this)
             );
-
-        iMax = SqlRow_getSize(this);
-        for (i=0; i<iMax; i++) {
-            pCol = ObjArray_Get(this->pArray, i+1);
-            if (pCol) {
-                pWrkStr = SqlCol_ToDebugString(pCol, indent+4);
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-                pWrkStr = OBJ_NIL;
-            }
-        }
 
 #ifdef  XYZZY        
         if (this->pData) {
@@ -1180,15 +1060,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            SqlRow_Validate (
-        SQLROW_DATA      *this
+    bool            ValueArray_Validate (
+        VALUEARRAY_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_SQLROW))
+            if (obj_IsKindOf(this, OBJ_IDENT_VALUEARRAY))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1204,7 +1084,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(SQLROW_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(VALUEARRAY_DATA))) {
             return false;
         }
 

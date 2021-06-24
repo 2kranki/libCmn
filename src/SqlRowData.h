@@ -54,6 +54,8 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <SqlRow.h>
+#include        <Value.h>
+#include        <ValueArray.h>
 
 
 #ifndef         SQLROWDATA_H
@@ -167,23 +169,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     SqlRowData_Disable (
-        SQLROWDATA_DATA       *this
+    ERESULT         SqlRowData_Disable (
+        SQLROWDATA_DATA *this
     );
 
 
-    ERESULT     SqlRowData_Enable (
-        SQLROWDATA_DATA       *this
+    ERESULT         SqlRowData_Enable (
+        SQLROWDATA_DATA *this
     );
 
    
-    SQLROWDATA_DATA *   SqlRowData_Init (
-        SQLROWDATA_DATA     *this
+    SQLROWDATA_DATA * SqlRowData_Init (
+        SQLROWDATA_DATA *this
     );
 
 
-    ERESULT     SqlRowData_IsEnabled (
-        SQLROWDATA_DATA       *this
+    ERESULT         SqlRowData_IsEnabled (
+        SQLROWDATA_DATA *this
     );
     
  
@@ -201,7 +203,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     SqlRowData_ToJson (
-        SQLROWDATA_DATA   *this
+        SQLROWDATA_DATA *this
     );
 #endif
 
@@ -219,7 +221,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     SqlRowData_ToDebugString (
-        SQLROWDATA_DATA     *this,
+        SQLROWDATA_DATA *this,
         int             indent
     );
     

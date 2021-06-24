@@ -244,7 +244,7 @@ extern "C" {
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        VALUE_DATA   *pObject = OBJ_NIL;
+        VALUE_DATA      *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);

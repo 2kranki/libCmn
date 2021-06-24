@@ -193,8 +193,9 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Add the elements from the other array to the end of the array.
+     Add the elements from the other array to the end of this array.
      @param     this    object pointer
+     @param     pOther  array object pointer to be appended
      @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
                 error.
      */
@@ -337,8 +338,9 @@ extern "C" {
     
     
     /*!
-     Find the index'th entry in the array.
+     Get the index'th entry in the array.
      @param     this    objArray object pointer
+     @param     index   index (relative to 1)
      @return    If successful, an object pointer, otherwise OBJ_NIL.
      */
     OBJ_ID          ObjArray_Get (

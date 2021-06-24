@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 5/30/2021 15:10:38.000)
+# ( 6/24/2021 15:34:51.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1364,6 +1364,21 @@ OBJS += $(OBJDIR)/Value.o
 $(OBJDIR)/Value.o: $(SRCDIR)/Value.c $(SRCDIR)/Value.h $(SRCDIR)/Value_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/ValueArray.o
+
+$(OBJDIR)/ValueArray.o: $(SRCDIR)/ValueArray.c $(SRCDIR)/ValueArray.h $(SRCDIR)/ValueArray_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ValueArray_json.o
+
+$(OBJDIR)/ValueArray_json.o: $(SRCDIR)/ValueArray_json.c $(SRCDIR)/ValueArray.h $(SRCDIR)/ValueArray_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ValueArray_object.o
+
+$(OBJDIR)/ValueArray_object.o: $(SRCDIR)/ValueArray_object.c $(SRCDIR)/ValueArray.h $(SRCDIR)/ValueArray_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/Value_json.o
 
 $(OBJDIR)/Value_json.o: $(SRCDIR)/Value_json.c $(SRCDIR)/Value.h $(SRCDIR)/Value_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2695,6 +2710,12 @@ U32Index_test: $(TEST_SRC)/U32Index_test.c $(SRCDIR)/U32Index.h $(SRCDIR)/U32Ind
 TESTS += Uri_test
 
 Uri_test: $(TEST_SRC)/Uri_test.c $(SRCDIR)/Uri.h $(SRCDIR)/Uri_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += ValueArray_test
+
+ValueArray_test: $(TEST_SRC)/ValueArray_test.c $(SRCDIR)/ValueArray.h $(SRCDIR)/ValueArray_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

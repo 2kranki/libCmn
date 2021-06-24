@@ -1327,7 +1327,7 @@ extern "C" {
         }
 #endif
 
-        amt = this->amt * 10000;    // Expand to 8 decimal places.
+        amt = (int128_t)this->amt * 10000;    // Expand to 8 decimal places.
         amt %= pOther->amt;
         this->amt = (int64_t)amt;
         if (amt < 0) {

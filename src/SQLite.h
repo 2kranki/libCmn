@@ -54,6 +54,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <AStrCArray.h>
+#include        <ObjList.h>
 #include        <SqlCol.h>
 #include        <SqlRow.h>
 #include        <sqlite3.h>
@@ -162,6 +163,18 @@ extern "C" {
 #endif
 
 
+    /*!
+     Create a string that describes this object and the objects within it.
+     @param     pCol    Column Definition Entry
+     @return    If successful, an AStr object which must be released containing the
+                SQL, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SQLite_SQL_ColCreate (
+        SQLCOL_STRUCT   *pCol
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
@@ -198,13 +211,13 @@ extern "C" {
      @param     this        object pointer
      @param     pCallback   optional callback address
      @param     pParm1      optional 1st parameter pass to callback
-     @param     pSqlA       sql statement
+     @param     pSqlA       SQL statement
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
     ERESULT         SQLite_Exec (
         SQLITE_DATA     *this,
-        int             (*pCallback)(void*, int, char**, char**),
+        int             (*pCallback)(void *, int, char**, char**),
         void            *pParm1,
         const
         char            *pSqlA
@@ -238,6 +251,29 @@ extern "C" {
     
  
     /*!
+     Execute an SQL Statement binding data to it. The bind data is supplied
+     in a queue of SqlRow objects. Each object in the queue is deleted as
+     it is performed. If an error occurs, then the first member will be the
+     one that the error occurred on. The Bind Queue is optoinal. If not
+     present, then the SQL statement is performed without binding.
+     @param     this        object pointer
+     @param     pCallback   optional callback address
+     @param     pParm1      optional 1st parameter pass to callback
+     @param     pSqlA       SQL statement
+     @param     pBindQueue  Optional Bind Queue of SqlRow
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SQLite_Step (
+        SQLITE_DATA     *this,
+        int             (*pCallback)(void *, SQLROW_DATA *),
+        void            *pParm1,
+        const
+        char            *pSqlA,
+        OBJLIST_DATA    *pBindQueue
+    );
+
+    /*!
      Get an array of the permanent table names in this database.
      @param     this    object pointer
      @return    if successful, an array of table names.  Otherwise,
@@ -245,6 +281,13 @@ extern "C" {
      */
     ASTRCARRAY_DATA * SQLite_TableNames (
         SQLITE_DATA     *this
+    );
+
+
+    uint32_t        SQLite_TableRowCount (
+        SQLITE_DATA     *this,
+        const
+        char            *pTableNameA
     );
 
 

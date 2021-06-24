@@ -53,7 +53,10 @@
 
 /* Header File Inclusion */
 #include        <SQLite_internal.h>
+#include        <dec.h>
 #include        <trace.h>
+#include        <Value_internal.h>
+#include        <ValueArray_internal.h>
 
 
 
@@ -147,6 +150,28 @@ extern "C" {
     }
 
 
+    // int (*pCallback)(void*,int,char**,char**)
+    static
+    int             SQLite_tableCount_callback (
+        void            *pData,
+        int             numCols,
+        char            **pColText,
+        char            **pColName
+    )
+    {
+        uint32_t        *pCount = pData;
+
+        if (numCols == 1) {
+            if (strcmp(pColName[0], "cRcds") == 0) {
+                *pCount = dec_getInt32A(pColText[0]);
+            }
+        }
+
+
+        return SQLITE_OK;
+    }
+
+
 
     /****************************************************************
     * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
@@ -208,7 +233,263 @@ extern "C" {
 
 
 
-    
+    /*!
+     Create a string that describes this object and the objects within it.
+     @param     pCol    Column Definition Entry
+     @return    If successful, an AStr object which must be released containing the
+                SQL, otherwise OBJ_NIL.
+     @warning  Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     SQLite_SQL_ColCreate (
+        SQLCOL_STRUCT   *pCol
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pWrkStr;
+        //uint32_t        i;
+        //uint32_t        j;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (NULL == pCol) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        if (pCol->pName) {
+            eRc = AStr_AppendA(pStr, pCol->pName);
+        } else {
+            obj_Release(pStr);
+            return OBJ_NIL;
+        }
+        switch (pCol->type) {
+            case SQLCOL_TYPE_BIGINT:
+                eRc = AStr_AppendA(pStr, " BIGINT");
+                break;
+            case SQLCOL_TYPE_BLOB:
+                eRc = AStr_AppendA(pStr, " BLOB");
+                break;
+            case SQLCOL_TYPE_BOOL:
+                eRc = AStr_AppendA(pStr, " BOOL");
+                break;
+            case SQLCOL_TYPE_CHAR:
+                eRc = AStr_AppendPrint(pStr, " CHAR(%d)", pCol->length);
+                break;
+            case SQLCOL_TYPE_DATE:
+                eRc = AStr_AppendA(pStr, " DATE");
+                break;
+            case SQLCOL_TYPE_DECIMAL:
+                eRc = AStr_AppendA(pStr, " INTEGER");
+                break;
+            case SQLCOL_TYPE_FILLER:
+                eRc = AStr_AppendPrint(pStr, " CHAR(%d)", pCol->length);
+                break;
+            case SQLCOL_TYPE_INTEGER:
+                eRc = AStr_AppendA(pStr, " INTEGER");
+                break;
+            case SQLCOL_TYPE_MONEY64:
+                eRc = AStr_AppendA(pStr, " BIGINT");
+                break;
+            case SQLCOL_TYPE_NCHAR:
+                eRc = AStr_AppendPrint(pStr, " NCHAR(%d)", pCol->length);
+                break;
+            case SQLCOL_TYPE_NUMBER:
+                eRc = AStr_AppendA(pStr, " INTEGER");
+                break;
+            case SQLCOL_TYPE_NVARCHAR:
+                eRc = AStr_AppendPrint(pStr, " NVARCHAR(%d)", pCol->length);
+                break;
+            case SQLCOL_TYPE_REAL:
+                eRc = AStr_AppendA(pStr, " REAL");
+                break;
+            case SQLCOL_TYPE_SMALLINT:
+                eRc = AStr_AppendA(pStr, " INTEGER");
+                break;
+            case SQLCOL_TYPE_TEXT:
+                eRc = AStr_AppendA(pStr, " TEXT");
+                break;
+            case SQLCOL_TYPE_TINYINT:
+                eRc = AStr_AppendA(pStr, " INTEGER");
+                break;
+            case SQLCOL_TYPE_VARCHAR:
+                eRc = AStr_AppendPrint(pStr, " VARCHAR(%d)", pCol->length);
+                break;
+            default:
+                obj_Release(pStr);
+                return OBJ_NIL;
+                break;
+        }
+
+        if (pCol->flags & SQLCOL_FLAG_AUTO_INC) {
+            eRc = AStr_AppendA(pStr, " AUTOINCREMENT");
+        }
+        if (pCol->flags & SQLCOL_FLAG_NOT_NULL) {
+            eRc = AStr_AppendA(pStr, " NOT NULL");
+        }
+        if (pCol->flags & SQLCOL_FLAG_UNIQUE) {
+            eRc = AStr_AppendA(pStr, " UNIQUE");
+        }
+        if (pCol->flags & SQLCOL_FLAG_PRIM_KEY) {
+            eRc = AStr_AppendA(pStr, " PRIMARY KEY");
+        }
+
+        if (pCol->pDefaultValue) {
+            eRc = AStr_AppendPrint(pStr, " DEFAULT( %d )", pCol->pDefaultValue);
+        }
+
+        return pStr;
+    }
+
+
+
+    ASTR_DATA *     SQLite_SQL_ColFromData (
+        SQLCOL_STRUCT   *pCol,
+        OBJ_ID          *pData
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        ASTR_DATA       *pWrkStr = OBJ_NIL;
+        //DATA_DATA       *pData = OBJ_NIL;
+        MONEY64_DATA    *pMoney = OBJ_NIL;
+        VALUE_DATA      *pValue = OBJ_NIL;
+        //uint32_t        i;
+        //uint32_t        j;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (NULL == pCol) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (NULL == pData) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        // Figure out what data that we have to work with.
+        if (obj_getType(pData) == OBJ_IDENT_VALUE) {
+            pValue = (VALUE_DATA *)pData;
+            if (Value_getType(pValue) == VALUE_TYPE_ASTR) {
+                pWrkStr = Value_getAStr(pValue);
+            } else if (Value_getType(pValue) == VALUE_TYPE_DATA) {
+                //pData = Value_getData(pValue);
+            } else if (Value_getType(pValue) == VALUE_TYPE_OBJECT) {
+                OBJ_ID          pObj = Value_getObject(pValue);
+            }
+        } else if (obj_getType(pData) == OBJ_IDENT_ASTR) {
+            pWrkStr = (ASTR_DATA *)pData;
+        } else if (obj_getType(pData) == OBJ_IDENT_MONEY64) {
+            pMoney = (MONEY64_DATA *)pData;
+        } else {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        pStr = AStr_New();
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        if (pCol->pName) {
+            eRc = AStr_AppendA(pStr, pCol->pName);
+        } else {
+            obj_Release(pStr);
+            return OBJ_NIL;
+        }
+        switch (pCol->type) {
+            case SQLCOL_TYPE_BIGINT:
+                eRc = AStr_AppendA(pStr, " BIGINT");
+                break;
+            case SQLCOL_TYPE_BLOB:
+                eRc = AStr_AppendA(pStr, " BLOB");
+                break;
+            case SQLCOL_TYPE_BOOL:
+                eRc = AStr_AppendA(pStr, " BOOL");
+                break;
+            case SQLCOL_TYPE_CHAR:
+                eRc = AStr_AppendPrint(pStr, " CHAR(%d)", pCol->length);
+                break;
+            case SQLCOL_TYPE_DATE:
+                eRc = AStr_AppendA(pStr, " DATE");
+                break;
+            case SQLCOL_TYPE_DECIMAL:
+                eRc = AStr_AppendA(pStr, " INTEGER");
+                break;
+            case SQLCOL_TYPE_FILLER:
+                eRc = AStr_AppendPrint(pStr, " CHAR(%d)", pCol->length);
+                break;
+            case SQLCOL_TYPE_INTEGER:
+                eRc = AStr_AppendA(pStr, " INTEGER");
+                break;
+            case SQLCOL_TYPE_MONEY64:
+                eRc = AStr_AppendA(pStr, " BIGINT");
+                break;
+            case SQLCOL_TYPE_NCHAR:
+                eRc = AStr_AppendPrint(pStr, " NCHAR(%d)", pCol->length);
+                break;
+            case SQLCOL_TYPE_NUMBER:
+                eRc = AStr_AppendA(pStr, " INTEGER");
+                break;
+            case SQLCOL_TYPE_NVARCHAR:
+                eRc = AStr_AppendPrint(pStr, " NVARCHAR(%d)", pCol->length);
+                break;
+            case SQLCOL_TYPE_REAL:
+                eRc = AStr_AppendA(pStr, " REAL");
+                break;
+            case SQLCOL_TYPE_SMALLINT:
+                eRc = AStr_AppendA(pStr, " INTEGER");
+                break;
+            case SQLCOL_TYPE_TEXT:
+                eRc = AStr_AppendA(pStr, " TEXT");
+                break;
+            case SQLCOL_TYPE_TINYINT:
+                eRc = AStr_AppendA(pStr, " INTEGER");
+                break;
+            case SQLCOL_TYPE_VARCHAR:
+                eRc = AStr_AppendPrint(pStr, " VARCHAR(%d)", pCol->length);
+                break;
+            default:
+                obj_Release(pStr);
+                return OBJ_NIL;
+                break;
+        }
+
+        if (pCol->flags & SQLCOL_FLAG_AUTO_INC) {
+            eRc = AStr_AppendA(pStr, " AUTOINCREMENT");
+        }
+        if (pCol->flags & SQLCOL_FLAG_NOT_NULL) {
+            eRc = AStr_AppendA(pStr, " NOT NULL");
+        }
+        if (pCol->flags & SQLCOL_FLAG_UNIQUE) {
+            eRc = AStr_AppendA(pStr, " UNIQUE");
+        }
+        if (pCol->flags & SQLCOL_FLAG_PRIM_KEY) {
+            eRc = AStr_AppendA(pStr, " PRIMARY KEY");
+        }
+
+        if (pCol->pDefaultValue) {
+            eRc = AStr_AppendPrint(pStr, " DEFAULT( %d )", pCol->pDefaultValue);
+        }
+
+        return pStr;
+    }
+
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
@@ -508,6 +789,103 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       B i n d  V a l u e
+    //---------------------------------------------------------------
+
+    /*!
+     Bind the given Value object to the given SQLite statement.
+     @param     this    object pointer
+     @param     pStmt   SQLite Statement pointer
+     @param     idx     index into the statement for the value to be
+                        assigned to
+     @param     pValue  Value object pointer containing data to be
+                        bound to the statement
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SQLite_BindValue (
+        SQLITE_DATA     *this,
+        sqlite3_stmt    *pStmt,
+        int             idx,
+        VALUE_DATA      *pValue
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             iRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        MONEY64_DATA    *pMoney = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!Value_Validate(pValue)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        switch (Value_getType(pValue)) {
+            case VALUE_TYPE_ASTR:           // AStr Object
+                pStr = Value_getAStr(pValue);
+                if (pStr) {
+                    pStr = AStr_ToSQL(pStr);
+                    iRc = sqlite3_bind_text(pStmt, idx, AStr_getData(pStr), -1, NULL);
+#ifdef XYZZY            // Not certain if this is needed yet!
+                    if (pStr) {
+                        iRc = sqlite3_bind_text(pStmt, idx, AStr_getData(pStr), -1, NULL);
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    } else {
+                        return ERESULT_GENERAL_FAILURE;
+                    }
+#endif
+                } else {
+                    return ERESULT_GENERAL_FAILURE;
+                }
+            case VALUE_TYPE_DOUBLE:         // 64-bit Float
+                iRc = sqlite3_bind_double(pStmt, idx, Value_getDouble(pValue));
+                break;
+            case VALUE_TYPE_INT8:           // int8_t
+            case VALUE_TYPE_INT16:          // int16_t
+            case VALUE_TYPE_INT32:          // int32_t
+                iRc = sqlite3_bind_int(pStmt, idx, Value_getU32(pValue));
+                break;
+            case VALUE_TYPE_INT64:          // int64_t
+                iRc = sqlite3_bind_int64(pStmt, idx, Value_getI64(pValue));
+                break;
+            case VALUE_TYPE_UINT8:          // int8_t
+            case VALUE_TYPE_UINT16:         // int16_t
+            case VALUE_TYPE_UINT32:         // int32_t
+                iRc = sqlite3_bind_int(pStmt, idx, Value_getI32(pValue));
+                break;
+            case VALUE_TYPE_UINT64:         // int64_t
+                iRc = sqlite3_bind_int64(pStmt, idx, Value_getI64(pValue));
+                break;
+            case VALUE_TYPE_MONEY64:        // Money64 Object
+                pMoney = Value_getMoney64(pValue);
+            case VALUE_TYPE_OBJECT:         // Any object that supports "ToJson" method
+            case VALUE_TYPE_DATA:           // Any data (pointer and length) (pointer and length
+                //                          // must be valid for life of object)
+            case VALUE_TYPE_DATA_FREE:      // Any data (pointer and length) which will be freed
+                //                          // using mem_Free() when no longer needed (pointer
+                //                          // and length must be valid for life of object)
+            default:
+                return ERESULT_INVALID_FORMAT;
+        }
+
+        // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          C l o s e
     //---------------------------------------------------------------
 
@@ -542,6 +920,153 @@ extern "C" {
 
         // Return to caller.
         return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          C o l
+    //---------------------------------------------------------------
+
+    /*!
+     Convert SQLite column data to SqlCol object.
+     SQLite allows any column to contain any type of data regardless
+     of the original table definition. We impose a stricter interpre-
+     tation and require that data from SQLite conform to the type
+     of data that we are expecting from the column definition.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    SQLCOL_DATA *   SQLite_ColDataToCol (
+        SQLITE_DATA     *this,
+        sqlite3_stmt    *pStmt,
+        int             idx
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        int             type;           // Sqlite native type
+        const
+        void            *pBlob;
+        double          dbl;
+        int64_t         i64;
+        const
+        uint8_t         *pText;
+        int             len;
+        SQLCOL_DATA     *pCol = OBJ_NIL;
+        const
+        char            *pDatabaseName = NULL;
+        const
+        char            *pTableName = NULL;
+        const
+        char            *pName = NULL;
+        VALUE_DATA      *pValue = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pCol = SqlCol_New();
+        if (pCol) {
+            pDatabaseName = sqlite3_column_database_name(pStmt, idx);
+            if (pDatabaseName) {
+                pStr = AStr_NewA(pDatabaseName);
+                if (pStr) {
+                    SqlCol_setDatabaseName(pCol, pStr);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+            pTableName = sqlite3_column_table_name(pStmt, idx);
+            if (pTableName) {
+                pStr = AStr_NewA(pTableName);
+                if (pStr) {
+                    SqlCol_setTableName(pCol, pStr);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+            pName = sqlite3_column_origin_name(pStmt, idx);
+            if (pName) {
+                pStr = AStr_NewA(pName);
+                if (pStr) {
+                    SqlCol_setName(pCol, pStr);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+            type = sqlite3_column_type(pStmt, idx);
+            switch (type) {
+
+                case SQLITE_BLOB:
+                    pBlob = sqlite3_column_blob(pStmt, idx);
+                    len = sqlite3_column_bytes(pStmt, idx);
+                    if (len && pBlob) {
+                        pValue = Value_NewDataCopy(len, (void *)pBlob);
+                        if (pValue) {
+                            SqlCol_setValue(pCol, pValue);
+                            obj_Release(pValue);
+                            pValue = OBJ_NIL;
+                        } else {
+                            obj_Release(pCol);
+                            pCol = OBJ_NIL;
+                        }
+                    } else {
+                        obj_Release(pCol);
+                        pCol = OBJ_NIL;
+                    }
+                    break;
+
+                case SQLITE_FLOAT:
+                    dbl = sqlite3_column_double(pStmt, idx);
+                    pValue = Value_NewDouble(dbl);
+                    break;
+                case SQLITE_INTEGER:
+                    i64 = sqlite3_column_int64(pStmt, idx);
+                    pValue = Value_NewI64(i64);
+                    break;
+                case SQLITE_NULL:
+                    // No further data is needed.
+                    obj_Release(pValue);
+                    pValue = OBJ_NIL;
+                    break;
+                case SQLITE_TEXT:
+                    pText = sqlite3_column_text(pStmt, idx);
+                    //len = sqlite3_column_bytes(pStmt, idx);
+                    // pText is UTF-8 and NUL terminated.
+                    pStr = AStr_NewA((void *)pText);
+                    if (pStr) {
+                        pValue = Value_NewAStr(pStr);
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    } else {
+                        obj_Release(pValue);
+                        pValue = OBJ_NIL;
+                    }
+                    break;
+                default:
+                    DEBUG_BREAK();
+                    break;
+            }
+            if (pValue) {
+                SqlCol_setValue(pCol, pValue);
+                obj_Release(pValue);
+                pValue = OBJ_NIL;
+            } else {
+                obj_Release(pCol);
+                pCol = OBJ_NIL;
+            }
+        }
+
+        // Return to caller.
+        return pCol;
     }
 
 
@@ -1236,22 +1761,70 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SQLite_Row (
+    SQLROW_DATA *   SQLite_RowDataToRow (
         SQLITE_DATA     *this,
         sqlite3_stmt    *pStmt
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        //ERESULT         eRc = ERESULT_SUCCESS;
         int             cCols = 0;
         int             i;
-        int             type;           // Sqlite native type
+        SQLCOL_DATA     *pCol = OBJ_NIL;
+        SQLROW_DATA     *pRow = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if (NULL == pStmt) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pRow = SqlRow_New();
+        if (pRow) {
+            cCols = sqlite3_column_count(pStmt);
+            for (i=0; i<cCols; i++) {
+                pCol = SQLite_ColDataToCol(this, pStmt, i);
+                SqlRow_AppendCol(pRow, pCol);
+                obj_Release(pCol);
+                pCol = OBJ_NIL;
+            }
+        }
+
+        // Return to caller.
+        return pRow;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S t e p
+    //---------------------------------------------------------------
+
+    ERESULT         SQLite_Step (
+        SQLITE_DATA     *this,
+        int             (*pCallback)(void *, SQLROW_DATA *),
+        void            *pParm1,
         const
-        void            *pBlob;
-        double          dbl;
-        int64_t         int64;
-        const
-        uint8_t         *pText;
-        int             len;
+        char            *pSqlA,
+        OBJLIST_DATA    *pBindQueue
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             sqlError;
+        sqlite3_stmt    *pStmt;
+        bool            fDone = false;
+        SQLROW_DATA     *pRowSql = OBJ_NIL;
+        VALUEARRAY_DATA *pRow = OBJ_NIL;
+        VALUE_DATA      *pCol = OBJ_NIL;
+        int             colNo;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1260,60 +1833,91 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if (NULL == pSqlA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
 #endif
-
-        cCols = sqlite3_column_count(pStmt);
-        for (i=0; i<cCols; i++) {
-            const
-            char            *pDatabaseName = NULL;
-            const
-            char            *pTableName = NULL;
-            const
-            char            *pName = NULL;
-            SQLCOL_DATA     *pCol = SqlCol_New();
-            if (pCol) {
-                pDatabaseName = sqlite3_column_database_name(pStmt, i);
-                pTableName = sqlite3_column_table_name(pStmt, i);
-                pName = sqlite3_column_origin_name(pStmt, i);
-                type = sqlite3_column_type(pStmt, i);
-                switch (type) {
-                    case SQLITE_BLOB:
-                        pBlob = sqlite3_column_blob(pStmt, i);
-                        len = sqlite3_column_bytes(pStmt, i);
-                        break;
-                    case SQLITE_FLOAT:
-                        dbl = sqlite3_column_double(pStmt, i);
-                        break;
-                    case SQLITE_INTEGER:
-                        int64 = sqlite3_column_int64(pStmt, i);
-                        break;
-                    case SQLITE_NULL:
-                        // No further data is needed.
-                        break;
-                    case SQLITE_TEXT:
-                        pText = sqlite3_column_text(pStmt, i);
-                        // pText is UTF-8 and NUL terminated.
-                        break;
-                    default:
-                        break;
-                }
-                obj_Release(pCol);
-                pCol = OBJ_NIL;
-            }
+        if (NULL == this->pConn) {
+            return ERESULT_GENERAL_FAILURE;
         }
 
-        obj_Enable(this);
+        sqlError = sqlite3_prepare_v2(this->pConn, pSqlA, -1, &pStmt, NULL);
+        if (SQLITE_OK != sqlError ) {
+            return ERESULT_INVALID_PARAMETER;
+        }
 
-        // Put code here...
+        do {
+
+            if (pBindQueue && (0 < ObjList_getSize(pBindQueue))) {
+                VALUE_DATA          *pValue = OBJ_NIL;
+
+                // Bind each column of the row.
+                pRow = ObjList_Head(pBindQueue);
+                if (!ValueArray_Validate(pRow)) {
+                    DEBUG_BREAK();
+                    return ERESULT_INVALID_OBJECT;
+                }
+                for (colNo=0; colNo < ValueArray_getSize(pRow); colNo++) {
+                    pCol = ValueArray_Get(pRow, colNo+1);
+                    if (pCol) {
+                        eRc = SQLite_BindValue(this, pStmt, colNo, pCol);
+                        if (ERESULT_FAILED(eRc)) {
+                            sqlError = -2;
+                            sqlite3_reset(pStmt);       // Release bound parameters.
+                            break;
+                        }
+                    } else {
+                        sqlError = -2;
+                        sqlite3_reset(pStmt);           // Release bound parameters.
+                        break;
+                    }
+                }
+            }
+
+            fDone = false;
+            while (!fDone) {
+                sqlError = sqlite3_step(pStmt);
+                switch (sqlError) {
+                    case SQLITE_DONE:
+                        fDone = true;
+                        break;
+                    case    SQLITE_ROW:
+                        if (pCallback) {
+                            pRowSql = SQLite_RowDataToRow(this, pStmt);
+                            if (pRowSql) {
+                                sqlError = pCallback(pParm1, pRowSql);
+                                obj_Release(pRowSql);
+                                pRowSql = OBJ_NIL;
+                                if (ERESULT_OK(eRc))
+                                    ;
+                                else {
+                                    return eRc;
+                                }
+                            }
+                        }
+                    default:
+                        eRc = ERESULT_FAILURE;
+                        fDone = true;
+                        break;
+                }
+            }
+            sqlite3_reset(pStmt);           // Release bound parameters.
+            if (pBindQueue && (0 < ObjList_getSize(pBindQueue))) {
+                ObjList_DeleteHead(pBindQueue);
+            }
+
+        } while (ERESULT_OK(eRc) && pBindQueue && (0 < ObjList_getSize(pBindQueue)));
+
+        sqlite3_finalize(pStmt);
 
         // Return to caller.
         return eRc;
     }
 
 
-
     //---------------------------------------------------------------
-    //                  T a b l e  N a m e s
+    //                      T a b l e
     //---------------------------------------------------------------
 
     ASTRCARRAY_DATA * SQLite_TableNames (
@@ -1362,6 +1966,55 @@ extern "C" {
         // Return to caller.
         return pArray;
     }
+
+
+    uint32_t        SQLite_TableRowCount (
+        SQLITE_DATA     *this,
+        const
+        char            *pTableNameA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        cRcds = 0;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        const
+        char            *pSql1 = "SELECT COUNT(*) AS cRcds FROM %s ;";
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+        if (NULL == pTableNameA) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+
+        pStr = AStr_NewFromPrint(pSql1, pTableNameA);
+        if (pStr) {
+            eRc =   SQLite_Exec(
+                              this,
+                              SQLite_tableCount_callback,
+                              &cRcds,
+                              AStr_getData(pStr)
+                    );
+            if (ERESULT_FAILED(eRc)) {
+                cRcds = 0;
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+
+        // Return to caller.
+        return cRcds;
+    }
+
 
 
 

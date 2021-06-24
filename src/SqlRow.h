@@ -246,8 +246,22 @@ extern "C" {
 
 
     /*!
+     Find the column object for the given name.
+     @param     this    object pointer
+     @param     pNameA  column name
+     @return    If successful, an column object pointer, otherwise OBJ_NIL.
+                The returned column object should not be released.
+     */
+    SQLCOL_DATA *   SqlRow_FindNameA (
+        SQLROW_DATA     *this,
+        const
+        char            *pNameA
+    );
+
+
+    /*!
      Find the index'th column in the row array.
-     @param     this    objArray object pointer
+     @param     this    object pointer
      @param     index   column array index
      @return    If successful, an columnobject pointer, otherwise OBJ_NIL.
                 The returned column object should not be released.
@@ -279,7 +293,19 @@ extern "C" {
     ERESULT         SqlRow_SetupFromColumnStructs (
         SQLROW_DATA     *this,
         int             num,
+        const
         SQLCOL_STRUCT   *pStructs
+    );
+
+
+    /*!
+     Sort Column array by column name.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SqlRow_SortAscending (
+        SQLROW_DATA     *this
     );
 
 

@@ -589,6 +589,8 @@ extern "C" {
         OBJ_IDENT_UTF8FILE_CLASS,
         OBJ_IDENT_VALUE,                // Any type of value
         OBJ_IDENT_VALUE_CLASS,
+        OBJ_IDENT_VALUEARRAY,           // An Array of Value Objects
+        OBJ_IDENT_VALUEARRAY_CLASS,
         OBJ_IDENT_VISITOR,              // Visitor Base Class
         OBJ_IDENT_VISITOR_CLASS,
         OBJ_IDENT_WAV,                  // WAV File

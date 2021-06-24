@@ -1,0 +1,12 @@
+-- vi:nu:et:sts=4 ts=4 sw=4
+
+DROP TABLE IF EXISTS `Items`;
+CREATE TABLE `Items` (
+  `Date` date DEFAULT NULL,
+  `Desc` varchar(255) DEFAULT NULL,
+  `Member` varchar(255) DEFAULT NULL,
+  `Account` varchar(255) DEFAULT NULL,
+  `Amount` DECIMAL(9,2)   DEFAULT 0.00
+);
+
+

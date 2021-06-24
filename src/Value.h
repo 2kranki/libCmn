@@ -62,6 +62,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Money64.h>
 
 
 #ifndef         VALUE_H
@@ -119,6 +120,7 @@ extern "C" {
         VALUE_TYPE_UINT16,          // int16_t
         VALUE_TYPE_UINT32,          // int32_t
         VALUE_TYPE_UINT64,          // int64_t
+        VALUE_TYPE_MONEY64,         // Money64 Object
         VALUE_TYPE_OBJECT,          // Any object that supports "ToJson" method
         VALUE_TYPE_DATA,            // Any data (pointer and length) (pointer and length
         //                          // must be valid for life of object)
@@ -186,6 +188,15 @@ extern "C" {
     );
 
     /*!
+     Create a value object with a copy of the given data
+     which will be freed upon release of the object.
+     */
+    VALUE_DATA *    Value_NewDataCopy (
+        int32_t         length,
+        uint8_t         *pData
+    );
+
+    /*!
      Create a value object where the data will be freed upon
      release of the object.
      */
@@ -212,6 +223,10 @@ extern "C" {
 
     VALUE_DATA *    Value_NewI64 (
         int64_t         value
+    );
+
+    VALUE_DATA *    Value_NewMoney64 (
+        MONEY64_DATA    *pValue
     );
 
     VALUE_DATA *    Value_NewObject (
@@ -331,8 +346,9 @@ extern "C" {
     );
 
 
-    /*! Property: 16-Bit Miscellaneous property which can be used for
-                    whatever is necessary.
+    /*! @property: Misc16 is a 16-bit number which can be used for
+                    whatever is necessary. This is separate from any
+                    value stored in the Value Object.
      */
     uint16_t        Value_getMisc16 (
         VALUE_DATA      *this
@@ -344,6 +360,16 @@ extern "C" {
     );
 
 
+    MONEY64_DATA *  Value_getMoney64 (
+        VALUE_DATA      *this
+    );
+
+    bool            Value_setMoney64 (
+        VALUE_DATA      *this,
+        MONEY64_DATA    *pValue
+    );
+
+
     OBJ_DATA *      Value_getObject (
         VALUE_DATA      *this
     );
@@ -351,6 +377,20 @@ extern "C" {
     bool            Value_setObject (
         VALUE_DATA      *this,
         OBJ_DATA        *pValue
+    );
+
+
+    /*! @property: other    Other is an object which can be associated
+                        with this object, but is separate from the value's
+                        actual data.
+     */
+    OBJ_ID          Value_getOther (
+        VALUE_DATA      *this
+    );
+
+    bool            Value_setOther (
+        VALUE_DATA      *this,
+        OBJ_ID          pValue
     );
 
 
@@ -399,6 +439,9 @@ extern "C" {
     );
 
 
+/*! @property: user is a number which can be associated with this object,
+                    but is separate from the value's actual data.
+ */
     uint32_t        Value_getUser (
         VALUE_DATA      *this
     );

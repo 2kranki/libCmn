@@ -1,10 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   SqlCol_internal.h
- *	Generated 04/25/2020 18:28:59
+ * File:   ValueArray_internal.h
+ *  Generated 06/17/2021 14:31:59
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
 
@@ -39,30 +39,23 @@
 
 
 
-#include        <SqlCol.h>
+#include        <ValueArray.h>
 #include        <JsonIn.h>
+#include        <ObjArray_internal.h>
+#include        <Value_internal.h>
 
 
-#ifndef SQLCOL_INTERNAL_H
-#define	SQLCOL_INTERNAL_H
+#ifndef VALUEARRAY_INTERNAL_H
+#define VALUEARRAY_INTERNAL_H
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
-
-    typedef struct SqlCol_Type_Expr_s {
-        const
-        char        *pNameA;
-        const
-        char        *pSqliteTypeA;
-        uint8_t     type;                   // see SQLCOL_TYPES
-        uint8_t     fHasDec;                // true == can have decimal value
-    } SQLCOL_TYPE_EXPR;
 
 
 
@@ -71,38 +64,27 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct SqlCol_data_s	{
+struct ValueArray_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint8_t         type;
-    uint8_t         decimalPlaces;
+    uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
-    uint16_t        keySeq;
-    uint16_t        colSeq;
-    uint32_t        flags;
-    int32_t         length;
-    int32_t         lengthMin;
-    ASTR_DATA       *pDBName;
-    ASTR_DATA       *pTableName;
-    ASTR_DATA       *pName;
-    ASTR_DATA       *pCheckExpr;
-    ASTR_DATA       *pDesc;
-    ASTR_DATA       *pDefVal;
-    OBJ_ID          pValue;         // VALUE_DATA * or MONEY64_DATA *
+    ASTR_DATA       *pStr;
+    OBJARRAY_DATA   *pArray;
 
 };
 #pragma pack(pop)
 
     extern
-    struct SqlCol_class_data_s  SqlCol_ClassObj;
+    struct ValueArray_class_data_s  ValueArray_ClassObj;
 
     extern
     const
-    SQLCOL_VTBL         SqlCol_Vtbl;
+    VALUEARRAY_VTBL         ValueArray_Vtbl;
 
 
 
@@ -110,14 +92,14 @@ struct SqlCol_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  SQLCOL_SINGLETON
-    SQLCOL_DATA *     SqlCol_getSingleton (
+#ifdef  VALUEARRAY_SINGLETON
+    VALUEARRAY_DATA * ValueArray_getSingleton (
         void
     );
 
-    bool            SqlCol_setSingleton (
-     SQLCOL_DATA       *pValue
-);
+    bool            ValueArray_setSingleton (
+        VALUEARRAY_DATA *pValue
+    );
 #endif
 
 
@@ -126,45 +108,35 @@ struct SqlCol_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  SqlCol_getSuperVtbl (
-        SQLCOL_DATA     *this
+    OBJ_IUNKNOWN *  ValueArray_getSuperVtbl (
+        VALUEARRAY_DATA *this
     );
 
 
-    ERESULT         SqlCol_Assign (
-        SQLCOL_DATA    *this,
-        SQLCOL_DATA    *pOther
+    ERESULT         ValueArray_Assign (
+        VALUEARRAY_DATA *this,
+        VALUEARRAY_DATA *pOther
     );
 
 
-    SQLCOL_DATA *   SqlCol_Copy (
-        SQLCOL_DATA     *this
+    VALUEARRAY_DATA * ValueArray_Copy (
+        VALUEARRAY_DATA *this
     );
 
 
-    void            SqlCol_Dealloc (
+    void            ValueArray_Dealloc (
         OBJ_ID          objId
     );
 
 
-    SQLCOL_TYPE_EXPR * SqlCol_FindByName (
-        const
-        char        *pName
-    );
-
-    SQLCOL_TYPE_EXPR * SqlCol_FindByType (
-        uint8_t     type                    // see SQLCOL_TYPES
-    );
-
-
-#ifdef  SQLCOL_JSON_SUPPORT
+#ifdef  VALUEARRAY_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SQLCOL_DATA *       SqlCol_ParseJsonObject (
+    VALUEARRAY_DATA * ValueArray_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -178,40 +150,35 @@ struct SqlCol_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SqlCol_ParseJsonFields (
+    ERESULT         ValueArray_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SQLCOL_DATA     *pObject
+        VALUEARRAY_DATA *pObject
     );
 #endif
 
 
-    void *          SqlCol_QueryInfo (
+    void *          ValueArray_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    ERESULT         SqlCol_ReleaseData (
-        SQLCOL_DATA     *this
-    );
-
-
-#ifdef  SQLCOL_JSON_SUPPORT
+#ifdef  VALUEARRAY_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SqlCol_ToJson(this);
+     ASTR_DATA      *pDesc = ValueArray_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlCol_ToJson (
-        SQLCOL_DATA      *this
+    ASTR_DATA *     ValueArray_ToJson (
+        VALUEARRAY_DATA *this
     );
 
 
@@ -224,8 +191,8 @@ struct SqlCol_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         SqlCol_ToJsonFields (
-        SQLCOL_DATA     *this,
+    ERESULT         ValueArray_ToJsonFields (
+        VALUEARRAY_DATA *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -235,16 +202,16 @@ struct SqlCol_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			SqlCol_Validate (
-        SQLCOL_DATA       *this
+    bool            ValueArray_Validate (
+        VALUEARRAY_DATA       *this
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* SQLCOL_INTERNAL_H */
+#endif  /* VALUEARRAY_INTERNAL_H */
 

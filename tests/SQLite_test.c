@@ -335,7 +335,7 @@ int             test_SQLite_Table01 (
     SQLITE_DATA     *pObj = OBJ_NIL;
     bool            fRc;
     const
-    char            *pDatabasePath = TEST_FILES_DIR "/chinook.db";
+    char            *pDatabasePath = TEST_FILES_DIR "/db/ae.db";
     PATH_DATA       *pPath = OBJ_NIL;
     ASTRCARRAY_DATA *pArray = OBJ_NIL;
     int             i;
@@ -360,24 +360,15 @@ int             test_SQLite_Table01 (
         pArray = SQLite_TableNames(pObj);
         TINYTEST_FALSE( (OBJ_NIL == pArray) );
         fprintf(stderr, "Array Size: %d\n", AStrCArray_getSize(pArray));
-        TINYTEST_TRUE( (11 == AStrCArray_getSize(pArray)) );
-        for (i=0; i<11; ++i) {
-            pStr = AStrCArray_Get(pArray, i);
+        TINYTEST_TRUE( (1 == AStrCArray_getSize(pArray)) );
+        for (i=0; i<1; ++i) {
+            pStr = AStrCArray_Get(pArray, i+1);
             if (pStr) {
                 fprintf(stderr, "\t%s\n", AStrC_getData(pStr));
             }
         }
         obj_Release(pArray);
         pArray = OBJ_NIL;
-
-        {
-            ASTR_DATA       *pStr = SQLite_ToDebugString(pObj, 0);
-            if (pStr) {
-                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -392,8 +383,236 @@ int             test_SQLite_Table01 (
 
 
 
+int             test_SQLite_Table02 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SQLITE_DATA     *pObj = OBJ_NIL;
+    bool            fRc;
+    const
+    char            *pDatabasePath = TEST_FILES_DIR "/db/ae.db";
+    PATH_DATA       *pPath = OBJ_NIL;
+    uint32_t        count;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = Path_NewA(pDatabasePath);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    eRc = Path_Clean(pPath);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+    pObj = SQLite_NewPath(pPath);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLITE);
+        TINYTEST_TRUE( (fRc) );
+        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        count = SQLite_TableRowCount(pObj, "Items");
+        fprintf(stderr, "Count: %d\n", count);
+        TINYTEST_TRUE( (177 == count) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_SQLite_SQL_Col01 (
+    const
+    char            *pTestName
+)
+{
+    //ERESULT         eRc = ERESULT_SUCCESS;
+    int             iRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    static
+    SQLCOL_STRUCT     rowCols[] = {
+        {
+            "rowId",                                // Name
+            "Row Identifier",                       // Description
+            "Trades",                               // Table Name
+            "Accts",                                // Database Name
+            SQLCOL_TYPE_INTEGER,                    // Type
+            1,                                      // Key Sequence
+            0,                                      // Decimal Places
+            1,                                      // Column Sequence Number
+            0,                                      // Length
+            0,                                      // Minimum Length
+            SQLCOL_FLAG_UNIQUE                      // Flags
+            | SQLCOL_FLAG_NOT_NULL
+            | SQLCOL_FLAG_AUTO_INC
+            | SQLCOL_FLAG_PRIM_KEY,
+            NULL,                                   // Default Value
+            NULL                                    // Check Expression
+        },
+        {
+            "trdSymbol",                            // Name
+            "Trade Symbol",                         // Description
+            "Trades",                               // Table Name
+            "Accts",                                // Database Name
+            SQLCOL_TYPE_NVARCHAR,                   // Type
+            0,                                      // Key Sequence
+            0,                                      // Decimal Places
+            3,                                      // Column Sequence Number
+            20,                                     // Length
+            0,                                      // Minimum Length
+            SQLCOL_FLAG_UNIQUE                      // Flags
+            | SQLCOL_FLAG_NOT_NULL,
+            NULL,                                   // Default Value
+            NULL                                    // Check Expression
+        },
+        {
+            "trdDate",                              // Name
+            "Trade Date",                           // Description
+            "Trades",                               // Table Name
+            "Accts",                                // Database Name
+            SQLCOL_TYPE_DATE,                       // Type
+            0,                                      // Key Sequence
+            0,                                      // Decimal Places
+            3,                                      // Column Sequence Number
+            0,                                      // Length
+            0,                                      // Minimum Length
+            SQLCOL_FLAG_NOT_NULL,                   // Flags
+            NULL,                                   // Default Value
+            NULL                                    // Check Expression
+        },
+        {
+            "trdNum",                               // Name
+            "Trade Number",                         // Description
+            "Trades",                               // Table Name
+            "Accts",                                // Database Name
+            SQLCOL_TYPE_INTEGER,                    // Type
+            0,                                      // Key Sequence
+            0,                                      // Decimal Places
+            3,                                      // Column Sequence Number
+            0,                                      // Length
+            0,                                      // Minimum Length
+            SQLCOL_FLAG_NOT_NULL,                   // Flags
+            NULL,                                   // Default Value
+            NULL                                    // Check Expression
+        },
+        {
+            "trdRef",                               // Name
+            "Trade Reference",                      // Description
+            "Trades",                               // Table Name
+            "Accts",                                // Database Name
+            SQLCOL_TYPE_NVARCHAR,                   // Type
+            0,                                      // Key Sequence
+            0,                                      // Decimal Places
+            3,                                      // Column Sequence Number
+            20,                                     // Length
+            0,                                      // Minimum Length
+            SQLCOL_FLAG_UNIQUE                      // Flags
+            | SQLCOL_FLAG_NOT_NULL,
+            NULL,                                   // Default Value
+            NULL                                    // Check Expression
+        },
+        {
+            "trdCls",                               // Name
+            "Trade Closes",                         // Description
+            "Trades",                               // Table Name
+            "Accts",                                // Database Name
+            SQLCOL_TYPE_NVARCHAR,                   // Type
+            0,                                      // Key Sequence
+            0,                                      // Decimal Places
+            3,                                      // Column Sequence Number
+            20,                                     // Length
+            0,                                      // Minimum Length
+            SQLCOL_FLAG_UNIQUE                      // Flags
+            | SQLCOL_FLAG_NOT_NULL,
+            NULL,                                   // Default Value
+            NULL                                    // Check Expression
+        },
+        {
+            "trdOrder",                             // Name
+            "Trade Order",                          // Description
+            "Trades",                               // Table Name
+            "Accts",                                // Database Name
+            SQLCOL_TYPE_NVARCHAR,                   // Type
+            0,                                      // Key Sequence
+            0,                                      // Decimal Places
+            3,                                      // Column Sequence Number
+            100,                                    // Length
+            0,                                      // Minimum Length
+            SQLCOL_FLAG_UNIQUE                      // Flags
+            | SQLCOL_FLAG_NOT_NULL,
+            NULL,                                   // Default Value
+            NULL                                    // Check Expression
+        },
+        {
+            "trdStop",                              // Name
+            "Trade Stop Price",                     // Description
+            "Trades",                               // Table Name
+            "Accts",                                // Database Name
+            SQLCOL_TYPE_INTEGER,                    // Type
+            0,                                      // Key Sequence
+            0,                                      // Decimal Places
+            3,                                      // Column Sequence Number
+            0,                                      // Length
+            0,                                      // Minimum Length
+            SQLCOL_FLAG_NOT_NULL,                   // Flags
+            NULL,                                   // Default Value
+            NULL                                    // Check Expression
+        },
+    };
+
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pStr = SQLite_SQL_ColCreate(&rowCols[0]);
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+    fprintf(stderr, "\t0 - %s\n", AStr_getData(pStr));
+    iRc = AStr_CompareA(pStr, "rowId INTEGER AUTOINCREMENT NOT NULL UNIQUE PRIMARY KEY");
+    TINYTEST_TRUE( (0 == iRc) );
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+
+    pStr = SQLite_SQL_ColCreate(&rowCols[1]);
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+    fprintf(stderr, "\t1 - %s\n", AStr_getData(pStr));
+    iRc = AStr_CompareA(pStr, "trdSymbol NVARCHAR(20) NOT NULL UNIQUE");
+    TINYTEST_TRUE( (0 == iRc) );
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+
+    pStr = SQLite_SQL_ColCreate(&rowCols[2]);
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+    fprintf(stderr, "\t2 - %s\n", AStr_getData(pStr));
+    iRc = AStr_CompareA(pStr, "trdDate DATE NOT NULL");
+    TINYTEST_TRUE( (0 == iRc) );
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+
+    pStr = SQLite_SQL_ColCreate(&rowCols[3]);
+    TINYTEST_FALSE( (OBJ_NIL == pStr) );
+    fprintf(stderr, "\t3 - %s\n", AStr_getData(pStr));
+    iRc = AStr_CompareA(pStr, "trdNum INTEGER NOT NULL");
+    TINYTEST_TRUE( (0 == iRc) );
+    obj_Release(pStr);
+    pStr = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_SQLite);
+    TINYTEST_ADD_TEST(test_SQLite_SQL_Col01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_SQLite_Table02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SQLite_Table01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SQLite_Test01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_SQLite_Copy01,setUp,tearDown);

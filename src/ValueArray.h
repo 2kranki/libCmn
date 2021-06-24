@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  SQL Table Support (SqlTbl) Header
+//                  An Array of Value Objects (ValueArray) Header
 //****************************************************************
 /*
  * Program
- *          SQL Table Support (SqlTbl)
+ *          An Array of Value Objects (ValueArray)
  * Purpose
  *          This object provides a standardized way of handling
- *          a separate SqlTbl to run things without complications
- *          of interfering with the main SqlTbl. A SqlTbl may be 
- *          called a SqlTbl on other O/S's.
+ *          a separate ValueArray to run things without complications
+ *          of interfering with the main ValueArray. A ValueArray may be 
+ *          called a ValueArray on other O/S's.
  *
  * Remarks
  *  1.      None
  *
  * History
- *  04/14/2021 Generated
+ *  06/17/2021 Generated
  */
 
 
@@ -53,17 +53,16 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <SqlCol.h>
-#include        <SqlRow.h>
+#include        <Value.h>
 
 
-#ifndef         SQLTBL_H
-#define         SQLTBL_H
+#ifndef         VALUEARRAY_H
+#define         VALUEARRAY_H
 
 
-//#define   SQLTBL_IS_IMMUTABLE     1
-#define   SQLTBL_JSON_SUPPORT       1
-//#define   SQLTBL_SINGLETON        1
+//#define   VALUEARRAY_IS_IMMUTABLE     1
+#define   VALUEARRAY_JSON_SUPPORT       1
+//#define   VALUEARRAY_SINGLETON        1
 
 
 
@@ -79,34 +78,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct SqlTbl_data_s  SQLTBL_DATA;            // Inherits from OBJ
-    typedef struct SqlTbl_class_data_s SQLTBL_CLASS_DATA;   // Inherits from OBJ
+    typedef struct ValueArray_data_s  VALUEARRAY_DATA;            // Inherits from OBJ
+    typedef struct ValueArray_class_data_s VALUEARRAY_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct SqlTbl_vtbl_s  {
+    typedef struct ValueArray_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in SqlTbl_object.c.
+        // method names to the vtbl definition in ValueArray_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SQLTBL_DATA *);
-    } SQLTBL_VTBL;
+        //bool        (*pIsEnabled)(VALUEARRAY_DATA *);
+    } VALUEARRAY_VTBL;
 
-    typedef struct SqlTbl_class_vtbl_s    {
+    typedef struct ValueArray_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in SqlTbl_object.c.
+        // method names to the vtbl definition in ValueArray_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SQLTBL_DATA *);
-    } SQLTBL_CLASS_VTBL;
-
-
-    typedef enum SqlTbl_SQL_e  {
-        SQLTBL_SQL_UNKNOWN=0,
-        SQLTBL_SQL_MYSQL,
-        SQLTBL_SQL_POSTGRES,
-        SQLTBL_SQL_SQLITE,
-    } SQLTBL_SQL;
+        //bool        (*pIsEnabled)(VALUEARRAY_DATA *);
+    } VALUEARRAY_CLASS_VTBL;
 
 
 
@@ -120,12 +111,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  SQLTBL_SINGLETON
-    SQLTBL_DATA *     SqlTbl_Shared (
+#ifdef  VALUEARRAY_SINGLETON
+    VALUEARRAY_DATA * ValueArray_Shared (
         void
     );
 
-    void            SqlTbl_SharedReset (
+    void            ValueArray_SharedReset (
         void
     );
 #endif
@@ -135,29 +126,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to SqlTbl object if successful, otherwise OBJ_NIL.
+     @return    pointer to ValueArray object if successful, otherwise OBJ_NIL.
      */
-    SQLTBL_DATA *     SqlTbl_Alloc (
+    VALUEARRAY_DATA * ValueArray_Alloc (
         void
     );
     
     
-    OBJ_ID          SqlTbl_Class (
+    OBJ_ID          ValueArray_Class (
         void
     );
     
     
-    SQLTBL_DATA *     SqlTbl_New (
+    VALUEARRAY_DATA * ValueArray_New (
         void
     );
     
     
-#ifdef  SQLTBL_JSON_SUPPORT
-    SQLTBL_DATA *   SqlTbl_NewFromJsonString (
+#ifdef  VALUEARRAY_JSON_SUPPORT
+    VALUEARRAY_DATA * ValueArray_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    SQLTBL_DATA *   SqlTbl_NewFromJsonStringA (
+    VALUEARRAY_DATA * ValueArray_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -169,6 +160,9 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    uint32_t        ValueArray_getSize (
+        VALUEARRAY_DATA *this
+    );
 
 
     
@@ -176,41 +170,82 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     SqlTbl_Disable (
-        SQLTBL_DATA       *this
+    /*!
+     Add the elements from the other array to the end of this array.
+     @param     this    object pointer
+     @param     pOther  array object pointer to be appended
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         ValueArray_Append (
+        VALUEARRAY_DATA *this,
+        VALUEARRAY_DATA *pOther
     );
 
 
-    ERESULT     SqlTbl_Enable (
-        SQLTBL_DATA       *this
+    /*!
+     Add the given element to the end of the array.
+     @param     this    object pointer
+     @param     pValue  value object to be added
+     @param     pIndex  optional index of object added
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         ValueArray_AppendValue (
+        VALUEARRAY_DATA *this,
+        VALUE_DATA      *pValue,
+        uint32_t        *pIndex
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        ValueArray      *pCopy = ValueArray_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a VALUEARRAY object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    VALUEARRAY_DATA * ValueArray_Copy (
+        VALUEARRAY_DATA *this
     );
 
    
-    SQLTBL_DATA *   SqlTbl_Init (
-        SQLTBL_DATA     *this
+    /*!
+     Get the index'th entry in the array.
+     @param     this    objArray object pointer
+     @param     index   index (relative to 1)
+     @return    If successful, an object pointer, otherwise OBJ_NIL.
+     */
+    VALUE_DATA *    ValueArray_Get (
+        VALUEARRAY_DATA *this,
+        uint32_t        index       // Relative to 1
     );
 
 
-    ERESULT     SqlTbl_IsEnabled (
-        SQLTBL_DATA       *this
+    VALUEARRAY_DATA * ValueArray_Init (
+        VALUEARRAY_DATA *this
     );
-    
- 
-#ifdef  SQLTBL_JSON_SUPPORT
+
+
+#ifdef  VALUEARRAY_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = SqlTbl_ToJson(this);
+     ASTR_DATA      *pDesc = ValueArray_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlTbl_ToJson (
-        SQLTBL_DATA   *this
+    ASTR_DATA *     ValueArray_ToJson (
+        VALUEARRAY_DATA *this
     );
 #endif
 
@@ -219,7 +254,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = SqlTbl_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = ValueArray_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -227,8 +262,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     SqlTbl_ToDebugString (
-        SQLTBL_DATA     *this,
+    ASTR_DATA *     ValueArray_ToDebugString (
+        VALUEARRAY_DATA *this,
         int             indent
     );
     
@@ -239,5 +274,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* SQLTBL_H */
+#endif  /* VALUEARRAY_H */
 
