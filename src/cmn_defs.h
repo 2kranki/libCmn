@@ -217,6 +217,8 @@ extern "C" {
         OBJ_IDENT_CON_CLASS,
         OBJ_IDENT_CON_FIO,              // Console File I/O Object
         OBJ_IDENT_CON_FIO_CLASS,
+        OBJ_IDENT_CONSUMER,             // Section Table Entry
+        OBJ_IDENT_CONSUMER_CLASS,
         OBJ_IDENT_CONXMT,
         OBJ_IDENT_CONXMT_CLASS,
         OBJ_IDENT_CRC,                  // CRC Calculations
