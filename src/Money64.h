@@ -157,6 +157,12 @@ extern "C" {
     );
     
     
+    MONEY64_DATA *  Money64_NewFromSQL_USD (
+        const
+        char            *pStringA
+    );
+
+
 #ifdef  MONEY64_JSON_SUPPORT
     MONEY64_DATA *  Money64_NewFromJsonString (
         ASTR_DATA       *pString
@@ -383,6 +389,19 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     Money64_ToAStrDec2 (
+        MONEY64_DATA    *this
+    );
+
+
+    /*!
+     Create a string from the number in the form to be stored in an SQL statement.
+     The number will be stored in its raw form and be type USD.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                description, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Money64_ToAStrSQL (
         MONEY64_DATA    *this
     );
 

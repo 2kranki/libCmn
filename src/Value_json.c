@@ -116,6 +116,11 @@ extern "C" {
                 (void)JsonIn_FindI64NodeInHashA(pParser, "data", &pObject->value.i64);
                 break;
 
+            case VALUE_TYPE_MONEY64:
+                //TODO:  Use JsonIn_ParseObject();
+                goto exit00;
+                break;
+
             case VALUE_TYPE_UINT8:          // int8_t
                 (void)JsonIn_FindU8NodeInHashA(pParser, "data", &pObject->value.u8);
                 break;
@@ -132,8 +137,26 @@ extern "C" {
                 (void)JsonIn_FindU64NodeInHashA(pParser, "data", &pObject->value.u64);
                 break;
 
+            case VALUE_TYPE_FALSE:
+                pObject->type = VALUE_TYPE_FALSE;
+                pObject->value.pObject = False_New();
+                goto exit00;
+                break;
+
+            case VALUE_TYPE_NULL:
+                pObject->type = VALUE_TYPE_NULL;
+                pObject->value.pObject = Null_New();
+                goto exit00;
+                break;
+
             case VALUE_TYPE_OBJECT:
                 //TODO:  Use JsonIn_ParseObject();
+                goto exit00;
+                break;
+
+            case VALUE_TYPE_TRUE:
+                pObject->type = VALUE_TYPE_TRUE;
+                pObject->value.pObject = True_New();
                 goto exit00;
                 break;
 
@@ -387,6 +410,35 @@ extern "C" {
                 }
                 break;
 
+            case VALUE_TYPE_MONEY64:
+                AStr_AppendPrint(
+                             pStr,
+                             ", \"type\":%d /*VALUE_TYPE_MONEY64*/, \"data\":",
+                             VALUE_TYPE_OBJECT
+                );
+                if (this->value.pObject) {
+                    pVtbl = obj_getVtbl(this->value.pObject);
+                    if (pVtbl) {
+                        pToJson =   pVtbl->pQueryInfo(
+                                                    this->value.pObject,
+                                                    OBJ_QUERYINFO_TYPE_METHOD,
+                                                    "ToJson"
+                                    );
+                        if (pToJson) {
+                            pWrk = (*pToJson)(this->value.pObject);
+                            if (pWrk) {
+                                AStr_Append(pStr, pWrk);
+                                obj_Release(pWrk);
+                                pWrk = OBJ_NIL;
+                            }
+                        }
+                    }
+                }
+                else {
+                    AStr_AppendA(pStr, "null");
+                }
+                break;
+
             case VALUE_TYPE_UINT8:
                 AStr_AppendPrint(
                                  pStr,
@@ -443,6 +495,22 @@ extern "C" {
                 }
                 break;
 
+            case VALUE_TYPE_FALSE:
+                AStr_AppendPrint(
+                             pStr,
+                             ", \"type\":%d /*VALUE_TYPE_FALSE*/, ",
+                             VALUE_TYPE_OBJECT
+                );
+                break;
+
+            case VALUE_TYPE_NULL:
+                AStr_AppendPrint(
+                             pStr,
+                             ", \"type\":%d /*VALUE_TYPE_NULL*/, ",
+                             VALUE_TYPE_OBJECT
+                );
+                break;
+
             case VALUE_TYPE_OBJECT:
                 AStr_AppendPrint(
                              pStr,
@@ -470,6 +538,14 @@ extern "C" {
                 else {
                     AStr_AppendA(pStr, "null");
                 }
+                break;
+
+            case VALUE_TYPE_TRUE:
+                AStr_AppendPrint(
+                             pStr,
+                             ", \"type\":%d /*VALUE_TYPE_TRUE*/, ",
+                             VALUE_TYPE_OBJECT
+                );
                 break;
 
             case VALUE_TYPE_DATA:

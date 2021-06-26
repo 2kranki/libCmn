@@ -386,7 +386,7 @@ extern "C" {
             } else if (Value_getType(pValue) == VALUE_TYPE_DATA) {
                 //pData = Value_getData(pValue);
             } else if (Value_getType(pValue) == VALUE_TYPE_OBJECT) {
-                OBJ_ID          pObj = Value_getObject(pValue);
+                //OBJ_ID          pObj = Value_getObject(pValue);
             }
         } else if (obj_getType(pData) == OBJ_IDENT_ASTR) {
             pWrkStr = (ASTR_DATA *)pData;
@@ -1826,7 +1826,6 @@ extern "C" {
         bool            fDone = false;
         SQLROW_DATA     *pRowSql = OBJ_NIL;
         VALUEARRAY_DATA *pRow = OBJ_NIL;
-        VALUE_DATA      *pCol = OBJ_NIL;
         int             colNo;
 
         // Do initialization.
@@ -1862,9 +1861,9 @@ extern "C" {
                     return ERESULT_INVALID_OBJECT;
                 }
                 for (colNo=0; colNo < ValueArray_getSize(pRow); colNo++) {
-                    pCol = ValueArray_Get(pRow, colNo+1);
-                    if (pCol) {
-                        eRc = SQLite_BindValue(this, pStmt, colNo, pCol);
+                    pValue = ValueArray_Get(pRow, colNo+1);
+                    if (pValue) {
+                        eRc = SQLite_BindValue(this, pStmt, colNo, pValue);
                         if (ERESULT_FAILED(eRc)) {
                             sqlError = -2;
                             sqlite3_reset(pStmt);       // Release bound parameters.

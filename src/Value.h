@@ -62,7 +62,10 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <False.h>
 #include        <Money64.h>
+#include        <Null.h>
+#include        <True.h>
 
 
 #ifndef         VALUE_H
@@ -112,6 +115,7 @@ extern "C" {
         VALUE_TYPE_UNKNOWN=0,
         VALUE_TYPE_ASTR,            // AStr Object
         VALUE_TYPE_DOUBLE,          // 64-bit Float
+        VALUE_TYPE_FALSE,           // False object
         VALUE_TYPE_INT8,            // int8_t
         VALUE_TYPE_INT16,           // int16_t
         VALUE_TYPE_INT32,           // int32_t
@@ -121,7 +125,9 @@ extern "C" {
         VALUE_TYPE_UINT32,          // int32_t
         VALUE_TYPE_UINT64,          // int64_t
         VALUE_TYPE_MONEY64,         // Money64 Object
+        VALUE_TYPE_NULL,            // Null Object
         VALUE_TYPE_OBJECT,          // Any object that supports "ToJson" method
+        VALUE_TYPE_TRUE,            // True object
         VALUE_TYPE_DATA,            // Any data (pointer and length) (pointer and length
         //                          // must be valid for life of object)
         VALUE_TYPE_DATA_FREE,       // Any data (pointer and length) which will be freed
@@ -209,6 +215,10 @@ extern "C" {
         double          value
     );
 
+    VALUE_DATA *    Value_NewFalse (
+        void
+    );
+
     VALUE_DATA *    Value_NewI8 (
         int8_t          value
     );
@@ -229,8 +239,16 @@ extern "C" {
         MONEY64_DATA    *pValue
     );
 
+    VALUE_DATA *    Value_NewNull (
+        void
+    );
+
     VALUE_DATA *    Value_NewObject (
         OBJ_DATA        *pValue
+    );
+
+    VALUE_DATA *    Value_NewTrue (
+        void
     );
 
     VALUE_DATA *    Value_NewU8 (
@@ -306,6 +324,15 @@ extern "C" {
     );
 
 
+    OBJ_DATA *      Value_getFalse (
+        VALUE_DATA      *this
+    );
+
+    bool            Value_setFalse (
+        VALUE_DATA      *this
+    );
+
+
     int8_t          Value_getI8 (
         VALUE_DATA      *this
     );
@@ -370,6 +397,15 @@ extern "C" {
     );
 
 
+    OBJ_DATA *      Value_getNull (
+        VALUE_DATA      *this
+    );
+
+    bool            Value_setNull (
+        VALUE_DATA      *this
+    );
+
+
     OBJ_DATA *      Value_getObject (
         VALUE_DATA      *this
     );
@@ -391,6 +427,15 @@ extern "C" {
     bool            Value_setOther (
         VALUE_DATA      *this,
         OBJ_ID          pValue
+    );
+
+
+    OBJ_DATA *      Value_getTrue (
+        VALUE_DATA      *this
+    );
+
+    bool            Value_setTrue (
+        VALUE_DATA      *this
     );
 
 

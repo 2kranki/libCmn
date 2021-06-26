@@ -256,6 +256,14 @@ extern "C" {
      it is performed. If an error occurs, then the first member will be the
      one that the error occurred on. The Bind Queue is optoinal. If not
      present, then the SQL statement is performed without binding.
+
+     Binding is done using an index into the SQL statement. The following
+     forms in the statement will be matched:
+            ?
+            ?NNN
+     In the above, NNN represents an integer literal which will be used
+     as the matching index instead of the relative index. Indices are
+     relative to 1.
      @param     this        object pointer
      @param     pCallback   optional callback address
      @param     pParm1      optional 1st parameter pass to callback

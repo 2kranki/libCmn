@@ -704,8 +704,62 @@ int             test_SQLite_Step01 (
 
 
 
+int             test_SQLite_Step02 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SQLITE_DATA     *pObj = OBJ_NIL;
+    bool            fRc;
+    const
+    char            *pDatabasePath = TEST_FILES_DIR "/db/ae.db";
+    PATH_DATA       *pPath = OBJ_NIL;
+    const
+    char            *pSqlA = NULL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = Path_NewA(pDatabasePath);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    eRc = Path_Clean(pPath);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+    pObj = SQLite_NewPath(pPath);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLITE);
+        TINYTEST_TRUE( (fRc) );
+        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        pSqlA = "SELECT * FROM Items;";
+        fprintf(stderr, "Exec() ==> SQL: %s\n", pSqlA);
+        eRc = SQLite_Exec(pObj, SQLite_dump_callback, NULL, pSqlA);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pSqlA = "SELECT * FROM Items;";
+        fprintf(stderr, "Step() ==> SQL: %s\n", pSqlA);
+        eRc = SQLite_Step(pObj, SQLite_step_callback, NULL, pSqlA, OBJ_NIL);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_SQLite);
+    TINYTEST_ADD_TEST(test_SQLite_Step02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SQLite_Step01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SQLite_SQL_Col01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SQLite_Table02,setUp,tearDown);

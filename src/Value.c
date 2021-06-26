@@ -110,8 +110,11 @@ extern "C" {
                 break;
 
             case VALUE_TYPE_ASTR:
+            case VALUE_TYPE_FALSE:
             case VALUE_TYPE_MONEY64:
+            case VALUE_TYPE_NULL:
             case VALUE_TYPE_OBJECT:
+            case VALUE_TYPE_TRUE:
                 if (this->value.pObject) {
                     obj_Release(this->value.pObject);
                     this->value.pObject = OBJ_NIL;
@@ -306,6 +309,26 @@ extern "C" {
     }
 
 
+    VALUE_DATA *    Value_NewFalse (
+        void
+    )
+    {
+        VALUE_DATA      *this;
+
+        this = Value_New();
+        if (this) {
+            this->type = VALUE_TYPE_FALSE;
+            this->value.pObject = False_New();
+            if (OBJ_NIL == this->value.pObject) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+
+        return this;
+    }
+
+
     VALUE_DATA *    Value_NewI8 (
         int8_t          value
     )
@@ -401,6 +424,26 @@ extern "C" {
     }
 
 
+    VALUE_DATA *    Value_NewNull (
+        void
+    )
+    {
+        VALUE_DATA      *this;
+
+        this = Value_New();
+        if (this) {
+            this->type = VALUE_TYPE_NULL;
+            this->value.pObject = Null_New();
+            if (OBJ_NIL == this->value.pObject) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+
+        return this;
+    }
+
+
     VALUE_DATA *    Value_NewObject (
         OBJ_DATA        *pValue
     )
@@ -416,6 +459,26 @@ extern "C" {
                 this = OBJ_NIL;
             }
         }
+        return this;
+    }
+
+
+    VALUE_DATA *    Value_NewTrue (
+        void
+    )
+    {
+        VALUE_DATA      *this;
+
+        this = Value_New();
+        if (this) {
+            this->type = VALUE_TYPE_TRUE;
+            this->value.pObject = True_New();
+            if (OBJ_NIL == this->value.pObject) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+
         return this;
     }
 
@@ -697,6 +760,54 @@ extern "C" {
         Value_FreeData(this);
         this->value.flt = value;
         this->type = VALUE_TYPE_DOUBLE;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          F a l s e
+    //---------------------------------------------------------------
+
+    OBJ_DATA *      Value_getFalse (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        if (this->type == VALUE_TYPE_FALSE) {
+            return this->value.pObject;
+        }
+        else {
+            return OBJ_NIL;
+        }
+    }
+
+
+    bool            Value_setFalse (
+        VALUE_DATA      *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Value_FreeData(this);
+        this->value.pObject = False_New();
+        this->type = VALUE_TYPE_FALSE;
 
         return true;
     }
@@ -997,6 +1108,54 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          N u l l
+    //---------------------------------------------------------------
+
+    OBJ_DATA *      Value_getNull (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        if (this->type == VALUE_TYPE_NULL) {
+            return this->value.pObject;
+        }
+        else {
+            return OBJ_NIL;
+        }
+    }
+
+
+    bool            Value_setNull (
+        VALUE_DATA      *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Value_FreeData(this);
+        this->value.pObject = Null_New();
+        this->type = VALUE_TYPE_NULL;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          O b j e c t
     //---------------------------------------------------------------
 
@@ -1136,6 +1295,54 @@ extern "C" {
     }
     
   
+
+    //---------------------------------------------------------------
+    //                          T r u e
+    //---------------------------------------------------------------
+
+    OBJ_DATA *      Value_getTrue (
+        VALUE_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        if (this->type == VALUE_TYPE_TRUE) {
+            return this->value.pObject;
+        }
+        else {
+            return OBJ_NIL;
+        }
+    }
+
+
+    bool            Value_setTrue (
+        VALUE_DATA      *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Value_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Value_FreeData(this);
+        this->value.pObject = True_New();
+        this->type = VALUE_TYPE_TRUE;
+
+        return true;
+    }
+
+
 
     //---------------------------------------------------------------
     //                          T y p e

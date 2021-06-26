@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <Money64_internal.h>
+#include        <dec.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -113,6 +114,22 @@ extern "C" {
         if (this) {
             this = Money64_Init(this);
         } 
+        return this;
+    }
+
+
+    MONEY64_DATA *  Money64_NewFromSQL_USD (
+        const
+        char            *pStringA
+    )
+    {
+        MONEY64_DATA       *this;
+
+        this = Money64_New( );
+        if (this) {
+            this->type = MONEY64_TYPE_USD;
+            this->amt = dec_getInt64A(pStringA);
+        }
         return this;
     }
 
@@ -1509,6 +1526,46 @@ extern "C" {
         pStr = AStr_NewFromPrint("%c%s.%02d", sign, AStr_getData(pWrkStr), dec);
         obj_Release(pWrkStr);
         pWrkStr = OBJ_NIL;
+
+        return pStr;
+    }
+
+
+    ASTR_DATA *     Money64_ToAStrSQL (
+        MONEY64_DATA    *this
+    )
+    {
+        //ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        //uint32_t        i;
+        //uint32_t        j;
+        int64_t         amt = 0;
+        char            sign = ' ';
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Money64_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        switch (this->type) {
+            case MONEY64_TYPE_USD:
+                if (this->amt < 0) {
+                    sign = '-';
+                    amt = this->amt * -1;
+                } else {
+                    amt = this->amt;
+                }
+                pStr = AStr_NewFromPrint("%c%d", sign, amt);
+                break;
+
+            default:
+                DEBUG_BREAK();
+                pStr = AStr_NewA("Unknown Money Type");
+        }
 
         return pStr;
     }
