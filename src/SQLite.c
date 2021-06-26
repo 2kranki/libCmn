@@ -928,149 +928,6 @@ extern "C" {
     //                          C o l
     //---------------------------------------------------------------
 
-    /*!
-     Convert SQLite column data to SqlCol object.
-     SQLite allows any column to contain any type of data regardless
-     of the original table definition. We impose a stricter interpre-
-     tation and require that data from SQLite conform to the type
-     of data that we are expecting from the column definition.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    SQLCOL_DATA *   SQLite_ColDataToCol (
-        SQLITE_DATA     *this,
-        sqlite3_stmt    *pStmt,
-        int             idx
-    )
-    {
-        //ERESULT         eRc = ERESULT_SUCCESS;
-        int             type;           // Sqlite native type
-        const
-        void            *pBlob;
-        double          dbl;
-        int64_t         i64;
-        const
-        uint8_t         *pText;
-        int             len;
-        SQLCOL_DATA     *pCol = OBJ_NIL;
-        const
-        char            *pDatabaseName = NULL;
-        const
-        char            *pTableName = NULL;
-        const
-        char            *pName = NULL;
-        VALUE_DATA      *pValue = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!SQLite_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-
-        pCol = SqlCol_New();
-        if (pCol) {
-            pDatabaseName = sqlite3_column_database_name(pStmt, idx);
-            if (pDatabaseName) {
-                pStr = AStr_NewA(pDatabaseName);
-                if (pStr) {
-                    SqlCol_setDatabaseName(pCol, pStr);
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
-            }
-            pTableName = sqlite3_column_table_name(pStmt, idx);
-            if (pTableName) {
-                pStr = AStr_NewA(pTableName);
-                if (pStr) {
-                    SqlCol_setTableName(pCol, pStr);
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
-            }
-            pName = sqlite3_column_origin_name(pStmt, idx);
-            if (pName) {
-                pStr = AStr_NewA(pName);
-                if (pStr) {
-                    SqlCol_setName(pCol, pStr);
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
-            }
-            type = sqlite3_column_type(pStmt, idx);
-            switch (type) {
-
-                case SQLITE_BLOB:
-                    pBlob = sqlite3_column_blob(pStmt, idx);
-                    len = sqlite3_column_bytes(pStmt, idx);
-                    if (len && pBlob) {
-                        pValue = Value_NewDataCopy(len, (void *)pBlob);
-                        if (pValue) {
-                            SqlCol_setValue(pCol, pValue);
-                            obj_Release(pValue);
-                            pValue = OBJ_NIL;
-                        } else {
-                            obj_Release(pCol);
-                            pCol = OBJ_NIL;
-                        }
-                    } else {
-                        obj_Release(pCol);
-                        pCol = OBJ_NIL;
-                    }
-                    break;
-
-                case SQLITE_FLOAT:
-                    dbl = sqlite3_column_double(pStmt, idx);
-                    pValue = Value_NewDouble(dbl);
-                    break;
-                case SQLITE_INTEGER:
-                    i64 = sqlite3_column_int64(pStmt, idx);
-                    pValue = Value_NewI64(i64);
-                    break;
-                case SQLITE_NULL:
-                    // No further data is needed.
-                    obj_Release(pValue);
-                    pValue = OBJ_NIL;
-                    break;
-                case SQLITE_TEXT:
-                    pText = sqlite3_column_text(pStmt, idx);
-                    //len = sqlite3_column_bytes(pStmt, idx);
-                    // pText is UTF-8 and NUL terminated.
-                    pStr = AStr_NewA((void *)pText);
-                    if (pStr) {
-                        pValue = Value_NewAStr(pStr);
-                        obj_Release(pStr);
-                        pStr = OBJ_NIL;
-                    } else {
-                        obj_Release(pValue);
-                        pValue = OBJ_NIL;
-                    }
-                    break;
-                default:
-                    DEBUG_BREAK();
-                    break;
-            }
-            if (pValue) {
-                SqlCol_setValue(pCol, pValue);
-                obj_Release(pValue);
-                pValue = OBJ_NIL;
-            } else {
-                obj_Release(pCol);
-                pCol = OBJ_NIL;
-            }
-        }
-
-        // Return to caller.
-        return pCol;
-    }
-
-
-
     //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
@@ -1752,16 +1609,162 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                          R o w
+    //                          S q l  D a t a
     //---------------------------------------------------------------
 
     /*!
-     Enable operation of this object.
+     Convert SQLite column data to SqlCol object.
+     SQLite allows any column to contain any type of data regardless
+     of the original table definition. We impose a stricter interpre-
+     tation and require that data from SQLite conform to the type
+     of data that we are expecting from the column definition.
      @param     this    object pointer
+     @param     pStmt   SQLite Statement pointer
+     @param     idx     column index (relative to zero)
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    SQLROW_DATA *   SQLite_RowDataToRow (
+    SQLCOL_DATA *   SQLite_SqlDataToCol (
+        SQLITE_DATA     *this,
+        sqlite3_stmt    *pStmt,
+        int             idx
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        int             type;           // Sqlite native type
+        const
+        void            *pBlob;
+        double          dbl;
+        int64_t         i64;
+        const
+        uint8_t         *pText;
+        int             len;
+        SQLCOL_DATA     *pCol = OBJ_NIL;
+        const
+        char            *pDatabaseName = NULL;
+        const
+        char            *pTableName = NULL;
+        const
+        char            *pName = NULL;
+        VALUE_DATA      *pValue = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SQLite_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pCol = SqlCol_New();
+        if (pCol) {
+            pDatabaseName = sqlite3_column_database_name(pStmt, idx);
+            if (pDatabaseName) {
+                pStr = AStr_NewA(pDatabaseName);
+                if (pStr) {
+                    SqlCol_setDatabaseName(pCol, pStr);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+            pTableName = sqlite3_column_table_name(pStmt, idx);
+            if (pTableName) {
+                pStr = AStr_NewA(pTableName);
+                if (pStr) {
+                    SqlCol_setTableName(pCol, pStr);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+            pName = sqlite3_column_origin_name(pStmt, idx);
+            if (pName) {
+                pStr = AStr_NewA(pName);
+                if (pStr) {
+                    SqlCol_setName(pCol, pStr);
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+            type = sqlite3_column_type(pStmt, idx);
+            switch (type) {
+
+                case SQLITE_BLOB:
+                    pBlob = sqlite3_column_blob(pStmt, idx);
+                    len = sqlite3_column_bytes(pStmt, idx);
+                    if (len && pBlob) {
+                        pValue = Value_NewDataCopy(len, (void *)pBlob);
+                        if (pValue) {
+                            SqlCol_setValue(pCol, pValue);
+                            obj_Release(pValue);
+                            pValue = OBJ_NIL;
+                        } else {
+                            obj_Release(pCol);
+                            pCol = OBJ_NIL;
+                        }
+                    } else {
+                        obj_Release(pCol);
+                        pCol = OBJ_NIL;
+                    }
+                    break;
+
+                case SQLITE_FLOAT:
+                    dbl = sqlite3_column_double(pStmt, idx);
+                    pValue = Value_NewDouble(dbl);
+                    break;
+                case SQLITE_INTEGER:
+                    i64 = sqlite3_column_int64(pStmt, idx);
+                    pValue = Value_NewI64(i64);
+                    break;
+                case SQLITE_NULL:
+                    // No further data is needed.
+                    obj_Release(pValue);
+                    pValue = OBJ_NIL;
+                    break;
+                case SQLITE_TEXT:
+                    pText = sqlite3_column_text(pStmt, idx);
+                    //len = sqlite3_column_bytes(pStmt, idx);
+                    // pText is UTF-8 and NUL terminated.
+                    pStr = AStr_NewA((void *)pText);
+                    if (pStr) {
+                        pValue = Value_NewAStr(pStr);
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    } else {
+                        obj_Release(pValue);
+                        pValue = OBJ_NIL;
+                    }
+                    break;
+                default:
+                    DEBUG_BREAK();
+                    break;
+            }
+            if (pValue) {
+                SqlCol_setValue(pCol, pValue);
+                obj_Release(pValue);
+                pValue = OBJ_NIL;
+            } else {
+                obj_Release(pCol);
+                pCol = OBJ_NIL;
+            }
+        }
+
+        // Return to caller.
+        return pCol;
+    }
+
+
+
+    /*!
+     Convert one row of the SQLite data from a step execution to a SqlRow object.
+     @param     this    object pointer
+     @param     pStmt   SQLite Statement pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    SQLROW_DATA *   SQLite_SqlDataToRow (
         SQLITE_DATA     *this,
         sqlite3_stmt    *pStmt
     )
@@ -1791,7 +1794,7 @@ extern "C" {
         if (pRow) {
             cCols = sqlite3_column_count(pStmt);
             for (i=0; i<cCols; i++) {
-                pCol = SQLite_ColDataToCol(this, pStmt, i);
+                pCol = SQLite_SqlDataToCol(this, pStmt, i);
                 SqlRow_AppendCol(pRow, pCol);
                 obj_Release(pCol);
                 pCol = OBJ_NIL;
@@ -1884,18 +1887,19 @@ extern "C" {
                         break;
                     case    SQLITE_ROW:
                         if (pCallback) {
-                            pRowSql = SQLite_RowDataToRow(this, pStmt);
+                            pRowSql = SQLite_SqlDataToRow(this, pStmt);
                             if (pRowSql) {
                                 sqlError = pCallback(pParm1, pRowSql);
                                 obj_Release(pRowSql);
                                 pRowSql = OBJ_NIL;
-                                if (ERESULT_OK(eRc))
-                                    ;
-                                else {
-                                    return eRc;
+                                if (sqlError) {
+                                    eRc = ERESULT_FAILURE;
+                                    fDone = true;
+                                    break;
                                 }
                             }
                         }
+                        break;
                     default:
                         eRc = ERESULT_FAILURE;
                         fDone = true;

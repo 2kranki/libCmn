@@ -1,0 +1,31 @@
+05/27/2021,JCPENNEY 2972 2972  Somewhere         FL,Irma Xyzzy,-62020,46.84
+05/26/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,45.00
+05/26/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,113.62
+05/24/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,78.55
+05/23/2021,PUBLIX              Somewhere         FL,Joe Blow,-62001,47.51
+05/22/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,162.31
+05/19/2021,JCPENNEY 2972 2972  Somewhere         FL,Irma Xyzzy,-62020,19.17
+05/19/2021,ROSS DRESS FOR LESS Somewhere         FL,Irma Xyzzy,-62020,67.06
+05/18/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,210.05
+05/16/2021,PUBLIX              Somewhere         FL,Joe Blow,-62001,227.85
+05/11/2021,SHELL OIL 5754554870Somewhere              FL,Joe Blow,-62001,67.13
+05/09/2021,7-ELEVEN 38429 00073Somewhere         FL,Joe Blow,-62001,22.38
+05/09/2021,PUBLIX              Somewhere         FL,Joe Blow,-62001,104.70
+05/07/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,75.15
+05/05/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,179.81
+04/23/2021,CIRCLE K # 07644/CIRSomewhere         FL,Joe Blow,-62001,21.94
+04/15/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,23.84
+04/15/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,57.82
+04/14/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,144.25
+04/13/2021,SPECTRUM            EAST SYRACUSE       NY,Joe Blow,-62001,265.30
+04/11/2021,PUBLIX              Somewhere         FL,Joe Blow,-62001,85.88
+04/08/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,96.58
+04/05/2021,WALGREENS #26262 000Somewhere         FL,Joe Blow,-62001,49.99
+04/03/2021,PUBLIX              Somewhere         FL,Joe Blow,-62001,45.45
+04/03/2021,PUBLIX              Somewhere         FL,Joe Blow,-62001,86.96
+04/02/2021,CIRCLE K # 05644/CIRSomewhere         FL,Joe Blow,-62001,16.56
+04/02/2021,PUBLIX              Somewhere         FL,Irma Xyzzy,-62020,66.79
+04/01/2021,7-ELEVEN 38519 00073Somewhere         FL,Irma Xyzzy,-62020,27.01
+04/01/2021,JCPENNEY 2972 2972  Somewhere         FL,Irma Xyzzy,-62020,46.84
+04/01/2021,JCPENNEY 2972 2972  Somewhere         FL,Irma Xyzzy,-62020,173.59
+04/01/2021,ROSS DRESS FOR LESS Somewhere         FL,Irma Xyzzy,-62020,120.26

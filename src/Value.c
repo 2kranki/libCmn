@@ -109,6 +109,8 @@ extern "C" {
             case VALUE_TYPE_UINT64:
                 break;
 
+            case VALUE_TYPE_ASTR:
+            case VALUE_TYPE_MONEY64:
             case VALUE_TYPE_OBJECT:
                 if (this->value.pObject) {
                     obj_Release(this->value.pObject);
@@ -2347,9 +2349,7 @@ extern "C" {
         VALUE_DATA      *this
     )
     {
-        ERESULT         eRc;
-        ASTR_DATA       *pStr;
-        ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pStr = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -2360,87 +2360,50 @@ extern "C" {
         }
 #endif
 
-        pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-
         switch (this->type) {
             case VALUE_TYPE_ASTR:           // AStr Object
-                eRc = AStr_Append(pStr, this->value.pObject);
+                pStr = this->value.pObject;
+                obj_Retain(pStr);
                 break;
 
             case VALUE_TYPE_DOUBLE:         // 64-bit Float
-                eRc = AStr_AppendPrint(
-                            pStr,
-                            "%f",
-                            this->value.flt
-                    );
+                pStr = AStr_NewFromPrint("%f", this->value.flt);
                 break;
 
             case VALUE_TYPE_INT8:           // int8_t
-                eRc = AStr_AppendPrint(
-                            pStr,
-                            "%d",
-                            this->value.i8
-                    );
+                pStr = AStr_NewFromPrint("%d", this->value.i8);
                 break;
 
             case VALUE_TYPE_INT16:          // int16_t
-                eRc = AStr_AppendPrint(
-                            pStr,
-                            "%d",
-                            this->value.i16
-                    );
+                pStr = AStr_NewFromPrint("%d", this->value.i16);
                 break;
 
             case VALUE_TYPE_INT32:          // int32_t
-                eRc = AStr_AppendPrint(
-                            pStr,
-                            "%d",
-                            this->value.i32
-                    );
+                pStr = AStr_NewFromPrint("%d", this->value.i32);
                 break;
 
             case VALUE_TYPE_INT64:          // int64_t
-                eRc = AStr_AppendPrint(
-                            pStr,
-                            "%d",
-                            this->value.i64
-                    );
+                pStr = AStr_NewFromPrint("%d", this->value.i64);
                 break;
 
             case VALUE_TYPE_UINT8:          // uint8_t
-                eRc = AStr_AppendPrint(
-                            pStr,
-                            "%u",
-                            this->value.u8
-                    );
+                pStr = AStr_NewFromPrint("%u", this->value.u8);
                 break;
 
             case VALUE_TYPE_UINT16:         // uint16_t
-                eRc = AStr_AppendPrint(
-                            pStr,
-                            "%u",
-                            this->value.u16
-                    );
+                pStr = AStr_NewFromPrint("%u", this->value.u16);
                 break;
 
             case VALUE_TYPE_UINT32:         // uint32_t
-                eRc = AStr_AppendPrint(
-                            pStr,
-                            "%u",
-                            this->value.u32
-                    );
+                pStr = AStr_NewFromPrint("%u", this->value.u32);
                 break;
 
             case VALUE_TYPE_UINT64:         // uint64_t
-                eRc = AStr_AppendPrint(
-                            pStr,
-                            "%u",
-                            this->value.u64
-                    );
+                pStr = AStr_NewFromPrint("%u", this->value.u64);
+                break;
+
+            case VALUE_TYPE_MONEY64:        // Money64 Object
+                pStr = Money64_ToAStr((OBJ_ID)this->value.pObject);
                 break;
 
             case VALUE_TYPE_OBJECT:         // Any object that supports "ToStr" method
@@ -2452,9 +2415,7 @@ extern "C" {
                                              "ToStr"
                                 );
                     if (pToStr) {
-                        pWrkStr = pToStr(this->value.pObject);
-                        AStr_Append(pStr, pWrkStr);
-                        obj_Release(pWrkStr);
+                        pStr = pToStr(this->value.pObject);
                     }
                 }
                 break;

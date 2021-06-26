@@ -317,7 +317,7 @@ extern "C" {
                 return ERESULT_OUT_OF_MEMORY;
             }
         }
-        eRc =  ObjArray_Append(this->pArray, (OBJ_ID)pCol);
+        eRc =  ObjArray_AppendObj(this->pArray, (OBJ_ID)pCol, NULL);
 
 
         // Return to caller.

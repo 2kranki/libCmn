@@ -139,23 +139,6 @@ struct SQLite_data_s  {
     );
 
 
-    /*!
-     Convert SQLite column data to SqlCol object.
-     SQLite allows any column to contain any type of data regardless
-     of the original table definition. We impose a stricter interpre-
-     tation and require that data from SQLite conform to the type
-     of data that we are expecting from the column definition.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    SQLCOL_DATA *   SQLite_ColDataToCol (
-        SQLITE_DATA     *this,
-        sqlite3_stmt    *pStmt,
-        int             idx
-    );
-
-
     SQLITE_DATA *   SQLite_Copy (
         SQLITE_DATA     *this
     );
@@ -198,6 +181,36 @@ struct SQLite_data_s  {
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
+    );
+
+
+    /*!
+     Convert SQLite column data to SqlCol object.
+     SQLite allows any column to contain any type of data regardless
+     of the original table definition. We impose a stricter interpre-
+     tation and require that data from SQLite conform to the type
+     of data that we are expecting from the column definition.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    SQLCOL_DATA *   SQLite_SqlDataToCol (
+        SQLITE_DATA     *this,
+        sqlite3_stmt    *pStmt,
+        int             idx
+    );
+
+
+    /*!
+     Convert one row of the SQLite data from a step execution to a SqlRow object.
+     @param     this    object pointer
+     @param     pStmt   SQLite Statement pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    SQLROW_DATA *   SQLite_SqlDataToRow (
+        SQLITE_DATA     *this,
+        sqlite3_stmt    *pStmt
     );
 
 

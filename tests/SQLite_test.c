@@ -23,13 +23,12 @@
 
 
 #include    <tinytest.h>
+#include    <JsonIn.h>
 #include    <test_defs.h>
 #include    <trace.h>
 #include    <SQLite_internal.h>
-#ifdef  SQLITE_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
@@ -47,6 +46,50 @@ int             SQLite_dump_callback (
 
     for (i=0; i<numCols; ++i) {
         fprintf(stderr, "\t%15s: %s\n", pColName[i], pColText[i]);
+    }
+    fprintf(stderr, "\n");
+
+    return SQLITE_OK;
+}
+
+
+// int (*pCallback)(void *, SQLROW_DATA *)
+// Note: The SqlRow object is released immediately after this
+//      callback returns. So, if it is needed, then it needs
+//      to be retained.
+static
+int             SQLite_step_callback (
+    void            *pObj,
+    SQLROW_DATA     *pRow
+)
+{
+    //SQLITE_DATA     *this = pData;
+    uint32_t        i;
+    SQLCOL_DATA     *pCol;
+    VALUE_DATA      *pVal;
+    ASTR_DATA       *pStr = OBJ_NIL;
+
+    if (pRow) {
+        for (i=0; i<SqlRow_getSize(pRow); ++i) {
+            pCol = SqlRow_Get(pRow, i+1);
+            if (pCol) {
+                pVal = SqlCol_getValue(pCol);
+                if (pVal) {
+                    pStr = Value_ToString(pVal);
+                    if (pStr) {
+                        fprintf(
+                                stderr,
+                                "\t%15s: %s\n",
+                                AStr_getData(SqlCol_getName(pCol)),
+                                AStr_getData(pStr)
+                        );
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    }
+                }
+            }
+        }
+        fprintf(stderr, "\n");
     }
 
     return SQLITE_OK;
@@ -124,11 +167,10 @@ int             tearDown (
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-#ifdef  SQLITE_JSON_SUPPORT
     SrcErrors_SharedReset( );
     szTbl_SharedReset( );
-#endif
-    trace_SharedReset( ); 
+    JsonIn_RegisterReset();
+    trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(
                 stderr,
@@ -273,7 +315,7 @@ int             test_SQLite_Test01 (
     SQLITE_DATA     *pObj = OBJ_NIL;
     bool            fRc;
     const
-    char            *pDatabasePath = TEST_FILES_DIR "/chinook.db";
+    char            *pDatabasePath = TEST_FILES_DIR "/db/ae.db";
     PATH_DATA       *pPath = OBJ_NIL;
     const
     char            *pSqlA = NULL;
@@ -414,7 +456,7 @@ int             test_SQLite_Table02 (
 
         count = SQLite_TableRowCount(pObj, "Items");
         fprintf(stderr, "Count: %d\n", count);
-        TINYTEST_TRUE( (177 == count) );
+        TINYTEST_TRUE( (31 == count) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -609,8 +651,62 @@ int             test_SQLite_SQL_Col01 (
 
 
 
+int             test_SQLite_Step01 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SQLITE_DATA     *pObj = OBJ_NIL;
+    bool            fRc;
+    const
+    char            *pDatabasePath = TEST_FILES_DIR "/db/ae.db";
+    PATH_DATA       *pPath = OBJ_NIL;
+    const
+    char            *pSqlA = NULL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPath = Path_NewA(pDatabasePath);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    eRc = Path_Clean(pPath);
+    TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+    pObj = SQLite_NewPath(pPath);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SQLITE);
+        TINYTEST_TRUE( (fRc) );
+        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        pSqlA = "SELECT * FROM Items;";
+        fprintf(stderr, "Exec() ==> SQL: %s\n", pSqlA);
+        eRc = SQLite_Exec(pObj, SQLite_dump_callback, NULL, pSqlA);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        pSqlA = "SELECT * FROM Items;";
+        fprintf(stderr, "Step() ==> SQL: %s\n", pSqlA);
+        eRc = SQLite_Step(pObj, SQLite_step_callback, NULL, pSqlA, OBJ_NIL);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_SQLite);
+    TINYTEST_ADD_TEST(test_SQLite_Step01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SQLite_SQL_Col01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SQLite_Table02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_SQLite_Table01,setUp,tearDown);
