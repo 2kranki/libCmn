@@ -386,7 +386,7 @@ extern "C" {
             } else if (Value_getType(pValue) == VALUE_TYPE_DATA) {
                 //pData = Value_getData(pValue);
             } else if (Value_getType(pValue) == VALUE_TYPE_OBJECT) {
-                //OBJ_ID          pObj = Value_getObject(pValue);
+                 //OBJ_ID          pObj = Value_getObject(pValue);
             }
         } else if (obj_getType(pData) == OBJ_IDENT_ASTR) {
             pWrkStr = (ASTR_DATA *)pData;

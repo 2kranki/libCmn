@@ -465,12 +465,12 @@ extern "C" {
      */
     bool            misc_PatternMatchA(
         const
-        char            *pPattern,
+        char            *pPatternA,
         const
-        char            *pName,
+        char            *pNameA,
         const
-        char            *pEquiv,
-        char            *pNewname
+        char            *pEquivA,
+        char            *pNewnameA
     )
     {
         int             len;
@@ -484,18 +484,18 @@ extern "C" {
         bool            fRc;
 
         // Get the next Pattern Character.
-        len = utf8_Utf8ToW32(pPattern, &mcw);
+        len = utf8_Utf8ToW32(pPatternA, &mcw);
         if (len == -1) {    // *** Malformed Unicode Char ***
             return false;
         }
-        pPattern += len;
+        pPatternA += len;
 
         for (;;) {		/* Corresponding char */
-            len = utf8_Utf8ToW32(pName, &cw);
+            len = utf8_Utf8ToW32(pNameA, &cw);
             if (len == -1) {    // *** Malformed Unicode Char ***
                 return false;
             }
-            pName += len;
+            pNameA += len;
             lenName = len;
             if (cw == '\0') {
                 break;
@@ -503,69 +503,69 @@ extern "C" {
             switch (mcw) {
                     
                 case '?':				// '?' matches any single char
-                    if (pEquiv) {
-                        if (misc_CopyText(&pEquiv, &pNewname)) {
-                            len = utf8_W32ToUtf8(cw, pNewname);
-                            pNewname += len;
-                            len = utf8_Utf8ToW32(pPattern, &mcwn);
+                    if (pEquivA) {
+                        if (misc_CopyText(&pEquivA, &pNewnameA)) {
+                            len = utf8_W32ToUtf8(cw, pNewnameA);
+                            pNewnameA += len;
+                            len = utf8_Utf8ToW32(pPatternA, &mcwn);
                             if (mcwn != '?') {
-                                len = utf8_Utf8ToW32(pEquiv, NULL);
-                                pEquiv += len;
+                                len = utf8_Utf8ToW32(pEquivA, NULL);
+                                pEquivA += len;
                             }
                         }
                     }
-                    len = utf8_Utf8ToW32(pPattern, &mcw);
+                    len = utf8_Utf8ToW32(pPatternA, &mcw);
                     if (len == -1) {    // *** Malformed Unicode Char ***
                         return false;
                     }
-                    pPattern += len;
+                    pPatternA += len;
                     break;
                     
                 case '*':				// '*' matches any string
                     flag = 0;
-                    if (pEquiv) {
-                        if (misc_CopyText(&pEquiv, &pNewname))
+                    if (pEquivA) {
+                        if (misc_CopyText(&pEquivA, &pNewnameA))
                             flag = 1;
                     }
                     len = 0;
-                    if (flag && pEquiv) {
-                        len = utf8_Utf8ToW32(pEquiv, NULL);
+                    if (flag && pEquivA) {
+                        len = utf8_Utf8ToW32(pEquivA, NULL);
                     }
                     fRc = misc_PatternMatchA(
-                                    pPattern,
-                                    (pName - lenName), // Backup one char
-                                    (pEquiv + len),    // Optionally Advance one char
-                                    pNewname
+                                    pPatternA,
+                                    (pNameA - lenName), // Backup one char
+                                    (pEquivA + len),    // Optionally Advance one char
+                                    pNewnameA
                              );
                     if ( fRc )
                         return true;
                     if (flag) {
-                        len = utf8_W32ToUtf8(cw, pNewname);
-                        pNewname += len;
+                        len = utf8_W32ToUtf8(cw, pNewnameA);
+                        pNewnameA += len;
                     }
                     break;
                     
                 default:				/* Anything else matches only itself */
                     if (ascii_toUpperW32(mcw) != ascii_toUpperW32(cw))
                         return false;
-                    len = utf8_Utf8ToW32(pPattern, &mcw);
+                    len = utf8_Utf8ToW32(pPatternA, &mcw);
                     if (len == -1) {    // *** Malformed Unicode Char ***
                         return false;
                     }
-                    pPattern += len;
+                    pPatternA += len;
                     break;
             }
         }
         
-        if ((mcw != '*' || *pPattern) && mcw) {
+        if ((mcw != '*' || *pPatternA) && mcw) {
             return false;
         }
-        if (pEquiv) {
-            while (misc_CopyText(&pEquiv, &pNewname)) {
-                len = utf8_Utf8ToW32(pEquiv, NULL);
-                pEquiv += len;
+        if (pEquivA) {
+            while (misc_CopyText(&pEquivA, &pNewnameA)) {
+                len = utf8_Utf8ToW32(pEquivA, NULL);
+                pEquivA += len;
             }
-            *pNewname = '\0';
+            *pNewnameA = '\0';
         }
         return true;
     }

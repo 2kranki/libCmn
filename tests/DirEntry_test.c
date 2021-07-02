@@ -274,8 +274,105 @@ int             test_DirEntry_Test02 (
 
 
 
+int             test_DirEntry_Match01 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    DIRENTRY_DATA   *pObj = OBJ_NIL;
+    bool            fRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pPathA = "/bin/bash";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = DirEntry_NewA(pPathA, DIRENTRY_TYPE_REG);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_DIRENTRY);
+        TINYTEST_TRUE( (fRc) );
+
+        pPath = DirEntry_getFullPath(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pPath) );
+        TINYTEST_TRUE( (0 == Path_CompareA(pPath, pPathA)) );
+
+        eRc = DirEntry_MatchA(pObj, "/bin/bash");
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        eRc = DirEntry_MatchA(pObj, "/bin/*");
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        eRc = DirEntry_MatchA(pObj, "/*/bash");
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_DirEntry_Match02 (
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    DIRENTRY_DATA   *pObj = OBJ_NIL;
+    bool            fRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
+    const
+    char            *pPathA = "/usr/bin/grep";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = DirEntry_NewA(pPathA, DIRENTRY_TYPE_REG);
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_DIRENTRY);
+        TINYTEST_TRUE( (fRc) );
+
+        pPath = DirEntry_getFullPath(pObj);
+        TINYTEST_FALSE( (OBJ_NIL == pPath) );
+        TINYTEST_TRUE( (0 == Path_CompareA(pPath, pPathA)) );
+
+        eRc = DirEntry_MatchA(pObj, "/usr/bin/grep");
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        eRc = DirEntry_MatchA(pObj, "/usr/bin/*");
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        eRc = DirEntry_MatchA(pObj, "/usr/*/grep");
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        eRc = DirEntry_MatchA(pObj, "/*/bin/grep");
+        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_DirEntry);
+    TINYTEST_ADD_TEST(test_DirEntry_Match02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_DirEntry_Match01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_DirEntry_Test02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_DirEntry_Test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_DirEntry_Copy01,setUp,tearDown);

@@ -340,8 +340,9 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !DirEntry_Validate(this) ) {
+        if (!DirEntry_Validate(this)) {
             DEBUG_BREAK();
+            return OBJ_NIL;
         }
 #endif
 
@@ -355,7 +356,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !DirEntry_Validate(this) ) {
+        if (!DirEntry_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }

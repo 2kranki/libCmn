@@ -235,6 +235,14 @@ int         test_misc_Match01(
     XCTAssertTrue( (fRc) );
     fRc = misc_PatternMatchA("*y.??t","xyzzy.txt",NULL,NULL);
     XCTAssertTrue( (fRc) );
+    fRc = misc_PatternMatchA("/usr/bin/grep", "/usr/bin/grep",NULL,NULL);
+    TINYTEST_TRUE( (fRc) );
+    fRc = misc_PatternMatchA("/usr/bin/*", "/usr/bin/grep",NULL,NULL);
+    TINYTEST_TRUE( (fRc) );
+    fRc = misc_PatternMatchA("/usr/*/grep", "/usr/bin/grep",NULL,NULL);
+    TINYTEST_TRUE( (fRc) );
+    fRc = misc_PatternMatchA("/*/bin/grep", "/usr/bin/grep",NULL,NULL);
+    TINYTEST_TRUE( (fRc) );
 
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;

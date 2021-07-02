@@ -1312,6 +1312,64 @@ int         test_Path_CleanDir06(
 
 
 
+int         test_Path_CleanDir07(
+    const
+    char        *pTestName
+)
+{
+    PATH_DATA    *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    const
+    char        *pszStr;
+    uint32_t    i;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Path_NewA("./y.tmp");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    fprintf(stderr, "\tBefore: %s\n", Path_getData(pObj));
+    if (pObj) {
+
+        eRc = Path_Clean(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        fprintf(stderr, "\tAfter: %s\n", Path_getData(pObj));
+#ifdef XYZZY
+        i = AStr_getLength((ASTR_DATA *)pObj);
+        XCTAssertTrue( (16 == i) );
+        pszStr = AStr_getData((ASTR_DATA *)pObj);
+        XCTAssertTrue( (0 == strcmp(pszStr, "/Users/bob/y.tmp")) );
+#endif
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    pObj = Path_NewA("../y.tmp");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    fprintf(stderr, "\tBefore: %s\n", Path_getData(pObj));
+    if (pObj) {
+
+        eRc = Path_Clean(pObj);
+        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        fprintf(stderr, "\tAfter: %s\n", Path_getData(pObj));
+        //DEBUG_BREAK();
+#ifdef XYZZY
+        i = AStr_getLength((ASTR_DATA *)pObj);
+        XCTAssertTrue( (16 == i) );
+        pszStr = AStr_getData((ASTR_DATA *)pObj);
+        XCTAssertTrue( (0 == strcmp(pszStr, "/Users/bob/y.tmp")) );
+#endif
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 int         test_Path_ToBash(
     const
     char        *pTestName
@@ -1565,6 +1623,7 @@ TINYTEST_START_SUITE(test_Path);
     TINYTEST_ADD_TEST(test_Path_ExpandEnvVars02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_ExpandEnvVars01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_ToBash,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_Path_CleanDir07,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_CleanDir06,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_CleanDir05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Path_CleanDir04,setUp,tearDown);

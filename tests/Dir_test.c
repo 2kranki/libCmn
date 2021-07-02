@@ -591,7 +591,7 @@ int         test_Dir_Glob01(
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pPattern = NULL;
-    pDir = TEST_FILES_DIR "/*.txt";
+    pDir = TEST_FILES_DIR "/";
     count = 1;
     pObj = Dir_New( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -600,7 +600,7 @@ int         test_Dir_Glob01(
         obj_TraceSet(pObj, true);
         count = 1;
         pPath = Path_NewA(pDir);
-        eRc = Dir_GlobMatch(pObj, pPath, false, (void *)&globScanner, NULL, NULL);
+        eRc = Dir_GlobMatch(pObj, pPath, "*.txt", false, (void *)&globScanner, NULL, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
         // Count will be 1 more than what was found.
@@ -630,7 +630,7 @@ int         test_Dir_Glob02(
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pPattern = NULL;
-    pDir = TEST_FILES_DIR "/*.txt";
+    pDir = TEST_FILES_DIR;
     count = 1;
     pObj = Dir_New( );
     XCTAssertFalse( (OBJ_NIL == pObj) );
@@ -639,13 +639,52 @@ int         test_Dir_Glob02(
         obj_TraceSet(pObj, true);
         count = 1;
         pPath = Path_NewA(pDir);
-        eRc = Dir_GlobMatch(pObj, pPath, true, (void *)&globScanner, NULL, NULL);
+        eRc = Dir_GlobMatch(pObj, pPath, "*.txt", true, (void *)&globScanner, NULL, NULL);
         obj_Release(pPath);
         pPath = OBJ_NIL;
         // Count will be 1 more than what was found.
         fprintf(stderr, "%s Count: %d\n", pDir, count);
-        XCTAssertTrue( (24 == count) );
+        XCTAssertTrue( (25 == count) );
 
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_Dir_Search01(
+    const
+    char        *pTestName
+)
+{
+    DIR_DATA    *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    PATH_DATA   *pPath;
+    DIRENTRY_DATA *pEntry = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pPattern = NULL;
+    pDir = TEST_FILES_DIR;
+    count = 1;
+    pObj = Dir_New( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+
+        pEntry = Dir_SearchList(pObj, ".:/usr:/usr/bin", "write");
+        XCTAssertFalse( (OBJ_NIL == pEntry) );
+        pPath = DirEntry_getFullPath(pEntry);
+        XCTAssertFalse( (OBJ_NIL == pPath) );
+        XCTAssertTrue( (0 == strcmp("/usr/bin/write", Path_getData(pPath))) );
+        obj_Release(pEntry);
+        pEntry = OBJ_NIL;
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -659,6 +698,7 @@ int         test_Dir_Glob02(
 
 
 TINYTEST_START_SUITE(test_Dir);
+    TINYTEST_ADD_TEST(test_Dir_Search01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dir_Glob02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dir_Glob01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dir_Enum02,setUp,tearDown);

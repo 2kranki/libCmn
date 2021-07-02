@@ -3018,7 +3018,7 @@ extern "C" {
         while (i < (iMax + 1)) {
             
             // We have to use i to store the current index since index
-            // get clobbered if the character is not found.
+            // gets clobbered if the character is not found.
             index = i;
             start = index;
             eRc = AStr_CharFindNextW32(this, &index, chr);

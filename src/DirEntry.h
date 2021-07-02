@@ -428,7 +428,7 @@ extern "C" {
     );
 
 
-    /*! Match this entry's file name against a pattern.
+    /*! Match this entry's full path against a pattern.
         which may include '?' and '*'.
      @param     this        object pointer
      @param     pPatternA   pattern to match against

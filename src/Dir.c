@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <Dir_internal.h>
+#include        <AStrArray.h>
 #include        <ObjList.h>
 #include        <trace.h>
 
@@ -127,6 +128,37 @@ extern "C" {
 
 
 
+    // GlobScan exit which is called for every file that matches. We only
+    // care about the first match.
+    //         int             (*pScanner)(void *, DIRENTRY_DATA *, void *)
+    static
+    bool            srchScanner(
+        void            *pObject,
+        DIRENTRY_DATA   *pDirent,
+        void            *pData
+    )
+    {
+        DIR_DATA        *this = pObject;
+        DIRENTRY_DATA   **ppDirEntry = (DIRENTRY_DATA **)pData;
+        bool            fRc = false;
+
+
+        TRC_OBJ(
+                this,
+                "\tdir::srchList: %s\n",
+                Path_getData(DirEntry_getFullPath(pDirent))
+        );
+        if (ppDirEntry && (OBJ_NIL == *ppDirEntry)) {
+            obj_Retain(pDirent);
+            *ppDirEntry = pDirent;
+            fRc = false;
+        }
+
+        return fRc;
+    }
+
+
+
 #ifdef XYZZY
     static
     bool            scan_rm(
@@ -168,6 +200,32 @@ extern "C" {
         
         // Return to caller.
         return this;
+    }
+
+
+
+    const
+    char *          Dir_GetCWD (
+        void
+    )
+    {
+        char            *pWrk = NULL;
+        int             i = 256;
+
+
+        for (;;) {
+            pWrk = mem_Malloc(i);
+            if (NULL == pWrk) {
+                break;
+            }
+            if (NULL == getcwd(pWrk, i)) {
+                i += 256;
+                mem_Free(pWrk);
+            } else
+                break;
+        }
+
+        return pWrk;
     }
 
 
@@ -850,6 +908,8 @@ extern "C" {
     ERESULT         Dir_GlobMatch (
         DIR_DATA        *this,
         PATH_DATA       *pPath,
+        const
+        char            *pMatchA,
         bool            fRecurse,
         int             (*pScanner)(void *, DIRENTRY_DATA *, void *),
         void            *pObject,
@@ -879,7 +939,9 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        TRC_OBJ(this,"%s:\n", __func__);
 
+#ifdef XYZZY
         eRc = Path_SplitPath(pPath, &pDrive, &pDir, &pFileName);
         if (ERESULT_FAILED(eRc)) {
             return  ERESULT_INVALID_DATA;
@@ -890,16 +952,27 @@ extern "C" {
         pDrive = OBJ_NIL;
         obj_Release(pDir);
         pDir = OBJ_NIL;
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
+#else
+        pDriveDir = Path_Copy(pPath);
+        if (OBJ_NIL == pDriveDir) {
+            return  ERESULT_INVALID_DATA;
+        }
+        eRc = Path_Clean(pDriveDir);
+        if (ERESULT_FAILED(eRc)) {
+            return  ERESULT_INVALID_DATA;
+        }
+#endif
 
+        TRC_OBJ(this, "\tPath: %s\n", Path_getData(pDriveDir));
         pScanData = mem_Calloc(sizeof(SCANNER_DATA), 1);
         if( NULL == pScanData ) {
             obj_Release(pDriveDir);
             pDriveDir = OBJ_NIL;
-            obj_Release(pFileName);
-            pFileName = OBJ_NIL;
             return ERESULT_OUT_OF_MEMORY;
         }
-        pScanData->pPatternA = Path_getData(pFileName);
+        pScanData->pPatternA = pMatchA;
         pScanData->pScanner = (void *)pScanner;
         pScanData->pObject = pObject;
         pScanData->pData = pData;
@@ -911,8 +984,6 @@ extern "C" {
         pScanData = NULL;
         obj_Release(pDriveDir);
         pDriveDir = OBJ_NIL;
-        obj_Release(pFileName);
-        pFileName = OBJ_NIL;
 
         // Return to caller.
         return eRc;
@@ -1241,21 +1312,23 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Dir_Validate(this) ) {
+        if (!Dir_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( (OBJ_NIL == pPath) || !(OBJ_IDENT_PATH == obj_getType(pPath)) ) {
+        if ((OBJ_NIL == pPath) || !(OBJ_IDENT_PATH == obj_getType(pPath))) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
-        if( NULL == pScanner ) {
+        if (NULL == pScanner) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        TRC_OBJ(this,"%s:\n", __func__);
 
         Path_Clean(pPath);
+        TRC_OBJ(this, "\tpath: \"%s\"\n", Path_getData(pPath));
         eRc = Path_IsDir(pPath);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
@@ -1301,6 +1374,7 @@ extern "C" {
                 continue;
             }
 
+            TRC_OBJ(this, "\t\tfile/subdir: \"%s\"\n", pDirent->d_name);
             pFileName = Path_NewA(pDirent->d_name);
             if (OBJ_NIL == pFileName) {
                 DEBUG_BREAK();
@@ -1367,6 +1441,104 @@ extern "C" {
         obj_Release(pDir);
         pDir = OBJ_NIL;
         return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      D i s a b l e
+    //---------------------------------------------------------------
+
+    /*!
+     SearchList() searches a Bash PATH-like list of directories for a
+     specific file and returns the full path if it is found. The list
+     of directories are passed in one string with ':' as a separator.
+     The first file to match the criteria is returned.
+     @param     this        object pointer
+     @param     pPathListA  directory path list (Required)
+     @param     pMatchA     regex match criteria (Defualt '*')
+     @return    if successful, a DirEntry object which must be released.
+                Otherwise, OBJ_NIL.
+     */
+    DIRENTRY_DATA * Dir_SearchList (
+        DIR_DATA        *this,
+        const
+        char            *pPathListA,
+        const
+        char            *pMatchA
+    )
+    {
+        ERESULT         eRc;
+        DIRENTRY_DATA   *pFound = OBJ_NIL;
+        ASTRARRAY_DATA  *pDirs = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Dir_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+        if (NULL == pPathListA) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+        TRC_OBJ(this,"%s:\n", __func__);
+        TRC_OBJ(this,"\tPath List: %s\n", pPathListA);
+        TRC_OBJ(this,"\tMatch Pattern: %s\n", pMatchA);
+
+        pStr = AStr_NewA(pPathListA);
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            //return ERESULT_OUT_MEMORY;
+            return OBJ_NIL;
+        }
+        pDirs = AStr_SplitOnCharW32(pStr, ':');
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        if (OBJ_NIL == pDirs) {
+            DEBUG_BREAK();
+            //return ERESULT_OUT_MEMORY;
+            return OBJ_NIL;
+        }
+
+        iMax = AStrArray_getSize(pDirs);
+        for (i=0; i<iMax; i++) {
+            pStr = AStrArray_Get(pDirs, i+1);
+            if (pStr) {
+                PATH_DATA           *pPath = Path_NewFromAStr(pStr);
+                TRC_OBJ(this, "\tnext dir: \"%s\"\n", Path_getData(pPath));
+                PATH_DATA           *pMatch = Path_NewFromAStr(pStr);
+                Path_AppendFileNameA(pMatch, pMatchA);
+                TRC_OBJ(this, "\tmatch: \"%s\"\n", Path_getData(pMatch));
+                eRc =   Dir_GlobMatch(
+                                    this,
+                                    pPath,
+                                    Path_getData(pMatch),
+                                    false,
+                                    (void *)&srchScanner,
+                                    this,
+                                    &pFound
+                        );
+                obj_Release(pMatch);
+                pMatch = OBJ_NIL;
+                obj_Release(pPath);
+                pPath = OBJ_NIL;
+                if (pFound)
+                    break;
+            }
+        }
+        obj_Release(pDirs);
+        pDirs = OBJ_NIL;
+
+        // Return to caller.
+        return pFound;
     }
 
 

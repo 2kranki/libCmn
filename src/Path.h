@@ -585,6 +585,25 @@ extern "C" {
      portion of the Path.  It also denotes the beginning of the file name.
      So, if the Path consists of optionally the drive and the directory
      portions, it must end in a '/' to be properly parsed.
+
+     path := [drive ':']['/'dir | '.' | ".."] ('/'dir)* [file_name ['.' extension]]
+     dir := '*' | directory_name
+     where directtory_name, file_name and extension may contain '*' | '?' for
+     file matching.
+
+     If the path provided is /dir/dir/dir, then we will see the right-most dir
+     as a file_name except if it is '.' or "..".  If you know that the right-
+     most entry is a dir, you should append it with a leading '/' to the
+     scanned directory entry and delete the returned file_name.
+
+     The following formats are supported by this method:
+     [drive ':'] ('/' dir)* '/' [file_name ['.' extension]]
+     [drive ':'] file_name ['.' extension]
+     [] means optional. Note that if we are dealing with a directory then we
+     should have a trailing '/' to identify it as a directory rather than a
+     file name. Without the trailing '/', the last dirctory will be returned
+     as the file name.
+
      @param     this        object pointer
      @param     ppDrive     pointer to ASTR object pointer which will contain
                             the drive if it exists in the Path.  The drive

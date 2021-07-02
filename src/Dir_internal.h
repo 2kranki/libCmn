@@ -70,6 +70,7 @@ extern "C" {
         const
         char            *pPatternA;
         bool            fRecurse;
+        void            *pExtra;
     } SCANNER_DATA;
 #pragma pack(pop)
 

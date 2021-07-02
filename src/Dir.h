@@ -139,6 +139,18 @@ extern "C" {
     );
     
     
+    /*!
+     Get the current working directory (CWD) as a C string.
+     @return    If successful, an mem object which must be freed containing the
+                CWD, otherwise NULL.
+     @warning   Remember to free the returned area with mem_Free().
+     */
+    const
+    char *          Dir_GetCWD (
+        void
+    );
+
+
     ERESULT         Dir_IsDirA (
         const
         char            *pPath
@@ -224,7 +236,9 @@ extern "C" {
      Match method is used to select the appropriate directory entries to
      be scanned.
      @param     this        object pointer
-     @param     pPath       path for directory to scan with pattern to be matched
+     @param     pPath       path for directory to start scan
+     @param     pMatchA     Pattern to be matched against which may include directory
+                            entries.
      @param     fRecurse    True == recurse through the directory structure, False
                             == just remain in the specified directory.
      @param     pScanner    scan method to be called for directory entry.  It should
@@ -238,6 +252,8 @@ extern "C" {
     ERESULT         Dir_GlobMatch (
         DIR_DATA        *this,
         PATH_DATA       *pPath,
+        const
+        char            *pMatchA,
         bool            fRecurse,
         int             (*pScanner)(void *, DIRENTRY_DATA *, void *),
         void            *pObject,
@@ -275,6 +291,26 @@ extern "C" {
         bool            (*pScanner)(void *, DIRENTRY_DATA *, void *),
         void            *pObject,
         void            *pData
+    );
+
+
+    /*!
+     SearchList() searches a Bash PATH-like list of directories for a
+     specific file and returns the full path if it is found. The list
+     of directories are passed in one string with ':' as a separator.
+     The first file to match the criteria is returned.
+     @param     this        object pointer
+     @param     pPathListA  directory path list (Required)
+     @param     pMatchA     regex match criteria (Defualt '*')
+     @return    if successful, a DirEntry object which must be released.
+                Otherwise, OBJ_NIL.
+     */
+    DIRENTRY_DATA * Dir_SearchList (
+        DIR_DATA        *this,
+        const
+        char            *pPathListA,
+        const
+        char            *pMatchA
     );
 
 

@@ -427,6 +427,7 @@ extern "C" {
         int32_t         chr3;
         const
         char            *pszHome;
+        char            *pWrk;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -459,6 +460,34 @@ extern "C" {
                         pszPath = getenv("HOMEDRIVE");
                     }
 
+                }
+            } else if (chr1 == '.') {
+                i = 256;
+                for (;;) {
+                    pWrk = mem_Malloc(i);
+                    if (NULL == pWrk) {
+                        break;
+                    }
+                    if (NULL == getcwd(pWrk, i)) {
+                        i += 256;
+                        mem_Free(pWrk);
+                    } else
+                        break;
+                }
+                if (pWrk) {
+                    chr2 = AStr_CharGetW32(pStr, 2);
+                    if (chr2 == '.') {
+                        i = (uint32_t)strlen(pWrk);
+                        AStr_InsertA(pStr, 1, pWrk);
+                        AStr_InsertA(pStr, i+1, "/");
+                    } else {
+                        eRc = AStr_Remove(pStr, 1, 1);
+                        if (ERESULT_IS_SUCCESSFUL(eRc)) {
+                            AStr_InsertA(pStr, 1, pWrk);
+                        }
+                    }
+                    mem_Free(pWrk);
+                    pWrk = NULL;
                 }
             }
         }
@@ -2338,7 +2367,7 @@ extern "C" {
         //---------------------------------------------------------------
 
         ERESULT         Path_SplitPath(
-            PATH_DATA        *this,
+            PATH_DATA       *this,
             ASTR_DATA       **ppDrive,
             PATH_DATA       **ppDir,
             PATH_DATA       **ppFileName
@@ -2349,6 +2378,8 @@ extern "C" {
             uint32_t        begin = 1;
             uint32_t        end;
             uint32_t        begDir = 1;
+            W32CHR_T        chr1;
+            W32CHR_T        chr2;
 
             // Do initialization.
     #ifdef NDEBUG
@@ -2359,6 +2390,7 @@ extern "C" {
             }
     #endif
 
+            // Scan off the drive.
             index = 0;
             eRc = AStr_CharFindNextW32((ASTR_DATA *)this, &index, ':');
             if (ERESULT_IS_SUCCESSFUL(eRc)) {
@@ -2390,6 +2422,8 @@ extern "C" {
                 }
             }
 
+            // Scan off the directory entries except for maybe the right-most
+            // directory entry.
             index = 0;
             eRc = AStr_CharFindPrevW32((ASTR_DATA *)this, &index, '/');
             if (ERESULT_IS_SUCCESSFUL(eRc)) {     // *** Directory is present ***
@@ -2426,11 +2460,30 @@ extern "C" {
                 }
             }
 
+            // Scan off the file_name and file_extension.
             if (ppFileName) {
                 *ppFileName = OBJ_NIL;
                 begin = begDir;
                 end = AStr_getLength((ASTR_DATA *)this);
                 if (begin <= end) {
+                    if ((end - begin) < 3) {
+                        chr1 = AStr_CharGetW32((ASTR_DATA *)this, begin+1);
+                        chr2 = AStr_CharGetW32((ASTR_DATA *)this, begin+2);
+                        if (((chr1 == '.') && (chr2 == EOF))
+                            || ((chr1 == '.') && (chr2 == '.'))) {
+                            if (ppDir) {
+                                AStr_AppendA((ASTR_DATA *)*ppDir, "/");
+                                AStr_AppendA((ASTR_DATA *)*ppDir, ".");
+                                if (chr2 == '.')
+                                    AStr_AppendA((ASTR_DATA *)*ppDir, ".");
+                            } else {
+                                *ppDir = Path_NewA(".");
+                                if (chr2 == '.')
+                                    AStr_AppendA((ASTR_DATA *)*ppDir, ".");
+                            }
+                            goto fileNameByp;
+                        }
+                    }
                     ASTR_DATA      *pStr;
                     if (ppFileName) {
                         eRc = AStr_Right((ASTR_DATA *)this, (end - begin + 1), &pStr);
@@ -2442,6 +2495,7 @@ extern "C" {
                     }
                 }
             }
+        fileNameByp:
 
             // Return to caller.
             return ERESULT_SUCCESS;
