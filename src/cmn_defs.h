@@ -349,6 +349,14 @@ extern "C" {
         OBJ_IDENT_MSGDATA_CLASS,
         OBJ_IDENT_NAME,
         OBJ_IDENT_NAME_CLASS,
+        OBJ_IDENT_NET,                  // TCP/IP Network Support
+        OBJ_IDENT_NET_CLASS,
+        OBJ_IDENT_NETHTTP,              // Network HTTP Support
+        OBJ_IDENT_NETHTTP_CLASS,
+        OBJ_IDENT_NETIO,                // Network I/O using Unix Sockets
+        OBJ_IDENT_NETIO_CLASS,
+        OBJ_IDENT_NETMIME,              // Network MIME Server Support
+        OBJ_IDENT_NETMIME_CLASS,
         OBJ_IDENT_NODE,
         OBJ_IDENT_NODE_CLASS,
         OBJ_IDENT_NODEARC,              // An Arc in a Node Graph

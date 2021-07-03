@@ -918,10 +918,12 @@ extern "C" {
     {
         ERESULT         eRc;
         SCANNER_DATA    *pScanData = NULL;
+#ifdef XYZZY
         ASTR_DATA       *pDrive = OBJ_NIL;
         PATH_DATA       *pDir = OBJ_NIL;
-        PATH_DATA       *pDriveDir = OBJ_NIL;
         PATH_DATA       *pFileName = OBJ_NIL;
+#endif
+        PATH_DATA       *pDriveDir = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
