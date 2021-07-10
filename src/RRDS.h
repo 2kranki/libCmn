@@ -1,16 +1,18 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Fixed Length File Record I/O System (RRDS) Header
+//     Relative Record Dataset (ie Fixed size records indexed
+//              by record number) (RRDS) Header
 //****************************************************************
 /*
  * Program
- *			Fixed Length File Record I/O System (RRDS)
+ *          Relative Record Dataset (ie Fixed size records indexed
+ *          by record number) (RRDS)
  * Purpose
  *          The RRDS routines provide Record I/O functions for a
  *          dataset/file.  An RRDS dataset/file consists of zero
- *          more fixed length records as used on large IBM main-
- *          frames.
+ *          or more fixed length records as used on large IBM
+ *          mainframes.
  *
  *          The default size is 80 bytes. It is assumed that data
  *          is only in columns 1 - 71. Column 72 is a continuation
@@ -22,16 +24,19 @@
  *          to minimize impact on C's Heap.
  *
  *          An associated LRU buffering mechanism is utilized in
- *          these routines.
+ *          these routines if the dataset is defined as disk based.
  *
  * Remarks
- *	1.      Internally, lines may be 80-82 characters. When a
- *          dataset is opened, it will be scanned at bytes 80
- *          and 81 to determine if there are \r, \n, \r\n or
- *          \n\r characters after the 80 bytes of data.
+ *    1.    If the default record size is used, the lines may be
+ *          80-82 characters. When a dataset is opened, it will
+ *          be scanned at bytes 81 and 82 to determine if there
+ *          are \r, \n, \r\n or \n\r characters after the 80
+ *          bytes of data.
  *
  * History
- *	01/05/2019 Generated
+ *  01/05/2019 Generated
+ *  07/10/2021 Regenerated and modified to include memory based
+ *              files with this object.
  */
 
 
@@ -68,7 +73,6 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <ioRrdsInterface.h>
 #include        <lru.h>
 
 
@@ -76,13 +80,15 @@
 #define         RRDS_H
 
 
-//#define   RRDS_SINGLETON    1
+//#define   RRDS_IS_IMMUTABLE     1
+//#define   RRDS_JSON_SUPPORT     1
+//#define   RRDS_SINGLETON        1
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -92,10 +98,10 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct RRDS_data_s	RRDS_DATA;            // Inherits from LRU
-    typedef struct RRDS_class_data_s RRDS_CLASS_DATA; // Inherits from OBJ
+    typedef struct RRDS_data_s  RRDS_DATA;            // Inherits from OBJ
+    typedef struct RRDS_class_data_s RRDS_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct RRDS_vtbl_s	{
+    typedef struct RRDS_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in RRDS_object.c.
@@ -133,7 +139,7 @@ extern "C" {
         );
     } RRDS_VTBL;
 
-    typedef struct RRDS_class_vtbl_s	{
+    typedef struct RRDS_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in RRDS_object.c.
@@ -143,20 +149,21 @@ extern "C" {
     } RRDS_CLASS_VTBL;
 
 
-    enum  RRDS_rcd_trm_e {
+    // RRDS Record Terminators
+    typedef enum  RRDS_rcd_trm_e {
         RRDS_RCD_TRM_UNKNOWN=0,
         RRDS_RCD_TRM_NONE,
         RRDS_RCD_TRM_CR,
         RRDS_RCD_TRM_NL,
         RRDS_RCD_TRM_CRNL,
         RRDS_RCD_TRM_NLCR
-    };
-    
-    
+    } RRDS_RCD_TRMS;
+
+
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -169,7 +176,7 @@ extern "C" {
         void
     );
 
-    bool            RRDS_SharedReset (
+    void            RRDS_SharedReset (
         void
     );
 #endif
@@ -196,36 +203,38 @@ extern "C" {
     );
     
     
+#ifdef  RRDS_JSON_SUPPORT
+    RRDS_DATA *     RRDS_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    RRDS_DATA *     RRDS_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
+
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    IORRDS_INTERFACE * RRDS_getIO (
-        RRDS_DATA       *this
-    );
-
-
-    LRU_DATA *      RRDS_getLRU (
-        RRDS_DATA       *this
-    );
-    
-    
     uint8_t         RRDS_getFillChar (
         RRDS_DATA       *this
     );
-    
+
     bool            RRDS_setFillChar (
         RRDS_DATA       *this,
         uint8_t         value
     );
-    
-    
+
+
     PATH_DATA *     RRDS_getPath (
         RRDS_DATA       *this
     );
-    
-    
+
+
     /*!
      The record size property should be set before a dataset/file
      is opened or created. This size does not include any record
@@ -236,25 +245,26 @@ extern "C" {
     uint16_t        RRDS_getRecordSize (
         RRDS_DATA       *this
     );
-    
+
     bool            RRDS_setRecordSize (
         RRDS_DATA     *this,
         uint16_t        value
     );
-    
+
 
     /*! Number of Records in the Dataset Property
      */
     uint32_t        RRDS_getSize (
         RRDS_DATA       *this
     );
-    
-    
 
-    
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
 
     /*! Close the file and free the areas associated with reading and
      writing to the file instance.
@@ -266,8 +276,8 @@ extern "C" {
         RRDS_DATA       *this,
         bool            fDelete
     );
-    
-    
+
+
     /* Create() creates an instance of a new RRDS.    This
      * routine or Open() must be called prior to using any other
      * RRDS I/O calls.  Use Close() to flush buffers and close the
@@ -277,8 +287,8 @@ extern "C" {
         RRDS_DATA       *this,
         PATH_DATA       *pPath
     );
-    
-    
+
+
     RRDS_DATA *     RRDS_Init (
         RRDS_DATA       *this
     );
@@ -311,8 +321,8 @@ extern "C" {
         RRDS_DATA       *this,
         PATH_DATA       *pPath
     );
-    
-    
+
+
     /* RecordRead() reads a Block from the File if it exists to the
      * address specified.
      * Returns:
@@ -329,8 +339,8 @@ extern "C" {
         uint32_t        recordNum,
         uint8_t         *pData
     );
-    
-    
+
+
     /* RecordWrite() writes a Block to the File from the address specified.
      * Returns:
      *    RRDS_OK            =    Successful Completion
@@ -345,8 +355,8 @@ extern "C" {
         uint32_t        recordNum,
         uint8_t         *pData    // Data Ptr (if NULL, a FillChar record is written)
     );
-    
-    
+
+
     /*!
      Initialize the RRDS and LRU mechanisms for this RRDS and the basic
      constants.  This overrides the defaults of record size of 80, record
@@ -367,8 +377,27 @@ extern "C" {
         uint16_t        cLRU,           // Number of LRU Buffers
         uint16_t        cHash           // Number of LRU Hash Chains
     );
-    
-    
+
+
+#ifdef  RRDS_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = RRDS_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     RRDS_ToJson (
+        RRDS_DATA       *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -389,9 +418,9 @@ extern "C" {
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* RRDS_H */
+#endif  /* RRDS_H */
 

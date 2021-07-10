@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   RRDS.c
- *	Generated 01/05/2019 23:32:39
+ *  Generated 07/10/2021 09:44:02
  *
  */
 
@@ -42,14 +42,16 @@
 
 /* Header File Inclusion */
 #include        <RRDS_internal.h>
+#include        <JsonIn.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -69,30 +71,29 @@ extern "C" {
         RRDS_DATA       *this,
         uint32_t        lsn                /* Block to extend to */
     );
-    
+
     static
     ERESULT         RRDS_LSN_Read (
         RRDS_DATA       *this,
         uint32_t        recordNum,
         uint8_t         *pBuffer
     );
-    
+
     static
     ERESULT         RRDS_LSN_Write (
         RRDS_DATA       *this,
         uint32_t        recordNum,
         uint8_t         *pBuffer
     );
-    
+
     static
     size_t          RRDS_RecordOffset (
         RRDS_DATA       *this,
         uint32_t        recordNum
     );
-    
-    
-    
-    
+
+
+
     //----------------------------------------------------------------
     //                      F i l e  C l o s e
     //----------------------------------------------------------------
@@ -103,7 +104,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+
         if (this->pIO && fileio_IsOpen(this->pIO)) {
             // Close the file.
             eRc = fileio_Close(this->pIO, fDelete);
@@ -111,15 +112,15 @@ extern "C" {
                 return eRc;
             }
         }
-        
+
         eRc = RRDS_setFileIO(this, OBJ_NIL);
-        
+
         // Return to Caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //----------------------------------------------------------------
     //      RRDS_FileExtend - Extend the File with Zeroed Records
     //----------------------------------------------------------------
@@ -141,17 +142,17 @@ extern "C" {
         uint32_t        curRec;
         size_t          fileOffset;
         uint8_t         *pFillData;
-        
+
         // Fill the File until Block number of records exist
         // bypassing the LRU mechanism.
         if( recordNum > this->cRecords ) {
-            
+
             pFillData = (uint8_t *)mem_Malloc(this->recordSize);
             if( NULL == pFillData ) {
                 return false;
             }
             memset(pFillData, this->fillChar, this->recordSize);
-            
+
             for(curRec=(this->cRecords + 1); curRec <= recordNum; ++curRec) {
                 fileOffset = RRDS_RecordOffset(this, curRec);
                 eRc = RRDS_LSN_Write(
@@ -166,18 +167,18 @@ extern "C" {
                     return false;
                 }
             }
-            
+
             mem_Free(pFillData);
             //pFillData = NULL;
             this->cRecords = recordNum;
         }
-        
+
         // Return to Caller.
         return true;
     }
-    
-    
-    
+
+
+
     //----------------------------------------------------------------
     //              R e a d  D a t a  U s i n g  L S N
     //----------------------------------------------------------------
@@ -192,7 +193,7 @@ extern "C" {
         off_t           fileOffset;
         off_t           seekOffset;
         uint32_t        amtRead = 0;
-        
+
         // Seek to the appropriate location within the file.
         fileOffset = RRDS_RecordOffset(this, lsn);
         seekOffset = fileio_SeekBegin(this->pIO, fileOffset);
@@ -202,16 +203,16 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_SEEK_ERROR;
         }
-        
+
         // Read the data.
         eRc = fileio_Read(this->pIO, this->reqSize, pBuffer, &amtRead);
-        
+
         // Return to Caller.
         return eRc;
     }
-    
-    
-    
+
+
+
     //----------------------------------------------------------------
     //              W r i t e  D a t a  U s i n g  L S N
     //----------------------------------------------------------------
@@ -227,7 +228,7 @@ extern "C" {
         off_t           seekOffset;
         uint8_t         rcdtrm[2];
         int             cRcdtrm = 1;
-        
+
         // Seek to the appropriate location within the file.
         fileOffset = RRDS_RecordOffset(this, lsn);
         seekOffset = fileio_SeekBegin(this->pIO, fileOffset);
@@ -237,7 +238,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_SEEK_ERROR;
         }
-        
+
         // Write the data.
         eRc = fileio_Write(this->pIO, this->reqSize, pBuffer);
         if (!ERESULT_FAILED(eRc)) {
@@ -245,35 +246,35 @@ extern "C" {
                 this->cRecords = lsn;
             }
         }
-        
+
         // Write the record terminator.
         switch (this->recordTerm) {
             case RRDS_RCD_TRM_NONE:
                 cRcdtrm = 0;
                 break;
-                
+
             case RRDS_RCD_TRM_CR:
                 cRcdtrm = 1;
                 rcdtrm[0] = '\r';
                 break;
-                
+
             case RRDS_RCD_TRM_NL:
                 cRcdtrm = 1;
                 rcdtrm[0] = '\n';
                 break;
-                
+
             case RRDS_RCD_TRM_CRNL:
                 cRcdtrm = 2;
                 rcdtrm[0] = '\r';
                 rcdtrm[1] = '\n';
                 break;
-                
+
             case RRDS_RCD_TRM_NLCR:
                 cRcdtrm = 2;
                 rcdtrm[0] = '\n';
                 rcdtrm[1] = '\r';
                 break;
-                
+
             default:
                 cRcdtrm = 0;
                 break;
@@ -286,13 +287,13 @@ extern "C" {
                 }
             }
         }
-        
+
         // Return to Caller.
         return eRc;
     }
-    
-    
-    
+
+
+
     //----------------------------------------------------------------
     //      BlockOffset - calculate file offset from Record Number
     //----------------------------------------------------------------
@@ -303,15 +304,15 @@ extern "C" {
     )
     {
         size_t          fileOffset;
-        
+
         fileOffset = (this->recordSize * (recordNum-1));
-        
+
         // Return to Caller.
         return fileOffset;
     }
-    
-    
-    
+
+
+
     //----------------------------------------------------------------
     //              Set up the FileIO and LRU objects
     //----------------------------------------------------------------
@@ -320,14 +321,14 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+
         eRc = RRDS_setFileIO(this, OBJ_NIL);
         this->pIO = fileio_New( );
         if (OBJ_NIL == this->pIO) {
             DEBUG_BREAK();
             return ERESULT_OBJECT_CREATION;
         }
-        
+
         eRc = lru_Setup((LRU_DATA *)this, this->recordSize, this->cLRU, this->cHash);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
@@ -335,17 +336,15 @@ extern "C" {
             this->pIO = OBJ_NIL;
             return ERESULT_OBJECT_CREATION;
         }
-        
+
         // Now tie the LRU object to the fileio object.
         lru_setLogicalSectorRead((LRU_DATA *)this, (void *)RRDS_LSN_Read, this);
         lru_setLogicalSectorWrite((LRU_DATA *)this, (void *)RRDS_LSN_Write, this);
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
 
 
 
@@ -399,12 +398,12 @@ extern "C" {
     //---------------------------------------------------------------
     //                        F i l e  I / O
     //---------------------------------------------------------------
-    
-    OBJ_ID      RRDS_getFileIO (
-        RRDS_DATA   *this
+
+    OBJ_ID          RRDS_getFileIO (
+        RRDS_DATA       *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -413,14 +412,14 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         return this->pIO;
     }
-    
-    
-    bool        RRDS_setFileIO (
-        RRDS_DATA   *this,
-        OBJ_ID      pValue
+
+
+    bool            RRDS_setFileIO (
+        RRDS_DATA       *this,
+        OBJ_ID          pValue
     )
     {
 #ifdef NDEBUG
@@ -430,7 +429,7 @@ extern "C" {
             return false;
         }
 #endif
-        
+
 #ifdef  PROPERTY_IO_OWNED
         obj_Retain(pValue);
         if (this->pIO) {
@@ -438,21 +437,21 @@ extern "C" {
         }
 #endif
         this->pIO = pValue;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //               F i l l  C h a r a c t e r
     //---------------------------------------------------------------
-    
+
     uint8_t         RRDS_getFillChar (
         RRDS_DATA       *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -461,11 +460,11 @@ extern "C" {
             return 0;
         }
 #endif
-        
+
         return this->fillChar;
     }
-    
-    
+
+
     bool            RRDS_setFillChar (
         RRDS_DATA       *this,
         uint8_t         value
@@ -478,48 +477,23 @@ extern "C" {
             return false;
         }
 #endif
-        
+
         this->fillChar = value;
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
-    //                       I O
+    //                              L R U
     //---------------------------------------------------------------
 
-    IORRDS_INTERFACE * RRDS_getIO (
+    LRU_DATA *      RRDS_getLRU (
         RRDS_DATA       *this
     )
     {
 
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!RRDS_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        this->IO.pVtbl = RRDS_IO_getVtbl();
-        obj_Retain(this);
-        return &this->IO;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          L R U
-    //---------------------------------------------------------------
-    
-    LRU_DATA *  RRDS_getLRU (
-        RRDS_DATA   *this
-    )
-    {
-        
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -528,22 +502,45 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-        
-        return (LRU_DATA *)this;
+
+        return this->pLRU;
     }
-    
-    
-    
+
+
+    bool            RRDS_setLRU (
+        RRDS_DATA       *this,
+        LRU_DATA        *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!RRDS_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pLRU) {
+            obj_Release(this->pLRU);
+        }
+        this->pLRU = pValue;
+
+        return true;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          P a t h
     //---------------------------------------------------------------
-    
+
     PATH_DATA *     RRDS_getPath (
         RRDS_DATA       *this
     )
     {
         PATH_DATA       *pPath = OBJ_NIL;
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -552,22 +549,22 @@ extern "C" {
             return 0;
         }
 #endif
-        
+
         if (this->pIO) {
             pPath = fileio_getPath(this->pIO);
         }
-        
+
         return pPath;
     }
-    
-   
-    
+
+
+
     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
     uint16_t        RRDS_getPriority (
-        RRDS_DATA       *this
+        RRDS_DATA     *this
     )
     {
 
@@ -586,7 +583,7 @@ extern "C" {
 
 
     bool            RRDS_setPriority (
-        RRDS_DATA       *this,
+        RRDS_DATA     *this,
         uint16_t        value
     )
     {
@@ -608,12 +605,12 @@ extern "C" {
     //---------------------------------------------------------------
     //                      R e c o r d  S i z e
     //---------------------------------------------------------------
-    
+
     uint16_t        RRDS_getRecordSize (
         RRDS_DATA       *this
     )
     {
-        
+
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
@@ -622,11 +619,11 @@ extern "C" {
             return 0;
         }
 #endif
-        
+
         return this->reqSize;
     }
-    
-    
+
+
     bool            RRDS_setRecordSize (
         RRDS_DATA       *this,
         uint16_t        value
@@ -639,16 +636,16 @@ extern "C" {
             return false;
         }
 #endif
-        
+
         if (OBJ_NIL == this->pIO) {
             this->reqSize = value;
         }
-        
+
         return true;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
@@ -675,7 +672,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     OBJ_IUNKNOWN *  RRDS_getSuperVtbl (
-        RRDS_DATA       *this
+        RRDS_DATA     *this
     )
     {
 
@@ -713,14 +710,14 @@ extern "C" {
      @code 
         ERESULT eRc = RRDS_Assign(this,pOther);
      @endcode 
-     @param     this    RRDS object pointer
+     @param     this    object pointer
      @param     pOther  a pointer to another RRDS object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
     ERESULT         RRDS_Assign (
-        RRDS_DATA		*this,
-        RRDS_DATA       *pOther
+        RRDS_DATA       *this,
+        RRDS_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -737,6 +734,16 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -761,8 +768,7 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        //pOther->x     = this->x; 
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -788,7 +794,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -797,20 +803,19 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         // Flush the file header.
         eRc = RRDS_FileClose(this, fDelete);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
-    //---------------------------------------------------------------
+
+
+     //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -825,8 +830,14 @@ extern "C" {
         RRDS_DATA     *pOther
     )
     {
-        int             iRc = 0;
-
+        int             iRc = -1;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
 #ifdef NDEBUG
 #else
         if (!RRDS_Validate(this)) {
@@ -841,18 +852,13 @@ extern "C" {
         }
 #endif
 
-#ifdef  xyzzy
-        if (this->token == pOther->token) {
-            return iRc;
-        }
-        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
-#endif
-
+        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+     
         return iRc;
     }
-
-
     
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -863,12 +869,155 @@ extern "C" {
      @code 
         RRDS      *pCopy = RRDS_Copy(this);
      @endcode 
-     @param     this    RRDS object pointer
+     @param     this    object pointer
      @return    If successful, a RRDS object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
     RRDS_DATA *     RRDS_Copy (
+        RRDS_DATA       *this
+    )
+    {
+        RRDS_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!RRDS_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+#ifdef RRDS_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = RRDS_New( );
+        if (pOther) {
+            eRc = RRDS_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+#endif
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //----------------------------------------------------------------
+    //                  Create - Create a File
+    //----------------------------------------------------------------
+
+    ERESULT         RRDS_Create (
+        RRDS_DATA       *this,
+        PATH_DATA       *pPath
+    )
+    {
+        ERESULT         eRc;
+
+#ifdef NDEBUG
+#else
+        if ( !RRDS_Validate(this) ) {
+            DEBUG_BREAK();              // Should not happen!
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pPath) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        eRc = RRDS_Setup(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        // Create the file.
+        eRc = fileio_Create(this->pIO, pPath);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        eRc = fileio_Close(this->pIO, false);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        eRc = fileio_Open(this->pIO, pPath);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        D e a l l o c
+    //---------------------------------------------------------------
+
+    void            RRDS_Dealloc (
+        OBJ_ID          objId
+    )
+    {
+        RRDS_DATA   *this = objId;
+        //ERESULT         eRc;
+
+        // Do initialization.
+        if (NULL == this) {
+            return;
+        }        
+#ifdef NDEBUG
+#else
+        if (!RRDS_Validate(this)) {
+            DEBUG_BREAK();
+            return;
+        }
+#endif
+
+#ifdef XYZZY
+        if (obj_IsEnabled(this)) {
+            ((RRDS_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+        }
+#endif
+
+        RRDS_setLRU(this, OBJ_NIL);
+        //FIXME: eRc = RRDS_FileClose(this, false);
+
+        obj_setVtbl(this, this->pSuperVtbl);
+        // pSuperVtbl is saved immediately after the super
+        // object which we inherit from is initialized.
+        this->pSuperVtbl->pDealloc(this);
+        this = OBJ_NIL;
+
+        // Return to caller.
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        RRDS      *pDeepCopy = RRDS_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a RRDS object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    RRDS_DATA *     RRDS_DeepyCopy (
         RRDS_DATA       *this
     )
     {
@@ -894,97 +1043,11 @@ extern "C" {
         }
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
     
     
-    //----------------------------------------------------------------
-    //                  Create - Create a File
-    //----------------------------------------------------------------
-    
-    ERESULT         RRDS_Create (
-        RRDS_DATA       *this,
-        PATH_DATA       *pPath
-    )
-    {
-        ERESULT         eRc;
-        
-#ifdef NDEBUG
-#else
-        if ( !RRDS_Validate(this) ) {
-            DEBUG_BREAK();              // Should not happen!
-            return ERESULT_INVALID_OBJECT;
-        }
-        if (OBJ_NIL == pPath) {
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        
-        eRc = RRDS_Setup(this);
-        if (ERESULT_FAILED(eRc)) {
-            return eRc;
-        }
-        
-        // Create the file.
-        eRc = fileio_Create(this->pIO, pPath);
-        if (ERESULT_FAILED(eRc)) {
-            return eRc;
-        }
-        
-        eRc = fileio_Close(this->pIO, false);
-        if (ERESULT_FAILED(eRc)) {
-            return eRc;
-        }
-        
-        eRc = fileio_Open(this->pIO, pPath);
-        if (ERESULT_FAILED(eRc)) {
-            return eRc;
-        }
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                        D e a l l o c
-    //---------------------------------------------------------------
-
-    void            RRDS_Dealloc (
-        OBJ_ID          objId
-    )
-    {
-        RRDS_DATA       *this = objId;
-        ERESULT         eRc;
-
-        // Do initialization.
-        if (NULL == this) {
-            return;
-        }        
-#ifdef NDEBUG
-#else
-        if (!RRDS_Validate(this)) {
-            DEBUG_BREAK();
-            return;
-        }
-#endif
-
-        eRc = RRDS_FileClose(this, false);
-        
-        obj_setVtbl(this, this->pSuperVtbl);
-        // pSuperVtbl is saved immediately after the super
-        // object which we inherit from is initialized.
-        this->pSuperVtbl->pDealloc(this);
-        this = OBJ_NIL;
-
-        // Return to caller.
-    }
-
-
-
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -996,25 +1059,26 @@ extern "C" {
                 error code.
      */
     ERESULT         RRDS_Disable (
-        RRDS_DATA		*this
+        RRDS_DATA       *this
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!RRDS_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -1030,25 +1094,26 @@ extern "C" {
                 error code.
      */
     ERESULT         RRDS_Enable (
-        RRDS_DATA		*this
+        RRDS_DATA       *this
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!RRDS_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -1057,11 +1122,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    RRDS_DATA *     RRDS_Init (
+    RRDS_DATA *   RRDS_Init (
         RRDS_DATA       *this
     )
     {
         uint32_t        cbSize = sizeof(RRDS_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1077,28 +1143,40 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)lru_Init((LRU_DATA *)this);      // Needed for Inheritance
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of RRDS_object.c
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_RRDS);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                      // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&RRDS_Vtbl);
+#ifdef  RRDS_JSON_SUPPORT
+        JsonIn_RegisterClass(RRDS_Class());
+#endif
 
+        this->pLRU = lru_New();
+        if (OBJ_NIL == this->pLRU) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
         lru_setLogicalSectorRead(
-                                 (LRU_DATA *)this,
+                                 this->pLRU,
                                  (void *)RRDS_LSN_Read,
                                  this
         );
         lru_setLogicalSectorWrite(
-                                 (LRU_DATA *)this,
+                                  this->pLRU,
                                  (void *)RRDS_LSN_Write,
                                  this
         );
 
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+#if defined(__MACOSX_ENV__) || defined(__MACOS32_ENV__) || defined(__MACOS64_ENV__)
         this->recordTerm = RRDS_RCD_TRM_NL;
         this->recordSize = 81;
 #endif
@@ -1115,18 +1193,24 @@ extern "C" {
         this->cLRU = 1;
         this->cHash = 13;
 
-    #ifdef NDEBUG
-    #else
+
+#ifdef NDEBUG
+#else
         if (!RRDS_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        //fprintf(stderr, "RRDS::sizeof(RRDS_DATA) = %lu\n", sizeof(RRDS_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "RRDS::sizeof(RRDS_DATA) = %lu\n", 
+                sizeof(RRDS_DATA)
+        );
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(RRDS_DATA));
-    #endif
+#endif
 
         return this;
     }
@@ -1134,13 +1218,14 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
     ERESULT         RRDS_IsEnabled (
-        RRDS_DATA		*this
+        RRDS_DATA       *this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1192,7 +1277,7 @@ extern "C" {
     //----------------------------------------------------------------
     //                      Open - Open a File
     //----------------------------------------------------------------
-    
+
     ERESULT         RRDS_Open (
         RRDS_DATA       *this,
         PATH_DATA       *pPath
@@ -1203,7 +1288,7 @@ extern "C" {
         off_t           offset;
         size_t          fileSize;
         uint8_t         terms[2];
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1212,18 +1297,18 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        
+
         // Set up the FileIO and LRU objects.
         eRc = RRDS_Setup(this);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
-        
+
         eRc = fileio_Open(this->pIO, pPath);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
-  
+
         // Records may or may not have \r\n or \n at the end of them. So,
         // record size can be 80-82 bytes.
         offset = fileio_SeekBegin(this->pIO, this->reqSize);
@@ -1256,16 +1341,16 @@ extern "C" {
             this->recordSize = 80;
             this->recordTerm = RRDS_RCD_TRM_NONE;
         }
-        
+
         fileSize = fileio_Size(this->pIO);
         this->cRecords = (uint32_t)(fileSize / this->recordSize);
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -1298,7 +1383,7 @@ extern "C" {
         void            *pData
     )
     {
-        RRDS_DATA       *this = objId;
+        RRDS_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1315,33 +1400,29 @@ extern "C" {
         
         switch (type) {
                 
-        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(RRDS_DATA);
-            break;
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(RRDS_DATA);
+                break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
                 return (void *)RRDS_Class();
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -1360,10 +1441,29 @@ extern "C" {
                         }
                         break;
 
+                    case 'P':
+#ifdef  RRDS_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return RRDS_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return RRDS_ParseJsonObject;
+                        }
+#endif
+                        break;
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return RRDS_ToDebugString;
                         }
+#ifdef  RRDS_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return RRDS_ToJsonFields;
+                        }
+                        if (str_Compare("ToJson", (char *)pStr) == 0) {
+                            return RRDS_ToJson;
+                        }
+#endif
                         break;
                         
                     default:
@@ -1374,6 +1474,10 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == RRDS_ToDebugString)
                     return "ToDebugString";
+#ifdef  RRDS_JSON_SUPPORT
+                if (pData == RRDS_ToJson)
+                    return "ToJson";
+#endif
                 break;
                 
             default:
@@ -1388,7 +1492,7 @@ extern "C" {
     //----------------------------------------------------------------
     //              RecordBuffer - Read a Block into Memory
     //----------------------------------------------------------------
-    
+
     uint8_t *       RRDS_RecordBuffer (
         RRDS_DATA       *this,
         uint32_t        recordNum,
@@ -1398,7 +1502,7 @@ extern "C" {
         ERESULT         eRc;
         //size_t          fileOffset;
         uint8_t         *pBuffer;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1413,25 +1517,25 @@ extern "C" {
             return NULL;
         }
 #endif
-        
+
         eRc = RRDS_RecordRead(this, recordNum, NULL);
         if (ERESULT_FAILED(eRc)) {
             return NULL;
         }
-        
+
         pBuffer = (uint8_t *)lru_FindBuffer((LRU_DATA *)this->pIO, recordNum);
-        
+
         // Return to caller.
         return pBuffer;
     }
-    
-    
-    
-    
+
+
+
+
     //----------------------------------------------------------------
     //              RecordRead - Read a Block into Memory
     //----------------------------------------------------------------
-    
+
     ERESULT         RRDS_RecordRead (
         RRDS_DATA       *this,
         uint32_t        recordNum,
@@ -1440,7 +1544,7 @@ extern "C" {
     {
         ERESULT         eRc;
         //size_t          fileOffset;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1459,7 +1563,7 @@ extern "C" {
         if( recordNum > this->cRecords ) {
             return ERESULT_INVALID_PARAMETER;
         }
-        
+
         // Read the Block into Memory.
         if (this->cLRU > 1) {
             eRc = lru_Read((LRU_DATA *)this, recordNum, pData);
@@ -1473,18 +1577,18 @@ extern "C" {
                 return ERESULT_IO_ERROR;
             }
         }
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
-    
+
+
+
+
     //----------------------------------------------------------------
     //              RecordWrite - Write a Block to the File
     //----------------------------------------------------------------
-    
+
     ERESULT         RRDS_RecordWrite (
         RRDS_DATA       *this,
         uint32_t        recordNum,
@@ -1492,7 +1596,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1526,7 +1630,7 @@ extern "C" {
                 return ERESULT_IO_ERROR;
             }
         }
-        
+
         // Write the Block to the File.
         if (this->cLRU > 1) {
             TRC_OBJ(this, "\tLRU write...\n");
@@ -1546,14 +1650,14 @@ extern "C" {
             }
             TRC_OBJ(this, "\tRRDS write completed\n");
         }
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
-    
+
+
+
+
     //----------------------------------------------------------------
     //              Set up the FileIO and LRU objects
     //----------------------------------------------------------------
@@ -1567,7 +1671,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1580,7 +1684,7 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
+
         this->reqSize = recordSize;
         this->recordTerm = recordTerm;
         this->cLRU = cLRU;
@@ -1589,28 +1693,28 @@ extern "C" {
             case RRDS_RCD_TRM_NONE:
                 this->recordSize = recordSize;
                 break;
-                
+
             case RRDS_RCD_TRM_CR:
                 this->recordSize = recordSize + 1;
                 break;
-                
+
             case RRDS_RCD_TRM_NL:
                 this->recordSize = recordSize + 1;
                 break;
-                
+
             case RRDS_RCD_TRM_CRNL:
                 this->recordSize = recordSize + 2;
                 break;
-                
+
             case RRDS_RCD_TRM_NLCR:
                 this->recordSize = recordSize + 2;
                 break;
-                
+
             default:
                 this->recordSize = recordSize;
                 break;
         }
-        
+
         eRc = lru_Setup((LRU_DATA *)this, this->recordSize, cLRU, cHash);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
@@ -1618,17 +1722,17 @@ extern "C" {
             this->pIO = OBJ_NIL;
             return ERESULT_OBJECT_CREATION;
         }
-        
+
         // Now tie the LRU object to the fileio object.
         lru_setLogicalSectorRead((LRU_DATA *)this, (void *)RRDS_LSN_Read, this);
         lru_setLogicalSectorWrite((LRU_DATA *)this, (void *)RRDS_LSN_Write, this);
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -1639,25 +1743,24 @@ extern "C" {
      @code 
         ASTR_DATA      *pDesc = RRDS_ToDebugString(this,4);
      @endcode 
-     @param     this    RRDS object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     RRDS_ToDebugString (
-        RRDS_DATA       *this,
+        RRDS_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1680,10 +1783,11 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    RRDS_getSize(this)
+                    RRDS_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -1693,8 +1797,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -1718,10 +1824,10 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
     bool            RRDS_Validate (
-        RRDS_DATA       *this
+        RRDS_DATA      *this
     )
     {
  
@@ -1751,13 +1857,13 @@ extern "C" {
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

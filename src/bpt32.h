@@ -55,7 +55,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <rrds.h>
+#include        <RRDS.h>
 
 
 #ifndef         BPT32_H

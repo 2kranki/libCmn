@@ -339,8 +339,6 @@ extern "C" {
         OBJ_IDENT_MEMMSC_CLASS,
         OBJ_IDENT_MEMMAC64,             // Memory Debug for MacOS 64-bit
         OBJ_IDENT_MEMMAC64_CLASS,
-        OBJ_IDENT_MEMRRDS,              // Memory-Based Relative Record Dataset/File
-        OBJ_IDENT_MEMRRDS_CLASS,
         OBJ_IDENT_MISC,                 // Miscellaneous Functions
         OBJ_IDENT_MISC_CLASS,
         OBJ_IDENT_MONEY64,              // Monetary Amounts based on 64-bit Signed Integer
@@ -484,7 +482,7 @@ extern "C" {
         OBJ_IDENT_RPGBASE_CLASS,
         OBJ_IDENT_RPGLVL,               // Report Program Generator (RPG) Level Handler
         OBJ_IDENT_RPGLVL_CLASS,
-        OBJ_IDENT_RRDS,                 // Relative Record Database
+        OBJ_IDENT_RRDS,                 // Relative Record Dataset
         OBJ_IDENT_RRDS_CLASS,
         OBJ_IDENT_RRDS32,               // Relative Record Database - 32 bit Logical
         //                              //                              Record Number

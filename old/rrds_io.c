@@ -1,6 +1,6 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	I/O Interface 'rrds'
+//	I/O Interface 'RRDS'
 //	Generated 11/02/2018 09:11:58
 
 
@@ -35,7 +35,7 @@
 
 
 //#define			RRDS_OBJECT_C	    1
-#include        <rrds_internal.h>
+#include        <RRDS_internal.h>
 #ifdef          RRDS_SINGLETON
 #include        <psxLock.h>
 #endif
@@ -48,36 +48,36 @@
 
 static
 const
-OBJ_INFO        rrds_IO_Info;
+OBJ_INFO        RRDS_IO_Info;
 
 
 static
-IORRDS_VTBL     rrds_IO_Vtbl;
+IORRDS_VTBL     RRDS_IO_Vtbl;
 
 
 static
-ERESULT         rrds_IO_Close(OBJ_ID,bool);
+ERESULT         RRDS_IO_Close(OBJ_ID,bool);
 
 
 static
-ERESULT         rrds_IO_Flush(OBJ_ID);
+ERESULT         RRDS_IO_Flush(OBJ_ID);
 
 
 static
-ERESULT         rrds_IO_Read(OBJ_ID, uint32_t, uint8_t *);
+ERESULT         RRDS_IO_Read(OBJ_ID, uint32_t, uint8_t *);
 
 
-bool            rrds_IO_Validate(
+bool            RRDS_IO_Validate(
     IORRDS_INTERFACE *this
 );
 
 
 static
-ERESULT         rrds_IO_Write(OBJ_ID, uint32_t, uint8_t *);
+ERESULT         RRDS_IO_Write(OBJ_ID, uint32_t, uint8_t *);
 
 
 static
-uint16_t        rrds_IO_WhoAmI(
+uint16_t        RRDS_IO_WhoAmI(
     void
 );
 
@@ -91,7 +91,7 @@ uint16_t        rrds_IO_WhoAmI(
 
 
     static
-    IORRDS_VTBL     rrds_IO_Vtbl;
+    IORRDS_VTBL     RRDS_IO_Vtbl;
 
 
 
@@ -104,11 +104,11 @@ uint16_t        rrds_IO_WhoAmI(
     //                          V t b l
     //---------------------------------------------------------------
 
-    IORRDS_VTBL * rrds_IO_getVtbl (
+    IORRDS_VTBL * RRDS_IO_getVtbl (
         void
     )
     {
-        return &rrds_IO_Vtbl;
+        return &RRDS_IO_Vtbl;
     }
 
 
@@ -122,7 +122,7 @@ uint16_t        rrds_IO_WhoAmI(
     //                          C l o s e
     //---------------------------------------------------------------
 
-    ERESULT         rrds_IO_Close (
+    ERESULT         RRDS_IO_Close (
         OBJ_ID          objId,
         bool            fDelete
     )
@@ -133,13 +133,13 @@ uint16_t        rrds_IO_WhoAmI(
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!rrds_IO_Validate(objId)) {
+        if (!RRDS_IO_Validate(objId)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
     #endif
         
-        eRc = rrds_Close(this, fDelete);
+        eRc = RRDS_Close(this, fDelete);
         
         // Return to caller.
         return eRc;
@@ -151,7 +151,7 @@ uint16_t        rrds_IO_WhoAmI(
     //                          F l u s h
     //---------------------------------------------------------------
 
-    ERESULT         rrds_IO_Flush (
+    ERESULT         RRDS_IO_Flush (
         OBJ_ID          objId
     )
     {
@@ -161,13 +161,13 @@ uint16_t        rrds_IO_WhoAmI(
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!rrds_IO_Validate(objId)) {
+        if (!RRDS_IO_Validate(objId)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
     #endif
         
-        //eRc = rrds_Flush(this);
+        //eRc = RRDS_Flush(this);
         
         // Return to caller.
         return eRc;
@@ -180,7 +180,7 @@ uint16_t        rrds_IO_WhoAmI(
     //---------------------------------------------------------------
 
     static
-    bool            rrds_IO_IsKindOf(
+    bool            RRDS_IO_IsKindOf(
         uint16_t        classID
     )
     {
@@ -200,7 +200,7 @@ uint16_t        rrds_IO_WhoAmI(
     //---------------------------------------------------------------
 
     static
-    void *          rrds_IO_QueryInfo(
+    void *          RRDS_IO_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -217,7 +217,7 @@ uint16_t        rrds_IO_WhoAmI(
         switch (type) {
           
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return rrds_Class( );
+                return RRDS_Class( );
                 break;
                 
             // Query for an address to specific data within the object.
@@ -228,7 +228,7 @@ uint16_t        rrds_IO_WhoAmI(
      
                     case 'I':
                         if (str_Compare("Info", (char *)pStr) == 0) {
-                            return (void *)&rrds_IO_Info;
+                            return (void *)&RRDS_IO_Info;
                         }
                         break;
                         
@@ -238,7 +238,7 @@ uint16_t        rrds_IO_WhoAmI(
                 break;
                 
             case OBJ_QUERYINFO_TYPE_INFO:
-                return (void *)&rrds_IO_Info;
+                return (void *)&RRDS_IO_Info;
                 break;
                 
             case OBJ_QUERYINFO_TYPE_METHOD:
@@ -246,13 +246,13 @@ uint16_t        rrds_IO_WhoAmI(
                         
                     case 'C':
                         if (str_Compare("Close", (char *)pStr) == 0) {
-                            return rrds_IO_Close;
+                            return RRDS_IO_Close;
                         }
                         break;
                         
                      case 'W':
                         if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                            return rrds_IO_WhoAmI;
+                            return RRDS_IO_WhoAmI;
                         }
                         break;
                         
@@ -275,7 +275,7 @@ uint16_t        rrds_IO_WhoAmI(
     //                          R e a d
     //---------------------------------------------------------------
 
-    ERESULT         rrds_IO_Read (
+    ERESULT         RRDS_IO_Read (
         OBJ_ID          objId,
         uint32_t        rcdNo,
         uint8_t         *pBuffer
@@ -287,13 +287,13 @@ uint16_t        rrds_IO_WhoAmI(
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!rrds_IO_Validate(objId)) {
+        if (!RRDS_IO_Validate(objId)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
     #endif
         
-        eRc = rrds_RecordRead(this, rcdNo, pBuffer);
+        eRc = RRDS_RecordRead(this, rcdNo, pBuffer);
         
         // Return to caller.
         return eRc;
@@ -305,7 +305,7 @@ uint16_t        rrds_IO_WhoAmI(
     //                      R e l e a s e
     //---------------------------------------------------------------
 
-        OBJ_ID          rrds_IO_Release(
+        OBJ_ID          RRDS_IO_Release(
             OBJ_ID          objId
         )
         {
@@ -329,7 +329,7 @@ uint16_t        rrds_IO_WhoAmI(
         //                      R e t a i n
         //---------------------------------------------------------------
 
-        OBJ_ID          rrds_IO_Retain(
+        OBJ_ID          RRDS_IO_Retain(
             OBJ_ID          objId
         )
         {
@@ -355,12 +355,12 @@ uint16_t        rrds_IO_WhoAmI(
 
     #ifdef NDEBUG
     #else
-    bool            rrds_IO_Validate(
+    bool            RRDS_IO_Validate(
         IORRDS_INTERFACE *this
     )
     {
 
-        if (this && (this->pVtbl ==  &rrds_IO_Vtbl))
+        if (this && (this->pVtbl ==  &RRDS_IO_Vtbl))
             return true;
         
         // Return to caller.
@@ -375,7 +375,7 @@ uint16_t        rrds_IO_WhoAmI(
         //---------------------------------------------------------------
 
     static
-    uint16_t		rrds_IO_WhoAmI(
+    uint16_t		RRDS_IO_WhoAmI(
         void
     )
     {
@@ -388,7 +388,7 @@ uint16_t        rrds_IO_WhoAmI(
     //                          W r i t e
     //---------------------------------------------------------------
 
-    ERESULT         rrds_IO_Write (
+    ERESULT         RRDS_IO_Write (
         OBJ_ID          objId,
         uint32_t        rcdNo,
         uint8_t         *pBuffer
@@ -400,13 +400,13 @@ uint16_t        rrds_IO_WhoAmI(
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if (!rrds_IO_Validate(objId)) {
+        if (!RRDS_IO_Validate(objId)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
     #endif
         
-        eRc = rrds_RecordWrite(this, rcdNo, pBuffer);
+        eRc = RRDS_RecordWrite(this, rcdNo, pBuffer);
         
         // Return to caller.
         return eRc;
@@ -421,32 +421,32 @@ uint16_t        rrds_IO_WhoAmI(
 //===========================================================
 
 static
-IORRDS_VTBL     rrds_IO_Vtbl = {
+IORRDS_VTBL     RRDS_IO_Vtbl = {
     {
-        &rrds_IO_Info,
-        rrds_IO_IsKindOf,
-        rrds_IO_Retain,
-        rrds_IO_Release,
-        rrds_Dealloc,
-        rrds_Class,
-        rrds_IO_WhoAmI,
-        (P_OBJ_QUERYINFO)rrds_IO_QueryInfo,
-        NULL,           // (P_OBJ_TOSTRING)rrds_ToDebugString,
-        NULL,			// rrds_Enable,
-        NULL,			// rrds_Disable,
-        NULL,			// (P_OBJ_ASSIGN)rrds_Assign,
-        NULL,			// (P_OBJ_COMPARE)rrds_Compare,
-        NULL, 			// (P_OBJ_PTR)rrds_Copy,
-        NULL, 			// (P_OBJ_PTR)rrds_DeepCopy,
-        NULL 			// (P_OBJ_HASH)rrds_Hash,
+        &RRDS_IO_Info,
+        RRDS_IO_IsKindOf,
+        RRDS_IO_Retain,
+        RRDS_IO_Release,
+        RRDS_Dealloc,
+        RRDS_Class,
+        RRDS_IO_WhoAmI,
+        (P_OBJ_QUERYINFO)RRDS_IO_QueryInfo,
+        NULL,           // (P_OBJ_TOSTRING)RRDS_ToDebugString,
+        NULL,			// RRDS_Enable,
+        NULL,			// RRDS_Disable,
+        NULL,			// (P_OBJ_ASSIGN)RRDS_Assign,
+        NULL,			// (P_OBJ_COMPARE)RRDS_Compare,
+        NULL, 			// (P_OBJ_PTR)RRDS_Copy,
+        NULL, 			// (P_OBJ_PTR)RRDS_DeepCopy,
+        NULL 			// (P_OBJ_HASH)RRDS_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    rrds_IO_Close,
-    rrds_IO_Flush,
-    rrds_IO_Read,
-    rrds_IO_Write
+    RRDS_IO_Close,
+    RRDS_IO_Flush,
+    RRDS_IO_Read,
+    RRDS_IO_Write
 
 };
 
@@ -454,12 +454,12 @@ IORRDS_VTBL     rrds_IO_Vtbl = {
 
 static
 const
-OBJ_INFO        rrds_IO_Info = {
-    "rrds",
+OBJ_INFO        RRDS_IO_Info = {
+    "RRDS",
     "I/O Interface",
-    (OBJ_DATA *)&rrds_ClassObj,
+    (OBJ_DATA *)&RRDS_ClassObj,
     (OBJ_DATA *)&lru_ClassObj,
-    (OBJ_IUNKNOWN *)&rrds_Vtbl,
+    (OBJ_IUNKNOWN *)&RRDS_Vtbl,
     sizeof(RRDS_DATA)
 
 };

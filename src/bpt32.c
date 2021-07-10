@@ -2100,7 +2100,7 @@ extern "C" {
 #endif
         
         if (OBJ_NIL == this->pIO) {
-            this->pIO = rrds_New( );
+            this->pIO = RRDS_New( );
             if (OBJ_NIL == this->pIO) {
                 return ERESULT_OUT_OF_MEMORY;
             }
