@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 7/ 2/2021 11:18:47.000)
+# ( 7/10/2021  2:00:26.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -132,6 +132,16 @@ $(OBJDIR)/AudioWAV.o: $(SRCDIR)/AudioWAV.c $(SRCDIR)/AStr.h $(SRCDIR)/AudioWAV.h
 OBJS += $(OBJDIR)/AudioWAV_object.o
 
 $(OBJDIR)/AudioWAV_object.o: $(SRCDIR)/AudioWAV_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AudioWAV.h $(SRCDIR)/AudioWAV_internal.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Base64.o
+
+$(OBJDIR)/Base64.o: $(SRCDIR)/Base64.c $(SRCDIR)/Base64.h $(SRCDIR)/Base64_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Base64_object.o
+
+$(OBJDIR)/Base64_object.o: $(SRCDIR)/Base64_object.c $(SRCDIR)/Base64.h $(SRCDIR)/Base64_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/BitMatrix.o
@@ -602,6 +612,76 @@ $(OBJDIR)/Name_json.o: $(SRCDIR)/Name_json.c $(SRCDIR)/Name.h $(SRCDIR)/Name_int
 OBJS += $(OBJDIR)/Name_object.o
 
 $(OBJDIR)/Name_object.o: $(SRCDIR)/Name_object.c $(SRCDIR)/Name.h $(SRCDIR)/Name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Net.o
+
+$(OBJDIR)/Net.o: $(SRCDIR)/Net.c $(SRCDIR)/Net.h $(SRCDIR)/Net_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetHTTP.o
+
+$(OBJDIR)/NetHTTP.o: $(SRCDIR)/NetHTTP.c $(SRCDIR)/NetHTTP.h $(SRCDIR)/NetHTTP_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetHTTPA.o
+
+$(OBJDIR)/NetHTTPA.o: $(SRCDIR)/NetHTTPA.c $(SRCDIR)/NetHTTPA.h $(SRCDIR)/NetHTTPA_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetHTTPA_json.o
+
+$(OBJDIR)/NetHTTPA_json.o: $(SRCDIR)/NetHTTPA_json.c $(SRCDIR)/NetHTTPA.h $(SRCDIR)/NetHTTPA_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetHTTPA_object.o
+
+$(OBJDIR)/NetHTTPA_object.o: $(SRCDIR)/NetHTTPA_object.c $(SRCDIR)/NetHTTPA.h $(SRCDIR)/NetHTTPA_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetHTTPR.o
+
+$(OBJDIR)/NetHTTPR.o: $(SRCDIR)/NetHTTPR.c $(SRCDIR)/NetHTTPR.h $(SRCDIR)/NetHTTPR_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetHTTPR_json.o
+
+$(OBJDIR)/NetHTTPR_json.o: $(SRCDIR)/NetHTTPR_json.c $(SRCDIR)/NetHTTPR.h $(SRCDIR)/NetHTTPR_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetHTTPR_object.o
+
+$(OBJDIR)/NetHTTPR_object.o: $(SRCDIR)/NetHTTPR_object.c $(SRCDIR)/NetHTTPR.h $(SRCDIR)/NetHTTPR_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetHTTP_object.o
+
+$(OBJDIR)/NetHTTP_object.o: $(SRCDIR)/NetHTTP_object.c $(SRCDIR)/NetHTTP.h $(SRCDIR)/NetHTTP_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetIO.o
+
+$(OBJDIR)/NetIO.o: $(SRCDIR)/NetIO.c $(SRCDIR)/NetIO.h $(SRCDIR)/NetIO_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetIO_object.o
+
+$(OBJDIR)/NetIO_object.o: $(SRCDIR)/NetIO_object.c $(SRCDIR)/NetIO.h $(SRCDIR)/NetIO_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetMIME.o
+
+$(OBJDIR)/NetMIME.o: $(SRCDIR)/NetMIME.c $(SRCDIR)/NetMIME.h $(SRCDIR)/NetMIME_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/NetMIME_object.o
+
+$(OBJDIR)/NetMIME_object.o: $(SRCDIR)/NetMIME_object.c $(SRCDIR)/NetMIME.h $(SRCDIR)/NetMIME_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Net_object.o
+
+$(OBJDIR)/Net_object.o: $(SRCDIR)/Net_object.c $(SRCDIR)/Net.h $(SRCDIR)/Net_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Node.o
@@ -2147,6 +2227,12 @@ AudioWAV_test: $(TEST_SRC)/AudioWAV_test.c $(SRCDIR)/AudioWAV.h $(SRCDIR)/AudioW
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += Base64_test
+
+Base64_test: $(TEST_SRC)/Base64_test.c $(SRCDIR)/Base64.h $(SRCDIR)/Base64_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += BitMatrix_test
 
 BitMatrix_test: $(TEST_SRC)/BitMatrix_test.c $(SRCDIR)/BitMatrix.h $(SRCDIR)/BitMatrix_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/BitSet.h $(SRCDIR)/u32Array.h $(SRCDIR)/cmn_defs.h 
@@ -2384,6 +2470,42 @@ MsgData_test: $(TEST_SRC)/MsgData_test.c $(SRCDIR)/MsgData.h $(SRCDIR)/MsgData_i
 TESTS += Name_test
 
 Name_test: $(TEST_SRC)/Name_test.c $(SRCDIR)/Name.h $(SRCDIR)/Name_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += NetHTTPA_test
+
+NetHTTPA_test: $(TEST_SRC)/NetHTTPA_test.c $(SRCDIR)/NetHTTPA.h $(SRCDIR)/NetHTTPA_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += NetHTTPR_test
+
+NetHTTPR_test: $(TEST_SRC)/NetHTTPR_test.c $(SRCDIR)/NetHTTPR.h $(SRCDIR)/NetHTTPR_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += NetHTTP_test
+
+NetHTTP_test: $(TEST_SRC)/NetHTTP_test.c $(SRCDIR)/NetHTTP.h $(SRCDIR)/NetHTTP_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += NetIO_test
+
+NetIO_test: $(TEST_SRC)/NetIO_test.c $(SRCDIR)/NetIO.h $(SRCDIR)/NetIO_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += NetMIME_test
+
+NetMIME_test: $(TEST_SRC)/NetMIME_test.c $(SRCDIR)/NetMIME.h $(SRCDIR)/NetMIME_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Net_test
+
+Net_test: $(TEST_SRC)/Net_test.c $(SRCDIR)/Net.h $(SRCDIR)/Net_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

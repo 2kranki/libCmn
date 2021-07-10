@@ -3,7 +3,7 @@ libCmn
 ===============
 
 **libCmn** is one approach to providing simple C objects for
-various environments such as Mac, PIC32MX7xx, and iOS.
+various environments such as MacOS, PIC32MX7xx, and iOS.
 
 The library contains a variety of objects such as:
     string objects
@@ -17,8 +17,8 @@ The library contains a variety of objects such as:
     csv file parsing
     simple wav file object used to generate morse code
     big/small endian support
-to name just a few of them.  Look in src/cmn_defs.h for a
-comprehensive list of the objects available.
+to name just a few of them.  Look in src/cmn_defs.h and objects.json.txt
+for a comprehensive list of the objects available.
 
 It is intended that each object be self documenting and consistent
 in its usage from other objects within this library.
@@ -32,7 +32,7 @@ which are copyrighted.  Those copyrights still stand. Note that copyrighted
 files within this library are minimal and only used for extraneous purposes.
 See 'obj.h' for a list of the public domain objects in the library.
 
-My primary development environment is MacOSX with Xcode. The C code
+My primary development environment is MacOS 64-bit with Xcode. The C code
 is ANSI C and should be compilable with any ANSI C compiler. Use
 'mkLib.sh' after adjusting it to create the library. If you are
 using Xcode, you will find a test program for almost every object.
@@ -43,24 +43,40 @@ make/nmake. I use the "objects.json.txt" file to generate make files using
 the program, genMake, found in the "programs" directory.  genMake will 
 generate a makefile for either MacOSX and Windows right now. The make file
 does contain specific locations for the libraries and programs that I use.
-To generate everything and test it, I use the following:
+To generate the Makefile, test it and install it, I use "mkLib.py".
 
-    ./genMake.sh                            # generates Windows and MacOSX make files
-    make -f Makefile.macosx.txt all         # compile library routines to /tmp
-    make -f Makefile.macosx.txt install     # Install library to ~/Support/lib/macosx
-    make -f Makefile.macosx.txt tests       # Perform all library tests
-    make -f Makefile.macosx.txt programs    # compile utility programs such as genmake
+C is the primary language used. The objects use a Objective C like implementation
+which only allows single inheritance.
 
-You can run specific tests using: 
-    make -f Makefile.macosx.txt test_abc    # Run test abc
 
-In Windows, the system works the same way:
-    #genMake  --msc32  -o Makefile.win32.txt  objects.json.txt  # I actually do this in MacOSX.
-    nmake /f Makefile.win32.txt all         # compile library routines to /tmp
-    nmake /f Makefile.win32.txt install     # Install library to ~/Support/lib/macosx
-    nmake /f Makefile.win32.txt tests       # Perform all library tests
-    nmake /f Makefile.win32.txt programs    # compile utility programs such as genmake
 
-It is my plan to add other environments such as PIC32MX and PIC32MZ as neeeded.
 
 *** Use at your own risk. ***
+
+/*
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <http://unlicense.org/>
+*/
+
