@@ -105,7 +105,13 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY 
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "authority", &pObject->pAuthority);
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "fragment", &pObject->pFragment);
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "path", &pObject->pPath);
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "query", &pObject->pQuery);
+        eRc = JsonIn_FindAStrNodeInHashA(pParser, "scheme", &pObject->pScheme);
+
+#ifdef XYZZY
         (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
         (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
         (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
@@ -306,7 +312,13 @@ extern "C" {
         ASTR_DATA       *pWrkStr;
 #endif
 
-#ifdef XYZZY 
+        JsonOut_Append_AStr("authority", this->pAuthority, pStr);
+        JsonOut_Append_AStr("fragment", this->pFragment, pStr);
+        JsonOut_Append_AStr("path", this->pPath, pStr);
+        JsonOut_Append_AStr("query", this->pQuery, pStr);
+        JsonOut_Append_AStr("scheme", this->pScheme, pStr);
+
+#ifdef XYZZY
         JsonOut_Append_i32("x", this->x, pStr);
         JsonOut_Append_i64("t", this->t, pStr);
         JsonOut_Append_u32("o", this->o, pStr);

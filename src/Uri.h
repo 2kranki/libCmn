@@ -8,9 +8,7 @@
  *          Uniform Resource Identifier - RFC 3986 (Uri)
  * Purpose
  *          This object provides a standardized way of handling
- *          a separate Uri to run things without complications
- *          of interfering with the main Uri. A Uri may be 
- *          called a Uri on other O/S's.
+ *          URI's.
  *
  *          A Uniform Resource Identifier (URI) provides a simple and extensible
  *          means for identifying a resource. This specification of URI syntax and
@@ -229,7 +227,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  URI_SINGLETON
-    URI_DATA *     Uri_Shared (
+    URI_DATA *      Uri_Shared (
         void
     );
 
@@ -245,7 +243,7 @@ extern "C" {
      released.
      @return    pointer to Uri object if successful, otherwise OBJ_NIL.
      */
-    URI_DATA *     Uri_Alloc (
+    URI_DATA *      Uri_Alloc (
         void
     );
     
@@ -255,17 +253,17 @@ extern "C" {
     );
     
     
-    URI_DATA *     Uri_New (
+    URI_DATA *      Uri_New (
         void
     );
     
     
 #ifdef  URI_JSON_SUPPORT
-    URI_DATA *   Uri_NewFromJsonString (
+    URI_DATA *      Uri_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    URI_DATA *   Uri_NewFromJsonStringA (
+    URI_DATA *      Uri_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -277,43 +275,53 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    ASTR_DATA * Uri_getAuthority (
-        URI_DATA     *this
+    ASTR_DATA *     Uri_getAuthority (
+        URI_DATA        *this
     );
 
-    bool        Uri_setAuthority (
-        URI_DATA     *this,
-        ASTR_DATA   *pValue
-    );
-
-
-    ASTR_DATA * Uri_getFragment (
-        URI_DATA     *this
-    );
-
-    bool        Uri_setFragment (
-        URI_DATA     *this,
-        ASTR_DATA   *pValue
+    bool            Uri_setAuthority (
+        URI_DATA        *this,
+        ASTR_DATA       *pValue
     );
 
 
-    ASTR_DATA * Uri_getPath (
-        URI_DATA     *this
+    ASTR_DATA *     Uri_getFragment (
+        URI_DATA        *this
     );
 
-    bool        Uri_setPath (
-        URI_DATA     *this,
-        ASTR_DATA   *pValue
+    bool            Uri_setFragment (
+        URI_DATA        *this,
+        ASTR_DATA       *pValue
     );
 
 
-    ASTR_DATA * Uri_getScheme (
-        URI_DATA     *this
+    ASTR_DATA *     Uri_getPath (
+        URI_DATA        *this
     );
 
-    bool        Uri_setScheme (
-        URI_DATA     *this,
-        ASTR_DATA   *pValue
+    bool            Uri_setPath (
+        URI_DATA        *this,
+        ASTR_DATA       *pValue
+    );
+
+
+    ASTR_DATA *     Uri_getQuery (
+        URI_DATA        *this
+    );
+
+    bool            Uri_setQuery (
+        URI_DATA        *this,
+        ASTR_DATA       *pValue
+    );
+
+
+    ASTR_DATA *     Uri_getScheme (
+        URI_DATA        *this
+    );
+
+    bool            Uri_setScheme (
+        URI_DATA        *this,
+        ASTR_DATA       *pValue
     );
 
 
@@ -324,26 +332,40 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Uri_Disable (
-        URI_DATA       *this
+    ERESULT         Uri_Disable (
+        URI_DATA        *this
     );
 
 
-    ERESULT     Uri_Enable (
-        URI_DATA       *this
+    ERESULT         Uri_Enable (
+        URI_DATA        *this
     );
 
    
-    URI_DATA *   Uri_Init (
-        URI_DATA     *this
+    URI_DATA *      Uri_Init (
+        URI_DATA        *this
     );
 
 
-    ERESULT     Uri_IsEnabled (
-        URI_DATA       *this
+    ERESULT         Uri_IsEnabled (
+        URI_DATA        *this
     );
     
  
+    /*!
+     Parse a URI into its components.
+     @param     this    object pointer
+     @param     pStr    AStr object pointer containing the URI
+     @return    if successful, ERESULT_SUCCESS and the components are
+                stored within the object.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Uri_Parse (
+        URI_DATA        *this,
+        ASTR_DATA       *pStr
+    );
+
+
 #ifdef  URI_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
@@ -358,7 +380,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     Uri_ToJson (
-        URI_DATA   *this
+        URI_DATA        *this
     );
 #endif
 
@@ -376,7 +398,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     Uri_ToDebugString (
-        URI_DATA     *this,
+        URI_DATA        *this,
         int             indent
     );
     

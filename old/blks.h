@@ -189,7 +189,7 @@ extern "C" {
     );
     
     
-    BLKS_DATA *   blks_Init (
+    BLKS_DATA *     blks_Init (
         BLKS_DATA     *this
     );
 

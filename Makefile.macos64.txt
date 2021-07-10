@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 7/10/2021  2:00:26.000)
+# ( 7/10/2021 13:29:29.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1529,16 +1529,6 @@ OBJS += $(OBJDIR)/ascii_object.o
 $(OBJDIR)/ascii_object.o: $(SRCDIR)/ascii_object.c $(SRCDIR)/ascii.h $(SRCDIR)/ascii_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/blks.o
-
-$(OBJDIR)/blks.o: $(SRCDIR)/blks.c $(SRCDIR)/blks.h $(SRCDIR)/blks_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/blks_object.o
-
-$(OBJDIR)/blks_object.o: $(SRCDIR)/blks_object.c $(SRCDIR)/blks.h $(SRCDIR)/blks_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/block16.o
 
 $(OBJDIR)/block16.o: $(SRCDIR)/block16.c $(SRCDIR)/block16.h $(SRCDIR)/block16_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1557,36 +1547,6 @@ $(OBJDIR)/block32.o: $(SRCDIR)/block32.c $(SRCDIR)/block32.h $(SRCDIR)/block32_i
 OBJS += $(OBJDIR)/block32_object.o
 
 $(OBJDIR)/block32_object.o: $(SRCDIR)/block32_object.c $(SRCDIR)/block32.h $(SRCDIR)/block32_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32.o
-
-$(OBJDIR)/bpt32.o: $(SRCDIR)/bpt32.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32_object.o
-
-$(OBJDIR)/bpt32_object.o: $(SRCDIR)/bpt32_object.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32idx.o
-
-$(OBJDIR)/bpt32idx.o: $(SRCDIR)/bpt32idx.c $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32idx_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32idx_object.o
-
-$(OBJDIR)/bpt32idx_object.o: $(SRCDIR)/bpt32idx_object.c $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32idx_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32lf.o
-
-$(OBJDIR)/bpt32lf.o: $(SRCDIR)/bpt32lf.c $(SRCDIR)/bpt32lf.h $(SRCDIR)/bpt32lf_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32lf_object.o
-
-$(OBJDIR)/bpt32lf_object.o: $(SRCDIR)/bpt32lf_object.c $(SRCDIR)/bpt32lf.h $(SRCDIR)/bpt32lf_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/cb.o
@@ -1859,21 +1819,6 @@ OBJS += $(OBJDIR)/memMac64_object.o
 $(OBJDIR)/memMac64_object.o: $(SRCDIR)/memMac64_object.c $(SRCDIR)/listdl.h $(SRCDIR)/memMac64.h $(SRCDIR)/memMac64_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/memrrds.o
-
-$(OBJDIR)/memrrds.o: $(SRCDIR)/memrrds.c $(SRCDIR)/memrrds.h $(SRCDIR)/memrrds_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/memrrds_io.o
-
-$(OBJDIR)/memrrds_io.o: $(SRCDIR)/memrrds_io.c $(SRCDIR)/memrrds.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/memrrds_object.o
-
-$(OBJDIR)/memrrds_object.o: $(SRCDIR)/memrrds_object.c $(SRCDIR)/memrrds.h $(SRCDIR)/memrrds_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/misc.o
 
 $(OBJDIR)/misc.o: $(SRCDIR)/misc.c $(SRCDIR)/misc.h $(SRCDIR)/misc_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1992,21 +1937,6 @@ $(OBJDIR)/ptrArray_object.o: $(SRCDIR)/ptrArray_object.c $(SRCDIR)/ptrArray.h $(
 OBJS += $(OBJDIR)/rbt_tree.o
 
 $(OBJDIR)/rbt_tree.o: $(SRCDIR)/rbt_tree.c $(SRCDIR)/rbt_tree.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/rrds.o
-
-$(OBJDIR)/rrds.o: $(SRCDIR)/rrds.c $(SRCDIR)/Path.h $(SRCDIR)/listdl.h $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/rrds_io.o
-
-$(OBJDIR)/rrds_io.o: $(SRCDIR)/rrds_io.c $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/rrds_object.o
-
-$(OBJDIR)/rrds_object.o: $(SRCDIR)/rrds_object.c $(SRCDIR)/Path.h $(SRCDIR)/listdl.h $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/scanReader.o
@@ -2887,12 +2817,6 @@ ascii_test: $(TEST_SRC)/ascii_test.c $(SRCDIR)/ascii.h $(SRCDIR)/ascii_internal.
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += blks_test
-
-blks_test: $(TEST_SRC)/blks_test.c $(SRCDIR)/blks.h $(SRCDIR)/blks_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += block16_test
 
 block16_test: $(TEST_SRC)/block16_test.c $(SRCDIR)/block16.h $(SRCDIR)/block16_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2902,18 +2826,6 @@ block16_test: $(TEST_SRC)/block16_test.c $(SRCDIR)/block16.h $(SRCDIR)/block16_i
 TESTS += block32_test
 
 block32_test: $(TEST_SRC)/block32_test.c $(SRCDIR)/block32.h $(SRCDIR)/block32_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += bpt32_test
-
-bpt32_test: $(TEST_SRC)/bpt32_test.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += bpt32lf_test
-
-bpt32lf_test: $(TEST_SRC)/bpt32lf_test.c $(SRCDIR)/bpt32lf.h $(SRCDIR)/bpt32lf_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
@@ -3067,12 +2979,6 @@ memMac64_test: $(TEST_SRC)/memMac64_test.c $(SRCDIR)/memMac64.h $(SRCDIR)/memMac
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += memrrds_test
-
-memrrds_test: $(TEST_SRC)/memrrds_test.c $(SRCDIR)/memrrds.h $(SRCDIR)/memrrds_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += misc_test
 
 misc_test: $(TEST_SRC)/misc_test.c $(SRCDIR)/misc.h $(SRCDIR)/misc_internal.h $(SRCDIR)/cmn_defs.h 
@@ -3142,12 +3048,6 @@ ptrArray_test: $(TEST_SRC)/ptrArray_test.c $(SRCDIR)/ptrArray.h $(SRCDIR)/ptrArr
 TESTS += rbt_tree_test
 
 rbt_tree_test: $(TEST_SRC)/rbt_tree_test.c $(SRCDIR)/rbt_tree.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += rrds_test
-
-rrds_test: $(TEST_SRC)/rrds_test.c $(SRCDIR)/rrds.h $(SRCDIR)/rrds_internal.h $(SRCDIR)/Path.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

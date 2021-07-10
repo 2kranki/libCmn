@@ -304,6 +304,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         Q u e r y
+    //---------------------------------------------------------------
+
+    ASTR_DATA * Uri_getQuery (
+        URI_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Uri_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pQuery;
+    }
+
+
+    bool        Uri_setQuery (
+        URI_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Uri_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pQuery) {
+            obj_Release(this->pQuery);
+        }
+        this->pQuery = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -606,6 +652,10 @@ extern "C" {
         }
 #endif
 
+        Uri_setAuthority(this, OBJ_NIL);
+        Uri_setFragment(this, OBJ_NIL);
+        Uri_setPath(this, OBJ_NIL);
+        Uri_setQuery(this, OBJ_NIL);
         Uri_setScheme(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -676,7 +726,7 @@ extern "C" {
                 error code.
      */
     ERESULT         Uri_Disable (
-        URI_DATA       *this
+        URI_DATA        *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -833,6 +883,44 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      P a r s e
+    //---------------------------------------------------------------
+
+    /*!
+     Parse a URI into its components.
+     @param     this    object pointer
+     @param     pStr    AStr object pointer containing the URI
+     @return    if successful, ERESULT_SUCCESS and the components are
+                stored within the object.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Uri_Parse (
+        URI_DATA        *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Uri_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Put code here...
+
+        obj_Disable(this);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
