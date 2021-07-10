@@ -1476,7 +1476,44 @@ extern "C" {
     }
     
     
-    
+    ASTR_DATA *     u8Array_ToString(
+        U8ARRAY_DATA    *this
+    )
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+        uint8_t         *pData;
+        uint8_t         wchr;
+        ASTR_DATA       *pWrkStr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pWrkStr = AStr_New();
+        if (pWrkStr == OBJ_NIL) {
+            return pWrkStr;
+        }
+
+        iMax = array_getSize(this->pData);
+        pData = array_Ptr(this->pData, 1);
+        if (iMax) {
+            for (i=0; i<iMax; ++i) {
+                wchr = *pData++;
+                AStr_AppendCharA(pWrkStr, wchr);
+            }
+        }
+
+        return pWrkStr;
+    }
+
+
+
     //---------------------------------------------------------------
     //                         T r u n c a t e
     //---------------------------------------------------------------

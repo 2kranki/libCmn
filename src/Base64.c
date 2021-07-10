@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   MsgData.c
- *	Generated 12/31/2019 10:05:08
+ * File:   Base64.c
+ *  Generated 07/08/2021 09:13:40
  *
  */
 
@@ -41,20 +41,28 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <MsgData_internal.h>
+#include        <Base64_internal.h>
+#include        <JsonIn.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
+    static
+    const
+    char            *pBase64Chars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz"
+            "0123456789"
+            "+/";
 
-    
 
 
  
@@ -62,16 +70,129 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            MsgData_task_body (
-        void            *pData
+    U8ARRAY_DATA *  Base64_DecodeData (
+        int             len,
+        const
+        uint8_t         *pData
     )
     {
-        //MSGDATA_DATA  *this = pData;
-        
+        ERESULT         eRc;
+        U8ARRAY_DATA    *pArray = OBJ_NIL;
+        uint32_t        data = 0;
+        int             i;
+        int             j = 0;
+        uint8_t         wrk;
+
+        if (len && pData) {
+            pArray = u8Array_New();
+            if (pArray) {
+                // Processing 1 byte at a time avoids big-endian
+                // vs little-endian issues when loading greater
+                // data sizes into a register.
+                for (i=0; i<len; i++) {
+                    // Convert the external characters to base 64.
+                    wrk = *pData++;
+                    if ((wrk >= 'A') && (wrk <= 'Z')) {
+                        wrk = wrk - 'A';
+                    } else if ((wrk >= 'a') && (wrk <= 'z')) {
+                        wrk = wrk - 'a' + 26;
+                    } else if ((wrk >= '0') && (wrk <= '9')) {
+                        wrk = wrk - '0' + 26 + 26;
+                    } else if (wrk == '+') {
+                        wrk = 26 + 26 + 10;
+                    } else if (wrk == '/') {
+                        wrk = 26 + 26 + 10 + 1;
+                    } else if (wrk == '=') {
+                        break;
+                    } else {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                    // Accumulate up to 3 bytes.
+                    data = (data << 6) | wrk;
+                    j++;
+                    // Output the 3 bytes accumulated and reset for more.
+                    if (i && ((j % 4) == 0)) {
+                        eRc = u8Array_AppendU8(pArray, (data >> 16) & 0xFF);
+                        eRc = u8Array_AppendU8(pArray, (data >> 8) & 0xFF);
+                        eRc = u8Array_AppendU8(pArray, data & 0xFF);
+                        data = 0;
+                        j = 0;
+                    }
+                }
+                switch (j) {
+                    case 4:             // 24 Bits -> 3 Bytes
+                        wrk = (data >> 16) & 0xFF;
+                        eRc = u8Array_AppendU8(pArray, wrk);
+                        wrk = (data >> 8) & 0xFF;
+                        eRc = u8Array_AppendU8(pArray, wrk);
+                        wrk = data & 0xFF;
+                        eRc = u8Array_AppendU8(pArray, wrk);
+                        break;
+                    case 3:             // 18 Bits -> 2 Bytes
+                        wrk = (data >> 10) & 0xFF;
+                        eRc = u8Array_AppendU8(pArray, wrk);
+                        wrk = (data >> 2) & 0xFF;
+                        eRc = u8Array_AppendU8(pArray, wrk);
+                        break;
+                    case 2 :            // 12 Bits -> 1 Bytes
+                        wrk = (data >> 4) & 0xFF;
+                        eRc = u8Array_AppendU8(pArray, wrk);
+                        break;
+                    case 1 :            //  6 Bits -> 1 Byte
+                        wrk = data & 0xFF;
+                        eRc = u8Array_AppendU8(pArray, wrk);
+                        break;
+                }
+            }
+        }
+
+        return pArray;
     }
-#endif
+
+
+    ASTR_DATA *     Base64_EncodeData (
+        int             len,
+        const
+        uint8_t         *pData
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        uint16_t        data = 0;
+        int             i;
+        uint8_t         wrk;
+
+        if (len && pData) {
+            pStr = AStr_New();
+            if (pStr) {
+                // Processing 1 byte at a time avoids big-endian
+                // vs little-endian issues when loading greater
+                // data sizes into a register.
+                for (i=0; i<len; i++) {
+                    data <<= 8;
+                    data |= *pData++;
+                    wrk = (data >> (2 * (1 + (i % 3)))) & 0x3F;
+                    eRc = AStr_AppendCharA(pStr, pBase64Chars[wrk]);
+                    if (i && (2 == (i % 3))) {
+                        wrk = data & 0x3F;
+                        eRc = AStr_AppendCharA(pStr, pBase64Chars[wrk]);
+                    }
+                }
+                if ((len % 3) > 0) {
+                    data <<= 8;
+                    wrk = (data >> (2 * (1 + (len % 3)))) & 0x3F;
+                    eRc = AStr_AppendCharA(pStr, pBase64Chars[wrk]);
+                }
+                while (!(0 == (AStr_getSize(pStr) % 4))) {
+                    eRc = AStr_AppendCharA(pStr, '=');
+                }
+            }
+        }
+
+        return pStr;
+    }
+
 
 
 
@@ -84,12 +205,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    MSGDATA_DATA *     MsgData_Alloc (
+    BASE64_DATA *     Base64_Alloc (
         void
     )
     {
-        MSGDATA_DATA       *this;
-        uint32_t        cbSize = sizeof(MSGDATA_DATA);
+        BASE64_DATA       *this;
+        uint32_t        cbSize = sizeof(BASE64_DATA);
         
         // Do initialization.
         
@@ -101,38 +222,31 @@ extern "C" {
 
 
 
-    MSGDATA_DATA *     MsgData_New (
+    ASTR_DATA *     Base64_EncodeA (
+        const
+        char            *pStrA
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+
+        return pStr;
+    }
+
+
+
+    BASE64_DATA *     Base64_New (
         void
     )
     {
-        MSGDATA_DATA       *this;
+        BASE64_DATA       *this;
         
-        this = MsgData_Alloc( );
+        this = Base64_Alloc( );
         if (this) {
-            this = MsgData_Init(this);
+            this = Base64_Init(this);
         } 
         return this;
     }
-
-
-    MSGDATA_DATA *  MsgData_NewWithData (
-        uint32_t        origin,
-        uint32_t        dest,
-        uint32_t        size,
-        void            *pData
-    )
-    {
-        MSGDATA_DATA       *this;
-
-        this = MsgData_New();
-        if (this) {
-            this->origin = origin;
-            this->dest = dest;
-            Value_setDataFree((VALUE_DATA *)this, size, pData);
-        }
-        return this;
-    }
-
 
 
 
@@ -143,148 +257,42 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                   D a t a
+    //                          P r i o r i t y
     //---------------------------------------------------------------
-
-    void *          MsgData_getData (
-        MSGDATA_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !MsgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return (void *)Value_getData((VALUE_DATA *)this);
-    }
-
     
-
-    //---------------------------------------------------------------
-    //                   D e s t i n a t i o n
-    //---------------------------------------------------------------
-
-    uint32_t        MsgData_getDestination (
-        MSGDATA_DATA    *this
+    uint16_t        Base64_getPriority (
+        BASE64_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !MsgData_Validate(this) ) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return this->dest;
+        //return this->priority;
+        return 0;
     }
 
 
-    bool            MsgData_setDestination (
-        MSGDATA_DATA    *this,
-        uint32_t        value
+    bool            Base64_setPriority (
+        BASE64_DATA     *this,
+        uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !MsgData_Validate(this) ) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        this->dest = value;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                        N u m 3 2
-    //---------------------------------------------------------------
-
-    uint32_t        MsgData_getNum32 (
-        MSGDATA_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !MsgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->num32;
-    }
-
-
-    bool            MsgData_setNum32 (
-        MSGDATA_DATA    *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !MsgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        this->num32 = value;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                        O r i g i n
-    //---------------------------------------------------------------
-
-    uint32_t        MsgData_getOrigin (
-        MSGDATA_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !MsgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->origin;
-    }
-
-
-    bool            MsgData_setOrigin (
-        MSGDATA_DATA    *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !MsgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        this->origin = value;
+        //this->priority = value;
 
         return true;
     }
@@ -295,36 +303,82 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        MsgData_getSize (
-        MSGDATA_DATA       *this
+    uint32_t        Base64_getSize (
+        BASE64_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return Value_getDataLen((VALUE_DATA *)this);
+        return 0;
     }
 
 
 
     //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA * Base64_getStr (
+        BASE64_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Base64_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool        Base64_setStr (
+        BASE64_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Base64_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  MsgData_getSuperVtbl (
-        MSGDATA_DATA     *this
+    OBJ_IUNKNOWN *  Base64_getSuperVtbl (
+        BASE64_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -353,16 +407,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = MsgData_Assign(this,pOther);
+        ERESULT eRc = Base64_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another MSGDATA object
+     @param     pOther  a pointer to another BASE64 object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         MsgData_Assign (
-        MSGDATA_DATA    *this,
-        MSGDATA_DATA    *pOther
+    ERESULT         Base64_Assign (
+        BASE64_DATA       *this,
+        BASE64_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -370,35 +424,56 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!MsgData_Validate(pOther)) {
+        if (!Base64_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
+
         // Release objects and areas in other object.
+#ifdef  XYZZY
+        if (pOther->pArray) {
+            obj_Release(pOther->pArray);
+            pOther->pArray = OBJ_NIL;
+        }
+#endif
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-        eRc = Value_Assign((VALUE_DATA *)this, (VALUE_DATA *)pOther);
-        if (ERESULT_FAILED(eRc)) {
-            goto eom;
+#ifdef  XYZZY
+        if (this->pArray) {
+            if (obj_getVtbl(this->pArray)->pCopy) {
+                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
+            }
+            else {
+                obj_Retain(this->pArray);
+                pOther->pArray = this->pArray;
+            }
         }
+#endif
 
         // Copy other data from this object to other.
-        pOther->dest   = this->dest;
-        pOther->num32  = this->num32;
-        pOther->origin = this->origin;
-
-        //goto eom;
+        //pOther->x     = this->x; 
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
+        //FIXME: Implement the assignment.        
+        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -414,37 +489,38 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             MsgData_Compare (
-        MSGDATA_DATA    *this,
-        MSGDATA_DATA    *pOther
+    int             Base64_Compare (
+        BASE64_DATA     *this,
+        BASE64_DATA     *pOther
     )
     {
-        int             iRc = 0;
-
+        int             iRc = -1;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!MsgData_Validate(pOther)) {
+        if (!Base64_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
         }
 #endif
 
-#ifdef  xyzzy
-        if (this->token == pOther->token) {
-            return iRc;
-        }
-        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
-#endif
-
+        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+     
         return iRc;
     }
-
+    
    
  
     //---------------------------------------------------------------
@@ -455,40 +531,44 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        MsgData      *pCopy = MsgData_Copy(this);
+        Base64      *pCopy = Base64_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a MSGDATA object which must be 
+     @return    If successful, a BASE64 object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    MSGDATA_DATA *     MsgData_Copy (
-        MSGDATA_DATA       *this
+    BASE64_DATA *     Base64_Copy (
+        BASE64_DATA       *this
     )
     {
-        MSGDATA_DATA       *pOther = OBJ_NIL;
+        BASE64_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = MsgData_New( );
+#ifdef BASE64_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = Base64_New( );
         if (pOther) {
-            eRc = MsgData_Assign(this, pOther);
+            eRc = Base64_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -498,11 +578,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            MsgData_Dealloc (
+    void            Base64_Dealloc (
         OBJ_ID          objId
     )
     {
-        MSGDATA_DATA   *this = objId;
+        BASE64_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -510,7 +591,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -518,9 +599,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((MSGDATA_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((BASE64_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
+
+        Base64_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -534,6 +617,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        Base64      *pDeepCopy = Base64_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a BASE64 object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    BASE64_DATA *     Base64_DeepyCopy (
+        BASE64_DATA       *this
+    )
+    {
+        BASE64_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Base64_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = Base64_New( );
+        if (pOther) {
+            eRc = Base64_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -543,27 +672,27 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         MsgData_Disable (
-        MSGDATA_DATA		*this
+    ERESULT         Base64_Disable (
+        BASE64_DATA       *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!MsgData_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -578,27 +707,27 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         MsgData_Enable (
-        MSGDATA_DATA		*this
+    ERESULT         Base64_Enable (
+        BASE64_DATA       *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!MsgData_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -607,11 +736,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    MSGDATA_DATA *   MsgData_Init (
-        MSGDATA_DATA       *this
+    BASE64_DATA *   Base64_Init (
+        BASE64_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(MSGDATA_DATA);
+        uint32_t        cbSize = sizeof(BASE64_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -628,19 +757,24 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)Value_Init((VALUE_DATA *)this);          // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MSGDATA);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of Base64_object.c
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BASE64);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                              // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&MsgData_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Base64_Vtbl);
+#ifdef  BASE64_JSON_SUPPORT
+        JsonIn_RegisterClass(Base64_Class());
+#endif
         
         /*
-        this->pArray = objArray_New( );
+        this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -648,18 +782,23 @@ extern "C" {
         }
         */
 
-    #ifdef NDEBUG
-    #else
-        if (!MsgData_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        //fprintf(stderr, "MsgData::sizeof(MSGDATA_DATA) = %lu\n", sizeof(MSGDATA_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "Base64::sizeof(BASE64_DATA) = %lu\n", 
+                sizeof(BASE64_DATA)
+        );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(MSGDATA_DATA));
-    #endif
+        BREAK_NOT_BOUNDARY4(sizeof(BASE64_DATA));
+#endif
 
         return this;
     }
@@ -667,11 +806,11 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         MsgData_IsEnabled (
-        MSGDATA_DATA		*this
+    ERESULT         Base64_IsEnabled (
+        BASE64_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -679,7 +818,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -706,14 +845,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = MsgData_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Base64_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "MsgData", prefix,
+                        the object name, "Base64", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -721,13 +860,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          MsgData_QueryInfo (
+    void *          Base64_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        MSGDATA_DATA     *this = objId;
+        BASE64_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -736,7 +875,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -745,26 +884,19 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(MSGDATA_DATA);
+                return (void *)sizeof(BASE64_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)MsgData_Class();
+                return (void *)Base64_Class();
                 break;
-                
-#ifdef XYZZY  
-            // Query for an address to specific data within the object.  
-            // This should be used very sparingly since it breaks the 
-            // object's encapsulation.                 
+                              
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
                 switch (*pStr) {
      
                     case 'S':
                         if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                            return obj_getInfo(this)->pClassSuperObject;
-                        }
-                        if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                            return &this->pSuperVtbl;
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
                         }
                         break;
                         
@@ -772,8 +904,8 @@ extern "C" {
                         break;
                 }
                 break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -782,23 +914,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return MsgData_Disable;
+                            return Base64_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return MsgData_Enable;
+                            return Base64_Enable;
                         }
+                        break;
+
+                    case 'P':
+#ifdef  BASE64_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return Base64_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return Base64_ParseJsonObject;
+                        }
+#endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return MsgData_ToDebugString;
+                            return Base64_ToDebugString;
                         }
-#ifdef  MSGDATA_JSON_SUPPORT
+#ifdef  BASE64_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return Base64_ToJsonFields;
+                        }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return MsgData_ToJson;
+                            return Base64_ToJson;
                         }
 #endif
                         break;
@@ -809,10 +955,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == MsgData_ToDebugString)
+                if (pData == Base64_ToDebugString)
                     return "ToDebugString";
-#ifdef  MSGDATA_JSON_SUPPORT
-                if (pData == MsgData_ToJson)
+#ifdef  BASE64_JSON_SUPPORT
+                if (pData == Base64_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -834,7 +980,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = MsgData_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Base64_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -842,22 +988,23 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     MsgData_ToDebugString (
-        MSGDATA_DATA      *this,
+    ASTR_DATA *     Base64_ToDebugString (
+        BASE64_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!Base64_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -878,7 +1025,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    MsgData_getSize(this),
+                    Base64_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -889,8 +1036,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -914,17 +1063,17 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            MsgData_Validate (
-        MSGDATA_DATA      *this
+#ifdef NDEBUG
+#else
+    bool            Base64_Validate (
+        BASE64_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_MSGDATA))
+            if (obj_IsKindOf(this, OBJ_IDENT_BASE64))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -940,20 +1089,20 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(MSGDATA_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(BASE64_DATA))) {
             return false;
         }
 
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

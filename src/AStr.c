@@ -3081,7 +3081,104 @@ extern "C" {
     }
 
     
-    
+    ASTRARRAY_DATA * AStr_SplitOnCharsW32(
+        ASTR_DATA       *this,
+        const
+        W32CHR_T        *pChrs
+    )
+    {
+        ERESULT         eRc;
+        ASTRARRAY_DATA  *pArray = OBJ_NIL;
+        uint32_t        i = 1;
+        uint32_t        iMax;
+        uint32_t        start;
+        uint32_t        index = 1;
+        uint32_t        len;
+        ASTR_DATA       *pWrkStr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+
+        iMax = AStr_getLength(this);
+        pArray = AStrArray_New( );
+        if (OBJ_NIL == pArray) {
+            return OBJ_NIL;
+        }
+
+        while (i < (iMax + 1)) {
+
+            // We have to use i to store the current index since index
+            // gets clobbered if the character is not found.
+            index = i;
+            start = index;
+            eRc = AStr_FindNextW32(this, pChrs, &index);
+            if (ERESULT_FAILED(eRc)) {
+                // index is unreliable.
+                i = iMax + 1;
+                len = i - start;
+                pWrkStr = OBJ_NIL;
+                if (len) {
+                    eRc = AStr_Mid(this, start, len, &pWrkStr);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                else {
+                    pWrkStr = AStr_New( );
+                    if (OBJ_NIL == pWrkStr) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                eRc = AStrArray_AppendStr(pArray, pWrkStr, NULL);
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pArray);
+                    return OBJ_NIL;
+                }
+            }
+            else {
+                i = index + 1;
+                len = index - start;
+                pWrkStr = OBJ_NIL;
+                if (len) {
+                    eRc = AStr_Mid(this, start, len, &pWrkStr);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                else {
+                    pWrkStr = AStr_New( );
+                    if (OBJ_NIL == pWrkStr) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                eRc = AStrArray_AppendStr(pArray, pWrkStr, NULL);
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pArray);
+                    return OBJ_NIL;
+                }
+            }
+        }
+
+        return pArray;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  C h r  C o n
     //---------------------------------------------------------------

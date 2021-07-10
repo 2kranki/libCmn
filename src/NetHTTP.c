@@ -189,55 +189,9 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * NetHTTP_getStr (
-        NETHTTP_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!NetHTTP_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        NetHTTP_setStr (
-        NETHTTP_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!NetHTTP_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
-    
+
     OBJ_IUNKNOWN *  NetHTTP_getSuperVtbl (
         NETHTTP_DATA     *this
     )
@@ -252,13 +206,59 @@ extern "C" {
         }
 #endif
 
-        
+
         return this->pSuperVtbl;
     }
-    
-  
 
+
+
+    //---------------------------------------------------------------
+    //                           URI
+    //---------------------------------------------------------------
     
+    ASTR_DATA * NetHTTP_getURI (
+        NETHTTP_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NetHTTP_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pURI;
+    }
+    
+    
+    bool        NetHTTP_setURI (
+        NETHTTP_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NetHTTP_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pURI) {
+            obj_Release(this->pURI);
+        }
+        this->pURI = pValue;
+        
+        return true;
+    }
+    
+    
+    
+
 
     //===============================================================
     //                          M e t h o d s
@@ -471,7 +471,7 @@ extern "C" {
         }
 #endif
 
-        NetHTTP_setStr(this, OBJ_NIL);
+        NetHTTP_setURI(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super

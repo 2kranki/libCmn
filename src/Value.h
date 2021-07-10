@@ -293,6 +293,7 @@ extern "C" {
     );
 
 
+    const
     uint8_t *       Value_getData (
         VALUE_DATA      *this
     );

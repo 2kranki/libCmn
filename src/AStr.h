@@ -720,7 +720,13 @@ extern "C" {
         W32CHR_T        chr
     );
     
-    
+    ASTRARRAY_DATA * AStr_SplitOnCharsW32(
+        ASTR_DATA       *this,
+        const
+        W32CHR_T        *pChrs              // NUL-terminated list of chars
+    );
+
+
     /*!
      Convert this string to a constant string object.
      @param     this    object pointer

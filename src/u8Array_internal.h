@@ -44,6 +44,7 @@
 
 #include        <u8Array.h>
 #include        <array_internal.h>
+#include        <AStr_internal.h>
 #include        <JsonIn.h>
 
 

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   NetHTTP_internal.h
- *  Generated 07/02/2021 14:27:37
+ * File:   NetHTTPR_internal.h
+ *  Generated 07/07/2021 09:54:54
  *
  * Notes:
  *  --  N/A
@@ -39,12 +39,13 @@
 
 
 
-#include        <NetHTTP.h>
+#include        <NetHTTPR.h>
+#include        <AStrArray.h>
 #include        <JsonIn.h>
 
 
-#ifndef NETHTTP_INTERNAL_H
-#define NETHTTP_INTERNAL_H
+#ifndef NETHTTPR_INTERNAL_H
+#define NETHTTPR_INTERNAL_H
 
 
 
@@ -62,7 +63,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct NetHTTP_data_s  {
+struct NetHTTPR_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -70,19 +71,21 @@ struct NetHTTP_data_s  {
 
     // Common Data
     uint16_t        size;           // maximum number of elements
-    uint16_t        rsvd16;
+    uint16_t        cmd;
+    uint16_t        majRel;         // HTTP Major Release
+    uint16_t        minRel;         // HTTP Minor Release
+    ASTR_DATA       *pBody;
     ASTR_DATA       *pURI;
-    int             socket;
 
 };
 #pragma pack(pop)
 
     extern
-    struct NetHTTP_class_data_s  NetHTTP_ClassObj;
+    struct NetHTTPR_class_data_s  NetHTTPR_ClassObj;
 
     extern
     const
-    NETHTTP_VTBL         NetHTTP_Vtbl;
+    NETHTTPR_VTBL         NetHTTPR_Vtbl;
 
 
 
@@ -90,13 +93,13 @@ struct NetHTTP_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NETHTTP_SINGLETON
-    NETHTTP_DATA *     NetHTTP_getSingleton (
+#ifdef  NETHTTPR_SINGLETON
+    NETHTTPR_DATA *     NetHTTPR_getSingleton (
         void
     );
 
-    bool            NetHTTP_setSingleton (
-     NETHTTP_DATA       *pValue
+    bool            NetHTTPR_setSingleton (
+     NETHTTPR_DATA       *pValue
 );
 #endif
 
@@ -106,35 +109,35 @@ struct NetHTTP_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  NetHTTP_getSuperVtbl (
-        NETHTTP_DATA     *this
+    OBJ_IUNKNOWN *  NetHTTPR_getSuperVtbl (
+        NETHTTPR_DATA     *this
     );
 
 
-    ERESULT         NetHTTP_Assign (
-        NETHTTP_DATA    *this,
-        NETHTTP_DATA    *pOther
+    ERESULT         NetHTTPR_Assign (
+        NETHTTPR_DATA    *this,
+        NETHTTPR_DATA    *pOther
     );
 
 
-    NETHTTP_DATA *       NetHTTP_Copy (
-        NETHTTP_DATA     *this
+    NETHTTPR_DATA *       NetHTTPR_Copy (
+        NETHTTPR_DATA     *this
     );
 
 
-    void            NetHTTP_Dealloc (
+    void            NetHTTPR_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  NETHTTP_JSON_SUPPORT
+#ifdef  NETHTTPR_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NETHTTP_DATA *       NetHTTP_ParseJsonObject (
+    NETHTTPR_DATA *       NetHTTPR_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -148,35 +151,35 @@ struct NetHTTP_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NetHTTP_ParseJsonFields (
+    ERESULT         NetHTTPR_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        NETHTTP_DATA     *pObject
+        NETHTTPR_DATA     *pObject
     );
 #endif
 
 
-    void *          NetHTTP_QueryInfo (
+    void *          NetHTTPR_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  NETHTTP_JSON_SUPPORT
+#ifdef  NETHTTPR_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = NetHTTP_ToJson(this);
+     ASTR_DATA      *pDesc = NetHTTPR_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NetHTTP_ToJson (
-        NETHTTP_DATA      *this
+    ASTR_DATA *     NetHTTPR_ToJson (
+        NETHTTPR_DATA      *this
     );
 
 
@@ -189,8 +192,8 @@ struct NetHTTP_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NetHTTP_ToJsonFields (
-        NETHTTP_DATA     *this,
+    ERESULT         NetHTTPR_ToJsonFields (
+        NETHTTPR_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -200,8 +203,8 @@ struct NetHTTP_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            NetHTTP_Validate (
-        NETHTTP_DATA       *this
+    bool            NetHTTPR_Validate (
+        NETHTTPR_DATA       *this
     );
 #endif
 
@@ -211,5 +214,5 @@ struct NetHTTP_data_s  {
 }
 #endif
 
-#endif  /* NETHTTP_INTERNAL_H */
+#endif  /* NETHTTPR_INTERNAL_H */
 

@@ -620,6 +620,7 @@ extern "C" {
     //                          D a t a
     //---------------------------------------------------------------
 
+    const
     uint8_t *       Value_getData (
         VALUE_DATA      *this
     )
@@ -636,6 +637,9 @@ extern "C" {
 
         if ((this->type == VALUE_TYPE_DATA) || (this->type == VALUE_TYPE_DATA_FREE)) {
             return this->value.data.pData;
+        }
+        else if (this->value.pObject && (this->type == VALUE_TYPE_ASTR)) {
+            return (const uint8_t *)AStr_getData(this->value.pObject);
         }
         else {
             return NULL;

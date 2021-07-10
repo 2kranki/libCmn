@@ -390,6 +390,14 @@ extern "C" {
     );
     
     
+    /*!
+     Create a string with the non-ascii characters being
+     expanded to back-slash, '\', format.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
     ASTR_DATA *     u8Array_ToConstantString(
         U8ARRAY_DATA    *this
     );
@@ -414,6 +422,18 @@ extern "C" {
     );
 
     
+    /*!
+     Create a string from the data within this array.
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released,
+                otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     u8Array_ToString(
+        U8ARRAY_DATA    *this
+    );
+
+
     ASTR_DATA *     u8Array_ToJson (
         U8ARRAY_DATA    *this
     );

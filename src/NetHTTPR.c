@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   MsgData.c
- *	Generated 12/31/2019 10:05:08
+ * File:   NetHTTPR.c
+ *  Generated 07/07/2021 09:54:54
  *
  */
 
@@ -41,20 +41,46 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <MsgData_internal.h>
+#include        <NetHTTPR_internal.h>
+#include        <ascii.h>
+#include        <JsonIn.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
+    typedef struct cmd_s {
+        const
+        char        *pNameA;
+        int         cmd;
+    } CMD;
 
-    
+    // Table must be sorted by Name.
+    static
+    const
+    CMD             pCmds[] = {
+        {"CONNECT", NETHTTPR_CMD_CONNECT},
+        {"DELETE",  NETHTTPR_CMD_DELETE},
+        {"GET",     NETHTTPR_CMD_GET},
+        {"HEAD",    NETHTTPR_CMD_HEAD},
+        {"OPTIONS", NETHTTPR_CMD_OPTIONS},
+        {"POST",    NETHTTPR_CMD_POST},
+        {"PUT",     NETHTTPR_CMD_PUT},
+        {"TRACE",   NETHTTPR_CMD_TRACE},
+        {"UNKNOWN", NETHTTPR_CMD_UNKNOWN},
+    };
+
+    static
+    const
+    int             cCmds = sizeof(pCmds) / sizeof(CMD);
+
 
 
  
@@ -62,16 +88,22 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            MsgData_task_body (
-        void            *pData
+    int             NetHTTPR_CmdToInternal (
+        const
+        char            *pData
     )
     {
-        //MSGDATA_DATA  *this = pData;
-        
+        int             i;
+        int             iRc = NETHTTPR_CMD_UNKNOWN;
+
+        for (i=0; i<cCmds; i++) {
+            if (0 == strcmp(pData, pCmds[i].pNameA))
+                iRc = pCmds[i].cmd;
+        }
+
+        return iRc;
     }
-#endif
 
 
 
@@ -84,12 +116,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    MSGDATA_DATA *     MsgData_Alloc (
+    NETHTTPR_DATA *     NetHTTPR_Alloc (
         void
     )
     {
-        MSGDATA_DATA       *this;
-        uint32_t        cbSize = sizeof(MSGDATA_DATA);
+        NETHTTPR_DATA       *this;
+        uint32_t        cbSize = sizeof(NETHTTPR_DATA);
         
         // Do initialization.
         
@@ -101,38 +133,18 @@ extern "C" {
 
 
 
-    MSGDATA_DATA *     MsgData_New (
+    NETHTTPR_DATA *     NetHTTPR_New (
         void
     )
     {
-        MSGDATA_DATA       *this;
+        NETHTTPR_DATA       *this;
         
-        this = MsgData_Alloc( );
+        this = NetHTTPR_Alloc( );
         if (this) {
-            this = MsgData_Init(this);
+            this = NetHTTPR_Init(this);
         } 
         return this;
     }
-
-
-    MSGDATA_DATA *  MsgData_NewWithData (
-        uint32_t        origin,
-        uint32_t        dest,
-        uint32_t        size,
-        void            *pData
-    )
-    {
-        MSGDATA_DATA       *this;
-
-        this = MsgData_New();
-        if (this) {
-            this->origin = origin;
-            this->dest = dest;
-            Value_setDataFree((VALUE_DATA *)this, size, pData);
-        }
-        return this;
-    }
-
 
 
 
@@ -143,148 +155,172 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                   D a t a
+    //                          B o d y
     //---------------------------------------------------------------
 
-    void *          MsgData_getData (
-        MSGDATA_DATA    *this
+    ASTR_DATA *     NetHTTPR_getBody (
+        NETHTTPR_DATA   *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !MsgData_Validate(this) ) {
+        if (!NetHTTPR_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pBody;
+    }
+
+
+    bool            NetHTTPR_setBody (
+        NETHTTPR_DATA   *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pBody) {
+            obj_Release(this->pBody);
+        }
+        this->pBody = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                 M a j o r  R e l e a s e
+    //---------------------------------------------------------------
+
+    uint16_t        NetHTTPR_getMajorRelease (
+        NETHTTPR_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return (void *)Value_getData((VALUE_DATA *)this);
+        return this->majRel;
     }
 
+
+    bool            NetHTTPR_setMajorRelease (
+        NETHTTPR_DATA   *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->majRel = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                 M i n o r  R e l e a s e
+    //---------------------------------------------------------------
+
+    uint16_t        NetHTTPR_getMinorRelease (
+        NETHTTPR_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->minRel;
+    }
+
+
+    bool            NetHTTPR_setMinorRelease (
+        NETHTTPR_DATA   *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->minRel = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
     
-
-    //---------------------------------------------------------------
-    //                   D e s t i n a t i o n
-    //---------------------------------------------------------------
-
-    uint32_t        MsgData_getDestination (
-        MSGDATA_DATA    *this
+    uint16_t        NetHTTPR_getPriority (
+        NETHTTPR_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !MsgData_Validate(this) ) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return this->dest;
+        //return this->priority;
+        return 0;
     }
 
 
-    bool            MsgData_setDestination (
-        MSGDATA_DATA    *this,
-        uint32_t        value
+    bool            NetHTTPR_setPriority (
+        NETHTTPR_DATA     *this,
+        uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !MsgData_Validate(this) ) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        this->dest = value;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                        N u m 3 2
-    //---------------------------------------------------------------
-
-    uint32_t        MsgData_getNum32 (
-        MSGDATA_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !MsgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->num32;
-    }
-
-
-    bool            MsgData_setNum32 (
-        MSGDATA_DATA    *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !MsgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        this->num32 = value;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                        O r i g i n
-    //---------------------------------------------------------------
-
-    uint32_t        MsgData_getOrigin (
-        MSGDATA_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !MsgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->origin;
-    }
-
-
-    bool            MsgData_setOrigin (
-        MSGDATA_DATA    *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !MsgData_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        this->origin = value;
+        //this->priority = value;
 
         return true;
     }
@@ -295,19 +331,19 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        MsgData_getSize (
-        MSGDATA_DATA       *this
+    uint32_t        NetHTTPR_getSize (
+        NETHTTPR_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return Value_getDataLen((VALUE_DATA *)this);
+        return 0;
     }
 
 
@@ -316,15 +352,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  MsgData_getSuperVtbl (
-        MSGDATA_DATA     *this
+    OBJ_IUNKNOWN *  NetHTTPR_getSuperVtbl (
+        NETHTTPR_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -336,7 +372,53 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                          U R I
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     NetHTTPR_getURI (
+        NETHTTPR_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pURI;
+    }
+
+
+    bool            NetHTTPR_setURI (
+        NETHTTPR_DATA   *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pURI) {
+            obj_Release(this->pURI);
+        }
+        this->pURI = pValue;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -353,16 +435,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = MsgData_Assign(this,pOther);
+        ERESULT eRc = NetHTTPR_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another MSGDATA object
+     @param     pOther  a pointer to another NETHTTPR object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         MsgData_Assign (
-        MSGDATA_DATA    *this,
-        MSGDATA_DATA    *pOther
+    ERESULT         NetHTTPR_Assign (
+        NETHTTPR_DATA       *this,
+        NETHTTPR_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -370,35 +452,56 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!MsgData_Validate(pOther)) {
+        if (!NetHTTPR_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
+
         // Release objects and areas in other object.
+#ifdef  XYZZY
+        if (pOther->pArray) {
+            obj_Release(pOther->pArray);
+            pOther->pArray = OBJ_NIL;
+        }
+#endif
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-        eRc = Value_Assign((VALUE_DATA *)this, (VALUE_DATA *)pOther);
-        if (ERESULT_FAILED(eRc)) {
-            goto eom;
+#ifdef  XYZZY
+        if (this->pArray) {
+            if (obj_getVtbl(this->pArray)->pCopy) {
+                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
+            }
+            else {
+                obj_Retain(this->pArray);
+                pOther->pArray = this->pArray;
+            }
         }
+#endif
 
         // Copy other data from this object to other.
-        pOther->dest   = this->dest;
-        pOther->num32  = this->num32;
-        pOther->origin = this->origin;
-
-        //goto eom;
+        //pOther->x     = this->x; 
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
+        //FIXME: Implement the assignment.        
+        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -414,37 +517,38 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             MsgData_Compare (
-        MSGDATA_DATA    *this,
-        MSGDATA_DATA    *pOther
+    int             NetHTTPR_Compare (
+        NETHTTPR_DATA     *this,
+        NETHTTPR_DATA     *pOther
     )
     {
-        int             iRc = 0;
-
+        int             iRc = -1;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!MsgData_Validate(pOther)) {
+        if (!NetHTTPR_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
         }
 #endif
 
-#ifdef  xyzzy
-        if (this->token == pOther->token) {
-            return iRc;
-        }
-        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
-#endif
-
+        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+     
         return iRc;
     }
-
+    
    
  
     //---------------------------------------------------------------
@@ -455,40 +559,44 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        MsgData      *pCopy = MsgData_Copy(this);
+        NetHTTPR      *pCopy = NetHTTPR_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a MSGDATA object which must be 
+     @return    If successful, a NETHTTPR object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    MSGDATA_DATA *     MsgData_Copy (
-        MSGDATA_DATA       *this
+    NETHTTPR_DATA *     NetHTTPR_Copy (
+        NETHTTPR_DATA       *this
     )
     {
-        MSGDATA_DATA       *pOther = OBJ_NIL;
+        NETHTTPR_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = MsgData_New( );
+#ifdef NETHTTPR_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = NetHTTPR_New( );
         if (pOther) {
-            eRc = MsgData_Assign(this, pOther);
+            eRc = NetHTTPR_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -498,11 +606,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            MsgData_Dealloc (
+    void            NetHTTPR_Dealloc (
         OBJ_ID          objId
     )
     {
-        MSGDATA_DATA   *this = objId;
+        NETHTTPR_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -510,7 +619,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -518,9 +627,12 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((MSGDATA_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((NETHTTPR_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
+
+        NetHTTPR_setBody(this, OBJ_NIL);
+        NetHTTPR_setURI(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -534,6 +646,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        NetHTTPR      *pDeepCopy = NetHTTPR_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a NETHTTPR object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    NETHTTPR_DATA *     NetHTTPR_DeepyCopy (
+        NETHTTPR_DATA       *this
+    )
+    {
+        NETHTTPR_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = NetHTTPR_New( );
+        if (pOther) {
+            eRc = NetHTTPR_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -543,27 +701,27 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         MsgData_Disable (
-        MSGDATA_DATA		*this
+    ERESULT         NetHTTPR_Disable (
+        NETHTTPR_DATA   *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!MsgData_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -578,27 +736,27 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         MsgData_Enable (
-        MSGDATA_DATA		*this
+    ERESULT         NetHTTPR_Enable (
+        NETHTTPR_DATA   *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!MsgData_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -607,11 +765,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    MSGDATA_DATA *   MsgData_Init (
-        MSGDATA_DATA       *this
+    NETHTTPR_DATA * NetHTTPR_Init (
+        NETHTTPR_DATA   *this
     )
     {
-        uint32_t        cbSize = sizeof(MSGDATA_DATA);
+        uint32_t        cbSize = sizeof(NETHTTPR_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -628,19 +786,24 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)Value_Init((VALUE_DATA *)this);          // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_MSGDATA);
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of NetHTTPR_object.c
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_NETHTTPR);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        obj_setSize(this, cbSize);                              // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&MsgData_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&NetHTTPR_Vtbl);
+#ifdef  NETHTTPR_JSON_SUPPORT
+        JsonIn_RegisterClass(NetHTTPR_Class());
+#endif
         
         /*
-        this->pArray = objArray_New( );
+        this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -648,18 +811,23 @@ extern "C" {
         }
         */
 
-    #ifdef NDEBUG
-    #else
-        if (!MsgData_Validate(this)) {
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        //fprintf(stderr, "MsgData::sizeof(MSGDATA_DATA) = %lu\n", sizeof(MSGDATA_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "NetHTTPR::sizeof(NETHTTPR_DATA) = %lu\n", 
+                sizeof(NETHTTPR_DATA)
+        );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(MSGDATA_DATA));
-    #endif
+        BREAK_NOT_BOUNDARY4(sizeof(NETHTTPR_DATA));
+#endif
 
         return this;
     }
@@ -667,11 +835,11 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         MsgData_IsEnabled (
-        MSGDATA_DATA		*this
+    ERESULT         NetHTTPR_IsEnabled (
+        NETHTTPR_DATA   *this
     )
     {
         //ERESULT         eRc;
@@ -679,7 +847,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -696,6 +864,174 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      P a r s e
+    //---------------------------------------------------------------
+
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         NetHTTPR_Parse (
+        NETHTTPR_DATA   *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        ASTR_DATA       *pLine = OBJ_NIL;
+        ASTRARRAY_DATA  *pLines = OBJ_NIL;
+        ASTR_DATA       *pField = OBJ_NIL;
+        ASTRARRAY_DATA  *pFields = OBJ_NIL;
+        static
+        const
+        W32CHR_T        eols[3] = {
+            '\n',
+            '\r',
+            0
+        };
+        static
+        const
+        W32CHR_T        spaces[2] = {
+            ' ',
+            0
+        };
+        int             i;
+        int             iMax;
+        int             numMaj;
+        int             numMin;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!NetHTTPR_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        // Break the buffer up into trimmed lines.
+        pLines = AStr_SplitOnCharW32(pStr, '\n');
+        if (OBJ_NIL == pLines) {
+            return ERESULT_GENERAL_FAILURE;
+        }
+        iMax = AStrArray_getSize(pLines);
+        for (i=0; i<iMax; i++) {
+            pLine = AStrArray_Get(pLines, i+1);
+            if (pLine) {
+                AStr_Trim(pLine);
+            }
+        }
+        pLine = OBJ_NIL;
+
+        // Scan the first line.
+        pLine = AStrArray_Get(pLines, 1);
+        TRC_OBJ(this,"\tFirst Line: \"%s\"\n", AStr_getData(pLine));
+        if (pLine) {
+            pFields = AStr_SplitOnCharW32(pLine, ' ');
+            iMax = AStrArray_getSize(pFields);
+            if (3 == iMax)
+                ;
+            else {
+#ifdef NDEBUG
+#else
+                TRC_OBJ(this,"\tDid not find 3 fields on First Line, only %d!\n", iMax);
+                for (i=0; i<iMax; i++) {
+                    TRC_OBJ(this,"\t%d: \"%s\"\n", i, AStr_getData(AStrArray_Get(pFields, i+1)));
+                }
+#endif
+                obj_Release(pFields);
+                pFields = OBJ_NIL;
+                obj_Release(pLines);
+                pLines = OBJ_NIL;
+                return ERESULT_INVALID_SYNTAX;
+            }
+
+            // Field 1 == Command
+            pField = AStrArray_Get(pFields, 1);
+            TRC_OBJ(this,"\tField 1: \"%s\"\n", AStr_getData(pField));
+            i = NetHTTPR_CmdToInternal(AStr_getData(pField));
+            if (NETHTTPR_CMD_UNKNOWN == i) {
+                TRC_OBJ(this,"\tUnknown Command!\n");
+                obj_Release(pFields);
+                pFields = OBJ_NIL;
+                obj_Release(pLines);
+                pLines = OBJ_NIL;
+                return ERESULT_INVALID_SYNTAX;
+            }
+            this->cmd = i;
+
+            // Field 2 == URI
+            pField = AStrArray_Get(pFields, 2);
+            if (pField) {
+                TRC_OBJ(this,"\tField 2 (URI): \"%s\"\n", AStr_getData(pField));
+                obj_Retain(pField);
+                this->pURI = pField;
+            }
+
+            // Field 3 == HTTPn.n
+            pField = AStrArray_Get(pFields, 3);
+            if (pField) {
+                TRC_OBJ(this,"\tField 3: \"%s\"\n", AStr_getData(pField));
+                i = AStr_CompareLeftA(pField, "HTTP/");
+                if (0 == i) {
+                    i = 6;
+                    iMax = AStr_getSize(pField);
+                    numMaj = 0;
+                    while ((i <= iMax) && ascii_isNumericW32(AStr_CharGetW32(pField, i))) {
+                        numMaj *= 10;
+                        numMaj += AStr_CharGetW32(pField, i) - '0';
+                        i++;
+                    }
+                    if ('.' == AStr_CharGetW32(pField, i))
+                        i++;
+                    else {
+                        TRC_OBJ(this, "\tInvalid char, need '.', found %c!\n",
+                                        AStr_CharGetW32(pField, i));
+                        obj_Release(pFields);
+                        pFields = OBJ_NIL;
+                        obj_Release(pLines);
+                        pLines = OBJ_NIL;
+                        return ERESULT_INVALID_SYNTAX;
+                    }
+                    numMin = 0;
+                    while ((i <= iMax) && ascii_isNumericW32(AStr_CharGetW32(pField, i))) {
+                        numMin *= 10;
+                        numMin += AStr_CharGetW32(pField, i) - '0';
+                        i++;
+                    }
+                    TRC_OBJ(this, "\tFound Maj.Min: %d.%d\n", numMaj, numMin);
+                    this->majRel = numMaj;
+                    this->minRel = numMin;
+                } else {
+                    TRC_OBJ(this, "\tMissing \"HTTP/\"!\n");
+                    obj_Release(pFields);
+                    pFields = OBJ_NIL;
+                    obj_Release(pLines);
+                    pLines = OBJ_NIL;
+                    return ERESULT_INVALID_SYNTAX;
+                }
+            }
+
+            obj_Release(pFields);
+            pFields = OBJ_NIL;
+        }
+
+        obj_Release(pLines);
+        pLines = OBJ_NIL;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -706,14 +1042,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = MsgData_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = NetHTTPR_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "MsgData", prefix,
+                        the object name, "NetHTTPR", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -721,13 +1057,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          MsgData_QueryInfo (
+    void *          NetHTTPR_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        MSGDATA_DATA     *this = objId;
+        NETHTTPR_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -736,7 +1072,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -745,26 +1081,19 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(MSGDATA_DATA);
+                return (void *)sizeof(NETHTTPR_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)MsgData_Class();
+                return (void *)NetHTTPR_Class();
                 break;
-                
-#ifdef XYZZY  
-            // Query for an address to specific data within the object.  
-            // This should be used very sparingly since it breaks the 
-            // object's encapsulation.                 
+                              
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
                 switch (*pStr) {
      
                     case 'S':
                         if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                            return obj_getInfo(this)->pClassSuperObject;
-                        }
-                        if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                            return &this->pSuperVtbl;
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
                         }
                         break;
                         
@@ -772,8 +1101,8 @@ extern "C" {
                         break;
                 }
                 break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -782,23 +1111,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return MsgData_Disable;
+                            return NetHTTPR_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return MsgData_Enable;
+                            return NetHTTPR_Enable;
                         }
+                        break;
+
+                    case 'P':
+#ifdef  NETHTTPR_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return NetHTTPR_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return NetHTTPR_ParseJsonObject;
+                        }
+#endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return MsgData_ToDebugString;
+                            return NetHTTPR_ToDebugString;
                         }
-#ifdef  MSGDATA_JSON_SUPPORT
+#ifdef  NETHTTPR_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return NetHTTPR_ToJsonFields;
+                        }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return MsgData_ToJson;
+                            return NetHTTPR_ToJson;
                         }
 #endif
                         break;
@@ -809,10 +1152,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == MsgData_ToDebugString)
+                if (pData == NetHTTPR_ToDebugString)
                     return "ToDebugString";
-#ifdef  MSGDATA_JSON_SUPPORT
-                if (pData == MsgData_ToJson)
+#ifdef  NETHTTPR_JSON_SUPPORT
+                if (pData == NetHTTPR_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -834,7 +1177,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = MsgData_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = NetHTTPR_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -842,22 +1185,23 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     MsgData_ToDebugString (
-        MSGDATA_DATA      *this,
+    ASTR_DATA *     NetHTTPR_ToDebugString (
+        NETHTTPR_DATA   *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!MsgData_Validate(this)) {
+        if (!NetHTTPR_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -878,7 +1222,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    MsgData_getSize(this),
+                    NetHTTPR_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -889,8 +1233,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -914,17 +1260,17 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            MsgData_Validate (
-        MSGDATA_DATA      *this
+#ifdef NDEBUG
+#else
+    bool            NetHTTPR_Validate (
+        NETHTTPR_DATA   *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_MSGDATA))
+            if (obj_IsKindOf(this, OBJ_IDENT_NETHTTPR))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -940,20 +1286,20 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(MSGDATA_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(NETHTTPR_DATA))) {
             return false;
         }
 
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

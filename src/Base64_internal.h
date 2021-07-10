@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   NetHTTP_internal.h
- *  Generated 07/02/2021 14:27:37
+ * File:   Base64_internal.h
+ *  Generated 07/08/2021 09:13:40
  *
  * Notes:
  *  --  N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <NetHTTP.h>
+#include        <Base64.h>
 #include        <JsonIn.h>
 
 
-#ifndef NETHTTP_INTERNAL_H
-#define NETHTTP_INTERNAL_H
+#ifndef BASE64_INTERNAL_H
+#define BASE64_INTERNAL_H
 
 
 
@@ -62,7 +62,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct NetHTTP_data_s  {
+struct Base64_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -71,18 +71,17 @@ struct NetHTTP_data_s  {
     // Common Data
     uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
-    ASTR_DATA       *pURI;
-    int             socket;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct NetHTTP_class_data_s  NetHTTP_ClassObj;
+    struct Base64_class_data_s  Base64_ClassObj;
 
     extern
     const
-    NETHTTP_VTBL         NetHTTP_Vtbl;
+    BASE64_VTBL         Base64_Vtbl;
 
 
 
@@ -90,13 +89,13 @@ struct NetHTTP_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NETHTTP_SINGLETON
-    NETHTTP_DATA *     NetHTTP_getSingleton (
+#ifdef  BASE64_SINGLETON
+    BASE64_DATA *   Base64_getSingleton (
         void
     );
 
-    bool            NetHTTP_setSingleton (
-     NETHTTP_DATA       *pValue
+    bool            Base64_setSingleton (
+     BASE64_DATA       *pValue
 );
 #endif
 
@@ -106,35 +105,49 @@ struct NetHTTP_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  NetHTTP_getSuperVtbl (
-        NETHTTP_DATA     *this
+    OBJ_IUNKNOWN *  Base64_getSuperVtbl (
+        BASE64_DATA     *this
     );
 
 
-    ERESULT         NetHTTP_Assign (
-        NETHTTP_DATA    *this,
-        NETHTTP_DATA    *pOther
+    ERESULT         Base64_Assign (
+        BASE64_DATA    *this,
+        BASE64_DATA    *pOther
     );
 
 
-    NETHTTP_DATA *       NetHTTP_Copy (
-        NETHTTP_DATA     *this
+    BASE64_DATA *   Base64_Copy (
+        BASE64_DATA     *this
     );
 
 
-    void            NetHTTP_Dealloc (
+    void            Base64_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  NETHTTP_JSON_SUPPORT
+    U8ARRAY_DATA *  Base64_DecodeData (
+        int             len,
+        const
+        uint8_t         *pData
+    );
+
+
+    ASTR_DATA *     Base64_EncodeData (
+        int             len,
+        const
+        uint8_t         *pData
+    );
+
+
+#ifdef  BASE64_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NETHTTP_DATA *       NetHTTP_ParseJsonObject (
+    BASE64_DATA *       Base64_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -148,35 +161,35 @@ struct NetHTTP_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NetHTTP_ParseJsonFields (
+    ERESULT         Base64_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        NETHTTP_DATA     *pObject
+        BASE64_DATA     *pObject
     );
 #endif
 
 
-    void *          NetHTTP_QueryInfo (
+    void *          Base64_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  NETHTTP_JSON_SUPPORT
+#ifdef  BASE64_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = NetHTTP_ToJson(this);
+     ASTR_DATA      *pDesc = Base64_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NetHTTP_ToJson (
-        NETHTTP_DATA      *this
+    ASTR_DATA *     Base64_ToJson (
+        BASE64_DATA      *this
     );
 
 
@@ -189,8 +202,8 @@ struct NetHTTP_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NetHTTP_ToJsonFields (
-        NETHTTP_DATA     *this,
+    ERESULT         Base64_ToJsonFields (
+        BASE64_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -200,8 +213,8 @@ struct NetHTTP_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            NetHTTP_Validate (
-        NETHTTP_DATA       *this
+    bool            Base64_Validate (
+        BASE64_DATA       *this
     );
 #endif
 
@@ -211,5 +224,5 @@ struct NetHTTP_data_s  {
 }
 #endif
 
-#endif  /* NETHTTP_INTERNAL_H */
+#endif  /* BASE64_INTERNAL_H */
 

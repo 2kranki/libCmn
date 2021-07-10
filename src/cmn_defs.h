@@ -169,6 +169,8 @@ extern "C" {
         OBJ_IDENT_AUDIOCW_CLASS,
         OBJ_IDENT_AUDIOWAV,             // WAV Audio
         OBJ_IDENT_AUDIOWAV_CLASS,
+        OBJ_IDENT_BASE64,               // Base64 Encoding/Decoding
+        OBJ_IDENT_BASE64_CLASS,
         OBJ_IDENT_BITMATRIX,
         OBJ_IDENT_BITMATRIX_CLASS,
         OBJ_IDENT_BITSET,
@@ -353,6 +355,10 @@ extern "C" {
         OBJ_IDENT_NET_CLASS,
         OBJ_IDENT_NETHTTP,              // Network HTTP Support
         OBJ_IDENT_NETHTTP_CLASS,
+        OBJ_IDENT_NETHTTPA,             // TCP/IP Network HTTP Response/Answer
+        OBJ_IDENT_NETHTTPA_CLASS,
+        OBJ_IDENT_NETHTTPR,             // TCP/IP Network HTTP Request
+        OBJ_IDENT_NETHTTPR_CLASS,
         OBJ_IDENT_NETIO,                // Network I/O using Unix Sockets
         OBJ_IDENT_NETIO_CLASS,
         OBJ_IDENT_NETMIME,              // Network MIME Server Support
