@@ -45,7 +45,7 @@
 #include        <JsonIn.h>
 #include        <lru_internal.h>
 #include        <ObjArray.h>
-#include        <RRDS.h>
+#include        <RRDS_internal.h>
 
 
 #ifndef BPT32_INTERNAL_H
@@ -106,6 +106,7 @@ struct bpt32_data_s	{
 
     // Common Data
     RRDS_DATA       *pIO;
+    LRU_DATA        *pLRU;          // LRU Mechanism from RRDS (not owned)
     uint32_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
     uint16_t        cLRU;

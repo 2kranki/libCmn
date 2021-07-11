@@ -48,7 +48,7 @@
 
 /* Header File Inclusion */
 #include        <bpt32_internal.h>
-#include        <fileio.h>
+#include        <FileIO.h>
 #include        <trace.h>
 
 
@@ -169,7 +169,7 @@ extern "C" {
                 if (obj_Trace(this))
                     obj_TraceSet(pIndex, true);
 #endif
-                eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pWrite(
+                eRc =   RRDS_RecordWrite(
                                          this->pIO,
                                          bpt32idx_getIndex(pIndex),
                                          bpt32idx_getBlock(pIndex)
@@ -205,7 +205,7 @@ extern "C" {
                 if (obj_Trace(this))
                     obj_TraceSet(pLeaf, true);
 #endif
-                eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pWrite(
+                eRc =   RRDS_RecordWrite(
                                          this->pIO,
                                          bpt32lf_getIndex(pLeaf),
                                          bpt32lf_getBlock(pLeaf)
@@ -249,7 +249,7 @@ extern "C" {
                     pBlock = pVtbl->pGetBlock(pObj);
                 }
                 if (lsn && pBlock) {
-                    eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pRead(
+                    eRc =   RRDS_RecordRead(
                                             this->pIO,
                                             lsn,
                                             pBlock
@@ -312,7 +312,7 @@ extern "C" {
                 TRC_OBJ(this, "\tWrite data for block %d...\n", lsn);
                 pBlock = pVtbl->pGetBlock(pObj);
                 if (lsn && pBlock) {
-                    eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pWrite(
+                    eRc =   RRDS_RecordWrite(
                                              this->pIO,
                                              lsn,
                                              pBlock
@@ -347,7 +347,7 @@ extern "C" {
         TRC_OBJ(this, "bpt32_BlockRead lsn=%d\n", lsn);
         
         // Load the block into the LRU.
-        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pRead(
+        eRc =   RRDS_RecordRead(
                                     this->pIO,
                                     lsn,
                                     NULL
@@ -358,7 +358,7 @@ extern "C" {
             return eRc;
         }
         
-        pData = (uint16_t *)lru_FindBuffer((LRU_DATA *)this->pIO, lsn);
+        pData = (uint16_t *)lru_FindBuffer(this->pLRU, lsn);
         if (*pData == OBJ_IDENT_BPT32IDX) {
             pIndex = bpt32idx_New();
             if (OBJ_NIL == pIndex) {
@@ -633,7 +633,7 @@ extern "C" {
             // Note - No split should occur here.
             
             // Write the new block to the file.
-            eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pWrite(
+            eRc =   RRDS_RecordWrite(
                                      this->pIO,
                                      bpt32idx_getIndex(pIndex),
                                      bpt32idx_getBlock(pIndex)
@@ -705,20 +705,20 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
 
-        pIO = fileio_New( );
+        pIO = FileIO_New( );
         if (OBJ_NIL == pIO) {
             DEBUG_BREAK();
             return ERESULT_OBJECT_CREATION;
         }
         
-        eRc = fileio_Open(pIO, pPath);
+        eRc = FileIO_Open(pIO, pPath, false);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return ERESULT_OBJECT_CREATION;
         }
         
         
-        eRc = fileio_Read(pIO, (uint32_t)(sizeof(BPT32_HEADER)), pHdr, &readAmt);
+        eRc = FileIO_Read(pIO, (uint32_t)(sizeof(BPT32_HEADER)), pHdr, &readAmt);
         if (!ERESULT_FAILED(eRc) && (readAmt == sizeof(BPT32_HEADER))) {
             this->blockSize = pHdr->blockSize;
             this->dataSize  = pHdr->dataSize;
@@ -733,7 +733,7 @@ extern "C" {
             pHdr = NULL;
         }
 
-        fileio_Close(pIO, false);
+        FileIO_Close(pIO, false);
         obj_Release(pIO);
         pIO = OBJ_NIL;
         
@@ -760,13 +760,13 @@ extern "C" {
         BREAK_NULL(this->pHdr);
 #endif
         
-        pIO = fileio_New( );
+        pIO = FileIO_New( );
         if (OBJ_NIL == pIO) {
             DEBUG_BREAK();
             return ERESULT_OBJECT_CREATION;
         }
         
-        eRc = fileio_Open(pIO, pPath);
+        eRc = FileIO_Open(pIO, pPath, false);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(pIO);
@@ -775,13 +775,13 @@ extern "C" {
         }
         
         
-        eRc = fileio_Write(pIO, (uint32_t)(sizeof(BPT32_HEADER)), this->pHdr);
+        eRc = FileIO_Write(pIO, (uint32_t)(sizeof(BPT32_HEADER)), this->pHdr);
         if (!ERESULT_FAILED(eRc) && (readAmt == sizeof(BPT32_HEADER))) {
             this->blockSize = hdr.blockSize;
             this->dataSize  = hdr.dataSize;
         }
         
-        fileio_Close(pIO, false);
+        FileIO_Close(pIO, false);
         obj_Release(pIO);
         pIO = OBJ_NIL;
         
@@ -1299,9 +1299,9 @@ extern "C" {
         }
 #endif
         
-        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pClose(
-                                                        this->pIO,
-                                                        fDelete
+        eRc =   RRDS_Close(
+                    this->pIO,
+                    fDelete
                 );
         if (ERESULT_FAILED(eRc)) {
             return eRc;
@@ -1451,7 +1451,7 @@ extern "C" {
         }
         
         // Set up rrds.
-        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pSetupSizes(
+        eRc =   RRDS_SetupSizes(
                                 this->pIO,
                                 this->blockSize,
                                 RRDS_RCD_TRM_NONE,
@@ -1472,7 +1472,7 @@ extern "C" {
         this->pHdr->actualSize = ROUNDUP4(this->dataSize);
         this->pHdr->cRecords = 1;                   // Allow for Header
 
-        eRc = ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pCreate(this->pIO, pPath);
+        eRc = RRDS_Create(this->pIO, pPath, false);
         
         eRc = bpt32_BlockRequest(this, OBJ_NIL, BPT32_REQUEST_NEW_LEAF, &pLeaf);
         if (ERESULT_FAILED(eRc)) {
@@ -1924,7 +1924,7 @@ extern "C" {
         }
         
         // Setup sizes from our merged sizes.
-        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pSetupSizes(
+        eRc =   RRDS_SetupSizes(
                                 this->pIO,
                                 this->blockSize,
                                 RRDS_RCD_TRM_NONE,
@@ -1932,10 +1932,7 @@ extern "C" {
                                 this->cHash
                 );
 
-        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pOpen(
-                                                    this->pIO,
-                                                    pPath
-                );
+        eRc =   RRDS_Open(this->pIO, pPath, false);
         
 #ifdef XYZZY
         this->pBlock = mem_Calloc(1, this->blockSize);
@@ -2106,13 +2103,15 @@ extern "C" {
             }
         }
         
-        eRc =   ((RRDS_VTBL *)obj_getVtbl(this->pIO))->pSetupSizes(
-                                                    this->pIO,
-                                                    this->blockSize,
-                                                    RRDS_RCD_TRM_NONE,
-                                                    this->cLRU,
-                                                    this->cHash
+        eRc =   RRDS_SetupSizes(
+                    this->pIO,
+                    this->blockSize,
+                    RRDS_RCD_TRM_NONE,
+                    this->cLRU,
+                    this->cHash
                 );
+
+        this->pLRU = RRDS_getLRU(this->pIO);
 
         // Return to caller.
         return eRc;

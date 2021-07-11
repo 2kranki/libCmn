@@ -81,7 +81,9 @@ typedef struct io_vtbl_s    {
         ERESULT     (*pClose)(OBJ_ID);
         // Flush() writes any pending buffered data to the file output if
         // write() is active.
-        ERESULT     (*pFlush)(OBJ_ID);
+        ERESULT     (*pFlush)(
+                OBJ_ID
+        );
         // Read() attempts to read the amount of data specified from the
         // data source.  It returns the amount actually read which might
         // be less than the amount requested. It will return -1 if an

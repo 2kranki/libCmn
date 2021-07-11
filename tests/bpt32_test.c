@@ -24,8 +24,8 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <lru.h>
-#include    <memFile.h>
-#include    <memrrds.h>
+#include    <FileIO.h>
+#include    <RRDS.h>
 #include    <trace.h>
 #include    <bpt32_internal.h>
 

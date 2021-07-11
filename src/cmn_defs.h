@@ -263,7 +263,7 @@ extern "C" {
         OBJ_IDENT_FCB_CLASS,
         OBJ_IDENT_FILE,                 // File
         OBJ_IDENT_FILE_CLASS,
-        OBJ_IDENT_FILEIO,               // File I/O
+        OBJ_IDENT_FILEIO,               // Generic Dataset/File Input/Output
         OBJ_IDENT_FILEIO_CLASS,
         OBJ_IDENT_FILEREF,              // File Reference
         OBJ_IDENT_FILEREF_CLASS,
@@ -333,8 +333,6 @@ extern "C" {
         OBJ_IDENT_LRU_CLASS,
         OBJ_IDENT_MD5CHKSUM,            // MD5 Check Sum Calculation
         OBJ_IDENT_MD5CHKSUM_CLASS,
-        OBJ_IDENT_MEMFILE,              // Memory-Based File
-        OBJ_IDENT_MEMFILE_CLASS,
         OBJ_IDENT_MEMMSC,               // Memory Debug for MS C
         OBJ_IDENT_MEMMSC_CLASS,
         OBJ_IDENT_MEMMAC64,             // Memory Debug for MacOS 64-bit

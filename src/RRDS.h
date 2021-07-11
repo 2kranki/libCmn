@@ -107,36 +107,6 @@ extern "C" {
         // method names to the vtbl definition in RRDS_object.c.
         // Properties:
         // Methods:
-        ERESULT         (*pClose) (
-            OBJ_ID          this,
-            bool            fDelete
-        );
-        ERESULT         (*pCreate) (
-            OBJ_ID          this,
-            PATH_DATA       *pPath
-        );
-        ERESULT         (*pOpen) (
-            OBJ_ID          this,
-            PATH_DATA       *pPath
-        );
-        ERESULT         (*pRead) (
-            OBJ_ID          this,
-            uint32_t        recordNum,
-            uint8_t         *pData
-        );
-        ERESULT         (*pWrite) (
-            OBJ_ID          this,
-            uint32_t        recordNum,
-            uint8_t         *pData
-        );
-        ERESULT         (*pSetupSizes) (
-            OBJ_ID       this,
-            uint16_t        recordSize,     // Record Size without optional terminator
-            uint16_t        recordTerm,     // Record Terminator Type
-            //                              // (See RRDS_rcd_trm_e above)
-            uint16_t        cLRU,           // Number of LRU Buffers
-            uint16_t        cHash           // Number of LRU Hash Chains
-        );
     } RRDS_VTBL;
 
     typedef struct RRDS_class_vtbl_s    {
@@ -285,7 +255,8 @@ extern "C" {
      */
     ERESULT         RRDS_Create (
         RRDS_DATA       *this,
-        PATH_DATA       *pPath
+        PATH_DATA       *pPath,
+        bool            fMem
     );
 
 
@@ -319,7 +290,8 @@ extern "C" {
      */
     ERESULT         RRDS_Open (
         RRDS_DATA       *this,
-        PATH_DATA       *pPath
+        PATH_DATA       *pPath,
+        bool            fMem
     );
 
 
@@ -364,6 +336,7 @@ extern "C" {
      should be called before a Create() or an Open().
      @param     this    object pointer
      @param     cLRU    number of LRU buffers to use (relative to one and default is 1)
+                        (0 == illegal, 1 == bypass LRU, > 1 == use LRU buffering)
      @param     cHash   Number of Hash chains for LRU mechanism
                         (You should use a prime number for this and default is 13).
      @Return    If successful, ERESULT_SUCCESS; otherwise an ERESULT_*

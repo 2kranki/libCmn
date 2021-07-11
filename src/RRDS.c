@@ -105,15 +105,15 @@ extern "C" {
     {
         ERESULT         eRc;
 
-        if (this->pIO && fileio_IsOpen(this->pIO)) {
+        if (this->pIO && FileIO_IsOpen(this->pIO)) {
             // Close the file.
-            eRc = fileio_Close(this->pIO, fDelete);
+            eRc = FileIO_Close(this->pIO, fDelete);
             if (ERESULT_FAILED(eRc)) {
                 return eRc;
             }
         }
 
-        eRc = RRDS_setFileIO(this, OBJ_NIL);
+        RRDS_setFileIO(this, OBJ_NIL);
 
         // Return to Caller.
         return ERESULT_SUCCESS;
@@ -153,7 +153,7 @@ extern "C" {
             }
             memset(pFillData, this->fillChar, this->recordSize);
 
-            for(curRec=(this->cRecords + 1); curRec <= recordNum; ++curRec) {
+            for (curRec=(this->cRecords + 1); curRec <= recordNum; ++curRec) {
                 fileOffset = RRDS_RecordOffset(this, curRec);
                 eRc = RRDS_LSN_Write(
                                        this,
@@ -170,7 +170,6 @@ extern "C" {
 
             mem_Free(pFillData);
             //pFillData = NULL;
-            this->cRecords = recordNum;
         }
 
         // Return to Caller.
@@ -196,7 +195,7 @@ extern "C" {
 
         // Seek to the appropriate location within the file.
         fileOffset = RRDS_RecordOffset(this, lsn);
-        seekOffset = fileio_SeekBegin(this->pIO, fileOffset);
+        seekOffset = FileIO_SeekBegin(this->pIO, fileOffset);
         if (seekOffset == fileOffset)
             ;
         else {
@@ -205,7 +204,7 @@ extern "C" {
         }
 
         // Read the data.
-        eRc = fileio_Read(this->pIO, this->reqSize, pBuffer, &amtRead);
+        eRc = FileIO_Read(this->pIO, this->reqSize, pBuffer, &amtRead);
 
         // Return to Caller.
         return eRc;
@@ -231,7 +230,7 @@ extern "C" {
 
         // Seek to the appropriate location within the file.
         fileOffset = RRDS_RecordOffset(this, lsn);
-        seekOffset = fileio_SeekBegin(this->pIO, fileOffset);
+        seekOffset = FileIO_SeekBegin(this->pIO, fileOffset);
         if (seekOffset == fileOffset)
             ;
         else {
@@ -240,7 +239,7 @@ extern "C" {
         }
 
         // Write the data.
-        eRc = fileio_Write(this->pIO, this->reqSize, pBuffer);
+        eRc = FileIO_Write(this->pIO, this->reqSize, pBuffer);
         if (!ERESULT_FAILED(eRc)) {
             if (lsn > this->cRecords) {
                 this->cRecords = lsn;
@@ -280,7 +279,7 @@ extern "C" {
                 break;
         }
         if (cRcdtrm) {
-            eRc = fileio_Write(this->pIO, cRcdtrm, rcdtrm);
+            eRc = FileIO_Write(this->pIO, cRcdtrm, rcdtrm);
             if (!ERESULT_FAILED(eRc)) {
                 if (lsn > this->cRecords) {
                     this->cRecords = lsn;
@@ -305,7 +304,7 @@ extern "C" {
     {
         size_t          fileOffset;
 
-        fileOffset = (this->recordSize * (recordNum-1));
+        fileOffset = this->recordSize * (recordNum - 1);
 
         // Return to Caller.
         return fileOffset;
@@ -322,14 +321,14 @@ extern "C" {
     {
         ERESULT         eRc;
 
-        eRc = RRDS_setFileIO(this, OBJ_NIL);
-        this->pIO = fileio_New( );
+        RRDS_setFileIO(this, OBJ_NIL);
+        this->pIO = FileIO_New( );
         if (OBJ_NIL == this->pIO) {
             DEBUG_BREAK();
             return ERESULT_OBJECT_CREATION;
         }
 
-        eRc = lru_Setup((LRU_DATA *)this, this->recordSize, this->cLRU, this->cHash);
+        eRc = lru_Setup(this->pLRU, this->recordSize, this->cLRU, this->cHash);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             obj_Release(this->pIO);
@@ -338,8 +337,8 @@ extern "C" {
         }
 
         // Now tie the LRU object to the fileio object.
-        lru_setLogicalSectorRead((LRU_DATA *)this, (void *)RRDS_LSN_Read, this);
-        lru_setLogicalSectorWrite((LRU_DATA *)this, (void *)RRDS_LSN_Write, this);
+        lru_setLogicalSectorRead(this->pLRU, (void *)RRDS_LSN_Read, this);
+        lru_setLogicalSectorWrite(this->pLRU, (void *)RRDS_LSN_Write, this);
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -430,12 +429,10 @@ extern "C" {
         }
 #endif
 
-#ifdef  PROPERTY_IO_OWNED
         obj_Retain(pValue);
         if (this->pIO) {
             obj_Release(this->pIO);
         }
-#endif
         this->pIO = pValue;
 
         return true;
@@ -551,7 +548,7 @@ extern "C" {
 #endif
 
         if (this->pIO) {
-            pPath = fileio_getPath(this->pIO);
+            pPath = FileIO_getPath(this->pIO);
         }
 
         return pPath;
@@ -583,7 +580,7 @@ extern "C" {
 
 
     bool            RRDS_setPriority (
-        RRDS_DATA     *this,
+        RRDS_DATA       *this,
         uint16_t        value
     )
     {
@@ -672,7 +669,7 @@ extern "C" {
     //---------------------------------------------------------------
     
     OBJ_IUNKNOWN *  RRDS_getSuperVtbl (
-        RRDS_DATA     *this
+        RRDS_DATA       *this
     )
     {
 
@@ -717,7 +714,7 @@ extern "C" {
      */
     ERESULT         RRDS_Assign (
         RRDS_DATA       *this,
-        RRDS_DATA     *pOther
+        RRDS_DATA       *pOther
     )
     {
         ERESULT     eRc;
@@ -916,7 +913,8 @@ extern "C" {
 
     ERESULT         RRDS_Create (
         RRDS_DATA       *this,
-        PATH_DATA       *pPath
+        PATH_DATA       *pPath,
+        bool            fMem
     )
     {
         ERESULT         eRc;
@@ -927,7 +925,7 @@ extern "C" {
             DEBUG_BREAK();              // Should not happen!
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pPath) {
+        if ((OBJ_NIL == pPath) && !fMem) {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
@@ -938,17 +936,17 @@ extern "C" {
         }
 
         // Create the file.
-        eRc = fileio_Create(this->pIO, pPath);
+        eRc = FileIO_Create(this->pIO, pPath, fMem);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
 
-        eRc = fileio_Close(this->pIO, false);
+        eRc = FileIO_Close(this->pIO, false);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
 
-        eRc = fileio_Open(this->pIO, pPath);
+        eRc = FileIO_Open(this->pIO, pPath, fMem);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -968,7 +966,7 @@ extern "C" {
     )
     {
         RRDS_DATA   *this = objId;
-        //ERESULT         eRc;
+        ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -988,8 +986,10 @@ extern "C" {
         }
 #endif
 
+        // Order is important here!
+        eRc = RRDS_FileClose(this, false);
         RRDS_setLRU(this, OBJ_NIL);
-        //FIXME: eRc = RRDS_FileClose(this, false);
+        RRDS_setFileIO(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1264,7 +1264,7 @@ extern "C" {
         }
 #endif
 
-        if (fileio_IsOpen(this->pIO)) {
+        if (FileIO_IsOpen(this->pIO)) {
             return ERESULT_SUCCESS;
         }
 
@@ -1280,7 +1280,8 @@ extern "C" {
 
     ERESULT         RRDS_Open (
         RRDS_DATA       *this,
-        PATH_DATA       *pPath
+        PATH_DATA       *pPath,
+        bool            fMem
     )
     {
         ERESULT         eRc;
@@ -1304,19 +1305,19 @@ extern "C" {
             return eRc;
         }
 
-        eRc = fileio_Open(this->pIO, pPath);
+        eRc = FileIO_Open(this->pIO, pPath, fMem);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
 
         // Records may or may not have \r\n or \n at the end of them. So,
         // record size can be 80-82 bytes.
-        offset = fileio_SeekBegin(this->pIO, this->reqSize);
+        offset = FileIO_SeekBegin(this->pIO, this->reqSize);
         if (!(offset == this->reqSize)) {
             DEBUG_BREAK();
             return ERESULT_OPEN_ERROR;
         }
-        eRc = fileio_Read(this->pIO, sizeof(terms), terms, &amtRead);
+        eRc = FileIO_Read(this->pIO, sizeof(terms), terms, &amtRead);
         if ((ERESULT_FAILED(eRc)) || !(amtRead == 2)) {
             DEBUG_BREAK();
             return eRc;
@@ -1342,7 +1343,7 @@ extern "C" {
             this->recordTerm = RRDS_RCD_TRM_NONE;
         }
 
-        fileSize = fileio_Size(this->pIO);
+        fileSize = FileIO_Size(this->pIO);
         this->cRecords = (uint32_t)(fileSize / this->recordSize);
 
         // Return to caller.
@@ -1511,7 +1512,7 @@ extern "C" {
             //return ERESULT_INVALID_OBJECT;
             return NULL;
         }
-        if (!fileio_IsOpen(this->pIO)) {
+        if (!FileIO_IsOpen(this->pIO)) {
             DEBUG_BREAK();
             //return ERESULT_DATA_NOT_FOUND;
             return NULL;
@@ -1523,7 +1524,7 @@ extern "C" {
             return NULL;
         }
 
-        pBuffer = (uint8_t *)lru_FindBuffer((LRU_DATA *)this->pIO, recordNum);
+        pBuffer = (uint8_t *)lru_FindBuffer(this->pLRU, recordNum);
 
         // Return to caller.
         return pBuffer;
@@ -1552,7 +1553,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!fileio_IsOpen(this->pIO)) {
+        if (!FileIO_IsOpen(this->pIO)) {
             DEBUG_BREAK();
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1566,7 +1567,7 @@ extern "C" {
 
         // Read the Block into Memory.
         if (this->cLRU > 1) {
-            eRc = lru_Read((LRU_DATA *)this, recordNum, pData);
+            eRc = lru_Read(this->pLRU, recordNum, pData);
             if (ERESULT_FAILED(eRc)) {
                 return ERESULT_IO_ERROR;
             }
@@ -1604,7 +1605,7 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!fileio_IsOpen(this->pIO)) {
+        if (!FileIO_IsOpen(this->pIO)) {
             DEBUG_BREAK();
             return ERESULT_DATA_NOT_FOUND;
         }
@@ -1617,14 +1618,14 @@ extern "C" {
         /* Fill the File if a block is accessed beyond the end of the
          * File.
          */
-        if( recordNum > this->cRecords+1 ) {
+        if( recordNum > (this->cRecords + 1) ) {
             TRC_OBJ(
                     this,
                     "\tfile too short, extending from %d to %d\n",
                     this->cRecords,
                     recordNum
             );
-            if( RRDS_FileExtend( this, recordNum-1 ) )
+            if( RRDS_FileExtend( this, (recordNum - 1) ) )
                 ;
             else {
                 return ERESULT_IO_ERROR;
@@ -1634,7 +1635,7 @@ extern "C" {
         // Write the Block to the File.
         if (this->cLRU > 1) {
             TRC_OBJ(this, "\tLRU write...\n");
-            eRc = lru_Write((LRU_DATA *)this, recordNum, pData);
+            eRc = lru_Write(this->pLRU, recordNum, pData);
             if (ERESULT_FAILED(eRc)) {
                 TRC_OBJ(this, "\tLRU write error!\n");
                 return ERESULT_IO_ERROR;
@@ -1715,17 +1716,15 @@ extern "C" {
                 break;
         }
 
-        eRc = lru_Setup((LRU_DATA *)this, this->recordSize, cLRU, cHash);
+        eRc = lru_Setup(this->pLRU, this->recordSize, cLRU, cHash);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
-            obj_Release(this->pIO);
-            this->pIO = OBJ_NIL;
             return ERESULT_OBJECT_CREATION;
         }
 
         // Now tie the LRU object to the fileio object.
-        lru_setLogicalSectorRead((LRU_DATA *)this, (void *)RRDS_LSN_Read, this);
-        lru_setLogicalSectorWrite((LRU_DATA *)this, (void *)RRDS_LSN_Write, this);
+        lru_setLogicalSectorRead(this->pLRU, (void *)RRDS_LSN_Read, this);
+        lru_setLogicalSectorWrite(this->pLRU, (void *)RRDS_LSN_Write, this);
 
         // Return to caller.
         return ERESULT_SUCCESS;

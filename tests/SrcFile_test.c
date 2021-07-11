@@ -34,7 +34,7 @@
 
 static
 const
-char        *pFilePath = TEST_FILES_DIR "/test_objects.json.txt";
+char        *pFilePath = TEST_FILES_DIR "/test_expand_01.txt";
 // Currently 853 bytes
 
 

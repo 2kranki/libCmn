@@ -39,11 +39,10 @@
             index, uint32_t. It is designed to use with 'rrds' and 'lru' to provide
             fast indexed file system.
          */
-        /* ===Temporary while rewriting RRDS!===
+        //TODO:    === TODO: Rewrite to new naming convention ===
         {name:"bpt32",          desc:"32-Bit Index B-Plus Tree", deps:["bpt32idx.h","bpt32lf.h","rrds.h"]},
         {name:"bpt32idx",       desc:"32-Bit Index B-Plus Tree Index Block", test:false}, 
         {name:"bpt32lf",        desc:"32-Bit Index B-Plus Tree Leaf Block"},
-         ===Temporary while rewriting RRDS!=== */
 
         {name:"cb",             desc:"Generic Circular Buffer", 
                                 test:{srcs:["objTest.c", "objTest_object.c"]}},
@@ -73,7 +72,7 @@
         {name:"fbsi",           deps:["Path.h","u8Array.h"]},
         {name:"fbso",           deps:["Path.h"]},
         {name:"File",           deps:["u8Array.h"]},
-        {name:"fileio",         deps:["Path.h"]},
+        {name:"FileIO",         desc:"Generic Dataset/File Input/Output", deps:["Path.h"]},
         {name:"FileRef"         deps:["AStrC.h","Path.h"]},
         {name:"genObj"},
         {name:"greg"},
@@ -125,8 +124,9 @@
                             desc:"Keyword Lexical Scanner"},
         {name:"LineIndex",  desc:"Line Index into File or Buffer", deps:["SrcLoc.h"], json:true},
         {name:"lru", deps:["listdl.h"]},
+        /* ========== Add back into here and Xcode testCmn when FileIO is completed ======
         {name:"md5ChkSum", deps:["md5_plumb.h"]},
-        {name:"memFile"},
+        =========================== */
         {name:"memMac64", deps:["listdl.h"], os:["macos64"]},
         {name:"memWin32", deps:["memWin32.h","memWin32_internal.h"], os:["win32"], test:false},
         {name:"misc"},
@@ -192,8 +192,7 @@
         {name:"RpgBase",    desc:"Report Program Generator (RPG) Base", json:true},
         {name:"RpgLvl",     desc:"Report Program Generator (RPG) Level handler", json:true},
         {name:"RRDS",       desc:"Relative Record Dataset (ie Fixed size records indexed by record number)",
-                            deps:["listdl.h","Path.h"],},
-        //{name:"memrrds",  desc:"Memory-based Relative Record Dataset (ie Fixed Size record indexed by record number)"},
+                            deps:["FileIO.h","lru.h","Path.h"],},
         {name:"Scanner", json:true, desc:"String Scanner"},
         {name:"scanReader", desc:"Scanner UTF-32 Reader"},
         {name:"Sect", json:true, desc:"Section/Segment Table Entry"},
@@ -255,11 +254,10 @@
         //{name:"cmnMac32", os:["macos32"]},
         {name:"cmnMac64", os:["macos64"]},
         {name:"cmn_win32", os:["win32","win64"]},
-        {name:"fileio_io", deps:["fileio.h"]},
+        //{name:"fileio_io", deps:["fileio.h"]},
         {name:"IntLock", deps:["IntLock.h"], test:true},
         {name:"listdl", deps:["listdl.h"], test:true},
-        {name:"md5_plumb", deps:["md5_plumb.h"]},
-        //{name:"memrrds_io", deps:["blks.h","memrrds.h"]},
+        //FIXME: When FileIO is done! {name:"md5_plumb", deps:["md5_plumb.h"]},
         {name:"obj", deps:["obj.h"], test:false},
         {name:"rbt_tree", deps:["rbt_tree.h"], test:true},
         //{name:"rrds_io", deps:["rrds.h"]},

@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 7/10/2021 13:29:29.000)
+# ( 7/11/2021 22:26:25.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -322,6 +322,16 @@ $(OBJDIR)/False_object.o: $(SRCDIR)/False_object.c $(SRCDIR)/False.h $(SRCDIR)/F
 OBJS += $(OBJDIR)/File.o
 
 $(OBJDIR)/File.o: $(SRCDIR)/File.c $(SRCDIR)/File.h $(SRCDIR)/File_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/FileIO.o
+
+$(OBJDIR)/FileIO.o: $(SRCDIR)/FileIO.c $(SRCDIR)/FileIO.h $(SRCDIR)/FileIO_internal.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/FileIO_object.o
+
+$(OBJDIR)/FileIO_object.o: $(SRCDIR)/FileIO_object.c $(SRCDIR)/FileIO.h $(SRCDIR)/FileIO_internal.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/FileRef.o
@@ -1004,6 +1014,16 @@ OBJS += $(OBJDIR)/Path_object.o
 $(OBJDIR)/Path_object.o: $(SRCDIR)/Path_object.c $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/RRDS.o
+
+$(OBJDIR)/RRDS.o: $(SRCDIR)/RRDS.c $(SRCDIR)/FileIO.h $(SRCDIR)/Path.h $(SRCDIR)/RRDS.h $(SRCDIR)/RRDS_internal.h $(SRCDIR)/lru.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/RRDS_object.o
+
+$(OBJDIR)/RRDS_object.o: $(SRCDIR)/RRDS_object.c $(SRCDIR)/FileIO.h $(SRCDIR)/Path.h $(SRCDIR)/RRDS.h $(SRCDIR)/RRDS_internal.h $(SRCDIR)/lru.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/RpgBase.o
 
 $(OBJDIR)/RpgBase.o: $(SRCDIR)/RpgBase.c $(SRCDIR)/RpgBase.h $(SRCDIR)/RpgBase_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1549,6 +1569,36 @@ OBJS += $(OBJDIR)/block32_object.o
 $(OBJDIR)/block32_object.o: $(SRCDIR)/block32_object.c $(SRCDIR)/block32.h $(SRCDIR)/block32_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/bpt32.o
+
+$(OBJDIR)/bpt32.o: $(SRCDIR)/bpt32.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/bpt32_object.o
+
+$(OBJDIR)/bpt32_object.o: $(SRCDIR)/bpt32_object.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/bpt32idx.o
+
+$(OBJDIR)/bpt32idx.o: $(SRCDIR)/bpt32idx.c $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32idx_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/bpt32idx_object.o
+
+$(OBJDIR)/bpt32idx_object.o: $(SRCDIR)/bpt32idx_object.c $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32idx_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/bpt32lf.o
+
+$(OBJDIR)/bpt32lf.o: $(SRCDIR)/bpt32lf.c $(SRCDIR)/bpt32lf.h $(SRCDIR)/bpt32lf_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/bpt32lf_object.o
+
+$(OBJDIR)/bpt32lf_object.o: $(SRCDIR)/bpt32lf_object.c $(SRCDIR)/bpt32lf.h $(SRCDIR)/bpt32lf_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/cb.o
 
 $(OBJDIR)/cb.o: $(SRCDIR)/cb.c $(SRCDIR)/cb.h $(SRCDIR)/cb_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1709,21 +1759,6 @@ OBJS += $(OBJDIR)/fbso_object.o
 $(OBJDIR)/fbso_object.o: $(SRCDIR)/fbso_object.c $(SRCDIR)/Path.h $(SRCDIR)/fbso.h $(SRCDIR)/fbso_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/fileio.o
-
-$(OBJDIR)/fileio.o: $(SRCDIR)/fileio.c $(SRCDIR)/Path.h $(SRCDIR)/fileio.h $(SRCDIR)/fileio_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/fileio_io.o
-
-$(OBJDIR)/fileio_io.o: $(SRCDIR)/fileio_io.c $(SRCDIR)/fileio.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/fileio_object.o
-
-$(OBJDIR)/fileio_object.o: $(SRCDIR)/fileio_object.c $(SRCDIR)/Path.h $(SRCDIR)/fileio.h $(SRCDIR)/fileio_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/genObj.o
 
 $(OBJDIR)/genObj.o: $(SRCDIR)/genObj.c $(SRCDIR)/genObj.h $(SRCDIR)/genObj_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1782,31 +1817,6 @@ $(OBJDIR)/lru.o: $(SRCDIR)/lru.c $(SRCDIR)/listdl.h $(SRCDIR)/lru.h $(SRCDIR)/lr
 OBJS += $(OBJDIR)/lru_object.o
 
 $(OBJDIR)/lru_object.o: $(SRCDIR)/lru_object.c $(SRCDIR)/listdl.h $(SRCDIR)/lru.h $(SRCDIR)/lru_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/md5ChkSum.o
-
-$(OBJDIR)/md5ChkSum.o: $(SRCDIR)/md5ChkSum.c $(SRCDIR)/md5ChkSum.h $(SRCDIR)/md5ChkSum_internal.h $(SRCDIR)/md5_plumb.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/md5ChkSum_object.o
-
-$(OBJDIR)/md5ChkSum_object.o: $(SRCDIR)/md5ChkSum_object.c $(SRCDIR)/md5ChkSum.h $(SRCDIR)/md5ChkSum_internal.h $(SRCDIR)/md5_plumb.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/md5_plumb.o
-
-$(OBJDIR)/md5_plumb.o: $(SRCDIR)/md5_plumb.c $(SRCDIR)/md5_plumb.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/memFile.o
-
-$(OBJDIR)/memFile.o: $(SRCDIR)/memFile.c $(SRCDIR)/memFile.h $(SRCDIR)/memFile_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/memFile_object.o
-
-$(OBJDIR)/memFile_object.o: $(SRCDIR)/memFile_object.c $(SRCDIR)/memFile.h $(SRCDIR)/memFile_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/memMac64.o
@@ -2247,6 +2257,12 @@ False_test: $(TEST_SRC)/False_test.c $(SRCDIR)/False.h $(SRCDIR)/False_internal.
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += FileIO_test
+
+FileIO_test: $(TEST_SRC)/FileIO_test.c $(SRCDIR)/FileIO.h $(SRCDIR)/FileIO_internal.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += FileRef_test
 
 FileRef_test: $(TEST_SRC)/FileRef_test.c $(SRCDIR)/FileRef.h $(SRCDIR)/FileRef_internal.h $(SRCDIR)/AStrC.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
@@ -2577,6 +2593,12 @@ Path_test: $(TEST_SRC)/Path_test.c $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += RRDS_test
+
+RRDS_test: $(TEST_SRC)/RRDS_test.c $(SRCDIR)/RRDS.h $(SRCDIR)/RRDS_internal.h $(SRCDIR)/FileIO.h $(SRCDIR)/Path.h $(SRCDIR)/lru.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += RpgBase_test
 
 RpgBase_test: $(TEST_SRC)/RpgBase_test.c $(SRCDIR)/RpgBase.h $(SRCDIR)/RpgBase_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2829,6 +2851,18 @@ block32_test: $(TEST_SRC)/block32_test.c $(SRCDIR)/block32.h $(SRCDIR)/block32_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
+TESTS += bpt32_test
+
+bpt32_test: $(TEST_SRC)/bpt32_test.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += bpt32lf_test
+
+bpt32lf_test: $(TEST_SRC)/bpt32lf_test.c $(SRCDIR)/bpt32lf.h $(SRCDIR)/bpt32lf_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
 TESTS += cb16_test
 
 cb16_test: $(TEST_SRC)/cb16_test.c $(SRCDIR)/cb16.h $(SRCDIR)/cb16_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2919,12 +2953,6 @@ fbso_test: $(TEST_SRC)/fbso_test.c $(SRCDIR)/fbso.h $(SRCDIR)/fbso_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += fileio_test
-
-fileio_test: $(TEST_SRC)/fileio_test.c $(SRCDIR)/fileio.h $(SRCDIR)/fileio_internal.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += genObj_test
 
 genObj_test: $(TEST_SRC)/genObj_test.c $(SRCDIR)/genObj.h $(SRCDIR)/genObj_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2958,18 +2986,6 @@ listdl_test: $(TEST_SRC)/listdl_test.c $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h
 TESTS += lru_test
 
 lru_test: $(TEST_SRC)/lru_test.c $(SRCDIR)/lru.h $(SRCDIR)/lru_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += md5ChkSum_test
-
-md5ChkSum_test: $(TEST_SRC)/md5ChkSum_test.c $(SRCDIR)/md5ChkSum.h $(SRCDIR)/md5ChkSum_internal.h $(SRCDIR)/md5_plumb.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += memFile_test
-
-memFile_test: $(TEST_SRC)/memFile_test.c $(SRCDIR)/memFile.h $(SRCDIR)/memFile_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

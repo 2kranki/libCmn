@@ -237,8 +237,273 @@ int             test_RRDS_Test01 (
 
 
 
+int         test_RRDS_Read01(
+    const
+    char        *pTestName
+)
+{
+    RRDS_DATA     *pDS80;
+    uint32_t        i;
+    //bool            fRc;
+    const
+    char            *pPathA    = TEST_FILES_DIR "/regequ.asm.txt";
+    char            block[80]  = {0};
+    char            block2[80] = {0};
+    uint32_t        numRcds = 19;
+    uint32_t        cBlock;
+    char            *pBlock;
+    ERESULT         eRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    DATETIME_DATA   *pTime = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pTime = DateTime_NewCurrent();
+    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+
+    pPath = Path_NewA(pPathA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
+
+    pDS80 = RRDS_New();
+    XCTAssertFalse( (NULL == pDS80));
+    XCTAssertTrue( (80 == RRDS_getRecordSize(pDS80)));
+#if defined(__MACOSX_ENV__)
+    fprintf(stderr, "\tRecordSize = %d\n",  pDS80->recordSize);
+    XCTAssertTrue( (81 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    XCTAssertTrue( (82 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_CRNL == pDS80->recordTerm));
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
+    XCTAssertTrue( (81 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
+#endif
+
+    eRc = RRDS_SetupSizes(pDS80, 80, RRDS_RCD_TRM_NL, 1, 11);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+
+    eRc = RRDS_Open(pDS80, pPath, false);
+    if (ERESULT_FAILED(eRc)) {
+        fprintf(stderr, "\tFailed eRc = %d\n", eRc);
+    }
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    fprintf(stderr, "\trecordSize = %d\n", RRDS_getRecordSize(pDS80));
+    fprintf(stderr, "\tnumRecords = %d\n", RRDS_getSize(pDS80));
+    XCTAssertTrue( (80 == RRDS_getRecordSize(pDS80)));
+#if defined(__MACOSX_ENV__)
+    XCTAssertTrue( (81 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    XCTAssertTrue( (82 == pDS80->recordSize));
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
+    XCTAssertTrue( (81 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
+#endif
+    XCTAssertTrue( (19 == RRDS_getSize(pDS80)));
+
+    for (i=0; i<numRcds; ++i) {
+        cBlock = 80;
+        pBlock = block;
+        //dec_putInt32A( i, &cBlock, &pBlock );
+        //eRc = RRDS_RecordWrite(cbp, i+1, block);
+        //STAssertTrue( (fRc), @"RRDS_BlockWrite failed!" );
+        eRc = RRDS_RecordRead(pDS80, i+1, (uint8_t *)block2);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        fprintf(stderr, "\t%3d = \"%s\"\n", i+1, block2);
+        //XCTAssertTrue( (0 == memcmp(block, block2, 80)) );
+    }
+
+    eRc = RRDS_Close(pDS80, false);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+
+    obj_Release(pDS80);
+    pDS80 = OBJ_NIL;
+
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    obj_Release(pTime);
+    pTime = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_RRDS_Read02(
+    const
+    char        *pTestName
+)
+{
+    RRDS_DATA     *pDS80;
+    uint32_t        i;
+    //bool            fRc;
+    const
+    char            *pPathA    = TEST_FILES_DIR "/mvsobj.object360";
+    uint8_t         block[80]  = {0};
+    uint8_t         block2[80] = {0};
+    uint32_t        numRcds = 19;
+    uint32_t        cBlock;
+    uint8_t         *pBlock;
+    ERESULT         eRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    DATETIME_DATA   *pTime = OBJ_NIL;
+    //ASTR_DATA       *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pTime = DateTime_NewCurrent();
+    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+
+    pPath = Path_NewA(pPathA);
+    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
+
+    pDS80 = RRDS_New();
+    XCTAssertFalse( (NULL == pDS80));
+    XCTAssertTrue( (80 == RRDS_getRecordSize(pDS80)));
+#if defined(__MACOSX_ENV__)
+    fprintf(stderr, "\tRecordSize = %d\n",  pDS80->recordSize);
+    XCTAssertTrue( (81 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+    XCTAssertTrue( (82 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_CRNL == pDS80->recordTerm));
+#endif
+#if defined(__PIC32MX_TNEO_ENV__)
+    XCTAssertTrue( (81 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
+#endif
+
+    eRc = RRDS_SetupSizes(pDS80, 80, RRDS_RCD_TRM_NL, 1, 11);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+
+    eRc = RRDS_Open(pDS80, pPath, false);
+    if (ERESULT_FAILED(eRc)) {
+        fprintf(stderr, "\tFailed eRc = %d\n", eRc);
+    }
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    fprintf(stderr, "\trecordSize = %d\n", RRDS_getRecordSize(pDS80));
+    fprintf(stderr, "\tnumRecords = %d\n", RRDS_getSize(pDS80));
+    XCTAssertTrue( (80 == RRDS_getRecordSize(pDS80)));
+    XCTAssertTrue( (80 == pDS80->recordSize));
+    XCTAssertTrue( (RRDS_RCD_TRM_NONE == pDS80->recordTerm));
+    XCTAssertTrue( (48 == RRDS_getSize(pDS80)));
+
+    eRc = RRDS_RecordRead(pDS80, 1, (uint8_t *)block2);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    XCTAssertTrue( (block2[0] == 0x02) );
+    XCTAssertTrue( (block2[1] == 0xC5) );
+    XCTAssertTrue( (block2[2] == 0xE2) );
+    XCTAssertTrue( (block2[3] == 0xC4) );
+
+    eRc = RRDS_RecordRead(pDS80, 2, (uint8_t *)block2);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    XCTAssertTrue( (block2[0] == 0x02) );
+    XCTAssertTrue( (block2[1] == 0xC5) );
+    XCTAssertTrue( (block2[2] == 0xE2) );
+    XCTAssertTrue( (block2[3] == 0xC4) );
+
+    eRc = RRDS_RecordRead(pDS80, 3, (uint8_t *)block2);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    XCTAssertTrue( (block2[0] == 0x02) );
+    XCTAssertTrue( (block2[1] == 0xC5) );
+    XCTAssertTrue( (block2[2] == 0xE2) );
+    XCTAssertTrue( (block2[3] == 0xC4) );
+
+    eRc = RRDS_RecordRead(pDS80, 4, (uint8_t *)block2);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+    XCTAssertTrue( (block2[0] == 0x02) );
+    XCTAssertTrue( (block2[1] == 0xE3) );
+    XCTAssertTrue( (block2[2] == 0xE7) );
+    XCTAssertTrue( (block2[3] == 0xE3) );
+
+    eRc = RRDS_Close(pDS80, false);
+    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+
+    obj_Release(pDS80);
+    pDS80 = OBJ_NIL;
+
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    obj_Release(pTime);
+    pTime = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int             test_RRDS_Insert01(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    RRDS_DATA       *pObj = OBJ_NIL;
+    //uint32_t        i;
+    //uint32_t        index;
+    uint8_t         data[8];
+    uint8_t         *pData = data;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = RRDS_New( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        eRc = RRDS_SetupSizes(pObj, 8, RRDS_RCD_TRM_NONE, 1, 11);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        // Create a memory-based file.
+        eRc = RRDS_Create(pObj, OBJ_NIL, true);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "\tFailed eRc = %d\n", eRc);
+        }
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        RRDS_setFillChar(pObj, '1');
+
+        str_Copy((char *)data, sizeof(data), "2222222");
+        eRc = RRDS_RecordWrite(pObj, 2, pData);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+
+        str_Copy((char *)data, sizeof(data), "0000000");
+        eRc = RRDS_RecordRead(pObj, 1, pData);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE((0 == strncmp((char *)pData, "11111111", 8)));
+
+        str_Copy((char *)data, sizeof(data), "0000000");
+        pData = data;
+        eRc = RRDS_RecordRead(pObj, 2, pData);
+        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TINYTEST_TRUE((0 == strcmp((char *)pData, "2222222")));
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_RRDS);
+    TINYTEST_ADD_TEST(test_RRDS_Insert01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_RRDS_Read02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_RRDS_Read01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_RRDS_Test01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_RRDS_Copy01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_RRDS_OpenClose,setUp,tearDown);
