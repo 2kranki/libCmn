@@ -180,7 +180,7 @@ extern "C" {
     /*!
      Create a new name from a UTF-8 character string.  The character string
      is copied into the new object and then released upon object deletion.
-     @param     pValue  pointer to a NUL-terminated UTF-8 Character String.
+     @param     pValueA pointer to a NUL-terminated UTF-8 Character String.
      @return    If successful, a new name object which must be released,
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned object when you are done
@@ -188,7 +188,7 @@ extern "C" {
      */
     NAME_DATA *     Name_NewUTF8 (
         const
-        char            *pValue
+        char            *pValueA
     );
 
 

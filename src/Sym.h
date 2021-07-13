@@ -1,16 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SYM Console Transmit Task (Sym) Header
+//          Symbol Table Entry (Sym) Header
 //****************************************************************
 /*
  * Program
- *			Separate Sym (Sym)
+ *			Symbol Table Entry (Sym)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate Sym to run things without complications
- *          of interfering with the main Sym. A Sym may be 
- *          called a Sym on other O/S's.
+ *			This object provides a standardized Symbol Table Entry.
  *
  * Remarks
  *	1.      None
@@ -701,6 +698,13 @@ extern "C" {
     ERESULT         Sym_Compare (
         SYM_DATA        *this,
         SYM_DATA        *pOther
+    );
+
+    int             Sym_CompareA (
+        SYM_DATA        *this,
+        int32_t         cls,
+        const
+        char            *pNameA
     );
 
 

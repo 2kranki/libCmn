@@ -526,7 +526,7 @@ void * 			listdl_Index(
 		return( NULL );
 
 	// Return to caller.
-	return( Node2Ptr( pNode ) );
+	return Node2Ptr(pNode);
 }
 
 

@@ -490,8 +490,90 @@ int         test_ObjList_Json01(
 
 
 
+int         test_ObjList_Sort01(
+    const
+    char        *pTestName
+)
+{
+    OBJLIST_DATA    *pObj = OBJ_NIL;
+    NAME_DATA       *pNameA = OBJ_NIL;
+    NAME_DATA       *pNameB = OBJ_NIL;
+    NAME_DATA       *pNameC = OBJ_NIL;
+    NAME_DATA       *pNameD = OBJ_NIL;
+    NAME_DATA       *pNameE = OBJ_NIL;
+    ERESULT         eRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    NAME_DATA       *pEntry;
+    int             i;
+    int             iMax;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = ObjList_Alloc( );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    pObj = ObjList_Init( pObj );
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pNameA = Name_NewUTF8("A");
+        XCTAssertFalse( (OBJ_NIL == pNameA) );
+        pNameB = Name_NewUTF8("B");
+        XCTAssertFalse( (OBJ_NIL == pNameB) );
+        pNameC = Name_NewUTF8("C");
+        XCTAssertFalse( (OBJ_NIL == pNameC) );
+        pNameD = Name_NewUTF8("D");
+        XCTAssertFalse( (OBJ_NIL == pNameD) );
+        pNameE = Name_NewUTF8("E");
+        XCTAssertFalse( (OBJ_NIL == pNameE) );
+
+        eRc = ObjList_Add2Head(pObj, pNameC);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = ObjList_Add2Head(pObj, pNameB);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = ObjList_Add2Head(pObj, pNameA);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = ObjList_Add2Head(pObj, pNameE);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        eRc = ObjList_Add2Head(pObj, pNameD);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+
+        eRc = ObjList_SortAscending(pObj);
+
+        fprintf(stderr, "Number of elements = %d\n", ObjList_getSize(pObj));
+        iMax = ObjList_getSize(pObj);
+        for (i=0; i<iMax; i++) {
+            char        *pNameA;
+            pEntry = ObjList_Index(pObj, i+1);
+            pNameA = Name_getUTF8(pEntry);
+            fprintf(stderr, "\t%2d - %s\n", i+1, pNameA);
+            mem_Free(pNameA);
+        }
+
+        obj_Release(pNameE);
+        pNameE = OBJ_NIL;
+        obj_Release(pNameD);
+        pNameD = OBJ_NIL;
+        obj_Release(pNameC);
+        pNameC = OBJ_NIL;
+        obj_Release(pNameB);
+        pNameB = OBJ_NIL;
+        obj_Release(pNameA);
+        pNameA = OBJ_NIL;
+
+        XCTAssertTrue( (obj_IsFlag(pObj, OBJ_FLAG_ALLOC)) );
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_ObjList);
+    TINYTEST_ADD_TEST(test_ObjList_Sort01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_ObjList_Json01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_ObjList_Shift,setUp,tearDown);
     TINYTEST_ADD_TEST(test_ObjList_BasicList01,setUp,tearDown);

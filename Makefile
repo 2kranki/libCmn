@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 7/11/2021 22:26:25.000)
+# ( 7/13/2021 23:05:42.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1282,6 +1282,21 @@ $(OBJDIR)/SrcLoc_object.o: $(SRCDIR)/SrcLoc_object.c $(SRCDIR)/SrcLoc.h $(SRCDIR
 OBJS += $(OBJDIR)/Sym.o
 
 $(OBJDIR)/Sym.o: $(SRCDIR)/Sym.c $(SRCDIR)/Sym.h $(SRCDIR)/Sym_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SymList.o
+
+$(OBJDIR)/SymList.o: $(SRCDIR)/SymList.c $(SRCDIR)/SymList.h $(SRCDIR)/SymList_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SymList_json.o
+
+$(OBJDIR)/SymList_json.o: $(SRCDIR)/SymList_json.c $(SRCDIR)/SymList.h $(SRCDIR)/SymList_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/SymList_object.o
+
+$(OBJDIR)/SymList_object.o: $(SRCDIR)/SymList_object.c $(SRCDIR)/SymList.h $(SRCDIR)/SymList_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Sym_json.o
@@ -2710,6 +2725,12 @@ SrcFiles_test: $(TEST_SRC)/SrcFiles_test.c $(SRCDIR)/SrcFiles.h $(SRCDIR)/SrcFil
 TESTS += SrcLoc_test
 
 SrcLoc_test: $(TEST_SRC)/SrcLoc_test.c $(SRCDIR)/SrcLoc.h $(SRCDIR)/SrcLoc_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += SymList_test
+
+SymList_test: $(TEST_SRC)/SymList_test.c $(SRCDIR)/SymList.h $(SRCDIR)/SymList_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

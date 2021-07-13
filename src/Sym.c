@@ -1925,7 +1925,48 @@ extern "C" {
     }
     
    
- 
+    int             Sym_CompareA (
+        SYM_DATA        *this,
+        int32_t         cls,
+        const
+        char            *pNameA
+    )
+    {
+        int             i = 0;
+
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
+        }
+#endif
+
+        if (0 == cls) {
+            i = utf8_StrCmp(this->entry.name, pNameA);
+        }
+        else {
+            i = this->entry.cls - cls;
+            if (0 == i) {
+                i = utf8_StrCmp(this->entry.name, pNameA);
+            }
+            if (i < 0)
+                i = -1;
+            else if (i > 0)
+                i = 1;
+        }
+
+        return i;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------

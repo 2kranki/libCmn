@@ -1164,7 +1164,7 @@ extern "C" {
          NODE_DATA      *this,
          int32_t        cls,
          const
-         char           *pName
+         char           *pNameA
      )
      {
          int            i = -1;
@@ -1177,7 +1177,7 @@ extern "C" {
              //return ERESULT_INVALID_OBJECT;
              return -2;
          }
-         if (NULL == pName) {
+         if (NULL == pNameA) {
              DEBUG_BREAK();
              //return ERESULT_INVALID_PARAMETER;
              return -2;
@@ -1185,12 +1185,12 @@ extern "C" {
  #endif
 
          if (0 == cls) {
-             i = Name_CompareA(this->pName, pName);
+             i = Name_CompareA(this->pName, pNameA);
          }
          else {
              i = Node_getClass(this) - cls;
              if (0 == i) {
-                 i = Name_CompareA(this->pName, pName);
+                 i = Name_CompareA(this->pName, pNameA);
              }
              if (i < 0)
                  i = -1;

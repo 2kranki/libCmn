@@ -533,8 +533,10 @@ extern "C" {
         OBJ_IDENT_SRCLOC_CLASS,
         OBJ_IDENT_SRECORDS,             // S-Record Reader/Writer
         OBJ_IDENT_SRECORDS_CLASS,
-        OBJ_IDENT_SYM,                  // Symbol Entry
+        OBJ_IDENT_SYM,                  // Symbol Table Entry
         OBJ_IDENT_SYM_CLASS,
+        OBJ_IDENT_SYMLIST,              // List of Symbol Table Entries
+        OBJ_IDENT_SYMLIST_CLASS,
         OBJ_IDENT_SYMS,                 // Symbol Table
         OBJ_IDENT_SYMS_CLASS,
         OBJ_IDENT_SZBT,                 // Static String Binary Tree

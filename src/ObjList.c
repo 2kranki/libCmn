@@ -95,16 +95,18 @@ OBJLIST_RECORD * ObjList_FindObj (
 
 static
 int             ObjList_SortCompare (
-    OBJ_ID          pNode1,
-    OBJ_ID          pNode2
+    OBJLIST_RECORD  *pNode1,
+    OBJLIST_RECORD  *pNode2
 )
 {
     int             iRc;
-    P_OBJ_COMPARE   pCompare = obj_getVtbl(pNode1)->pCompare;
+    OBJ_ID          pObj1 = pNode1->pObject;
+    OBJ_ID          pObj2 = pNode2->pObject;
+    P_OBJ_COMPARE   pCompare = obj_getVtbl(pObj1)->pCompare;
     
     if (NULL == pCompare)
         return -1;
-    iRc = pCompare(pNode1, pNode2);
+    iRc = pCompare(pObj1, pObj2);
 
     // Return to caller.
     return iRc;

@@ -6,6 +6,14 @@ will depend upon time and resources.
 -- grep -rn --include="*.c" "ERESULT_SUCCESS_GREATER_THAN" .
 -- grep -rn --include="*.c" "ERESULT_SUCCESS_LESS_THAN" .
 
+-- Finish Net* to create a web server.
+    * Net
+    * NetHTTP
+    * NetHTTPA
+    * NetHTTPR
+    * NetIO
+    * NetMime
+
 -- Finish mkAll.
 
 -- Finish "Consumer" object w/testing.
