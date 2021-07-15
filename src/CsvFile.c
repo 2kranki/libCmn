@@ -80,6 +80,7 @@ extern "C" {
         TOKEN_DATA      *pToken;
         W32CHR_T        chr;
         bool            fRc;
+        uint16_t        col;
 
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -90,8 +91,9 @@ extern "C" {
 #endif
 
         pToken = SrcFile_InputLookAhead(this->pSrc, 1);
+        col = Token_getColNo(pToken);
         chr = Token_getChrW32(pToken);
-        if (chr == '#') {
+        if ((chr == '#') && (1 == col)) {
             SrcFile_InputAdvance(this->pSrc, 1);
             this->lenFld = 0;
             while (!(fRc = CsvFile_ParseCRLF(this))) {
@@ -345,32 +347,6 @@ extern "C" {
             );
             return OBJ_NIL;
         }
-
-#ifdef xyzzy
-        pRecord = CsvFile_ParseRecord(this);
-        if (pRecord == OBJ_NIL) {
-            return OBJ_NIL;
-        }
-        ++recordNo;
-        fRc = true;
-        if (this->pRecordProcess) {
-            fRc = this->pRecordProcess(this->pRecordData, pRecord);
-        }
-        if (fRc) {
-            eRc = ObjArray_AppendObj(pRecords, pRecord, NULL);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                TOKEN_DATA      *pToken;
-                pToken = SrcFile_InputLookAhead(this->pSrc, 1);
-                SrcErrors_AddFatalFromTokenA(
-                    OBJ_NIL,
-                    pToken,
-                    "Could not save record"
-                );
-            }
-        }
-        obj_Release(pRecord);
-        pRecord = OBJ_NIL;
-#endif
 
         for (;;) {
             if (CsvFile_ParseEOF(this)) {

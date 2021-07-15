@@ -1217,7 +1217,7 @@ int         test_w32str_JSON01(
     XCTAssertTrue( (0 == W32Str_CompareA(pObj, "abc")) );
     if (pObj) {
         
-        pJson = W32Str_ToJSON(pObj);
+        pJson = W32Str_ToJson(pObj);
         fprintf(stderr, "\tJSON(\"abc\") = %s\n", AStr_getData(pJson));
         pJsonOut = W32Str_NewFromJSONString(pJson);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );
@@ -1242,7 +1242,7 @@ int         test_w32str_JSON01(
     XCTAssertTrue( (0 == W32Str_CompareA(pObj, "")) );
     if (pObj) {
         
-        pJson = W32Str_ToJSON(pObj);
+        pJson = W32Str_ToJson(pObj);
         fprintf(stderr, "\tJSON(\"\") = %s\n", AStr_getData(pJson));
         pJsonOut = W32Str_NewFromJSONString(pJson);
         XCTAssertFalse( (ERESULT_FAILED(eRc)) );

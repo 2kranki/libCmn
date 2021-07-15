@@ -49,6 +49,7 @@
 #include    <dec.h>
 #include    <hex.h>
 #include    <JsonIn.h>
+#include    <JsonOut.h>
 #include    <Node.h>
 #include    <NodeArray.h>
 #include    <NodeHash.h>
@@ -70,42 +71,80 @@ extern "C" {
      * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
      ****************************************************************/
     
-    void            W32Str_Int64ToChrClean(
-        int64_t         num,
-        char            *pBuffer
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT     W32Str_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        W32STR_DATA     *pObject
     )
     {
-        char            data[32];
-        int             i;
-        
-        dec_Int64ToChr(num, data);
-        
-        // Now output string without leading zeroes.
-        *pBuffer++ = data[0];       // Sign
-        for (i=1; i<21; ++i) {
-            if (data[i] && (data[i] == '0')) {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        //NODE_DATA       *pNode = OBJ_NIL;
+        //NODEARRAY_DATA  *pArray = OBJ_NIL;
+        //NODEHASH_DATA   *pHash = OBJ_NIL;
+        //uint32_t        i;
+        //uint32_t        iMax;
+        //int64_t         intIn;
+        ASTR_DATA       *pWrk;
+        //uint8_t         *pData;
+        uint32_t        len = 0;
+        uint32_t        crc = 0;
+        W32CHR_T        ch;
+        const
+        char            *pSrc;
+        uint32_t        i;
+
+        (void)JsonIn_FindU32NodeInHashA(pParser, "crc", &crc);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "len", &len);
+
+        if (len) {
+            eRc = JsonIn_FindStrNodeInHashA(pParser, "data", &pWrk);
+            pSrc = AStr_getData(pWrk);
+            for (i=0; i<len; ++i) {
+                ch = utf8_ChrConToW32_Scan(&pSrc);
+                W32Str_AppendW32(pObject, 1, &ch);
             }
-            else {
-                break;
+            if (!(crc == W32Str_getCrcIEEE(pObject))) {
+                return ERESULT_DATA_ERROR;
             }
         }
-        for (; i<22; ++i) {
-            if (data[i]) {
-                *pBuffer++ = data[i];
+
+#ifdef XYZZZY
+        (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
+        (void)JsonIn_FindU32NodeInHashA(pParser, "attr", &pObject->attr);
+        (void)JsonIn_FindIntegerNodeInHashA(pParser, "fileSize", &pObject->fileSize); //i64
+
+        eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
+        eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
+        if (ERESULT_OK(eRc)) {
+            pWrk = AStr_ParseJsonObject(pParser);
+            if (pWrk) {
+                pObject->pErrorStr = pWrk;
             }
+            JsonIn_SubObjectEnd(pParser);
         }
-        *pBuffer++ = '\0';
+#endif
+
+        // Return to caller.
+    exit00:
+        return eRc;
     }
-    
-    
+
+
 
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
-     @return    a new null object if successful, otherwise, OBJ_NIL
-     @warning   Returned null object must be released.
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
      */
-    W32STR_DATA *   W32Str_ParseObject(
+    W32STR_DATA *   W32Str_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
@@ -113,59 +152,36 @@ extern "C" {
         W32STR_DATA     *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
-        uint32_t        crc = 0;
-        uint32_t        length = 0;
-        uint32_t        i;
-        W32CHR_T        ch;
-        const
-        char            *pSrc;
-        ASTR_DATA       *pWrk;
-        int64_t         intIn;
+        //int64_t         intIn;
+        //ASTR_DATA       *pWrk;
+
+        JsonIn_RegisterClass(W32Str_Class());
 
         pInfo = obj_getInfo(W32Str_Class());
-        
         eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
-        
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "crc", &intIn);
-        crc = (uint32_t)intIn;
-        
-        eRc = JsonIn_FindIntegerNodeInHashA(pParser, "len", &intIn);
-        length = (uint32_t)intIn;
-        
 
-        pObject = W32Str_New();
+        pObject = W32Str_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
-        
-        if (length && pObject) {
-            eRc = JsonIn_FindStrNodeInHashA(pParser, "data", &pWrk);
-            pSrc = AStr_getData(pWrk);
-            for (i=0; i<length; ++i) {
-                ch = utf8_ChrConToW32_Scan(&pSrc);
-                W32Str_AppendW32(pObject, 1, &ch);
-            }
-            if (!(crc == W32Str_getCrcIEEE(pObject))) {
-                obj_Release(pObject);
-                pObject = OBJ_NIL;
-            }
+
+        eRc =  W32Str_ParseJsonFields(pParser, pObject);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pObject);
+            pObject = OBJ_NIL;
         }
-        
+
         // Return to caller.
     exit00:
-        if (pParser) {
-            obj_Release(pParser);
-            pParser = OBJ_NIL;
-        }
         return pObject;
     }
-    
-    
-    
+
+
+
 
     
     
@@ -193,7 +209,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = W32Str_ParseObject(pParser);
+        pObject = W32Str_ParseJsonObject(pParser);
         
         
         // Return to caller.
@@ -228,15 +244,79 @@ extern "C" {
     
     
     
-    ASTR_DATA *     W32Str_ToJSON(
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = W32Str_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     W32Str_ToJson (
         W32STR_DATA     *this
     )
     {
-        char            str[16];
-        uint32_t        i;
         ASTR_DATA       *pStr;
         const
         OBJ_INFO        *pInfo;
+        ERESULT         eRc;
+
+#ifdef NDEBUG
+#else
+        if( !W32Str_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pInfo = obj_getInfo(this);
+
+        pStr = AStr_New();
+        if (pStr) {
+             AStr_AppendPrint(pStr,
+                              "{ \"objectType\":\"%s\",\n",
+                              pInfo->pClassName
+             );
+
+            eRc = W32Str_ToJsonFields(this, pStr);
+
+            AStr_AppendPrint(pStr, "}\t/* %s */\n", pInfo->pClassName);
+        }
+
+        return pStr;
+    }
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         W32Str_ToJsonFields (
+        W32STR_DATA     *this,
+        ASTR_DATA       *pStr
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+#ifdef XYZZZY
+        void *          (*pQueryInfo)(
+            OBJ_ID          objId,
+            uint32_t        type,
+            void            *pData
+        );
+        ASTR_DATA *     (*pToJson)(
+            OBJ_ID          objId
+        );
+        ASTR_DATA       *pWrkStr;
+#endif
         const
         char            *pChr;
         uint32_t        crc = 0;
@@ -245,29 +325,15 @@ extern "C" {
         uint32_t        len;
         const
         char            *pData;
-
-#ifdef NDEBUG
-#else
-        if( !W32Str_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = W32Str_Vtbl.iVtbl.pInfo;
-        pData  = array_Ptr((ARRAY_DATA *)this, 1);
-
-        pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            return OBJ_NIL;
-        }
-        AStr_AppendPrint(pStr, "{\"objectType\":\"%s\"", pInfo->pClassName);
+        char            str[16];
+        uint32_t        i;
 
         crc = W32Str_getCrcIEEE(this);
-        AStr_AppendPrint(pStr, ", \"crc\":%u", crc);
-        
+        JsonOut_Append_u32("crc", crc, pStr);
+
+        pData  = array_Ptr((ARRAY_DATA *)this, 1);
         len = array_getSize((ARRAY_DATA *)this) - 1;
-        AStr_AppendPrint(pStr, ", \"len\":%u", len);
+        JsonOut_Append_u32("len", len, pStr);
         if (len) {
             AStr_AppendA(pStr, ", \"data\":\"");
             pChr = pData;
@@ -282,14 +348,23 @@ extern "C" {
         else {
             AStr_AppendA(pStr, ", \"data\":null ");
         }
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        return pStr;
+
+#ifdef XYZZZY
+        JsonOut_Append_i32("x", this->x, pStr);
+        JsonOut_Append_i64("t", this->t, pStr);
+        JsonOut_Append_u32("o", this->o, pStr);
+        JsonOut_Append_utf8("n", pEntry->pN, pStr);
+        JsonOut_Append_Object("e", this->pE, pStr);
+        JsonOut_Append_AStr("d", this->pAStr, pStr);
+        JsonOut_Append_StrA("d", this->pStrA, pStr);
+        JsonOut_Append_StrW32("d", this->pStrW32, pStr);
+#endif
+
+        return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
 
     
     

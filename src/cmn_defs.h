@@ -609,10 +609,10 @@ extern "C" {
         OBJ_IDENT_VISITOR_CLASS,
         OBJ_IDENT_WAV,                  // WAV File
         OBJ_IDENT_WAV_CLASS,
+        OBJ_IDENT_W32ARRAY,             // an Array of W32Str(s)
+        OBJ_IDENT_W32ARRAY_CLASS,
         OBJ_IDENT_W32STR,
         OBJ_IDENT_W32STR_CLASS,
-        OBJ_IDENT_W32STRARRAY,          // an Array of Wide Strings
-        OBJ_IDENT_W32STRARRAY_CLASS,
         OBJ_IDENT_W32STRC,
         OBJ_IDENT_W32STRC_CLASS,
         OBJ_IDENT_W32_READER,           // UTF-32 Reader

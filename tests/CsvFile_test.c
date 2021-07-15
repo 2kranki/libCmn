@@ -23,6 +23,7 @@
 
 
 #include    <tinytest.h>
+#include    <test_defs.h>
 #include    <cmn_defs.h>
 #include    <JsonIn.h>
 #include    <trace.h>
@@ -394,7 +395,7 @@ int         test_CsvFile_Input03(
 
 
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pPath = Path_NewA("/Users/bob/Support/testFiles/csv_e360_opcodes.txt");
+    pPath = Path_NewA(TEST_FILES_DIR "/csv_e360_opcodes.txt");
     XCTAssertFalse( (OBJ_NIL == pPath) );
     eRc = Path_IsFile(pPath);
     if (ERESULT_FAILED(eRc)) {
@@ -425,7 +426,7 @@ int         test_CsvFile_Input03(
                                     i,
                                     j,
                                     AStr_getData(pField)
-                                    );
+                            );
                         }
                     }
 

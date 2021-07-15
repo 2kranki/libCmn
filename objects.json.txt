@@ -246,7 +246,8 @@
         {name:"Value",      desc:"Generic Value (Multiple Types Supported)", json:true},
         {name:"ValueArray", desc:"An Array of Value Objects", json:true},
         {name:"Visitor"},
-        {name:"W32Str",     desc:"Mutable 32-bit String", json:true},
+        {name:"W32Array",   desc:"An Array of W32Str(s)", json:true},
+        {name:"W32Str",     desc:"Mutable Wide (W32CHR_T) NUL-terminated String", json:true},
         {name:"W32StrC",    desc:"Constant 32-bit String", json:true},
     ],
 

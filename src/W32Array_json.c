@@ -1,8 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   AStrArray_json.c
+ * File:   W32Array_json.c
  *
- *  Generated 04/11/2021 10:41:38
+ *  Generated 07/15/2021 10:35:28
  *
  */
 
@@ -42,7 +42,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <AStrArray_internal.h>
+#include    <W32Array_internal.h>
+#include    <ObjArray_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -79,9 +80,9 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     AStrArray_ParseJsonFields (
+    ERESULT     W32Array_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        ASTRARRAY_DATA     *pObject
+        W32ARRAY_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -108,11 +109,13 @@ extern "C" {
 
         eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
         eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
-        pWrk = AStr_ParseJsonObject(pParser);
-        if (pWrk) {
-            pObject->pErrorStr = pWrk;
+        if (ERESULT_OK(eRc)) {
+            pWrk = AStr_ParseJsonObject(pParser);
+            if (pWrk) {
+                pObject->pErrorStr = pWrk;
+            }
+            JsonIn_SubObjectEnd(pParser);
         }
-        JsonIn_SubObjectEnd(pParser);
 #endif
 
         // Return to caller.
@@ -128,32 +131,32 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    ASTRARRAY_DATA * AStrArray_ParseJsonObject (
+    W32ARRAY_DATA * W32Array_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        ASTRARRAY_DATA   *pObject = OBJ_NIL;
+        W32ARRAY_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        JsonIn_RegisterClass(AStrArray_Class());
+        JsonIn_RegisterClass(W32Array_Class());
 
-        pInfo = obj_getInfo(AStrArray_Class());
+        pInfo = obj_getInfo(W32Array_Class());
         eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
 
-        pObject = AStrArray_New( );
+        pObject = W32Array_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  AStrArray_ParseJsonFields(pParser, pObject);
+        eRc =  W32Array_ParseJsonFields(pParser, pObject);
 
         // Return to caller.
     exit00:
@@ -175,13 +178,13 @@ extern "C" {
     //===============================================================
     
 
-    ASTRARRAY_DATA *   AStrArray_NewFromJsonString (
+    W32ARRAY_DATA *   W32Array_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        ASTRARRAY_DATA   *pObject = OBJ_NIL;
+        W32ARRAY_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -190,7 +193,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = AStrArray_ParseJsonObject(pParser);
+        pObject = W32Array_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -203,17 +206,17 @@ extern "C" {
     
     
 
-    ASTRARRAY_DATA * AStrArray_NewFromJsonStringA (
+    W32ARRAY_DATA * W32Array_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        ASTRARRAY_DATA   *pObject = OBJ_NIL;
+        W32ARRAY_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = AStrArray_NewFromJsonString(pStr);
+            pObject = W32Array_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -229,7 +232,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = AStrArray_ToJson(this);
+     ASTR_DATA      *pDesc = W32Array_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -237,8 +240,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     AStrArray_ToJson (
-        ASTRARRAY_DATA   *this
+    ASTR_DATA *     W32Array_ToJson (
+        W32ARRAY_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -248,7 +251,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !AStrArray_Validate(this) ) {
+        if( !W32Array_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -262,9 +265,9 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = AStrArray_ToJsonFields(this, pStr);      
+            eRc = W32Array_ToJsonFields(this, pStr);      
 
-            AStr_AppendA(pStr, "}\n");
+            AStr_AppendPrint(pStr, "}\t/* %s */\n", pInfo->pClassName);
         }
 
         return pStr;
@@ -280,12 +283,12 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         AStrArray_ToJsonFields (
-        ASTRARRAY_DATA  *this,
+    ERESULT         W32Array_ToJsonFields (
+        W32ARRAY_DATA     *this,
         ASTR_DATA       *pStr
     )
     {
-        //ERESULT         eRc;
+        //ERESULT         eRc = ERESULT_SUCCESS;
 #ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
@@ -299,7 +302,6 @@ extern "C" {
 #endif
 
         JsonOut_Append_Object("array", this->pArray, pStr);
-        //eRc = ObjArray_ToJsonFields(this->pArray, pStr);
 
 #ifdef XYZZZY
         JsonOut_Append_i32("x", this->x, pStr);

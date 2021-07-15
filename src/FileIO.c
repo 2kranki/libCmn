@@ -1065,6 +1065,79 @@ extern "C" {
 
 
 
+    ERESULT         FileIO_GetsW32 (
+        FILEIO_DATA     *this,
+        uint32_t        cBuffer,
+        W32CHR_T        *pBuffer
+    )
+    {
+        ERESULT         eRc;
+        W32CHR_T        *pChr;
+        W32CHR_T        chr = 0;
+        uint32_t        amtRead;
+        off_t           fileOffset;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!FileIO_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (cBuffer > 1)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pBuffer) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        --cBuffer;                      // Allow for trailing NUL.
+
+        if (obj_Flag(this, FILEIO_MEM_BASED)) {
+            return ERESULT_NOT_IMPLEMENTED;
+        } else  {
+            pChr = pBuffer;
+            for (;;) {
+                if (--cBuffer == 0)
+                    break;
+                //TODO: chr = fgetwc();
+                eRc = FileIO_Read(this, 1, &chr, &amtRead);
+                if (ERESULT_FAILED(eRc)) {
+                    break;
+                }
+                if (!(1 == amtRead))
+                    break;
+                if (chr == '\n')
+                    break;
+                if (chr == '\r')
+                    break;
+                *pChr++ = chr;
+            }
+            *pChr++ = '\0';                 // Add trailing NUL.
+
+            // Remove '\r' '\n' or '\n' '\r' combination.
+            if ((chr == '\n') || (chr == '\r')) {
+                eRc = FileIO_Read(this, 1, &chr, &amtRead);
+                if (!ERESULT_FAILED(eRc) && (1 == amtRead)) {
+                    if ((chr == '\n') || (chr == '\r'))
+                        ;
+                    else {
+                        fileOffset = FileIO_SeekCur(this, -1);
+                    }
+                }
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------

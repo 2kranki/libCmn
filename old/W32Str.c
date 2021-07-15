@@ -2273,15 +2273,25 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
+                    case 'P':
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return W32Str_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return W32Str_ParseJsonObject;
+                        }
+                        break;
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return W32Str_ToDebugString;
                         }
-#ifdef XYZZY
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return W32Str_ToJSON;
+                            return W32Str_ToJson;
                         }
-#endif
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return W32Str_ToJsonFields;
+                        }
                         break;
                         
                     default:

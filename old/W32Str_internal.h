@@ -44,6 +44,7 @@
 
 #include        <W32Str.h>
 #include        <array_internal.h>
+#include        <JsonIn.h>
 #include        <Path.h>
 
 #ifdef	__cplusplus
@@ -75,6 +76,31 @@ struct W32Str_data_s	{
     );
 
     
+    /*!
+     Parse the object from an established parser.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT     W32Str_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        W32STR_DATA     *pObject
+    );
+
+
+    /*!
+     Parse the new object from an established parser.
+     @param pParser an established jsonIn Parser Object
+     @return    a new object if successful, otherwise, OBJ_NIL
+     @warning   Returned object must be released.
+     */
+    W32STR_DATA *   W32Str_ParseJsonObject (
+        JSONIN_DATA     *pParser
+    );
+
+
     void *          W32Str_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
@@ -82,6 +108,39 @@ struct W32Str_data_s	{
     );
 
     
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = W32Str_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
+                ERESULT_* error code.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     W32Str_ToJson (
+        W32STR_DATA     *this
+    );
+
+
+    /*!
+     Append the json representation of the object's fields to the given
+     string. This helps facilitate parsing the fields from an inheriting
+     object.
+     @param this        Object Pointer
+     @param pStr        String Pointer to be appended to.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         W32Str_ToJsonFields (
+        W32STR_DATA     *this,
+        ASTR_DATA       *pStr
+    );
+
+
 #ifdef NDEBUG
 #else
     bool			W32Str_Validate(

@@ -179,7 +179,7 @@ W32STR_VTBL   W32Str_Vtbl = {
         W32Str_Dealloc,
         W32Str_Class,
         W32Str_WhoAmI,
-        NULL,           // (P_OBJ_QUERYINFO)
+        (P_OBJ_QUERYINFO)W32Str_QueryInfo,
         (P_OBJ_TOSTRING)W32Str_ToDebugString,
         NULL,            // W32Str_Enable,
         NULL,            // W32Str_Disable,
@@ -202,7 +202,7 @@ W32STR_VTBL   W32Str_Vtbl = {
 static
 const
 OBJ_INFO        W32Str_Info = {
-    "WStr",
+    "W32Str",
     "Wide String (int32)",		
     (OBJ_DATA *)&W32Str_ClassObj,
     (OBJ_DATA *)&array_ClassObj

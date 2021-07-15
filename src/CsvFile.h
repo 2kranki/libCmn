@@ -16,6 +16,7 @@
  *              header : name {SEP name}
  *                     ;
  *              record : field {SEP field}
+                       | '#'(col 1) ... CRLF    // Comment Record which are ignored
  *                     ;
  *              name : field
  *                   ;

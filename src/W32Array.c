@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   AStrArray.c
- *  Generated 04/11/2021 10:41:38
+ * File:   W32Array.c
+ *  Generated 07/15/2021 10:35:28
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <AStrArray_internal.h>
+#include        <W32Array_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -66,11 +66,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            AStrArray_task_body (
+    void            W32Array_task_body (
         void            *pData
     )
     {
-        //ASTRARRAY_DATA  *this = pData;
+        //W32ARRAY_DATA  *this = pData;
         
     }
 #endif
@@ -86,12 +86,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    ASTRARRAY_DATA *     AStrArray_Alloc (
+    W32ARRAY_DATA *     W32Array_Alloc (
         void
     )
     {
-        ASTRARRAY_DATA       *this;
-        uint32_t        cbSize = sizeof(ASTRARRAY_DATA);
+        W32ARRAY_DATA       *this;
+        uint32_t        cbSize = sizeof(W32ARRAY_DATA);
         
         // Do initialization.
         
@@ -103,42 +103,50 @@ extern "C" {
 
 
 
-    ASTRARRAY_DATA *     AStrArray_New (
+    W32ARRAY_DATA * W32Array_New (
         void
     )
     {
-        ASTRARRAY_DATA       *this;
+        W32ARRAY_DATA   *this;
         
-        this = AStrArray_Alloc( );
+        this = W32Array_Alloc( );
         if (this) {
-            this = AStrArray_Init(this);
+            this = W32Array_Init(this);
         } 
         return this;
     }
 
 
-    ASTRARRAY_DATA *    AStrArray_NewFromArgV(
+
+    W32ARRAY_DATA * W32Array_NewFromArgV(
         int             cArgs,
         const
         char            *ppArgV[]
     )
     {
-        ASTRARRAY_DATA  *pArray = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
+        ERESULT         eRc;
+        W32ARRAY_DATA   *pArray = OBJ_NIL;
+        W32STR_DATA     *pStr = OBJ_NIL;
         int             i;
 
         if ((cArgs < 1) || (NULL == ppArgV)) {
             return OBJ_NIL;
         }
-        pArray = AStrArray_New( );
+        pArray = W32Array_New( );
         if (pArray) {
             for (i=0; i<cArgs; ++i) {
                 if (ppArgV[i]) {
-                    pStr = AStr_NewA(ppArgV[i]);
+                    pStr = W32Str_NewA(ppArgV[i]);
                     if (pStr) {
-                        AStrArray_AppendStr(pArray, pStr, NULL);
+                        eRc = W32Array_AppendStr(pArray, pStr, NULL);
                         obj_Release(pStr);
                         pStr = OBJ_NIL;
+                        if (ERESULT_FAILED(eRc)) {
+                            DEBUG_BREAK();
+                            obj_Release(pArray);
+                            pArray = OBJ_NIL;
+                            break;
+                        }
                     }
                     else {
                         obj_Release(pArray);
@@ -153,68 +161,6 @@ extern "C" {
     }
 
 
-    ASTRARRAY_DATA *    AStrArray_NewFromArrayA(
-        const
-        char            *ppArgV[]
-    )
-    {
-        ASTRARRAY_DATA  *pArray = OBJ_NIL;
-        ASTR_DATA       *pStr = OBJ_NIL;
-
-        if (NULL == ppArgV) {
-            return OBJ_NIL;
-        }
-        pArray = AStrArray_New( );
-        if (pArray) {
-            while (*ppArgV) {
-                pStr = AStr_NewA(*ppArgV);
-                if (pStr) {
-                    AStrArray_AppendStr(pArray, pStr, NULL);
-                    obj_Release(pStr);
-                    pStr = OBJ_NIL;
-                }
-                else {
-                    obj_Release(pArray);
-                    pArray = OBJ_NIL;
-                    break;
-                }
-                ++ppArgV;
-            }
-        }
-
-        return pArray;
-    }
-
-
-
-    ASTRARRAY_DATA * AStrArray_NewFromUtf8File(
-        PATH_DATA       *pPath,
-        int             maxLineLength
-    )
-    {
-        ASTRARRAY_DATA  *this =  OBJ_NIL;
-        ERESULT         eRc;
-
-        // Do initialization.
-        if (NULL == pPath) {
-            return this;
-        }
-
-        this = AStrArray_New( );
-        if (this) {
-            eRc = AStrArray_AppendUtf8File(this, pPath, maxLineLength);
-            if (ERESULT_FAILED(eRc)) {
-                obj_Release(this);
-                this = OBJ_NIL;
-            }
-        }
-
-        // Return to caller.
-        return this;
-    }
-
-
-
 
 
     //===============================================================
@@ -222,18 +168,18 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                           A r r a y
+    //                          A r r a y
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * AStrArray_getArray (
-        ASTRARRAY_DATA  *this
+    OBJARRAY_DATA * W32Array_getArray (
+        W32ARRAY_DATA   *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -243,14 +189,14 @@ extern "C" {
     }
 
 
-    bool            AStrArray_setArray (
-        ASTRARRAY_DATA  *this,
+    bool            W32Array_setArray (
+        W32ARRAY_DATA   *this,
         OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -268,44 +214,131 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S i z e
+    //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint32_t        AStrArray_getSize (
-        ASTRARRAY_DATA       *this
-    )
-    {
-        uint32_t            i = 0;
-#ifdef NDEBUG
-#else
-        if (!AStrArray_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        if (this->pArray) {
-            i = ObjArray_getSize(this->pArray);
-        }
-
-        return i;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          S u p e r
-    //---------------------------------------------------------------
-    
-    OBJ_IUNKNOWN *  AStrArray_getSuperVtbl (
-        ASTRARRAY_DATA     *this
+    uint16_t        W32Array_getPriority (
+        W32ARRAY_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        //return this->priority;
+        return 0;
+    }
+
+
+    bool            W32Array_setPriority (
+        W32ARRAY_DATA     *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!W32Array_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        //this->priority = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                              S i z e
+    //---------------------------------------------------------------
+    
+    uint32_t        W32Array_getSize (
+        W32ARRAY_DATA       *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!W32Array_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        if (this->pArray)
+            return ObjArray_getSize(this->pArray);
+        else
+            return 0;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA *     W32Array_getStr (
+        W32ARRAY_DATA   *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!W32Array_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool            W32Array_setStr (
+        W32ARRAY_DATA   *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!W32Array_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          S u p e r
+    //---------------------------------------------------------------
+    
+    OBJ_IUNKNOWN *  W32Array_getSuperVtbl (
+        W32ARRAY_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -328,9 +361,9 @@ extern "C" {
     //                          A p p e n d
     //---------------------------------------------------------------
 
-    ERESULT         AStrArray_AppendStr(
-        ASTRARRAY_DATA  *this,
-        ASTR_DATA       *pObject,
+    ERESULT         W32Array_AppendStr(
+        W32ARRAY_DATA   *this,
+        W32STR_DATA     *pObject,
         uint32_t        *pIndex
     )
     {
@@ -342,7 +375,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !AStrArray_Validate(this) ) {
+        if( !W32Array_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -367,23 +400,23 @@ extern "C" {
     //                    A p p e n d  F i l e
     //---------------------------------------------------------------
 
-    ERESULT         AStrArray_AppendUtf8File(
-        ASTRARRAY_DATA  *this,
-        PATH_DATA       *pPath,
-        int             maxLineLength
+    ERESULT         W32Array_AppendUtf8File(
+        W32ARRAY_DATA   *this,
+        PATH_DATA       *pPath
     )
     {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         FILE            *pFile = NULL;
-        char            *pRcd = NULL;
-        char            *pRcdRead;
-        ASTR_DATA       *pWrk = OBJ_NIL;
+        W32CHR_T        *pRcd = NULL;
+        W32CHR_T        *pRcdRead;
+        W32STR_DATA     *pWrk = OBJ_NIL;
+        int             maxLineLength = 1024;
 
         /* Do Initialization.
          */
 #ifdef NDEBUG
 #else
-        if( !AStrArray_Validate( this ) ) {
+        if( !W32Array_Validate( this ) ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -406,10 +439,10 @@ extern "C" {
             pRcd = NULL;
             return ERESULT_FILE_NOT_FOUND;
         }
-        while ( (pRcdRead = fgets(pRcd, maxLineLength, pFile)) != NULL ) {
-            pWrk = AStr_NewA(pRcdRead);
+        while ( (pRcdRead = fgetws(pRcd, maxLineLength, pFile)) != NULL ) {
+            pWrk = W32Str_NewW32(0, pRcdRead);
             if (pWrk) {
-                eRc = AStrArray_AppendStr(this, pWrk, NULL);
+                eRc = W32Array_AppendStr(this, pWrk, NULL);
                 obj_Release(pWrk);
                 pWrk = OBJ_NIL;
             }
@@ -434,28 +467,28 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = AStrArray_Assign(this,pOther);
+        ERESULT eRc = W32Array_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another ASTRARRAY object
+     @param     pOther  a pointer to another W32ARRAY object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         AStrArray_Assign (
-        ASTRARRAY_DATA       *this,
-        ASTRARRAY_DATA     *pOther
+    ERESULT         W32Array_Assign (
+        W32ARRAY_DATA   *this,
+        W32ARRAY_DATA   *pOther
     )
     {
-        ERESULT     eRc;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!AStrArray_Validate(pOther)) {
+        if (!W32Array_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -510,9 +543,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             AStrArray_Compare (
-        ASTRARRAY_DATA     *this,
-        ASTRARRAY_DATA     *pOther
+    int             W32Array_Compare (
+        W32ARRAY_DATA     *this,
+        W32ARRAY_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -525,12 +558,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!AStrArray_Validate(pOther)) {
+        if (!W32Array_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -552,36 +585,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        AStrArray      *pCopy = AStrArray_Copy(this);
+        W32Array      *pCopy = W32Array_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ASTRARRAY object which must be 
+     @return    If successful, a W32ARRAY object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ASTRARRAY_DATA *     AStrArray_Copy (
-        ASTRARRAY_DATA       *this
+    W32ARRAY_DATA *     W32Array_Copy (
+        W32ARRAY_DATA       *this
     )
     {
-        ASTRARRAY_DATA       *pOther = OBJ_NIL;
+        W32ARRAY_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef ASTRARRAY_IS_IMMUTABLE
+#ifdef W32ARRAY_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = AStrArray_New( );
+        pOther = W32Array_New( );
         if (pOther) {
-            eRc = AStrArray_Assign(this, pOther);
+            eRc = W32Array_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -599,11 +632,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            AStrArray_Dealloc (
+    void            W32Array_Dealloc (
         OBJ_ID          objId
     )
     {
-        ASTRARRAY_DATA   *this = objId;
+        W32ARRAY_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -612,7 +645,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -620,11 +653,12 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((ASTRARRAY_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((W32ARRAY_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        AStrArray_setArray(this, OBJ_NIL);
+        W32Array_setArray(this, OBJ_NIL);
+        W32Array_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -645,32 +679,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        AStrArray      *pDeepCopy = AStrArray_Copy(this);
+        W32Array      *pDeepCopy = W32Array_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ASTRARRAY object which must be 
+     @return    If successful, a W32ARRAY object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ASTRARRAY_DATA *     AStrArray_DeepyCopy (
-        ASTRARRAY_DATA       *this
+    W32ARRAY_DATA *     W32Array_DeepyCopy (
+        W32ARRAY_DATA       *this
     )
     {
-        ASTRARRAY_DATA       *pOther = OBJ_NIL;
+        W32ARRAY_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = AStrArray_New( );
+        pOther = W32Array_New( );
         if (pOther) {
-            eRc = AStrArray_Assign(this, pOther);
+            eRc = W32Array_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -687,11 +721,11 @@ extern "C" {
     //                        D e l e t e
     //---------------------------------------------------------------
 
-    ASTR_DATA *     AStrArray_DeleteFirst(
-        ASTRARRAY_DATA    *this
+    W32STR_DATA *   W32Array_DeleteFirst(
+        W32ARRAY_DATA   *this
     )
     {
-        ASTR_DATA       *pNode = OBJ_NIL;
+        W32STR_DATA     *pNode = OBJ_NIL;
 
         // Do initialization.
         if (NULL == this) {
@@ -699,7 +733,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !AStrArray_Validate(this) ) {
+        if( !W32Array_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -714,11 +748,11 @@ extern "C" {
     }
 
 
-    ASTR_DATA *     AStrArray_DeleteLast(
-        ASTRARRAY_DATA    *this
+    W32STR_DATA *   W32Array_DeleteLast(
+        W32ARRAY_DATA   *this
     )
     {
-        ASTR_DATA       *pNode = OBJ_NIL;
+        W32STR_DATA     *pNode = OBJ_NIL;
 
         // Do initialization.
         if (NULL == this) {
@@ -726,7 +760,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !AStrArray_Validate(this) ) {
+        if( !W32Array_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -752,8 +786,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         AStrArray_Disable (
-        ASTRARRAY_DATA       *this
+    ERESULT         W32Array_Disable (
+        W32ARRAY_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -761,7 +795,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -787,8 +821,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         AStrArray_Enable (
-        ASTRARRAY_DATA       *this
+    ERESULT         W32Array_Enable (
+        W32ARRAY_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -796,7 +830,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -816,17 +850,17 @@ extern "C" {
     //                        G e t
     //---------------------------------------------------------------
 
-    ASTR_DATA *     AStrArray_Get(
-        ASTRARRAY_DATA    *this,
+    W32STR_DATA *   W32Array_Get(
+        W32ARRAY_DATA   *this,
         uint32_t        index       // Relative to 1
     )
     {
-        ASTR_DATA       *pNode = OBJ_NIL;
+        W32STR_DATA     *pNode = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !AStrArray_Validate(this) ) {
+        if( !W32Array_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -841,11 +875,11 @@ extern "C" {
     }
 
 
-    ASTR_DATA *     AStrArray_GetFirst(
-        ASTRARRAY_DATA    *this
+    W32STR_DATA *   W32Array_GetFirst(
+        W32ARRAY_DATA   *this
     )
     {
-        ASTR_DATA       *pNode = OBJ_NIL;
+        W32STR_DATA     *pNode = OBJ_NIL;
 
         // Do initialization.
         if (NULL == this) {
@@ -853,7 +887,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !AStrArray_Validate(this) ) {
+        if( !W32Array_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -868,11 +902,11 @@ extern "C" {
     }
 
 
-    ASTR_DATA *     AStrArray_GetLast(
-        ASTRARRAY_DATA    *this
+    W32STR_DATA *   W32Array_GetLast(
+        W32ARRAY_DATA   *this
     )
     {
-        ASTR_DATA       *pNode = OBJ_NIL;
+        W32STR_DATA     *pNode = OBJ_NIL;
 
         // Do initialization.
         if (NULL == this) {
@@ -880,7 +914,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !AStrArray_Validate(this) ) {
+        if( !W32Array_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -900,11 +934,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA *   AStrArray_Init (
-        ASTRARRAY_DATA       *this
+    W32ARRAY_DATA *   W32Array_Init (
+        W32ARRAY_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(ASTRARRAY_DATA);
+        uint32_t        cbSize = sizeof(W32ARRAY_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -922,7 +956,9 @@ extern "C" {
         }
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_ASTRARRAY);
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of W32Array_object.c
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_W32ARRAY);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -930,23 +966,21 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&AStrArray_Vtbl);
-#ifdef  ASTRARRAY_JSON_SUPPORT
-        JsonIn_RegisterClass(AStrArray_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&W32Array_Vtbl);
+#ifdef  W32ARRAY_JSON_SUPPORT
+        JsonIn_RegisterClass(W32Array_Class());
 #endif
         
-        /*
-        this->pArray = objArray_New( );
+        this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        */
 
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -955,11 +989,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "AStrArray::sizeof(ASTRARRAY_DATA) = %lu\n", 
-                sizeof(ASTRARRAY_DATA)
+                "W32Array::sizeof(W32ARRAY_DATA) = %lu\n", 
+                sizeof(W32ARRAY_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(ASTRARRAY_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(W32ARRAY_DATA));
 #endif
 
         return this;
@@ -971,10 +1005,10 @@ extern "C" {
     //                          I n s e r t
     //---------------------------------------------------------------
 
-    ERESULT         AStrArray_InsertStr(
-        ASTRARRAY_DATA    *this,
+    ERESULT         W32Array_InsertStr(
+        W32ARRAY_DATA   *this,
         uint32_t        index,
-        ASTR_DATA       *pObject
+        W32STR_DATA     *pObject
     )
     {
         ERESULT         eRc;
@@ -985,7 +1019,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !AStrArray_Validate(this) ) {
+        if( !W32Array_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -1006,11 +1040,11 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         AStrArray_IsEnabled (
-        ASTRARRAY_DATA       *this
+    ERESULT         W32Array_IsEnabled (
+        W32ARRAY_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -1018,7 +1052,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1045,14 +1079,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = AStrArray_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = W32Array_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "AStrArray", prefix,
+                        the object name, "W32Array", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1060,13 +1094,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          AStrArray_QueryInfo (
+    void *          W32Array_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        ASTRARRAY_DATA     *this = objId;
+        W32ARRAY_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1075,7 +1109,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1084,11 +1118,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(ASTRARRAY_DATA);
+                return (void *)sizeof(W32ARRAY_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)AStrArray_Class();
+                return (void *)W32Array_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -1114,37 +1148,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return AStrArray_Disable;
+                            return W32Array_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return AStrArray_Enable;
+                            return W32Array_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  ASTRARRAY_JSON_SUPPORT
+#ifdef  W32ARRAY_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return AStrArray_ParseJsonFields;
+                            return W32Array_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return AStrArray_ParseJsonObject;
+                            return W32Array_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return AStrArray_ToDebugString;
+                            return W32Array_ToDebugString;
                         }
-#ifdef  ASTRARRAY_JSON_SUPPORT
+#ifdef  W32ARRAY_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return AStrArray_ToJsonFields;
+                            return W32Array_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return AStrArray_ToJson;
+                            return W32Array_ToJson;
                         }
 #endif
                         break;
@@ -1155,10 +1189,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == AStrArray_ToDebugString)
+                if (pData == W32Array_ToDebugString)
                     return "ToDebugString";
-#ifdef  ASTRARRAY_JSON_SUPPORT
-                if (pData == AStrArray_ToJson)
+#ifdef  W32ARRAY_JSON_SUPPORT
+                if (pData == W32Array_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1176,8 +1210,8 @@ extern "C" {
     //                         S o r t
     //---------------------------------------------------------------
 
-    ERESULT         AStrArray_SortAscending(
-        ASTRARRAY_DATA    *this
+    ERESULT         W32Array_SortAscending(
+        W32ARRAY_DATA   *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -1188,14 +1222,14 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !AStrArray_Validate(this) ) {
+        if( !W32Array_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
         if (this->pArray) {
-            eRc = ObjArray_SortAscending(this->pArray, (OBJ_COMPARE)&AStr_Compare);
+            eRc = ObjArray_SortAscending(this->pArray, (OBJ_COMPARE)&W32Str_Compare);
         }
 
         // Return to caller.
@@ -1212,7 +1246,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = AStrArray_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = W32Array_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1220,8 +1254,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     AStrArray_ToDebugString (
-        ASTRARRAY_DATA      *this,
+    ASTR_DATA *     W32Array_ToDebugString (
+        W32ARRAY_DATA      *this,
         int             indent
     )
     {
@@ -1230,13 +1264,13 @@ extern "C" {
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        uint32_t        i;
+        //uint32_t        i;
         //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!AStrArray_Validate(this)) {
+        if (!W32Array_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1257,22 +1291,25 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    AStrArray_getSize(this),
+                    W32Array_getSize(this),
                     obj_getRetainCount(this)
             );
 
-        if (this->pArray) {
-            for (i=0; i<ObjArray_getSize(this->pArray); i++) {
-                ASTR_DATA       *pWrk = ObjArray_Get(this->pArray, i+1);
-                if (pWrk) {
-                    if (indent) {
-                        AStr_AppendCharRepeatA(pStr, indent+4, ' ');
-                    }
-                    AStr_AppendPrint(pStr, "%3d %s\n", i+1, AStr_getData(pWrk));
+#ifdef  XYZZY        
+        if (this->pData) {
+            if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
+                pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
+                                                    this->pData,
+                                                    indent+3
+                            );
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
                 }
             }
         }
-
+#endif
+        
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent, ' ');
         }
@@ -1294,15 +1331,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            AStrArray_Validate (
-        ASTRARRAY_DATA      *this
+    bool            W32Array_Validate (
+        W32ARRAY_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_ASTRARRAY))
+            if (obj_IsKindOf(this, OBJ_IDENT_W32ARRAY))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1318,7 +1355,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(ASTRARRAY_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(W32ARRAY_DATA))) {
             return false;
         }
 

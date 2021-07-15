@@ -553,7 +553,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     W32Str_ToJSON(
+    ASTR_DATA *     W32Str_ToJson(
         W32STR_DATA     *this
     );
     

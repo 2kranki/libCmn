@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  An Array of AStr(ings) (AStrArray) Header
+//                  An Array of W32Str(s) (W32Array) Header
 //****************************************************************
 /*
  * Program
- *          An Array of AStr(ings) (AStrArray)
+ *          An Array of W32Str(s) (W32Array)
  * Purpose
  *          This object provides a standardized way of handling
- *          a separate AStrArray to run things without complications
- *          of interfering with the main AStrArray. A AStrArray may be 
- *          called a AStrArray on other O/S's.
+ *          a separate W32Array to run things without complications
+ *          of interfering with the main W32Array. A W32Array may be 
+ *          called a W32Array on other O/S's.
  *
  * Remarks
  *  1.      None
  *
  * History
- *  04/11/2021 Generated
+ *  07/15/2021 Generated
  */
 
 
@@ -53,17 +53,16 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <Path.h>
-#include        <ObjArray.h>
+#include        <W32Str.h>
 
 
-#ifndef         ASTRARRAY_H
-#define         ASTRARRAY_H
+#ifndef         W32ARRAY_H
+#define         W32ARRAY_H
 
 
-//#define   ASTRARRAY_IS_IMMUTABLE     1
-#define   ASTRARRAY_JSON_SUPPORT       1
-//#define   ASTRARRAY_SINGLETON        1
+//#define   W32ARRAY_IS_IMMUTABLE     1
+#define   W32ARRAY_JSON_SUPPORT       1
+//#define   W32ARRAY_SINGLETON        1
 
 
 
@@ -79,30 +78,26 @@ extern "C" {
     //****************************************************************
 
 
-    // ASTRARRAY_DATA and ASTRARRAY_VTBL is defined in "cmn_defs.h"
+    typedef struct W32Array_data_s  W32ARRAY_DATA;            // Inherits from OBJ
+    typedef struct W32Array_class_data_s W32ARRAY_CLASS_DATA;   // Inherits from OBJ
 
-    //typedef struct AStrArray_data_s  ASTRARRAY_DATA;            // Inherits from OBJ
-    typedef struct AStrArray_class_data_s ASTRARRAY_CLASS_DATA;   // Inherits from OBJ
-
-#ifdef CMN_DEF_DEFINED_ASTRARRAY
-    typedef struct AStrArray_vtbl_s  {
+    typedef struct W32Array_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in AStrArray_object.c.
+        // method names to the vtbl definition in W32Array_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(ASTRARRAY_DATA *);
-    } ASTRARRAY_VTBL;
-#endif
+        //bool        (*pIsEnabled)(W32ARRAY_DATA *);
+    } W32ARRAY_VTBL;
 
-    typedef struct AStrArray_class_vtbl_s    {
+    typedef struct W32Array_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in AStrArray_object.c.
+        // method names to the vtbl definition in W32Array_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(ASTRARRAY_DATA *);
-    } ASTRARRAY_CLASS_VTBL;
+        //bool        (*pIsEnabled)(W32ARRAY_DATA *);
+    } W32ARRAY_CLASS_VTBL;
 
 
 
@@ -116,12 +111,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  ASTRARRAY_SINGLETON
-    ASTRARRAY_DATA * AStrArray_Shared (
+#ifdef  W32ARRAY_SINGLETON
+    W32ARRAY_DATA * W32Array_Shared (
         void
     );
 
-    void            AStrArray_SharedReset (
+    void            W32Array_SharedReset (
         void
     );
 #endif
@@ -131,59 +126,40 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to AStrArray object if successful, otherwise OBJ_NIL.
+     @return    pointer to W32Array object if successful, otherwise OBJ_NIL.
      */
-    ASTRARRAY_DATA * AStrArray_Alloc (
+    W32ARRAY_DATA * W32Array_Alloc (
         void
     );
     
     
-    OBJ_ID          AStrArray_Class (
+    OBJ_ID          W32Array_Class (
         void
     );
     
     
-    ASTRARRAY_DATA *  AStrArray_New (
+    W32ARRAY_DATA * W32Array_New (
         void
     );
-    
-    
-    ASTRARRAY_DATA * AStrArray_NewFromArgV(
+
+
+    W32ARRAY_DATA * W32Array_NewFromArgV(
         int             cArgs,
         const
         char            *ppArgV[]
     );
 
 
-    /*!
-     Create a string that describes this object and the objects within it.
-     @param     ppArgV  pointer to NULL-terminated array of strings
-     @return    If successful, an AStrArray object which must be released
-                containing the array of strings, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
-     */
-    ASTRARRAY_DATA * AStrArray_NewFromArrayA(
-        const
-        char            *ppArgV[]
-    );
-
-
-#ifdef  ASTRARRAY_JSON_SUPPORT
-    ASTRARRAY_DATA * AStrArray_NewFromJsonString (
+#ifdef  W32ARRAY_JSON_SUPPORT
+    W32ARRAY_DATA * W32Array_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    ASTRARRAY_DATA * AStrArray_NewFromJsonStringA (
+    W32ARRAY_DATA * W32Array_NewFromJsonStringA (
         const
         char            *pStringA
     );
 #endif
-
-
-    ASTRARRAY_DATA * AStrArray_NewFromUtf8File(
-        PATH_DATA       *pPath,
-        int             maxLineLength
-    );
 
 
 
@@ -191,14 +167,10 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * AStrArray_getArray(
-        ASTRARRAY_DATA  *this
+    uint32_t        W32Array_getSize(
+        W32ARRAY_DATA   *this
     );
 
-
-    uint32_t        AStrArray_getSize(
-        ASTRARRAY_DATA  *this
-    );
 
 
     
@@ -214,16 +186,15 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS and the index in pIndex
                 if it is not NULL.  Otherwise, an ERESULT_* error.
      */
-    ERESULT         AStrArray_AppendStr(
-        ASTRARRAY_DATA    *this,
-        ASTR_DATA       *pObject,
+    ERESULT         W32Array_AppendStr(
+        W32ARRAY_DATA   *this,
+        W32STR_DATA     *pObject,
         uint32_t        *pIndex
     );
 
-    ERESULT         AStrArray_AppendUtf8File(
-        ASTRARRAY_DATA  *this,
-        PATH_DATA       *pPath,
-        int             maxLineLength
+    ERESULT         W32Array_AppendUtf8File(
+        W32ARRAY_DATA   *this,
+        PATH_DATA       *pPath
     );
 
     /*!
@@ -232,16 +203,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code
-     ERESULT eRc = AStrArray_Assign(this, pOther);
+        ERESULT eRc = W32Array_Assign(this,pOther);
      @endcode
-     @param     this    ASTRARRAY_DATA object pointer
-     @param     pOther  a pointer to another ASTRARRAY_DATA object
+     @param     this    object pointer
+     @param     pOther  a pointer to another W32ARRAY object
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error
      */
-    ERESULT         AStrArray_Assign(
-        ASTRARRAY_DATA  *this,
-        ASTRARRAY_DATA  *pOther
+    ERESULT         W32Array_Assign (
+        W32ARRAY_DATA   *this,
+        W32ARRAY_DATA   *pOther
     );
 
 
@@ -249,80 +220,80 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code
-     appl      *pCopy = AStrArray_Copy(this);
+        W32Array      *pCopy = W32Array_Copy(this);
      @endcode
-     @param     this    ASTRARRAY_DATA object pointer
-     @return    If successful, a ASTRARRAY_DATA object which must
-     be released, otherwise OBJ_NIL.
-     @warning   Remember to release the returned the returned object.
+     @param     this    object pointer
+     @return    If successful, a W32ARRAY object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
      */
-    ASTRARRAY_DATA * AStrArray_Copy(
-        ASTRARRAY_DATA  *this
+    W32ARRAY_DATA * W32Array_Copy (
+        W32ARRAY_DATA   *this
     );
 
-
+   
     // DeleteFromBottom() returns the top element after deleting it,
     // but not releasing it. It needs to be released before it is
     // discarded.
-    ASTR_DATA *     AStrArray_DeleteFirst(
-        ASTRARRAY_DATA    *this
+    W32STR_DATA *   W32Array_DeleteFirst(
+        W32ARRAY_DATA   *this
     );
 
 
     // DeleteFromTop() returns the top element after deleting it,
     // but not releasing it. It needs to be released before it is
     // discarded.
-    ASTR_DATA *     AStrArray_DeleteLast(
-        ASTRARRAY_DATA    *this
+    W32STR_DATA *   W32Array_DeleteLast(
+        W32ARRAY_DATA   *this
     );
 
 
-    ASTR_DATA *     AStrArray_Get(
-        ASTRARRAY_DATA    *this,
+    W32STR_DATA *   W32Array_Get(
+        W32ARRAY_DATA   *this,
         uint32_t        index       // Relative to 1
     );
 
-    ASTR_DATA *     AStrArray_GetFirst(
-        ASTRARRAY_DATA  *this
+    W32STR_DATA *   W32Array_GetFirst(
+        W32ARRAY_DATA   *this
     );
 
-    ASTR_DATA *     AStrArray_GetLast(
-        ASTRARRAY_DATA    *this
-    );
-
-
-    ASTRARRAY_DATA * AStrArray_Init (
-        ASTRARRAY_DATA  *this
+    W32STR_DATA *   W32Array_GetLast(
+        W32ARRAY_DATA   *this
     );
 
 
-    ERESULT         AStrArray_InsertStr(
-        ASTRARRAY_DATA    *this,
+    W32ARRAY_DATA * W32Array_Init (
+        W32ARRAY_DATA   *this
+    );
+
+
+    ERESULT         W32Array_InsertStr(
+        W32ARRAY_DATA   *this,
         uint32_t        index,
-        ASTR_DATA       *pObject
+        W32STR_DATA     *pObject
     );
 
 
-    ERESULT         AStrArray_SortAscending(
-        ASTRARRAY_DATA    *this
+    ERESULT         W32Array_SortAscending(
+        W32ARRAY_DATA    *this
     );
 
 
-#ifdef  ASTRARRAY_JSON_SUPPORT
+#ifdef  W32ARRAY_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = AStrArray_ToJson(this);
+     ASTR_DATA      *pDesc = W32Array_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     AStrArray_ToJson (
-        ASTRARRAY_DATA  *this
+    ASTR_DATA *     W32Array_ToJson (
+        W32ARRAY_DATA    *this
     );
 #endif
 
@@ -331,7 +302,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = AStrArray_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = W32Array_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -339,8 +310,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     AStrArray_ToDebugString (
-        ASTRARRAY_DATA  *this,
+    ASTR_DATA *     W32Array_ToDebugString (
+        W32ARRAY_DATA   *this,
         int             indent
     );
     
@@ -351,5 +322,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* ASTRARRAY_H */
+#endif  /* W32ARRAY_H */
 
