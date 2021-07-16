@@ -368,7 +368,6 @@
 		C4D4483926A0804000AC5E60 /* W32Array_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4483426A0803F00AC5E60 /* W32Array_object.c */; };
 		C4D4483A26A0804000AC5E60 /* W32Array_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4483526A0803F00AC5E60 /* W32Array_json.c */; };
 		C4D4483B26A0804000AC5E60 /* W32Array.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4483826A0804000AC5E60 /* W32Array.c */; };
-		C4D4483D26A0CB1400AC5E60 /* W32Str_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4483C26A0CB1400AC5E60 /* W32Str_test.c */; };
 		C4D463102419275C00AF453D /* False_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4630B2419275900AF453D /* False_json.c */; };
 		C4D463112419275C00AF453D /* False_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4630C2419275A00AF453D /* False_object.c */; };
 		C4D463122419275C00AF453D /* False.c in Sources */ = {isa = PBXBuildFile; fileRef = C4D4630F2419275C00AF453D /* False.c */; };
@@ -1128,7 +1127,7 @@
 		C4D4483626A0804000AC5E60 /* W32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = W32Array.h; sourceTree = "<group>"; };
 		C4D4483726A0804000AC5E60 /* W32Array_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = W32Array_internal.h; sourceTree = "<group>"; };
 		C4D4483826A0804000AC5E60 /* W32Array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = W32Array.c; sourceTree = "<group>"; };
-		C4D4483C26A0CB1400AC5E60 /* W32Str_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = W32Str_test.c; sourceTree = "<group>"; };
+		C4D4483F26A1A32C00AC5E60 /* Appl_test.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Appl_test.c; sourceTree = "<group>"; };
 		C4D4630B2419275900AF453D /* False_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = False_json.c; sourceTree = "<group>"; };
 		C4D4630C2419275A00AF453D /* False_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = False_object.c; sourceTree = "<group>"; };
 		C4D4630D2419275B00AF453D /* False_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = False_internal.h; sourceTree = "<group>"; };
@@ -1284,7 +1283,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C4D4483C26A0CB1400AC5E60 /* W32Str_test.c */,
+				C4D4483F26A1A32C00AC5E60 /* Appl_test.c */,
 				C4D44829269F720F00AC5E60 /* test_defs.h */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
@@ -2157,7 +2156,6 @@
 			files = (
 				C440262C202B4252009B7806 /* szData.c in Sources */,
 				C4E1383123BE91570095EABE /* TokenList.c in Sources */,
-				C4D4483D26A0CB1400AC5E60 /* W32Str_test.c in Sources */,
 				C4359B041FC9C3D800CA858E /* misc.c in Sources */,
 				C43599CE1FC9C36800CA858E /* cb_object.c in Sources */,
 				C47D7C332662B8E500E2A280 /* Money64.c in Sources */,
