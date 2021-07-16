@@ -281,52 +281,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA *     W32Array_getStr (
-        W32ARRAY_DATA   *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!W32Array_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool            W32Array_setStr (
-        W32ARRAY_DATA   *this,
-        ASTR_DATA       *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!W32Array_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
@@ -482,6 +436,7 @@ extern "C" {
         ERESULT         eRc;
         
         // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!W32Array_Validate(this)) {
@@ -505,6 +460,7 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
+        TRC_OBJ(this,"\tother_array: %p:\n", pOther->pArray);
         if (pOther->pArray) {
             obj_Release(pOther->pArray);
             pOther->pArray = OBJ_NIL;
@@ -512,6 +468,7 @@ extern "C" {
 
         // Create a copy of objects and areas in this object placing
         // them in other.
+        TRC_OBJ(this,"\tthis_array: %p:\n", this->pArray);
         if (this->pArray) {
             if (obj_getVtbl(this->pArray)->pCopy) {
                 pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
@@ -521,6 +478,7 @@ extern "C" {
                 pOther->pArray = this->pArray;
             }
         }
+        TRC_OBJ(this,"\tother_array after copy: %p:\n", pOther->pArray);
 
         // Copy other data from this object to other.
         //pOther->x     = this->x; 
@@ -658,7 +616,6 @@ extern "C" {
 #endif
 
         W32Array_setArray(this, OBJ_NIL);
-        W32Array_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -686,13 +643,18 @@ extern "C" {
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    W32ARRAY_DATA *     W32Array_DeepyCopy (
-        W32ARRAY_DATA       *this
+    W32ARRAY_DATA *  W32Array_DeepyCopy (
+        W32ARRAY_DATA    *this
     )
     {
-        W32ARRAY_DATA       *pOther = OBJ_NIL;
+        W32ARRAY_DATA   *pOther = OBJ_NIL;
         ERESULT         eRc;
-        
+        uint32_t        i;
+        uint32_t        iMax;
+        OBJ_IUNKNOWN    *pVtbl;
+        W32STR_DATA     *pData = NULL;
+        OBJ_ID          pItem;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -703,14 +665,33 @@ extern "C" {
 #endif
         
         pOther = W32Array_New( );
-        if (pOther) {
-            eRc = W32Array_Assign(this, pOther);
-            if (ERESULT_HAS_FAILED(eRc)) {
-                obj_Release(pOther);
-                pOther = OBJ_NIL;
-            }
+        if (OBJ_NIL == pOther) {
+            return OBJ_NIL;
         }
         
+        iMax = ObjArray_getSize(this->pArray);
+        for (i=0; i<iMax; ++i) {
+            pData = ObjArray_Get(this->pArray, (i + 1));
+            if (pData) {
+                pVtbl = obj_getVtbl(pData);
+                if (pVtbl->pDeepCopy) {
+                    pData = pVtbl->pDeepCopy(pData);
+                }
+                else if (pVtbl->pCopy) {
+                    pData = pVtbl->pCopy(pData);
+                }
+                else {
+                    obj_Retain(pData);
+                }
+                eRc = ObjArray_AppendObj(pOther->pArray, pData, NULL);
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pOther);
+                    pOther = OBJ_NIL;
+                    break;
+                }
+            }
+        }
+
         // Return to caller.
         return pOther;
     }

@@ -470,7 +470,7 @@ W32ARRAY_VTBL     W32Array_Vtbl = {
         (P_OBJ_ASSIGN)W32Array_Assign,
         NULL,           // (P_OBJ_COMPARE)W32Array_Compare,
         (P_OBJ_PTR)W32Array_Copy,
-        NULL,           // (P_OBJ_PTR)W32Array_DeepCopy,
+        (P_OBJ_PTR)W32Array_DeepyCopy,
         NULL            // (P_OBJ_HASH)W32Array_Hash,
     },
     // Put other object method names below this.

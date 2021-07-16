@@ -53,6 +53,7 @@
 #include        <time.h>
 #include        <trace.h>
 #include        <utf8.h>
+#include        <W32Array.h>
 #include        <stdio.h>
 
 
@@ -2802,6 +2803,205 @@ extern "C" {
         // Return to caller.
         *pIndex = 0;
         return ERESULT_OUT_OF_RANGE;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                     S p l i t  O n
+    //---------------------------------------------------------------
+
+    W32ARRAY_DATA * W32Str_SplitOnCharW32(
+        W32STR_DATA     *this,
+        const
+        W32CHR_T        chr
+    )
+    {
+        ERESULT         eRc;
+        W32ARRAY_DATA   *pArray = OBJ_NIL;
+        uint32_t        i = 1;
+        uint32_t        iMax;
+        uint32_t        start;
+        uint32_t        index = 1;
+        uint32_t        len;
+        W32STR_DATA     *pWrkStr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32Str_Validate(this) ) {
+            DEBUG_BREAK();
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+
+        iMax = W32Str_getLength(this);
+        pArray = W32Array_New( );
+        if (OBJ_NIL == pArray) {
+            return OBJ_NIL;
+        }
+
+        while (i < (iMax + 1)) {
+
+            // We have to use i to store the current index since index
+            // gets clobbered if the character is not found.
+            index = i;
+            start = index;
+            eRc = W32Str_CharFindNextW32(this, &index, chr);
+            if (ERESULT_FAILED(eRc)) {
+                // index is unreliable.
+                i = iMax + 1;
+                len = i - start;
+                pWrkStr = OBJ_NIL;
+                if (len) {
+                    pWrkStr = W32Str_Mid(this, start, len);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                else {
+                    pWrkStr = W32Str_New( );
+                    if (OBJ_NIL == pWrkStr) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                eRc = W32Array_AppendStr(pArray, pWrkStr, NULL);
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pArray);
+                    return OBJ_NIL;
+                }
+            }
+            else {
+                i = index + 1;
+                len = index - start;
+                pWrkStr = OBJ_NIL;
+                if (len) {
+                    pWrkStr = W32Str_Mid(this, start, len);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                else {
+                    pWrkStr = W32Str_New( );
+                    if (OBJ_NIL == pWrkStr) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                eRc = W32Array_AppendStr(pArray, pWrkStr, NULL);
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pArray);
+                    return OBJ_NIL;
+                }
+            }
+        }
+
+        return pArray;
+    }
+
+
+    W32ARRAY_DATA * W32Str_SplitOnCharsW32(
+        W32STR_DATA     *this,
+        const
+        W32CHR_T        *pChrs
+    )
+    {
+        ERESULT         eRc;
+        W32ARRAY_DATA   *pArray = OBJ_NIL;
+        uint32_t        i = 1;
+        uint32_t        iMax;
+        uint32_t        start;
+        uint32_t        index = 1;
+        uint32_t        len;
+        W32STR_DATA     *pWrkStr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32Str_Validate(this) ) {
+            DEBUG_BREAK();
+            //obj_setLastError(this, ERESULT_INVALID_OBJECT);
+            return OBJ_NIL;
+        }
+#endif
+
+        iMax = W32Str_getLength(this);
+        pArray = W32Array_New( );
+        if (OBJ_NIL == pArray) {
+            return OBJ_NIL;
+        }
+
+        while (i < (iMax + 1)) {
+
+            // We have to use i to store the current index since index
+            // gets clobbered if the character is not found.
+            index = i;
+            start = index;
+            eRc = W32Str_FindNextW32(this, pChrs, &index);
+            if (ERESULT_FAILED(eRc)) {
+                // index is unreliable.
+                i = iMax + 1;
+                len = i - start;
+                pWrkStr = OBJ_NIL;
+                if (len) {
+                    pWrkStr = W32Str_Mid(this, start, len);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                else {
+                    pWrkStr = W32Str_New( );
+                    if (OBJ_NIL == pWrkStr) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                eRc = W32Array_AppendStr(pArray, pWrkStr, NULL);
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pArray);
+                    return OBJ_NIL;
+                }
+            }
+            else {
+                i = index + 1;
+                len = index - start;
+                pWrkStr = OBJ_NIL;
+                if (len) {
+                    pWrkStr = W32Str_Mid(this, start, len);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                else {
+                    pWrkStr = W32Str_New( );
+                    if (OBJ_NIL == pWrkStr) {
+                        obj_Release(pArray);
+                        return OBJ_NIL;
+                    }
+                }
+                eRc = W32Array_AppendStr(pArray, pWrkStr, NULL);
+                obj_Release(pWrkStr);
+                pWrkStr = OBJ_NIL;
+                if (ERESULT_FAILED(eRc)) {
+                    obj_Release(pArray);
+                    return OBJ_NIL;
+                }
+            }
+        }
+
+        return pArray;
     }
 
 

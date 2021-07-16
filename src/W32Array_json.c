@@ -97,7 +97,8 @@ extern "C" {
         //uint32_t        len;
 
         eRc = JsonIn_SubObjectInHash(pParser, "array");
-        if (!ERESULT_FAILED(eRc)) {
+        if (ERESULT_OK(eRc)) {
+            obj_Release(pObject->pArray);
             pObject->pArray = ObjArray_ParseJsonObject(pParser);
             JsonIn_SubObjectEnd(pParser);
         }

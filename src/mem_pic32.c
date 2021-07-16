@@ -49,7 +49,7 @@
 //#include        <xc.h>
 #include        <stdlib.h>
 #include        <string.h>
-#include        "cmn.h"
+#include        "cmn_defs.h"
 #include        "mem_pic32.h"
 
 

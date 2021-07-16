@@ -232,6 +232,22 @@ extern "C" {
     );
 
    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        W32Array      *pDeepCopy = W32Array_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a W32ARRAY object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    W32ARRAY_DATA *  W32Array_DeepyCopy (
+        W32ARRAY_DATA    *this
+    );
+
+
     // DeleteFromBottom() returns the top element after deleting it,
     // but not releasing it. It needs to be released before it is
     // discarded.

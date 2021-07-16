@@ -693,7 +693,7 @@ extern "C" {
         else {
             return pNode;
         }
-        
+
 #ifdef NDEBUG
 #else
         TRC_OBJ(this, "\tstring: (%d) \"%s\"\n", AStr_getLength(pStr), AStr_getData(pStr));

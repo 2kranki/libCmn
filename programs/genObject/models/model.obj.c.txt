@@ -547,6 +547,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!${LNAME}_Validate(this)) {
@@ -557,6 +558,7 @@ extern "C" {
 
         // Put code here...
 
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Disable(this);
         
         // Return to caller.
@@ -582,6 +584,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!${LNAME}_Validate(this)) {
@@ -590,6 +593,7 @@ extern "C" {
         }
 #endif
         
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Enable(this);
 
         // Put code here...

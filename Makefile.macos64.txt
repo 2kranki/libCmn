@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 7/13/2021 23:05:42.000)
+# ( 7/16/2021 12:46:28.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1514,6 +1514,21 @@ OBJS += $(OBJDIR)/Visitor_object.o
 $(OBJDIR)/Visitor_object.o: $(SRCDIR)/Visitor_object.c $(SRCDIR)/Visitor.h $(SRCDIR)/Visitor_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/W32Array.o
+
+$(OBJDIR)/W32Array.o: $(SRCDIR)/W32Array.c $(SRCDIR)/W32Array.h $(SRCDIR)/W32Array_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/W32Array_json.o
+
+$(OBJDIR)/W32Array_json.o: $(SRCDIR)/W32Array_json.c $(SRCDIR)/W32Array.h $(SRCDIR)/W32Array_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/W32Array_object.o
+
+$(OBJDIR)/W32Array_object.o: $(SRCDIR)/W32Array_object.c $(SRCDIR)/W32Array.h $(SRCDIR)/W32Array_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/W32Str.o
 
 $(OBJDIR)/W32Str.o: $(SRCDIR)/W32Str.c $(SRCDIR)/W32Str.h $(SRCDIR)/W32Str_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2833,6 +2848,12 @@ Value_test: $(TEST_SRC)/Value_test.c $(SRCDIR)/Value.h $(SRCDIR)/Value_internal.
 TESTS += Visitor_test
 
 Visitor_test: $(TEST_SRC)/Visitor_test.c $(SRCDIR)/Visitor.h $(SRCDIR)/Visitor_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += W32Array_test
+
+W32Array_test: $(TEST_SRC)/W32Array_test.c $(SRCDIR)/W32Array.h $(SRCDIR)/W32Array_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

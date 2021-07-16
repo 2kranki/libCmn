@@ -147,7 +147,7 @@ int             test_W32Array_Copy01 (
     TINYTEST_FALSE( (OBJ_NIL == pObj1) );
     if (pObj1) {
 
-        //obj_TraceSet(pObj1, true);       
+        obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_W32ARRAY);
         TINYTEST_TRUE( (fRc) );
         i = W32Array_getSize(pObj1);
@@ -270,7 +270,7 @@ int             test_W32Array_Test01 (
 )
 {
     //ERESULT         eRc = ERESULT_SUCCESS;
-    W32ARRAY_DATA       *pObj = OBJ_NIL;
+    W32ARRAY_DATA   *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
