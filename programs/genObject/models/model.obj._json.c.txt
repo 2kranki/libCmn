@@ -150,6 +150,10 @@ extern "C" {
         }
         
         eRc =  ${LNAME}_ParseJsonFields(pParser, pObject);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pObject);
+            pObject = OBJ_NIL;
+        }
 
         // Return to caller.
     exit00:

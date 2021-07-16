@@ -1,8 +1,9 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   W32Str_JSON.c
+ * File:   W32Str_json.c
  *
- * Created on 10/13/2017 from AStr_JSON
+ *  Generated 07/15/2021 16:05:13
+ *
  */
 
 
@@ -45,20 +46,19 @@
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
-#include    <crc.h>
+#include    <AStr_internal.h>
 #include    <dec.h>
-#include    <hex.h>
 #include    <JsonIn.h>
 #include    <JsonOut.h>
 #include    <Node.h>
-#include    <NodeArray.h>
 #include    <NodeHash.h>
+#include    <SrcErrors.h>
 #include    <utf8.h>
 
-//#define TRACE_FUNCTIONS 1
 
 
-#ifdef	__cplusplus
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -88,17 +88,17 @@ extern "C" {
         //NODE_DATA       *pNode = OBJ_NIL;
         //NODEARRAY_DATA  *pArray = OBJ_NIL;
         //NODEHASH_DATA   *pHash = OBJ_NIL;
-        //uint32_t        i;
+        uint32_t        i;
         //uint32_t        iMax;
         //int64_t         intIn;
         ASTR_DATA       *pWrk;
         //uint8_t         *pData;
+        //uint32_t        len;
         uint32_t        len = 0;
         uint32_t        crc = 0;
         W32CHR_T        ch;
         const
         char            *pSrc;
-        uint32_t        i;
 
         (void)JsonIn_FindU32NodeInHashA(pParser, "crc", &crc);
         (void)JsonIn_FindU32NodeInHashA(pParser, "len", &len);
@@ -135,21 +135,21 @@ extern "C" {
     exit00:
         return eRc;
     }
-
-
-
+    
+    
+    
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    W32STR_DATA *   W32Str_ParseJsonObject (
+    W32STR_DATA * W32Str_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        W32STR_DATA     *pObject = OBJ_NIL;
+        W32STR_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
@@ -168,7 +168,7 @@ extern "C" {
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
-
+        
         eRc =  W32Str_ParseJsonFields(pParser, pObject);
         if (ERESULT_FAILED(eRc)) {
             obj_Release(pObject);
@@ -179,9 +179,9 @@ extern "C" {
     exit00:
         return pObject;
     }
-
-
-
+    
+    
+    
 
     
     
@@ -195,22 +195,22 @@ extern "C" {
     //===============================================================
     
 
-    W32STR_DATA *   W32Str_NewFromJSONString(
+    W32STR_DATA *   W32Str_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
-        ERESULT         eRc = ERESULT_SUCCESS;
-        W32STR_DATA     *pObject = OBJ_NIL;
+        ERESULT         eRc;
+        W32STR_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
         if (ERESULT_FAILED(eRc)) {
+            SrcErrors_Print(OBJ_NIL, stderr);
             goto exit00;
         }
         
         pObject = W32Str_ParseJsonObject(pParser);
-        
         
         // Return to caller.
     exit00:
@@ -223,17 +223,17 @@ extern "C" {
     
     
 
-    W32STR_DATA *   W32Str_NewFromJSONStringA(
+    W32STR_DATA * W32Str_NewFromJsonStringA (
         const
-        char            *pString
+        char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        W32STR_DATA     *pObject = OBJ_NIL;
+        W32STR_DATA   *pObject = OBJ_NIL;
         
-        if (pString) {
-            pStr = AStr_NewA(pString);
-            pObject = W32Str_NewFromJSONString(pStr);
+        if (pStringA) {
+            pStr = AStr_NewA(pStringA);
+            pObject = W32Str_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -258,7 +258,7 @@ extern "C" {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     W32Str_ToJson (
-        W32STR_DATA     *this
+        W32STR_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -274,26 +274,26 @@ extern "C" {
         }
 #endif
         pInfo = obj_getInfo(this);
-
+        
         pStr = AStr_New();
         if (pStr) {
              AStr_AppendPrint(pStr,
                               "{ \"objectType\":\"%s\",\n",
                               pInfo->pClassName
              );
-
-            eRc = W32Str_ToJsonFields(this, pStr);
+     
+            eRc = W32Str_ToJsonFields(this, pStr);      
 
             AStr_AppendPrint(pStr, "}\t/* %s */\n", pInfo->pClassName);
         }
 
         return pStr;
     }
-
-
+    
+    
     /*!
      Append the json representation of the object's fields to the given
-     string. This helps facilitate parsing the fields from an inheriting
+     string. This helps facilitate parsing the fields from an inheriting 
      object.
      @param this        Object Pointer
      @param pStr        String Pointer to be appended to.
@@ -306,7 +306,7 @@ extern "C" {
     )
     {
         //ERESULT         eRc = ERESULT_SUCCESS;
-#ifdef XYZZZY
+#ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
             uint32_t        type,
@@ -362,16 +362,12 @@ extern "C" {
 
         return ERESULT_SUCCESS;
     }
-
-
-
-
     
     
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

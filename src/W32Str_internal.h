@@ -1,12 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   W32Str_internal.h
- *	Generated 08/14/2015 07:22:10
+ *  Generated 07/15/2021 16:05:13
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
+
 
 /*
  This is free and unencumbered software released into the public domain.
@@ -38,76 +39,130 @@
 
 
 
-#ifndef W32STR_INTERNAL_H
-#define	W32STR_INTERNAL_H
-
-
 #include        <W32Str.h>
 #include        <array_internal.h>
 #include        <JsonIn.h>
-#include        <Path.h>
 
-#ifdef	__cplusplus
+
+#ifndef W32STR_INTERNAL_H
+#define W32STR_INTERNAL_H
+
+
+
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
 
+
+
+    //---------------------------------------------------------------
+    //                  Object Data Description
+    //---------------------------------------------------------------
+
 #pragma pack(push, 1)
-struct W32Str_data_s	{
+struct W32Str_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     ARRAY_DATA      super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    uint16_t        size;           // maximum number of elements
+    uint16_t        rsvd16;
+    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
+    struct W32Str_class_data_s  W32Str_ClassObj;
+
+    extern
     const
-    W32STR_VTBL     W32Str_Vtbl;
+    W32STR_VTBL         W32Str_Vtbl;
 
 
 
-    // Internal Functions
-    void            W32Str_Dealloc(
+    //---------------------------------------------------------------
+    //              Class Object Method Forward Definitions
+    //---------------------------------------------------------------
+
+#ifdef  W32STR_SINGLETON
+    W32STR_DATA *     W32Str_getSingleton (
+        void
+    );
+
+    bool            W32Str_setSingleton (
+     W32STR_DATA       *pValue
+);
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //              Internal Method Forward Definitions
+    //---------------------------------------------------------------
+
+    OBJ_IUNKNOWN *  W32Str_getSuperVtbl (
+        W32STR_DATA     *this
+    );
+
+
+    ERESULT         W32Str_Assign (
+        W32STR_DATA    *this,
+        W32STR_DATA    *pOther
+    );
+
+
+    W32STR_DATA *       W32Str_Copy (
+        W32STR_DATA     *this
+    );
+
+
+    void            W32Str_Dealloc (
         OBJ_ID          objId
     );
 
-    
-    /*!
-     Parse the object from an established parser.
-     @param pParser     an established jsonIn Parser Object
-     @param pObject     an Object to be filled in with the
-                        parsed fields.
-     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT     W32Str_ParseJsonFields (
-        JSONIN_DATA     *pParser,
-        W32STR_DATA     *pObject
-    );
 
-
+#ifdef  W32STR_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    W32STR_DATA *   W32Str_ParseJsonObject (
+    W32STR_DATA *       W32Str_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
 
-    void *          W32Str_QueryInfo(
+    /*!
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object.
+     @param pParser     an established jsonIn Parser Object
+     @param pObject     an Object to be filled in with the
+                        parsed fields.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         W32Str_ParseJsonFields (
+        JSONIN_DATA     *pParser,
+        W32STR_DATA     *pObject
+    );
+#endif
+
+
+    void *          W32Str_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
-    
+
+#ifdef  W32STR_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
@@ -117,18 +172,17 @@ struct W32Str_data_s	{
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
-                ERESULT_* error code.
+                JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     W32Str_ToJson (
-        W32STR_DATA     *this
+        W32STR_DATA      *this
     );
 
 
     /*!
      Append the json representation of the object's fields to the given
-     string. This helps facilitate parsing the fields from an inheriting
+     string. This helps facilitate parsing the fields from an inheriting 
      object.
      @param this        Object Pointer
      @param pStr        String Pointer to be appended to.
@@ -139,20 +193,23 @@ struct W32Str_data_s	{
         W32STR_DATA     *this,
         ASTR_DATA       *pStr
     );
+#endif
+
+
 
 
 #ifdef NDEBUG
 #else
-    bool			W32Str_Validate(
-        W32STR_DATA     *cbp
+    bool            W32Str_Validate (
+        W32STR_DATA       *this
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* WSTR_INTERNAL_H */
+#endif  /* W32STR_INTERNAL_H */
 
