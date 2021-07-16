@@ -70,6 +70,7 @@
 
 
 
+typedef struct W32Array_data_s  W32ARRAY_DATA;            // Inherits from OBJ
 
 
 #ifdef  __cplusplus
@@ -330,6 +331,24 @@ extern "C" {
     );
 
 
+    /*! Scan the string until one of the characters in the given
+        NUL-terminated array/string are found. Start searching at the
+        given index and bump it as the search continues.
+     @param     this    object pointer
+     @param     pIndex  Index into the string to start at and where the
+                        scan stopped. 0 will be assumed to be 1.
+     @param     pChrs   pointer to a wide char NUL-terminated string.
+     @return    If one of the chars is found, ERESULT_SUCCESS.
+                ERESULT_OUT_OF_RANGE if none of the chars are found.
+     */
+    ERESULT         W32Str_CharsFindNextW32(
+        W32STR_DATA     *this,
+        uint32_t        *pIndex,
+        const
+        W32CHR_T        *pChrs          // NUL-Terminated array of wide chars
+    );
+
+
     // Search the string backwards for the provided char. If
     // *pIndex is set to 0, then the search begins at the
     // end of the string.
@@ -474,13 +493,14 @@ extern "C" {
 
 
     /*! Scan the string until one of the characters in the given
-        nul-terminated string are found. Start searching at the
-        given index and bump it as the search continues.
+        nul-terminated string are found.  Compare the remainder
+        of the string for equality.
      @param     this    object pointer
      @param     pStrW32 pointer to a wide char nul-terminated string.
      @param     pIndex  Index into the string to start at and where the
                         scan stopped.
-     @return    If one of the chars is found, ERESULT_SUCCESS.
+     @return    If the string is found, ERESULT_SUCCESS and the index
+                is adjusted to the beginning of where the string is.
                 ERESULT_OUT_OF_RANGE if none of the chars are found.
      */
     ERESULT         W32Str_FindNextW32(
@@ -576,6 +596,20 @@ extern "C" {
         uint32_t        *pIndex,            // [in-out]
         const
         W32CHR_T        *pSetStr
+    );
+
+
+    W32ARRAY_DATA * W32Str_SplitOnCharW32(
+        W32STR_DATA     *this,
+        const
+        W32CHR_T        chr
+    );
+
+
+    W32ARRAY_DATA * W32Str_SplitOnCharsW32(
+        W32STR_DATA     *this,
+        const
+        W32CHR_T        *pChrs              // NUL-Terminated Array
     );
 
 

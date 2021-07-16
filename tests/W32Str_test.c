@@ -26,6 +26,7 @@
 #include    <test_defs.h>
 #include    <trace.h>
 #include    <W32Str_internal.h>
+#include    <W32Array_internal.h>
 #include    <JsonIn.h>
 #ifdef  W32STR_JSON_SUPPORT
 #   include    <SrcErrors.h>
@@ -1277,8 +1278,579 @@ int         test_W32Str_CRC01(
 
 
 
+int         test_W32Str_SplitOn01(
+    const
+    char            *pTestName
+)
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    //ERESULT         eRc;
+    W32STR_DATA     *pStr = OBJ_NIL;
+    W32ARRAY_DATA   *pArray = OBJ_NIL;
+    //int             len = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = W32Str_New();
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pArray = W32Str_SplitOnCharW32(pObj, '/');
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == W32Array_getSize(pArray)) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_W32Str_SplitOn02(
+    const
+    char            *pTestName
+)
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    //ERESULT         eRc;
+    W32STR_DATA     *pStr = OBJ_NIL;
+    W32ARRAY_DATA   *pArray = OBJ_NIL;
+    //int             len = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = W32Str_NewA("123");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pArray = W32Str_SplitOnCharW32(pObj, '/');
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (1 == W32Array_getSize(pArray)) );
+        pStr = W32Array_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "123")) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_W32Str_SplitOn03(
+    const
+    char            *pTestName
+)
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    //ERESULT         eRc;
+    W32STR_DATA     *pStr = OBJ_NIL;
+    W32ARRAY_DATA   *pArray = OBJ_NIL;
+    //int             len = 0;
+    const
+    char            *pTestString = "1/2/3/4/5";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    fprintf(stderr, "\tTest String: %s\n", pTestString);
+    pObj = W32Str_NewA(pTestString);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pArray = W32Str_SplitOnCharW32(pObj, '/');
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        fprintf(stderr, "\tArray Size = %d\n", W32Array_getSize(pArray));
+        XCTAssertTrue( (5 == W32Array_getSize(pArray)) );
+        pStr = W32Array_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "1")) );
+        pStr = W32Array_Get(pArray, 2);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "2")) );
+        pStr = W32Array_Get(pArray, 3);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "3")) );
+        pStr = W32Array_Get(pArray, 4);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "4")) );
+        pStr = W32Array_Get(pArray, 5);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "5")) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_W32Str_SplitOn04(
+    const
+    char            *pTestName
+                                )
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    //ERESULT         eRc;
+    W32STR_DATA     *pStr = OBJ_NIL;
+    W32ARRAY_DATA   *pArray = OBJ_NIL;
+    int             iRc;
+    const
+    char            *pTestString = "1/";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    fprintf(stderr, "\tTest String: %s\n", pTestString);
+    pObj = W32Str_NewA(pTestString);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pArray = W32Str_SplitOnCharW32(pObj, '/');
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        fprintf(stderr, "\tArray Size = %d\n", W32Array_getSize(pArray));
+        XCTAssertTrue( (1 == W32Array_getSize(pArray)) );
+        pStr = W32Array_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        fprintf(stderr, "\tString Length = %d\n", W32Str_getLength(pStr));
+        XCTAssertTrue( (1 == W32Str_getLength(pStr)) );
+        {
+            W32CHR_T        chrw = W32Str_CharGetW32(pStr, 1);
+            fprintf(stderr, "\tstr: %lc\n", chrw);
+        }
+        iRc = W32Str_CompareA(pStr, "1");
+        XCTAssertTrue( (0 == iRc) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_W32Str_SplitOn05(
+    const
+    char            *pTestName
+)
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    //ERESULT         eRc;
+    W32STR_DATA     *pStr = OBJ_NIL;
+    W32ARRAY_DATA   *pArray = OBJ_NIL;
+    //int             len = 0;
+    const
+    char            *pTestString = "/";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    fprintf(stderr, "\tTest String: %s\n", pTestString);
+    pObj = W32Str_NewA(pTestString);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pArray = W32Str_SplitOnCharW32(pObj, '/');
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        fprintf(stderr, "\tArray Size = %d\n", W32Array_getSize(pArray));
+        XCTAssertTrue( (1 == W32Array_getSize(pArray)) );
+        pStr = W32Array_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_getLength(pStr)) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_W32Str_FindChars(
+    const
+    char        *pTestName
+)
+{
+    W32STR_DATA *pObj = OBJ_NIL;
+    ERESULT     eRc;
+    const
+    char        *pStr1 = "abc\tcbs\tnbc\tfox\n";
+    W32CHR_T    chrs[3] = {0};
+    uint32_t    offset = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = W32Str_NewA(pStr1);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        chrs[0] = '\t';
+        chrs[1] = '\n';
+        offset = 0;
+
+        eRc = W32Str_CharsFindNextW32(pObj, &offset, chrs);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (4 == offset) );
+        offset += 1;
+
+        eRc = W32Str_CharsFindNextW32(pObj, &offset, chrs);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (8 == offset) );
+        offset += 1;
+
+        eRc = W32Str_CharsFindNextW32(pObj, &offset, chrs);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (12 == offset) );
+        offset += 1;
+
+        eRc = W32Str_CharsFindNextW32(pObj, &offset, chrs);
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
+        XCTAssertTrue( (16 == offset) );
+        offset += 1;
+
+        eRc = W32Str_CharsFindNextW32(pObj, &offset, chrs);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == offset) );
+
+        chrs[0] = '\n';
+        chrs[1] = '\t';
+        offset = 0;
+
+        eRc = W32Str_CharsFindNextW32(pObj, &offset, chrs);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (4 == offset) );
+        offset += 1;
+
+        eRc = W32Str_CharsFindNextW32(pObj, &offset, chrs);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (8 == offset) );
+        offset += 1;
+
+        eRc = W32Str_CharsFindNextW32(pObj, &offset, chrs);
+        XCTAssertTrue( (ERESULT_SUCCESS == eRc) );
+        XCTAssertTrue( (12 == offset) );
+        offset += 1;
+
+        eRc = W32Str_CharsFindNextW32(pObj, &offset, chrs);
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
+        XCTAssertTrue( (16 == offset) );
+        offset += 1;
+
+        eRc = W32Str_CharsFindNextW32(pObj, &offset, chrs);
+        XCTAssertTrue( (ERESULT_FAILED(eRc)) );
+        XCTAssertTrue( (0 == offset) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_W32Str_SplitsOn01(
+    const
+    char            *pTestName
+)
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    //ERESULT         eRc;
+    W32STR_DATA     *pStr = OBJ_NIL;
+    W32ARRAY_DATA   *pArray = OBJ_NIL;
+    //int             len = 0;
+    const
+    W32CHR_T        wchrs[3] = {'/', '\n', 0};
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = W32Str_New();
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        pArray = W32Str_SplitOnCharsW32(pObj, wchrs);
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (0 == W32Array_getSize(pArray)) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_W32Str_SplitsOn02(
+    const
+    char            *pTestName
+)
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    //ERESULT         eRc;
+    W32STR_DATA     *pStr = OBJ_NIL;
+    W32ARRAY_DATA   *pArray = OBJ_NIL;
+    //int             len = 0;
+    W32CHR_T        chrs[3] = {0};
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = W32Str_NewA("123");
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        chrs[0] = '/';
+        pArray = W32Str_SplitOnCharsW32(pObj, chrs);
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        XCTAssertTrue( (1 == W32Array_getSize(pArray)) );
+        pStr = W32Array_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "123")) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_W32Str_SplitsOn03(
+    const
+    char            *pTestName
+)
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    //ERESULT         eRc;
+    W32STR_DATA     *pStr = OBJ_NIL;
+    W32ARRAY_DATA   *pArray = OBJ_NIL;
+    //int             len = 0;
+    const
+    char            *pTestString = "1/2/3/4/5";
+    W32CHR_T        chrs[3] = {0};
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    fprintf(stderr, "\tTest String: %s\n", pTestString);
+    pObj = W32Str_NewA(pTestString);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        chrs[0] = '/';
+        pArray = W32Str_SplitOnCharsW32(pObj, chrs);
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        fprintf(stderr, "\tArray Size = %d\n", W32Array_getSize(pArray));
+        XCTAssertTrue( (5 == W32Array_getSize(pArray)) );
+        pStr = W32Array_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "1")) );
+        pStr = W32Array_Get(pArray, 2);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "2")) );
+        pStr = W32Array_Get(pArray, 3);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "3")) );
+        pStr = W32Array_Get(pArray, 4);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "4")) );
+        pStr = W32Array_Get(pArray, 5);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_CompareA(pStr, "5")) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_W32Str_SplitsOn04(
+    const
+    char            *pTestName
+                                )
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    //ERESULT         eRc;
+    W32STR_DATA     *pStr = OBJ_NIL;
+    W32ARRAY_DATA   *pArray = OBJ_NIL;
+    int             iRc;
+    const
+    char            *pTestString = "1/";
+    W32CHR_T        chrs[3] = {0};
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    fprintf(stderr, "\tTest String: %s\n", pTestString);
+    pObj = W32Str_NewA(pTestString);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        chrs[0] = '/';
+        pArray = W32Str_SplitOnCharsW32(pObj, chrs);
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        fprintf(stderr, "\tArray Size = %d\n", W32Array_getSize(pArray));
+        XCTAssertTrue( (1 == W32Array_getSize(pArray)) );
+        pStr = W32Array_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        fprintf(stderr, "\tString Length = %d\n", W32Str_getLength(pStr));
+        XCTAssertTrue( (1 == W32Str_getLength(pStr)) );
+        {
+            W32CHR_T        chrw = W32Str_CharGetW32(pStr, 1);
+            fprintf(stderr, "\tstr: %lc\n", chrw);
+        }
+        iRc = W32Str_CompareA(pStr, "1");
+        XCTAssertTrue( (0 == iRc) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_W32Str_SplitsOn05(
+    const
+    char            *pTestName
+)
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    //ERESULT         eRc;
+    W32STR_DATA     *pStr = OBJ_NIL;
+    W32ARRAY_DATA   *pArray = OBJ_NIL;
+    //int             len = 0;
+    const
+    char            *pTestString = "/";
+    W32CHR_T        chrs[3] = {0};
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    fprintf(stderr, "\tTest String: %s\n", pTestString);
+    pObj = W32Str_NewA(pTestString);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        chrs[0] = '/';
+        pArray = W32Str_SplitOnCharsW32(pObj, chrs);
+        XCTAssertFalse( (OBJ_NIL == pArray) );
+        //eRc = obj_getLastError(pObj);
+        //XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        //XCTAssertTrue( (AStr_getLength(pStr) == AStr_getLength((ASTR_DATA *)pObj)) );
+        fprintf(stderr, "\tArray Size = %d\n", W32Array_getSize(pArray));
+        XCTAssertTrue( (1 == W32Array_getSize(pArray)) );
+        pStr = W32Array_Get(pArray, 1);
+        XCTAssertFalse( (OBJ_NIL == pStr) );
+        XCTAssertTrue( (0 == W32Str_getLength(pStr)) );
+
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+    obj_Release(pStr);
+    pStr = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_W32Str);
+    TINYTEST_ADD_TEST(test_W32Str_SplitsOn05,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_W32Str_SplitsOn04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_W32Str_SplitsOn03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_W32Str_SplitsOn02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_W32Str_SplitsOn01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_W32Str_FindChars,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_W32Str_SplitOn05,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_W32Str_SplitOn04,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_W32Str_SplitOn03,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_W32Str_SplitOn02,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_W32Str_SplitOn01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_W32Str_CRC01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_W32Str_EscapeForC,setUp,tearDown);
     TINYTEST_ADD_TEST(test_W32Str_Trim,setUp,tearDown);

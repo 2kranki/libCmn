@@ -1013,10 +1013,63 @@ extern "C" {
         }
 
         pChr = array_Ptr((ARRAY_DATA *)this, index);
-        for ( i=index; i<lenStr; ++i,++pChr ) {
+        for ( i=index; i<(lenStr+1); ++i,++pChr ) {
             if (chr == *pChr) {
                 *pIndex = i;
                 return ERESULT_SUCCESS;
+            }
+        }
+
+        // Return to caller.
+        *pIndex = 0;
+        return ERESULT_OUT_OF_RANGE;
+    }
+
+
+    ERESULT         W32Str_CharsFindNextW32(
+        W32STR_DATA     *this,
+        uint32_t        *pIndex,
+        const
+        W32CHR_T        *pChrs
+    )
+    {
+        uint32_t        i;
+        uint32_t        index;
+        uint32_t        lenStr;
+        W32CHR_T        *pChr;
+        const
+        W32CHR_T        *pNext;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32Str_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pIndex) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        lenStr = W32Str_getLength(this);
+
+        index = *pIndex;
+        if (0 == index) {
+            index = 1;
+        }
+        if (index > lenStr) {
+            *pIndex = 0;
+            return ERESULT_OUT_OF_RANGE;
+        }
+
+        pChr = array_Ptr((ARRAY_DATA *)this, index);
+        for ( i=index; i<(lenStr+1); ++i,++pChr ) {
+            pNext = pChrs;
+            while (*pNext) {
+                if (*pNext++ == *pChr) {
+                    *pIndex = i;
+                    return ERESULT_SUCCESS;
+                }
             }
         }
 
@@ -1995,7 +2048,6 @@ extern "C" {
     }
 
 
-
     //---------------------------------------------------------------
     //                       G e t  C h a r
     //---------------------------------------------------------------
@@ -2853,54 +2905,31 @@ extern "C" {
                 // index is unreliable.
                 i = iMax + 1;
                 len = i - start;
-                pWrkStr = OBJ_NIL;
-                if (len) {
-                    pWrkStr = W32Str_Mid(this, start, len);
-                    if (ERESULT_FAILED(eRc)) {
-                        obj_Release(pArray);
-                        return OBJ_NIL;
-                    }
-                }
-                else {
-                    pWrkStr = W32Str_New( );
-                    if (OBJ_NIL == pWrkStr) {
-                        obj_Release(pArray);
-                        return OBJ_NIL;
-                    }
-                }
-                eRc = W32Array_AppendStr(pArray, pWrkStr, NULL);
-                obj_Release(pWrkStr);
-                pWrkStr = OBJ_NIL;
-                if (ERESULT_FAILED(eRc)) {
+            } else {
+                i = index + 1;
+                len = index - start;
+            }
+            pWrkStr = OBJ_NIL;
+            if (len) {
+                pWrkStr = W32Str_Mid(this, start, len);
+                if (OBJ_NIL == pWrkStr) {
                     obj_Release(pArray);
                     return OBJ_NIL;
                 }
             }
             else {
-                i = index + 1;
-                len = index - start;
-                pWrkStr = OBJ_NIL;
-                if (len) {
-                    pWrkStr = W32Str_Mid(this, start, len);
-                    if (ERESULT_FAILED(eRc)) {
-                        obj_Release(pArray);
-                        return OBJ_NIL;
-                    }
-                }
-                else {
-                    pWrkStr = W32Str_New( );
-                    if (OBJ_NIL == pWrkStr) {
-                        obj_Release(pArray);
-                        return OBJ_NIL;
-                    }
-                }
-                eRc = W32Array_AppendStr(pArray, pWrkStr, NULL);
-                obj_Release(pWrkStr);
-                pWrkStr = OBJ_NIL;
-                if (ERESULT_FAILED(eRc)) {
+                pWrkStr = W32Str_New( );
+                if (OBJ_NIL == pWrkStr) {
                     obj_Release(pArray);
                     return OBJ_NIL;
                 }
+            }
+            eRc = W32Array_AppendStr(pArray, pWrkStr, NULL);
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pArray);
+                return OBJ_NIL;
             }
         }
 
@@ -2922,6 +2951,8 @@ extern "C" {
         uint32_t        index = 1;
         uint32_t        len;
         W32STR_DATA     *pWrkStr;
+        W32CHR_T        *pChr;
+        W32CHR_T        chr;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -2945,59 +2976,36 @@ extern "C" {
             // gets clobbered if the character is not found.
             index = i;
             start = index;
-            eRc = W32Str_FindNextW32(this, pChrs, &index);
+            eRc = W32Str_CharsFindNextW32(this, &index, pChrs);
             if (ERESULT_FAILED(eRc)) {
                 // index is unreliable.
                 i = iMax + 1;
                 len = i - start;
-                pWrkStr = OBJ_NIL;
-                if (len) {
-                    pWrkStr = W32Str_Mid(this, start, len);
-                    if (ERESULT_FAILED(eRc)) {
-                        obj_Release(pArray);
-                        return OBJ_NIL;
-                    }
-                }
-                else {
-                    pWrkStr = W32Str_New( );
-                    if (OBJ_NIL == pWrkStr) {
-                        obj_Release(pArray);
-                        return OBJ_NIL;
-                    }
-                }
-                eRc = W32Array_AppendStr(pArray, pWrkStr, NULL);
-                obj_Release(pWrkStr);
-                pWrkStr = OBJ_NIL;
-                if (ERESULT_FAILED(eRc)) {
+            } else {
+                i = index + 1;
+                len = index - start;
+            }
+            pWrkStr = OBJ_NIL;
+            if (len) {
+                pWrkStr = W32Str_Mid(this, start, len);
+                if (OBJ_NIL == pWrkStr) {
                     obj_Release(pArray);
                     return OBJ_NIL;
                 }
             }
             else {
-                i = index + 1;
-                len = index - start;
-                pWrkStr = OBJ_NIL;
-                if (len) {
-                    pWrkStr = W32Str_Mid(this, start, len);
-                    if (ERESULT_FAILED(eRc)) {
-                        obj_Release(pArray);
-                        return OBJ_NIL;
-                    }
-                }
-                else {
-                    pWrkStr = W32Str_New( );
-                    if (OBJ_NIL == pWrkStr) {
-                        obj_Release(pArray);
-                        return OBJ_NIL;
-                    }
-                }
-                eRc = W32Array_AppendStr(pArray, pWrkStr, NULL);
-                obj_Release(pWrkStr);
-                pWrkStr = OBJ_NIL;
-                if (ERESULT_FAILED(eRc)) {
+                pWrkStr = W32Str_New( );
+                if (OBJ_NIL == pWrkStr) {
                     obj_Release(pArray);
                     return OBJ_NIL;
                 }
+            }
+            eRc = W32Array_AppendStr(pArray, pWrkStr, NULL);
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pArray);
+                return OBJ_NIL;
             }
         }
 
