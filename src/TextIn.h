@@ -22,6 +22,9 @@
  *          or last just numbers.
  * Remarks
  *	1.      This object uses OBJ_FLAG_USER1 internally.
+ *  2.      This object discards all '\r' and uses '\n' to detect end
+ *          of line. If the input uses '\r' as a line terminator,
+ *          then it will not be properly handled.
  *
  * History
  *	01/21/2020 Regenerated
@@ -296,16 +299,37 @@ extern "C" {
         SRCLOC          *pLoc
     );
 
+    ERESULT         TextIn_GetLineW32 (
+        TEXTIN_DATA     *this,
+        int             size,
+        W32CHR_T        *pBuffer,
+        SRCLOC          *pLoc
+    );
+
+
+    /*!
+     Read a line of text into the given string or obtain a new
+     string. '\n' is considered the line terminator. '\r' is ignored.
+     @param     this    object pointer
+     @param     ppStr   return area for new string object pointer or
+                        if not OBJ_NIL on entry to method, truncate
+                        given string and use it.
+     @param     pLoc    Address of SRCLOC used to indicate the first
+                        character of the line
+     @return    If successful, ERESULT_SUCCESS and pBuffer contains the
+                line of UTF-8 text.  ERESULT_EOF_ERROR if end of file
+                is reached for first character.  Otherwise, an ERESULT_*
+                error.
+     */
     ERESULT         TextIn_GetLineAStr (
         TEXTIN_DATA     *this,
         ASTR_DATA       **ppStr,
         SRCLOC          *pLoc
     );
 
-    ERESULT         TextIn_GetLineW32 (
+    ERESULT         TextIn_GetLineW32Str (
         TEXTIN_DATA     *this,
-        int             size,
-        W32CHR_T        *pBuffer,
+        W32STR_DATA     **ppStr,
         SRCLOC          *pLoc
     );
 

@@ -247,6 +247,11 @@ extern "C" {
     );
 
 
+    uint32_t        W32Str_getSize (
+        W32STR_DATA       *this
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Methods ***
@@ -460,6 +465,22 @@ extern "C" {
         W32STR_DATA     *this,
         uint32_t        *pLen       // Optional returned string length
                                     // less terminating NUL
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        W32Str      *pDeepCopy = W32Str_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a W32STR object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    W32STR_DATA *   W32Str_DeepCopy (
+        W32STR_DATA     *this
     );
 
 

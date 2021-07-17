@@ -1243,9 +1243,14 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        pStr = AStr_New();
-        if (OBJ_NIL == pStr) {
-            return ERESULT_OUT_OF_MEMORY;
+        if (*ppStr) {
+            pStr = *ppStr;
+            AStr_Truncate(pStr, 0);
+        } else {
+            pStr = AStr_New();
+            if (OBJ_NIL == pStr) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
         }
 
         while (fMore) {
@@ -1378,6 +1383,92 @@ extern "C" {
             *pLoc = loc;
         }
         return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         TextIn_GetLineW32Str (
+        TEXTIN_DATA     *this,
+        W32STR_DATA     **ppStr,
+        SRCLOC          *pLoc
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             len = 0;
+        SRCLOC          loc = {0};
+        bool            fMore = true;
+        bool            fLoc = false;
+        W32STR_DATA     *pStr = OBJ_NIL;
+        TOKEN_FIELDS    *pTok;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIn_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == ppStr) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        if (*ppStr) {
+            pStr = *ppStr;
+            W32Str_Truncate(pStr, 0);
+        } else {
+            pStr = W32Str_New();
+            if (OBJ_NIL == pStr) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+
+        while (fMore) {
+            pTok = TextIn_NextToken(this);
+            switch (pTok->w32chr[0]) {
+                case '\n':
+                    fMore = false;
+                    break;
+                case '\r':
+                    break;
+                case ASCII_CPM_EOF:
+                case EOF:
+                    fMore = false;
+                    if (W32Str_getSize(pStr) == 0) {
+                        eRc = ERESULT_EOF_ERROR;
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    } else {
+                        eRc = ERESULT_SUCCESS;
+                    }
+                    break;
+                default:
+                    if (!fLoc) {
+                        loc = this->curTok.src;
+                        fLoc = true;
+                    }
+                    eRc = W32Str_AppendCharW32(pStr, 1, pTok->w32chr[0]);
+                    len++;
+                    if (this->upperLimit && (len >= this->upperLimit)) {
+                        fMore = false;
+                        (void)TextIn_SkipToEOL(this);
+                    }
+                    break;
+            }
+        }
+
+        // Return to caller.
+        if (ERESULT_OK(eRc)) {
+            (void)LineIndex_Add(this->pLineIndex, &loc);
+        }
+        if (pLoc) {
+            *pLoc = loc;
+        }
+        if (ppStr) {
+            *ppStr = pStr;
+        } else {
+            obj_Release(pStr);
+        }
+        return eRc;
     }
 
 
@@ -2211,7 +2302,7 @@ extern "C" {
                 eRc = ERESULT_EOF_ERROR;
                 break;
             }
-            if ((pTok->w32chr[0] == '\n') || (pTok->w32chr[0] == '\r')) {
+            if (pTok->w32chr[0] == '\n') {
                 break;
             }
         }

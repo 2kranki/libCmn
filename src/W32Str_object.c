@@ -470,7 +470,7 @@ W32STR_VTBL     W32Str_Vtbl = {
         (P_OBJ_ASSIGN)W32Str_Assign,
         (P_OBJ_COMPARE)W32Str_Compare,
         (P_OBJ_PTR)W32Str_Copy,
-        NULL,           // (P_OBJ_PTR)W32Str_DeepCopy,
+        (P_OBJ_PTR)W32Str_DeepCopy,
         (P_OBJ_HASH)W32Str_Hash,
     },
     // Put other object method names below this.

@@ -501,52 +501,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * W32Str_getStr (
-        W32STR_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!W32Str_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        W32Str_setStr (
-        W32STR_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!W32Str_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
@@ -1582,7 +1536,7 @@ extern "C" {
         }
 #endif
 
-        W32Str_setStr(this, OBJ_NIL);
+        //W32Str_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1610,13 +1564,13 @@ extern "C" {
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    W32STR_DATA *     W32Str_DeepyCopy (
-        W32STR_DATA       *this
+    W32STR_DATA *   W32Str_DeepCopy (
+        W32STR_DATA     *this
     )
     {
-        W32STR_DATA       *pOther = OBJ_NIL;
+        W32STR_DATA     *pOther = OBJ_NIL;
         ERESULT         eRc;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1628,8 +1582,8 @@ extern "C" {
         
         pOther = W32Str_New( );
         if (pOther) {
-            eRc = W32Str_Assign(this, pOther);
-            if (ERESULT_HAS_FAILED(eRc)) {
+            eRc = W32Str_Append(pOther, this);
+            if (ERESULT_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }

@@ -126,6 +126,11 @@ struct ${LNAME}_data_s	{
     );
 
 
+    ${UNAME}_DATA *     ${LNAME}_DeepCopy (
+        ${UNAME}_DATA       *this
+    );
+
+
 #ifdef  ${UNAME}_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.

@@ -499,7 +499,7 @@ extern "C" {
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ${UNAME}_DATA *     ${LNAME}_DeepyCopy (
+    ${UNAME}_DATA *     ${LNAME}_DeepCopy (
         ${UNAME}_DATA       *this
     )
     {

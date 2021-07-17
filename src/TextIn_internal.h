@@ -120,7 +120,7 @@ struct TextIn_data_s	{
     PATH_DATA       *pPath;
     const
     char            *pPathA;
-    uint8_t         *pBuffer;
+    //uint8_t         *pBuffer;
     uint16_t        fileIndex;
     uint16_t        upperLimit;         // If set upper length limit for line.
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
