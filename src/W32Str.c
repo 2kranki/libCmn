@@ -2645,7 +2645,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         W32Str_Remove(
-        W32STR_DATA        *cbp,
+        W32STR_DATA     *this,
         uint32_t        offset,
         uint32_t        len
     )
@@ -2656,12 +2656,12 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !W32Str_Validate( cbp ) ) {
+        if (!W32Str_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
 #endif
-        lenStr = W32Str_getLength(cbp);
+        lenStr = W32Str_getLength(this);
         if( (0 == offset) || (offset > lenStr) ) {
             return ERESULT_INVALID_PARAMETER;
         }
@@ -2669,7 +2669,51 @@ extern "C" {
             return ERESULT_OUT_OF_RANGE;
         }
 
-        eRc = array_Delete((ARRAY_DATA *)cbp, offset, len);
+        eRc = array_Delete((ARRAY_DATA *)this, offset, len);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         W32Str_RemoveNL(
+        W32STR_DATA     *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        lenStr;
+        uint32_t        offset;
+        W32CHR_T        *pData;
+        W32CHR_T        chr;
+        bool            fMore = true;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!W32Str_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_DATA;
+        }
+#endif
+        lenStr = W32Str_getLength(this);
+        if (lenStr == 0) {
+            return ERESULT_SUCCESS;
+        }
+        offset = lenStr;
+
+        pData = (W32CHR_T *)W32Str_getData(this);
+        while (fMore) {
+            fMore = false;
+            chr = *(pData + offset - 1);
+            if (('\r' == chr) || ('\n' == chr)) {
+                offset--;
+                fMore = true;
+            }
+        }
+
+        if (offset < lenStr) {
+            eRc = W32Str_Truncate(this, offset);
+        }
 
         // Return to caller.
         return eRc;
@@ -2905,8 +2949,6 @@ extern "C" {
         uint32_t        index = 1;
         uint32_t        len;
         W32STR_DATA     *pWrkStr;
-        W32CHR_T        *pChr;
-        W32CHR_T        chr;
 
         // Do initialization.
 #ifdef NDEBUG

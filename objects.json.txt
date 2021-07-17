@@ -57,6 +57,7 @@
         {name:"consumer",       desc:"Consumer side of Consumer/Producer", note:"Used in libJ1939"},
         {name:"crc",            "test":null},
         {name:"CsvFile",        deps:["ObjArray.h","Path.h","srcFile.h"]},
+        {name:"CsvRcd",         desc:"Comma-Delimited Record"},
         {name:"DateTime",       json:true},
         {name:"dec",            json:true},
         {name:"Dir",            deps:["dirEntry.h","Path.h"], json:true},

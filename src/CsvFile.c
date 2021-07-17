@@ -216,7 +216,7 @@ extern "C" {
 
 
 
-    OBJARRAY_DATA * CsvFile_ParseRecord(
+    OBJARRAY_DATA * CsvFile_ParseRcd(
         CSVFILE_DATA    *this
     )
     {
@@ -318,7 +318,7 @@ extern "C" {
 
 
 
-    OBJARRAY_DATA * CsvFile_ParseRecords(
+    OBJARRAY_DATA * CsvFile_ParseRcds(
         CSVFILE_DATA    *this
     )
     {
@@ -355,7 +355,7 @@ extern "C" {
             while (CsvFile_ParseComment(this) || CsvFile_ParseWS(this)) {
             }
 
-            pRecord = CsvFile_ParseRecord(this);
+            pRecord = CsvFile_ParseRcd(this);
             if (pRecord == OBJ_NIL) {
                 break;
             }
@@ -1270,7 +1270,7 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                      P a r s e  F i l e
+    //                          P a r s e
     //---------------------------------------------------------------
 
     OBJARRAY_DATA * CsvFile_ParseFile(
@@ -1292,7 +1292,7 @@ extern "C" {
         pMethod = ObjMethod_NewObjectA(this, "ErrorExit");
         SrcErrors_setFatalExit(OBJ_NIL, pMethod);
 
-        pRecords = CsvFile_ParseRecords(this);
+        pRecords = CsvFile_ParseRcds(this);
         if (pRecords == OBJ_NIL) {
             DEBUG_BREAK();
             return pRecords;

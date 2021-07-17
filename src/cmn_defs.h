@@ -227,6 +227,8 @@ extern "C" {
         OBJ_IDENT_CRC_CLASS,
         OBJ_IDENT_CSVFILE,              // Comma-Delimited File
         OBJ_IDENT_CSVFILE_CLASS,
+        OBJ_IDENT_CSVRCD,               // Comma-Delimited Record
+        OBJ_IDENT_CSVRCD_CLASS,
         OBJ_IDENT_DATETIME,             // Date & Time
         OBJ_IDENT_DATETIME_CLASS,
         OBJ_IDENT_DEC,                  // Decimal (Base 10)

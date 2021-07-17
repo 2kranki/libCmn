@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   W32Array.c
- *  Generated 07/15/2021 10:35:28
+ * File:   CsvRcd.c
+ *  Generated 07/16/2021 23:40:28
  *
  */
 
@@ -41,7 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <W32Array_internal.h>
+#include        <CsvRcd_internal.h>
+#include        <ascii.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -64,16 +65,450 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            W32Array_task_body (
-        void            *pData
+    bool            CsvRcd_ParseLineEnd(
+        CSVRCD_DATA     *this
+    );
+    static
+    W32STR_DATA *   CsvRcd_ParseField(
+        CSVRCD_DATA     *this
+    );
+    static
+    W32ARRAY_DATA * CsvRcd_ParseRcd(
+        CSVRCD_DATA     *this
+    );
+    static
+    bool            CsvRcd_ParseSEP(
+        CSVRCD_DATA     *this
+    );
+    static
+    W32STR_DATA *   CsvRcd_ParseStringEscaped(
+        CSVRCD_DATA     *this
+    );
+    static
+    W32STR_DATA *   CsvRcd_ParseStringNonEscaped(
+        CSVRCD_DATA     *this
+    );
+    static
+    W32CHR_T        CsvRcd_ParseTEXTDATA(
+        CSVRCD_DATA     *this
+    );
+    static
+    bool            CsvRcd_ParseWS(
+        CSVRCD_DATA     *this
+    );
+
+
+
+    static
+    bool            CsvRcd_ParseAddError(
+        CSVRCD_DATA     *this,
+        ASTR_DATA       *pError
     )
     {
-        //W32ARRAY_DATA  *this = pData;
-        
+
+        if (OBJ_NIL == this->pErrors) {
+            this->pErrors = AStrArray_New();
+            if (OBJ_NIL == this->pErrors) {
+                return false;
+            }
+        }
+
+        if (pError) {
+            AStrArray_AppendStr(this->pErrors, pError, NULL);
+            return true;
+        }
+
+        return false;
     }
+
+
+
+    // Look for <cr>[<lf>] or <lf>[<cr>] and discard
+    // if found, but return true.
+    static
+    bool            CsvRcd_ParseLineEnd(
+        CSVRCD_DATA     *this
+    )
+    {
+        W32CHR_T        chr1;
+        W32CHR_T        chr2;
+
+        // Validate the input parameters.
+        if (this->pChr == this->pEnd)
+            return true;
+        if (0 == *this->pChr)
+            return true;
+
+        chr1 = *this->pChr;
+        chr2 = *(this->pChr + 1);
+        if (chr1 == this->lineEnd1) {
+            this->pChr++; this->col++;
+            if (chr2 == this->lineEnd2) {
+                this->pChr++; this->col++;
+            }
+            return true;
+        } else if (chr1 == this->lineEnd2) {
+            this->pChr++; this->col++;
+            if (chr2 == this->lineEnd1) {
+                this->pChr++; this->col++;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+    static
+    W32STR_DATA *   CsvRcd_ParseField(
+        CSVRCD_DATA     *this
+    )
+    {
+        W32STR_DATA     *pStr = OBJ_NIL;
+        bool            fRc;
+
+        // Validate the input parameters.
+        if (this->pChr == this->pEnd)
+            return OBJ_NIL;
+        if (0 == *this->pChr)
+            return OBJ_NIL;
+
+        CsvRcd_ParseWS(this);
+        pStr = CsvRcd_ParseStringEscaped(this);
+        if (OBJ_NIL == pStr) {
+            pStr = CsvRcd_ParseStringNonEscaped(this);
+        }
+        fRc = CsvRcd_ParseSEP(this);
+        if (!fRc) {
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        return pStr;
+    }
+
+
+
+    static
+    W32ARRAY_DATA * CsvRcd_ParseRcd(
+        CSVRCD_DATA     *this
+    )
+    {
+        ERESULT         eRc;
+        W32ARRAY_DATA   *pRecord = OBJ_NIL;
+        W32STR_DATA     *pStr;
+        uint32_t        size;
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!CsvRcd_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (OBJ_NIL == this->pStr) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
 #endif
+        this->pChr = (W32CHR_T *)W32Str_getData(this->pStr);
+        size = W32Str_getLength(this->pStr);
+        this->pEnd = this->pChr + size;
+        if (this->pChr == this->pEnd)
+            return OBJ_NIL;
+        if (0 == *this->pChr)
+            return OBJ_NIL;
+
+        pStr = CsvRcd_ParseField(this);
+        if (pStr == OBJ_NIL) {
+            return OBJ_NIL;
+        }
+
+        pRecord = W32Array_New();
+        if (pRecord == OBJ_NIL) {
+            return OBJ_NIL;
+        }
+
+        eRc = W32Array_AppendStr(pRecord, pStr, NULL);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pRecord);
+            return OBJ_NIL;
+        }
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        for (;;) {
+            pStr = CsvRcd_ParseField(this);
+            if (pStr == OBJ_NIL) {
+                break;
+            }
+            eRc = W32Array_AppendStr(pRecord, pStr, NULL);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(pRecord);
+                return OBJ_NIL;
+            }
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+
+            if (CsvRcd_ParseLineEnd(this))
+                break;
+        }
+
+        return pRecord;
+    }
+
+
+    // Scan field terminator.
+    static
+    bool            CsvRcd_ParseSEP(
+        CSVRCD_DATA     *this
+    )
+    {
+        W32CHR_T        chr;
+
+        // Validate the input parameters.
+        if (this->pChr == this->pEnd)
+            return false;
+        if (0 == *this->pChr)
+            return true;
+
+        CsvRcd_ParseWS(this);
+
+        chr = *this->pChr;
+        if (chr == this->fieldSeparator) {
+            this->pChr++; this->col++;
+            return true;
+        } else if (chr == this->lineEnd1) {
+            this->pChr++; this->col++;
+            return true;
+        } else if (chr == this->lineEnd2) {
+            this->pChr++; this->col++;
+            return true;
+        } else if (chr == 0) {
+            this->pChr++; this->col++;
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+    static
+    W32STR_DATA *   CsvRcd_ParseStringEscaped(
+        CSVRCD_DATA     *this
+    )
+    {
+        W32CHR_T        chr;
+        W32STR_DATA     *pStr = OBJ_NIL;
+
+        // Validate the input parameters.
+        if (this->pChr == this->pEnd)
+            return OBJ_NIL;
+        if (0 == *this->pChr)
+            return OBJ_NIL;
+
+        chr = *this->pChr;
+        if (chr == '"') {
+            this->pChr++; this->col++;
+        } else {
+            return pStr;
+        }
+        pStr = W32Str_New();
+        if (OBJ_NIL == pStr) {
+            return OBJ_NIL;
+        }
+
+        for (;;) {
+            if (this->pChr == this->pEnd)
+                return OBJ_NIL;
+            if (0 == *this->pChr)
+                return OBJ_NIL;
+
+            chr = CsvRcd_ParseTEXTDATA(this);
+            if (chr) {
+                W32Str_AppendCharW32(pStr, 1, chr);
+                this->pChr++; this->col++;
+                continue;
+            }
+
+            chr = *this->pChr;
+            if (chr == '"') {
+                chr = *(this->pChr + 1);
+                if (chr == '"') {
+                    W32Str_AppendCharW32(pStr, 1, '"');
+                    this->pChr++; this->col++;
+                }
+                else {
+                    break;
+                }
+            }
+            else if (chr == this->fieldSeparator) {
+                W32Str_AppendCharW32(pStr, 1, this->fieldSeparator);
+                this->pChr++; this->col++;
+            }
+            else if ((chr == '\f') || (chr == '\n') || (chr == '\r') || (chr == '\t')) {
+                W32Str_AppendCharW32(pStr, 1, chr);
+                this->pChr++; this->col++;
+            }
+            else if (chr == '\\') {
+                chr = *(this->pChr + 1);
+                if (chr == '"') {
+                    W32Str_AppendCharW32(pStr, 1, '"');
+                    this->pChr++; this->col++;
+                }
+                else {
+                    W32Str_AppendCharW32(pStr, 1, '\\');
+                    this->pChr++; this->col++;
+                }
+            }
+            else {
+                ASTR_DATA           *pError = AStr_New();
+                AStr_AppendPrint(
+                                 pError,
+                                 "Illegal char in Escaped String at col %d\n",
+                                 this->col
+                );
+                CsvRcd_ParseAddError(this, pError);
+                obj_Release(pError);
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+                break;
+            }
+        }
+
+        chr = *this->pChr;
+        if (chr == '"') {
+            this->pChr++; this->col++;
+        } else {
+            ASTR_DATA           *pError = AStr_New();
+            AStr_AppendPrint(
+                             pError,
+                             "Illegal terminator in Escaped String at col %d\n",
+                             this->col
+            );
+            CsvRcd_ParseAddError(this, pError);
+            obj_Release(pError);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        return pStr;
+    }
+
+
+
+    static
+    W32STR_DATA *   CsvRcd_ParseStringNonEscaped(
+        CSVRCD_DATA     *this
+    )
+    {
+        ERESULT         eRc;
+        W32STR_DATA     *pStr = OBJ_NIL;
+        W32CHR_T        chr;
+
+        // Validate the input parameters.
+        if (this->pChr == this->pEnd)
+            return OBJ_NIL;
+        if (0 == *this->pChr)
+            return OBJ_NIL;
+        pStr = W32Str_New();
+        if (OBJ_NIL == pStr) {
+            return OBJ_NIL;
+        }
+
+        for (;;) {
+            if (this->pChr == this->pEnd)
+                break;
+            if (0 == *this->pChr)
+                break;
+
+            chr = *this->pChr;
+            if (chr == this->fieldSeparator) {
+                break;
+            } else if ((chr == this->lineEnd1) || (chr == this->lineEnd2)) {
+                break;
+            }
+            eRc = W32Str_AppendCharW32(pStr, 1, chr);
+            this->pChr++; this->col++;
+        }
+        eRc = W32Str_Trim(pStr);
+
+        return pStr;
+    }
+
+
+
+    static
+    W32CHR_T        CsvRcd_ParseTEXTDATA(
+        CSVRCD_DATA     *this
+    )
+    {
+        W32CHR_T        chr;
+
+        // Validate the input parameters.
+        if (this->pChr == this->pEnd)
+            return 0;
+        if (0 == *this->pChr)
+            return 0;
+
+        chr = *this->pChr;
+        if ((chr == this->fieldSeparator) || (chr == '"')) {
+            return 0;
+        } else if ((chr == this->lineEnd1) || (chr == this->lineEnd2)) {
+            return 0;
+        } else if( (chr >= ' ') && (chr < ASCII_DEL) )
+            ;
+        else if (chr > 128)
+            ;
+        else
+            return 0;
+
+        return chr;
+    }
+
+
+
+    // Parse White-space
+    static
+    bool            CsvRcd_ParseWS(
+        CSVRCD_DATA     *this
+    )
+    {
+        W32CHR_T        chr;
+        bool            fRc = false;
+
+        // Validate the input parameters.
+        if (this->pChr == this->pEnd)
+            return false;
+        if (0 == *this->pChr)
+            return false;
+
+        chr = *this->pChr;
+        while (((chr == ' ') || (chr == '\f') || (chr == '\t'))
+               && !(
+                    (chr == this->fieldSeparator)
+                    || (chr == this->lineEnd1)
+                    || (chr == this->lineEnd2)
+                    )
+               ) {
+            fRc = true;
+            this->pChr++; this->col++;
+            if (this->pChr == this->pEnd) {
+                break;
+            }
+            if (0 == *this->pChr)
+                break;
+            chr = *this->pChr;
+        }
+
+        return fRc;
+    }
+
+
+
 
 
 
@@ -86,12 +521,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    W32ARRAY_DATA *     W32Array_Alloc (
+    CSVRCD_DATA *     CsvRcd_Alloc (
         void
     )
     {
-        W32ARRAY_DATA       *this;
-        uint32_t        cbSize = sizeof(W32ARRAY_DATA);
+        CSVRCD_DATA       *this;
+        uint32_t        cbSize = sizeof(CSVRCD_DATA);
         
         // Do initialization.
         
@@ -103,110 +538,67 @@ extern "C" {
 
 
 
-    W32ARRAY_DATA * W32Array_New (
+    CSVRCD_DATA *     CsvRcd_New (
         void
     )
     {
-        W32ARRAY_DATA   *this;
+        CSVRCD_DATA       *this;
         
-        this = W32Array_Alloc( );
+        this = CsvRcd_Alloc( );
         if (this) {
-            this = W32Array_Init(this);
+            this = CsvRcd_Init(this);
         } 
         return this;
     }
 
 
 
-    W32ARRAY_DATA * W32Array_NewFromArgV(
-        int             cArgs,
-        const
-        char            *ppArgV[]
-    )
-    {
-        ERESULT         eRc;
-        W32ARRAY_DATA   *pArray = OBJ_NIL;
-        W32STR_DATA     *pStr = OBJ_NIL;
-        int             i;
-
-        if ((cArgs < 1) || (NULL == ppArgV)) {
-            return OBJ_NIL;
-        }
-        pArray = W32Array_New( );
-        if (pArray) {
-            for (i=0; i<cArgs; ++i) {
-                if (ppArgV[i]) {
-                    pStr = W32Str_NewA(ppArgV[i]);
-                    if (pStr) {
-                        eRc = W32Array_AppendStr(pArray, pStr, NULL);
-                        obj_Release(pStr);
-                        pStr = OBJ_NIL;
-                        if (ERESULT_FAILED(eRc)) {
-                            DEBUG_BREAK();
-                            obj_Release(pArray);
-                            pArray = OBJ_NIL;
-                            break;
-                        }
-                    }
-                    else {
-                        obj_Release(pArray);
-                        pArray = OBJ_NIL;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return pArray;
-    }
-
-
-
+    
 
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          A r r a y
+    //                    E r r o r s
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * W32Array_getArray (
-        W32ARRAY_DATA   *this
+    ASTRARRAY_DATA * CsvRcd_getErrors (
+        CSVRCD_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
 
-        return this->pArray;
+        return this->pErrors;
     }
 
 
-    bool            W32Array_setArray (
-        W32ARRAY_DATA   *this,
-        OBJARRAY_DATA   *pValue
+    bool            CsvRcd_setErrors (
+        CSVRCD_DATA     *this,
+        ASTRARRAY_DATA  *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
         obj_Retain(pValue);
-        if (this->pArray) {
-            obj_Release(this->pArray);
+        if (this->pErrors) {
+            obj_Release(this->pErrors);
         }
-        this->pArray = pValue;
+        this->pErrors = pValue;
 
         return true;
     }
@@ -217,15 +609,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        W32Array_getPriority (
-        W32ARRAY_DATA     *this
+    uint16_t        CsvRcd_getPriority (
+        CSVRCD_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -236,14 +628,14 @@ extern "C" {
     }
 
 
-    bool            W32Array_setPriority (
-        W32ARRAY_DATA     *this,
+    bool            CsvRcd_setPriority (
+        CSVRCD_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -260,39 +652,82 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        W32Array_getSize (
-        W32ARRAY_DATA       *this
+    uint32_t        CsvRcd_getSize (
+        CSVRCD_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        if (this->pArray)
-            return ObjArray_getSize(this->pArray);
-        else
-            return 0;
+        return 0;
     }
 
 
 
     //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
+    
+    W32STR_DATA *   CsvRcd_getStr (
+        CSVRCD_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!CsvRcd_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool            CsvRcd_setStr (
+        CSVRCD_DATA     *this,
+        W32STR_DATA     *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!CsvRcd_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  W32Array_getSuperVtbl (
-        W32ARRAY_DATA     *this
+    OBJ_IUNKNOWN *  CsvRcd_getSuperVtbl (
+        CSVRCD_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -312,106 +747,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          A p p e n d
-    //---------------------------------------------------------------
-
-    ERESULT         W32Array_AppendStr(
-        W32ARRAY_DATA   *this,
-        W32STR_DATA     *pObject,
-        uint32_t        *pIndex
-    )
-    {
-        ERESULT         eRc;
-
-        // Do initialization.
-        if (NULL == this) {
-            return false;
-        }
-#ifdef NDEBUG
-#else
-        if( !W32Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        if (OBJ_NIL == this->pArray) {
-            this->pArray = ObjArray_New();
-            if (OBJ_NIL == this->pArray) {
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-
-        eRc = ObjArray_AppendObj(this->pArray, pObject, pIndex);
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                    A p p e n d  F i l e
-    //---------------------------------------------------------------
-
-    ERESULT         W32Array_AppendUtf8File(
-        W32ARRAY_DATA   *this,
-        PATH_DATA       *pPath
-    )
-    {
-        ERESULT         eRc = ERESULT_GENERAL_FAILURE;
-        FILE            *pFile = NULL;
-        W32CHR_T        *pRcd = NULL;
-        W32CHR_T        *pRcdRead;
-        W32STR_DATA     *pWrk = OBJ_NIL;
-        int             maxLineLength = 1024;
-
-        /* Do Initialization.
-         */
-#ifdef NDEBUG
-#else
-        if( !W32Array_Validate( this ) ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-        if( OBJ_NIL == pPath ) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-        if (maxLineLength <= 0) {
-            return ERESULT_INVALID_PARAMETER;
-        }
-        pRcd = mem_Malloc(maxLineLength);
-        if (pRcd == NULL) {
-            return ERESULT_OUT_OF_MEMORY;
-        }
-
-        pFile = fopen(Path_getData(pPath), "r");
-        if (NULL == pFile) {
-            mem_Free(pRcd);
-            pRcd = NULL;
-            return ERESULT_FILE_NOT_FOUND;
-        }
-        while ( (pRcdRead = fgetws(pRcd, maxLineLength, pFile)) != NULL ) {
-            pWrk = W32Str_NewW32(0, pRcdRead);
-            if (pWrk) {
-                eRc = W32Array_AppendStr(this, pWrk, NULL);
-                obj_Release(pWrk);
-                pWrk = OBJ_NIL;
-            }
-        }
-        fclose(pFile);
-        pFile = NULL;
-
-        mem_Free(pRcd);
-        pRcd = NULL;
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -421,29 +756,28 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = W32Array_Assign(this,pOther);
+        ERESULT eRc = CsvRcd_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another W32ARRAY object
+     @param     pOther  a pointer to another CSVRCD object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         W32Array_Assign (
-        W32ARRAY_DATA   *this,
-        W32ARRAY_DATA   *pOther
+    ERESULT         CsvRcd_Assign (
+        CSVRCD_DATA       *this,
+        CSVRCD_DATA     *pOther
     )
     {
-        ERESULT         eRc;
+        ERESULT     eRc;
         
         // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!W32Array_Validate(pOther)) {
+        if (!CsvRcd_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -460,15 +794,16 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-        TRC_OBJ(this,"\tother_array: %p:\n", pOther->pArray);
+#ifdef  XYZZY
         if (pOther->pArray) {
             obj_Release(pOther->pArray);
             pOther->pArray = OBJ_NIL;
         }
+#endif
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-        TRC_OBJ(this,"\tthis_array: %p:\n", this->pArray);
+#ifdef  XYZZY
         if (this->pArray) {
             if (obj_getVtbl(this->pArray)->pCopy) {
                 pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
@@ -478,7 +813,7 @@ extern "C" {
                 pOther->pArray = this->pArray;
             }
         }
-        TRC_OBJ(this,"\tother_array after copy: %p:\n", pOther->pArray);
+#endif
 
         // Copy other data from this object to other.
         //pOther->x     = this->x; 
@@ -486,6 +821,8 @@ extern "C" {
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
+        //FIXME: Implement the assignment.        
+        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -501,9 +838,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             W32Array_Compare (
-        W32ARRAY_DATA     *this,
-        W32ARRAY_DATA     *pOther
+    int             CsvRcd_Compare (
+        CSVRCD_DATA     *this,
+        CSVRCD_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -516,12 +853,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!W32Array_Validate(pOther)) {
+        if (!CsvRcd_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -543,36 +880,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        W32Array      *pCopy = W32Array_Copy(this);
+        CsvRcd      *pCopy = CsvRcd_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a W32ARRAY object which must be 
+     @return    If successful, a CSVRCD object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    W32ARRAY_DATA *     W32Array_Copy (
-        W32ARRAY_DATA       *this
+    CSVRCD_DATA *     CsvRcd_Copy (
+        CSVRCD_DATA       *this
     )
     {
-        W32ARRAY_DATA       *pOther = OBJ_NIL;
+        CSVRCD_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef W32ARRAY_IS_IMMUTABLE
+#ifdef CSVRCD_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = W32Array_New( );
+        pOther = CsvRcd_New( );
         if (pOther) {
-            eRc = W32Array_Assign(this, pOther);
+            eRc = CsvRcd_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -590,11 +927,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            W32Array_Dealloc (
+    void            CsvRcd_Dealloc (
         OBJ_ID          objId
     )
     {
-        W32ARRAY_DATA   *this = objId;
+        CSVRCD_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -603,7 +940,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -611,11 +948,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((W32ARRAY_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((CSVRCD_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        W32Array_setArray(this, OBJ_NIL);
+        CsvRcd_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -636,126 +973,44 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        W32Array      *pDeepCopy = W32Array_Copy(this);
+        CsvRcd      *pDeepCopy = CsvRcd_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a W32ARRAY object which must be 
+     @return    If successful, a CSVRCD object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    W32ARRAY_DATA *  W32Array_DeepyCopy (
-        W32ARRAY_DATA    *this
+    CSVRCD_DATA *     CsvRcd_DeepyCopy (
+        CSVRCD_DATA       *this
     )
     {
-        W32ARRAY_DATA   *pOther = OBJ_NIL;
+        CSVRCD_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
-        uint32_t        i;
-        uint32_t        iMax;
-        OBJ_IUNKNOWN    *pVtbl;
-        W32STR_DATA     *pData = NULL;
-
+        
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = W32Array_New( );
-        if (OBJ_NIL == pOther) {
-            return OBJ_NIL;
-        }
-        
-        iMax = ObjArray_getSize(this->pArray);
-        for (i=0; i<iMax; ++i) {
-            pData = ObjArray_Get(this->pArray, (i + 1));
-            if (pData) {
-                pVtbl = obj_getVtbl(pData);
-                if (pVtbl->pDeepCopy) {
-                    pData = pVtbl->pDeepCopy(pData);
-                }
-                else if (pVtbl->pCopy) {
-                    pData = pVtbl->pCopy(pData);
-                }
-                else {
-                    obj_Retain(pData);
-                }
-                eRc = ObjArray_AppendObj(pOther->pArray, pData, NULL);
-                if (ERESULT_FAILED(eRc)) {
-                    obj_Release(pOther);
-                    pOther = OBJ_NIL;
-                    break;
-                }
+        pOther = CsvRcd_New( );
+        if (pOther) {
+            eRc = CsvRcd_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
             }
         }
-
+        
         // Return to caller.
         return pOther;
     }
     
     
     
-    //---------------------------------------------------------------
-    //                        D e l e t e
-    //---------------------------------------------------------------
-
-    W32STR_DATA *   W32Array_DeleteFirst(
-        W32ARRAY_DATA   *this
-    )
-    {
-        W32STR_DATA     *pNode = OBJ_NIL;
-
-        // Do initialization.
-        if (NULL == this) {
-            return false;
-        }
-#ifdef NDEBUG
-#else
-        if( !W32Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        if (this->pArray) {
-            pNode = ObjArray_DeleteFirst(this->pArray);
-        }
-
-        // Return to caller.
-        return pNode;
-    }
-
-
-    W32STR_DATA *   W32Array_DeleteLast(
-        W32ARRAY_DATA   *this
-    )
-    {
-        W32STR_DATA     *pNode = OBJ_NIL;
-
-        // Do initialization.
-        if (NULL == this) {
-            return false;
-        }
-#ifdef NDEBUG
-#else
-        if( !W32Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        if (this->pArray) {
-            pNode = ObjArray_DeleteLast(this->pArray);
-        }
-
-        // Return to caller.
-        return pNode;
-    }
-
-
-
     //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
@@ -766,8 +1021,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         W32Array_Disable (
-        W32ARRAY_DATA       *this
+    ERESULT         CsvRcd_Disable (
+        CSVRCD_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -775,7 +1030,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -801,8 +1056,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         W32Array_Enable (
-        W32ARRAY_DATA       *this
+    ERESULT         CsvRcd_Enable (
+        CSVRCD_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -810,7 +1065,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -827,98 +1082,14 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                        G e t
-    //---------------------------------------------------------------
-
-    W32STR_DATA *   W32Array_Get(
-        W32ARRAY_DATA   *this,
-        uint32_t        index       // Relative to 1
-    )
-    {
-        W32STR_DATA     *pNode = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !W32Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        if (this->pArray) {
-            pNode = ObjArray_Get(this->pArray,index);
-        }
-
-        // Return to caller.
-        return pNode;
-    }
-
-
-    W32STR_DATA *   W32Array_GetFirst(
-        W32ARRAY_DATA   *this
-    )
-    {
-        W32STR_DATA     *pNode = OBJ_NIL;
-
-        // Do initialization.
-        if (NULL == this) {
-            return OBJ_NIL;
-        }
-#ifdef NDEBUG
-#else
-        if( !W32Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        if (this->pArray) {
-            pNode = ObjArray_GetFirst(this->pArray);
-        }
-
-        // Return to caller.
-        return pNode;
-    }
-
-
-    W32STR_DATA *   W32Array_GetLast(
-        W32ARRAY_DATA   *this
-    )
-    {
-        W32STR_DATA     *pNode = OBJ_NIL;
-
-        // Do initialization.
-        if (NULL == this) {
-            return OBJ_NIL;
-        }
-#ifdef NDEBUG
-#else
-        if( !W32Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        if (this->pArray) {
-            pNode = ObjArray_GetLast(this->pArray);
-        }
-
-        // Return to caller.
-        return pNode;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
-    W32ARRAY_DATA *   W32Array_Init (
-        W32ARRAY_DATA       *this
+    CSVRCD_DATA *   CsvRcd_Init (
+        CSVRCD_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(W32ARRAY_DATA);
+        uint32_t        cbSize = sizeof(CSVRCD_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -937,8 +1108,8 @@ extern "C" {
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
         // If you use inheritance, remember to change the obj_ClassObj reference 
-        // in the OBJ_INFO at the end of W32Array_object.c
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_W32ARRAY);
+        // in the OBJ_INFO at the end of CsvRcd_object.c
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_CSVRCD);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -946,21 +1117,26 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&W32Array_Vtbl);
-#ifdef  W32ARRAY_JSON_SUPPORT
-        JsonIn_RegisterClass(W32Array_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&CsvRcd_Vtbl);
+#ifdef  CSVRCD_JSON_SUPPORT
+        JsonIn_RegisterClass(CsvRcd_Class());
 #endif
         
+        this->fieldSeparator = ',';
+        this->lineEnd1 = '\r';
+        this->lineEnd2 = '\n';
+        /*
         this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
+        */
 
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -969,11 +1145,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "W32Array::sizeof(W32ARRAY_DATA) = %lu\n", 
-                sizeof(W32ARRAY_DATA)
+                "CsvRcd::sizeof(CSVRCD_DATA) = %lu\n", 
+                sizeof(CSVRCD_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(W32ARRAY_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(CSVRCD_DATA));
 #endif
 
         return this;
@@ -982,49 +1158,11 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                          I n s e r t
-    //---------------------------------------------------------------
-
-    ERESULT         W32Array_InsertStr(
-        W32ARRAY_DATA   *this,
-        uint32_t        index,
-        W32STR_DATA     *pObject
-    )
-    {
-        ERESULT         eRc;
-
-        // Do initialization.
-        if (NULL == this) {
-            return false;
-        }
-#ifdef NDEBUG
-#else
-        if( !W32Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        if (OBJ_NIL == this->pArray) {
-            this->pArray = ObjArray_New();
-            if (OBJ_NIL == this->pArray) {
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-
-        eRc = ObjArray_InsertObj(this->pArray, index, pObject);
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-    //---------------------------------------------------------------
     //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         W32Array_IsEnabled (
-        W32ARRAY_DATA       *this
+    ERESULT         CsvRcd_IsEnabled (
+        CSVRCD_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -1032,7 +1170,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1049,6 +1187,48 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      P a r s e
+    //---------------------------------------------------------------
+
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    W32ARRAY_DATA * CsvRcd_Parse (
+        CSVRCD_DATA     *this,
+        W32STR_DATA     *pLine
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        W32ARRAY_DATA   *pArray = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!CsvRcd_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        CsvRcd_setStr(this, pLine);
+        pArray = CsvRcd_ParseRcd(this);
+        if (this->pErrors) {
+            obj_Release(pArray);
+            pArray = OBJ_NIL;
+        }
+        CsvRcd_setStr(this, OBJ_NIL);
+
+        // Return to caller.
+        return pArray;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -1059,14 +1239,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = W32Array_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = CsvRcd_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "W32Array", prefix,
+                        the object name, "CsvRcd", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1074,13 +1254,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          W32Array_QueryInfo (
+    void *          CsvRcd_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        W32ARRAY_DATA     *this = objId;
+        CSVRCD_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1089,7 +1269,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1098,11 +1278,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(W32ARRAY_DATA);
+                return (void *)sizeof(CSVRCD_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)W32Array_Class();
+                return (void *)CsvRcd_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -1128,37 +1308,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return W32Array_Disable;
+                            return CsvRcd_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return W32Array_Enable;
+                            return CsvRcd_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  W32ARRAY_JSON_SUPPORT
+#ifdef  CSVRCD_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return W32Array_ParseJsonFields;
+                            return CsvRcd_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return W32Array_ParseJsonObject;
+                            return CsvRcd_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return W32Array_ToDebugString;
+                            return CsvRcd_ToDebugString;
                         }
-#ifdef  W32ARRAY_JSON_SUPPORT
+#ifdef  CSVRCD_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return W32Array_ToJsonFields;
+                            return CsvRcd_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return W32Array_ToJson;
+                            return CsvRcd_ToJson;
                         }
 #endif
                         break;
@@ -1169,10 +1349,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == W32Array_ToDebugString)
+                if (pData == CsvRcd_ToDebugString)
                     return "ToDebugString";
-#ifdef  W32ARRAY_JSON_SUPPORT
-                if (pData == W32Array_ToJson)
+#ifdef  CSVRCD_JSON_SUPPORT
+                if (pData == CsvRcd_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1187,38 +1367,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                         S o r t
-    //---------------------------------------------------------------
-
-    ERESULT         W32Array_SortAscending(
-        W32ARRAY_DATA   *this
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-
-        // Do initialization.
-        if (NULL == this) {
-            return false;
-        }
-#ifdef NDEBUG
-#else
-        if( !W32Array_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        if (this->pArray) {
-            eRc = ObjArray_SortAscending(this->pArray, (OBJ_COMPARE)&W32Str_Compare);
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1226,7 +1374,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = W32Array_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = CsvRcd_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1234,8 +1382,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     W32Array_ToDebugString (
-        W32ARRAY_DATA      *this,
+    ASTR_DATA *     CsvRcd_ToDebugString (
+        CSVRCD_DATA      *this,
         int             indent
     )
     {
@@ -1244,13 +1392,13 @@ extern "C" {
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        uint32_t        i;
-        uint32_t        iMax;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!W32Array_Validate(this)) {
+        if (!CsvRcd_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1271,25 +1419,9 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    W32Array_getSize(this),
+                    CsvRcd_getSize(this),
                     obj_getRetainCount(this)
             );
-
-        iMax = W32Array_getSize(this);
-        for (i=0; i<iMax; i++) {
-            W32STR_DATA         *pStrW = W32Array_Get(this, i+1);
-            if (pStrW) {
-                ASTR_DATA           *pWrkStr;
-                pWrkStr = W32Str_ToChrCon(pStrW);
-                if (indent) {
-                    AStr_AppendCharRepeatA(pStr, indent+4, ' ');
-                }
-                AStr_AppendPrint(pStr, "%2d - \"", i+1);
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
-                AStr_AppendA(pStr, "\"\n");
-            }
-        }
 
 #ifdef  XYZZY        
         if (this->pData) {
@@ -1327,15 +1459,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            W32Array_Validate (
-        W32ARRAY_DATA      *this
+    bool            CsvRcd_Validate (
+        CSVRCD_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_W32ARRAY))
+            if (obj_IsKindOf(this, OBJ_IDENT_CSVRCD))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1351,7 +1483,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(W32ARRAY_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(CSVRCD_DATA))) {
             return false;
         }
 

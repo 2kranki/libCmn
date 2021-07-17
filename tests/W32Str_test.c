@@ -1181,7 +1181,7 @@ int         test_W32Str_EscapeForC(
         i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 3) );
         eRc = W32Str_EscapeForC(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 5) );
         fprintf(stderr, "string=(%d)\"%ls\"\n",i,W32Str_getData(pObj));
@@ -1199,7 +1199,7 @@ int         test_W32Str_EscapeForC(
         i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 3) );
         eRc = W32Str_EscapeForC(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 6) );
         fprintf(stderr, "string=(%d)\"%ls\"\n",i,W32Str_getData(pObj));
@@ -1217,7 +1217,7 @@ int         test_W32Str_EscapeForC(
         i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 4) );
         eRc = W32Str_EscapeForC(pObj);
-        XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
         i = W32Str_getLength( pObj );
         XCTAssertTrue( (i == 6) );
         fprintf(stderr, "string=(%d)\"%ls\"\n",i,W32Str_getData(pObj));
@@ -1838,8 +1838,43 @@ int         test_W32Str_SplitsOn05(
 
 
 
+int         test_W32Str_RemoveNL01(
+    const
+    char            *pTestName
+)
+{
+    W32STR_DATA     *pObj = OBJ_NIL;
+    ERESULT         eRc;
+    int             iRc = 0;
+    const
+    char            *pTestString = "abc\ndef\r\r\r\n\r\n";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    //fprintf(stderr, "\tTest String: %s\n", pTestString);
+    pObj = W32Str_NewA(pTestString);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+        eRc = W32Str_RemoveNL(pObj);
+        XCTAssertTrue( (ERESULT_OK(eRc)) );
+        XCTAssertTrue( (7 == W32Str_getLength(pObj)) );
+        iRc = W32Str_CompareA(pObj, "abc\ndef");
+        XCTAssertTrue( (0 == iRc) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_W32Str);
+    TINYTEST_ADD_TEST(test_W32Str_RemoveNL01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_W32Str_SplitsOn05,setUp,tearDown);
     TINYTEST_ADD_TEST(test_W32Str_SplitsOn04,setUp,tearDown);
     TINYTEST_ADD_TEST(test_W32Str_SplitsOn03,setUp,tearDown);

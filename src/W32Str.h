@@ -601,6 +601,17 @@ extern "C" {
     );
 
 
+    /*!
+     Remove all trailing '\r' or '\n'.
+     sequences for non-printable character.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error.
+     */
+    ERESULT         W32Str_RemoveNL(
+        W32STR_DATA     *this
+    );
+
+
     W32STR_DATA *   W32Str_Right(
         W32STR_DATA     *this,
         uint32_t        len
