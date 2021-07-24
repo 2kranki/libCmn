@@ -615,6 +615,17 @@ extern "C" {
 
     
     /*!
+     Checks the string to see if it conforms to general number.
+     @param     this    object pointer
+     @return    If string conforms to a number, ERESULT_SUCCESS,
+                otherwise, an ERESULT_* Error Code.
+     */
+    ERESULT         AStr_IsNumeric(
+        ASTR_DATA        *this
+    );
+
+
+    /*!
      Checks the string to see if it only contains ASCII characters 
      (ie no wide characters).
      @param     this    object pointer

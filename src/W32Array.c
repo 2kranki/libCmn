@@ -1280,7 +1280,7 @@ extern "C" {
             W32STR_DATA         *pStrW = W32Array_Get(this, i+1);
             if (pStrW) {
                 ASTR_DATA           *pWrkStr;
-                pWrkStr = W32Str_ToChrCon(pStrW);
+                pWrkStr = W32Str_ToAStr(pStrW);
                 if (indent) {
                     AStr_AppendCharRepeatA(pStr, indent+4, ' ');
                 }

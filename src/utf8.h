@@ -215,7 +215,7 @@ extern "C" {
      @return    0 for (src1 == src2), < 0 for (src1 < src2) or
                 > 0 for (src1 > src2)
      */
-    int             utf8_StrNCmp(
+    int             utf8_StrCmpN(
         const
         char            *pSrc1,
         const

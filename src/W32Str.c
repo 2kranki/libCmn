@@ -180,6 +180,172 @@ extern "C" {
     }
 
 
+    int             W32Str_CmpA(
+        const
+        W32CHR_T        *pStr,
+        const
+        char            *pStrA
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        uint32_t        str1len;
+        uint32_t        str2len;
+        W32CHR_T        chr2;
+        int             i = -1;
+
+        // Do initialization.
+        str1len = W32Str_StrLen(pStr);
+        if (NULL == pStrA) {
+            str2len = 0;
+        }
+        else {
+            str2len = (uint32_t)utf8_StrLenA(pStrA);
+        }
+
+        if ((0 == str1len) && (0 == str2len)) {
+            return 0;
+        }
+
+        for ( ;; ) {
+            chr2 = utf8_Utf8ToW32_Scan(&pStrA);
+            if (*pStr)
+                ;
+            else {
+                if (chr2)
+                    //eRc = ERESULT_SUCCESS_LESS_THAN;
+                    i = -1;
+                break;
+            }
+            if (chr2)
+                ;
+            else {
+                if (*pStr)
+                    //eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    i = 1;
+                break;
+            }
+            i = *pStr - chr2;
+            if (i) {
+                break;
+            }
+            ++pStr;
+        }
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
+
+        // Return to caller.
+        return i;
+    }
+
+
+    int             W32Str_CmpAN(
+        const
+        W32CHR_T        *pStr,
+        const
+        char            *pStrA,
+        uint32_t        n
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        uint32_t        str1len;
+        uint32_t        str2len;
+        W32CHR_T        chr2;
+        int             i = -1;
+
+        // Do initialization.
+        str1len = W32Str_StrLen(pStr);
+        if (NULL == pStrA) {
+            str2len = 0;
+        }
+        else {
+            str2len = (uint32_t)utf8_StrLenA(pStrA);
+        }
+
+        if ((0 == str1len) && (0 == str2len)) {
+            return 0;
+        }
+
+        while ( n-- ) {
+            chr2 = utf8_Utf8ToW32_Scan(&pStrA);
+            if (*pStr)
+                ;
+            else {
+                if (chr2)
+                    //eRc = ERESULT_SUCCESS_LESS_THAN;
+                    i = -1;
+                break;
+            }
+            if (chr2)
+                ;
+            else {
+                if (*pStr)
+                    //eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    i = 1;
+                break;
+            }
+            i = *pStr - chr2;
+            if (i) {
+                break;
+            }
+            ++pStr;
+        }
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
+
+        // Return to caller.
+        return i;
+    }
+
+
+    int             W32Str_CmpN(
+        const
+        W32CHR_T        *pStr1,
+        const
+        W32CHR_T        *pStr2,
+        uint32_t        n
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             i = 0;
+
+        while (n--) {
+            if( *pStr1 )
+                ;
+            else {
+                if( *pStr2 )
+                    //eRc = ERESULT_SUCCESS_LESS_THAN;
+                    i = -1;
+                break;
+            }
+            if( *pStr2 )
+                ;
+            else {
+                if( *pStr1 )
+                    //eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    i = 1;
+                break;
+            }
+            i = *pStr1 - *pStr2;
+            if( i ) {
+                break;
+            }
+            ++pStr1;
+            ++pStr2;
+        }
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
+
+        // Return to caller.
+        return i;
+    }
+
+
 
     uint32_t        W32Str_StrLen(
         const
@@ -1241,7 +1407,7 @@ extern "C" {
     
    
     int             W32Str_CompareA(
-        W32STR_DATA        *this,
+        W32STR_DATA     *this,
         const
         char            *pString
     )
@@ -1297,6 +1463,149 @@ extern "C" {
             }
             i = *pStr1 - chr2;
             if( i ) {
+                break;
+            }
+            ++pStr1;
+        }
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
+
+        // Return to caller.
+        return i;
+    }
+
+
+    int             W32Str_CompareA_IC(
+        W32STR_DATA     *this,
+        const
+        char            *pString
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        uint32_t        str1len;
+        const
+        W32CHR_T        *pStr1;
+        uint32_t        str2len;
+        W32CHR_T        chr2;
+        int             i = -1;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !W32Str_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
+        }
+#endif
+
+        str1len = W32Str_getLength(this);
+        pStr1 = array_Ptr((ARRAY_DATA *)this, 1);
+        if (NULL == pString) {
+            str2len = 0;
+        }
+        else {
+            str2len = (uint32_t)utf8_StrLenA(pString);
+        }
+
+        if ((0 == str1len) && (0 == str2len)) {
+            return 0;
+        }
+
+        for( ;; ) {
+            chr2 = utf8_Utf8ToW32_Scan(&pString);
+            if( *pStr1 )
+                ;
+            else {
+                if( chr2 )
+                    //eRc = ERESULT_SUCCESS_LESS_THAN;
+                    i = -1;
+                break;
+            }
+            if( chr2 )
+                ;
+            else {
+                if( *pStr1 )
+                    //eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    i = 1;
+                break;
+            }
+            i = ascii_toUpperW32(*pStr1) - ascii_toUpperW32(chr2);
+            if( i ) {
+                break;
+            }
+            ++pStr1;
+        }
+        if (i < 0)
+            i = -1;
+        else if (i > 0)
+            i = 1;
+
+        // Return to caller.
+        return i;
+    }
+
+
+    int             W32Str_CompareA_N(
+        W32STR_DATA     *this,
+        const
+        char            *pString,
+        uint32_t        n
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        uint32_t        str1len;
+        const
+        W32CHR_T        *pStr1;
+        uint32_t        str2len;
+        W32CHR_T        chr2;
+        int             i = -1;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!W32Str_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
+        }
+#endif
+
+        str1len = W32Str_getLength(this);
+        pStr1 = array_Ptr((ARRAY_DATA *)this, 1);
+        if (NULL == pString) {
+            str2len = 0;
+        }
+        else {
+            str2len = (uint32_t)utf8_StrLenA(pString);
+        }
+
+        if ((0 == str1len) && (0 == str2len)) {
+            return 0;
+        }
+
+        while ( n-- ) {
+            chr2 = utf8_Utf8ToW32_Scan(&pString);
+            if (*pStr1)
+                ;
+            else {
+                if (chr2)
+                    //eRc = ERESULT_SUCCESS_LESS_THAN;
+                    i = -1;
+                break;
+            }
+            if (chr2)
+                ;
+            else {
+                if (*pStr1)
+                    //eRc = ERESULT_SUCCESS_GREATER_THAN;
+                    i = 1;
+                break;
+            }
+            i = *pStr1 - chr2;
+            if (i) {
                 break;
             }
             ++pStr1;
@@ -3011,10 +3320,10 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                       T o  C h r  C o n
+    //                       T o  A S t r
     //---------------------------------------------------------------
 
-    ASTR_DATA *     W32Str_ToChrCon(
+    ASTR_DATA *     W32Str_ToAStr(
         W32STR_DATA       *this
     )
     {
@@ -3068,6 +3377,40 @@ extern "C" {
 
         // Return to caller.
         return i;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                     T o  U t f 8  F i l e
+    //---------------------------------------------------------------
+
+    ERESULT         W32Str_ToFile(
+        W32STR_DATA     *this,
+        FILE            *pOut
+    )
+    {
+        const
+        W32CHR_T        *pBuffer;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!W32Str_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pOut) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        pBuffer = W32Str_getData(this);
+        fprintf(pOut, "%ls", pBuffer);
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
 
 

@@ -1822,7 +1822,7 @@ extern "C" {
         }
         
         offset = 1;
-        i = utf8_StrNCmp(array_Ptr(this->pData, offset), pData, lenData);
+        i = utf8_StrCmpN(array_Ptr(this->pData, offset), pData, lenData);
 
         // Return to caller.
         return i;

@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 7/17/2021  3:23:31.000)
+# ( 7/20/2021 21:11:22.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -247,6 +247,16 @@ $(OBJDIR)/CsvFile.o: $(SRCDIR)/CsvFile.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_i
 OBJS += $(OBJDIR)/CsvFile_object.o
 
 $(OBJDIR)/CsvFile_object.o: $(SRCDIR)/CsvFile_object.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/Path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/CsvRcd.o
+
+$(OBJDIR)/CsvRcd.o: $(SRCDIR)/CsvRcd.c $(SRCDIR)/CsvRcd.h $(SRCDIR)/CsvRcd_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/CsvRcd_object.o
+
+$(OBJDIR)/CsvRcd_object.o: $(SRCDIR)/CsvRcd_object.c $(SRCDIR)/CsvRcd.h $(SRCDIR)/CsvRcd_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/DateTime.o
@@ -2254,6 +2264,12 @@ Compiler_test: $(TEST_SRC)/Compiler_test.c $(SRCDIR)/Compiler.h $(SRCDIR)/Compil
 TESTS += CsvFile_test
 
 CsvFile_test: $(TEST_SRC)/CsvFile_test.c $(SRCDIR)/CsvFile.h $(SRCDIR)/CsvFile_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/Path.h $(SRCDIR)/srcFile.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += CsvRcd_test
+
+CsvRcd_test: $(TEST_SRC)/CsvRcd_test.c $(SRCDIR)/CsvRcd.h $(SRCDIR)/CsvRcd_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

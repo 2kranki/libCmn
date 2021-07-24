@@ -157,6 +157,11 @@ extern "C" {
     );
     
     
+    MONEY64_DATA *  Money64_NewFromAStr (
+        ASTR_DATA       *pAmt
+    );
+
+
     MONEY64_DATA *  Money64_NewFromSQL_USD (
         const
         char            *pStringA

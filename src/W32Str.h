@@ -173,6 +173,29 @@ extern "C" {
         W32CHR_T        *pStr2
     );
 
+    int             W32Str_CmpA(
+        const
+        W32CHR_T        *pStr,
+        const
+        char            *pStrA
+    );
+
+    int             W32Str_CmpAN(
+        const
+        W32CHR_T        *pStr,
+        const
+        char            *pStrA,
+        uint32_t        n
+    );
+
+    int             W32Str_CmpN(
+        const
+        W32CHR_T        *pStr1,
+        const
+        W32CHR_T        *pStr2,
+        uint32_t        n
+    );
+
 
     uint32_t        W32Str_StrLen(
         const
@@ -409,8 +432,8 @@ extern "C" {
 
 
     /*!
-     @param     pString
-        Pointer to nul-terminated UTF-8 char string
+     @param     this        object pointer
+     @param     pString     Pointer to nul-terminated UTF-8 char string
      @return    0  if this == other
                 <0 if this < other
                 >0 if this > other
@@ -419,6 +442,29 @@ extern "C" {
         W32STR_DATA     *this,
         const
         char            *pString
+    );
+
+
+    /*!
+     Compare the given UTF-8 String with this string ignoring case.
+     @param     this        object pointer
+     @param     pString     Pointer to nul-terminated UTF-8 char string
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
+     */
+    int             W32Str_CompareA_IC(
+        W32STR_DATA     *this,
+        const
+        char            *pString
+    );
+
+
+    int             W32Str_CompareA_N(
+        W32STR_DATA     *this,
+        const
+        char            *pString,
+        uint32_t        n
     );
 
 
@@ -495,9 +541,9 @@ extern "C" {
     );
 
 
-    /*! Scan the string until one of the characters in the given
-        nul-terminated string are found. Start searching at the
-        given index and bump it as the search continues.
+    /*! Scan the string for an occurrence of the given UTF-8 string.
+        Start searching at the given index and bump it as the search
+        continues.
      @param     this    object pointer
      @param     pStrA   pointer to a wide char nul-terminated string.
      @param     pIndex  Index into the string to start at and where the
@@ -513,9 +559,8 @@ extern "C" {
     );
 
 
-    /*! Scan the string until one of the characters in the given
-        nul-terminated string are found.  Compare the remainder
-        of the string for equality.
+    /*! Scan the string for the next occurrence of the given wide
+        nul-terminated string is found.
      @param     this    object pointer
      @param     pStrW32 pointer to a wide char nul-terminated string.
      @param     pIndex  Index into the string to start at and where the
@@ -653,7 +698,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     W32Str_ToChrCon(
+    ASTR_DATA *     W32Str_ToAStr(
         W32STR_DATA     *this
     );
 
@@ -703,6 +748,12 @@ extern "C" {
     );
     
     
+    ERESULT         W32Str_ToFile(
+        W32STR_DATA     *this,
+        FILE            *pOut
+    );
+
+
     ERESULT         W32Str_ToUtf8File(
         W32STR_DATA     *this,
         PATH_DATA       *pPath

@@ -104,16 +104,35 @@ extern "C" {
 
 
 
-    MONEY64_DATA *     Money64_New (
+    MONEY64_DATA *  Money64_New (
         void
     )
     {
-        MONEY64_DATA       *this;
+        MONEY64_DATA    *this;
         
         this = Money64_Alloc( );
         if (this) {
             this = Money64_Init(this);
         } 
+        return this;
+    }
+
+
+    MONEY64_DATA *  Money64_NewFromAStr (
+        ASTR_DATA       *pAmt
+    )
+    {
+        MONEY64_DATA    *this;
+        ERESULT         eRc;
+
+        this = Money64_New( );
+        if (this) {
+            eRc = Money64_FromAStr(this, pAmt);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
         return this;
     }
 

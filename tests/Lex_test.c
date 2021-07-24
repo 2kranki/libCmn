@@ -466,7 +466,7 @@ int         test_Lex_Number04(
                 eRc = Lex_ParseTokenSetup(pLex, pToken);
                 newClass = Lex_ParseNumber(pLex);
                 if (pLex->pStr) {
-                    ASTR_DATA       *pStr = W32Str_ToChrCon(pLex->pStr);
+                    ASTR_DATA       *pStr = W32Str_ToAStr(pLex->pStr);
                     fprintf(stderr, "Scanned: %s\n", AStr_getData(pStr));
                     obj_Release(pStr);
                 }
@@ -726,7 +726,7 @@ int         test_Lex_Strings04(
                 XCTAssertTrue( (ch == '"') );
                 Lex_ParseTokenAppendString(pLex, pToken);
                 {
-                    ASTR_DATA       *pWrk2 = W32Str_ToChrCon(pLex->pStr);
+                    ASTR_DATA       *pWrk2 = W32Str_ToAStr(pLex->pStr);
                     fprintf(stderr, "\tDATA=\"%s\"\n", AStr_getData(pWrk2));
                     obj_Release(pWrk2);
                 }

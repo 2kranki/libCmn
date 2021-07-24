@@ -86,16 +86,26 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            NetMIME_task_body (
-        void            *pData
+    const
+    MIME_TYPE *     NetMIME_MimeByFileExtension(
+        const
+        char            *pTypeA
     )
     {
-        //NETMIME_DATA  *this = pData;
-        
+        int             i;
+
+        for (i=0; i<cMimeTable; i++) {
+            if (0 == strcmp(mimeTable[i].pExt, pTypeA)) {
+                return &mimeTable[i];
+            }
+        }
+
+        return NULL;
     }
-#endif
+
+
+
 
 
 

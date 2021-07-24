@@ -215,7 +215,7 @@ extern "C" {
     
     
     
-    int             utf8_StrNCmp(
+    int             utf8_StrCmpN(
         const
         char            *pSrc1,
         const
