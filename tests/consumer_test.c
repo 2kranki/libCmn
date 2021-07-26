@@ -53,7 +53,7 @@ void        printMsg(
     void        *pMsg
 )
 {
-    fprintf(stderr, "  Recieved - %s\n", pMsg);
+    fprintf(stderr, "  Recieved - %s\n", (char *)pMsg);
 }
 
 

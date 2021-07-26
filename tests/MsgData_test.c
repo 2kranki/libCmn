@@ -134,7 +134,7 @@ int         test_MsgData_Test01(
                MsgData_getOrigin(pObj),
                MsgData_getDestination(pObj),
                MsgData_getSize(pObj),
-               MsgData_getData(pObj)
+               (char *)MsgData_getData(pObj)
                );
         printf("   len includes trailing NUL.\n");
 

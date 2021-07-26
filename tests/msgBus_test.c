@@ -170,7 +170,7 @@ int             test_msgBus_Broadcast01(
                        MsgData_getOrigin(pData),
                        MsgData_getDestination(pData),
                        MsgData_getSize(pData),
-                       MsgData_getData(pData)
+                       (char *)MsgData_getData(pData)
                 );
             }
         }

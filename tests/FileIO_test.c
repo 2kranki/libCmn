@@ -421,7 +421,7 @@ int         test_FileIO_Create01(
     FILEIO_DATA     *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     const
-    char            *pPathA = TEST_FILES_DIR "/tmp/testFile.tmp";
+    char            *pPathA = "/tmp/testFile.tmp";
     int64_t         fileSize = 0;
     //uint8_t         *pBuffer = NULL;
     DATETIME_DATA   *pTime = OBJ_NIL;
@@ -501,7 +501,7 @@ int             test_FileIO_Create02(
     FILEIO_DATA     *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     const
-    char            *pPathA = TEST_FILES_DIR "/tmp/testFile.tmp";
+    char            *pPathA = "/tmp/testFile.tmp";
     DATETIME_DATA   *pTime = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
     int64_t         fileSize = 0;
