@@ -24,6 +24,7 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
 #include    <trace.h>
 #include    <Dict_internal.h>
 
@@ -51,7 +52,7 @@ int             tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    
+    JsonIn_SharedReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(
@@ -85,9 +86,7 @@ int             test_Dict_OpenClose(
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Dict_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = Dict_Init( pObj );
+    pObj = Dict_New( );
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -161,7 +160,7 @@ int             test_Dict_test01(
 
 
 TINYTEST_START_SUITE(test_Dict);
-    TINYTEST_ADD_TEST(test_Dict_test01,setUp,tearDown);
+    //TINYTEST_ADD_TEST(test_Dict_test01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_Dict_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();
 

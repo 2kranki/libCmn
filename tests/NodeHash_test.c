@@ -272,7 +272,7 @@ int         test_NodeHash_AddFindDelete02(
     NODEHASH_DATA   *pHash;
     NODE_DATA       *pNode;
     NODE_DATA       *pNodeFnd;
-    NODEHASH_RECORD *pRecord;
+    //NODEHASH_RECORD *pRecord;
     ERESULT         eRc;
     char            **pStrA;
     uint32_t        numBuckets;     // Number of Hash Buckets
@@ -331,6 +331,102 @@ int         test_NodeHash_AddFindDelete02(
                     );
 
         }
+
+        obj_Release(pHash);
+        pHash = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_NodeHash_AddFindDelete03(
+    const
+    char        *pTestName
+)
+{
+    NODEHASH_DATA   *pHash;
+    NODE_DATA       *pNode;
+    NODE_DATA       *pNodeFnd;
+    //NODEHASH_RECORD *pRecord;
+    ERESULT         eRc;
+    char            **ppStrA;
+    char            *pStrA;
+    uint32_t        numBuckets;     // Number of Hash Buckets
+    uint32_t        numEmpty;       // Number of Empty Hash Buckets
+    uint32_t        numMax;         // Maximum Number in any one Hash Bucket
+    uint32_t        numAvg;         // Average Number in each Hash Bucket
+    uint32_t        i;
+    uint32_t        iMax;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pHash = NodeHash_NewWithSize(NODEHASH_TABLE_SIZE_XSMALL);
+    XCTAssertFalse( (OBJ_NIL == pHash) );
+    if (pHash) {
+
+        ppStrA = strings;
+        while (*ppStrA) {
+            pNode = Node_NewWithUTF8ConAndClass(0, *ppStrA, OBJ_NIL);
+            XCTAssertFalse( (OBJ_NIL == pNode) );
+            eRc = NodeHash_Add(pHash, pNode);
+            XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+            fprintf(stderr, "\tAdded %p - %s\n", pNode, *ppStrA);
+            fprintf(stderr, "\tLooking for: %s\n", *ppStrA);
+            pNodeFnd = NodeHash_FindA(pHash, 0, *ppStrA);
+            XCTAssertTrue( (pNode) );
+            fprintf(stderr, "\t\tFound\n");
+            obj_Release(pNode);
+            pNode = OBJ_NIL;
+            ++ppStrA;
+        }
+
+        eRc = NodeHash_CalcHashStats(pHash, &numBuckets, &numEmpty, &numMax, &numAvg);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        fprintf(
+                stderr,
+                "\tnumBuckets=%d numEmpty=%d numMax=%d numAvg=%d\n",
+                numBuckets,
+                numEmpty,
+                numMax,
+                numAvg
+        );
+
+        fprintf(stderr, "Hash Chains %d:\n", pHash->cHash);
+        iMax = pHash->cHash;
+        for (i=0; i<iMax; ++i) {
+            RBT_TREE        *pTree;
+            //ASTR_DATA       *pStr = OBJ_NIL;
+
+            fprintf(stderr, "\tChain %4d:\n", i);
+            pTree = &pHash->pHash[i];
+            eRc =   rbt_VisitNodeInRecurse(
+                                       pTree,
+                                       pTree->pRoot,
+                                       (void *)scanPrintExit,
+                                       pHash,               // Used as first parameter of scan method
+                                       NULL                 // Used as third parameter of scan method
+                    );
+
+        }
+
+        // Find
+        pStrA = "all";
+        fprintf(stderr, "\tLooking for: %s\n", pStrA);
+        pNodeFnd = NodeHash_FindA(pHash, 0, pStrA);
+        XCTAssertTrue( (pNodeFnd) );
+        
+        // Delete
+        fprintf(stderr, "\tDeleting: %s\n", pStrA);
+        eRc = NodeHash_DeleteA(pHash, 0, pStrA);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        
+        // Add
+        fprintf(stderr, "\tAdding: %s\n", pStrA);
+        eRc = NodeHash_AddA(pHash, 0, pStrA, OBJ_NIL);
+        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
 
         obj_Release(pHash);
         pHash = OBJ_NIL;
@@ -548,6 +644,7 @@ TINYTEST_START_SUITE(test_NodeHash);
     //TINYTEST_ADD_TEST(test_NodeHash_Expand01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_NodeHash_Merge01,setUp,tearDown);
     //TINYTEST_ADD_TEST(test_NodeHash_Json01,setUp,tearDown);
+    TINYTEST_ADD_TEST(test_NodeHash_AddFindDelete03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_NodeHash_AddFindDelete02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_NodeHash_AddFindDelete01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_NodeHash_Test01,setUp,tearDown);

@@ -391,8 +391,8 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         GenBase_Assign (
-        GENBASE_DATA		*this,
-        GENBASE_DATA     *pOther
+        GENBASE_DATA	*this,
+        GENBASE_DATA    *pOther
     )
     {
         ERESULT     eRc;

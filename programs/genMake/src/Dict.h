@@ -186,7 +186,7 @@ extern "C" {
         const
         char            *pNameA,
         const
-        char            *pData
+        char            *pDataA
     );
 
 

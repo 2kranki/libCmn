@@ -100,9 +100,10 @@ extern "C" {
 
 
 
-    /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
-    ****************************************************************/
+    //****************************************************************
+    //* * * * * * * * * * * Routine Definitions  * * * * * * * * * * *
+    //****************************************************************
+
 
 
     //---------------------------------------------------------------
@@ -178,10 +179,21 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
+     Close the current file.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         TextIns_Close (
+        TEXTINS_DATA    *this
+    );
+
+
+    /*!
      Read a line of text into the given buffer if it will fit. '\n'
      is considered the line terminator. Ignore '\r' in the file.
      @param     this    object pointer
-     @param     pBuffer UTF-8 Buffer for data
+     @param     pBufferA UTF-8 Buffer for data
      @param     size    size of buffer
      @param     pLoc    Address of SRCLOC used to indicate the first
                         character of the line
@@ -193,7 +205,7 @@ extern "C" {
     ERESULT         TextIns_GetLineA (
         TEXTINS_DATA    *this,
         int             size,
-        char            *pBuffer,
+        char            *pBufferA,
         SRCLOC          *pLoc
     );
 

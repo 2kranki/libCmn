@@ -197,6 +197,7 @@ int             test_TextIns_Test01 (
     ERESULT         eRc = ERESULT_SUCCESS;
     TEXTINS_DATA	*pObj = OBJ_NIL;
     bool            fRc;
+    int             iRc;
     SRCLOC          loc = {0};
     const
     char            *pFilePath1A = TEST_FILES_DIR "/e360_ex1_bal.txt";
@@ -205,6 +206,12 @@ int             test_TextIns_Test01 (
     char            *pFilePath2A = TEST_FILES_DIR "/e360_ex2_bal.txt";
     PATH_DATA       *pFilePath2 = OBJ_NIL;
     char            line[256];
+    const
+    char            *pLine1_1 = "*       Figure 3.7, page 46, \\\"Principles of Systems Programming\\\", ";
+    const
+    char            *pLine2_1 = "*       Robert M. Graham, John Wiley & Sons, Inc, 1975";
+    const
+    char            *pLine1_2 = "*       This test program sorts, in ascending sequence, the 16 hexadecimal characters";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -233,21 +240,30 @@ int             test_TextIns_Test01 (
 
         eRc = TextIns_GetLineA(pObj, sizeof(line), line, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        fprintf(stderr, "\tfile1: %s\n", line);
+        fprintf(stderr, "\tShould be: \"%s\"\n", pLine1_1);
+        fprintf(stderr, "\tfile1_1  : \"%s\"\n", line);
+        iRc = strcmp(line, pLine1_1);
+        TINYTEST_TRUE( (0 == iRc) );
 
         eRc = TextIns_NewSrcFromPath(pObj, pFilePath2, 4);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         eRc = TextIns_GetLineA(pObj, sizeof(line), line, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        fprintf(stderr, "\tfile2: %s\n", line);
+        fprintf(stderr, "\tShould be: \"%s\"\n", pLine1_2);
+        fprintf(stderr, "\tfile2_1  : \"%s\"\n", line);
+        iRc = strcmp(line, pLine1_2);
+        TINYTEST_TRUE( (0 == iRc) );
 
         eRc = TextIns_StackPop(pObj);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
 
         eRc = TextIns_GetLineA(pObj, sizeof(line), line, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        fprintf(stderr, "\tfile1: %s\n", line);
+        fprintf(stderr, "\tShould be: \"%s\"\n", pLine2_1);
+        fprintf(stderr, "\tfile1_2  : \"%s\"\n", line);
+        iRc = strcmp(line, pLine2_1);
+        TINYTEST_TRUE( (0 == iRc) );
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

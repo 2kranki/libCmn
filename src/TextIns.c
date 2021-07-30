@@ -395,6 +395,41 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                      C l o s e
+    //---------------------------------------------------------------
+
+    /*!
+     Close the current file.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         TextIns_Close (
+        TEXTINS_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!TextIns_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        //eRc = TextIn_Close(TextIns_StackTop(this));
+
+        //obj_Disable(this);
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -588,7 +623,7 @@ extern "C" {
                 error code.
      */
     ERESULT         TextIns_Disable (
-        TEXTINS_DATA		*this
+        TEXTINS_DATA    *this
     )
     {
         //ERESULT         eRc;

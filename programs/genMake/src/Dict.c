@@ -385,11 +385,11 @@ extern "C" {
     
     
     ERESULT         Dict_AddUpdateA (
-        DICT_DATA        *this,
+        DICT_DATA       *this,
         const
-        char            *pName,
+        char            *pNameA,
         const
-        char            *pData
+        char            *pDataA
     )
     {
         ERESULT         eRc;
@@ -404,15 +404,15 @@ extern "C" {
         }
 #endif
         
-        pStr = AStr_NewA(pData);
+        pStr = AStr_NewA(pDataA);
         if (OBJ_NIL == pStr) {
             return ERESULT_OUT_OF_MEMORY;
         }
         
-        if (NodeHash_FindA(Dict_getNodeHash(this), 0, pName)) {
-            eRc = NodeHash_DeleteA(Dict_getNodeHash(this), 0, pName);
+        if (NodeHash_FindA(Dict_getNodeHash(this), 0, pNameA)) {
+            eRc = NodeHash_DeleteA(Dict_getNodeHash(this), 0, pNameA);
         }
-        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pName, pStr);
+        eRc = NodeHash_AddA(Dict_getNodeHash(this), 0, pNameA, pStr);
         
         // Return to caller.
         obj_Release(pStr);

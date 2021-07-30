@@ -947,7 +947,7 @@ extern "C" {
                          Dict_GetA(pDict, objsVarID));
 
         AStr_AppendA(pStr, ".PHONY: all\n");
-        AStr_AppendA(pStr, "all:  clean create_dirs $(LIB_PATH)\n\n\n");
+        AStr_AppendA(pStr, "all:  clean create_dirs $(LIB_PATH) check install\n\n\n");
 
         AStr_AppendA(pStr, ".PHONY: build\n");
         AStr_AppendA(pStr, "build:  create_dirs $(LIB_PATH)\n\n\n");

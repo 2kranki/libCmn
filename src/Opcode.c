@@ -219,6 +219,7 @@ extern "C" {
         return &this->entry;
     }
 
+    
     bool            Opcode_setEntry (
         OPCODE_DATA     *this,
         const
