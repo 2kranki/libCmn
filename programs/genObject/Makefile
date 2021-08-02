@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 5/29/2021  2:22:31.000)
+# ( 8/ 2/2021 19:14:12.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -45,6 +45,15 @@ LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)
 OBJS =
 
 TESTS =
+
+
+
+
+
+
+#------------------------------------------------
+#         Compile Objects and Routines
+#------------------------------------------------
 
 
 OBJS += $(OBJDIR)/Dict.o
@@ -107,6 +116,15 @@ OBJS += $(OBJDIR)/NodeProp_object.o
 $(OBJDIR)/NodeProp_object.o: $(SRCDIR)/NodeProp_object.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+
+
+
+
+#------------------------------------------------
+#      Compile and execute Tests
+#------------------------------------------------
+
+
 TESTS += Dict_test
 
 Dict_test: $(TEST_SRC)/Dict_test.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
@@ -136,6 +154,15 @@ TESTS += NodeProp_test
 NodeProp_test: $(TEST_SRC)/NodeProp_test.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
+
+
+
+
+
+#------------------------------------------------
+#              Phony Targets
+#------------------------------------------------
+
 
 .PHONY: all
 all:  clean create_dirs link

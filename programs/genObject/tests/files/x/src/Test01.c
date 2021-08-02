@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   Test01.c
- *  Generated 05/28/2021 22:22:34
+ *  Generated 08/02/2021 15:14:16
  *
  */
 
@@ -57,9 +57,21 @@ extern "C" {
     
 
     
+    //****************************************************************
+    // * * * * * * * * * * *    Internal Data    * * * * * * * * * * *
+    //****************************************************************
+
+    // Place constant internal data here. Generally, it should be
+    // 'static' so that it does not interfere with other objects.
 
 
  
+    /****************************************************************
+    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
+    ****************************************************************/
+
+
+
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
@@ -75,11 +87,6 @@ extern "C" {
     }
 #endif
 
-
-
-    /****************************************************************
-    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
-    ****************************************************************/
 
 
     //===============================================================
@@ -499,7 +506,7 @@ extern "C" {
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    TEST01_DATA *     Test01_DeepyCopy (
+    TEST01_DATA *     Test01_DeepCopy (
         TEST01_DATA       *this
     )
     {
@@ -547,6 +554,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!Test01_Validate(this)) {
@@ -557,6 +565,7 @@ extern "C" {
 
         // Put code here...
 
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Disable(this);
         
         // Return to caller.
@@ -582,6 +591,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!Test01_Validate(this)) {
@@ -590,6 +600,7 @@ extern "C" {
         }
 #endif
         
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Enable(this);
 
         // Put code here...

@@ -2,7 +2,7 @@
 /*
  * File:   Test01_json.c
  *
- *  Generated 05/28/2021 22:22:34
+ *  Generated 08/02/2021 15:14:16
  *
  */
 
@@ -150,6 +150,10 @@ extern "C" {
         }
         
         eRc =  Test01_ParseJsonFields(pParser, pObject);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pObject);
+            pObject = OBJ_NIL;
+        }
 
         // Return to caller.
     exit00:

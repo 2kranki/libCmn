@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   Test01_internal.h
- *  Generated 05/28/2021 22:22:34
+ *  Generated 08/02/2021 15:14:16
  *
  * Notes:
  *  --  N/A
@@ -69,9 +69,9 @@ struct Test01_data_s  {
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    ASTR_DATA       *pStr;
     uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
@@ -123,6 +123,11 @@ struct Test01_data_s  {
 
     void            Test01_Dealloc (
         OBJ_ID          objId
+    );
+
+
+    TEST01_DATA *     Test01_DeepCopy (
+        TEST01_DATA       *this
     );
 
 
