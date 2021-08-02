@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 7/26/2021  0:12:19.000)
+# ( 8/ 1/2021 23:30:39.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1769,16 +1769,6 @@ OBJS += $(OBJDIR)/enum_object.o
 $(OBJDIR)/enum_object.o: $(SRCDIR)/enum_object.c $(SRCDIR)/enum.h $(SRCDIR)/enum_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/execArray.o
-
-$(OBJDIR)/execArray.o: $(SRCDIR)/execArray.c $(SRCDIR)/ObjArray.h $(SRCDIR)/execArray.h $(SRCDIR)/execArray_internal.h $(SRCDIR)/ptrArray.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/execArray_object.o
-
-$(OBJDIR)/execArray_object.o: $(SRCDIR)/execArray_object.c $(SRCDIR)/ObjArray.h $(SRCDIR)/execArray.h $(SRCDIR)/execArray_internal.h $(SRCDIR)/ptrArray.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/fbsi.o
 
 $(OBJDIR)/fbsi.o: $(SRCDIR)/fbsi.c $(SRCDIR)/Path.h $(SRCDIR)/fbsi.h $(SRCDIR)/fbsi_internal.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
@@ -1987,16 +1977,6 @@ $(OBJDIR)/ptrArray_object.o: $(SRCDIR)/ptrArray_object.c $(SRCDIR)/ptrArray.h $(
 OBJS += $(OBJDIR)/rbt_tree.o
 
 $(OBJDIR)/rbt_tree.o: $(SRCDIR)/rbt_tree.c $(SRCDIR)/rbt_tree.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/scanReader.o
-
-$(OBJDIR)/scanReader.o: $(SRCDIR)/scanReader.c $(SRCDIR)/scanReader.h $(SRCDIR)/scanReader_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/scanReader_object.o
-
-$(OBJDIR)/scanReader_object.o: $(SRCDIR)/scanReader_object.c $(SRCDIR)/scanReader.h $(SRCDIR)/scanReader_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/shellSortPtrs.o
@@ -2993,12 +2973,6 @@ enum_test: $(TEST_SRC)/enum_test.c $(SRCDIR)/enum.h $(SRCDIR)/enum_internal.h $(
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 
-TESTS += execArray_test
-
-execArray_test: $(TEST_SRC)/execArray_test.c $(SRCDIR)/execArray.h $(SRCDIR)/execArray_internal.h $(SRCDIR)/ObjArray.h $(SRCDIR)/ptrArray.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
 TESTS += fbsi_test
 
 fbsi_test: $(TEST_SRC)/fbsi_test.c $(SRCDIR)/fbsi.h $(SRCDIR)/fbsi_internal.h $(SRCDIR)/Path.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
@@ -3122,12 +3096,6 @@ ptrArray_test: $(TEST_SRC)/ptrArray_test.c $(SRCDIR)/ptrArray.h $(SRCDIR)/ptrArr
 TESTS += rbt_tree_test
 
 rbt_tree_test: $(TEST_SRC)/rbt_tree_test.c $(SRCDIR)/rbt_tree.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += scanReader_test
-
-scanReader_test: $(TEST_SRC)/scanReader_test.c $(SRCDIR)/scanReader.h $(SRCDIR)/scanReader_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

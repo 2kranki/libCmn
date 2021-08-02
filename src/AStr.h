@@ -466,7 +466,7 @@ extern "C" {
     /*!
      Compare 'this' to 'pOther'.
      @param     this    object pointer
-     @param     pOther  UTF-8 Ascii String Pointer
+     @param     pOtherA UTF-8 Ascii String Pointer
      @return    0  if this == other
                 <0 if this < other
                 >0 if this > other
@@ -474,7 +474,7 @@ extern "C" {
     int             AStr_CompareA(
         ASTR_DATA		*this,
         const
-        char            *pOther
+        char            *pOtherA
     );
     
     

@@ -97,7 +97,7 @@ struct scanReader_data_s	{
     );
 
     bool            scanReader_setSingleton (
-     SCANREADER_DATA       *pValue
+     SCANREADER_DATA    *pValue
 );
 #endif
 
@@ -108,7 +108,7 @@ struct scanReader_data_s	{
     //---------------------------------------------------------------
 
     OBJ_IUNKNOWN *  scanReader_getSuperVtbl (
-        SCANREADER_DATA     *this
+        SCANREADER_DATA *this
     );
 
 
@@ -137,7 +137,7 @@ struct scanReader_data_s	{
 
 
     ASTR_DATA *     scanReader_ToJSON (
-        SCANREADER_DATA      *this
+        SCANREADER_DATA *this
     );
 
 
@@ -146,7 +146,7 @@ struct scanReader_data_s	{
 #ifdef NDEBUG
 #else
     bool			scanReader_Validate (
-        SCANREADER_DATA       *this
+        SCANREADER_DATA *this
     );
 #endif
 

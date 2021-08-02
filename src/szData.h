@@ -206,23 +206,23 @@ extern "C" {
     
     
     /*!
-     Compare the names of the two provided objects.
-     @return    ERESULT_SUCCESS_EQUAL if name == other
-                ERESULT_SUCCESS_LESS_THAN if name < other
-                ERESULT_SUCCESS_GREATER_THAN if name > other
+     Compare the two provided objects.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         szData_Compare(
+    int             szData_Compare(
         SZDATA_DATA     *this,
         SZDATA_DATA     *pOther
     );
     
     /*!
-     Compare the name to the provided string.
-     @return    ERESULT_SUCCESS_EQUAL if name == other
-                ERESULT_SUCCESS_LESS_THAN if name < other
-                ERESULT_SUCCESS_GREATER_THAN if name > other
+     Compare the object's string to given one.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
      */
-    ERESULT         szData_CompareA(
+    int             szData_CompareA(
         SZDATA_DATA     *this,
         const
         char            *pOther

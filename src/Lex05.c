@@ -167,7 +167,6 @@ extern "C" {
     //               L e x i c a l  S c a n n e r
     //---------------------------------------------------------------
 
-    inline
     LEX_DATA *      Lex05_getLex(
         LEX05_DATA      *this
     )
@@ -787,12 +786,11 @@ extern "C" {
      * character.
      */
 
-    bool            Lex05_ParseToken(
-        LEX05_DATA      *this,
-        TOKEN_DATA      *pTokenOut
+    ERESULT         Lex05_ParseToken(
+        LEX05_DATA      *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
         TOKEN_DATA      *pInput;
         //int32_t         cls;
         //bool            fMore = true;
@@ -802,7 +800,7 @@ extern "C" {
 #else
         if( !Lex05_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
@@ -870,12 +868,12 @@ extern "C" {
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA       *pStr = Token_ToString(pTokenOut);
+            ASTR_DATA       *pStr = Token_ToString(Lex_getToken(Lex05_getLex(this)));
             TRC_OBJ(this, "...Lex05_ParseToken token=%s", AStr_getData(pStr));
             obj_Release(pStr);
         }
 #endif
-        return true;
+        return eRc;
     }
 
 

@@ -953,8 +953,7 @@ extern "C" {
      */
 
     ERESULT         Lex02_ParseToken(
-        LEX02_DATA      *this,
-        TOKEN_DATA      *pTokenOut
+        LEX02_DATA      *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -1661,7 +1660,7 @@ extern "C" {
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA       *pStr = Token_ToString(pTokenOut);
+            ASTR_DATA       *pStr = Token_ToString(Lex_getToken(Lex02_getLex(this)));
             TRC_OBJ(this, "...Lex00_ParseToken found token=%s", AStr_getData(pStr));
             obj_Release(pStr);
         }

@@ -885,13 +885,11 @@ extern "C" {
         Because on the input side, we use lookahead/advance to avoid
         having to back up the parse unlike some other lexical generators.
      @param     this        object pointer
-     @param     pTokenOut   output token pointer
      @return    true == EOF not reached, false == EOF or Error occurred
      */
 
-    bool            Lex00_ParseToken(
-        LEX00_DATA      *this,
-        TOKEN_DATA      *pTokenOut
+    ERESULT         Lex00_ParseToken(
+        LEX00_DATA      *this
     )
     {
         ERESULT         eRc;
@@ -906,7 +904,7 @@ extern "C" {
 #else
         if( !Lex00_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
         TRC_OBJ(this, "Lex00_ParseToken:\n");
@@ -993,12 +991,12 @@ extern "C" {
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA       *pStr = Token_ToString(pTokenOut);
+            ASTR_DATA       *pStr = Token_ToString(Lex_getToken(Lex00_getLex(this)));
             TRC_OBJ(this, "...Lex00_ParseToken token=%s", AStr_getData(pStr));
             obj_Release(pStr);
         }
 #endif
-        return true;
+        return eRc;
     }
 
 

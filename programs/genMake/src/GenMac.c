@@ -595,6 +595,17 @@ extern "C" {
         }
 #endif
         
+        GenBase_OutputA(GenMac_getGenBase(this), "\n\n\n\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#------------------------------------------------\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#      Compile and execute Tests\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#------------------------------------------------\n");
+        GenBase_OutputA(GenMac_getGenBase(this), "\n\n");
         iMax = NodeArray_getSize(pArray);
         for (i=0; i<iMax; i++) {
             pNode = (NODETSTA_DATA *)NodeArray_Get(pArray, i+1);
@@ -641,7 +652,18 @@ extern "C" {
             return eResult_NewStrA(ERESULT_INVALID_PARAMETER, NULL);
         }
 #endif
-        
+
+        GenBase_OutputA(GenMac_getGenBase(this), "\n\n\n\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#------------------------------------------------\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#         Compile Objects and Routines\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#------------------------------------------------\n");
+        GenBase_OutputA(GenMac_getGenBase(this), "\n\n");
         iMax = NodeArray_getSize(pArray);
         for (i=0; i<iMax; i++) {
             pNode = (NODERTNA_DATA *)NodeArray_Get(pArray, i+1);
@@ -728,6 +750,17 @@ extern "C" {
         }
 #endif
         
+        GenBase_OutputA(GenMac_getGenBase(this), "\n\n\n\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#------------------------------------------------\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#              Phony Targets\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#------------------------------------------------\n");
+        GenBase_OutputA(GenMac_getGenBase(this), "\n");
         // Set up to generate Makefile entry.
         pStr = NodeLib_GenMacEnd(pLib, pDict);
         if (OBJ_NIL == pStr) {
@@ -810,6 +843,17 @@ extern "C" {
         }
 #endif
         
+        GenBase_OutputA(GenMac_getGenBase(this), "\n\n\n\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#------------------------------------------------\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#              Phony Targets\n");
+        GenBase_OutputA(
+                GenMac_getGenBase(this),
+                "#------------------------------------------------\n");
+        GenBase_OutputA(GenMac_getGenBase(this), "\n\n");
         // Set up to generate Makefile entry.
         pStr = NodePgm_GenMacEnd(pPgm, pDict);
         if (OBJ_NIL == pStr) {

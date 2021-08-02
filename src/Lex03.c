@@ -817,9 +817,8 @@ extern "C" {
      * character.
      */
 
-    bool            Lex03_ParseToken(
-        LEX03_DATA      *this,
-        TOKEN_DATA      *pTokenOut
+    ERESULT         Lex03_ParseToken(
+        LEX03_DATA      *this
     )
     {
         ERESULT         eRc;
@@ -835,7 +834,7 @@ extern "C" {
 #else
         if( !Lex03_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
                 TRC_OBJ(this, "Lex00_ParseToken:\n");
@@ -877,12 +876,12 @@ extern "C" {
         #ifdef NDEBUG
         #else
                 if (obj_Trace(this)) {
-                    ASTR_DATA       *pStr = Token_ToString(pTokenOut);
+                    ASTR_DATA       *pStr = Token_ToString(Lex_getToken(Lex03_getLex(this)));
                     TRC_OBJ(this, "...Lex01_ParseToken token=%s", AStr_getData(pStr));
                     obj_Release(pStr);
                 }
         #endif
-        return true;
+        return eRc;
     }
 
 

@@ -72,6 +72,8 @@ extern "C" {
         { LEX_CLASS_EOL, "LEX_CLASS_EOL"},
         { LEX_CLASS_WHITESPACE, "LEX_CLASS_WHITESPACE"},
         { LEX_CLASS_UNICODE, "LEX_CLASS_UNICODE"},
+        { LEX_COMMENT_SINGLE, "LEX_COMMENT_SINGLE"},
+        { LEX_COMMENT_MULTI, "LEX_COMMENT_MULTI"},
         { LEX_CONSTANT_CHAR,    "LEX_CONSTANT_CHAR" },
         { LEX_CONSTANT_CHAR_WIDE,    "LEX_CONSTANT_CHAR_WIDE" },
         { LEX_CONSTANT_FLOAT,    "LEX_CONSTANT_FLOAT" },
@@ -315,8 +317,7 @@ extern "C" {
 
 
     ERESULT         Lex_DefaultParser(
-        OBJ_ID          pObj,
-        TOKEN_DATA      *pTokenOut      // Output Token
+        OBJ_ID          pObj
     )
     {
         LEX_DATA        *this = pObj;
@@ -922,7 +923,7 @@ extern "C" {
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA       *pStr = Token_ToString(pTokenOut);
+            ASTR_DATA       *pStr = Token_ToString(Lex_getToken(this));
             TRC_OBJ(this, "...Lex_DefaultParser token=%s", AStr_getData(pStr));
             obj_Release(pStr);
         }
@@ -1237,7 +1238,7 @@ extern "C" {
 
     bool            Lex_setParserFunction(
         LEX_DATA        *this,
-        ERESULT         (*pParser)(OBJ_ID, TOKEN_DATA *),
+        ERESULT         (*pParser)(OBJ_ID),
         OBJ_ID          pParseObj
     )
     {
@@ -3076,7 +3077,8 @@ extern "C" {
     )
     {
         //TOKEN_DATA      *pInput;
-        bool            fRc;
+        ERESULT         eRc;
+        //bool            fRc;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -3087,7 +3089,14 @@ extern "C" {
         }
 #endif
 
-        fRc = this->pParser(this->pParseObj, &this->token);
+        if (this->pParser) {
+            eRc = this->pParser(this->pParseObj);
+            if (ERESULT_FAILED(eRc)) {
+                return OBJ_NIL;
+            }
+        } else {
+            return OBJ_NIL;
+        }
 
 #ifdef NDEBUG
 #else
@@ -3153,7 +3162,9 @@ extern "C" {
 
     /*!
      Finalize the string being built by the parser creating the token
-     to be returned in this->token.
+     to be returned in this->token where it is either one W32CHR_T or
+     a character string saved in the global szTbl. This allows the
+     token to be copied or used for assign(), but must not be freed.
      @param     this     object pointer
      @param     newClass If non-zero, use this class for the token
                 being built.
@@ -3833,7 +3844,7 @@ extern "C" {
 #endif
 
         if (this->pParser) {
-            eRc = this->pParser(this->pParseObj, &this->token);
+            eRc = this->pParser(this->pParseObj);
         }
         if (ERESULT_FAILED(eRc)) {
             return eRc;

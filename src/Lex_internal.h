@@ -101,7 +101,7 @@ struct Lex_data_s  {
     //      pParse parses the pInputs into the token passed or ignores the
     //      passed token and uses lex_ParseSetup() and lex_ParseFinish() to
     //      accumulate the token.
-    ERESULT         (*pParser)(OBJ_ID, TOKEN_DATA *);   // Lexical Parser
+    ERESULT         (*pParser)(OBJ_ID);             // Lexical Parser
     OBJ_ID          pParseObj;
     ERESULT         (*pError)(OBJ_ID, ASTR_DATA *);     // Error Exit
     OBJ_ID          pErrorObj;
@@ -149,6 +149,11 @@ struct Lex_data_s  {
     //---------------------------------------------------------------
 
     OBJ_IUNKNOWN * Lex_getSuperVtbl (
+        LEX_DATA        *this
+    );
+
+
+    TOKEN_DATA *    Lex_getToken(
         LEX_DATA        *this
     );
 
@@ -457,7 +462,9 @@ struct Lex_data_s  {
     /*** @protected ***/
     /*!
      Finalize the string being built by the parser creating the token
-     to be returned.
+     to be returned in this->token where it is either one W32CHR_T or
+     a character string saved in the global szTbl. This allows the
+     token to be copied or used for assign(), but must not be freed.
      @param     this    LEX object pointer
      @param     newClass If non-zero, use this class for the token
                          being built.

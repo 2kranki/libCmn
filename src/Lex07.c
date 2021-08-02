@@ -167,7 +167,6 @@ extern "C" {
     //               L e x i c a l  S c a n n e r
     //---------------------------------------------------------------
 
-    inline
     LEX_DATA *      Lex07_getLex(
         LEX07_DATA      *this
     )
@@ -787,12 +786,11 @@ extern "C" {
      * character.
      */
 
-    bool            Lex07_ParseToken(
-        LEX07_DATA      *this,
-        TOKEN_DATA      *pTokenOut
+    ERESULT         Lex07_ParseToken(
+        LEX07_DATA      *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
         TOKEN_DATA      *pInput;
         //int32_t         cls;
         //bool            fMore = true;
@@ -870,12 +868,12 @@ extern "C" {
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA       *pStr = Token_ToString(pTokenOut);
+            ASTR_DATA       *pStr = Token_ToString(Lex_getToken(Lex07_getLex(this)));
             TRC_OBJ(this, "...Lex07_ParseToken token=%s", AStr_getData(pStr));
             obj_Release(pStr);
         }
 #endif
-        return true;
+        return eRc;
     }
 
 

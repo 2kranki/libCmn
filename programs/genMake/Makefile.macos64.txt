@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 7/28/2021  0:48:28.000)
+# ( 8/ 2/2021  5:59:42.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -45,6 +45,15 @@ LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)
 OBJS =
 
 TESTS =
+
+
+
+
+
+
+#------------------------------------------------
+#         Compile Objects and Routines
+#------------------------------------------------
 
 
 OBJS += $(OBJDIR)/Dict.o
@@ -207,6 +216,15 @@ OBJS += $(OBJDIR)/SrcParse_object.o
 $(OBJDIR)/SrcParse_object.o: $(SRCDIR)/SrcParse_object.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+
+
+
+
+#------------------------------------------------
+#      Compile and execute Tests
+#------------------------------------------------
+
+
 TESTS += Dict_test
 
 Dict_test: $(TEST_SRC)/Dict_test.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
@@ -302,6 +320,15 @@ TESTS += SrcParse_test
 SrcParse_test: $(TEST_SRC)/SrcParse_test.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcParse_internal.h $(SRCDIR)/genMake.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
+
+
+
+
+
+#------------------------------------------------
+#              Phony Targets
+#------------------------------------------------
+
 
 .PHONY: all
 all:  clean create_dirs link

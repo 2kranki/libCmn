@@ -579,7 +579,7 @@ extern "C" {
 
     bool            Lex_setParserFunction (
         LEX_DATA        *this,
-        ERESULT         (*pParser)(OBJ_ID, TOKEN_DATA *),
+        ERESULT         (*pParser)(OBJ_ID),
         OBJ_ID          pParseObj
     );
 

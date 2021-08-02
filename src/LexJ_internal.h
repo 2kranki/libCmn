@@ -156,7 +156,7 @@ struct LexJ_data_s  {
      */
     ERESULT         LexJ_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        LEXJ_DATA     *pObject
+        LEXJ_DATA       *pObject
     );
 #endif
 
