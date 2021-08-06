@@ -342,7 +342,7 @@ int         test_SrcFile_Buffer01(
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     i = AStr_getLength(pBuf);
     XCTAssertTrue( (17 == i) );
-    TRC( "\tpBuf = %p\n", pBuf );
+    fprintf(stderr, "\tpBuf = %p\n", pBuf);
 
     pSource = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
     XCTAssertFalse( (OBJ_NIL == pSource) );
@@ -639,12 +639,14 @@ int         test_SrcFile_Test03(
     uint32_t        i;
     PATH_DATA       *pPath = Path_NewA("abc");
     uint16_t        fileIndex;
+    const
+    char            *pStrA = "{oNe: +123}\n";
 
-    pBuf = AStr_NewA("{oNe: +123}\n");
+    pBuf = AStr_NewA(pStrA);
     XCTAssertFalse( (OBJ_NIL == pBuf) );
     i = AStr_getLength(pBuf);
     XCTAssertTrue( (12 == i) );
-    //TRC( "\tpBuf = %p\n", pBuffer );
+    fprintf(stderr, "\tInput = \"%s\"\n", pStrA);
 
     pSource = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
     XCTAssertFalse( (OBJ_NIL == pSource) );

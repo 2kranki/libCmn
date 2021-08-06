@@ -957,14 +957,15 @@ extern "C" {
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        bool            fRc;
+        bool            fRc = false;
         TOKEN_DATA      *pToken;
         int32_t         cls1;           // Input: 1 Lookahead
         W32CHR_T        chr1;
         int32_t         cls2;           // Input: 2 Lookahead
         W32CHR_T        chr2;
-        int32_t         clsNew = LEX_CLASS_UNKNOWN;
-        bool            fSavStr = true;
+        //int32_t         clsNew = LEX_CLASS_UNKNOWN;
+        //bool            fSavStr = true;
+        LEX_PARSE_DATA  data;
         //uint32_t        i;
 
         // Do initialization.
@@ -976,6 +977,9 @@ extern "C" {
         }
 #endif
         TRC_OBJ(this, "Lex02_ParseToken:\n");
+        data.pOutput = Lex_getToken(Lex02_getLex(this));
+        data.clsNew = LEX_CLASS_UNKNOWN;
+        data.fSavStr = true;
 
     nextToken:
         pToken = Lex_InputLookAhead(Lex02_getLex(this), 1);
@@ -998,7 +1002,7 @@ extern "C" {
 #endif
         cls1 = Token_getClass(pToken);
         chr1 = Token_getChrW32(pToken);
-        clsNew = cls1;              // Default to Input Class.
+        data.clsNew = cls1;              // Default to Input Class.
         // Set up the input token as the basis for the output token.
         eRc = Lex_ParseTokenSetup(Lex02_getLex(this), pToken);
         Lex_InputAdvance(Lex02_getLex(this), 1);
@@ -1035,7 +1039,7 @@ extern "C" {
                     // that back out here.
                     if (Lex02_getNL(this)) {
                         if ('\n' ==  chr1) {
-                            clsNew = LEX_CLASS_EOL;
+                            data.clsNew = LEX_CLASS_EOL;
                             break;
                         }
                     }
@@ -1063,7 +1067,7 @@ extern "C" {
                         else
                             break;
                     }
-                    clsNew = LEX_CLASS_WHITESPACE;
+                    data.clsNew = LEX_CLASS_WHITESPACE;
                 } else {
                     goto nextToken;
                 }
@@ -1072,7 +1076,7 @@ extern "C" {
             case LEX_CLASS_EOL:
                 if (Lex02_getNL(this)) {
                     Lex_InputAdvance(Lex02_getLex(this), 1);
-                    clsNew = LEX_CLASS_EOL;
+                    data.clsNew = LEX_CLASS_EOL;
                 } else {
                     goto nextToken;
                 }
@@ -1114,7 +1118,7 @@ extern "C" {
                         break;
                     }
                 }
-                clsNew = LEX_IDENTIFIER;
+                data.clsNew = LEX_IDENTIFIER;
                 break;
 
             case LEX_CLASS_NUMBER:
@@ -1129,9 +1133,9 @@ extern "C" {
                 break;
 
             case '!':           /*** '!' ***/
-                clsNew = LEX_OP_NOT;
+                data.clsNew = LEX_OP_NOT;
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_NE;
+                    data.clsNew = LEX_OP_NE;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                 }
@@ -1162,9 +1166,9 @@ extern "C" {
                 break;
 
             case '#':           /*** '#' ***/
-                clsNew = LEX_OP_POUND;
+                data.clsNew = LEX_OP_POUND;
                 if( '#' == cls2) {
-                    clsNew = LEX_OP_2POUNDS;
+                    data.clsNew = LEX_OP_2POUNDS;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1174,33 +1178,33 @@ extern "C" {
             /*** '$' ***/
 
             case '%':
-                clsNew = LEX_OP_MOD;
+                data.clsNew = LEX_OP_MOD;
                 if( '%' == cls2) {
-                    clsNew = LEX_SPCL_SEPARATOR;
+                    data.clsNew = LEX_SPCL_SEPARATOR;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_ASSIGN_MOD;
+                    data.clsNew = LEX_OP_ASSIGN_MOD;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( ')' == cls2) {
-                    clsNew = LEX_SPCL_RPAREN;
+                    data.clsNew = LEX_SPCL_RPAREN;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( ']' == cls2) {
-                    clsNew = LEX_SPCL_RBRACK;
+                    data.clsNew = LEX_SPCL_RBRACK;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '}' == cls2) {
-                    clsNew = LEX_SPCL_RBRACE;
+                    data.clsNew = LEX_SPCL_RBRACE;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1208,15 +1212,15 @@ extern "C" {
                 break;
 
             case '&':
-                clsNew = LEX_OP_AND;
+                data.clsNew = LEX_OP_AND;
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_ASSIGN_AND;
+                    data.clsNew = LEX_OP_ASSIGN_AND;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '&' == cls2) {
-                    clsNew = LEX_OP_LOG_AND;
+                    data.clsNew = LEX_OP_LOG_AND;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1224,8 +1228,8 @@ extern "C" {
                 break;
 
             case '\'':
-                fRc = Lex_ParseChrCon((LEX_DATA *)this, '\'');
-                clsNew = LEX_CONSTANT_CHAR;
+                //FIXME: fRc = Lex_ParseChrCon((LEX_DATA *)this, '\'');
+                data.clsNew = LEX_CONSTANT_CHAR;
                 if (!fRc) {
                     SrcErrors_AddFatalFromTokenA(
                                                  OBJ_NIL,
@@ -1236,15 +1240,15 @@ extern "C" {
                 break;
 
             case '(':           /*** '(' ***/
-                clsNew = LEX_SEP_LPAREN;
+                data.clsNew = LEX_SEP_LPAREN;
                 if( '%' == cls2) {
-                    clsNew = LEX_SPCL_LPAREN;
+                    data.clsNew = LEX_SPCL_LPAREN;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( ':' == cls2) {
-                    clsNew = LEX_SPCL_PAREN_LEFT;
+                    data.clsNew = LEX_SPCL_PAREN_LEFT;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1252,13 +1256,13 @@ extern "C" {
                 break;
 
             case ')':           /*** ')' ***/
-                clsNew = LEX_SEP_RPAREN;
+                data.clsNew = LEX_SEP_RPAREN;
                 break;
 
             case '*':           /*** '*' ***/
-                clsNew = LEX_OP_MUL;
+                data.clsNew = LEX_OP_MUL;
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_ASSIGN_MUL;
+                    data.clsNew = LEX_OP_ASSIGN_MUL;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1266,15 +1270,15 @@ extern "C" {
                 break;
 
             case '+':           /*** '+' ***/
-                clsNew = LEX_OP_ADD;
+                data.clsNew = LEX_OP_ADD;
                 if( '+' == cls2) {
-                    clsNew = LEX_OP_INC;
+                    data.clsNew = LEX_OP_INC;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_ASSIGN_ADD;
+                    data.clsNew = LEX_OP_ASSIGN_ADD;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1282,25 +1286,25 @@ extern "C" {
                 break;
 
             case ',':           /*** ',' ***/
-                clsNew = LEX_SEP_COMMA;
+                data.clsNew = LEX_SEP_COMMA;
                 break;
 
             case '-':           /*** '-' ***/
-                clsNew = LEX_OP_ADD;
+                data.clsNew = LEX_OP_ADD;
                 if( '-' == cls2) {
-                    clsNew = LEX_OP_DEC;
+                    data.clsNew = LEX_OP_DEC;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_ASSIGN_SUB;
+                    data.clsNew = LEX_OP_ASSIGN_SUB;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '>' == cls2) {
-                    clsNew = LEX_SEP_RARROW;
+                    data.clsNew = LEX_SEP_RARROW;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1308,24 +1312,24 @@ extern "C" {
                 break;
 
             case '.':           /*** '.' ***/
-                clsNew = LEX_SEP_DOT;
+                data.clsNew = LEX_SEP_DOT;
                 if ( '.' == cls2) {
                     TOKEN_DATA      *pToken2 = Lex_InputLookAhead((LEX_DATA *)this, 2);
                     int32_t         cls3;           // Input: 2 Lookahead
 
                     cls3 = Token_getClass(pToken2);
-                    clsNew = LEX_OP_RANGE;
+                    data.clsNew = LEX_OP_RANGE;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     if ( '.' == cls3) {
-                        clsNew = LEX_OP_ELIPSIS;
+                        data.clsNew = LEX_OP_ELIPSIS;
                         Lex_ParseTokenAppendString((LEX_DATA *)this, pToken2);
                         Lex_InputAdvance((LEX_DATA *)this, 1);
                     }
                     break;
                 }
                 if( '>' == cls2) {
-                    clsNew = LEX_SEP_DOT_GT;
+                    data.clsNew = LEX_SEP_DOT_GT;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1333,11 +1337,11 @@ extern "C" {
                 break;
 
             case '/':           /*** '/' ***/
-                clsNew = LEX_OP_DIV;
+                data.clsNew = LEX_OP_DIV;
                 if( '/' == cls2) {
                     // Single Line Comment - LEX_COMMENT_SINGLE
                     // Scan until EOL.
-                    clsNew = LEX_COMMENT_SINGLE;
+                    data.clsNew = LEX_COMMENT_SINGLE;
                     if (Lex_getFlags((LEX_DATA *)this) & LEX_FLAG_WS) {
                         Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     }
@@ -1360,7 +1364,7 @@ extern "C" {
                     uint32_t        depth = 1;
                     bool            fMore2 = true;
                     // Multi-line comment - LEX_COMMENT_MULTI
-                    clsNew = LEX_COMMENT_SINGLE;
+                    data.clsNew = LEX_COMMENT_SINGLE;
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     while (fMore2) {
                         TOKEN_DATA      *pToken1 = Lex_InputLookAhead((LEX_DATA *)this, 1);
@@ -1390,7 +1394,7 @@ extern "C" {
                     break;
                 }
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_ASSIGN_DIV;
+                    data.clsNew = LEX_OP_ASSIGN_DIV;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1399,40 +1403,40 @@ extern "C" {
 
             case ':':           /*** ':' ***/
                 if( ':' == cls2) {
-                    clsNew = LEX_SPCL_DBLCOLON;
+                    data.clsNew = LEX_SPCL_DBLCOLON;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( ')' == cls2) {
-                    clsNew = LEX_SPCL_PAREN_RIGHT;
+                    data.clsNew = LEX_SPCL_PAREN_RIGHT;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( ']' == cls2) {
-                    clsNew = LEX_SPCL_COLON_RBRACK;
+                    data.clsNew = LEX_SPCL_COLON_RBRACK;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '}' == cls2) {
-                    clsNew = LEX_SPCL_COLON_RBRACE;
+                    data.clsNew = LEX_SPCL_COLON_RBRACE;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '>' == cls2) {
-                    clsNew = LEX_SPCL_COLON_RIGHT;
+                    data.clsNew = LEX_SPCL_COLON_RIGHT;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 2);
                     break;
                 }
-                clsNew = LEX_SPCL_COLON;
+                data.clsNew = LEX_SPCL_COLON;
                 break;
 
             case ';':           /*** ';' ***/
-                clsNew = LEX_SEP_SEMICOLON;
+                data.clsNew = LEX_SEP_SEMICOLON;
                 break;
 
             case '<':           /*** '<' ***/
@@ -1441,11 +1445,11 @@ extern "C" {
                     int32_t         cls3;           // Input: 2 Lookahead
 
                     cls3 = Token_getClass(pToken2);
-                    clsNew = LEX_OP_LEFT;
+                    data.clsNew = LEX_OP_LEFT;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     if( '=' == cls3) {
-                        clsNew = LEX_OP_ASSIGN_LEFT;
+                        data.clsNew = LEX_OP_ASSIGN_LEFT;
                         Lex_ParseTokenAppendString((LEX_DATA *)this, pToken2);
                         Lex_InputAdvance((LEX_DATA *)this, 1);
                         break;
@@ -1453,25 +1457,25 @@ extern "C" {
                     break;
                 }
                 if( '-' == cls2) {
-                    clsNew = LEX_SEP_LARROW;
+                    data.clsNew = LEX_SEP_LARROW;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_LE;
+                    data.clsNew = LEX_OP_LE;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( ':' == cls2) {
-                    clsNew = LEX_SPCL_COLON_LEFT;
+                    data.clsNew = LEX_SPCL_COLON_LEFT;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '.' == cls2) {
-                    clsNew = LEX_SEP_LT_DOT;
+                    data.clsNew = LEX_SEP_LT_DOT;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1482,7 +1486,7 @@ extern "C" {
                         W32STR_DATA     *pStr;
                         pStr = pplex2_SaveText(this,'.','>');
                         if (pStr) {
-                            newCls = LEX_CONSTANT_TEXTD;
+                            data.clsNew = LEX_CONSTANT_TEXTD;
                             Token_setStrW32(
                                 Lex_getToken((LEX_DATA *)this),
                                 W32Str_getData(pStr)
@@ -1491,48 +1495,48 @@ extern "C" {
                             fSaveStr = false;
                         }
                     }
-                    clsNew = LEX_SEP_LT_DOT;
+                    data.clsNew = LEX_SEP_LT_DOT;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 2);
                     fMore = false;
                     break;
                 }
                 if( ':' == cls2) {
-                    clsNew = LEX_SPCL_COLON_LEFT;
+                    data.clsNew = LEX_SPCL_COLON_LEFT;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 2);
                     fMore = false;
                     break;
                 }
 #endif
-                clsNew = LEX_OP_LT;
+                data.clsNew = LEX_OP_LT;
                 break;
 
             case '=':           /*** '=' ***/
                 if( '>' == cls2) {
-                    clsNew = LEX_SPCL_RARROW;
+                    data.clsNew = LEX_SPCL_RARROW;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_EQ;
+                    data.clsNew = LEX_OP_EQ;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
-                clsNew = LEX_OP_ASSIGN;
+                data.clsNew = LEX_OP_ASSIGN;
                 break;
 
             case '>':           /*** '>' ***/
                 if( '>' == cls2) {
-                    clsNew = LEX_OP_RIGHT;
+                    data.clsNew = LEX_OP_RIGHT;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     pToken = Lex_InputLookAhead((LEX_DATA *)this, 1);
                     cls2 = Token_getClass(pToken);
                     if( '=' == cls2) {
-                        clsNew = LEX_OP_ASSIGN_RIGHT;
+                        data.clsNew = LEX_OP_ASSIGN_RIGHT;
                         Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                         Lex_InputAdvance((LEX_DATA *)this, 1);
                         break;
@@ -1540,68 +1544,68 @@ extern "C" {
                     break;
                 }
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_GE;
+                    data.clsNew = LEX_OP_GE;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
-                clsNew = LEX_OP_GT;
+                data.clsNew = LEX_OP_GT;
                 break;
 
             case '?':           /*** '?' ***/
-                clsNew = LEX_OP_QUESTION;
+                data.clsNew = LEX_OP_QUESTION;
                 break;
 
             case '@':           /*** '@' ***/
                 if( '(' == cls2) {
-                    clsNew = LEX_SPCL_AT_LPAREN;
+                    data.clsNew = LEX_SPCL_AT_LPAREN;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '[' == cls2) {
-                    clsNew = LEX_SPCL_AT_LBRACK;
+                    data.clsNew = LEX_SPCL_AT_LBRACK;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '{' == cls2) {
-                    clsNew = LEX_SPCL_AT_LBRACE;
+                    data.clsNew = LEX_SPCL_AT_LBRACE;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
-                clsNew = LEX_SEP_AT;
+                data.clsNew = LEX_SEP_AT;
                 break;
 
             case '[':           /*** '[' ***/
                 if( '%' == cls2) {
-                    clsNew = LEX_SPCL_LBRACK;
+                    data.clsNew = LEX_SPCL_LBRACK;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( ':' == cls2) {
-                    clsNew = LEX_SPCL_LBRACK_COLON;
+                    data.clsNew = LEX_SPCL_LBRACK_COLON;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
-                clsNew = LEX_SEP_LBRACK;
+                data.clsNew = LEX_SEP_LBRACK;
                 break;
 
             case ']':           /*** ']' ***/
-                clsNew = LEX_SEP_RBRACK;
+                data.clsNew = LEX_SEP_RBRACK;
                 break;
 
             case '^':           /*** '^' ***/
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_ASSIGN_XOR;
+                    data.clsNew = LEX_OP_ASSIGN_XOR;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
-                clsNew = LEX_OP_XOR;
+                data.clsNew = LEX_OP_XOR;
                 break;
 
                 /*
@@ -1611,30 +1615,30 @@ extern "C" {
 
             case '{':           /*** '{' ***/
                 if( '%' == cls2) {
-                    clsNew = LEX_SPCL_LBRACE;
+                    data.clsNew = LEX_SPCL_LBRACE;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( ':' == cls2) {
-                    clsNew = LEX_SPCL_LBRACE_COLON;
+                    data.clsNew = LEX_SPCL_LBRACE_COLON;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
-                clsNew = LEX_SEP_LBRACE;
+                data.clsNew = LEX_SEP_LBRACE;
                 break;
 
             case '|':
-                clsNew = LEX_OP_OR;
+                data.clsNew = LEX_OP_OR;
                 if( '=' == cls2) {
-                    clsNew = LEX_OP_ASSIGN_OR;
+                    data.clsNew = LEX_OP_ASSIGN_OR;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
                 }
                 if( '|' == cls2) {
-                    clsNew = LEX_OP_LOG_OR;
+                    data.clsNew = LEX_OP_LOG_OR;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     break;
@@ -1642,11 +1646,11 @@ extern "C" {
                 break;
 
             case '}':           /*** '}' ***/
-                clsNew = LEX_SEP_RBRACE;
+                data.clsNew = LEX_SEP_RBRACE;
                 break;
 
             case '~':           /*** '~' ***/
-                clsNew = LEX_OP_NEG;
+                data.clsNew = LEX_OP_NEG;
                 break;
 
            default:
@@ -1654,7 +1658,7 @@ extern "C" {
         }
 
         // Set up the output token.
-        eRc = Lex_ParseTokenFinalize(Lex02_getLex(this), clsNew, fSavStr);
+        eRc = Lex_ParseTokenFinalize(Lex02_getLex(this), data.clsNew, data.fSavStr);
 
         // Return to caller.
 #ifdef NDEBUG

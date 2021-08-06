@@ -835,7 +835,7 @@ extern "C" {
 
 
     ERESULT         W32Str_AppendW32(
-        W32STR_DATA        *this,
+        W32STR_DATA     *this,
         uint32_t        len,
         const
         W32CHR_T        *pStr
@@ -875,7 +875,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         W32Str_AppendCharW32(
-        W32STR_DATA        *this,
+        W32STR_DATA     *this,
         uint32_t        len,
         const
         W32CHR_T        chr
@@ -922,7 +922,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         W32Str_AppendUtf8File(
-        W32STR_DATA        *this,
+        W32STR_DATA     *this,
         PATH_DATA       *pPath
     )
     {
@@ -968,7 +968,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         W32Str_AppendPrintA(
-        W32STR_DATA        *this,
+        W32STR_DATA     *this,
         const
         char            *pFormat,
         ...
@@ -1027,7 +1027,7 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         W32Str_Assign (
-        W32STR_DATA       *this,
+        W32STR_DATA     *this,
         W32STR_DATA     *pOther
     )
     {

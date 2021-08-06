@@ -1147,10 +1147,10 @@ extern "C" {
 
                 case ASCII_LEXICAL_NUMBER:
                 parseNumber:
-                    newCls = Lex_ParseNumber((LEX_DATA *)this);
+                    //FIXME: newCls = Lex_ParseNumber((LEX_DATA *)this);
                     if (newCls) {
                         uint16_t            type;
-                        type = Lex_ParseIntegerSuffix((LEX_DATA *)this);
+                        //FIXME: type = Lex_ParseIntegerSuffix((LEX_DATA *)this);
                         Token_setMisc(&this->super.token, type);
                     }
                     TRC_OBJ(
@@ -1166,7 +1166,7 @@ extern "C" {
                     //TODO: "..." {<white-space> "..."}
                     Lex_InputAdvance((LEX_DATA *)this, 1);
                     Lex_ParseTokenTruncate((LEX_DATA *)this);
-                    while(Lex_ParseChrConWS((LEX_DATA *)this, '"'))
+                    //FIXME: while(Lex_ParseChrConWS((LEX_DATA *)this, '"'))
                         ;
                     pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
                     cls = Token_getClass(pInput);

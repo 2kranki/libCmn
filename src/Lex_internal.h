@@ -4,8 +4,22 @@
  *  Generated 05/28/2020 16:45:58
  *
  * Notes:
- *  --  N/A
+ *  --  The default parser parses the more common 'C' language lexical
+ *      tokens.  We have added a Pre-Process Exit and a Post-Process
+ *      exit to it.  This allows the basic lexical tokens to be scanned
+ *      off and additional ones to be added.
  *
+ *      The Pre-Process Exit allows for the default parser to be over-
+ *      ridden if needed. It should return 0 to indicate that it parsed
+ *      a valid token, 1 to skip the current input token and try the next
+ *      one or any other value to just do normal processing within the
+ *      default parser.
+ *
+ *      The Post-Process Exit allows for the addition of processwing
+ *      input tokens that are not recognized by the default parser.
+ *      This exit should return 0 to indicate that a valid output token
+ *      has been recognized or any other value to indicate that the
+ *      input token was not handled.
  */
 
 
@@ -68,6 +82,27 @@ extern "C" {
     } LEX_STATUSES;
 
 
+    // This structure is normally used in ParseToken()
+    // methods to pass data to subordinate parsers.
+    // Each sub-parser assumes that cls1/chr1 has been
+    // added to the accumulated string and advanced over.
+    // Whereas cls2/chr2 is a lookahead just beyond the
+    // first token.
+    typedef struct Lex_Parse_Data_s {
+        TOKEN_DATA      *pOutput;
+        W32STR_DATA     *pStr;      // String from accumulated tokens
+        int32_t         clsNew;
+        bool            fFinalize;
+        bool            fSavStr;
+        TOKEN_DATA      token1;
+        int32_t         cls1;       // Absorbed token
+        W32CHR_T        chr1;
+        TOKEN_DATA      token2;
+        int32_t         cls2;       // Lookahead token
+        W32CHR_T        chr2;
+    } LEX_PARSE_DATA;
+
+
 
     //---------------------------------------------------------------
     //                  Object Data Description
@@ -105,14 +140,23 @@ struct Lex_data_s  {
     OBJ_ID          pParseObj;
     ERESULT         (*pError)(OBJ_ID, ASTR_DATA *);     // Error Exit
     OBJ_ID          pErrorObj;
-    int             (*pParserExit)(
+    // The pre-process exit is called before the first token is analyzed
+    // allowing default parsing to be overridden.
+    int             (*pParserPreExit)(
                                    OBJ_ID,          // pParserExitObj
                                    LEX_DATA *,      // LEX Object Ptr
-                                   TOKEN_DATA *,    // Current Token Ptr
-                                   int32_t *,       // clsNew return Ptr
-                                   W32STR_DATA *    // Output Token Accumulaion String
+                                   LEX_PARSE_DATA * // Current Parse Data Ptr
                     );
-    OBJ_ID          pParserExitObj;
+    OBJ_ID          pParserPreExitObj;
+    // The post-process exit is called if the default parser does not find
+    // a match for the first token.  It allows for extensions to be added
+    // to the default process.
+    int             (*pParserPostExit)(
+                                   OBJ_ID,          // pParserExitObj
+                                   LEX_DATA *,      // LEX Object Ptr
+                                   LEX_PARSE_DATA * // Current Parse Data Ptr
+                    );
+    OBJ_ID          pParserPostExitObj;
     TOKEN_DATA      token;              // Next Output Token (output of pParser)
     W32STR_DATA     *pStr;              // String from accumulated tokens
 
@@ -148,6 +192,20 @@ struct Lex_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            Lex_setParserPosExit(
+        LEX_DATA        *this,
+        ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
+        OBJ_ID          pParseObj
+    );
+
+
+    bool            Lex_setParserPreExit(
+        LEX_DATA        *this,
+        ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
+        OBJ_ID          pParseObj
+    );
+
+
     OBJ_IUNKNOWN * Lex_getSuperVtbl (
         LEX_DATA        *this
     );
@@ -171,6 +229,11 @@ struct Lex_data_s  {
 
     void            Lex_Dealloc (
         OBJ_ID          objId
+    );
+
+
+    ERESULT         Lex_DefaultParser(
+        OBJ_ID          pObj
     );
 
 
@@ -203,7 +266,8 @@ struct Lex_data_s  {
 
 
     bool            Lex_ParseWhiteSpace(
-        LEX_DATA        *this
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData
     );
 
 
@@ -389,6 +453,7 @@ struct Lex_data_s  {
      */
     bool            Lex_ParseChrCon (
         LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData,
         W32CHR_T        ending
     );
 
@@ -399,48 +464,56 @@ struct Lex_data_s  {
      */
     bool            Lex_ParseChrConWS (
         LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData,
         W32CHR_T        ending
     );
 
 
     bool            Lex_ParseDigitHex (
-        LEX_DATA        *this
+       LEX_DATA        *this,
+       LEX_PARSE_DATA  *pData
     );
 
     bool            Lex_ParseDigitsHex (
-        LEX_DATA       *this
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData
     );
 
 
     bool            Lex_ParseDigitOct (
-        LEX_DATA        *this
+       LEX_DATA        *this,
+       LEX_PARSE_DATA  *pData
     );
 
     bool            Lex_ParseDigitsOct (
-        LEX_DATA        *this
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData
     );
 
 
     uint16_t        Lex_ParseIntegerSuffix (
-        LEX_DATA        *this
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData
     );
 
 
     bool            Lex_ParseName (
-        LEX_DATA        *this
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData
     );
 
 
     /*** @protected ***/
     /*!
      Parse a number of varying formats. The first character of the number
-     has already been parsed and appended, but not advanced over. So, we
-     can look at it and make decisions based on it.
+     has already been parsed, appended, and advanced over. So, we can
+     look at it and make decisions based on it.
      @return    If successful, LEX_CONSTANT_* class, otherwise 0. Also,
                  the token string is accumulated.
      */
     uint16_t        Lex_ParseNumber (
-        LEX_DATA        *this
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData
     );
 
 
@@ -516,6 +589,19 @@ struct Lex_data_s  {
      */
     TOKEN_DATA *    Lex_SetupTokenEOF (
         LEX_DATA        *this
+    );
+
+
+    /*** @protected ***/
+    /*!
+     Append the character data to the parse string.
+     @param     this    LEX object pointer
+     @param     chr     wide char to be appended to the string
+     @return:   If successful, ERESULT_SUCCESS, otherwise ERESULT_ERROR_*.
+     */
+    ERESULT         Lex_TokenAppendStringW32(
+        LEX_DATA        *this,
+        W32CHR_T        chr
     );
 
 

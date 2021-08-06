@@ -355,7 +355,7 @@ extern "C" {
 
 
     /*!
-    Return the next character in the file.
+    Get the next character in the file as a W32CHR_T token only.
     @return    If successful, pointer to a TOKEN_FIELD that contains the next
                character from the file and its associated data. Otherwise, NULL.
     */

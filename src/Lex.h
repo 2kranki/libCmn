@@ -462,7 +462,10 @@ extern "C" {
         //                                          // surrounded by double apostrophies
         LEX_FLAG_WS=0x40000000,                     /* Return Whitespace */
         LEX_FLAG_NL=0x20000000,                     /* Return NLs */
-        LEX_FLAG_CMT=0x20000000,                    /* Return comments */
+        LEX_FLAG_CMT=0x10000000,                    /* Return comments */
+        LEX_FLAG_SPCL_GROUP=0x08000000,             /* Recognize  LEX_CLASS_SPCL_GROUP
+                                                        tokens
+                                                     */
     } LEX_FLAGS;
 
 

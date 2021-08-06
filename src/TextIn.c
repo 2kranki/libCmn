@@ -1755,7 +1755,7 @@ extern "C" {
         this->curTok.w32chr[1] = 0;
         TRC_OBJ(
                 this,
-                "\tTextIn::NextToken: file:%d Line:%d Col:%d Offset:%lld Char:(%d)%c Cls:(%d)%c\n",
+                "\tTextIn::NextToken: file:%d Line:%3d Col:%2d Offset:%lld Char:(%d)%c Cls:(%d)%c\n",
                 this->curTok.src.fileIndex,
                 this->curTok.src.lineNo,
                 this->curTok.src.colNo,
