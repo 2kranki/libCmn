@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 8/ 1/2021 23:30:39.000)
+# ( 8/ 7/2021  0:07:40.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -42,6 +42,15 @@ LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)
 OBJS =
 
 TESTS =
+
+
+
+
+
+
+#------------------------------------------------
+#         Compile Objects and Routines
+#------------------------------------------------
 
 
 OBJS += $(OBJDIR)/AStr.o
@@ -2139,6 +2148,15 @@ OBJS += $(OBJDIR)/utf8_object.o
 $(OBJDIR)/utf8_object.o: $(SRCDIR)/utf8_object.c $(SRCDIR)/utf8.h $(SRCDIR)/utf8_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+
+
+
+
+#------------------------------------------------
+#      Compile and execute Tests
+#------------------------------------------------
+
+
 TESTS += AStrArray_test
 
 AStrArray_test: $(TEST_SRC)/AStrArray_test.c $(SRCDIR)/AStrArray.h $(SRCDIR)/AStrArray_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/cmn_defs.h 
@@ -3179,13 +3197,21 @@ utf8_test: $(TEST_SRC)/utf8_test.c $(SRCDIR)/utf8.h $(SRCDIR)/utf8_internal.h $(
 
 
 
+
+
+#------------------------------------------------
+#              Phony Targets
+#------------------------------------------------
+
+
+
 $(LIB_PATH):  $(OBJS)
 	-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)
 	ar rc $(LIB_PATH) $(OBJS)
 
 
 .PHONY: all
-all:  clean create_dirs $(LIB_PATH)
+all:  clean create_dirs $(LIB_PATH) check install
 
 
 .PHONY: build

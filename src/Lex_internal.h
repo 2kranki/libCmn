@@ -503,6 +503,21 @@ struct Lex_data_s  {
     );
 
 
+    /*!
+     Advance to the next input token and get the lookahead just beyond it.
+     @param     this        object pointer
+     @param     pData       input data area pointer
+     @param     fSetupToken true == setup the advanced token as the 1st token
+                            in this new string
+     @return    true if successful, otherwise false
+     */
+    bool            Lex_ParseNext(
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData,
+        bool            fSetupToken
+    );
+
+
     /*** @protected ***/
     /*!
      Parse a number of varying formats. The first character of the number

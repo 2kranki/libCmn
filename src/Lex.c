@@ -275,13 +275,6 @@ extern "C" {
     {
 
         // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Lex_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
 
         Token_Init(&this->token);
         Token_SetupCharW32(&this->token, NULL, LEX_CLASS_EOF, -1);
@@ -299,13 +292,6 @@ extern "C" {
     {
 
         // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !Lex_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
 
         Token_Init(&this->token);
         Token_SetupCharW32(&this->token, NULL, LEX_CLASS_EOF, -1);
@@ -321,7 +307,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Parse white space until eol or non-whitespace character.
+     Advance to the next input token and get the lookahead just beyond it.
      */
     bool            Lex_ParseNext(
         LEX_DATA        *this,
@@ -347,7 +333,7 @@ extern "C" {
             pToken = Lex_SetupTokenEOF(this);
             DEBUG_BREAK();
         }
-        eRc = Token_Assign(&pData->token1, pToken);
+        eRc = Token_Assign(pToken, &pData->token1);
         pData->cls1 = Token_getClass(pToken);
         pData->chr1 = Token_getChrW32(pToken);
         if (fSetupToken) {
@@ -374,7 +360,7 @@ extern "C" {
             pToken = Lex_SetupTokenEOF(this);
             DEBUG_BREAK();          // This should never happen!
         }
-        eRc = Token_Assign(&pData->token2, pToken);
+        eRc = Token_Assign(pToken, &pData->token2);
         pData->cls2 = Token_getClass(pToken);
         pData->chr2 = Token_getChrW32(pToken);
 #ifdef NDEBUG
@@ -402,7 +388,7 @@ extern "C" {
         ERESULT         eRc;
         bool            fRc;
         TOKEN_DATA      *pToken = OBJ_NIL;
-        LEX_PARSE_DATA  data;
+        LEX_PARSE_DATA  data = {0};
         bool            fMore = true;
 
         // Validate the input parameters.
@@ -467,7 +453,6 @@ extern "C" {
                     if (this->flags & LEX_FLAG_WS) {
                         if ('\n' ==  data.chr1) {
                             data.clsNew = LEX_SEP_NL;
-                            Lex_InputAdvance(this, 1);
                             fMore = false;
                             break;
                         }
@@ -492,12 +477,12 @@ extern "C" {
                     // the output accumulation string is only the first
                     // token's character.
                     for (;;) {
-                        eRc = Lex_ParseNext(this, &data, false);
-                        if (ascii_isLabelCharW32(data.chr1)) {
-                            Lex_TokenAppendStringW32(this, data.chr1);
+                        if (ascii_isLabelCharW32(data.chr2)) {
+                            Lex_TokenAppendStringW32(this, data.chr2);
                         } else {
                             break;
                         }
+                        eRc = Lex_ParseNext(this, &data, false);
                     }
                     data.clsNew = LEX_IDENTIFIER;
                     fMore = false;
@@ -601,10 +586,12 @@ extern "C" {
 
                 case '(':           /*** '(' ***/
                     data.clsNew = LEX_SEP_LPAREN;
-                    if( ':' == data.cls2) {
-                        data.clsNew = LEX_SPCL_PAREN_LEFT;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
+                    if (this->flags & LEX_FLAG_SPCL_GROUP) {
+                        if( ':' == data.cls2) {
+                            data.clsNew = LEX_SPCL_PAREN_LEFT;
+                            Lex_ParseTokenAppendString(this, pToken);
+                            Lex_InputAdvance(this, 1);
+                        }
                     }
                     fMore = false;
                     break;
@@ -683,9 +670,11 @@ extern "C" {
                         Lex_InputAdvance(this, 1);
                     }
                     else if( '>' == data.cls2) {
-                        data.clsNew = LEX_SEP_DOT_GT;
-                        W32Str_AppendA(this->pStr, ">");
-                        Lex_InputAdvance(this, 1);
+                        if (this->flags & LEX_FLAG_SPCL_GROUP) {
+                            data.clsNew = LEX_SEP_DOT_GT;
+                            W32Str_AppendA(this->pStr, ">");
+                            Lex_InputAdvance(this, 1);
+                        }
                     }
                     Lex_InputAdvance(this, 1);
                     fMore = false;
@@ -766,16 +755,20 @@ extern "C" {
                             break;
                         }
                         else if( ')' == data.cls2) {
-                            data.clsNew = LEX_SPCL_PAREN_RIGHT;
-                            Lex_ParseTokenAppendString(this, pToken);
-                            Lex_InputAdvance(this, 1);
-                            break;
+                            if (this->flags & LEX_FLAG_SPCL_GROUP) {
+                                data.clsNew = LEX_SPCL_PAREN_RIGHT;
+                                Lex_ParseTokenAppendString(this, pToken);
+                                Lex_InputAdvance(this, 1);
+                                break;
+                            }
                         }
                         else if( '>' == data.cls2) {
-                            data.clsNew = LEX_SPCL_COLON_RIGHT;
-                            Lex_ParseTokenAppendString(this, pToken);
-                            Lex_InputAdvance(this, 1);
-                            break;
+                            if (this->flags & LEX_FLAG_SPCL_GROUP) {
+                                data.clsNew = LEX_SPCL_COLON_RIGHT;
+                                Lex_ParseTokenAppendString(this, pToken);
+                                Lex_InputAdvance(this, 1);
+                                break;
+                            }
                         }
                     }
                     break;
@@ -800,20 +793,24 @@ extern "C" {
                             }
                             break;
                         case '-':
-                            data.clsNew = LEX_SEP_LARROW;
-                            Lex_TokenAppendStringW32(this, data.chr2);
-                            Lex_InputAdvance((LEX_DATA *)this, 1);
-                            break;
+                            if (this->flags & LEX_FLAG_SPCL_GROUP) {
+                                data.clsNew = LEX_SEP_LARROW;
+                                Lex_TokenAppendStringW32(this, data.chr2);
+                                Lex_InputAdvance((LEX_DATA *)this, 1);
+                                break;
+                            }
                         case '=':
                             data.clsNew = LEX_OP_LE;
                             Lex_TokenAppendStringW32(this, data.chr2);
                             Lex_InputAdvance((LEX_DATA *)this, 1);
                             break;
                         case '.':
-                            data.clsNew = LEX_SEP_LT_DOT;
-                            Lex_TokenAppendStringW32(this, data.chr2);
-                            Lex_InputAdvance((LEX_DATA *)this, 1);
-                            break;
+                            if (this->flags & LEX_FLAG_SPCL_GROUP) {
+                                data.clsNew = LEX_SEP_LT_DOT;
+                                Lex_TokenAppendStringW32(this, data.chr2);
+                                Lex_InputAdvance((LEX_DATA *)this, 1);
+                                break;
+                            }
                         case ':':
                             if (this->flags & LEX_FLAG_SPCL_GROUP) {
                                 data.clsNew = LEX_SPCL_COLON_LEFT;
@@ -830,10 +827,12 @@ extern "C" {
                     data.clsNew = LEX_OP_ASSIGN;
                     fMore = false;
                     if( '>' == data.cls2) {
-                        data.clsNew = LEX_SPCL_RARROW;
-                        Lex_TokenAppendStringW32(this, data.chr2);
-                        Lex_InputAdvance((LEX_DATA *)this, 1);
-                        break;
+                        if (this->flags & LEX_FLAG_SPCL_GROUP) {
+                            data.clsNew = LEX_SPCL_RARROW;
+                            Lex_TokenAppendStringW32(this, data.chr2);
+                            Lex_InputAdvance((LEX_DATA *)this, 1);
+                            break;
+                        }
                     }
                     else if( '=' == data.cls2) {
                         data.clsNew = LEX_OP_EQ;
@@ -958,7 +957,7 @@ extern "C" {
         // Set up the output token.
         if (data.fFinalize) {
             eRc = Lex_ParseTokenFinalize(this, data.clsNew, data.fSavStr);
-            BREAK_FALSE(ERESULT_IS_SUCCESSFUL(eRc));
+            BREAK_FALSE(ERESULT_OK(eRc));
         }
 
         // Return to caller.
@@ -2097,7 +2096,7 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Lex_Vtbl);
-        
+
         /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {
@@ -3161,9 +3160,6 @@ extern "C" {
         LEX_PARSE_DATA  *pData
     )
     {
-        int32_t         cls;
-        TOKEN_DATA      *pInput;
-        W32CHR_T        chr;
 
 #ifdef NDEBUG
 #else
@@ -3174,17 +3170,20 @@ extern "C" {
 #endif
 
         for (;;) {
-            pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-            cls = Token_getClass(pInput);
-            chr = Token_getChrW32(pInput);
-            if ( chr == '\n' ) {
+            if ( pData->chr2 == '\n' ) {
+                if (this->flags & LEX_FLAG_WS) {
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                }
                 break;
             }
-            if ( cls == ASCII_LEXICAL_WHITESPACE ) {
-                Lex_ParseTokenAppendString(this, pInput);
+            if ( pData->cls2 == ASCII_LEXICAL_WHITESPACE ) {
+                if (this->flags & LEX_FLAG_WS) {
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                }
             }
             else
                 break;
+            Lex_ParseNext(this, pData, false);
         }
 
         return true;
@@ -3817,18 +3816,22 @@ extern "C" {
             this->statuses |= LEX_STATUS_INIT;
         }
 
+        // Get the token needed.
+        idx = (this->curOutputs + numTokens - 1) % this->sizeOutputs;
+        pToken = &this->pOutputs[idx];
+
         // Shift inputs.
         for (i=0; i<numTokens; ++i) {
             Lex_TokenNext(this);
         }
+        //pToken = &this->pOutputs[this->curOutputs];
 
         // Return to caller.
-        pToken = &this->pOutputs[this->curOutputs];
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
             ASTR_DATA           *pStr = Token_ToDebugString(pToken, 0);
-            TRC_OBJ( this, "Lex_InputAdvance:  %s \n", AStr_getData(pStr) );
+            TRC_OBJ( this, "Lex_InputAdvance:  (%d) %s \n", idx, AStr_getData(pStr) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -3894,7 +3897,7 @@ extern "C" {
 #else
         if (obj_Trace(this)) {
             ASTR_DATA           *pStr = Token_ToString(pToken);
-            TRC_OBJ(this, "...Lex_TokenLookAhead:  %s \n", AStr_getData(pStr));
+            TRC_OBJ(this, "...Lex_TokenLookAhead:  (%d) %s \n", idx, AStr_getData(pStr));
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -3941,8 +3944,23 @@ extern "C" {
         // Add the next token to the queue.
         pToken = &this->pOutputs[this->curOutputs];
         Token_Assign(&this->token, pToken);
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            ASTR_DATA           *pStr = Token_ToString(pToken);
+            TRC_OBJ(this, "...Lex_TokenNext:  (%d) %s", this->curOutputs, AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+#endif
 
         this->curOutputs = (this->curOutputs + 1) % this->sizeOutputs;
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            TRC_OBJ(this, "\t\tcurOutputs:  %d\n\n", this->curOutputs);
+        }
+#endif
 
         // Return to caller.
         return eRc;

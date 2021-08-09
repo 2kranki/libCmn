@@ -762,10 +762,11 @@ int         test_Lex_Input01(
     SRCFILE_DATA    *pSrc = OBJ_NIL;
     LEX_DATA        *pLex = OBJ_NIL;
     TOKEN_DATA      *pToken;
+    TOKEN_DATA      *pTokenLA;
     bool            fRc;
     PATH_DATA       *pPath = Path_NewA("abc");
     const
-    char            *pStrA = "class xyzzy { int a; char *pA; };";
+    char            *pStrA = "class xyzzy{ int a; char *pA; };";
     ASTR_DATA       *pStr = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -781,6 +782,7 @@ int         test_Lex_Input01(
         XCTAssertFalse( (OBJ_NIL == pLex) );
         if (pLex) {
 
+            //obj_TraceSet(pSrc, true);
             obj_TraceSet(pLex, true);
             fRc =   Lex_setSourceInput(
                                           pLex,
@@ -790,53 +792,221 @@ int         test_Lex_Input01(
                     );
             XCTAssertTrue( (fRc) );
 
-            // 1st Line - "class xyzzy {\n"
-            pToken = Lex_TokenLookAhead(pLex, 1);
-            XCTAssertFalse( (OBJ_NIL == pToken) );
-            XCTAssertTrue( (Token_Validate(pToken)) );
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
             {
-                char            *pStrA = Token_getTextA(pToken);
+                char            *pStrA = Token_getTextA(pTokenLA);
                 fprintf(stderr, "Should be: \"class\"\n");
                 fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
                 mem_Free(pStrA);
                 pStrA = NULL;
-                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pToken)));
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
             }
-            XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
+            XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pTokenLA)) );
             {
-                ASTR_DATA *pWrk = Token_ToDataString(pToken);
+                ASTR_DATA *pWrk = Token_ToDataString(pTokenLA);
                 XCTAssertTrue( (0 == AStr_CompareA(pWrk, "class")) );
                 obj_Release(pWrk);
                 pWrk = OBJ_NIL;
             }
-
-#ifdef XYZZY
             pToken = Lex_TokenAdvance(pLex, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
 
-            pToken = Lex_TokenLookAhead(pLex, 1);
-            XCTAssertFalse( (OBJ_NIL == pToken) );
-            XCTAssertTrue( (Token_Validate(pToken)) );
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
             {
-                char            *pStrA = Token_getTextA(pToken);
+                char            *pStrA = Token_getTextA(pTokenLA);
                 fprintf(stderr, "Should be: \"xyzzy\"\n");
                 fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
                 mem_Free(pStrA);
                 pStrA = NULL;
-                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pToken)));
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
             }
-            XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pToken)) );
+            XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pTokenLA)) );
             {
-                ASTR_DATA *pWrk = Token_ToDataString(pToken);
+                ASTR_DATA *pWrk = Token_ToDataString(pTokenLA);
                 XCTAssertTrue( (0 == AStr_CompareA(pWrk, "xyzzy")) );
                 obj_Release(pWrk);
                 pWrk = OBJ_NIL;
             }
             pToken = Lex_TokenAdvance(pLex, 1);
             XCTAssertFalse( (OBJ_NIL == pToken) );
-#endif
+            XCTAssertTrue(  (pTokenLA == pToken) );
 
-            // 2nd line - "int a;"
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
+            {
+                char            *pStrA = Token_getTextA(pTokenLA);
+                fprintf(stderr, "Should be: \"{\"\n");
+                fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
+            }
+            XCTAssertTrue( (LEX_SEP_LBRACE == Token_getClass(pTokenLA)) );
+            pToken = Lex_TokenAdvance(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
+
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
+            {
+                char            *pStrA = Token_getTextA(pTokenLA);
+                fprintf(stderr, "Should be: \"int\"\n");
+                fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
+            }
+            XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pTokenLA)) );
+            {
+                ASTR_DATA *pWrk = Token_ToDataString(pTokenLA);
+                XCTAssertTrue( (0 == AStr_CompareA(pWrk, "int")) );
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+            pToken = Lex_TokenAdvance(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
+
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
+            {
+                char            *pStrA = Token_getTextA(pTokenLA);
+                fprintf(stderr, "Should be: \"a\"\n");
+                fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
+            }
+            XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pTokenLA)) );
+            {
+                ASTR_DATA *pWrk = Token_ToDataString(pTokenLA);
+                XCTAssertTrue( (0 == AStr_CompareA(pWrk, "a")) );
+                obj_Release(pWrk);
+                pWrk = OBJ_NIL;
+            }
+            pToken = Lex_TokenAdvance(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
+
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
+            {
+                char            *pStrA = Token_getTextA(pTokenLA);
+                fprintf(stderr, "Should be: \";\"\n");
+                fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
+            }
+            XCTAssertTrue( (LEX_SEP_SEMICOLON == Token_getClass(pTokenLA)) );
+            pToken = Lex_TokenAdvance(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
+
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
+            {
+                char            *pStrA = Token_getTextA(pTokenLA);
+                fprintf(stderr, "Should be: \"char\"\n");
+                fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
+            }
+            XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pTokenLA)) );
+            pToken = Lex_TokenAdvance(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
+
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
+            {
+                char            *pStrA = Token_getTextA(pTokenLA);
+                fprintf(stderr, "Should be: \"*\"\n");
+                fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
+            }
+            XCTAssertTrue( (LEX_OP_MUL == Token_getClass(pTokenLA)) );
+            pToken = Lex_TokenAdvance(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
+
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
+            {
+                char            *pStrA = Token_getTextA(pTokenLA);
+                fprintf(stderr, "Should be: \"pA\"\n");
+                fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
+            }
+            XCTAssertTrue( (LEX_IDENTIFIER == Token_getClass(pTokenLA)) );
+            pToken = Lex_TokenAdvance(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
+
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
+            {
+                char            *pStrA = Token_getTextA(pTokenLA);
+                fprintf(stderr, "Should be: \";\"\n");
+                fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
+            }
+            XCTAssertTrue( (LEX_SEP_SEMICOLON == Token_getClass(pTokenLA)) );
+            pToken = Lex_TokenAdvance(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
+
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
+            {
+                char            *pStrA = Token_getTextA(pTokenLA);
+                fprintf(stderr, "Should be: \"}\"\n");
+                fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
+            }
+            XCTAssertTrue( (LEX_SEP_RBRACE == Token_getClass(pTokenLA)) );
+            pToken = Lex_TokenAdvance(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
+
+            pTokenLA = Lex_TokenLookAhead(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pTokenLA) );
+            XCTAssertTrue( (Token_Validate(pTokenLA)) );
+            {
+                char            *pStrA = Token_getTextA(pTokenLA);
+                fprintf(stderr, "Should be: \";\"\n");
+                fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
+                mem_Free(pStrA);
+                pStrA = NULL;
+                fprintf(stderr, "class=%s\n\n", Lex_ClassToString(Token_getClass(pTokenLA)));
+            }
+            XCTAssertTrue( (LEX_SEP_SEMICOLON == Token_getClass(pTokenLA)) );
+            pToken = Lex_TokenAdvance(pLex, 1);
+            XCTAssertFalse( (OBJ_NIL == pToken) );
+            XCTAssertTrue(  (pTokenLA == pToken) );
 
             obj_Release(pLex);
             pLex = OBJ_NIL;

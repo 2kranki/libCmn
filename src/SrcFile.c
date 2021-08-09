@@ -152,7 +152,7 @@ extern "C" {
                 obj_Release(this);
                 return OBJ_NIL;
             }
-            SrcFile_InputAdvance(this, this->sizeInputs);
+            SrcFile_Preload(this);
         }
 
         return this;
@@ -186,7 +186,7 @@ extern "C" {
                 obj_Release(this);
                 return OBJ_NIL;
             }
-            SrcFile_InputAdvance(this, this->sizeInputs);
+            SrcFile_Preload(this);
         }
 
         return this;
@@ -219,7 +219,7 @@ extern "C" {
                 obj_Release(this);
                 return OBJ_NIL;
             }
-            SrcFile_InputAdvance(this, this->sizeInputs);
+            SrcFile_Preload(this);
         }
 
         return this;
@@ -264,7 +264,7 @@ extern "C" {
                 obj_Release(this);
                 return OBJ_NIL;
             }
-            SrcFile_InputAdvance(this, this->sizeInputs);
+            SrcFile_Preload(this);
         }
 
         return this;
@@ -273,7 +273,6 @@ extern "C" {
 
 
 
-    
 
     //===============================================================
     //                      P r o p e r t i e s
@@ -1177,14 +1176,15 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                       P r e l o a d
     //---------------------------------------------------------------
     
-    ERESULT         SrcFile_IsEnabled (
-        SRCFILE_DATA       *this
+    ERESULT         SrcFile_Preload (
+        SRCFILE_DATA    *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        i;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1195,12 +1195,16 @@ extern "C" {
         }
 #endif
         
-        if (obj_IsEnabled(this)) {
-            return ERESULT_SUCCESS_TRUE;
+        this->curInputs = 0;
+        for (i=0; i<this->sizeInputs; ++i) {
+            eRc = SrcFile_InputNextChar(this);
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
         }
-        
+
         // Return to caller.
-        return ERESULT_SUCCESS_FALSE;
+        return eRc;
     }
     
     
@@ -1375,8 +1379,7 @@ extern "C" {
         }
 
         // Prime the inputs.
-        this->curInputs = 0;
-        SrcFile_InputAdvance(this, this->sizeInputs);
+        SrcFile_Preload(this);
 
         // Return to caller.
         return eRc;

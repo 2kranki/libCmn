@@ -166,6 +166,17 @@ struct SrcFile_data_s  {
 #endif
 
 
+    /*!
+     Preload the lookahead tokens.
+     @param     this    object pointer
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         SrcFile_Preload (
+        SRCFILE_DATA    *this
+    );
+
+
     void *          SrcFile_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
