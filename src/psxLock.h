@@ -1,22 +1,19 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          PSXLOCK Console Transmit Task (psxLock) Header
+//          Standardized Lock (psxLock) Header
 //****************************************************************
 /*
  * Program
- *			Separate psxLock (psxLock)
+ *			Standardized Lock (psxLock)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate psxLock to run things without complications
- *          of interfering with the main psxLock. A psxLock may be 
- *          called a psxLock on other O/S's.
+ *			This lock provides the same functionality as a Posix
+ *          Mutex.  However, it executes faster than Mutexes when
+ *          those facilities are provided by the OS such as a
+ *          Critical Section in Windows.
  *
  * Remarks
- *	1.      Using this object allows for testable code, because a
- *          function, TaskBody() must be supplied which is repeatedly
- *          called on the internal psxLock. A testing unit simply calls
- *          the TaskBody() function as many times as needed to test.
+ *	1.      None
  *
  * History
  *	05/19/2017 Generated

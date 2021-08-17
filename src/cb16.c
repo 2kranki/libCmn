@@ -370,13 +370,13 @@ CB16_DATA *     cb16_Init(
     
     this->size = size;
 
-    this->pSemEmpty = psxSem_New(size,size);
+    this->pSemEmpty = psxSem_New(size, size);
     if (OBJ_NIL == this->pSemEmpty) {
         DEBUG_BREAK();
         obj_Release(this);
         return OBJ_NIL;
     }
-    this->pSemFull = psxSem_New(0,size);
+    this->pSemFull = psxSem_New(0, size);
     if (OBJ_NIL == this->pSemFull) {
         DEBUG_BREAK();
         obj_Release(this->pSemEmpty);

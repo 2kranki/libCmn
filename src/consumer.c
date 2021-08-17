@@ -395,7 +395,7 @@ extern "C" {
         this->pMsgRcvRoutine = pMsgRoutine;
         this->pRoutineData = pRoutineData;
         
-        this->pBuffer = cb_New(messageSize, messageCount);
+        this->pBuffer = cb_NewWithSizes(messageSize, messageCount, true);
         if (OBJ_NIL == this->pBuffer) {
             DEBUG_BREAK();
             obj_Release(this);

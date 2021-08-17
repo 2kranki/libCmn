@@ -400,6 +400,7 @@ extern "C" {
         }
 #endif
         TRC_OBJ(this, "Lex_DefaultParser:\n");
+    try_again:
         data.pOutput = Lex_getToken(this);
         data.pStr = this->pStr;
         data.clsNew = LEX_CLASS_UNKNOWN;
@@ -411,6 +412,7 @@ extern "C" {
         // Note: Lex_ParseNext() only returns the token type,
         //      TOKEN_TYPE_W32CHAR, in both the advanced and
         //      lookahead tokens.
+    while_more:
         while (fMore) {
             fRc = Lex_ParseNext(this, &data, true);
             data.clsNew = data.cls1;
@@ -489,12 +491,7 @@ extern "C" {
                     break;
 
                 case ASCII_LEXICAL_NUMBER:
-                    //FIXME: data.clsNew = Lex_ParseNumber(this);
-                    if (data.clsNew) {
-                        uint16_t        type;
-                        type = Lex_ParseIntegerSuffix(this, &data);
-                        //FIXME: Token_setMisc(&this->super.token, type);
-                    }
+                    data.clsNew = Lex_ParseNumber(this, &data);
                     fMore = false;
                     break;
 
@@ -934,10 +931,10 @@ extern "C" {
                     break;
 
                 default:
-                    if (this->pParserPostExit) {
+                    if (this->pParserDfltExit) {
                         int         iRc;
-                        iRc =   this->pParserPostExit(
-                                                      this->pParserPostExitObj,
+                        iRc =   this->pParserDfltExit(
+                                                      this->pParserDfltExitObj,
                                                       this,
                                                       &data
                                                       );
@@ -955,6 +952,22 @@ extern "C" {
         }
 
         // Set up the output token.
+        if (this->pParserPostExit) {
+            int         iRc;
+            iRc =   this->pParserPostExit(
+                                          this->pParserPostExitObj,
+                                          this,
+                                          &data
+                                          );
+            switch (iRc) {
+                case 1:             // Reset data and scan next char.
+                    goto try_again;
+                case 2:             // Keep data as it is and scan next char.
+                    goto while_more;
+                default:            // Accept token as scanned
+                    break;
+            }
+        }
         if (data.fFinalize) {
             eRc = Lex_ParseTokenFinalize(this, data.clsNew, data.fSavStr);
             BREAK_FALSE(ERESULT_OK(eRc));
@@ -2826,13 +2839,14 @@ extern "C" {
     // appended, and advanced over. So, we can look at it and
     // make decisions based on it.
 
-    // number   : integer
-    //          | fixed
-    //          | floating
+    // number   : ('-' | '+')? (integer | fixed | floating)
     //          ;
-    // integer  : [1-9][0-9]* suffix?
+    // integer  : [1-9] [0-9]* suffix?
     //          | '0' [xX] [0-9a-fA-F]*
     //          | '0' [bB] [01]*
+    //          | '0' [0-9]*                // Octal
+    //          ;
+    // suffix   : [lL][lL]?[uU] | [uU][lL][lL]?
     //          ;
     // fixed    : integer '.' [0-9]+
     // float    : fixed exp
@@ -2840,8 +2854,6 @@ extern "C" {
     //          ;
     //          OR
     // number   : ('-' | '+')? [1-9][0-9]* ('.' [0-9]+)? exp?
-    //          ;
-    // suffix   : [lL][lL]?[uU] | [uU][lL][lL]?
     //          ;
 
 

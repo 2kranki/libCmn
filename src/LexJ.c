@@ -1151,7 +1151,7 @@ extern "C" {
                     if (newCls) {
                         uint16_t            type;
                         //FIXME: type = Lex_ParseIntegerSuffix((LEX_DATA *)this);
-                        Token_setMisc(&this->super.token, type);
+                        //FIXME: Token_setMisc(&this->super.token, type);
                     }
                     TRC_OBJ(
                             this,

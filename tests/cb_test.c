@@ -176,9 +176,7 @@ int         test_cb_OpenClose(
     CB_DATA	*pObj = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = cb_Alloc(ELEM_SIZE, 8);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = cb_Init( pObj );
+    pObj = cb_New();
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
@@ -188,7 +186,7 @@ int         test_cb_OpenClose(
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -206,13 +204,13 @@ int         test_cb_CounterOverflow(
     char            msg[ELEM_SIZE];
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-	pCB = cb_Alloc(ELEM_SIZE, 10);
-    fprintf(stderr, "\tAlloc(12,10) = %p\n", pCB);
+    fprintf(stderr, "\tNOTE: This test is NOT multi-threaded!\n");
+	pCB = cb_NewWithSizes(ELEM_SIZE, 10, true);
+    fprintf(stderr, "\tNewWithSizes(12,10) = %p\n", pCB);
     XCTAssertFalse( (NULL == pCB) );
-	pCB = cb_Init( pCB );
-    fprintf(stderr, "\tInit(12,10) = %p\n", pCB);
-    XCTAssertFalse( (NULL == pCB) );
-    
+
+    obj_TraceSet(pCB, true);
+
     // Empty Queue - positive to negative overflow
     pCB->numRead = 32766;
     pCB->numWritten = 32766;
@@ -274,7 +272,7 @@ int         test_cb_CounterOverflow(
     fprintf(stderr, "\tobj_Release()\n");
     pCB = NULL;
     
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
@@ -292,20 +290,20 @@ int         test_cb_Operation(
     pMutex = psxMutex_New();
     XCTAssertFalse( (OBJ_NIL == pMutex) );
     fprintf(stderr, "Performing: %s\n", pTestName);
-    printf("Creating Buffer...\n");
-    pCB = cb_Alloc(sizeof(BUFFER_ENTRY), 4);
-    XCTAssertFalse( (OBJ_NIL == pCB) );
-    pCB = cb_Init( pCB );
+    fprintf(stderr, "\tNOTE: This test is NOT multi-threaded!\n");
+    fprintf(stderr, "\tCreating Buffer...\n");
+    pCB = cb_NewWithSizes(ELEM_SIZE, 4, true);
     XCTAssertFalse( (OBJ_NIL == pCB) );
     if (pCB) {
         obj_TraceSet(pCB, true);
- 
-        printf("Starting Reader Thread...\n");
+
+        cb_setProtect(pCB, true);
+        fprintf(stderr, "Starting Reader Thread...\n");
         pThread = psxThread_Alloc( );
         XCTAssertFalse( (OBJ_NIL == pThread) );
         pThread = psxThread_Init(pThread, getRoutine, NULL, 0);
         if (OBJ_NIL == pThread) {
-            printf("ERROR:  pthread_create errno=%d\n", errno);
+            fprintf(stderr, "ERROR:  pthread_create errno=%d\n", errno);
             exit(1);
         }
         fRc = psxThread_Pause(pThread);
@@ -319,7 +317,7 @@ int         test_cb_Operation(
             psxThread_Wait(1000);       // Wait 1 sec.
         }
         
-        printf("Loading Buffer...\n");
+        fprintf(stderr, "\tLoading Buffer...\n");
         for (i=0; i<NUM_STR; ++i) {
             printf("  Put(%d) - %s\n", i, StrArray[i]);
             cb_Put(pCB, &StrArray[i]);
@@ -327,10 +325,11 @@ int         test_cb_Operation(
         psxThread_Wait(10000);          // Wait 10 secs.
         
         printf("\n\n");
-        printf("Output Queue(%d):\n", outputQueueEnd+1);
+        fprintf(stderr, "\tOutput Queue(%d):\n", outputQueueEnd+1);
+        XCTAssertTrue( (outputQueueEnd == 15) );
         for (i=0; i<outputQueueEnd+1; ++i) {
             if (outputQueue[i].pStr) {
-                printf("  %3d - %s\n", i, outputQueue[i].pStr);
+                fprintf(stderr, "\t  %3d - %s\n", i, outputQueue[i].pStr);
             }
         }
         
@@ -347,15 +346,109 @@ int         test_cb_Operation(
     obj_Release(pMutex);
     pMutex = NULL;
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
+int         test_cb_Expand01(
+    const
+    char        *pTestName
+)
+{
+    CB_DATA            *pCB;
+    uint16_t        i;
+    uint16_t        j;
+    bool            fRc;
+    char            msg[ELEM_SIZE];
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "\tNOTE: This test is NOT multi-threaded!\n");
+    pCB = cb_NewWithSizes(ELEM_SIZE, 2, true);
+    fprintf(stderr, "\tNewWithSizes(12,2) = %p\n", pCB);
+    XCTAssertFalse( (NULL == pCB) );
+
+    obj_TraceSet(pCB, true);
+
+    fprintf(stderr, "\tBefore Expand = %d\n", pCB->cEntries);
+    fRc = cb_Expand(pCB);
+    XCTAssertFalse( (fRc) );
+
+    cb_setFixed(pCB, false);
+    fprintf(stderr, "\tBefore Expand = %d\n", pCB->cEntries);
+    fRc = cb_Expand(pCB);
+    XCTAssertTrue( (fRc) );
+    fprintf(stderr, "\tAfter Expand = %d\n", pCB->cEntries);
+    XCTAssertTrue( (3 == pCB->cEntries) );
+    fprintf(stderr, "\tStart: %d  End: %d\n\n", pCB->start, pCB->end);
+    XCTAssertTrue( (0 == pCB->start) );
+    XCTAssertTrue( (0 == pCB->end) );
+
+    // Non-wrapped
+    fprintf(stderr, "\tNon-wrapped example\n");
+    pCB->start = 1;
+    pCB->end = 2;
+    fprintf(stderr, "\tBefore Expand = %d\n", pCB->cEntries);
+    fRc = cb_Expand(pCB);
+    XCTAssertTrue( (fRc) );
+    fprintf(stderr, "\tAfter Expand = %d\n", pCB->cEntries);
+    XCTAssertTrue( (4 == pCB->cEntries) );
+    fprintf(stderr, "\tStart: %d  End: %d\n\n", pCB->start, pCB->end);
+    XCTAssertTrue( (1 == pCB->start) );
+    XCTAssertTrue( (2 == pCB->end) );
+
+    // Wrapped
+    fprintf(stderr, "\tWrapped example\n");
+    pCB->start = 2;
+    pCB->end = 0;
+    fprintf(stderr, "\tBefore Expand = %d\n", pCB->cEntries);
+    fprintf(stderr, "\tStart: %d  End: %d\n", pCB->start, pCB->end);
+    fRc = cb_Expand(pCB);
+    XCTAssertTrue( (fRc) );
+    fprintf(stderr, "\tAfter Expand = %d\n", pCB->cEntries);
+    XCTAssertTrue( (6 == pCB->cEntries) );
+    fprintf(stderr, "\tStart: %d  End: %d\n\n", pCB->start, pCB->end);
+    XCTAssertTrue( (0 == pCB->start) );
+    XCTAssertTrue( (2 == pCB->end) );
+
+    // Wrapped
+    fprintf(stderr, "\tWrapped example\n");
+    pCB->start = 4;
+    pCB->end = 2;
+    fprintf(
+            stderr,
+            "\tBefore Expand = %d   Start: %d  End: %d\n",
+            pCB->cEntries,
+            pCB->start,
+            pCB->end
+    );
+    fRc = cb_Expand(pCB);
+    XCTAssertTrue( (fRc) );
+    fprintf(
+            stderr,
+            "\tAfter Expand = %d   Start: %d  End: %d\n",
+            pCB->cEntries,
+            pCB->start,
+            pCB->end
+    );
+    XCTAssertTrue( (9 == pCB->cEntries) );
+    XCTAssertTrue( (0 == pCB->start) );
+    XCTAssertTrue( (4 == pCB->end) );
+
+    obj_Release( pCB );
+    fprintf(stderr, "\tobj_Release()\n");
+    pCB = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
     return 1;
 }
 
 
 
 
-
 TINYTEST_START_SUITE(test_cb);
+  TINYTEST_ADD_TEST(test_cb_Expand01,setUp,tearDown);
   TINYTEST_ADD_TEST(test_cb_Operation,setUp,tearDown);
   TINYTEST_ADD_TEST(test_cb_CounterOverflow,setUp,tearDown);
   TINYTEST_ADD_TEST(test_cb_OpenClose,setUp,tearDown);

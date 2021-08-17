@@ -5,15 +5,27 @@
  *
  * Notes:
  *  --  The default parser parses the more common 'C' language lexical
- *      tokens.  We have added a Pre-Process Exit and a Post-Process
- *      exit to it.  This allows the basic lexical tokens to be scanned
- *      off and additional ones to be added.
+ *      tokens. It starts a new output token at the beginning of the
+ *      scan accumulating the first character in the character accumulation
+ *      string.  As the parse proceeds, each new accepted input character
+ *      is appended to the character acccumulation string. When the end
+ *      of the token being scanned is found, a type is established for it.
+ *      Finalization creates the new output token from the new type and
+ *      the character accumulation string.
+ *
+ *      We have added exits in the parse process to support supplementing
+ *      the parse process or output.
  *
  *      The Pre-Process Exit allows for the default parser to be over-
  *      ridden if needed. It should return 0 to indicate that it parsed
  *      a valid token, 1 to skip the current input token and try the next
  *      one or any other value to just do normal processing within the
  *      default parser.
+ *
+ *      The Default Exit is called whenever the lead character of the
+ *      new output token does not normally begin any known token that
+ *      can be parsed. This allows other tokens to be recognized by
+ *      an external routine.
  *
  *      The Post-Process Exit allows for the addition of processwing
  *      input tokens that are not recognized by the default parser.
@@ -140,6 +152,15 @@ struct Lex_data_s  {
     OBJ_ID          pParseObj;
     ERESULT         (*pError)(OBJ_ID, ASTR_DATA *);     // Error Exit
     OBJ_ID          pErrorObj;
+    // The default exit is called if the default parser does not find
+    // a match for the first token.  It allows for extensions to be added
+    // to the default process.
+    int             (*pParserDfltExit)(
+                                   OBJ_ID,          // pParserExitObj
+                                   LEX_DATA *,      // LEX Object Ptr
+                                   LEX_PARSE_DATA * // Current Parse Data Ptr
+                    );
+    OBJ_ID          pParserDfltExitObj;
     // The pre-process exit is called before the first token is analyzed
     // allowing default parsing to be overridden.
     int             (*pParserPreExit)(
@@ -148,9 +169,15 @@ struct Lex_data_s  {
                                    LEX_PARSE_DATA * // Current Parse Data Ptr
                     );
     OBJ_ID          pParserPreExitObj;
-    // The post-process exit is called if the default parser does not find
-    // a match for the first token.  It allows for extensions to be added
-    // to the default process.
+    // The post-process exit is called when the default parser is about
+    // to finalize a token. This exit may ignore the token or continue
+    // with the finalization.  Ignoring the token causes the parser to
+    // start all over again scanning the next token. This exit could
+    // manipulate the internal save token save string if needed.
+    // Return codes:
+    //      0 == Keep token as is
+    //      1 == Reset data area and scan next char
+    //      2 == Keep data as is and scan next char
     int             (*pParserPostExit)(
                                    OBJ_ID,          // pParserExitObj
                                    LEX_DATA *,      // LEX Object Ptr

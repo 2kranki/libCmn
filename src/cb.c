@@ -7,6 +7,28 @@
  */
 
 /*
+   Count: 0 empty
+   S
+   E
+   0  1  2  3  4  5  6  7  8
+
+   Count: 2 w/o wrap around
+   S
+         E
+   0  1  2  3  4  5  6  7  8
+
+   Count: 5 w/wrap around
+                     S
+         E
+   0  1  2  3  4  5  6  7  8
+
+   S
+   E
+   0  1  2  3  4  5  6  7  8
+*/
+
+
+/*
  This is free and unencumbered software released into the public domain.
  
  Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -74,8 +96,8 @@ extern "C" {
     
 #ifdef NDEBUG
 #else
-    void                cb_DumpBuffer(
-        CB_DATA             *this
+    void            cb_DumpBuffer(
+        CB_DATA         *this
     )
     {
         uint32_t        i;
@@ -106,15 +128,15 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( index >= this->cEntries ) {
+        if (index >= this->cEntries) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
-        ptr = &this->entries[(index * this->elemSize)];
+        ptr = &this->pEntries[index * this->elemSize];
 
         // Return to caller.
-        return( ptr );
+        return ptr;
     }
 
 
@@ -150,37 +172,16 @@ extern "C" {
     //---------------------------------------------------------------
 
     CB_DATA *       cb_Alloc(
-        uint16_t        elemSize,       // Element Size in bytes (multiple of 4)
-        uint16_t        size            // Number of Elements in Buffer
+        void
     )
     {
         CB_DATA         *this;
-        uint32_t        cbSize;
+        uint32_t        cbSize = sizeof(CB_DATA);
         
         // Do initialization.
-#ifdef NDEBUG
-#else
-        if (0 == size) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-        if ((0 == elemSize) || (elemSize & (4-1))) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-#endif
-        
-        elemSize = ROUNDUP4(elemSize);
-        cbSize = size * elemSize;
-        cbSize += sizeof(CB_DATA);
-        if ((64 * 1024) <= cbSize) {
-            return NULL;
-        }
-        
+
         this = obj_Alloc( cbSize );
-        obj_setMisc1(this, size);
-        obj_setMisc2(this, elemSize);
-        
+
         // Return to caller.
         return this;
     }
@@ -191,12 +192,31 @@ extern "C" {
     //---------------------------------------------------------------
     
     CB_DATA *       cb_New(
-        uint16_t        elemSize,       // Element Size in bytes
-        uint16_t        size            // Number of Elements in Buffer
+        void
     )
     {
         CB_DATA         *this;
         
+        // Do initialization.
+
+        this = cb_Alloc();
+        if (this) {
+            this = cb_Init(this);
+        }
+        
+        // Return to caller.
+        return this;
+    }
+    
+    
+    CB_DATA *       cb_NewWithSizes(
+        uint16_t        elemSize,       // Element Size in bytes
+        uint16_t        size,           // Number of Elements in Buffer
+        bool            fFixed
+    )
+    {
+        CB_DATA         *this;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -209,18 +229,20 @@ extern "C" {
             return NULL;
         }
 #endif
-        
-        this = cb_Alloc(elemSize, size);
+
+        this = cb_New();
         if (this) {
-            this = cb_Init(this);
+            if (!cb_Setup(this, elemSize, size, fFixed)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
         }
-        
+
         // Return to caller.
         return this;
     }
-    
-    
-    
+
+
 
 
     
@@ -229,8 +251,12 @@ extern "C" {
     //                    P r o p e r t i e s
     //===============================================================
 
-    uint16_t        cb_getElementSize(
-        CB_DATA       *this
+    //---------------------------------------------------------------
+    //              E l e m e n t  S i z e
+    //---------------------------------------------------------------
+
+    uint16_t        cb_getElementSize (
+        CB_DATA         *this
     )
     {
         
@@ -249,7 +275,166 @@ extern "C" {
     
     
     
-    uint16_t        cb_getSize(
+    //---------------------------------------------------------------
+    //                        E n t r y
+    //---------------------------------------------------------------
+
+    bool            cb_setEntryInit (
+        CB_DATA         *this,
+        int             (*pEntryInit)(
+                                   OBJ_ID,       // pInitEntryObj
+                                   OBJ_ID,       // CB_DATA *
+                                   void *,       // Entry *
+                                   uint16_t      // Entry Size
+                        ),
+        OBJ_ID          pEntryInitObj
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pEntryInit    = pEntryInit;
+        this->pEntryInitObj = pEntryInitObj;
+
+        // Return to caller.
+        return true;
+    }
+
+
+    bool            cb_setEntryTerm (
+        CB_DATA         *this,
+        int             (*pEntryTerm)(
+                                   OBJ_ID,       // pInitEntryObj
+                                   OBJ_ID,       // CB_DATA *
+                                   void *,       // Entry *
+                                   uint16_t      // Entry Size
+                        ),
+        OBJ_ID          pEntryTermObj
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pEntryTerm    = pEntryTerm;
+        this->pEntryTermObj = pEntryTermObj;
+
+        // Return to caller.
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      F i x e d
+    //---------------------------------------------------------------
+
+    bool            cb_getFixed (
+        CB_DATA         *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        // Return to caller.
+        return obj_Flag(this, CB_FLAG_FIXED) ? true : false;
+    }
+
+
+    bool            cb_setFixed (
+        CB_DATA         *this,
+        bool            fValue
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_FlagSet(this, CB_FLAG_FIXED, fValue);
+
+        // Return to caller.
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      P r o t e c t
+    //---------------------------------------------------------------
+
+    bool            cb_getProtect (
+        CB_DATA         *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        // Return to caller.
+        return obj_Flag(this, CB_FLAG_PROTECT) ? true : false;
+    }
+
+
+    bool            cb_setProtect (
+        CB_DATA         *this,
+        bool            fValue
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_FlagSet(this, CB_FLAG_PROTECT, fValue);
+
+        // Return to caller.
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S i z e
+    //---------------------------------------------------------------
+
+    uint16_t        cb_getSize (
         CB_DATA       *this
     )
     {
@@ -269,7 +454,6 @@ extern "C" {
 
 
 
-
     
     //===============================================================
     //                          M e t h o d s
@@ -280,7 +464,7 @@ extern "C" {
     //                        C o u n t
     //---------------------------------------------------------------
 
-    uint16_t        cb_Count(
+    int32_t         cb_Count (
         CB_DATA       *this
     )
     {
@@ -292,17 +476,22 @@ extern "C" {
 #else
         if( !cb_Validate(this) ) {
             DEBUG_BREAK();
-            return 0;
+            return -1;
         }
 #endif
-        
-        fRc = psxMutex_Lock(this->pMutex);
-        if (fRc) {
-            count = (uint16_t)(this->numWritten - this->numRead);
+
+        if (obj_Flag(this, CB_FLAG_PROTECT)) {
+            fRc = psxMutex_Lock(this->pMutex);
+            if (!fRc) {
+                return -1;
+            }
+            count = cb_NumEntries(this);
+            fRc = psxMutex_Unlock(this->pMutex);
+        } else {
+            count = cb_NumEntries(this);
         }
         
-        fRc = psxMutex_Unlock(this->pMutex);
-        
+
         // Return to caller.
         return count;
     }
@@ -313,12 +502,14 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
     
-    void        cb_Dealloc(
+    void        cb_Dealloc (
         OBJ_ID      objId
     )
     {
         CB_DATA		*this = objId;
         bool        fRc;
+        int         i;
+        int         iRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -351,6 +542,23 @@ extern "C" {
             this->pMutex = OBJ_NIL;
         }
 
+        if (this->pEntryTerm && this->pEntries) {
+            for (i=0; i<this->cEntries; i++) {
+                iRc =   this->pEntryTerm(
+                                       this->pEntryTermObj,
+                                       this,
+                                       cb_GetPtr(this, i),
+                                       this->origSize
+                        );
+            }
+        }
+
+        if (this->pEntries) {
+            mem_Free(this->pEntries);
+            this->pEntries = NULL;
+            this->cEntries = 0;
+        }
+
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -363,10 +571,107 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       E x p a n d
+    //---------------------------------------------------------------
+
+    /*
+     The idea to expand the buffer is to unroll it if it is partially
+     wrapped. This leaves start at 0 and end at the current count.
+     */
+
+    bool            cb_Expand (
+        CB_DATA         *this
+    )
+    {
+        bool            fRc = false;
+        uint32_t        newSize = this->cEntries + (this->cEntries >> 1);
+        uint32_t        size;
+        uint32_t        offset;
+        uint32_t        count;
+        void            *pEntries;
+        uint16_t        start;      // index of oldest element
+        uint16_t        end;        // index at which to write new element
+        int             i;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if ( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+    #endif
+        if (obj_Flag(this, CB_FLAG_FIXED) && this->pEntries)
+            return false;
+        obj_FlagSet(this, CB_FLAG_EXPAND, true);
+        fRc = psxMutex_Lock(this->pMutex);
+        count = cb_NumEntries(this);
+
+
+        if (newSize <= 1)
+            newSize = 2;
+        if (newSize >= 65536)
+            newSize = 65535;
+        if (newSize == this->cEntries)
+            goto exit0;
+        if (newSize <= this->cEntries)
+            goto exit0;
+        size = newSize - this->cEntries;
+        offset = this->end;
+
+        pEntries = mem_Malloc(newSize * this->elemSize);
+        if (NULL == pEntries)
+            goto exit0;
+
+        end = this->end;
+        start = this->start;
+        if (this->pEntries) {
+            if (start <= end) { // Non-wrapped Buffer
+                if (start < end) {
+                    memmove(pEntries, this->pEntries, (this->elemSize * this->cEntries));
+                }
+            } else {                // Wrapped Buffer
+                memmove(
+                        pEntries,
+                        this->pEntries+(this->elemSize * start),
+                        (this->elemSize * (this->cEntries - start))
+                );
+                memmove(
+                        pEntries+(this->elemSize * (this->cEntries - start)),
+                        this->pEntries,
+                        (this->elemSize * start)
+                );
+                this->start = 0;
+                this->end += (this->cEntries - start);
+            }
+        }
+        if (this->pEntryInit) {
+            for (i=this->cEntries; i<newSize; i++) {
+                fRc =   this->pEntryInit(
+                                       this->pEntryInitObj,
+                                       this,
+                                       cb_GetPtr(this, i),
+                                       this->elemSize
+                        );
+            }
+        }
+        mem_Free(this->pEntries);
+        this->pEntries = pEntries;
+        this->cEntries = newSize;
+
+    exit0:
+        obj_FlagSet(this, CB_FLAG_EXPAND, false);
+        fRc = psxMutex_Unlock(this->pMutex);
+        return fRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                            G e t
     //---------------------------------------------------------------
 
-    bool            cb_Get(
+    bool            cb_Get (
         CB_DATA         *this,
         void            *pData
     )
@@ -388,10 +693,12 @@ extern "C" {
             return false;
         }
         
-        fRc = psxMutex_Lock(this->pMutex);
-        if (fRc) {
-            while ((cb_NumEntries(this) == 0) && !obj_Flag(this, CB_FLAG_STOP)) {
-                fRc = psxCond_Wait(this->pFull);
+        if (obj_Flag(this, CB_FLAG_PROTECT)) {
+            fRc = psxMutex_Lock(this->pMutex);
+            if (fRc) {
+                while ((cb_NumEntries(this) == 0) && !obj_Flag(this, CB_FLAG_STOP)) {
+                    fRc = psxCond_Wait(this->pFull);
+                }
             }
         }
 
@@ -405,12 +712,13 @@ extern "C" {
                 if( pElem ) {
                     TRC_OBJ(
                             this,
-                            "cb_Get(%p):  %d Entries  start: %d\n",
+                            "cb_Get(%p):  %d Entries  start: %d end: %d\n",
                             this,
                             cb_NumEntries(this),
-                            this->start
+                            this->start,
+                            this->end
                     );
-                    memmove(pData, pElem, this->elemSize);
+                    memmove(pData, pElem, this->origSize);
                     // below needed if multi-processor (???)
                     //__sync_fetch_and_add( &this->numRead, 1 );
                     ++this->numRead;
@@ -423,10 +731,12 @@ extern "C" {
             }
         }
         
-        if (fRc) {
-            psxCond_Signal(this->pEmpty);
+        if (obj_Flag(this, CB_FLAG_PROTECT)) {
+            if (fRc) {
+                psxCond_Signal(this->pEmpty);
+            }
+            psxMutex_Unlock(this->pMutex);
         }
-        psxMutex_Unlock(this->pMutex);
         
         return fRc;
     }
@@ -437,7 +747,7 @@ extern "C" {
     //                       i s E m p t y
     //---------------------------------------------------------------
 
-    bool            cb_isEmpty(
+    bool            cb_isEmpty (
         CB_DATA         *this
     )
     {
@@ -453,11 +763,17 @@ extern "C" {
         }
     #endif
 
-        fRc = psxMutex_Lock(this->pMutex);
-        if (cb_NumEntries(this) == 0) {
-            fEmpty = true;
+        if (obj_Flag(this, CB_FLAG_PROTECT)) {
+            fRc = psxMutex_Lock(this->pMutex);
+            if (cb_NumEntries(this) == 0) {
+                fEmpty = true;
+            }
+            fRc = psxMutex_Unlock(this->pMutex);
+        } else {
+            if (cb_NumEntries(this) == 0) {
+                fEmpty = true;
+            }
         }
-        fRc = psxMutex_Unlock(this->pMutex);
         
         return fEmpty;
     }
@@ -468,7 +784,7 @@ extern "C" {
     //                       i s F u l l
     //---------------------------------------------------------------
 
-    bool            cb_isFull(
+    bool            cb_isFull (
         CB_DATA       *this
     )
     {
@@ -484,11 +800,17 @@ extern "C" {
         }
     #endif
 
-        fRc = psxMutex_Lock(this->pMutex);
-        if (cb_NumEntries(this) == this->cEntries) {
-            fFull = true;
+        if (obj_Flag(this, CB_FLAG_PROTECT)) {
+            fRc = psxMutex_Lock(this->pMutex);
+            if (cb_NumEntries(this) == this->cEntries) {
+                fFull = true;
+            }
+            fRc = psxMutex_Unlock(this->pMutex);
+        } else {
+            if (cb_NumEntries(this) == this->cEntries) {
+                fFull = true;
+            }
         }
-        fRc = psxMutex_Unlock(this->pMutex);
 
         return fFull;
     }
@@ -499,36 +821,16 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    CB_DATA *       cb_Init(
+    CB_DATA *       cb_Init (
         CB_DATA         *this
     )
     {
         uint32_t        cbSize = sizeof(CB_DATA);
-        uint32_t        dataSize;
-        uint16_t        size =  obj_getMisc1(this);
-        uint16_t        elemSize =  obj_getMisc2(this);
 
         // Do initialization.
         if (NULL == this) {
             return NULL;
         }
-#ifdef NDEBUG
-#else
-        if( 0 == size ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-        if( 0 == elemSize ) {
-            DEBUG_BREAK();
-            return NULL;
-        }
-        // Must be less than 2^31 because of numWritten and numRead.
-        // This should not happen since size is 16 bits.
-        if ( !(size < 0x7FFF) ) {
-            return NULL;
-        }
-#endif
-        cbSize += size * elemSize;
 
         
         this = obj_Init(this, cbSize, OBJ_IDENT_CB);
@@ -538,15 +840,8 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&cb_Vtbl);
         
-        dataSize = size * elemSize;
-        if (dataSize >= (64 * 1024)) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return NULL;
-        }        
-        this->cEntries = size;
-        this->elemSize = elemSize;
-        
+        obj_FlagSet(this, CB_FLAG_FIXED, true);
+
         this->pMutex = psxMutex_New();
         if (OBJ_NIL == this->pMutex) {
             DEBUG_BREAK();
@@ -575,7 +870,7 @@ extern "C" {
     //                       P a u s e
     //---------------------------------------------------------------
     
-    bool            cb_Pause(
+    bool            cb_Pause (
         CB_DATA         *this
     )
     {
@@ -590,12 +885,14 @@ extern "C" {
         }
 #endif
         
-        fRc = psxMutex_Lock(this->pMutex);
-        if (fRc) {
-            obj_FlagSet(this, CB_FLAG_STOP, true);
-            fRc = psxCond_Broadcast(this->pEmpty);
-            fRc = psxCond_Broadcast(this->pFull);
-            fRc = psxMutex_Unlock(this->pMutex);
+        if (obj_Flag(this, CB_FLAG_PROTECT)) {
+            fRc = psxMutex_Lock(this->pMutex);
+            if (fRc) {
+                obj_FlagSet(this, CB_FLAG_STOP, true);
+                fRc = psxCond_Broadcast(this->pEmpty);
+                fRc = psxCond_Broadcast(this->pFull);
+                fRc = psxMutex_Unlock(this->pMutex);
+            }
         }
         
         return true;
@@ -607,7 +904,7 @@ extern "C" {
     //                            P u t
     //---------------------------------------------------------------
 
-    bool            cb_Put(
+    bool            cb_Put (
         CB_DATA         *this,
         void            *pValue
     )
@@ -627,22 +924,25 @@ extern "C" {
         if (obj_Flag(this, CB_FLAG_STOP)) {
             return false;
         }
-        fRc = psxMutex_Lock(this->pMutex);
-        while ((cb_NumEntries(this) == this->cEntries) && !obj_Flag(this, CB_FLAG_STOP)) {
-            fRc = psxCond_Wait(this->pEmpty);
+        if (obj_Flag(this, CB_FLAG_PROTECT)) {
+            fRc = psxMutex_Lock(this->pMutex);
+            while ((cb_NumEntries(this) == this->cEntries) && !obj_Flag(this, CB_FLAG_STOP)) {
+                fRc = psxCond_Wait(this->pEmpty);
+            }
         }
         
         if (cb_NumEntries(this) < this->cEntries) {
             TRC_OBJ(
                     this,
-                    "cb_Put(%p): %d Entries  end: %d\n",
+                    "cb_Put(%p): %d Entries  end: %d start: %d\n",
                     this,
                     cb_NumEntries(this),
-                    this->end
+                    this->end,
+                    this->start
             );
             pElem = cb_GetPtr(this, this->end);
             if (pElem) {
-                memmove(pElem, pValue, this->elemSize);
+                memmove(pElem, pValue, this->origSize);
                 ++this->numWritten;
                 ++this->end;
                 if (this->end == this->cEntries) {
@@ -652,10 +952,12 @@ extern "C" {
             }
         }
 
-        if (fRc) {
-            psxCond_Signal(this->pFull);
+        if (obj_Flag(this, CB_FLAG_PROTECT)) {
+            if (fRc) {
+                psxCond_Signal(this->pFull);
+            }
+            psxMutex_Unlock(this->pMutex);
         }
-        psxMutex_Unlock(this->pMutex);
         
         return fRc;
     }
@@ -666,7 +968,7 @@ extern "C" {
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
-    void *          cb_QueryInfo(
+    void *          cb_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
@@ -720,7 +1022,7 @@ extern "C" {
     //                       R e s u m e
     //---------------------------------------------------------------
     
-    bool            cb_Resume(
+    bool            cb_Resume (
         CB_DATA         *this
     )
     {
@@ -735,9 +1037,11 @@ extern "C" {
         }
 #endif
         
-        fRc = psxMutex_Lock(this->pMutex);
-        obj_FlagSet(this, CB_FLAG_STOP, false);
-        fRc = psxMutex_Unlock(this->pMutex);
+        if (obj_Flag(this, CB_FLAG_PROTECT) && obj_Flag(this, CB_FLAG_STOP)) {
+            fRc = psxMutex_Lock(this->pMutex);
+            obj_FlagSet(this, CB_FLAG_STOP, false);
+            fRc = psxMutex_Unlock(this->pMutex);
+        }
 
         return true;
     }
@@ -745,10 +1049,86 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       S e t u p
+    //---------------------------------------------------------------
+
+    bool            cb_Setup (
+        CB_DATA         *this,
+        uint16_t        elemSize,       // Element Size in bytes
+        uint16_t        size,           // Number of Elements in Buffer
+        bool            fFixed
+    )
+    {
+        uint32_t        cbSize;
+        int             i;
+        int             iRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !cb_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+        if (0 == size) {
+            DEBUG_BREAK();
+            return false;
+        }
+        if (0 == elemSize) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (obj_Flag(this, CB_FLAG_PROTECT)) {
+            cb_Pause(this);
+        }
+
+        if (this->pEntries) {
+            mem_Free(this->pEntries);
+            this->pEntries = NULL;
+            this->cEntries = 0;
+            this->elemSize = 0;
+            //this->start = 0;
+            //this->end = 0;
+        }
+
+        this->origSize = elemSize;
+        elemSize = ROUNDUP4(elemSize);
+        cbSize = size * elemSize;
+        this->pEntries = mem_Malloc(cbSize);
+        if (NULL == this->pEntries) {
+            return false;
+        }
+        this->cEntries = size;
+        this->elemSize = elemSize;
+
+        if (this->pEntryInit) {
+            for (i=0; i<size; i++) {
+                iRc =   this->pEntryInit(
+                                       this->pEntryInitObj,
+                                       this,
+                                       cb_GetPtr(this, i),
+                                       this->origSize
+                        );
+            }
+        }
+
+        if (obj_Flag(this, CB_FLAG_PROTECT)) {
+            cb_Resume(this);
+        }
+
+        // Return to caller.
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
-    ASTR_DATA *     cb_ToDebugString(
+    ASTR_DATA *     cb_ToDebugString (
         CB_DATA         *this,
         int             indent
     )
@@ -799,42 +1179,6 @@ extern "C" {
     
     
     
-    ASTR_DATA *     cb_ToJSON(
-        CB_DATA         *this
-    )
-    {
-        char            str[256];
-        int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !cb_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        str[0] = '\0';
-        j = snprintf(
-                     str,
-                     sizeof(str),
-                     "{\"objectType\":\"%s\"",
-                     pInfo->pClassName
-                     );
-        AStr_AppendA(pStr, str);
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        return pStr;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                        V a l i d a t e
     //---------------------------------------------------------------
@@ -842,7 +1186,7 @@ extern "C" {
     #ifdef NDEBUG
     #else
     static
-    bool			cb_Validate(
+    bool			cb_Validate (
         CB_DATA       *this
     )
     {

@@ -67,7 +67,10 @@ extern "C" {
          */
         OBJ_DATA        super;
         OBJ_IUNKNOWN    *pSuperVtbl;
-        #define CB_FLAG_STOP    OBJ_FLAG_USER1
+        #define CB_FLAG_FIXED   OBJ_FLAG_USER1      // Fixed Size/Grow
+        #define CB_FLAG_STOP    OBJ_FLAG_USER2
+        #define CB_FLAG_EXPAND  OBJ_FLAG_USER3
+        #define CB_FLAG_PROTECT OBJ_FLAG_USER4
 
         PSXCOND_DATA    *pEmpty;
         PSXCOND_DATA    *pFull;
@@ -75,17 +78,35 @@ extern "C" {
         
         // Common Data
         uint16_t        cEntries;	// maximum number of elements
-        uint16_t        elemSize;   // Must be power of two (??)
+        uint16_t        elemSize;   // Must be power of two
+        uint16_t        origSize;   // User requested size
         volatile
         uint16_t        start;		// index of oldest element
         volatile
-        uint16_t        end;		// index at which to write new element
+        uint16_t        end;		// index at which to write a new element
+        uint16_t        rsvd16;
         volatile
         int32_t         numWritten;
         volatile
         int32_t         numRead;
 
-        uint8_t         entries[0];
+        // Exits
+        int             (*pEntryInit)(
+                                      OBJ_ID,       // pInitEntryObj
+                                      OBJ_ID,       // CB_DATA *
+                                      void *,       // Entry *
+                                      uint16_t      // Entry Size
+                        );
+        OBJ_ID          pEntryInitObj;
+        int             (*pEntryTerm)(
+                                      OBJ_ID,       // pInitEntryObj
+                                      OBJ_ID,       // CB_DATA *
+                                      void *,       // Entry *
+                                      uint16_t      // Entry Size
+                        );
+        OBJ_ID          pEntryTermObj;
+
+        uint8_t         *pEntries;
 
     };
 #pragma pack(pop)
@@ -102,12 +123,19 @@ extern "C" {
         OBJ_ID          objId
     );
 
+
+    bool            cb_Expand (
+        CB_DATA         *this
+    );
+
+
     void *          cb_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
+
+
 #ifdef RMW_DEBUG
     bool            cb_Validate(
         CB_DATA         *this

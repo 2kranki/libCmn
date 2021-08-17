@@ -95,12 +95,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    PSXMUTEX_DATA *     psxMutex_Alloc(
+    PSXMUTEX_DATA *     psxMutex_Alloc (
         void
     );
     
     
-    PSXMUTEX_DATA *     psxMutex_New(
+    PSXMUTEX_DATA *     psxMutex_New (
         void
     );
     
@@ -116,40 +116,51 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    PSXMUTEX_DATA *   psxMutex_Init(
-        PSXMUTEX_DATA     *this
+    PSXMUTEX_DATA * psxMutex_Init (
+        PSXMUTEX_DATA   *this
     );
 
 
-    bool            psxMutex_IsLocked(
-        PSXMUTEX_DATA		*this
+    bool            psxMutex_IsLocked (
+        PSXMUTEX_DATA	*this
     );
     
     
-    bool            psxMutex_Lock(
-        PSXMUTEX_DATA		*this
+    /*!
+     Lock the mutex waiting if necessary for it to succeed.
+     @param     this    object pointer
+     @return:   If successful, true; otherwise, false.
+     */
+    bool            psxMutex_Lock (
+        PSXMUTEX_DATA   *this
     );
     
     
     /*!
      Create a string that describes this object and the
      objects within it.
+     @param     this    object pointer
      @return:   If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *    psxMutex_ToDebugString(
-        PSXMUTEX_DATA     *this,
+    ASTR_DATA *     psxMutex_ToDebugString (
+        PSXMUTEX_DATA   *this,
         int             indent
     );
     
     
-    bool            psxMutex_TryLock(
-        PSXMUTEX_DATA		*this
+    /*!
+     Try to gain the lock. If it did not, then return anyway.
+     @param     this    object pointer
+     @return:   If successful, true; otherwise, false.
+     */
+    bool            psxMutex_TryLock (
+        PSXMUTEX_DATA	*this
     );
     
     
-    bool            psxMutex_Unlock(
-        PSXMUTEX_DATA		*this
+    bool            psxMutex_Unlock (
+        PSXMUTEX_DATA	*this
     );
     
     

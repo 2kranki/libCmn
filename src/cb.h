@@ -18,11 +18,14 @@
  * Remarks
  *	1.			XC32 allows 4 register variables per function call.
  *	            So, we will restrict most function calls to 4 or less.
+ *  2.          This objects uses flags, OBJ_FLAG_USER1, OBJ_FLAG_USER2
+ *              OBJ_FLAG_USER3, and OBJ_FLAG_USER4.
  *
  * History
  *	12/30/2014	Created from cb8.
  *  05/31/2017  Moved to using the psxSem and psxLock classes instead of
  *              having environment specific code.
+ *  08/12/2021  Changed to allow buffer to grow dynamically.
  *
  * References
  *      http://en.wikipedia.org/wiki/Circular_buffer
@@ -33,10 +36,6 @@
  *		"Programs and Data Structures in C", Leendert Ammeraal,
  *			John Wiley & Sons, 1987
  *
- * TODO
- *  --          Implement iGet/iPut where they are executed in a non-
- *              interruptable state and at a higher priority than normal
- *              processing.
  */
 
 /*
@@ -111,6 +110,28 @@ extern "C" {
     //---------------------------------------------------------------
     
     /*!
+     Allocate an object.
+     @return    If successful, a pointer to the new object,
+                otherwise OBJ_NIL.
+     */
+    CB_DATA *      cb_Alloc (
+        void
+    );
+    
+    
+    /*!
+     Allocate and initialize an object with a circular buffer
+     size of 0. To use this object, you will need to run
+     Setup().
+     @return    If successful, a pointer to the new object,
+                otherwise OBJ_NIL.
+     */
+    CB_DATA *       cb_New (
+        void
+    );
+
+
+    /*!
      Allocate one contiguous object large enough for all the entries
      of the Circular Buffer.  Round the element size up to a multiple
      of 4 before calculating object size. The total object size is
@@ -121,15 +142,10 @@ extern "C" {
      @return    If successful, a pointer to the new object,
                 otherwise OBJ_NIL.
      */
-    CB_DATA *      cb_Alloc(
-        uint16_t        elemSize,       // Element Size in bytes (multiple of 4)
-        uint16_t        size            // Number of Elements in Buffer
-    );
-    
-    
-    CB_DATA *       cb_New(
+    CB_DATA *       cb_NewWithSizes (
         uint16_t        elemSize,       // Element Size in bytes
-        uint16_t        size            // Number of Elements in Buffer
+        uint16_t        size,           // Number of Elements in Buffer
+        bool            fFixed
     );
     
     
@@ -139,12 +155,77 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint16_t        cb_getElementSize(
+    uint16_t        cb_getElementSize (
         CB_DATA       *this
     );
     
-    
-    uint16_t        cb_getSize(
+
+    /*! @property   Buffer Entry Initialization
+                    If supplied, each new buffer entry will be passed
+                    to this method to be initialized.  This is primarily
+                    used for objects in the entry.
+     */
+    bool            cb_setEntryInit (
+        CB_DATA         *this,
+        int             (*pEntryInit)(
+                                   OBJ_ID,       // pInitEntryObj
+                                   OBJ_ID,       // CB_DATA *
+                                   void *,       // Entry *
+                                   uint16_t      // Entry Size
+                        ),
+        OBJ_ID          pEntryInitObj
+    );
+
+
+    /*! @property   Buffer Entry Termination
+                    If supplied, each new buffer entry will be passed
+                    to this method when the buffer is being released.
+     */
+    bool            cb_setEntryTerm (
+        CB_DATA         *this,
+        int             (*pEntryTerm)(
+                                   OBJ_ID,       // pInitEntryObj
+                                   OBJ_ID,       // CB_DATA *
+                                   void *,       // Entry *
+                                   uint16_t      // Entry Size
+                        ),
+        OBJ_ID          pEntryTermObj
+    );
+
+
+    /*! @property   Fixed Size Buffer
+                    If true, the buffer is fixed in size.  If false,
+                    the buffer will be expanded whenever needed. The
+                    buffer defaults to fixed.
+     */
+    bool            cb_getFixed (
+        CB_DATA         *this
+    );
+
+    bool            cb_setFixed (
+        CB_DATA         *this,
+        bool            fValue
+    );
+
+
+    /*! @property   Protected Buffer
+                    If true, all buffer changes are protected by locks
+                    and mutexes. If false (default), no multi-thread
+                    protection is provided.
+        @warning    This should be set immediately after NewWithSizes()
+                    or New() to protect for multi-threaded operation.
+     */
+    bool            cb_getProtect (
+        CB_DATA         *this
+    );
+
+    bool            cb_setProtect (
+        CB_DATA         *this,
+        bool            fValue
+    );
+
+
+    uint16_t        cb_getSize (
         CB_DATA        *this
     );
 
@@ -155,7 +236,13 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    uint16_t        cb_Count(
+    /*!
+     Get the current number of element in the buffer.
+     @param     this    object pointer
+     @return    If successful, the current number of elements in the
+                buffer, otherwise -1.
+     */
+    int32_t        cb_Count (
         CB_DATA         *this
     );
         
@@ -164,23 +251,23 @@ extern "C" {
      Get the next element from the buffer if available within the given time.
      Normally, this method is called from one thread and Put() from a different
      thread.
-     @param     this    CB object pointer
+     @param     this    object pointer
      @param     pValue  ptr to returned element data area
      @return    If successful, true and the element is moved to pValue,
                 otherwise false.
      */
-    bool            cb_Get(
+    bool            cb_Get (
         CB_DATA         *this,
         void            *pValue         // Copies element into the provided buffer
     );
 
 
-    bool            cb_isEmpty(
+    bool            cb_isEmpty (
         CB_DATA         *this
     );
 
 
-    bool            cb_isFull(
+    bool            cb_isFull (
         CB_DATA         *this
     );
 
@@ -190,7 +277,7 @@ extern "C" {
     // Returns:
     //      cbp  if successful
     //      NULL on failure
-    CB_DATA *       cb_Init(
+    CB_DATA *       cb_Init (
         CB_DATA         *this
     );
 
@@ -199,8 +286,12 @@ extern "C" {
      Pause the buffer flow releasing any tasks waiting to get/put data.
      This is necessary especially just prior to termination since all
      conditions and mutexes must be in an unlocked state.
+     @param     this    CB object pointer
+     @return    If successful, true, otherwise false.
+     @warning   Pause()/Resume() only work if the buffer is protected.
+                See the Protection Property.
      */
-    bool            cb_Pause(
+    bool            cb_Pause (
         CB_DATA         *this
     );
     
@@ -215,18 +306,43 @@ extern "C" {
      @return    If successful, true and the element is moved to pValue,
                 otherwise false.
      */
-    bool            cb_Put(
+    bool            cb_Put (
         CB_DATA         *this,
         void            *pValue
     );
 
 
-    bool            cb_Resume(
+    /*!
+     Resume buffer flow if it was previously paused.
+     @param     this    CB object pointer
+     @return    If successful, true, otherwise false.
+     */
+    bool            cb_Resume (
         CB_DATA         *this
     );
     
     
-    ASTR_DATA *     cb_ToDebugString(
+    /*!
+     Setup the circular buffer. This is called by NewWithSizes(). You should
+     only call this after New() before any other methods are called. This will
+     establish the buffer. The buffer will be initialized if the initiablization
+     method is provided.
+     @param     this    CB object pointer
+     @param     elemSize Size of each element within the buffer
+     @param     size    Number of elements in the buffer
+     @param     fFixed  true == fixed buffer size never to be expanded,
+                        false == expand buffer when buffer is full
+     @return    If successful, true, otherwise false.
+     */
+    bool            cb_Setup(
+        CB_DATA         *this,
+        uint16_t        elemSize,       // Element Size in bytes
+        uint16_t        size,           // Number of Elements in Buffer
+        bool            fFixed
+    );
+
+
+    ASTR_DATA *     cb_ToDebugString (
         CB_DATA         *this,
         int             indent
     );
