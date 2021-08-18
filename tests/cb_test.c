@@ -357,20 +357,23 @@ int         test_cb_Expand01(
     char        *pTestName
 )
 {
-    CB_DATA            *pCB;
-    uint16_t        i;
-    uint16_t        j;
-    bool            fRc;
-    char            msg[ELEM_SIZE];
+    CB_DATA     *pCB;
+    bool        fRc;
+    int         *pInt;
+    int         i;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     fprintf(stderr, "\tNOTE: This test is NOT multi-threaded!\n");
-    pCB = cb_NewWithSizes(ELEM_SIZE, 2, true);
+    pCB = cb_NewWithSizes(sizeof(int), 2, true);
     fprintf(stderr, "\tNewWithSizes(12,2) = %p\n", pCB);
     XCTAssertFalse( (NULL == pCB) );
 
     obj_TraceSet(pCB, true);
 
+    for (i=0; i<cb_getSize(pCB); i++) {
+        pInt = &((int *)pCB->pEntries)[i];
+        *pInt = i+1;
+    }
     fprintf(stderr, "\tBefore Expand = %d\n", pCB->cEntries);
     fRc = cb_Expand(pCB);
     XCTAssertFalse( (fRc) );
@@ -387,6 +390,10 @@ int         test_cb_Expand01(
 
     // Non-wrapped
     fprintf(stderr, "\tNon-wrapped example\n");
+    for (i=0; i<cb_getSize(pCB); i++) {
+        pInt = &((int *)pCB->pEntries)[i];
+        *pInt = i+1;
+    }
     pCB->start = 1;
     pCB->end = 2;
     fprintf(stderr, "\tBefore Expand = %d\n", pCB->cEntries);
@@ -400,6 +407,10 @@ int         test_cb_Expand01(
 
     // Wrapped
     fprintf(stderr, "\tWrapped example\n");
+    for (i=0; i<cb_getSize(pCB); i++) {
+        pInt = &((int *)pCB->pEntries)[i];
+        *pInt = i+1;
+    }
     pCB->start = 2;
     pCB->end = 0;
     fprintf(stderr, "\tBefore Expand = %d\n", pCB->cEntries);
@@ -414,6 +425,10 @@ int         test_cb_Expand01(
 
     // Wrapped
     fprintf(stderr, "\tWrapped example\n");
+    for (i=0; i<cb_getSize(pCB); i++) {
+        pInt = &((int *)pCB->pEntries)[i];
+        *pInt = i+1;
+    }
     pCB->start = 4;
     pCB->end = 2;
     fprintf(

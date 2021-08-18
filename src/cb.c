@@ -931,6 +931,12 @@ extern "C" {
             }
         }
         
+        if (!obj_Flag(this, CB_FLAG_FIXED) && (cb_NumEntries(this) >= this->cEntries)) {
+            fRc = cb_Expand(this);
+            if (!fRc) {
+                return fRc;
+            }
+        }
         if (cb_NumEntries(this) < this->cEntries) {
             TRC_OBJ(
                     this,

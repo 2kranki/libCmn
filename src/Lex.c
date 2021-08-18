@@ -490,7 +490,7 @@ extern "C" {
                     fMore = false;
                     break;
 
-                case ASCII_LEXICAL_NUMBER:
+                case ASCII_LEXICAL_NUMBER:      // 0-9
                     data.clsNew = Lex_ParseNumber(this, &data);
                     fMore = false;
                     break;
@@ -2455,10 +2455,8 @@ extern "C" {
         W32CHR_T        endingChar
     )
     {
-        int32_t         cls;
-        W32CHR_T        chr;
-        TOKEN_DATA      *pInput;
         int             i;
+        bool            fRc;
 
 #ifdef NDEBUG
 #else
@@ -2468,21 +2466,14 @@ extern "C" {
         }
 #endif
 
-        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-        cls = Token_getClass(pInput);
-        chr = Token_getChrW32(pInput);
-        if ((chr == '\n') || (chr == '\r')) {
+        if ((pData->chr2 == '\n') || (pData->chr2 == '\r')) {
             return false;
         }
-        if (chr == endingChar) {
+        if (pData->chr2 == endingChar) {
             return false;
         }
-        if ( cls == '\\') {
-            Lex_ParseTokenAppendString(this, pInput);
-            pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-            cls = Token_getClass(pInput);
-            chr = Token_getChrW32(pInput);
-            switch (chr) {
+        if ( pData->chr2 == '\\') {
+            switch (pData->chr2) {
 
                 case '0':
                 case '1':
@@ -2492,137 +2483,12 @@ extern "C" {
                 case '5':
                 case '6':
                 case '7':
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
-                    if (Lex_ParseDigitOct(this, pData)) {
-                        if (Lex_ParseDigitOct(this, pData)) {
-                        }
-                    }
-                    return true;
-
-                case '?':
-                case 'b':
-                case 'f':
-                case 'n':
-                case 'r':
-                case 't':
-                case 'v':
-                case '\\':
-                case '\'':
-                case '\"':
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
-                    return true;
-
-                case 'u':
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
-                    for (i=0; i<4; ++i) {
-                        if (Lex_ParseDigitHex(this, pData)) {
-                        }
-                        else {
-                            SrcErrors_AddFatalA(
-                                                OBJ_NIL,
-                                                &pInput->data.src,
-                                                "Malformed Unicode Escape Sequence - \\uHH"
-                                                );
-                            return false;
-                        }
-                    }
-                    break;
-
-                case 'U':
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
-                    for (i=0; i<8; ++i) {
-                        if (Lex_ParseDigitHex(this,pData)) {
-                        }
-                        else {
-                            SrcErrors_AddFatalA(
-                                                OBJ_NIL,
-                                                &pInput->data.src,
-                                                "Malformed Unicode Escape Sequence - \\uHHHH"
-                                                );
-                            return false;
-                        }
-                    }
-                    break;
-
-                case 'x':
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
                     for (i=0; i<2; ++i) {
-                        if (Lex_ParseDigitHex(this, pData)) {
-                        }
-                        else {
-                            SrcErrors_AddFatalA(
-                                    OBJ_NIL,
-                                    &pInput->data.src,
-                                    "Malformed Unicode Escape Sequence - \\xHH"
-                            );
-                            return false;
-                        }
-                    }
-                    break;
-
-                default:
-                    return false;
-                    break;
-            }
-        }
-        else {
-            Lex_ParseTokenAppendString(this, pInput);
-            this->pSrcChrAdvance(this->pSrcObj, 1);
-        }
-
-        return true;
-    }
-
-
-    bool            Lex_ParseChrConWS(
-        LEX_DATA        *this,
-        LEX_PARSE_DATA  *pData,
-        W32CHR_T        ending
-    )
-    {
-        int32_t         cls;
-        W32CHR_T        chr;
-        TOKEN_DATA      *pInput;
-        int             i;
-
-#ifdef NDEBUG
-#else
-        if( !Lex_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-        cls = Token_getClass(pInput);
-        chr = Token_getChrW32(pInput);
-        if ((chr == ending) || (cls == LEX_CLASS_EOF)) {
-            return false;
-        }
-        if ( chr == '\\') {
-            Lex_ParseTokenAppendString(this, pInput);
-            pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-            cls = Token_getClass(pInput);
-            chr = Token_getChrW32(pInput);
-            switch (chr) {
-
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
-                    if (Lex_ParseDigitOct(this, pData)) {
-                        if (Lex_ParseDigitOct(this, pData)) {
+                        if (ascii_isOctalW32(pData->chr2)) {
+                            Lex_TokenAppendStringW32(this, pData->chr2);
+                            fRc = Lex_ParseNext(this, pData, false);
                         }
                     }
                     return true;
@@ -2637,20 +2503,21 @@ extern "C" {
                 case '\\':
                 case '\'':
                 case '\"':
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
                     return true;
 
                 case 'u':
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
                     for (i=0; i<4; ++i) {
-                        if (Lex_ParseDigitHex(this, pData)) {
-                        }
-                        else {
+                        if (ascii_isHexW32(pData->chr2)) {
+                            Lex_TokenAppendStringW32(this, pData->chr2);
+                            fRc = Lex_ParseNext(this, pData, false);
+                        } else {
                             SrcErrors_AddFatalA(
                                                 OBJ_NIL,
-                                                &pInput->data.src,
+                                                &pData->token2.data.src,
                                                 "Malformed Unicode Escape Sequence - \\uHH"
                                                 );
                             return false;
@@ -2659,15 +2526,16 @@ extern "C" {
                     break;
 
                 case 'U':
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
                     for (i=0; i<8; ++i) {
-                        if (Lex_ParseDigitHex(this, pData)) {
-                        }
-                        else {
+                        if (ascii_isHexW32(pData->chr2)) {
+                            Lex_TokenAppendStringW32(this, pData->chr2);
+                            fRc = Lex_ParseNext(this, pData, false);
+                        } else {
                             SrcErrors_AddFatalA(
                                                 OBJ_NIL,
-                                                &pInput->data.src,
+                                                &pData->token2.data.src,
                                                 "Malformed Unicode Escape Sequence - \\UHHHH"
                                                 );
                             return false;
@@ -2676,15 +2544,16 @@ extern "C" {
                     break;
 
                 case 'x':
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
                     for (i=0; i<2; ++i) {
-                        if (Lex_ParseDigitHex(this, pData)) {
-                        }
-                        else {
+                        if (ascii_isHexW32(pData->chr2)) {
+                            Lex_TokenAppendStringW32(this, pData->chr2);
+                            fRc = Lex_ParseNext(this, pData, false);
+                        } else {
                             SrcErrors_AddFatalA(
                                                 OBJ_NIL,
-                                                &pInput->data.src,
+                                                &pData->token2.data.src,
                                                 "Malformed Unicode Escape Sequence - \\xHH"
                             );
                             return false;
@@ -2698,8 +2567,133 @@ extern "C" {
             }
         }
         else {
-            Lex_ParseTokenAppendString(this, pInput);
-            this->pSrcChrAdvance(this->pSrcObj, 1);
+            Lex_TokenAppendStringW32(this, pData->chr2);
+            fRc = Lex_ParseNext(this, pData, false);
+        }
+
+        return true;
+    }
+
+
+    bool            Lex_ParseChrConWS(
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData,
+        W32CHR_T        ending
+    )
+    {
+        int             i;
+        bool            fRc;
+
+#ifdef NDEBUG
+#else
+        if( !Lex_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if ((pData->chr2 == ending) || (pData->cls2 == LEX_CLASS_EOF)) {
+            return false;
+        }
+        if ( pData->chr2 == '\\') {
+            Lex_TokenAppendStringW32(this, pData->chr2);
+            fRc = Lex_ParseNext(this, pData, false);
+            switch (pData->chr2) {
+
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                    for (i=0; i<2; ++i) {
+                        if (ascii_isOctalW32(pData->chr2)) {
+                            Lex_TokenAppendStringW32(this, pData->chr2);
+                            fRc = Lex_ParseNext(this, pData, false);
+                        }
+                    }
+                    return true;
+
+                case '?':
+                case 'b':
+                case 'f':
+                case 'n':
+                case 'r':
+                case 't':
+                case 'v':
+                case '\\':
+                case '\'':
+                case '\"':
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                    return true;
+
+                case 'u':
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                    for (i=0; i<4; ++i) {
+                        if (ascii_isHexW32(pData->chr2)) {
+                            Lex_TokenAppendStringW32(this, pData->chr2);
+                            fRc = Lex_ParseNext(this, pData, false);
+                        } else {
+                            SrcErrors_AddFatalA(
+                                                OBJ_NIL,
+                                                &pData->token2.data.src,
+                                                "Malformed Unicode Escape Sequence - \\uHH"
+                                                );
+                            return false;
+                        }
+                    }
+                    break;
+
+                case 'U':
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                    for (i=0; i<8; ++i) {
+                        if (ascii_isHexW32(pData->chr2)) {
+                            Lex_TokenAppendStringW32(this, pData->chr2);
+                            fRc = Lex_ParseNext(this, pData, false);
+                        } else {
+                            SrcErrors_AddFatalA(
+                                                OBJ_NIL,
+                                                &pData->token2.data.src,
+                                                "Malformed Unicode Escape Sequence - \\UHHHH"
+                                                );
+                            return false;
+                        }
+                    }
+                    break;
+
+                case 'x':
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                    for (i=0; i<2; ++i) {
+                        if (ascii_isHexW32(pData->chr2)) {
+                            Lex_TokenAppendStringW32(this, pData->chr2);
+                            fRc = Lex_ParseNext(this, pData, false);
+                        } else {
+                            SrcErrors_AddFatalA(
+                                                OBJ_NIL,
+                                                &pData->token2.data.src,
+                                                "Malformed Unicode Escape Sequence - \\xHH"
+                            );
+                            return false;
+                        }
+                    }
+                    break;
+
+                default:
+                    return false;
+                    break;
+            }
+        }
+        else {
+            Lex_TokenAppendStringW32(this, pData->chr2);
+            fRc = Lex_ParseNext(this, pData, false);
         }
 
         return true;
@@ -2708,125 +2702,79 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                   P a r s e  D i g i t
+    //              P a r s e  I n t e g e r  S u f f i x
     //---------------------------------------------------------------
 
-    bool            Lex_ParseDigitHex(
+    /*!
+     Look for an integer suffix of [lL][lL]?[uU] | [uU][lL][lL]? on the end
+     of an integer parse.
+     @return:   integer type as defined by TOKEN_MISC
+     */
+    uint16_t        Lex_ParseIntegerSuffix(
         LEX_DATA        *this,
         LEX_PARSE_DATA  *pData
     )
     {
-        bool            fRc = false;
-        int32_t         cls;
+        int16_t         clsNew = 0;
+        bool            fRc;
         W32CHR_T        chr;
-        TOKEN_DATA      *pInput;
 
 #ifdef NDEBUG
 #else
         if( !Lex_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return clsNew;
         }
 #endif
 
-        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-        cls = Token_getClass(pInput);
-        chr = Token_getChrW32(pInput);
+        chr = ascii_toLowerW32(pData->chr2);
+        switch (pData->chr2) {
+            case 'l':
+                clsNew = TOKEN_MISC_SL;
+                Lex_TokenAppendStringW32(this, pData->chr2);
+                fRc = Lex_ParseNext(this, pData, false);
+                chr = ascii_toLowerW32(pData->chr2);
+                if ('l' == chr) {
+                    clsNew = TOKEN_MISC_SLL;
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                    chr = ascii_toLowerW32(pData->chr2);
+                    if ('u' == chr) {
+                        clsNew = TOKEN_MISC_ULL;
+                        Lex_TokenAppendStringW32(this, pData->chr2);
+                        fRc = Lex_ParseNext(this, pData, false);
+                    }
+                }
+                else if ('u' == chr) {
+                    clsNew = TOKEN_MISC_UL;
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                }
+                break;
 
-        if(   ((chr >= '0') && (chr <= '9'))
-           || ((chr >= 'a') && (chr <= 'f'))
-           || ((chr >= 'A') && (chr <= 'F'))
-           ) {
-            Lex_ParseTokenAppendString(this, pInput);
-            this->pSrcChrAdvance(this->pSrcObj, 1);
-            fRc = true;
+            case 'u':
+                clsNew = TOKEN_MISC_UI;
+                Lex_TokenAppendStringW32(this, pData->chr2);
+                fRc = Lex_ParseNext(this, pData, false);
+                chr = ascii_toLowerW32(pData->chr2);
+                if ('l' == chr) {
+                    clsNew = TOKEN_MISC_UL;
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                    chr = ascii_toLowerW32(pData->chr2);
+                    if ('l' == chr) {
+                        clsNew = TOKEN_MISC_ULL;
+                        Lex_TokenAppendStringW32(this, pData->chr2);
+                        fRc = Lex_ParseNext(this, pData, false);
+                    }
+                }
+                break;
+
+            default:
+                break;
         }
 
-        // Return to caller.
-        return fRc;
-    }
-
-
-
-    bool            Lex_ParseDigitsHex(
-        LEX_DATA        *this,
-        LEX_PARSE_DATA  *pData
-    )
-    {
-        bool            rc = false;
-
-#ifdef NDEBUG
-#else
-        if( !Lex_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        while (Lex_ParseDigitHex(this, pData)) {
-            rc = true;
-        }
-
-        // Return to caller.
-        return rc;
-    }
-
-
-
-    bool            Lex_ParseDigitOct(
-        LEX_DATA        *this,
-        LEX_PARSE_DATA  *pData
-    )
-    {
-        bool            fRc = false;
-        int32_t         cls;
-        char            chr;
-        TOKEN_DATA      *pInput;
-
-#ifdef NDEBUG
-#else
-        if( !Lex_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-        cls = Token_getClass(pInput);
-        chr = Token_getChrW32(pInput);
-
-        if( ((chr >= '0') && (chr <= '7')) ) {
-            Lex_ParseTokenAppendString(this, pInput);
-            this->pSrcChrAdvance(this->pSrcObj, 1);
-            fRc = true;
-        }
-
-        // Return to caller.
-        return fRc;
-    }
-
-
-    bool            Lex_ParseDigitsOct(
-        LEX_DATA        *this,
-        LEX_PARSE_DATA  *pData
-    )
-    {
-        bool            rc = false;
-
-#ifdef NDEBUG
-#else
-        if( !Lex_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        while (Lex_ParseDigitOct(this, pData)) {
-            rc = true;
-        }
-
-        // Return to caller.
-        return rc;
+        return clsNew;
     }
 
 
@@ -2839,7 +2787,7 @@ extern "C" {
     // appended, and advanced over. So, we can look at it and
     // make decisions based on it.
 
-    // number   : ('-' | '+')? (integer | fixed | floating)
+    // number   : (integer | fixed | floating)
     //          ;
     // integer  : [1-9] [0-9]* suffix?
     //          | '0' [xX] [0-9a-fA-F]*
@@ -2852,9 +2800,6 @@ extern "C" {
     // float    : fixed exp
     // exp      : ('e' | 'E') ('-' | '+')? [0-9]+
     //          ;
-    //          OR
-    // number   : ('-' | '+')? [1-9][0-9]* ('.' [0-9]+)? exp?
-    //          ;
 
 
     uint16_t        Lex_ParseNumber(
@@ -2862,8 +2807,7 @@ extern "C" {
         LEX_PARSE_DATA  *pData
     )
     {
-        TOKEN_DATA      *pInput;
-        bool            fRc;
+        bool            fRc = true;
         uint16_t        iRc;
 
 #ifdef NDEBUG
@@ -2875,15 +2819,48 @@ extern "C" {
 #endif
         switch (pData->chr1) {
             case '0':
+                // Must be hex, octal, or bit integer.
                 if ((pData->chr2 == 'x') || (pData->chr2 == 'X')) {
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
-                    if( !Lex_ParseDigitsHex(this, pData) ) {
-                        return 0;
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                    if (ascii_isHexW32(pData->chr2))
+                        ;
+                    else {
+                        SrcErrors_AddFatalA(
+                                            OBJ_NIL,
+                                            &pData->token2.data.src,
+                                            "Malformed Hexadecimal Integer"
+                                            );
+                    }
+                    while (fRc && ascii_isHexW32(pData->chr2)) {
+                        Lex_TokenAppendStringW32(this, pData->chr2);
+                        fRc = Lex_ParseNext(this, pData, false);
+                    }
+                    pData->clsNew = LEX_CONSTANT_INTEGER;
+                }
+                if ((pData->chr2 == 'b') || (pData->chr2 == 'B')) {
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                    if ((pData->chr2 >= '0') && (pData->chr2 <= '1'))
+                        ;
+                    else {
+                        SrcErrors_AddFatalA(
+                                            OBJ_NIL,
+                                            &pData->token2.data.src,
+                                            "Malformed Bit Integer"
+                                            );
+                    }
+                    while (fRc && (pData->chr2 >= '0') && (pData->chr2 <= '1')) {
+                        Lex_TokenAppendStringW32(this, pData->chr2);
+                        fRc = Lex_ParseNext(this, pData, false);
                     }
                     pData->clsNew = LEX_CONSTANT_INTEGER;
                 }
                 else {
-                    fRc = Lex_ParseDigitsOct(this, pData);
+                    while (fRc && ascii_isOctalW32(pData->chr2)) {
+                        Lex_TokenAppendStringW32(this, pData->chr2);
+                        fRc = Lex_ParseNext(this, pData, false);
+                    }
                     pData->clsNew = LEX_CONSTANT_INTEGER;
                 }
                 break;
@@ -2898,60 +2875,71 @@ extern "C" {
             case '8':
             case '9':
                 for (;;) {
-                    if ((pData->chr2 >= '0') && (pData->chr2 <= '9')) {
+                    if (ascii_isNumericW32(pData->chr2)) {
                         Lex_TokenAppendStringW32(this, pData->chr2);
                     }
                     else
                         break;
-                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    pData->chr2 = Token_getChrW32(pInput);
+                    fRc = Lex_ParseNext(this, pData, false);
                 }
-                pData->clsNew = LEX_CONSTANT_INTEGER;
+                if ('.' == pData->chr2)
+                    ;
+                else {
+                    iRc = Lex_ParseIntegerSuffix(this, pData);
+                    if (iRc) {
+                        Token_setMisc(&this->token, iRc);
+                    }
+                    pData->clsNew = LEX_CONSTANT_INTEGER;
+                    return pData->clsNew;
+                }
                 break;
 
             default:
                 break;
         }
-        iRc = Lex_ParseIntegerSuffix(this, pData);
-        if (iRc) {
-            Token_setMisc(&this->token, iRc);
-            return pData->clsNew;
-        }
 
-        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-        pData->chr2 = Token_getChrW32(pInput);
         if (pData->chr2 == '.') {
-            Lex_ParseTokenAppendString(this, pInput);
-            this->pSrcChrAdvance(this->pSrcObj, 1);
+            Lex_TokenAppendStringW32(this, pData->chr2);
+            fRc = Lex_ParseNext(this, pData, false);
+            if (fRc && ascii_isNumericW32(pData->chr2))
+                ;
+            else {
+                SrcErrors_AddFatalA(
+                                    OBJ_NIL,
+                                    &pData->token2.data.src,
+                                    "Malformed Decimal Value"
+                                    );
+            }
             for (;;) {
-                pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-                pData->chr2 = Token_getChrW32(pInput);
-                if ((pData->chr2 >= '0') && (pData->chr2 <= '9')) {
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                if (fRc && ascii_isNumericW32(pData->chr2)) {
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
                 }
                 else {
                     break;
                 }
             }
-            pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-            pData->chr2 = Token_getChrW32(pInput);
             if ((pData->chr2 == 'e') || (pData->chr2 == 'E')) {
-                Lex_ParseTokenAppendString(this, pInput);
-                this->pSrcChrAdvance(this->pSrcObj, 1);
+                Lex_TokenAppendStringW32(this, pData->chr2);
+                fRc = Lex_ParseNext(this, pData, false);
                 // Need to parse (+ | -) digit+
-                pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-                pData->chr2 = Token_getChrW32(pInput);
                 if ((pData->chr2 == '+') || (pData->chr2 == '-')) {
-                    Lex_ParseTokenAppendString(this, pInput);
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
+                    Lex_TokenAppendStringW32(this, pData->chr2);
+                    fRc = Lex_ParseNext(this, pData, false);
+                }
+                if (fRc && ascii_isNumericW32(pData->chr2))
+                    ;
+                else {
+                    SrcErrors_AddFatalA(
+                                        OBJ_NIL,
+                                        &pData->token2.data.src,
+                                        "Malformed Exponent"
+                                        );
                 }
                 for (;;) {
-                    pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-                    pData->chr2 = Token_getChrW32(pInput);
-                    if ((pData->chr2 >= '0') && (pData->chr2 <= '9')) {
-                        Lex_ParseTokenAppendString(this, pInput);
-                        this->pSrcChrAdvance(this->pSrcObj, 1);
+                    if (fRc && ascii_isNumericW32(pData->chr2)) {
+                        Lex_TokenAppendStringW32(this, pData->chr2);
+                        fRc = Lex_ParseNext(this, pData, false);
                     }
                     else {
                         break;
@@ -2962,154 +2950,6 @@ extern "C" {
        }
 
         return pData->clsNew;
-    }
-
-
-    /*!
-     Look for an integer suffix of [lL][lL]?[uU] | [uU][lL][lL]? on the end
-     of an integer parse.
-     @return:   integer type as defined by TOKEN_MISC
-     */
-    uint16_t        Lex_ParseIntegerSuffix(
-        LEX_DATA        *this,
-        LEX_PARSE_DATA  *pData
-    )
-    {
-        W32CHR_T        chr;
-        int16_t         clsNew = 0;
-        TOKEN_DATA      *pInput;
-
-#ifdef NDEBUG
-#else
-        if( !Lex_Validate(this) ) {
-            DEBUG_BREAK();
-            return clsNew;
-        }
-#endif
-
-        pInput = this->pSrcChrLookAhead(this->pSrcObj, 1);
-        chr = Token_getChrW32(pInput);
-        switch (chr) {
-            case 'l':
-                Lex_ParseTokenAppendString(this, pInput);
-                clsNew = TOKEN_MISC_SL;
-                pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                chr = Token_getChrW32(pInput);
-                if ('l' == chr) {
-                    Lex_ParseTokenAppendString(this, pInput);
-                    clsNew = TOKEN_MISC_SLL;
-                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = Token_getChrW32(pInput);
-                    if (('u' == chr) || ('U' == chr)) {
-                        Lex_ParseTokenAppendString(this, pInput);
-                        clsNew = TOKEN_MISC_ULL;
-                        this->pSrcChrAdvance(this->pSrcObj, 1);
-                    }
-                    return clsNew;
-                }
-                if (('u' == chr) || ('U' == chr)) {
-                    Lex_ParseTokenAppendString(this, pInput);
-                    clsNew = TOKEN_MISC_UL;
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
-                }
-                return clsNew;
-                break;
-
-            case 'L':
-                Lex_ParseTokenAppendString(this, pInput);
-                clsNew = TOKEN_MISC_SL;
-                pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                chr = Token_getChrW32(pInput);
-                if ('L' == chr) {
-                    Lex_ParseTokenAppendString(this, pInput);
-                    clsNew = TOKEN_MISC_SLL;
-                    pInput = ((LEX_DATA *)this)->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = Token_getChrW32(pInput);
-                    if (('u' == chr) || ('U' == chr)) {
-                        Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
-                        clsNew = TOKEN_MISC_ULL;
-                        this->pSrcChrAdvance(this->pSrcObj, 1);
-                    }
-                    return clsNew;
-                }
-                if (('u' == chr) || ('U' == chr)) {
-                    Lex_ParseTokenAppendString(this, pInput);
-                    clsNew = TOKEN_MISC_UL;
-                    this->pSrcChrAdvance(this->pSrcObj, 1);
-                    return clsNew;
-                }
-                return clsNew;
-                break;
-
-            case 'u':
-                Lex_ParseTokenAppendString(this, pInput);
-                clsNew = TOKEN_MISC_UI;
-                pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                chr = Token_getChrW32(pInput);
-                if ('l' == chr) {
-                    Lex_ParseTokenAppendString(this, pInput);
-                    clsNew = TOKEN_MISC_UL;
-                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = Token_getChrW32(pInput);
-                    if ('l' == chr) {
-                        Lex_ParseTokenAppendString(this, pInput);
-                        clsNew = TOKEN_MISC_ULL;
-                        this->pSrcChrAdvance(this->pSrcObj, 1);
-                    }
-                    return clsNew;
-                }
-                if ('L' == chr) {
-                    Lex_ParseTokenAppendString(this, pInput);
-                    clsNew = TOKEN_MISC_UL;
-                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = Token_getChrW32(pInput);
-                    if ('L' == chr) {
-                        Lex_ParseTokenAppendString(this, pInput);
-                        clsNew = TOKEN_MISC_ULL;
-                        this->pSrcChrAdvance(this->pSrcObj, 1);
-                    }
-                    return clsNew;
-                }
-                return clsNew;
-                break;
-
-            case 'U':
-                Lex_ParseTokenAppendString(this, pInput);
-                clsNew = TOKEN_MISC_UI;
-                pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                chr = Token_getChrW32(pInput);
-                if ('l' == chr) {
-                    Lex_ParseTokenAppendString(this, pInput);
-                    clsNew = TOKEN_MISC_UL;
-                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = Token_getChrW32(pInput);
-                    if ('l' == chr) {
-                        Lex_ParseTokenAppendString(this, pInput);
-                        clsNew = TOKEN_MISC_ULL;
-                        this->pSrcChrAdvance(this->pSrcObj, 1);
-                    }
-                    return clsNew;
-                }
-                if ('L' == chr) {
-                    Lex_ParseTokenAppendString(this, pInput);
-                    clsNew = TOKEN_MISC_UL;
-                    pInput = this->pSrcChrAdvance(this->pSrcObj, 1);
-                    chr = Token_getChrW32(pInput);
-                    if ('L' == chr) {
-                        Lex_ParseTokenAppendString(this, pInput);
-                        clsNew = TOKEN_MISC_ULL;
-                        this->pSrcChrAdvance(this->pSrcObj, 1);
-                    }
-                    return clsNew;
-                }
-                return clsNew;
-                break;
-
-            default:
-                break;
-        }
-
-        return clsNew;
     }
 
 
@@ -3353,11 +3193,6 @@ extern "C" {
         W32CHR_T        chr
     )
     {
-        uint32_t        cStrNum = 32;
-        char            strNum[32];
-        char            *pStrNum = strNum;
-        const
-        char            *pStr;
 
         // Do initialization.
 #ifdef NDEBUG

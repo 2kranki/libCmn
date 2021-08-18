@@ -203,6 +203,16 @@ extern "C" {
     );
     
     
+    /*!
+     Convert an octal character to internal binary if possible.
+     @return:   If valid hexadecimal character, return it converted to
+                binary (ie 0..7), otherwise -1.
+     */
+    int                 ascii_FromOctalW32 (
+        W32CHR_T            w32Char
+    );
+
+
     bool                ascii_isAlphaA (
         char                asciiChar
     );
@@ -273,6 +283,15 @@ extern "C" {
     
     bool                ascii_isNumericW32 (
         W32CHR_T            unicodeChar
+    );
+
+
+    /*!
+     @return:   true if w32Char is [0..7].
+                Otherwise, false is returned.
+     */
+    bool                ascii_isOctalW32 (
+        W32CHR_T            w32Char
     );
 
 

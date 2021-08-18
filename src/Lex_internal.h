@@ -496,28 +496,6 @@ struct Lex_data_s  {
     );
 
 
-    bool            Lex_ParseDigitHex (
-       LEX_DATA        *this,
-       LEX_PARSE_DATA  *pData
-    );
-
-    bool            Lex_ParseDigitsHex (
-        LEX_DATA        *this,
-        LEX_PARSE_DATA  *pData
-    );
-
-
-    bool            Lex_ParseDigitOct (
-       LEX_DATA        *this,
-       LEX_PARSE_DATA  *pData
-    );
-
-    bool            Lex_ParseDigitsOct (
-        LEX_DATA        *this,
-        LEX_PARSE_DATA  *pData
-    );
-
-
     uint16_t        Lex_ParseIntegerSuffix (
         LEX_DATA        *this,
         LEX_PARSE_DATA  *pData
