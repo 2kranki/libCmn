@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 8/17/2021 22:20:05.000)
+# ( 8/26/2021 21:10:03.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -496,16 +496,6 @@ $(OBJDIR)/Lex01.o: $(SRCDIR)/Lex01.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex01.h $(SRCDIR)
 OBJS += $(OBJDIR)/Lex01_object.o
 
 $(OBJDIR)/Lex01_object.o: $(SRCDIR)/Lex01_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex01.h $(SRCDIR)/Lex01_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/Lex02.o
-
-$(OBJDIR)/Lex02.o: $(SRCDIR)/Lex02.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex02.h $(SRCDIR)/Lex02_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/Lex02_object.o
-
-$(OBJDIR)/Lex02_object.o: $(SRCDIR)/Lex02_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex02.h $(SRCDIR)/Lex02_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Lex03.o
@@ -2382,12 +2372,6 @@ Lex00_test: $(TEST_SRC)/Lex00_test.c $(SRCDIR)/Lex00.h $(SRCDIR)/Lex00_internal.
 TESTS += Lex01_test
 
 Lex01_test: $(TEST_SRC)/Lex01_test.c $(SRCDIR)/Lex01.h $(SRCDIR)/Lex01_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F)
-
-TESTS += Lex02_test
-
-Lex02_test: $(TEST_SRC)/Lex02_test.c $(SRCDIR)/Lex02.h $(SRCDIR)/Lex02_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

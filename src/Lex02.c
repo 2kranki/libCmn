@@ -1402,6 +1402,7 @@ extern "C" {
                 break;
 
             case ':':           /*** ':' ***/
+                data.clsNew = LEX_OP_COLON;
                 if( ':' == cls2) {
                     data.clsNew = LEX_SPCL_DBLCOLON;
                     Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
@@ -1432,7 +1433,6 @@ extern "C" {
                     Lex_InputAdvance((LEX_DATA *)this, 2);
                     break;
                 }
-                data.clsNew = LEX_SPCL_COLON;
                 break;
 
             case ';':           /*** ';' ***/

@@ -161,9 +161,10 @@ struct LexJ_data_s  {
 #endif
 
 
-    bool            LexJ_ParseTokenJson(
+    int             LexJ_ParserPreExit (
         LEXJ_DATA       *this,
-        TOKEN_DATA      *pTokenOut          // Optional Output Token
+        LEX_DATA        *pLex,              // LEX Object Ptr
+        LEX_PARSE_DATA  *pData              // Current Parse Data Ptr
     );
 
 

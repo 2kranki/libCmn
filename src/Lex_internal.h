@@ -219,13 +219,56 @@ struct Lex_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            Lex_setParserPosExit(
+    /*
+     This exit is called when a character is not recognized. It allows
+     the scan to be enhanced for other characters that are not normally
+     handled.
+     The exist can call:
+            Lex_TokenAppendStringW32(this, data.chr2);
+            fRc = Lex_NextInput(this, &data, false);
+     as needed to do its own scan if desired. It should return:
+        0 == Accept token as scanned,
+        1 == Reset data accumulated and scan next char.
+        2 == Keep data as it is and scan next char.
+
+     */
+    bool            Lex_setParserDfltxit(
         LEX_DATA        *this,
         ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
         OBJ_ID          pParseObj
     );
 
 
+    /*
+     This exit is called just before an output token if finalized and
+     allows aspects of it to be over-ridden or even skipped.
+     The exist can call:
+            Lex_TokenAppendStringW32(this, data.chr2);
+            fRc = Lex_NextInput(this, &data, false);
+     as needed to do its own scan if desired. It should return:
+        0 == Accept token as scanned,
+        1 == Reset data accumulated and scan next char.
+        2 == Keep data as it is and scan next char.
+
+     */
+    bool            Lex_setParserPostExit(
+        LEX_DATA        *this,
+        ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
+        OBJ_ID          pParseObj
+    );
+
+
+    /*
+     This exit allows the entire lexical scan to be over-ridden.
+     The exit can call:
+            Lex_TokenAppendStringW32(this, data.chr2);
+            fRc = Lex_NextInput(this, &data, false);
+     as needed to do its own scan if desired. It should return:
+        0 == Accept what exit scanned
+        1 == Skip to next token and continue scan.
+        2 == Continue with default scanner.
+
+     */
     bool            Lex_setParserPreExit(
         LEX_DATA        *this,
         ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
@@ -261,6 +304,30 @@ struct Lex_data_s  {
 
     ERESULT         Lex_DefaultParser(
         OBJ_ID          pObj
+    );
+
+
+    /*!
+     Advance in the input token stream num tokens, refilling the
+     empty positions in the unparsed input queue.
+     @return:   If successful, a token which must NOT be released,
+                otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    Lex_InputAdvance (
+        LEX_DATA        *this,
+        uint16_t        num
+    );
+
+
+    /*!
+     Look Ahead in the input token stream to the num'th token in the
+     unparsed input queue.
+     @return:   If successful, a token which must NOT be released,
+                otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    Lex_InputLookAhead (
+        LEX_DATA        *this,
+        uint16_t        num
     );
 
 
@@ -476,9 +543,24 @@ struct Lex_data_s  {
 
     /*** @protected ***/
     /*!
-     Parse a character constant character not allowing \n or \r.
+     Advance to the next input token and get the lookahead just beyond it.
+     @param     this        object pointer
+     @param     pData       input data area pointer
+     @param     fSetupToken true == setup the advanced token as the 1st token
+                            in this new string
+     @return    true if successful, otherwise false
      */
-    bool            Lex_ParseChrCon (
+    bool            Lex_NextInput(
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData,
+        bool            fSetupToken
+    );
+
+
+    /*!
+     Parse a character constant character not allowing \f, \n or \r.
+     */
+    int             Lex_ParseChrCon (
         LEX_DATA        *this,
         LEX_PARSE_DATA  *pData,
         W32CHR_T        ending
@@ -487,9 +569,9 @@ struct Lex_data_s  {
 
     /*** @protected ***/
     /*!
-     Parse a character constant character allowing \n or \r.
+     Parse a character constant character allowing \f,  \n or \r.
      */
-    bool            Lex_ParseChrConWS (
+    int             Lex_ParseChrConWS (
         LEX_DATA        *this,
         LEX_PARSE_DATA  *pData,
         W32CHR_T        ending
@@ -505,21 +587,6 @@ struct Lex_data_s  {
     bool            Lex_ParseName (
         LEX_DATA        *this,
         LEX_PARSE_DATA  *pData
-    );
-
-
-    /*!
-     Advance to the next input token and get the lookahead just beyond it.
-     @param     this        object pointer
-     @param     pData       input data area pointer
-     @param     fSetupToken true == setup the advanced token as the 1st token
-                            in this new string
-     @return    true if successful, otherwise false
-     */
-    bool            Lex_ParseNext(
-        LEX_DATA        *this,
-        LEX_PARSE_DATA  *pData,
-        bool            fSetupToken
     );
 
 

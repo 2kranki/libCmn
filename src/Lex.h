@@ -17,12 +17,22 @@
  *          See TokenLookAhead() and TokenAdvance().
  *
  * Remarks
- *  1.      This object is designed to be inherited. See internal
- *          documentation on how to use this object.
+ *  1.      This object is designed to be inherited and to use exits
+ *          to alter/enhance its scanning. The exits provide for
+ *          completely over-riding the scanner or just the scan. Also,
+ *          the default scan is for the basics of the C language. If
+ *          the lexical scanner needed is only slightly different,
+ *          then there are several exits to control that scan to
+ *          produce the desired scanner. You should not use
+ *          Lex_TokenAppendStringW32() and Lex_NextInput() within
+ *          your exits.
+ *          See internal documentation on how to use this object.
  *
  * History
  *  09/07/2015  Generated
  *  05/28/2020  Regenerated
+ *  08/30/2021  Redesigned scanner internals to use exits to alter
+ *              its scan abilities.
  */
 
 
@@ -99,64 +109,7 @@ extern "C" {
 
     typedef struct Lex_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Lex_object.c.
-         // Properties:
-         ERESULT_DATA *  (*pGetErrors)(
-             LEX_DATA        *this
-         );
-         bool            (*pSetErrors)(
-             LEX_DATA        *this,
-             ERESULT_DATA    *pValue
-         );
-
-         bool            (*pSetParserFunction)(
-             LEX_DATA        *this,
-             ERESULT         (*pParser)(OBJ_ID, TOKEN_DATA *),
-             OBJ_ID          pParseObj
-         );
-
-         bool            (*pSetSourceInput)(
-             LEX_DATA        *this,
-             TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID,uint16_t),
-             TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID,uint16_t),
-             OBJ_ID          pSrcObj
-         );
-
-         W32STR_DATA *   (*pGetString)(
-             LEX_DATA        *this
-         );
-
-         TOKEN_DATA *    (*pGetToken)(
-             LEX_DATA        *this
-         );
-
-         // Methods:
-         TOKEN_DATA *    (*pInputAdvance)(
-             LEX_DATA        *this,
-             uint16_t        numChrs
-         );
-
-         TOKEN_DATA *    (*pInputLookAhead)(
-             LEX_DATA        *this,
-             uint16_t        num
-         );
-
-         TOKEN_DATA *    (*pTokenAdvance)(
-             LEX_DATA        *this,
-             uint16_t        num
-         );
-
-         TOKEN_DATA *    (*pTokenLookAhead)(
-             LEX_DATA        *this,
-             uint16_t        num
-         );
-
-         ERESULT         (*pTokenPush)(
-             LEX_DATA        *this,
-             TOKEN_DATA      *pChr
-         );
-            } LEX_CLASS_VTBL;
+    } LEX_CLASS_VTBL;
 
 
     /*                  Lexical Classes
@@ -251,6 +204,7 @@ extern "C" {
         LEX_OP_ASSIGN_RIGHT,                // >>=
         LEX_OP_ASSIGN_SUB,                  // -=
         LEX_OP_ASSIGN_XOR,                  // ^=
+        LEX_OP_COLON,                       // :
         LEX_OP_DEC,                         // --   (decrement)
         LEX_OP_DIV,                         // /
         LEX_OP_ELIPSIS,                     // ...
@@ -411,6 +365,7 @@ extern "C" {
         LEX_KWD_UINT256,
         LEX_KWD_UNION,
         LEX_KWD_UNSIGNED,
+        LEX_KWD_UNTIL,
         LEX_KWD_USING,
         LEX_KWD_VIRTUAL,
         LEX_KWD_VOID,
@@ -427,7 +382,6 @@ extern "C" {
         LEX_SPCL_AT_LPAREN,                 // @(
         LEX_SPCL_PAREN_LEFT,                // (:
         LEX_SPCL_PAREN_RIGHT,               // :)
-        LEX_SPCL_COLON,                     // :
         LEX_SPCL_COLON_RBRACK,              // :]
         LEX_SPCL_COLON_RBRACE,              // :}
         LEX_SPCL_DBLCOLON,                  // ::
@@ -638,30 +592,6 @@ extern "C" {
 
     LEX_DATA *      Lex_Init (
         LEX_DATA        *this
-    );
-
-
-    /*!
-     Advance in the input token stream num tokens, refilling the
-     empty positions in the unparsed input queue.
-     @return:   If successful, a token which must NOT be released,
-                otherwise OBJ_NIL.
-     */
-    TOKEN_DATA *    Lex_InputAdvance (
-        LEX_DATA        *this,
-        uint16_t        num
-    );
-
-
-    /*!
-     Look Ahead in the input token stream to the num'th token in the
-     unparsed input queue.
-     @return:   If successful, a token which must NOT be released,
-                otherwise OBJ_NIL.
-     */
-    TOKEN_DATA *    Lex_InputLookAhead (
-        LEX_DATA        *this,
-        uint16_t        num
     );
 
 

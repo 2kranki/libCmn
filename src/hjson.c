@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include <hjson_internal.h>
+#include <LexJ_internal.h>
 #include <trace.h>
 #include <JsonIn.h>
 #include <NodeArray.h>
@@ -61,6 +62,39 @@ extern "C" {
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
+
+    //---------------------------------------------------------------
+    //                   D i s p l a y  T o k e n
+    //---------------------------------------------------------------
+
+#ifdef NDEBUG
+#else
+    void            hjson_DisplayToken (
+        HJSON_DATA      *this,
+        TOKEN_DATA      *pToken
+    )
+    {
+        int32_t         tokenClass;
+        char            *pStrA;
+
+        BREAK_NULL(pToken);
+        if (pToken) {
+            pStrA = Token_getTextA(pToken);
+            tokenClass = Token_getClass(pToken);
+            TRC_OBJ(
+                    this,
+                    "\tInput Token: %s\n\t\tClass: %s\n\n",
+                    pStrA,
+                    LexJ_Class2Str(tokenClass)
+            );
+            mem_Free(pStrA);
+        }
+
+
+    }
+#endif
+
+
 
     //---------------------------------------------------------------
     //                   P a r s e  A r r a y
@@ -88,7 +122,7 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
 
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_LBRACKET ) {
             TRC_OBJ(this,"\t[ - found\n");
@@ -109,7 +143,7 @@ extern "C" {
         }
         
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_RBRACKET )   // Empty Array
             goto chkRBracket;
@@ -122,6 +156,7 @@ extern "C" {
                 
                 pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
                 BREAK_NULL(pToken);
+                TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
                 tokenClass = Token_getClass(pToken);
                 if( tokenClass == LEXJ_SEP_COMMA ) {
                     TRC_OBJ(this,"\t, - found\n");
@@ -144,7 +179,7 @@ extern "C" {
             
         chkRBracket:
             pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-            BREAK_NULL(pToken);
+            TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
             tokenClass = Token_getClass(pToken);
             if( tokenClass == LEXJ_SEP_RBRACKET ) {
                 TRC_OBJ(this,"\t] - found\n");
@@ -210,7 +245,7 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
         
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_LBRACE ) {
             TRC_OBJ(this,"\t{ - found\n");
@@ -231,7 +266,7 @@ extern "C" {
         }
 
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_RBRACE )
             goto chkRBrace;
@@ -244,7 +279,7 @@ extern "C" {
 
             for (;;) {
                 pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-                BREAK_NULL(pToken);
+                TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
                 tokenClass = Token_getClass(pToken);
                 if( tokenClass == LEXJ_SEP_COMMA ) {
                     TRC_OBJ(this,"\t, - found\n");
@@ -269,7 +304,7 @@ extern "C" {
         
     chkRBrace:
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
         if( tokenClass == LEXJ_SEP_RBRACE ) {
             TRC_OBJ(this,"\t} - found\n");
@@ -336,7 +371,7 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
         
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
         if (OBJ_NIL == pLoc) {
             pLoc = Token_ToSrcLoc(pToken);
@@ -421,7 +456,7 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
         
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
         pStr = Token_ToDataString(pToken);
         AStr_Trim(pStr);
@@ -480,7 +515,7 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
         
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
         TRC_OBJ(this, "\ttoken class = %d\n", tokenClass);
 #ifdef NDEBUG
@@ -503,7 +538,7 @@ extern "C" {
             BREAK_FALSE(((sign == '-') || (sign == '+')));
 
             pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-            BREAK_NULL(pToken);
+            TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
             tokenClass = Token_getClass(pToken);
             TRC_OBJ(this, "\ttoken class = %d\n", tokenClass);
 #ifdef NDEBUG
@@ -587,7 +622,7 @@ extern "C" {
         TRC_OBJ(this, "%s:\n", __func__);
         
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
 
         pName = hjson_ParseName(this);
         if (pName == OBJ_NIL) {
@@ -597,7 +632,7 @@ extern "C" {
         obj_Retain(pLoc);
 
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
         if((tokenClass == LEXJ_SEP_COLON) || (tokenClass == LEXJ_SEP_EQUAL)) {
             LexJ_TokenAdvance(this->pLexJ, 1);
@@ -669,6 +704,7 @@ extern "C" {
         int32_t         tokenClass;
         NODE_DATA       *pNode = OBJ_NIL;
         ASTR_DATA       *pStr = OBJ_NIL;
+        ASTR_DATA       *pStrAccum = OBJ_NIL;
         SRCLOC_DATA     *pLoc = OBJ_NIL;
         
         // Validate the input parameters.
@@ -681,27 +717,47 @@ extern "C" {
         TRC_OBJ(this,"%s:\n", __func__);
         
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
-        if( tokenClass == LEXJ_CONSTANT_STRING ) {
+        while (tokenClass == LEX_CONSTANT_STRING) {
+            TOKEN_DATA      *pToken2;
+            int32_t         token2Class;
+            pToken2 = LexJ_TokenLookAhead(this->pLexJ, 2);
+            TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken2));
+            token2Class = Token_getClass(pToken2);
+            if (token2Class == LEXJ_SEP_COLON) {
+                break;
+            }
             pStr = Token_ToDataString(pToken);
             if (OBJ_NIL == pLoc) {
                 pLoc = Token_ToSrcLoc(pToken);
             }
+            if (OBJ_NIL == pStrAccum) {
+                pStrAccum = pStr;
+            } else {
+                AStr_Append(pStrAccum, pStr);
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
             LexJ_TokenAdvance(this->pLexJ, 1);
+            pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
+            TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
+            tokenClass = Token_getClass(pToken);
         }
-        else {
+        if (OBJ_NIL == pStrAccum) {
             return pNode;
         }
 
-#ifdef NDEBUG
-#else
-        TRC_OBJ(this, "\tstring: (%d) \"%s\"\n", AStr_getLength(pStr), AStr_getData(pStr));
-#endif
-        if (pStr) {
-            pNode = JsonIn_NodeFromString(pStr);
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
+        TRC_OBJ(
+                this,
+                "\tstring: (%d) \"%s\"\n",
+                AStr_getLength(pStrAccum),
+                AStr_getData(pStrAccum)
+        );
+        if (pStrAccum) {
+            pNode = JsonIn_NodeFromString(pStrAccum);
+            obj_Release(pStrAccum);
+            pStrAccum = OBJ_NIL;
             if (pLoc) {
                 Node_setExtra(pNode, pLoc);
             }
@@ -733,9 +789,10 @@ extern "C" {
             DEBUG_BREAK();
         }
 #endif
-        
+        TRC_OBJ(this, "%s:\n", __func__);
+
         pToken = LexJ_TokenLookAhead(this->pLexJ, 1);
-        BREAK_NULL(pToken);
+        TRC_OBJ_EXEC(this, hjson_DisplayToken(this,pToken));
         tokenClass = Token_getClass(pToken);
 
 #ifdef XYZZY
@@ -1430,12 +1487,6 @@ extern "C" {
             return OBJ_NIL;
         }
 #endif
-#ifdef NDEBUG
-#else
-        if (obj_Trace(this)) {
-            obj_TraceSet(this->pLexJ, true);
-        }
-#endif
         TRC_OBJ(this, "%s:\n", __func__);
         
         pNode = hjson_ParseHash(this);
@@ -1461,12 +1512,6 @@ extern "C" {
         if( !hjson_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
-        }
-#endif
-#ifdef NDEBUG
-#else
-        if (obj_Trace(this)) {
-            obj_TraceSet(this->pLexJ, true);
         }
 #endif
         TRC_OBJ(this, "%s:\n", __func__);

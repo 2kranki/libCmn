@@ -858,7 +858,9 @@ extern "C" {
         char            *pStrA = NULL;
         const
         char            *pStrA2 = NULL;
-        //char            wrkchrs[9];
+#ifdef TOKEN_STORE_W32
+        char            wrkchrs[11];
+#endif
 
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -873,6 +875,15 @@ extern "C" {
 
             case TOKEN_TYPE_CHAR:
                 pStrA = mem_StrDup(this->data.chr);
+                break;
+
+            case TOKEN_TYPE_W32CHAR:
+#ifdef TOKEN_STORE_W32
+                utf8_W32ToChrCon(this->data.w32chr[0], wrkchrs);
+                pStrA = mem_StrDup(wrkchrs);
+#else
+                pStrA = mem_StrDup(this->data.chr);
+#endif
                 break;
 
             case TOKEN_TYPE_STRTOKEN:
@@ -913,7 +924,11 @@ extern "C" {
                 break;
 
             case TOKEN_TYPE_W32CHAR:
+#ifdef TOKEN_STORE_W32
                 pStr = AStr_NewW32(this->data.w32chr);
+#else
+                pStr = AStr_NewA(this->data.chr);
+#endif
                 break;
 
             case TOKEN_TYPE_STRTOKEN:
@@ -1746,14 +1761,21 @@ extern "C" {
         switch (this->data.type) {
 
             case TOKEN_TYPE_CHAR:
-                AStr_AppendA(pStr, this->data.chr);
+                if (ascii_isPrintableW32(this->data.chr[0])) {
+                    AStr_AppendCharA(pStr, this->data.chr[0]);
+                } else if (this->data.chr[0] == -1) {
+                    AStr_AppendA(pStr, "<<EOF>>");
+                } else {
+                    AStr_AppendCharA(pStr, ' ');
+                }
                 break;
 
            case TOKEN_TYPE_W32CHAR:
                 if (ascii_isPrintableW32(this->data.w32chr[0])) {
                     AStr_AppendCharW32(pStr, this->data.w32chr[0]);
-                }
-                else {
+                } else if (this->data.w32chr[0] == -1) {
+                    AStr_AppendA(pStr, "<<EOF>>");
+                } else {
                     AStr_AppendCharA(pStr, ' ');
                 }
                 break;
@@ -1765,9 +1787,13 @@ extern "C" {
             case TOKEN_TYPE_STRTOKEN:
                 pString = szTbl_TokenToString(szTbl_Shared(), this->data.strToken);
                 if (pString) {
-                    //AStr_AppendA(pStr, "\"");
-                    AStr_AppendA(pStr, pString);
-                    //AStr_AppendA(pStr, "\"");
+                    if (*pString == -1) {
+                    AStr_AppendA(pStr, "<<EOF>>");
+                    } else {
+                        //AStr_AppendA(pStr, "\"");
+                        AStr_AppendA(pStr, pString);
+                        //AStr_AppendA(pStr, "\"");
+                    }
                 }
                 break;
 

@@ -51,11 +51,14 @@
  *  3.      A data node's extra field will contain the SrcLoc Object
  *          defining the start of the data in the source file.
  *
- *
  * History
  *	07/08/2017 Generated
  *  10/08/2018 Changed to allow empty arrays and hashes.
  *  11/26/2019 Added SrcLoc object to data node's extra field.
+ *  08/26/2021 Fixed multiple strings in the value of a pair to
+ *              not concatenate if the following token is ':'
+ *              indicating that it was a name without a separating
+ *              comma.
  */
 
 

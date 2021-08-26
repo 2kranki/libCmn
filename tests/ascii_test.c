@@ -107,7 +107,6 @@ int         test_ascii_Lexical01(
 )
 {
     
-    
     fprintf(stderr, "Performing: %s\n", pTestName);
  
     XCTAssertTrue( (ASCII_LEXICAL_WHITESPACE == ascii_toLexicalClassA(' ')) );
@@ -134,6 +133,15 @@ int         test_ascii_Lexical01(
     XCTAssertTrue( ('|' == ascii_toLexicalClassA('|')) );
     XCTAssertTrue( ('}' == ascii_toLexicalClassA('}')) );
     XCTAssertTrue( ('-' == ascii_toLexicalClassA('-')) );
+
+    XCTAssertTrue( (ascii_isLabelCharW32('_')) );
+    XCTAssertTrue( (ascii_isLabelCharW32('a')) );
+    XCTAssertTrue( (ascii_isLabelCharW32('z')) );
+    XCTAssertTrue( (ascii_isLabelCharW32('A')) );
+    XCTAssertTrue( (ascii_isLabelCharW32('Z')) );
+    XCTAssertTrue( (ascii_isLabelCharW32('0')) );
+    XCTAssertTrue( (ascii_isLabelCharW32('9')) );
+    XCTAssertTrue( (!ascii_isLabelCharW32('.')) );
     
     fprintf(stderr, "...%s completed.\n", pTestName);
     return 1;

@@ -203,6 +203,7 @@ extern "C" {
         { LEX_OP_ASSIGN_RIGHT,    "LEX_OP_ASSIGN_RIGHT" },
         { LEX_OP_ASSIGN_SUB,    "LEX_OP_ASSIGN_SUB" },
         { LEX_OP_ASSIGN_XOR,    "LEX_OP_ASSIGN_XOR" },
+        { LEX_OP_COLON,    "LEX_OP_COLON" },
         { LEX_OP_DEC,    "LEX_OP_DEC" },
         { LEX_OP_DIV,    "LEX_OP_DIV" },
         { LEX_OP_ELIPSIS,    "LEX_OP_ELIPSIS" },
@@ -245,7 +246,6 @@ extern "C" {
         { LEX_SPCL_AT_LBRACK,    "LEX_SPCL_AT_LBRACK" },
         { LEX_SPCL_AT_LBRACE,    "LEX_SPCL_AT_LBRACE" },
         { LEX_SPCL_AT_LPAREN,    "LEX_SPCL_AT_LPAREN" },
-        { LEX_SPCL_COLON,    "LEX_SPCL_COLON" },
         { LEX_SPCL_DBLCOLON,    "LEX_SPCL_DBLCOLON" },
         { LEX_SPCL_LBRACK,    "LEX_SPCL_LBRACK" },
         { LEX_SPCL_LBRACE,    "LEX_SPCL_LBRACE" },
@@ -303,13 +303,13 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                P a r s e  N e x t
+    //                      N e x t  I n p u t
     //---------------------------------------------------------------
 
     /*!
      Advance to the next input token and get the lookahead just beyond it.
      */
-    bool            Lex_ParseNext(
+    bool            Lex_NextInput(
         LEX_DATA        *this,
         LEX_PARSE_DATA  *pData,
         bool            fSetupToken
@@ -390,6 +390,7 @@ extern "C" {
         TOKEN_DATA      *pToken = OBJ_NIL;
         LEX_PARSE_DATA  data = {0};
         bool            fMore = true;
+        int             iRc;
 
         // Validate the input parameters.
 #ifdef NDEBUG
@@ -409,12 +410,12 @@ extern "C" {
         Token_Init(&data.token1);
         Token_Init(&data.token2);
 
-        // Note: Lex_ParseNext() only returns the token type,
+        // Note: Lex_NextInput() only returns the token type,
         //      TOKEN_TYPE_W32CHAR, in both the advanced and
         //      lookahead tokens.
     while_more:
         while (fMore) {
-            fRc = Lex_ParseNext(this, &data, true);
+            fRc = Lex_NextInput(this, &data, true);
             data.clsNew = data.cls1;
             if (data.cls1 == EOF) {
                 data.fSavStr = false;
@@ -422,6 +423,17 @@ extern "C" {
                 break;
             }
 
+            /*
+             This exit allows the entire lexical scan to be over-ridden.
+             The exist can call:
+                    Lex_TokenAppendStringW32(this, data.chr2);
+                    fRc = Lex_NextInput(this, &data, false);
+             as needed to do its own scan if desired. It should return:
+                0 == Accept what exit scanned
+                1 == Skip to next input token and continue scan.
+                2 == Continue with default scanner.
+
+             */
             if (this->pParserPreExit) {
                 int         iRc;
                 iRc =   this->pParserPreExit(
@@ -430,10 +442,10 @@ extern "C" {
                                         &data
                         );
                 if (0 == iRc) {
-                    fMore = false;
-                    continue;;
-                } else if (1 == iRc) {
+                    fMore = false;          // Accept scan.
                     continue;
+                } else if (1 == iRc) {
+                    continue;               // Skip to next character.
                 }
             }
 
@@ -442,9 +454,9 @@ extern "C" {
                     we can simply return. If it is a 2 char
                     token, we must advance the input 1 char
                     and then return. We can advance directly
-                    without using Lex_ParseNext(). If the
+                    without using Lex_NextInput(). If the
                     token will be greater than 2 chars then,
-                    We use Lex_ParseNext() to advance until
+                    We use Lex_NextInput() to advance until
                     we get to the last char of that token
                     in the lookahead, then we advance directly
                     on the last char.
@@ -461,6 +473,22 @@ extern "C" {
                         Lex_ParseWhiteSpace(this, &data);
                         data.clsNew = LEX_SEP_WS;
                         fMore = false;
+                        for (;;) {
+                            if (data.chr2 == '\n') {
+                                if (this->flags & LEX_FLAG_WS) {
+                                    Lex_TokenAppendStringW32(this, data.chr2);
+                                }
+                                break;
+                            }
+                            if (data.cls2 == ASCII_LEXICAL_WHITESPACE) {
+                                if (this->flags & LEX_FLAG_WS) {
+                                    Lex_TokenAppendStringW32(this, data.chr2);
+                                }
+                            }
+                            else
+                                break;
+                            fRc = Lex_NextInput(this, &data, false);
+                        }
                     }
                     break;
 
@@ -478,13 +506,9 @@ extern "C" {
                     // The output token consists of the first token and
                     // the output accumulation string is only the first
                     // token's character.
-                    for (;;) {
-                        if (ascii_isLabelCharW32(data.chr2)) {
-                            Lex_TokenAppendStringW32(this, data.chr2);
-                        } else {
-                            break;
-                        }
-                        eRc = Lex_ParseNext(this, &data, false);
+                    while (ascii_isLabelCharW32(data.chr2)) {
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
                     }
                     data.clsNew = LEX_IDENTIFIER;
                     fMore = false;
@@ -497,34 +521,27 @@ extern "C" {
 
                 case '!':           /*** '!' ***/
                     data.clsNew = LEX_OP_NOT;
-                    pToken = Lex_InputLookAhead(this, 2);
-                    if( '=' == Token_getClass(pToken)) {
+                    if ('=' == data.chr2) {
                         data.clsNew = LEX_OP_NE;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
                     }
-                    Lex_InputAdvance(this, 1);
                     fMore = false;
                     break;
 
                 case '"':           /*** '"' ***/
                     Lex_ParseTokenTruncate(this);
-                    if (data.cls2 == '"') {      // Empty String
-                        Lex_InputAdvance(this, 1);
-                        data.clsNew = LEX_CONSTANT_STRING;
-                        break;
+                    fMore = false;
+                    data.clsNew = LEX_CONSTANT_STRING;
+                    if (data.cls2 == '"') {         // Empty String
+                        fRc = Lex_NextInput(this, &data, false);
                     } else {
                         // Token starts with 2nd initial token.
-                        while (Lex_ParseChrCon(this, &data, '"'))
+                        while ((iRc = Lex_ParseChrCon(this, &data, '"')) == 1)
                             ;
-                        pToken = Lex_InputLookAhead(this, 1);
-                        data.cls1 = Token_getClass(pToken);
-                        if (data.cls1 == '"') {
-                            Lex_InputAdvance(this, 1);
-                            data.clsNew = LEX_CONSTANT_STRING;
-                            break;
-                        }
-                        else {
+                        if (iRc == 0) {
+                            fRc = Lex_NextInput(this, &data, false);
+                        } else {
                             SrcErrors_AddFatalFromTokenA(
                                                          OBJ_NIL,
                                                          pToken,
@@ -536,61 +553,54 @@ extern "C" {
 
                 case '#':           /*** '#' ***/
                     data.clsNew = LEX_OP_POUND;
-                    if( '#' == data.cls2) {
-                        data.clsNew = LEX_OP_2POUNDS;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                        break;
-                    }
                     fMore = false;
+                    if ('#' == data.cls2) {
+                        data.clsNew = LEX_OP_2POUNDS;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    }
                     break;
 
                 case '%':           /*** '%' ***/
                     data.clsNew = LEX_OP_MOD;
-                    if( '%' == data.cls2) {
-                        data.clsNew = LEX_SPCL_SEPARATOR;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                        fMore = false;
-                        break;
-                    }
-                    else if( '=' == data.cls2) {
-                        data.clsNew = LEX_OP_ASSIGN_MOD;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                        fMore = false;
-                        break;
-                    }
                     fMore = false;
+                    if ('=' == data.cls2) {
+                        data.clsNew = LEX_OP_ASSIGN_MOD;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    } else if ('%' == data.cls2) {
+                        if (this->flags & LEX_FLAG_SPCL_GROUP) {
+                            data.clsNew = LEX_SPCL_SEPARATOR;
+                            Lex_TokenAppendStringW32(this, data.chr2);
+                            fRc = Lex_NextInput(this, &data, false);
+                        }
+                    }
                     break;
 
                 case '&':           /*** '&' ***/
                     data.clsNew = LEX_OP_AND;
-                    if( '&' == data.cls2) {
-                        data.clsNew = LEX_OP_LOG_AND;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 2);
-                        fMore = false;
-                        break;
-                    }
-                    else if( '=' == data.cls2) {
-                        data.clsNew = LEX_OP_ASSIGN_AND;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                    }
                     fMore = false;
+                    if ('&' == data.cls2) {
+                        data.clsNew = LEX_OP_LOG_AND;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    } else if ('=' == data.cls2) {
+                        data.clsNew = LEX_OP_ASSIGN_AND;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    }
                     break;
 
                 case '(':           /*** '(' ***/
                     data.clsNew = LEX_SEP_LPAREN;
+                    fMore = false;
                     if (this->flags & LEX_FLAG_SPCL_GROUP) {
-                        if( ':' == data.cls2) {
+                        if (':' == data.cls2) {
                             data.clsNew = LEX_SPCL_PAREN_LEFT;
-                            Lex_ParseTokenAppendString(this, pToken);
-                            Lex_InputAdvance(this, 1);
+                            Lex_TokenAppendStringW32(this, data.chr2);
+                            fRc = Lex_NextInput(this, &data, false);
                         }
                     }
-                    fMore = false;
                     break;
 
                 case ')':           /*** ')' ***/
@@ -600,29 +610,26 @@ extern "C" {
 
                 case '*':           /*** '*' ***/
                     data.clsNew = LEX_OP_MUL;
-                    if( '=' == data.cls2) {
-                        data.clsNew = LEX_OP_ASSIGN_MUL;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 2);
-                        fMore = false;
-                        break;
-                    }
                     fMore = false;
+                    if ('=' == data.cls2) {
+                        data.clsNew = LEX_OP_ASSIGN_MUL;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    }
                     break;
 
                 case '+':           /*** '+' ***/
                     data.clsNew = LEX_OP_ADD;
-                    if( '+' == data.cls2) {
-                        data.clsNew = LEX_OP_INC;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                    }
-                    else if( '=' == data.cls2) {
-                        data.clsNew = LEX_OP_ASSIGN_ADD;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                    }
                     fMore = false;
+                    if ('+' == data.cls2) {
+                        data.clsNew = LEX_OP_INC;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    } else if ('=' == data.cls2) {
+                        data.clsNew = LEX_OP_ASSIGN_ADD;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    }
                     break;
 
                 case ',':           /*** ',' ***/
@@ -632,140 +639,150 @@ extern "C" {
 
                 case '-':           /*** '-' ***/
                     data.clsNew = LEX_OP_SUB;
-                    if( '-' == data.cls2) {
-                        data.clsNew = LEX_OP_DEC;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                    }
-                    else if( '=' == data.cls2) {
-                        data.clsNew = LEX_OP_ASSIGN_SUB;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                    }
-                    else if( '>' == data.cls2) {
-                        data.clsNew = LEX_SEP_RARROW;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                    }
-                    Lex_InputAdvance(this, 1);
                     fMore = false;
+                    if ('-' == data.cls2) {
+                        data.clsNew = LEX_OP_DEC;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    } else if ('=' == data.cls2) {
+                        data.clsNew = LEX_OP_ASSIGN_SUB;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    } else if ('>' == data.cls2) {
+                        data.clsNew = LEX_SEP_RARROW;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    }
                     break;
 
                 case '.':           /*** '.' ***/
                     data.clsNew = LEX_SEP_DOT;
-                    if( '.' == data.cls2) {
+                    fMore = false;
+                    if ('.' == data.cls2) {
                         data.clsNew = LEX_OP_RANGE;
-                        Lex_InputAdvance(this, 1);
-                        pToken = Lex_InputLookAhead(this, 1);
-                        data.cls2 = Token_getClass(pToken);
-                        if( '.' == data.cls2) {
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                        if ('.' == data.cls2) {
                             data.clsNew = LEX_OP_ELIPSIS;
-                            W32Str_AppendA(this->pStr, ".");
-                            Lex_InputAdvance(this, 1);
+                            Lex_TokenAppendStringW32(this, data.chr2);
+                            fRc = Lex_NextInput(this, &data, false);
                         }
-                        W32Str_AppendA(this->pStr, ".");
-                        Lex_InputAdvance(this, 1);
-                    }
-                    else if( '>' == data.cls2) {
+                    } else if ('>' == data.cls2) {
                         if (this->flags & LEX_FLAG_SPCL_GROUP) {
                             data.clsNew = LEX_SEP_DOT_GT;
-                            W32Str_AppendA(this->pStr, ">");
-                            Lex_InputAdvance(this, 1);
+                            Lex_TokenAppendStringW32(this, data.chr2);
+                            fRc = Lex_NextInput(this, &data, false);
                         }
                     }
-                    Lex_InputAdvance(this, 1);
-                    fMore = false;
                     break;
 
                 case '/':           /*** '/' ***/
                     data.clsNew = LEX_OP_DIV;
-                    if( '/' == data.cls2) {
-                        // Single Line Comment - PPLEX_COMMENT_SINGLE
+                    fMore = false;
+                    if ('=' == data.cls2) {
+                        data.clsNew = LEX_OP_ASSIGN_DIV;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    } else if ('/' == data.cls2) {
                         data.clsNew = LEX_COMMENT_SINGLE;
                         if (this->flags & LEX_FLAG_CMT) {
-                            Lex_ParseTokenAppendString(this, pToken);
+                            Lex_TokenAppendStringW32(this, data.chr2);
+                        } else {
+                            Lex_ParseTokenTruncate(this);
                         }
-                        Lex_InputAdvance((LEX_DATA *)this, 1);
+                        fRc = Lex_NextInput(this, &data, false);
                         for (;;) {
-                            pToken = Lex_InputLookAhead(this, 1);
-                            data.cls2 = Token_getClass(pToken);
-                            Lex_InputAdvance((LEX_DATA *)this, 1);
+                            if (data.cls2 == LEX_CLASS_EOF) {
+                                SrcErrors_AddFatalFromTokenA(
+                                                    OBJ_NIL,
+                                                    pToken,
+                                                    "Premature EOF in single-line comment"
+                                );
+                            }
                             if (data.cls2 == ASCII_LEXICAL_EOL) {
                                 break;
                             }
                             if (this->flags & LEX_FLAG_CMT) {
-                                Lex_ParseTokenAppendString((LEX_DATA *)this, pToken);
+                                Lex_TokenAppendStringW32(this, data.chr2);
                             }
+                            fRc = Lex_NextInput(this, &data, false);
                         }
-                        if (this->flags & LEX_FLAG_CMT) {
-                            fMore = false;
+                        if (!(this->flags & LEX_FLAG_CMT)) {
+                            fMore = true;
                         }
                         break;
                     }
-                    else if( '*' == data.cls2) {
+                    else if ('*' == data.cls2) {
                         uint32_t        depth = 1;
                         bool            fMore2 = true;
-                        // Multi-line comment - PPLEX_COMMENT_MULTI
-                        data.clsNew = LEX_COMMENT_SINGLE;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 2);
+                        data.clsNew = LEX_COMMENT_MULTI;
+                        if (!(this->flags & LEX_FLAG_CMT)) {
+                            Lex_ParseTokenTruncate(this);
+                        }
                         while (fMore2) {
-                            pToken = Lex_InputLookAhead(this, 1);
-                            data.cls2 = Token_getClass(pToken);
-                            if (data.cls2 == '*') {
-                                pToken = Lex_InputLookAhead(this, 2);
-                                data.cls2 = Token_getClass(pToken);
+                            if (this->flags & LEX_FLAG_CMT) {
+                                Lex_TokenAppendStringW32(this, data.chr2);
+                            }
+                            fRc = Lex_NextInput(this, &data, false);
+                            if (data.cls2 == LEX_CLASS_EOF) {
+                                SrcErrors_AddFatalFromTokenA(
+                                                    OBJ_NIL,
+                                                    pToken,
+                                                    "Premature EOF in Multi-line comment"
+                                );
+                            } else if (data.cls2 == '*') {
+                                if (this->flags & LEX_FLAG_CMT) {
+                                    Lex_TokenAppendStringW32(this, data.chr2);
+                                }
+                                fRc = Lex_NextInput(this, &data, false);
                                 if (data.cls2 == '/') {
-                                    Lex_InputAdvance(this, 2);
+                                    if (this->flags & LEX_FLAG_CMT) {
+                                        Lex_TokenAppendStringW32(this, data.chr2);
+                                    }
+                                    fRc = Lex_NextInput(this, &data, false);
                                     --depth;
                                     if (0 == depth) {
                                         fMore2 = false;
                                     }
                                     continue;
                                 }
-                            }
-                            if (data.cls2 == '/') {
-                                pToken = Lex_InputLookAhead(this, 2);
-                                data.cls2 = Token_getClass(pToken);
+                                if (this->flags & LEX_FLAG_CMT) {
+                                    Lex_TokenAppendStringW32(this, data.chr2);
+                                }
+                                fRc = Lex_NextInput(this, &data, false);
+                            } else if (data.cls2 == '/') {
+                                if (this->flags & LEX_FLAG_CMT) {
+                                    Lex_TokenAppendStringW32(this, data.chr2);
+                                }
+                                fRc = Lex_NextInput(this, &data, false);
                                 if (data.cls2 == '*') {
-                                    Lex_InputAdvance(this, 2);
                                     ++depth;
                                     continue;
                                 }
                             }
-                            Lex_InputAdvance(this, 1);
                         }
-                        break;
+                        if (!(this->flags & LEX_FLAG_CMT)) {
+                            fMore = true;
+                        }
                     }
-                    Lex_InputAdvance(this, 1);
-                    fMore = false;
                     break;
 
                 case ':':           /*** ':' ***/
-                    data.clsNew = LEX_SPCL_COLON;
+                    data.clsNew = LEX_OP_COLON;
                     fMore = false;
                     if (this->flags & LEX_FLAG_SPCL_GROUP) {
-                        if( ':' == data.cls2) {
+                        if (':' == data.cls2) {
                             data.clsNew = LEX_SPCL_DBLCOLON;
-                            Lex_ParseTokenAppendString(this, pToken);
-                            Lex_InputAdvance(this, 1);
-                            break;
-                        }
-                        else if( ')' == data.cls2) {
-                            if (this->flags & LEX_FLAG_SPCL_GROUP) {
-                                data.clsNew = LEX_SPCL_PAREN_RIGHT;
-                                Lex_ParseTokenAppendString(this, pToken);
-                                Lex_InputAdvance(this, 1);
-                                break;
-                            }
-                        }
-                        else if( '>' == data.cls2) {
-                            if (this->flags & LEX_FLAG_SPCL_GROUP) {
-                                data.clsNew = LEX_SPCL_COLON_RIGHT;
-                                Lex_ParseTokenAppendString(this, pToken);
-                                Lex_InputAdvance(this, 1);
-                                break;
-                            }
+                            Lex_TokenAppendStringW32(this, data.chr2);
+                            fRc = Lex_NextInput(this, &data, false);
+                        } else if (')' == data.cls2) {
+                            data.clsNew = LEX_SPCL_PAREN_RIGHT;
+                            Lex_TokenAppendStringW32(this, data.chr2);
+                            fRc = Lex_NextInput(this, &data, false);
+                        } else if ('>' == data.cls2) {
+                            data.clsNew = LEX_SPCL_COLON_RIGHT;
+                            Lex_TokenAppendStringW32(this, data.chr2);
+                            fRc = Lex_NextInput(this, &data, false);
                         }
                     }
                     break;
@@ -782,37 +799,37 @@ extern "C" {
                         case '<':
                             data.clsNew = LEX_OP_LEFT;
                             Lex_TokenAppendStringW32(this, data.chr2);
-                            Lex_ParseNext(this, &data, false);
-                            if( '=' == data.cls2) {
+                            fRc = Lex_NextInput(this, &data, false);
+                            if ('=' == data.cls2) {
                                 data.clsNew = LEX_OP_ASSIGN_LEFT;
                                 Lex_TokenAppendStringW32(this, data.chr2);
-                                Lex_InputAdvance((LEX_DATA *)this, 1);
+                                fRc = Lex_NextInput(this, &data, false);
                             }
                             break;
                         case '-':
                             if (this->flags & LEX_FLAG_SPCL_GROUP) {
                                 data.clsNew = LEX_SEP_LARROW;
                                 Lex_TokenAppendStringW32(this, data.chr2);
-                                Lex_InputAdvance((LEX_DATA *)this, 1);
+                                fRc = Lex_NextInput(this, &data, false);
                                 break;
                             }
                         case '=':
                             data.clsNew = LEX_OP_LE;
                             Lex_TokenAppendStringW32(this, data.chr2);
-                            Lex_InputAdvance((LEX_DATA *)this, 1);
+                            fRc = Lex_NextInput(this, &data, false);
                             break;
                         case '.':
                             if (this->flags & LEX_FLAG_SPCL_GROUP) {
                                 data.clsNew = LEX_SEP_LT_DOT;
                                 Lex_TokenAppendStringW32(this, data.chr2);
-                                Lex_InputAdvance((LEX_DATA *)this, 1);
+                                fRc = Lex_NextInput(this, &data, false);
                                 break;
                             }
                         case ':':
                             if (this->flags & LEX_FLAG_SPCL_GROUP) {
                                 data.clsNew = LEX_SPCL_COLON_LEFT;
                                 Lex_TokenAppendStringW32(this, data.chr2);
-                                Lex_InputAdvance((LEX_DATA *)this, 1);
+                                fRc = Lex_NextInput(this, &data, false);
                             }
                             break;
                         default:
@@ -823,18 +840,17 @@ extern "C" {
                 case '=':           /*** '=' ***/
                     data.clsNew = LEX_OP_ASSIGN;
                     fMore = false;
-                    if( '>' == data.cls2) {
+                    if ('>' == data.cls2) {
                         if (this->flags & LEX_FLAG_SPCL_GROUP) {
                             data.clsNew = LEX_SPCL_RARROW;
                             Lex_TokenAppendStringW32(this, data.chr2);
-                            Lex_InputAdvance((LEX_DATA *)this, 1);
+                            fRc = Lex_NextInput(this, &data, false);
                             break;
                         }
-                    }
-                    else if( '=' == data.cls2) {
+                    } else if ('=' == data.cls2) {
                         data.clsNew = LEX_OP_EQ;
                         Lex_TokenAppendStringW32(this, data.chr2);
-                        Lex_InputAdvance((LEX_DATA *)this, 1);
+                        fRc = Lex_NextInput(this, &data, false);
                         break;
                     }
                     break;
@@ -842,21 +858,19 @@ extern "C" {
                 case '>':           /*** '>' ***/
                     data.clsNew = LEX_OP_GT;
                     fMore = false;
-                    if( '>' == data.cls2) {
+                    if ('>' == data.cls2) {
                         data.clsNew = LEX_OP_RIGHT;
                         Lex_TokenAppendStringW32(this, data.chr2);
-                        Lex_ParseNext(this, &data, false);
-                        if( '=' == data.cls2) {
+                        Lex_NextInput(this, &data, false);
+                        if ('=' == data.cls2) {
                             data.clsNew = LEX_OP_ASSIGN_RIGHT;
                             Lex_TokenAppendStringW32(this, data.chr2);
-                            Lex_InputAdvance((LEX_DATA *)this, 1);
-                            break;
+                            fRc = Lex_NextInput(this, &data, false);
                         }
-                    }
-                    else if( '=' == data.cls2) {
+                    } else if ('=' == data.cls2) {
                         data.clsNew = LEX_OP_GE;
                         Lex_TokenAppendStringW32(this, data.chr2);
-                        Lex_InputAdvance((LEX_DATA *)this, 1);
+                        fRc = Lex_NextInput(this, &data, false);
                     }
                     break;
 
@@ -886,14 +900,12 @@ extern "C" {
 
                 case '^':           /*** '^' ***/
                     data.clsNew = LEX_OP_XOR;
-                    if( '=' == data.cls2) {
-                        data.clsNew = LEX_OP_ASSIGN_XOR;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                        fMore = false;
-                        break;
-                    }
                     fMore = false;
+                    if ('=' == data.cls2) {
+                        data.clsNew = LEX_OP_ASSIGN_XOR;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    }
                     break;
 
                     /*
@@ -907,17 +919,17 @@ extern "C" {
 
                 case '|':           /*** '|' ***/
                     data.clsNew = LEX_OP_OR;
-                    if( '=' == data.cls2) {
-                        data.clsNew = LEX_OP_ASSIGN_OR;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                    }
-                    else if( '|' == data.cls2) {
-                        data.clsNew = LEX_OP_LOG_OR;
-                        Lex_ParseTokenAppendString(this, pToken);
-                        Lex_InputAdvance(this, 1);
-                    }
                     fMore = false;
+                    if ('=' == data.cls2) {
+                        data.clsNew = LEX_OP_ASSIGN_OR;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    }
+                    else if ('|' == data.cls2) {
+                        data.clsNew = LEX_OP_LOG_OR;
+                        Lex_TokenAppendStringW32(this, data.chr2);
+                        fRc = Lex_NextInput(this, &data, false);
+                    }
                     break;
 
                 case '}':           /*** '}' ***/
@@ -938,9 +950,13 @@ extern "C" {
                                                       this,
                                                       &data
                                                       );
-                        if (0 == iRc) {
-                            fMore = false;
-                            continue;;
+                        switch (iRc) {
+                            case 1:             // Reset data and scan next char.
+                                goto try_again;
+                            case 2:             // Keep data as it is and scan next char.
+                                goto while_more;
+                            default:            // Accept token as scanned
+                                break;
                         }
                     }
                     // We will pass the token out and let the caller
@@ -1126,7 +1142,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
@@ -1142,7 +1158,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -1214,7 +1230,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
@@ -1231,7 +1247,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -1298,7 +1314,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -1311,7 +1327,7 @@ extern "C" {
     }
 
 
-    bool            Lex_setParserPosExit(
+    bool            Lex_setParserDfltExit(
         LEX_DATA        *this,
         ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
         OBJ_ID          pParseObj
@@ -1319,7 +1335,28 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pParserDfltExit = pParser;
+        this->pParserDfltExitObj = pParseObj;
+
+        return true;
+    }
+
+
+    bool            Lex_setParserPostExit(
+        LEX_DATA        *this,
+        ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
+        OBJ_ID          pParseObj
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -1340,7 +1377,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -1367,7 +1404,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -1489,7 +1526,7 @@ extern "C" {
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
         }
 #endif
@@ -1602,14 +1639,14 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
         pToken = this->pSrcChrLookAhead(this->pSrcObj,1);
 
-        if(chr == Token_getChrW32(pToken) ) {
+        if (chr == Token_getChrW32(pToken)) {
             return true;
         }
 
@@ -1633,7 +1670,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -1660,12 +1697,12 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        pToken = this->pSrcChrLookAhead(this->pSrcObj,1);
+        pToken = this->pSrcChrLookAhead(this->pSrcObj, 1);
         cls = Token_getClass(pToken);
 
         while (*pClasses) {
@@ -1692,7 +1729,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -1720,7 +1757,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -1757,7 +1794,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -2018,7 +2055,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -2180,7 +2217,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -2212,7 +2249,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -2274,7 +2311,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -2308,7 +2345,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -2338,7 +2375,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -2378,12 +2415,12 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
 #endif
-        pToken = this->pSrcChrLookAhead(this->pSrcObj,1);
+        pToken = this->pSrcChrLookAhead(this->pSrcObj, 1);
 
         chr = Token_getChrW32(pToken);
         if((chr >= chrBeg) && (chr <= chrEnd) ) {
@@ -2414,7 +2451,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -2449,7 +2486,7 @@ extern "C" {
     // parsed, but not advanced. So, we just keep accumulating the proper
     // letters until there are no more that are acceptable.
 
-    bool            Lex_ParseChrCon(
+    int             Lex_ParseChrCon(
         LEX_DATA        *this,
         LEX_PARSE_DATA  *pData,
         W32CHR_T        endingChar
@@ -2460,19 +2497,41 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        if ((pData->chr2 == '\n') || (pData->chr2 == '\r')) {
-            return false;
+        if (pData->cls2 == LEX_CLASS_EOF) {
+            return -1;
         }
         if (pData->chr2 == endingChar) {
-            return false;
+            return 0;
+        }
+        if ((pData->chr2 == '\n') || (pData->chr2 == '\r')
+            || (pData->chr2 == '\t') || (pData->chr2 == '\f')) {
+            Lex_TokenAppendStringW32(this, '\\');
+            switch (pData->chr2) {
+                case '\f':
+                    Lex_TokenAppendStringW32(this, 'f');
+                    break;
+                case '\n':
+                    Lex_TokenAppendStringW32(this, 'n');
+                    break;
+                case '\r':
+                    Lex_TokenAppendStringW32(this, 'r');
+                    break;
+                case '\t':
+                    Lex_TokenAppendStringW32(this, 't');
+                    break;
+            }
+            fRc = Lex_NextInput(this, pData, false);
+            return 1;
         }
         if ( pData->chr2 == '\\') {
+            Lex_TokenAppendStringW32(this, pData->chr2);
+            fRc = Lex_NextInput(this, pData, false);
             switch (pData->chr2) {
 
                 case '0':
@@ -2484,11 +2543,11 @@ extern "C" {
                 case '6':
                 case '7':
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     for (i=0; i<2; ++i) {
                         if (ascii_isOctalW32(pData->chr2)) {
                             Lex_TokenAppendStringW32(this, pData->chr2);
-                            fRc = Lex_ParseNext(this, pData, false);
+                            fRc = Lex_NextInput(this, pData, false);
                         }
                     }
                     return true;
@@ -2504,16 +2563,16 @@ extern "C" {
                 case '\'':
                 case '\"':
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     return true;
 
                 case 'u':
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     for (i=0; i<4; ++i) {
                         if (ascii_isHexW32(pData->chr2)) {
                             Lex_TokenAppendStringW32(this, pData->chr2);
-                            fRc = Lex_ParseNext(this, pData, false);
+                            fRc = Lex_NextInput(this, pData, false);
                         } else {
                             SrcErrors_AddFatalA(
                                                 OBJ_NIL,
@@ -2527,11 +2586,11 @@ extern "C" {
 
                 case 'U':
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     for (i=0; i<8; ++i) {
                         if (ascii_isHexW32(pData->chr2)) {
                             Lex_TokenAppendStringW32(this, pData->chr2);
-                            fRc = Lex_ParseNext(this, pData, false);
+                            fRc = Lex_NextInput(this, pData, false);
                         } else {
                             SrcErrors_AddFatalA(
                                                 OBJ_NIL,
@@ -2545,11 +2604,11 @@ extern "C" {
 
                 case 'x':
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     for (i=0; i<2; ++i) {
                         if (ascii_isHexW32(pData->chr2)) {
                             Lex_TokenAppendStringW32(this, pData->chr2);
-                            fRc = Lex_ParseNext(this, pData, false);
+                            fRc = Lex_NextInput(this, pData, false);
                         } else {
                             SrcErrors_AddFatalA(
                                                 OBJ_NIL,
@@ -2565,17 +2624,16 @@ extern "C" {
                     return false;
                     break;
             }
-        }
-        else {
+        } else {
             Lex_TokenAppendStringW32(this, pData->chr2);
-            fRc = Lex_ParseNext(this, pData, false);
+            fRc = Lex_NextInput(this, pData, false);
         }
 
-        return true;
+        return 1;
     }
 
 
-    bool            Lex_ParseChrConWS(
+    int             Lex_ParseChrConWS(
         LEX_DATA        *this,
         LEX_PARSE_DATA  *pData,
         W32CHR_T        ending
@@ -2586,18 +2644,41 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        if ((pData->chr2 == ending) || (pData->cls2 == LEX_CLASS_EOF)) {
-            return false;
+        if (pData->cls2 == LEX_CLASS_EOF) {
+            return -1;
+        }
+        if (pData->chr2 == ending) {
+            return 0;
+        }
+        if ((pData->chr2 == '\n') || (pData->chr2 == '\r')
+            || (pData->chr2 == '\t') || (pData->chr2 == '\f')) {
+            Lex_TokenAppendStringW32(this, '\\');
+            switch (pData->chr2) {
+                case '\f':
+                    Lex_TokenAppendStringW32(this, 'f');
+                    break;
+                case '\n':
+                    Lex_TokenAppendStringW32(this, 'n');
+                    break;
+                case '\r':
+                    Lex_TokenAppendStringW32(this, 'r');
+                    break;
+                case '\t':
+                    Lex_TokenAppendStringW32(this, 't');
+                    break;
+            }
+            fRc = Lex_NextInput(this, pData, false);
+            return 1;
         }
         if ( pData->chr2 == '\\') {
             Lex_TokenAppendStringW32(this, pData->chr2);
-            fRc = Lex_ParseNext(this, pData, false);
+            fRc = Lex_NextInput(this, pData, false);
             switch (pData->chr2) {
 
                 case '0':
@@ -2609,11 +2690,11 @@ extern "C" {
                 case '6':
                 case '7':
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     for (i=0; i<2; ++i) {
                         if (ascii_isOctalW32(pData->chr2)) {
                             Lex_TokenAppendStringW32(this, pData->chr2);
-                            fRc = Lex_ParseNext(this, pData, false);
+                            fRc = Lex_NextInput(this, pData, false);
                         }
                     }
                     return true;
@@ -2629,16 +2710,16 @@ extern "C" {
                 case '\'':
                 case '\"':
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     return true;
 
                 case 'u':
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     for (i=0; i<4; ++i) {
                         if (ascii_isHexW32(pData->chr2)) {
                             Lex_TokenAppendStringW32(this, pData->chr2);
-                            fRc = Lex_ParseNext(this, pData, false);
+                            fRc = Lex_NextInput(this, pData, false);
                         } else {
                             SrcErrors_AddFatalA(
                                                 OBJ_NIL,
@@ -2652,11 +2733,11 @@ extern "C" {
 
                 case 'U':
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     for (i=0; i<8; ++i) {
                         if (ascii_isHexW32(pData->chr2)) {
                             Lex_TokenAppendStringW32(this, pData->chr2);
-                            fRc = Lex_ParseNext(this, pData, false);
+                            fRc = Lex_NextInput(this, pData, false);
                         } else {
                             SrcErrors_AddFatalA(
                                                 OBJ_NIL,
@@ -2670,11 +2751,11 @@ extern "C" {
 
                 case 'x':
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     for (i=0; i<2; ++i) {
                         if (ascii_isHexW32(pData->chr2)) {
                             Lex_TokenAppendStringW32(this, pData->chr2);
-                            fRc = Lex_ParseNext(this, pData, false);
+                            fRc = Lex_NextInput(this, pData, false);
                         } else {
                             SrcErrors_AddFatalA(
                                                 OBJ_NIL,
@@ -2693,7 +2774,7 @@ extern "C" {
         }
         else {
             Lex_TokenAppendStringW32(this, pData->chr2);
-            fRc = Lex_ParseNext(this, pData, false);
+            fRc = Lex_NextInput(this, pData, false);
         }
 
         return true;
@@ -2721,7 +2802,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return clsNew;
         }
@@ -2732,40 +2813,40 @@ extern "C" {
             case 'l':
                 clsNew = TOKEN_MISC_SL;
                 Lex_TokenAppendStringW32(this, pData->chr2);
-                fRc = Lex_ParseNext(this, pData, false);
+                fRc = Lex_NextInput(this, pData, false);
                 chr = ascii_toLowerW32(pData->chr2);
                 if ('l' == chr) {
                     clsNew = TOKEN_MISC_SLL;
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     chr = ascii_toLowerW32(pData->chr2);
                     if ('u' == chr) {
                         clsNew = TOKEN_MISC_ULL;
                         Lex_TokenAppendStringW32(this, pData->chr2);
-                        fRc = Lex_ParseNext(this, pData, false);
+                        fRc = Lex_NextInput(this, pData, false);
                     }
                 }
                 else if ('u' == chr) {
                     clsNew = TOKEN_MISC_UL;
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                 }
                 break;
 
             case 'u':
                 clsNew = TOKEN_MISC_UI;
                 Lex_TokenAppendStringW32(this, pData->chr2);
-                fRc = Lex_ParseNext(this, pData, false);
+                fRc = Lex_NextInput(this, pData, false);
                 chr = ascii_toLowerW32(pData->chr2);
                 if ('l' == chr) {
                     clsNew = TOKEN_MISC_UL;
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     chr = ascii_toLowerW32(pData->chr2);
                     if ('l' == chr) {
                         clsNew = TOKEN_MISC_ULL;
                         Lex_TokenAppendStringW32(this, pData->chr2);
-                        fRc = Lex_ParseNext(this, pData, false);
+                        fRc = Lex_NextInput(this, pData, false);
                     }
                 }
                 break;
@@ -2812,7 +2893,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return pData->clsNew;
         }
@@ -2822,7 +2903,7 @@ extern "C" {
                 // Must be hex, octal, or bit integer.
                 if ((pData->chr2 == 'x') || (pData->chr2 == 'X')) {
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     if (ascii_isHexW32(pData->chr2))
                         ;
                     else {
@@ -2834,13 +2915,13 @@ extern "C" {
                     }
                     while (fRc && ascii_isHexW32(pData->chr2)) {
                         Lex_TokenAppendStringW32(this, pData->chr2);
-                        fRc = Lex_ParseNext(this, pData, false);
+                        fRc = Lex_NextInput(this, pData, false);
                     }
                     pData->clsNew = LEX_CONSTANT_INTEGER;
                 }
                 if ((pData->chr2 == 'b') || (pData->chr2 == 'B')) {
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                     if ((pData->chr2 >= '0') && (pData->chr2 <= '1'))
                         ;
                     else {
@@ -2852,14 +2933,14 @@ extern "C" {
                     }
                     while (fRc && (pData->chr2 >= '0') && (pData->chr2 <= '1')) {
                         Lex_TokenAppendStringW32(this, pData->chr2);
-                        fRc = Lex_ParseNext(this, pData, false);
+                        fRc = Lex_NextInput(this, pData, false);
                     }
                     pData->clsNew = LEX_CONSTANT_INTEGER;
                 }
                 else {
                     while (fRc && ascii_isOctalW32(pData->chr2)) {
                         Lex_TokenAppendStringW32(this, pData->chr2);
-                        fRc = Lex_ParseNext(this, pData, false);
+                        fRc = Lex_NextInput(this, pData, false);
                     }
                     pData->clsNew = LEX_CONSTANT_INTEGER;
                 }
@@ -2880,7 +2961,7 @@ extern "C" {
                     }
                     else
                         break;
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                 }
                 if ('.' == pData->chr2)
                     ;
@@ -2900,7 +2981,7 @@ extern "C" {
 
         if (pData->chr2 == '.') {
             Lex_TokenAppendStringW32(this, pData->chr2);
-            fRc = Lex_ParseNext(this, pData, false);
+            fRc = Lex_NextInput(this, pData, false);
             if (fRc && ascii_isNumericW32(pData->chr2))
                 ;
             else {
@@ -2913,7 +2994,7 @@ extern "C" {
             for (;;) {
                 if (fRc && ascii_isNumericW32(pData->chr2)) {
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                 }
                 else {
                     break;
@@ -2921,11 +3002,11 @@ extern "C" {
             }
             if ((pData->chr2 == 'e') || (pData->chr2 == 'E')) {
                 Lex_TokenAppendStringW32(this, pData->chr2);
-                fRc = Lex_ParseNext(this, pData, false);
+                fRc = Lex_NextInput(this, pData, false);
                 // Need to parse (+ | -) digit+
                 if ((pData->chr2 == '+') || (pData->chr2 == '-')) {
                     Lex_TokenAppendStringW32(this, pData->chr2);
-                    fRc = Lex_ParseNext(this, pData, false);
+                    fRc = Lex_NextInput(this, pData, false);
                 }
                 if (fRc && ascii_isNumericW32(pData->chr2))
                     ;
@@ -2939,7 +3020,7 @@ extern "C" {
                 for (;;) {
                     if (fRc && ascii_isNumericW32(pData->chr2)) {
                         Lex_TokenAppendStringW32(this, pData->chr2);
-                        fRc = Lex_ParseNext(this, pData, false);
+                        fRc = Lex_NextInput(this, pData, false);
                     }
                     else {
                         break;
@@ -2969,7 +3050,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -3015,7 +3096,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -3035,7 +3116,7 @@ extern "C" {
             }
             else
                 break;
-            Lex_ParseNext(this, pData, false);
+            Lex_NextInput(this, pData, false);
         }
 
         return true;
@@ -3073,7 +3154,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -3128,7 +3209,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
@@ -3197,7 +3278,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_DATA;
         }
@@ -3259,7 +3340,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -3307,7 +3388,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -3474,7 +3555,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -3576,7 +3657,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -3703,7 +3784,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -3772,7 +3853,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -3831,7 +3912,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex_Validate(this) ) {
+        if (!Lex_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }

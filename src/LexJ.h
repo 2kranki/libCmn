@@ -241,26 +241,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         LexJ_Disable (
-        LEXJ_DATA       *this
-    );
-
-
-    ERESULT         LexJ_Enable (
-        LEXJ_DATA       *this
-    );
-
-   
     LEXJ_DATA *     LexJ_Init (
         LEXJ_DATA       *this
     );
 
 
-    ERESULT         LexJ_IsEnabled (
-        LEXJ_DATA       *this
-    );
-    
- 
 #ifdef  LEXJ_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in

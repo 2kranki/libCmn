@@ -122,11 +122,13 @@ extern "C" {
     // until there are no more that are acceptable.
 
     bool            LexJ_ParseQuotelessString(
-        LEXJ_DATA       *this
+        LEXJ_DATA       *this,
+        LEX_DATA        *pLex,              // LEX Object Ptr
+        LEX_PARSE_DATA  *pData              // Current Parse Data Ptr
     )
     {
-        int32_t         cls;
-        TOKEN_DATA      *pInput;
+        bool            fMore = true;
+        bool            fRc;
 
 #ifdef NDEBUG
 #else
@@ -136,17 +138,21 @@ extern "C" {
         }
 #endif
 
-        for (;;) {
-            pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
-            cls = Token_getClass(pInput);
-            if ((cls == ':') || (cls == ',')
-                || (cls == '{') || (cls == '}')
-                || (cls == '[') || (cls == ']')
-                || (cls == ASCII_LEXICAL_EOL) || (cls == -1)) {
-                break;
-            }
-            else {
-                Lex_ParseTokenAppendString((LEX_DATA *)this, pInput);
+        while (fMore) {
+            switch (pData->cls2) {
+                case ':':
+                case ',':
+                case '{':
+                case '}':
+                case '[':
+                case ']':
+                case ASCII_LEXICAL_EOL:
+                case -1:
+                    fMore = false;
+                    break;
+                default:
+                    Lex_TokenAppendStringW32(pLex, pData->chr2);
+                    fRc = Lex_NextInput(pLex, pData, false);
             }
         }
 
@@ -914,9 +920,9 @@ extern "C" {
         JsonIn_RegisterClass(LexJ_Class());
 #endif
         
-        fRc =   Lex_setParserFunction(
+        fRc =   Lex_setParserPreExit(
                             (LEX_DATA *)this,
-                            (void *)LexJ_ParseTokenJson,
+                            (void *)LexJ_ParserPreExit,
                             this
                 );
         if (!fRc) {
@@ -986,43 +992,7 @@ extern "C" {
     
     
     //--------------------------------------------------------------
-    //                      P a r s e  T o k e n
-    //--------------------------------------------------------------
-
-    TOKEN_DATA *    LexJ_ParseToken(
-        LEXJ_DATA       *this
-    )
-    {
-        bool            fRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !LexJ_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        fRc = LexJ_ParseTokenJson(this, &this->super.token);
-
-#ifdef NDEBUG
-#else
-        if (obj_Trace(this)) {
-            ASTR_DATA           *pStr = Token_ToDebugString(&this->super.token, 0);
-            TRC_OBJ( this, "LexJ_ParseToken:  %s \n", AStr_getData(pStr) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
-#endif
-
-        // Return to caller.
-        return &this->super.token;
-    }
-
-
-    //--------------------------------------------------------------
-    //                      P a r s e  T o k e n
+    //                P a r s e  P r e  E x i t
     //--------------------------------------------------------------
 
     /* ParseToken() gets the next token from the source file. It
@@ -1040,17 +1010,26 @@ extern "C" {
      * functions to create the parsed token.
      */
 
-    bool            LexJ_ParseTokenJson(
+    /*
+     This exit allows the entire lexical scan to be over-ridden.
+     The exit can call:
+            Lex_TokenAppendStringW32(this, data.chr2);
+            fRc = Lex_NextInput(this, &data, false);
+     as needed to do its own scan if desired. It should return:
+        0 == Accept what exit scanned
+        1 == Skip to next token and continue scan.
+        2 == Continue with default scanner.
+     */
+    int             LexJ_ParserPreExit (
         LEXJ_DATA       *this,
-        TOKEN_DATA      *pTokenOut          // Optional Output Token
+        LEX_DATA        *pLex,              // LEX Object Ptr
+        LEX_PARSE_DATA  *pData              // Current Parse Data Ptr
     )
     {
-        ERESULT         eRc;
-        TOKEN_DATA      *pInput;
-        int32_t         cls;
-        int32_t         newCls = 0;
+        //ERESULT         eRc;
+        bool            fRc;
+        int             iRc;
         bool            fMore = true;
-        bool            fSaveStr = true;
         ASTR_DATA       *pStr = OBJ_NIL;
 
         // Do initialization.
@@ -1062,72 +1041,45 @@ extern "C" {
         }
 #endif
         TRC_OBJ(this, "%s:\n", __func__);
+        Lex_setFlags(
+                     pLex,
+                     Lex_getFlags(pLex) & ~(LEX_FLAG_WS | LEX_FLAG_NL | LEX_FLAG_CMT)
+        );
 
         while (fMore) {
-            pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
-            if (pInput) {
-                cls = Token_getClass(pInput);
-            }
-            else {
-                pInput = Lex_SetupTokenEOF(((LEX_DATA *)this));
-                cls = Token_getClass(pInput);
-                DEBUG_BREAK();
-            }
-            eRc = Lex_ParseTokenSetup(((LEX_DATA *)this), pInput);
-            if (cls == EOF) {
-                fSaveStr = false;
-                newCls = LEX_CLASS_EOF;
-                break;
-            }
 
-            switch (cls) {
+            switch (pData->cls1) {
 
                 case ASCII_LEXICAL_WHITESPACE:
-                    for (;;) {
-                        pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
-                        cls = Token_getClass(pInput);
-                        if (cls == ASCII_LEXICAL_WHITESPACE) {
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    break;
-
                 case ASCII_LEXICAL_EOL:
-                    for (;;) {
-                        pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
-                        cls = Token_getClass(pInput);
-                        if (cls == ASCII_LEXICAL_WHITESPACE) {
-                        }
-                        else {
-                            break;
-                        }
-                    }
+                    TRC_OBJ(this, "\tWhite space/EOL - giving to default parser...\n");
+                    return 2;           // Just absorb the WS.
                     break;
 
                 case ASCII_LEXICAL_ALPHA_LOWER:
                 case ASCII_LEXICAL_ALPHA_UPPER:
-                    LexJ_ParseQuotelessString(this);
+                    TRC_OBJ(this, "\tScanning Quoteless string from (a..z)...\n");
+                    pData->clsNew = LEXJ_CONSTANT_STRING;
+                    LexJ_ParseQuotelessString(this, pLex, pData);
                     pStr = AStr_NewFromW32Str(this->super.pStr);
                     if (pStr) {
                         AStr_Trim(pStr);
                         if (0 == AStr_CompareA(pStr, "null")) {
-                            newCls = LEXJ_KWD_NULL;
+                            pData->clsNew = LEXJ_KWD_NULL;
                             fMore = false;
                             obj_Release(pStr);
                             TRC_OBJ(this, "\tkeyword: null\n");
                             break;
                         }
                         if (0 == AStr_CompareA(pStr, "false")) {
-                            newCls = LEXJ_KWD_FALSE;
+                            pData->clsNew = LEXJ_KWD_FALSE;
                             fMore = false;
                             obj_Release(pStr);
                             TRC_OBJ(this, "\tkeyword: false\n");
                             break;
                         }
                         if (0 == AStr_CompareA(pStr, "true")) {
-                            newCls = LEXJ_KWD_TRUE;
+                            pData->clsNew = LEXJ_KWD_TRUE;
                             fMore = false;
                             obj_Release(pStr);
                             TRC_OBJ(this, "\tkeyword: true\n");
@@ -1136,26 +1088,38 @@ extern "C" {
                         obj_Release(pStr);
                         pStr = OBJ_NIL;
                     }
-                    newCls = LEXJ_CONSTANT_STRING;
                     fMore = false;
                     TRC_OBJ(
                             this,
-                            "\tquote-less string: \"%ls\"\n",
+                            "\t\tstring: (%d)\"%ls\"\n",
+                            W32Str_getLength(this->super.pStr),
                             W32Str_getData(this->super.pStr)
                     );
                     break;
 
                 case ASCII_LEXICAL_NUMBER:
-                parseNumber:
-                    //FIXME: newCls = Lex_ParseNumber((LEX_DATA *)this);
-                    if (newCls) {
-                        uint16_t            type;
-                        //FIXME: type = Lex_ParseIntegerSuffix((LEX_DATA *)this);
-                        //FIXME: Token_setMisc(&this->super.token, type);
+                    TRC_OBJ(this, "\tScanning Number...\n");
+                    pData->clsNew = Lex_ParseNumber(pLex, pData);
+                    switch (pData->clsNew) {
+                        case LEX_CONSTANT_FLOAT:
+                            pData->clsNew = LEXJ_CONSTANT_FLOAT;
+                            TRC_OBJ(this, "\t...Floating Point\n");
+                            break;
+                        case LEX_CONSTANT_INTEGER:
+                            pData->clsNew = LEXJ_CONSTANT_INTEGER;
+                            TRC_OBJ(this, "\t...Integer\n");
+                            break;
+                        default:
+                            TRC_OBJ(
+                                    this,
+                                    "\t...Unknown number type! %3d\n",
+                                    pData->clsNew
+                            );
+                            break;
                     }
                     TRC_OBJ(
                             this,
-                            "\tnumber: \"%ls\"\n",
+                            "\t\tnumber: \"%ls\"\n",
                             W32Str_getData(this->super.pStr)
                     );
                     fMore = false;
@@ -1164,174 +1128,151 @@ extern "C" {
                 case '"':           /*** '"' ***/
                     // Quoted String
                     //TODO: "..." {<white-space> "..."}
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
-                    Lex_ParseTokenTruncate((LEX_DATA *)this);
-                    //FIXME: while(Lex_ParseChrConWS((LEX_DATA *)this, '"'))
-                        ;
-                    pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
-                    cls = Token_getClass(pInput);
-                    if (cls == '"') {
-                        Lex_InputAdvance((LEX_DATA *)this, 1);
-                        newCls = LEX_CONSTANT_STRING;
-                        fMore = false;
-                        TRC_OBJ(
-                                this,
-                                "\tquoted string: \"%ls\"\n",
-                                W32Str_getData(this->super.pStr)
-                        );
-                        break;
+                    TRC_OBJ(this, "\tScanning Quoted string...\n");
+                    Lex_ParseTokenTruncate(pLex);
+                    pData->clsNew = LEXJ_CONSTANT_STRING;
+                    fMore = false;
+                    if (pData->cls2 == '"') {         // Empty String
+                        fRc = Lex_NextInput(pLex, pData, false);
+                    } else {
+                        // Token starts with 2nd initial token.
+                        for (;;) {
+                            iRc = Lex_ParseChrCon(pLex, pData, '"');
+                            if (iRc == -1) {
+                                SrcErrors_AddFatalFromTokenA(
+                                                    OBJ_NIL,
+                                                    &pData->token2,
+                                                    "Malformed String constant"
+                                );
+                            } else if (iRc == 0) {
+                                break;
+                            } else if (iRc == 1) {
+                                continue;
+                            } else {
+                                SrcErrors_AddFatalFromTokenA(
+                                                    OBJ_NIL,
+                                                    &pData->token2,
+                                                    "Unknown Error in String constant"
+                                );
+                            }
+                        }
+                        if (iRc == 0) {
+                            fRc = Lex_NextInput(pLex, pData, false);
+                        } else {
+                            SrcErrors_AddFatalFromTokenA(
+                                                OBJ_NIL,
+                                                &pData->token2,
+                                                "Malformed String constant"
+                            );
+                        }
                     }
-                    else {
-                        SrcErrors_AddFatalFromTokenA(
-                                    OBJ_NIL,
-                                    pInput,
-                                    "Malformed String Constant"
-                        );
-                    }
+                    TRC_OBJ(
+                            this,
+                            "\t\tstring: (%d)\"%ls\"\n",
+                            W32Str_getLength(this->super.pStr),
+                            W32Str_getData(this->super.pStr)
+                    );
                     break;
 
                 case '#':           /*** '#' ***/
                     // Comment
+                    TRC_OBJ(this, "\tSkipping # comment...\n");
                     for (;;) {
-                        pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
-                        cls = Token_getClass(pInput);
-                        if (cls == ASCII_LEXICAL_EOL) {
+                        if (pData->cls2 == ASCII_LEXICAL_EOL) {
+                            fRc = Lex_NextInput(pLex, pData, false);
                             break;
                         }
+                        fRc = Lex_NextInput(pLex, pData, false);
                     }
+                    TRC_OBJ(this, "\t...Comment # skipped...\n");
+                    return 1;           // Just absorb the WS.
                     break;
 
                 case '+':           /*** '+' ***/
-                    newCls = LEXJ_SEP_PLUS;
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    pData->clsNew = LEXJ_SEP_PLUS;
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: +\n");
                     break;
 
                 case ',':           /*** ',' ***/
-                    newCls = LEXJ_SEP_COMMA;
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    pData->clsNew = LEXJ_SEP_COMMA;
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: ,\n");
                     break;
 
                 case '-':           /*** '-' ***/
-                    newCls = LEXJ_SEP_MINUS;
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    pData->clsNew = LEXJ_SEP_MINUS;
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: -\n");
                     break;
 
                 case '/':           /*** '/' ***/
-                    pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
-                    cls = Token_getClass(pInput);
-                    if( '/' == cls) {
-                        // Single Line Comment - // ... <eol>
-                        Lex_InputAdvance((LEX_DATA *)this, 2);
-                        for (;;) {
-                            pInput = Lex_InputAdvance((LEX_DATA *)this, 1);
-                            cls = Token_getClass(pInput);
-                            if (cls == ASCII_LEXICAL_EOL) {
-                                Lex_InputAdvance((LEX_DATA *)this, 1); // Skip over '\n'.
-                                break;
-                            }
-                        }
+                    if ('/' == pData->cls2) {
+                        TRC_OBJ(this, "\tSkipping // comment - giving to default parser...\n");
+                        return 2;           // Just absorb the WS.
                         break;
+                    } else if ('*' == pData->cls2) {
+                        TRC_OBJ(this, "\tSkipping /**/ comment - giving to default parser...\n");
+                        return 2;           // Just absorb the WS.
+                    } else {
+                        TRC_OBJ(this, "\tScanning Quoteless string...\n");
+                        LexJ_ParseQuotelessString(this, pLex, pData);
+                        pData->clsNew = LEX_CONSTANT_STRING;
+                        fMore = false;
+                        TRC_OBJ(
+                                this,
+                                "\t\tstring: (%d)\"%ls\"\n",
+                                W32Str_getLength(this->super.pStr),
+                                W32Str_getData(this->super.pStr)
+                        );
                     }
-                    if( '*' == cls) {
-                        uint32_t        depth = 1;
-                        bool            fMore2 = true;
-                        // Multi-line comment - /* ... */
-                        pInput = Lex_InputAdvance((LEX_DATA *)this, 2);
-                        while (fMore2) {
-                            pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
-                            cls = Token_getClass(pInput);
-                            if (cls == '*') {
-                                pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
-                                cls = Token_getClass(pInput);
-                                if (cls == '/') {
-                                    Lex_InputAdvance((LEX_DATA *)this, 2);
-                                    --depth;
-                                    if (0 == depth) {
-                                        fMore2 = false;
-                                    }
-                                    continue;
-                                }
-                            }
-                            if (cls == '/') {
-                                pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
-                                cls = Token_getClass(pInput);
-                                if (cls == '*') {
-                                    Lex_InputAdvance((LEX_DATA *)this, 2);
-                                    ++depth;
-                                    continue;
-                                }
-                            }
-                            if (cls == -1) {
-                                SrcErrors_AddFatalFromTokenA(
-                                    OBJ_NIL,
-                                    pInput,
-                                    "Unexpected EOF within a Comment"
-                                );
-                            }
-                            Lex_InputAdvance((LEX_DATA *)this, 1);
-                        }
-                        break;
-                    }
-                    LexJ_ParseQuotelessString(this);
-                    newCls = LEX_CONSTANT_STRING;
-                    fMore = false;
                     break;
 
                 case ':':           /*** ':' ***/
-                    newCls = LEXJ_SEP_COLON;
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    pData->clsNew = LEXJ_SEP_COLON;
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: :\n");
                     break;
 
                 case '=':           /*** '=' ***/
-                    newCls = LEXJ_SEP_EQUAL;
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    pData->clsNew = LEXJ_SEP_EQUAL;
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: :\n");
                     break;
 
                 case '[':           /*** '[' ***/
-                    newCls = LEXJ_SEP_LBRACKET;
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    pData->clsNew = LEXJ_SEP_LBRACKET;
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: [\n");
                     break;
 
                 case ']':           /*** ']' ***/
-                    newCls = LEXJ_SEP_RBRACKET;
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    pData->clsNew = LEXJ_SEP_RBRACKET;
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: ]\n");
                     break;
 
                 case '{':           /*** '{' ***/
-                    newCls = LEXJ_SEP_LBRACE;
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    pData->clsNew = LEXJ_SEP_LBRACE;
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: {\n");
                     break;
 
                 case '}':           /*** '}' ***/
-                    newCls = LEXJ_SEP_RBRACE;
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
+                    pData->clsNew = LEXJ_SEP_RBRACE;
                     fMore = false;
                     TRC_OBJ(this, "\tseperator: }\n");
                     break;
 
                 default:
-                    LexJ_ParseQuotelessString(this);
-                    newCls = LEX_CONSTANT_STRING;
+                    TRC_OBJ(this, "\tScanning Quoteless string...\n");
+                    LexJ_ParseQuotelessString(this, pLex, pData);
+                    pData->clsNew = LEX_CONSTANT_STRING;
                     fMore = false;
                     TRC_OBJ(
                             this,
-                            "\tquote-less string: \"%ls\"\n",
+                            "\t\tstring: (%d)\"%ls\"\n",
+                            W32Str_getLength(this->super.pStr),
                             W32Str_getData(this->super.pStr)
                     );
                     break;
@@ -1340,9 +1281,8 @@ extern "C" {
         }
 
         // Return to caller.
-        eRc = Lex_ParseTokenFinalize((LEX_DATA *)this, newCls, fSaveStr);
-        BREAK_FALSE(ERESULT_IS_SUCCESSFUL(eRc));
-        return true;
+        TRC_OBJ(this, "...%s - Completed token\n", __func__);
+        return 0;
     }
 
 

@@ -80,6 +80,7 @@ extern "C" {
 #   define  TRC_FLAGS(flag,desc,...)    /**/
 #   define  TRC_FLAGSF(flag,desc,...)   /**/
 #   define  TRC_OBJ(cbp,desc,...)       /**/
+#   define  TRC_OBJ_EXEC(cbp,exec)      /**/
 #   define  TRC(desc,...)               /**/
 #else
 #   define  TRC_FLAG(flag,desc,...)\
@@ -100,6 +101,12 @@ extern "C" {
     do {\
         if (obj_Trace(cbp) || obj_Trace(((OBJ_DATA *)cbp)->pVtbl->pClassObject())) {\
             trace_TraceA(trace_Shared(),desc,## __VA_ARGS__);\
+        }\
+    } while(0)
+#   define  TRC_OBJ_EXEC(cbp,exec)\
+    do {\
+        if (obj_Trace(cbp) || obj_Trace(((OBJ_DATA *)cbp)->pVtbl->pClassObject())) {\
+            exec;\
         }\
     } while(0)
 #   define  TRC(desc,...)\

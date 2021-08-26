@@ -25,7 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <JsonIn.h>
-#include    <Lex02.h>
+#include    <Lex_internal.h>
 #include    <trace.h>
 #include    <Parser_internal.h>
 
@@ -156,11 +156,14 @@ int         test_Parser_Lexer01(
     char        *pTestName
 )
 {
-    PARSER_DATA    *pObj = OBJ_NIL;
+    PARSER_DATA     *pObj = OBJ_NIL;
     //ERESULT         eRc;
-    LEX02_DATA      *pLex = OBJ_NIL;
+    bool            fRc;
+    LEX_DATA        *pLex = OBJ_NIL;
     PATH_DATA       *pPath = Path_NewA("abc");  // Used for error messages only
     TOKEN_DATA      *pToken = OBJ_NIL;
+    SRCFILE_DATA    *pSrc = OBJ_NIL;
+    ASTR_DATA       *pBuf = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -168,8 +171,21 @@ int         test_Parser_Lexer01(
     TINYTEST_FALSE( (OBJ_NIL == pObj) );
     if (pObj) {
 
-        pLex = Lex02_NewFromStrA(pPath, "a = b + c;\n");
+        pBuf = AStr_NewA("a = b + c;");
+        XCTAssertFalse( (OBJ_NIL == pBuf) );
+        pSrc = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
+        XCTAssertFalse( (OBJ_NIL == pSrc) );
+
+        pLex = (LEX_DATA *)Lex_New();
         XCTAssertFalse( (OBJ_NIL == pLex) );
+
+        fRc =   Lex_setSourceInput(
+                                      pLex,
+                                      (void *)SrcFile_InputAdvance,
+                                      (void *)SrcFile_InputLookAhead,
+                                      pSrc
+                                      );
+        XCTAssertTrue( (fRc) );
 
         Parser_setSourceFunction(
                                  pObj,
@@ -177,7 +193,7 @@ int         test_Parser_Lexer01(
                                 (void *)Lex_TokenLookAhead,
                                 pLex
         );
-        Parser_setLex(pObj, Lex02_getLex(pLex));
+        Parser_setLex(pObj, pLex);
         obj_Release(pLex);
         pLex = OBJ_NIL;
 
@@ -227,6 +243,12 @@ int         test_Parser_Lexer01(
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+
+    obj_Release(pSrc);
+    pSrc = OBJ_NIL;
+
+    obj_Release(pBuf);
+    pBuf = OBJ_NIL;
 
     obj_Release(pPath);
     pPath = OBJ_NIL;
