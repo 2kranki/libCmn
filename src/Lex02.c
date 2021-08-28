@@ -1033,13 +1033,13 @@ extern "C" {
             // stream with an advance to be made for the first char of the following
             // token.
 
-            case LEX_CLASS_WHITESPACE:
+            case LEX_GROUP_WHITESPACE:
                 if (Lex02_getWS(this)) {
                     // Sometimes, NL is handled as white-space. So, we must separate
                     // that back out here.
                     if (Lex02_getNL(this)) {
                         if ('\n' ==  chr1) {
-                            data.clsNew = LEX_CLASS_EOL;
+                            data.clsNew = LEX_GROUP_EOL;
                             break;
                         }
                     }
@@ -1060,36 +1060,36 @@ extern "C" {
                         if ( chr2 == '\n' ) {
                             break;
                         }
-                        if (cls2 == LEX_CLASS_WHITESPACE) {
+                        if (cls2 == LEX_GROUP_WHITESPACE) {
                             Lex_InputAdvance(Lex02_getLex(this), 1);
                             Lex_ParseTokenAppendString(Lex02_getLex(this), pToken);
                         }
                         else
                             break;
                     }
-                    data.clsNew = LEX_CLASS_WHITESPACE;
+                    data.clsNew = LEX_GROUP_WHITESPACE;
                 } else {
                     goto nextToken;
                 }
                 break;
 
-            case LEX_CLASS_EOL:
+            case LEX_GROUP_EOL:
                 if (Lex02_getNL(this)) {
                     Lex_InputAdvance(Lex02_getLex(this), 1);
-                    data.clsNew = LEX_CLASS_EOL;
+                    data.clsNew = LEX_GROUP_EOL;
                 } else {
                     goto nextToken;
                 }
                 break;
 
             case '_':
-            case LEX_CLASS_ALPHA_LOWER:
-            case LEX_CLASS_ALPHA_UPPER:
+            case LEX_GROUP_ALPHA_LOWER:
+            case LEX_GROUP_ALPHA_UPPER:
                 TRC_OBJ(this, "\tScanning Identifier...\n");
                 for (;;) {
-                    if (   (cls2 == LEX_CLASS_ALPHA_LOWER)
-                        || (cls2 == LEX_CLASS_ALPHA_UPPER)
-                        || (cls2 == LEX_CLASS_NUMBER)
+                    if (   (cls2 == LEX_GROUP_ALPHA_LOWER)
+                        || (cls2 == LEX_GROUP_ALPHA_UPPER)
+                        || (cls2 == LEX_GROUP_NUMBER)
                         || (cls2 == '_')
                     ) {
                         Lex_ParseTokenAppendString(Lex02_getLex(this), pToken);
@@ -1121,7 +1121,7 @@ extern "C" {
                 data.clsNew = LEX_IDENTIFIER;
                 break;
 
-            case LEX_CLASS_NUMBER:
+            case LEX_GROUP_NUMBER:
 #ifdef XYZZY
                 clsNew = Lex_ParseNumber((LEX_DATA *)this);
                 if (clsNew) {

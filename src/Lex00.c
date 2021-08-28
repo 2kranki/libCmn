@@ -927,14 +927,14 @@ extern "C" {
             // stream with an advance to be made for the first char of the following
             // token.
 
-            case LEX_CLASS_WHITESPACE:
+            case LEX_GROUP_WHITESPACE:
                 if (Lex00_getWS(this)) {
                     // Sometimes, NL is handled as white-space. So, we must separate
                     // that back out here.
                     chr = Token_getChrW32(pToken);
                     if (Lex00_getNL(this)) {
                         if ('\n' ==  chr) {
-                            clsNew = LEX_CLASS_EOL;
+                            clsNew = LEX_GROUP_EOL;
                             break;
                         }
                     }
@@ -955,22 +955,22 @@ extern "C" {
                         if ( chr == '\n' ) {
                             break;
                         }
-                        if (cls == LEX_CLASS_WHITESPACE) {
+                        if (cls == LEX_GROUP_WHITESPACE) {
                             Lex_InputAdvance(Lex00_getLex(this), 1);
                             Lex_ParseTokenAppendString(Lex00_getLex(this), pToken);
                         }
                         else
                             break;
                     }
-                    clsNew = LEX_CLASS_WHITESPACE;
+                    clsNew = LEX_GROUP_WHITESPACE;
                 } else {
                     goto nextToken;
                 }
                 break;
 
-            case LEX_CLASS_EOL:
+            case LEX_GROUP_EOL:
                 if (Lex00_getNL(this)) {
-                    clsNew = LEX_CLASS_EOL;
+                    clsNew = LEX_GROUP_EOL;
                 } else {
                     goto nextToken;
                 }

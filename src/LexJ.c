@@ -930,7 +930,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
-                /*
+        /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();

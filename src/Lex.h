@@ -140,14 +140,15 @@ extern "C" {
         LEX_CLASS_GROUP_LOWEST=256,
         // Note the following must be kept synchronized with the
         // ascii lexical classes (See ascii.h).
-        LEX_CLASS_ALPHA_LOWER=256,          // a-z
-        LEX_CLASS_ALPHA_UPPER,              // A-Z
-        LEX_CLASS_DELETE,                   // ascii 127
-        LEX_CLASS_NUMBER,                   // 0-9
-        LEX_CLASS_EOL,                      // '\n'
-        LEX_CLASS_WHITESPACE,               // ' ', '\t', '\n', '\r', '\f', '\v'
-        LEX_CLASS_UNICODE,                  //  Class for characters not in the
+        LEX_GROUP_ALPHA_LOWER=256,          // a-z
+        LEX_GROUP_ALPHA_UPPER,              // A-Z
+        LEX_GROUP_DELETE,                   // ascii 127
+        LEX_GROUP_NUMBER,                   // 0-9
+        LEX_GROUP_EOL,                      // '\n'
+        LEX_GROUP_WHITESPACE,               // ' ', '\t', '\n', '\r', '\f', '\v'
+        LEX_GROUP_UNICODE,                  //  Class for characters not in the
         //                                  //  range 1..255
+        LEX_GROUP_HIGHEST,                  // Add additional groups after this
 
         LEX_CLASS_COMMENT_GROUP=270,
         LEX_COMMENT_SINGLE,                 //  Single Line Comment
@@ -167,6 +168,7 @@ extern "C" {
         LEX_CONSTANT_TEXTE,                 // Text surrounded by "{." ... ".}"
         LEX_CONSTANT_TEXTF,                 // Text surrounded by "[." ... ".]"
         LEX_CONSTANT_TEXTG,                 // Text surrounded by "(." ... ".)"
+        LEX_CONSTANT_HIGHEST,               // Add additional constants after this
 
         LEX_IDENTIFIER=400,
 
@@ -188,6 +190,7 @@ extern "C" {
         LEX_SEP_RBRACE,                     // }
         LEX_SEP_RPAREN,                     // )
         LEX_SEP_SEMICOLON,                  // ;
+        LEX_SEP_HIGHEST,                    // Add additional separators after this
 
         LEX_CLASS_OP_GROUP=600,
         LEX_OP_ADD,                         // +
@@ -233,6 +236,7 @@ extern "C" {
         LEX_OP_RIGHT,                       // >> (Shift Right)
         LEX_OP_SUB,                         // -
         LEX_OP_XOR,                         // ^
+        LEX_OP_HIGHEST,                     // Add additional operators after this
 
         LEX_CLASS_KWD_GROUP=700,
         LEX_KWD_ASM,
@@ -373,6 +377,7 @@ extern "C" {
         LEX_KWD_WEAK,
         LEX_KWD_WHILE,
         LEX_KWD_WXTRN,
+        LEX_KWD_HIGHEST,                    // Add additional keywords after this
 
         LEX_CLASS_SPCL_GROUP=1000,
         LEX_SPCL_LBRACK_COLON,              // [:
@@ -395,6 +400,8 @@ extern "C" {
         LEX_SPCL_RBRACE,                    // %}
         LEX_SPCL_RPAREN,                    // %)
         LEX_SPCL_SEPARATOR,                 // %%
+        LEX_SPCL_HIGHEST,                   // Add additional special combinations
+        //                                  // after this
 
         LEX_CLASS_TYPE_GROUP=1200,
         LEX_TYPE_METHOD,

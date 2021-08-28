@@ -264,7 +264,7 @@ struct Lex_data_s  {
             Lex_TokenAppendStringW32(this, data.chr2);
             fRc = Lex_NextInput(this, &data, false);
      as needed to do its own scan if desired. It should return:
-        0 == Accept what exit scanned
+        0 == Accept what exit scanned.
         1 == Skip to next token and continue scan.
         2 == Continue with default scanner.
 
