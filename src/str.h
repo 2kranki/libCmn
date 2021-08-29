@@ -88,7 +88,22 @@ int             str_Compare(
 	char			*pszStr2
 );
 
+int             str_CompareIC(      // Ignore case
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2
+);
+
 int             str_CompareN(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2,
+    int             len
+);
+
+int             str_CompareNIC(     // Ignore case
     const
     char            *pszStr1,
     const

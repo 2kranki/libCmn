@@ -59,7 +59,7 @@ extern "C" {
     typedef struct cmn_data_s   CMN_DATA;
 
     typedef enum obj_idents_test_e {
-        OBJ_IDENT_TEST=OBJ_IDENT_USER_ENTRIES,
+        OBJ_IDENT_TESTS=OBJ_IDENT_USER_ENTRIES,
         OBJ_IDENT_OBJTEST,              // Test Object
         OBJ_IDENT_OBJTEST_CLASS,
     } OBJ_IDENTS_TEST;

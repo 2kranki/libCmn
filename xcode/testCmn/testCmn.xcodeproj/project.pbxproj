@@ -91,7 +91,7 @@
 		C43204C1239170060078124D /* TextOut_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C43204BE239170050078124D /* TextOut_object.c */; };
 		C434C06826AE32A200C903C1 /* consumer_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C434C06426AE32A200C903C1 /* consumer_object.c */; };
 		C434C06926AE32A200C903C1 /* consumer.c in Sources */ = {isa = PBXBuildFile; fileRef = C434C06626AE32A200C903C1 /* consumer.c */; };
-		C434C0C326B0E41900C903C1 /* hjson_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C434C0C226B0E41900C903C1 /* hjson_test.c */; };
+		C434C0C326B0E41900C903C1 /* Test_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C434C0C226B0E41900C903C1 /* Test_test.c */; };
 		C43584E023AFBF9D0069B103 /* BlkdRcds16.c in Sources */ = {isa = PBXBuildFile; fileRef = C43584DD23AFBF9C0069B103 /* BlkdRcds16.c */; };
 		C43584E123AFBF9D0069B103 /* BlkdRcds16_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C43584DF23AFBF9D0069B103 /* BlkdRcds16_object.c */; };
 		C435854B23B7A55D0069B103 /* SrcError_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C435854623B7A55B0069B103 /* SrcError_object.c */; };
@@ -199,6 +199,8 @@
 		C4404DE1254349D100A6787F /* SQLiteStmt.c in Sources */ = {isa = PBXBuildFile; fileRef = C4404DDD254349D100A6787F /* SQLiteStmt.c */; };
 		C4404DFA25485EA000A6787F /* File_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4404DF625485EA000A6787F /* File_object.c */; };
 		C4404DFB25485EA000A6787F /* File.c in Sources */ = {isa = PBXBuildFile; fileRef = C4404DF825485EA000A6787F /* File.c */; };
+		C451F3DD26DBC0B600D9CC69 /* Test.c in Sources */ = {isa = PBXBuildFile; fileRef = C451F3DA26DBC0B500D9CC69 /* Test.c */; };
+		C451F3DE26DBC0B600D9CC69 /* Test_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C451F3DC26DBC0B500D9CC69 /* Test_object.c */; };
 		C456276D2389B25E00603132 /* cmnMac64.c in Sources */ = {isa = PBXBuildFile; fileRef = C456276C2389B25E00603132 /* cmnMac64.c */; };
 		C456B6182454F14C00EB541A /* SqlCol_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C456B6132454F14900EB541A /* SqlCol_json.c */; };
 		C456B6192454F14C00EB541A /* SqlCol_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C456B6152454F14B00EB541A /* SqlCol_object.c */; };
@@ -611,7 +613,7 @@
 		C434C06526AE32A200C903C1 /* consumer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = consumer.h; sourceTree = "<group>"; };
 		C434C06626AE32A200C903C1 /* consumer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = consumer.c; sourceTree = "<group>"; };
 		C434C06726AE32A200C903C1 /* consumer_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = consumer_internal.h; sourceTree = "<group>"; };
-		C434C0C226B0E41900C903C1 /* hjson_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hjson_test.c; sourceTree = "<group>"; };
+		C434C0C226B0E41900C903C1 /* Test_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Test_test.c; sourceTree = "<group>"; };
 		C43584DC23AFBF9C0069B103 /* BlkdRcds16_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlkdRcds16_internal.h; sourceTree = "<group>"; };
 		C43584DD23AFBF9C0069B103 /* BlkdRcds16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BlkdRcds16.c; sourceTree = "<group>"; };
 		C43584DE23AFBF9D0069B103 /* BlkdRcds16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlkdRcds16.h; sourceTree = "<group>"; };
@@ -828,6 +830,10 @@
 		C4404DF725485EA000A6787F /* File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
 		C4404DF825485EA000A6787F /* File.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = File.c; sourceTree = "<group>"; };
 		C4404DF925485EA000A6787F /* File_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = File_internal.h; sourceTree = "<group>"; };
+		C451F3D926DBC0B500D9CC69 /* Test_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Test_internal.h; sourceTree = "<group>"; };
+		C451F3DA26DBC0B500D9CC69 /* Test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Test.c; sourceTree = "<group>"; };
+		C451F3DB26DBC0B500D9CC69 /* Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
+		C451F3DC26DBC0B500D9CC69 /* Test_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Test_object.c; sourceTree = "<group>"; };
 		C456276B2389B25D00603132 /* cmnMac64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmnMac64.h; sourceTree = "<group>"; };
 		C456276C2389B25E00603132 /* cmnMac64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmnMac64.c; sourceTree = "<group>"; };
 		C456B6132454F14900EB541A /* SqlCol_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SqlCol_json.c; sourceTree = "<group>"; };
@@ -1279,7 +1285,7 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C434C0C226B0E41900C903C1 /* hjson_test.c */,
+				C434C0C226B0E41900C903C1 /* Test_test.c */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -1954,6 +1960,10 @@
 				C4359B7A1FC9C47C00CA858E /* szTbl_object.c */,
 				C4359BB61FC9C48200CA858E /* szTbl.c */,
 				C4359B911FC9C47E00CA858E /* szTbl.h */,
+				C451F3D926DBC0B500D9CC69 /* Test_internal.h */,
+				C451F3DC26DBC0B500D9CC69 /* Test_object.c */,
+				C451F3DA26DBC0B500D9CC69 /* Test.c */,
+				C451F3DB26DBC0B500D9CC69 /* Test.h */,
 				C4B045B023D7F39100162B4F /* TextIn_internal.h */,
 				C4B045AD23D7F39000162B4F /* TextIn_object.c */,
 				C4B045AE23D7F39000162B4F /* TextIn.c */,
@@ -2203,6 +2213,7 @@
 				C4359AEE1FC9C3D800CA858E /* lru_object.c in Sources */,
 				C4B75F9024020A8C00701E77 /* Sym_object.c in Sources */,
 				C4B75F5823FD82E800701E77 /* I16Matrix.c in Sources */,
+				C451F3DD26DBC0B600D9CC69 /* Test.c in Sources */,
 				C4359BFC1FC9C48400CA858E /* trace.c in Sources */,
 				C40F05642482E55A00D66F9B /* Lex03.c in Sources */,
 				C4B75F8D24020A8C00701E77 /* Syms_json.c in Sources */,
@@ -2405,6 +2416,7 @@
 				C40F055D2482E55A00D66F9B /* Lex02.c in Sources */,
 				C4B0460023E2083800162B4F /* DateTime.c in Sources */,
 				C41B752D23AA5AD100C7DEBD /* BitSet_object.c in Sources */,
+				C451F3DE26DBC0B600D9CC69 /* Test_object.c in Sources */,
 				C4D463182419277600AF453D /* Null_object.c in Sources */,
 				C43599CA1FC9C36800CA858E /* ascii_object.c in Sources */,
 				C42C553423CBC2FA00AA762C /* Node.c in Sources */,
@@ -2475,7 +2487,7 @@
 				C4804608248BE39A008935B7 /* SrcFile_object.c in Sources */,
 				C406601C2184DE8A004CF223 /* disk.c in Sources */,
 				C4B7605B240A16F200701E77 /* Opcodes_json.c in Sources */,
-				C434C0C326B0E41900C903C1 /* hjson_test.c in Sources */,
+				C434C0C326B0E41900C903C1 /* Test_test.c in Sources */,
 				C4B7605D240A16F200701E77 /* Opcode.c in Sources */,
 				C4B75F4823FC4E1300701E77 /* U16Array_object.c in Sources */,
 				C43599CB1FC9C36800CA858E /* array_object.c in Sources */,

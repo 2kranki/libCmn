@@ -261,19 +261,29 @@ extern "C" {
     );
     
     
-    /*!    Search for an Element in a Sorted Array
+    /*!    Generic Search for an Element in a Sorted Array
      This routine performs a Binary Search on a provided sorted
      array trying to located a specific entry.  It is assumed
-     that the array is in ascending order by key.
+     that the array is in ascending order by key.  Also, if the
+     array is small, a simple search is performed rather than a
+     binary one.
+     @param     pKey    Key pointer with same type as key within element
+     @param     pArray  Address of Sorted Array
+     @param     Num     Number of elements in the Sorted Array
+     @param     Width   Size of an element in bytes
+     @param     Offset  Offset of the key within an element in bytes
+     @param     pCmp    Comparison routine which returns -1 if first
+                        key < second key, 0 if keys match and 1 if
+                        first key > second key
      @return    If successful, array element pointer; Othwise, NULL.
      */
-    void  *         binarySearch(
-        void            *pKey,              /* Element to be Located Ptr */
-        void            *pBase,             /* Beginning of Array Ptr */
-        size_t          Num,                /* Number of Elements in Array */
-        size_t          Width,              /* Array Element Width in Bytes */
-        size_t          Offset,             // Offset of Key in Array Element in Bytes
-        int             (*pCompare)(        /* Key Comparison Routine */
+    void  *         misc_SearchBinary(
+        void            *pKey,
+        void            *pArray,
+        size_t          Num,
+        size_t          Width,
+        size_t          Offset,
+        int             (*pCmp) (
             void            *,
             void            *
         )                               // Returns -1, 0, 1

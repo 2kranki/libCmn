@@ -551,6 +551,8 @@ extern "C" {
         OBJ_IDENT_SZTBL_CLASS,
         OBJ_IDENT_TABLE,
         OBJ_IDENT_TABLE_CLASS,
+        OBJ_IDENT_TEST,                 // Test Object Class
+        OBJ_IDENT_TEST_CLASS,
         OBJ_IDENT_TEXTIN,               // Text Input Class
         OBJ_IDENT_TEXTIN_CLASS,
         OBJ_IDENT_TEXTINS,              // Multiple Text Input Class

@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 8/29/2021  4:19:58.000)
+# ( 8/29/2021 22:28:47.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1351,6 +1351,16 @@ $(OBJDIR)/TRegex32_object.o: $(SRCDIR)/TRegex32_object.c $(SRCDIR)/TRegex32.h $(
 OBJS += $(OBJDIR)/TRegex_object.o
 
 $(OBJDIR)/TRegex_object.o: $(SRCDIR)/TRegex_object.c $(SRCDIR)/TRegex.h $(SRCDIR)/TRegex_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Test.o
+
+$(OBJDIR)/Test.o: $(SRCDIR)/Test.c $(SRCDIR)/Test.h $(SRCDIR)/Test_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Test_object.o
+
+$(OBJDIR)/Test_object.o: $(SRCDIR)/Test_object.c $(SRCDIR)/Test.h $(SRCDIR)/Test_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/TextIn.o
@@ -2768,6 +2778,12 @@ TRegex32_test: $(TEST_SRC)/TRegex32_test.c $(SRCDIR)/TRegex32.h $(SRCDIR)/TRegex
 TESTS += TRegex_test
 
 TRegex_test: $(TEST_SRC)/TRegex_test.c $(SRCDIR)/TRegex.h $(SRCDIR)/TRegex_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F)
+
+TESTS += Test_test
+
+Test_test: $(TEST_SRC)/Test_test.c $(SRCDIR)/Test.h $(SRCDIR)/Test_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F)
 

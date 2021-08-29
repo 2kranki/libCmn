@@ -49,7 +49,9 @@
 extern "C" {
 #endif
     
+    bool        fAllowInt3 = true;
 
+    
     
 CMDUTL_OPTION       pPgmOpts[] = {
     {

@@ -260,48 +260,60 @@ extern "C" {
      * array trying to located a specific entry.  It is as-
      * sumed that the array is in ascending order by key.
      */
-    void  *         binarySearch(
-        void            *pKey,              /* Element to be Located Ptr */
-        void            *pBase,             /* Beginning of Array Ptr */
-        size_t          Num,                /* Number of Elements in Array */
-        size_t          Width,              /* Array Element Width in Bytes */
-        size_t          Offset,             // Offset of Key in Array Element in Bytes
-        int             (*pCompare)(        /* Element Comparison Routine */
+    void  *         misc_SearchBinary(
+        void            *pKey,
+        void            *pArray,
+        size_t          Num,
+        size_t          Width,
+        size_t          Offset,
+        int             (*pCmp) (
             void            *,
             void            *
-        )                               // Returns -1, 0, 1
+        )
     )
     {
         size_t          High = Num - 1;
         size_t          Low = 0;
         size_t          Mid;
-        int             rc;
+        int             iRc;
         uint8_t         *pWrkPtr;
+        size_t          i;
 
         /* Validate input parameters.
          */
-        if( (pKey == NULL) || (pBase == NULL) || (pCompare == NULL) )
-            return( NULL );
-        if( (Num <= 0) || (Width <= 0) )
-            return( NULL );
+        if ((pKey == NULL) || (pArray == NULL) || (pCmp == NULL))
+            return NULL;
+        if ((Num <= 0) || (Width <= 0))
+            return NULL;
 
-        /* Search the array.
-         */
+        // If small array, just do a simple search.
+        if (Num <= 10) {
+            for (i=0; i<Num; i++) {
+                pWrkPtr = ((uint8_t *)pArray) + (i * Width) + Offset;
+                iRc = (*pCmp)(pKey, (void *)pWrkPtr);
+                if (iRc > 0)
+                    return NULL;
+                else if (iRc == 0)
+                    return (void *)(pWrkPtr - Offset);
+            }
+        }
+
+        /// Search the array using binary search.
         while (Low < High) {
             Mid = (High + Low) / 2;
-            pWrkPtr = ((uint8_t *)pBase) + (Mid * Width) + Offset;
-            rc = (*pCompare)(pKey, (void *)pWrkPtr);
-            if( rc < 0 )
+            pWrkPtr = ((uint8_t *)pArray) + (Mid * Width) + Offset;
+            iRc = (*pCmp)(pKey, (void *)pWrkPtr);
+            if (iRc < 0)
                 High = Mid;
-            else if( rc == 0 )
+            else if (iRc == 0)
                 return (void *)(pWrkPtr - Offset);
             else
                 Low = Mid + 1;
         }
         if (High == Low) {
-            pWrkPtr = ((uint8_t *)pBase) + (Low * Width) + Offset;
-            rc = (*pCompare)(pKey, (void *)pWrkPtr);
-            if( rc == 0 )
+            pWrkPtr = ((uint8_t *)pArray) + (Low * Width) + Offset;
+            iRc = (*pCmp)(pKey, (void *)pWrkPtr);
+            if (iRc == 0)
                 return (void *)(pWrkPtr - Offset);
         }
 

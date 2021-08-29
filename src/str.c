@@ -133,6 +133,55 @@ int             str_Compare(
 }
 
 
+int             str_CompareIC(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2
+)
+{
+    int             i;
+    int             result = 0;
+    char            ch1;
+    char            ch2;
+
+    // Do initialization.
+
+    //    Compare the strings.
+    for( ;; ) {
+        if( *pszStr1 )
+            ;
+        else {
+            if( *pszStr2 )
+                result = -1;
+            break;
+        }
+        if( *pszStr2 )
+            ;
+        else {
+            if( *pszStr1 )
+                result = 1;
+            break;
+        }
+        ch1 = ascii_toLowerA(*pszStr1);
+        ch2 = ascii_toLowerA(*pszStr2);
+        i = ch1 - ch2;
+        if( i ) {
+            if( i < 0 )
+                result = -1;
+            else
+                result = 1;
+            break;
+        }
+        ++pszStr1;
+        ++pszStr2;
+    }
+
+    // Return to caller.
+    return( result );
+}
+
+
 int             str_CompareN(
     const
     char            *pszStr1,
@@ -179,6 +228,61 @@ int             str_CompareN(
         }
     }
     
+    // Return to caller.
+    return( result );
+}
+
+
+int             str_CompareNIC(
+    const
+    char            *pszStr1,
+    const
+    char            *pszStr2,
+    int             len
+)
+{
+    int             i;
+    int             result = 0;
+    char            ch1;
+    char            ch2;
+
+    // Do initialization.
+
+    //    Compare the strings.
+    for( ;; ) {
+        if( *pszStr1 )
+            ;
+        else {
+            if( *pszStr2 )
+                result = -1;
+            break;
+        }
+        if( *pszStr2 )
+            ;
+        else {
+            if( *pszStr1 )
+                result = 1;
+            break;
+        }
+        ch1 = ascii_toLowerA(*pszStr1);
+        ch2 = ascii_toLowerA(*pszStr2);
+        i = ch1 - ch2;
+        if( i ) {
+            if( i < 0 )
+                result = -1;
+            else
+                result = 1;
+            break;
+        }
+        ++pszStr1;
+        ++pszStr2;
+        --len;
+        if (0 == len) {
+            result = 0;
+            break;
+        }
+    }
+
     // Return to caller.
     return( result );
 }

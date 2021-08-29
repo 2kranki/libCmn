@@ -234,6 +234,7 @@
         {name:"szHash", deps:["listdl.h","szTbl.h"]},
         {name:"szTbl", deps:["ptrArray.h","szHash.h"], 
                         json:true},
+        {name:"Test",       desc:"Test Object Framework (Base object for all object tests)"},
         {name:"TextIn",     desc:""},
         {name:"TextIns",    desc:""},
         {name:"TextOut",    desc:""},

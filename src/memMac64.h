@@ -324,12 +324,12 @@ extern "C" {
 
 
     void *          memMac64_DebugCalloc(
-        MEMMAC64_DATA    *this,
-        size_t            cNum,
-        size_t            cSize,
+        MEMMAC64_DATA   *this,
+        size_t          cNum,
+        size_t          cSize,
         const
         char            *pFilePath,
-        size_t            iLine
+        size_t          iLine
     );
 
 
