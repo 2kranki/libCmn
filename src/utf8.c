@@ -175,7 +175,47 @@ extern "C" {
     }
     
     
-    
+    int             utf8_StrCmp_IC(
+        const
+        char            *pSrc1,
+        const
+        char            *pSrc2
+    )
+    {
+        W32CHR_T        ch1 = 1;
+        W32CHR_T        ch2 = 1;
+        int             i = 0;
+
+        if ((NULL == pSrc1) && (NULL == pSrc2)) {
+            return 0;
+        }
+        if ((NULL == pSrc1) && pSrc2) {
+            return -1;
+        }
+        if ((NULL == pSrc2) && pSrc1) {
+            return 1;
+        }
+
+        while ((i == 0) && ch1 && ch2) {
+            ch1 = utf8_Utf8ToW32_Scan( &pSrc1 );
+            ch1 = ascii_toLowerW32(ch1);
+            ch2 = utf8_Utf8ToW32_Scan( &pSrc2 );
+            ch2 = ascii_toLowerW32(ch2);
+            i = ch1 - ch2;
+        }
+        if (i == 0) {
+            if (ch1) {
+                i = 1;
+            } else if (ch2) {
+                i = -1;
+            }
+        }
+
+        return i;
+    }
+
+
+
     int             utf8_StrCmpAW32(
         const
         char            *pSrc1,

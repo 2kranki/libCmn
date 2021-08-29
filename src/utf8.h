@@ -203,6 +203,19 @@ extern "C" {
         char            *pSrc2
     );
     
+    /*!
+     Compare the UTF-8 characters of src1 and src2 ignoring case.
+     @return    0   for (src1 == src2),
+                < 0 for (src1 < src2) or
+                > 0 for (src1 > src2)
+     */
+    int             utf8_StrCmp_IC(
+        const
+        char            *pSrc1,
+        const
+        char            *pSrc2
+    );
+
     int             utf8_StrCmpAW32(
         const
         char            *pSrc1,

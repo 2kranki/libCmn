@@ -261,7 +261,24 @@ extern "C" {
     );
     
     
-    
+    /*!    Search for an Element in a Sorted Array
+     This routine performs a Binary Search on a provided sorted
+     array trying to located a specific entry.  It is assumed
+     that the array is in ascending order by key.
+     @return    If successful, array element pointer; Othwise, NULL.
+     */
+    void  *         binarySearch(
+        void            *pKey,              /* Element to be Located Ptr */
+        void            *pBase,             /* Beginning of Array Ptr */
+        size_t          Num,                /* Number of Elements in Array */
+        size_t          Width,              /* Array Element Width in Bytes */
+        size_t          Offset,             // Offset of Key in Array Element in Bytes
+        int             (*pCompare)(        /* Key Comparison Routine */
+            void            *,
+            void            *
+        )                               // Returns -1, 0, 1
+    );
+
 
 
     

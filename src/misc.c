@@ -252,6 +252,67 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                 S e a r c h  B i n a r y
+    //---------------------------------------------------------------
+
+    /*    * * *  Search for an Element in an Array    * * *
+     * This routine performs a Binary Search on a provided
+     * array trying to located a specific entry.  It is as-
+     * sumed that the array is in ascending order by key.
+     */
+    void  *         binarySearch(
+        void            *pKey,              /* Element to be Located Ptr */
+        void            *pBase,             /* Beginning of Array Ptr */
+        size_t          Num,                /* Number of Elements in Array */
+        size_t          Width,              /* Array Element Width in Bytes */
+        size_t          Offset,             // Offset of Key in Array Element in Bytes
+        int             (*pCompare)(        /* Element Comparison Routine */
+            void            *,
+            void            *
+        )                               // Returns -1, 0, 1
+    )
+    {
+        size_t          High = Num - 1;
+        size_t          Low = 0;
+        size_t          Mid;
+        int             rc;
+        uint8_t         *pWrkPtr;
+
+        /* Validate input parameters.
+         */
+        if( (pKey == NULL) || (pBase == NULL) || (pCompare == NULL) )
+            return( NULL );
+        if( (Num <= 0) || (Width <= 0) )
+            return( NULL );
+
+        /* Search the array.
+         */
+        while (Low < High) {
+            Mid = (High + Low) / 2;
+            pWrkPtr = ((uint8_t *)pBase) + (Mid * Width) + Offset;
+            rc = (*pCompare)(pKey, (void *)pWrkPtr);
+            if( rc < 0 )
+                High = Mid;
+            else if( rc == 0 )
+                return (void *)(pWrkPtr - Offset);
+            else
+                Low = Mid + 1;
+        }
+        if (High == Low) {
+            pWrkPtr = ((uint8_t *)pBase) + (Low * Width) + Offset;
+            rc = (*pCompare)(pKey, (void *)pWrkPtr);
+            if( rc == 0 )
+                return (void *)(pWrkPtr - Offset);
+        }
+
+        /* Return to caller.
+         */
+        return NULL;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        A b b r e v
     //---------------------------------------------------------------
     
@@ -707,21 +768,21 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    bool            misc_Enable(
-        MISC_DATA		*cbp
+    bool            misc_Enable (
+        MISC_DATA		*this
     )
     {
 
         // Do initialization.
     #ifdef NDEBUG
     #else
-        if( !misc_Validate( cbp ) ) {
+        if (!misc_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
     #endif
         
-        obj_Enable(cbp);
+        obj_Enable(this);
 
         // Put code here...
         
