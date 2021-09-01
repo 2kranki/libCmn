@@ -270,7 +270,8 @@ int         test_Path_DateLastUpdated(
     pObj = Path_NewA(TEST_FILES_DIR "/test_ebcdic.txt");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
-        
+       
+        eRc = Path_Clean(pObj); 
         index = 0;      // Start at the beginning.
         eRc = Path_DateLastUpdated(pObj, &pTime);
         XCTAssertTrue( (ERESULT_IS_SUCCESSFUL(eRc)) );
@@ -1496,7 +1497,7 @@ int         test_Path_Version01(
     //ASTR_DATA   *pStrW = OBJ_NIL;
     
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pObj = Path_NewA("~/git/libCmn/programs/genMake/tests/test.txt");
+    pObj = Path_NewA("~/git/libCmn/programs/genMake/tests/files/test.txt");
     XCTAssertFalse( (OBJ_NIL == pObj) );
     if (pObj) {
         

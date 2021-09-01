@@ -248,7 +248,7 @@ int             test_NodeTstA_BuildTest02(
         "AStr_test: $(TEST_SRC)/AStr_test.c \n"
         "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) "
                         "-I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/data1.c $<\n"
-        "\t$(TEST_BIN)/$(@F)\n\n";
+        "\t$(TEST_BIN)/$(@F) --no_int3\n\n";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -329,7 +329,7 @@ int             test_NodeTstA_BuildTest03(
         "AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/y.h $(TEST_SRC)/x.h \n"
         "\t$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) "
                         "-I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/data1.c $<\n"
-        "\t$(TEST_BIN)/$(@F)\n\n";
+        "\t$(TEST_BIN)/$(@F) --no_int3\n\n";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 

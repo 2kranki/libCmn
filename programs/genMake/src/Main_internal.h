@@ -180,7 +180,7 @@ struct Main_data_s	{
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
      error code.
      */
-    ERESULT         Main_ParseInputStr (
+    ERESULT         Main_ParseInputStrA (
         MAIN_DATA       *this,
         const
         char            *pStr

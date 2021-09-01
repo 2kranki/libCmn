@@ -25,6 +25,8 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <JsonIn.h>
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <Dict_internal.h>
 
@@ -52,7 +54,9 @@ int             tearDown(
     // Put teardown code here. This method is called after the invocation of each
     // test method in the class.
 
-    JsonIn_SharedReset();
+    SrcErrors_SharedReset( );
+    szTbl_SharedReset();
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(
@@ -114,7 +118,7 @@ int             test_Dict_test01(
     ERESULT         eRc = ERESULT_SUCCESS;
     ASTR_DATA       *pStr = OBJ_NIL;
     const
-    char            *pResult = "LIBNAM=libTest\n";
+    char            *pResultA = "LIBNAM=libTest\n";
     
     fprintf(stderr, "Performing: %s\n", pTestName);
     
@@ -133,7 +137,7 @@ int             test_Dict_test01(
         if (pStr) {
             eRc = Dict_Expand(pObj, pStr);
             fprintf(stderr, "\tResult=\"%s\"\n", AStr_getData(pStr));
-            TINYTEST_TRUE( (0 == strcmp(AStr_getData(pStr), pResult)) );
+            TINYTEST_TRUE( (0 == strcmp(AStr_getData(pStr), pResultA)) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -143,7 +147,7 @@ int             test_Dict_test01(
         if (pStr) {
             eRc = Dict_Expand(pObj, pStr);
             fprintf(stderr, "\tResult=\"%s\"\n", AStr_getData(pStr));
-            TINYTEST_TRUE( (0 == strcmp(AStr_getData(pStr), pResult)) );
+            TINYTEST_TRUE( (0 == strcmp(AStr_getData(pStr), pResultA)) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }

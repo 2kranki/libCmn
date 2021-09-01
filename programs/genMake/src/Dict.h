@@ -156,7 +156,7 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         Dict_Add(
+    ERESULT         Dict_Add (
         DICT_DATA       *this,
         const
         char            *pNameA,
@@ -164,7 +164,7 @@ extern "C" {
     );
 
 
-    ERESULT         Dict_AddA(
+    ERESULT         Dict_AddA (
         DICT_DATA       *this,
         const
         char            *pNameA,
@@ -173,7 +173,7 @@ extern "C" {
     );
 
 
-    ERESULT         Dict_AddUpdate(
+    ERESULT         Dict_AddUpdate (
         DICT_DATA       *this,
         const
         char            *pNameA,
@@ -181,7 +181,7 @@ extern "C" {
     );
 
 
-    ERESULT         Dict_AddUpdateA(
+    ERESULT         Dict_AddUpdateA (
         DICT_DATA       *this,
         const
         char            *pNameA,
@@ -211,7 +211,7 @@ extern "C" {
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
      is returned.
      */
-    ERESULT         Dict_Expand(
+    ERESULT         Dict_Expand (
         DICT_DATA       *this,
         ASTR_DATA       *pStr
     );

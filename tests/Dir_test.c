@@ -605,7 +605,7 @@ int         test_Dir_Glob01(
         pPath = OBJ_NIL;
         // Count will be 1 more than what was found.
         fprintf(stderr, "%s Count: %d\n", pDir, count);
-        XCTAssertTrue( (22 == count) );
+        XCTAssertTrue( (24 == count) );
 
 
         obj_Release(pObj);
@@ -644,7 +644,7 @@ int         test_Dir_Glob02(
         pPath = OBJ_NIL;
         // Count will be 1 more than what was found.
         fprintf(stderr, "%s Count: %d\n", pDir, count);
-        XCTAssertTrue( (25 == count) );
+        XCTAssertTrue( (27 == count) );
 
 
         obj_Release(pObj);

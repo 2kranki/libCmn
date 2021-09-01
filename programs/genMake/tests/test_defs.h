@@ -46,7 +46,7 @@ extern "C" {
 #endif
     
 
-#define TEST_FILES_DIR  "${HOME}/git/libCmn/tests/files"    
+#define TEST_FILES_DIR  "${HOME}/git/libCmn/programs/genMake/tests/files"    
     
     
     //****************************************************************

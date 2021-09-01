@@ -1,1 +1,1 @@
-/Users/bob/git/libCmn/tests/files/test.txt
+${HOME}/git/libCmn/tests/files/test.txt

@@ -1173,7 +1173,7 @@ extern "C" {
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
      is returned.
      */
-    ERESULT         Dict_Expand(
+    ERESULT         Dict_Expand (
         DICT_DATA       *this,
         ASTR_DATA       *pStr
     )
@@ -1554,9 +1554,6 @@ extern "C" {
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return Dict_ToDebugString;
                         }
-                        if (str_Compare("ToJSON", (char *)pStr) == 0) {
-                            return Dict_ToJSON;
-                        }
                         break;
                         
                     default:
@@ -1567,8 +1564,6 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == Dict_ToDebugString)
                     return "ToDebugString";
-                if (pData == Dict_ToJSON)
-                    return "ToJSON";
                 break;
                 
             default:
@@ -1576,45 +1571,6 @@ extern "C" {
         }
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
-    }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-     ASTR_DATA *     Dict_ToJSON (
-        DICT_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!Dict_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
     }
     
     

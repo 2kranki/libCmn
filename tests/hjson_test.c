@@ -1114,8 +1114,67 @@ int             test_hjson_File02(
 
 
 
+int             test_hjson_File03(
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc;
+    HJSON_DATA      *pObj = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    //NODEHASH_DATA   *pHash;
+    NODE_DATA       *pFileNode;
+    //NODE_DATA       *pNode;
+    //NODEARRAY_DATA  *pArray;
+    FILE            *pInput = NULL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "Just see if we can parse objects.json.txt\n");
+
+    pPath = Path_NewA(TEST_FILES_DIR "/objects.json.txt");
+    XCTAssertFalse( (OBJ_NIL == pPath) );
+    eRc = Path_Clean(pPath);
+    XCTAssertTrue( (ERESULT_SUCCESSFUL(eRc)) );
+
+    pInput = fopen(Path_getData(pPath), "r");
+    XCTAssertFalse( (OBJ_NIL == pInput) );
+
+    pObj = hjson_NewFromFile(pInput, 4);
+    XCTAssertFalse( (OBJ_NIL == pObj) );
+    obj_Release(pPath);
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        pFileNode = hjson_ParseFileHash(pObj);
+        XCTAssertFalse( (OBJ_NIL == pFileNode) );
+        if (pFileNode) {
+            pStr = Node_ToDebugString(pFileNode, 0);
+            fprintf(stderr, "%s\n\n\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+
+        }
+
+        obj_Release(pFileNode);
+        pFileNode = OBJ_NIL;
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fclose(pInput);
+    pInput = NULL;
+
+    fprintf(stderr, "...%s completed.\n\n\n\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_hjson);
+    TINYTEST_ADD_TEST(test_hjson_File03,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_File02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_File01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_hjson_Object02,setUp,tearDown);

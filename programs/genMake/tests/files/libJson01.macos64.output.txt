@@ -1,0 +1,156 @@
+.DEFAULT_GOAL := all
+SHELL=/bin/sh
+
+LIBNAM=libCmn
+SYS=macos64
+TEMP=/tmp
+BASE_OBJ = $(TEMP)/$(LIBNAM)
+SRCDIR = ./src
+TEST_SRC = ./tests
+INSTALL_BASE = $(HOME)/Support/lib/$(SYS)
+LIB_BASE = $(HOME)/Support/lib/$(SYS)
+
+CFLAGS += -g -Werror -I$(SRCDIR)
+ifdef  NDEBUG
+CFLAGS += -DNDEBUG
+else   #DEBUG
+CFLAGS += -D_DEBUG
+endif  #NDEBUG
+CFLAGS += -D__MACOS64_ENV__
+CFLAGS_LIBS = 
+CFLAGS_TEST = -I$(TEST_SRC) $(CFLAGS_LIBS) -lcurses -lsqlite3
+
+INSTALL_DIR = $(INSTALL_BASE)/$(LIBNAM)
+LIBOBJ = $(BASE_OBJ)/$(SYS)
+ifdef  NDEBUG
+LIB_FILENAME=$(LIBNAM)R.a
+OBJDIR = $(LIBOBJ)/o/r
+else   #DEBUG
+LIB_FILENAME=$(LIBNAM)D.a
+OBJDIR = $(LIBOBJ)/o/d
+endif  #NDEBUG
+TEST_OBJ = $(OBJDIR)/obj
+TEST_BIN = $(OBJDIR)/bin
+LIB_PATH = $(LIBOBJ)/$(LIB_FILENAME)
+
+.SUFFIXES:
+.SUFFIXES: .asm .c .cpp .o
+
+OBJS =
+
+TESTS =
+
+
+
+
+
+
+#------------------------------------------------
+#         Compile Objects and Routines
+#------------------------------------------------
+
+
+OBJS += $(OBJDIR)/AStr.o
+
+$(OBJDIR)/AStr.o: $(SRCDIR)/AStr.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/AStr_json.o
+
+$(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/AStr_object.o
+
+$(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Appl.o
+
+$(OBJDIR)/Appl.o: $(SRCDIR)/Appl.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Appl_object.o
+
+$(OBJDIR)/Appl_object.o: $(SRCDIR)/Appl_object.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/dllist.o
+
+$(OBJDIR)/dllist.o: $(SRCDIR)/dllist.c 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+
+
+
+
+#------------------------------------------------
+#      Compile and execute Tests
+#------------------------------------------------
+
+
+TESTS += AStr_test
+
+AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += Appl_test
+
+Appl_test: $(TEST_SRC)/Appl_test.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+
+
+
+
+#------------------------------------------------
+#              Phony Targets
+#------------------------------------------------
+
+
+
+$(LIB_PATH):  $(OBJS)
+	-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)
+	ar rc $(LIB_PATH) $(OBJS)
+
+
+.PHONY: all
+all:  clean create_dirs $(LIB_PATH) check install
+
+
+.PHONY: build
+build:  create_dirs $(LIB_PATH)
+
+
+.PHONY: check
+check: $(TESTS)
+
+
+.PHONY: clean
+clean:
+	-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)
+
+
+.PHONY: create_dirs
+create_dirs:
+	[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)
+	[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)
+
+
+.PHONY: install
+install:
+	-cd $(INSTALL_BASE) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)
+	-cd $(INSTALL_BASE) ; [ ! -d $(LIBNAM)/include ] && mkdir -p $(LIBNAM)/include/$(SYS)
+	cp $(LIB_PATH) $(INSTALL_DIR)/$(LIBNAM).a
+	cp src/*.h $(INSTALL_DIR)/include/
+	if [ -d src/$(SYS) ]; then \
+		cp src/$(SYS)/*.h $(INSTALL_DIR)/include/$(SYS)/; \
+	fi
+
+
+.PHONY: test
+test: $(TESTS)
+
+

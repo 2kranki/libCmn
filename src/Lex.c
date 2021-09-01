@@ -306,6 +306,45 @@ extern "C" {
     //                      N e x t  I n p u t
     //---------------------------------------------------------------
 
+    bool            Lex_NextAccept(
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData,
+        bool            fAppend
+    )
+    {
+        bool            fRc;
+
+        // Do initialization.
+
+        TRC_OBJ(
+                this,
+                "\tNextAccept char: (0%02Xx) '%lc'\n",
+                pData->chr2,
+                pData->chr2
+        );
+        if (fAppend) {
+            Lex_TokenAppendStringW32(this, pData->chr2);
+        }
+#ifdef NDEBUG
+#else
+        {
+            char       *pStrA = W32Str_CStringA(this->pStr, NULL);
+            TRC_OBJ(
+                    this,
+                    "\t\tString: \"%s\"\n",
+                    pStrA
+            );
+            mem_Free(pStrA);
+        }
+#endif
+        fRc = Lex_NextInput(this, pData, false);
+
+        // Return to caller.
+        return fRc;
+    }
+
+
+
     /*!
      Advance to the next input token and get the lookahead just beyond it.
      */
@@ -712,55 +751,69 @@ extern "C" {
                         }
                         break;
                     }
-                    else if ('*' == data.cls2) {
+                    else if ('*' == data.cls2) {        // 42 02Ax
                         uint32_t        depth = 1;
                         bool            fMore2 = true;
+                        bool            fAppend = !(0 == (this->flags & LEX_FLAG_CMT));
                         data.clsNew = LEX_COMMENT_MULTI;
-                        if (!(this->flags & LEX_FLAG_CMT)) {
+                        if (!fAppend) {
                             Lex_ParseTokenTruncate(this);
                         }
-                        while (fMore2) {
-                            if (this->flags & LEX_FLAG_CMT) {
-                                Lex_TokenAppendStringW32(this, data.chr2);
-                            }
-                            fRc = Lex_NextInput(this, &data, false);
-                            if (data.cls2 == LEX_CLASS_EOF) {
-                                SrcErrors_AddFatalFromTokenA(
-                                                    OBJ_NIL,
-                                                    pToken,
-                                                    "Premature EOF in Multi-line comment"
-                                );
-                            } else if (data.cls2 == '*') {
-                                if (this->flags & LEX_FLAG_CMT) {
-                                    Lex_TokenAppendStringW32(this, data.chr2);
-                                }
-                                fRc = Lex_NextInput(this, &data, false);
-                                if (data.cls2 == '/') {
-                                    if (this->flags & LEX_FLAG_CMT) {
-                                        Lex_TokenAppendStringW32(this, data.chr2);
-                                    }
-                                    fRc = Lex_NextInput(this, &data, false);
-                                    --depth;
-                                    if (0 == depth) {
-                                        fMore2 = false;
-                                    }
-                                    continue;
-                                }
-                                if (this->flags & LEX_FLAG_CMT) {
-                                    Lex_TokenAppendStringW32(this, data.chr2);
-                                }
-                                fRc = Lex_NextInput(this, &data, false);
-                            } else if (data.cls2 == '/') {
-                                if (this->flags & LEX_FLAG_CMT) {
-                                    Lex_TokenAppendStringW32(this, data.chr2);
-                                }
-                                fRc = Lex_NextInput(this, &data, false);
-                                if (data.cls2 == '*') {
-                                    ++depth;
-                                    continue;
-                                }
-                            }
+                        if (fAppend) {
+                            Lex_TokenAppendStringW32(this, data.chr2);
                         }
+                        fRc = Lex_NextInput(this, &data, false);
+                        TRC_OBJ(this, "\tFound /* and accepted, now loop for */...\n");
+                        while (fMore2) {
+                            switch (data.chr2) {
+                                case -1:
+                                    SrcErrors_AddFatalFromTokenA(
+                                                        OBJ_NIL,
+                                                        pToken,
+                                                        "Premature EOF in Multi-line comment"
+                                    );
+                                    fMore2 = false;
+                                    break;
+
+                                case '*':
+                                    TRC_OBJ(this, "\tFound *, now looking for /...\n");
+                                    fRc = Lex_NextAccept(this, &data, fAppend);
+                                    if (data.chr2 == '/') {         // 47 02Fx
+                                        TRC_OBJ(this, "\tFound / of */, checking depth...\n");
+                                        /*
+                                        if (this->flags & LEX_FLAG_CMT) {
+                                            Lex_TokenAppendStringW32(this, data.chr2);
+                                        }
+                                        fRc = Lex_NextInput(this, &data, false);
+                                         */
+                                        --depth;
+                                        TRC_OBJ(this, "\t\tdepth: %d\n", depth);
+                                        if (0 == depth) {
+                                            fMore2 = false;
+                                            fRc = Lex_NextAccept(this, &data, fAppend);
+                                        }
+                                    } else {
+                                        TRC_OBJ(this, "\tDid not Find / of */, \n");
+                                    }
+                                    break;
+
+                                case '/':
+                                    TRC_OBJ(this, "\tFound / of /*...\n");
+                                    fRc = Lex_NextAccept(this, &data, fAppend);
+                                    if (data.chr2 == '*') {         // 42 02Ax
+                                        TRC_OBJ(this, "\tFound * of /*...\n");
+                                        ++depth;
+                                        TRC_OBJ(this, "\t\tdepth: %d\n", depth);
+                                    } else {
+                                        TRC_OBJ(this, "\tDid not find * of /*...\n");
+                                    }
+                                    break;
+
+                                default:
+                                    fRc = Lex_NextAccept(this, &data, fAppend);
+                                    break;
+                            }   // switch
+                        }   // while
                         if (!(this->flags & LEX_FLAG_CMT)) {
                             fMore = true;
                         }

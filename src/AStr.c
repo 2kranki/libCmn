@@ -1163,6 +1163,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_GENERAL_FAILURE;
         wint_t          chr;
         FILE            *pFile;
+        PATH_DATA       *pWrk = OBJ_NIL;
         
         /* Do Initialization.
          */
@@ -1177,11 +1178,19 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        pWrk = Path_Copy(pPath);
+        if (OBJ_NIL == pWrk) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        Path_Clean(pWrk);
         
-        pFile = fopen(Path_getData(pPath), "r");
+        pFile = fopen(Path_getData(pWrk), "r");
         if (NULL == pFile) {
+            obj_Release(pWrk);
             return ERESULT_FILE_NOT_FOUND;
         }
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
         while ( (chr = fgetwc(pFile)) != EOF ) {
             eRc = AStr_AppendCharRepeatW32(this, 1, chr);
             if (ERESULT_FAILED(eRc)) {
@@ -3636,7 +3645,8 @@ extern "C" {
         char            *pChr;
         char            *pBuffer;
         int             chr;
-        
+        PATH_DATA       *pWrk = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -3649,14 +3659,22 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-        
+        pWrk = Path_Copy(pPath);
+        if (OBJ_NIL == pWrk) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        Path_Clean(pWrk);
+
         pBuffer = AStr_CStringA(this, &size);
         pChr = pBuffer;
         
-        pFile = fopen(Path_getData(pPath), "wb");
+        pFile = fopen(Path_getData(pWrk), "wb");
         if (NULL == pFile) {
+            obj_Release(pWrk);
             return ERESULT_FILE_NOT_FOUND;
         }
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
         while ( size-- ) {
             chr = fputc(*pChr++, pFile);
             if (EOF == chr) {

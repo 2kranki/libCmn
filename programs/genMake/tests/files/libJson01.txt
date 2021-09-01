@@ -5,11 +5,12 @@
         "name":"Cmn"
     }
     "objects": [
-        {name:"AStr", "srcDeps":["libCmn.h"], "json":true},
-        {name:"appl", "srcDeps":["libCmn.h"]},
+        {name:"AStr", "json":true},
+        {name:"Appl"},
+        {name:\"Xyzzy\", os:[\"win32\"]}
     ],
     "routines": [
-        {name:"dllist"}
+        {name:"dllist"},
     ]
 }
 

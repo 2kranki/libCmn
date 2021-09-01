@@ -1649,7 +1649,10 @@ extern "C" {
             return ERESULT_DATA_MISSING;
         }
 #endif
-     
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\tGenerate the Makefile...\n");
+        }
+
         pLib = SrcParse_getLib(pPrs);
         pPgm = SrcParse_getPgm(pPrs);
         if (pPgm) {
@@ -1671,11 +1674,17 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\t\tExpand nodes...\n");
+        }
         ExpandNodes_setLib(this->pExpand, SrcParse_getLib(pPrs));
         ExpandNodes_setPgm(this->pExpand, SrcParse_getPgm(pPrs));
         ExpandNodes_SetupDeps(this->pExpand, this->pDict);
         
         // Expand the Objects.
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\t\tExpand the Objects...\n");
+        }
         pArray = SrcParse_getObjs(pPrs);
         if (pArray) {
             pErr = ExpandNodes_ExpandObjs(this->pExpand, pArray);
@@ -1688,6 +1697,9 @@ extern "C" {
         }
 
         // Expand the Routines.
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\t\tExpand the Routines...\n");
+        }
         pArray = SrcParse_getRtns(pPrs);
         if (pArray) {
             pErr = ExpandNodes_ExpandRtns(this->pExpand, pArray);
@@ -1732,6 +1744,9 @@ extern "C" {
                 GenMac_SetupDefaults(pMac);
                 GenMac_setOutput(pMac, this->pOutput);
                 
+                if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+                    fprintf(stdout, "\t\tGen Library/Program prefix...\n");
+                }
                 if (pLib) {
                     pErr = GenMac_GenLibBegin(pMac, pLib, this->pDict);
                 } else {
@@ -1743,6 +1758,9 @@ extern "C" {
                     exit(12);
                 }
 
+                if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+                    fprintf(stdout, "\t\tGen Routine compilation...\n");
+                }
                 pArray = ExpandNodes_getRtns(this->pExpand);
                 if (pArray) {
                     pErr = GenMac_GenCompileRtns(pMac, pArray, this->pDict);
@@ -1753,6 +1771,9 @@ extern "C" {
                     }
                 }
                 
+                if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+                    fprintf(stdout, "\t\tGen Tests...\n");
+                }
                 pArray = ExpandNodes_getTests(this->pExpand);
                 if (pArray) {
                     pErr = GenMac_GenBuildTests(pMac, pArray, this->pDict);
@@ -1763,6 +1784,9 @@ extern "C" {
                     }
                 }
 
+                if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+                    fprintf(stdout, "\t\tGen Library/Program suffix...\n");
+                }
                 if (pLib) {
                     pErr = GenMac_GenLibEnd(pMac, pLib, this->pDict);
                 } else {
@@ -1778,6 +1802,9 @@ extern "C" {
                 
             case OSTYPE_MSC32:
             case OSTYPE_MSC64:
+                if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+                    fprintf(stdout, "\t\tExpand the Nodes for MSC32 or MSC64...\n");
+                }
                 pWin = GenWin_New();
                 //FIXME: Needs to be implemented.
                 break;
@@ -2105,7 +2132,10 @@ extern "C" {
             fprintf(stderr, "Error - Out of Memory - Creating Source Parser!\n\n\n");
             exit(12);
         }
-        
+
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\tParsing Json Input File...\n");
+        }
         pErr = SrcParse_ParseJsonFile(pParser, pPath);
         if (pErr) {
             eResult_Fprint(pErr, stderr);
@@ -2121,6 +2151,9 @@ extern "C" {
             exit(12);
         }
         SrcErrors_ExitOnFatal(OBJ_NIL);
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\tParsing of Json Input File completed...\n");
+        }
 
         Main_setParser(this, pParser);
         obj_Release(pParser);
@@ -2131,7 +2164,7 @@ extern "C" {
     }
     
     
-    ERESULT         Main_ParseInputStr (
+    ERESULT         Main_ParseInputStrA (
         MAIN_DATA       *this,
         const
         char            *pStrA
@@ -2159,6 +2192,9 @@ extern "C" {
             exit(12);
         }
 
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\tParsing Json Input String...\n");
+        }
         pErr = SrcParse_ParseJsonStr(pParser, pStrA);
         if (pErr) {
             eResult_Fprint(pErr, stderr);
@@ -2171,7 +2207,10 @@ extern "C" {
             eResult_Fprint(pErr, stderr);
             exit(12);
         }
-        
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\tParsing of Json Input String completed...\n");
+        }
+
         Main_setParser(this, pParser);
         obj_Release(pParser);
         pParser = OBJ_NIL;
@@ -2247,8 +2286,8 @@ extern "C" {
             return eRc;
         }
 
-        if (!Appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\tProcessing - %s...\n", AStr_getData(pStr));
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\tProcessing - %s...\n", AStr_getData(pStr));
         }
         
         pPath = Main_CheckInputPath(this, pStr);
@@ -2263,8 +2302,8 @@ extern "C" {
                     "FATAL - Failed to parse input: %s",
                     Path_getData(pPath)
         );
-        if (!Appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\tParsed input: %s...\n", Path_getData(pPath));
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\tParsed input: %s...\n", Path_getData(pPath));
         }
         obj_Release(pPath);
         pPath = OBJ_NIL;
@@ -2283,8 +2322,8 @@ extern "C" {
             exit(EXIT_FAILURE);
         }
 
-        if (!Appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\tCreating - %s...\n", Path_getData(pMakepath));
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\tCreating - %s...\n", Path_getData(pMakepath));
         }
         
         pWrk = Main_getStr(this);
@@ -2301,8 +2340,8 @@ extern "C" {
             exit(EXIT_FAILURE);
         }
 
-        if (!Appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\t\t%s created.\n", Path_getData(pMakepath));
+        if ((0 == Appl_getQuiet(Main_getAppl(this))) && Appl_getVerbose(Main_getAppl(this))) {
+            fprintf(stdout, "\t\t%s created.\n", Path_getData(pMakepath));
         }
 
         // Return to caller.

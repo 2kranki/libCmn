@@ -742,6 +742,53 @@ extern "C" {
     //                       F o r  C o n d i t i o n
     //---------------------------------------------------------------
 
+    ERESULT         Test_ForFail (
+        TEST_DATA       *this,
+        ERESULT         eRc2,
+        const
+        char            *pErrorA,
+        const
+        char            *pFilePathA,
+        size_t          iLine
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             iRc = 1;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        if (ERESULT_OK(eRc2)) {
+            fprintf(
+                    stderr,
+                    "\x1b[1m\x1b[31mERROR\x1b[0m: Failure failed: %s file: %s line: %ld\n\n",
+                    pErrorA ? pErrorA : "",
+                    pFilePathA,
+                    iLine
+            );
+            this->iExitCode = 8;
+            if (this->pFatalExit) {
+                iRc = this->pFatalExit(this->pFatalObject, this);
+            }
+            if (iRc) {
+                if (cmn_AmIBeingDebugged() && Test_getAllowInt3(this)) {
+                    __asm__("int $3\n" : : );
+                }
+                exit(this->iExitCode);
+            }
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
     ERESULT         Test_ForFalse (
         TEST_DATA       *this,
         bool            fValue,
@@ -862,6 +909,53 @@ extern "C" {
             fprintf(
                     stderr,
                     "\x1b[1m\x1b[31mERROR\x1b[0m: NULL failed: %s file: %s line: %ld\n\n",
+                    pErrorA ? pErrorA : "",
+                    pFilePathA,
+                    iLine
+            );
+            this->iExitCode = 8;
+            if (this->pFatalExit) {
+                iRc = this->pFatalExit(this->pFatalObject, this);
+            }
+            if (iRc) {
+                if (cmn_AmIBeingDebugged() && Test_getAllowInt3(this)) {
+                    __asm__("int $3\n" : : );
+                }
+                exit(this->iExitCode);
+            }
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Test_ForSucess (
+        TEST_DATA       *this,
+        ERESULT         eRc2,
+        const
+        char            *pErrorA,
+        const
+        char            *pFilePathA,
+        size_t          iLine
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             iRc = 1;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        if (ERESULT_FAILED(eRc2)) {
+            fprintf(
+                    stderr,
+                    "\x1b[1m\x1b[31mERROR\x1b[0m: Success failed: %s file: %s line: %ld\n\n",
                     pErrorA ? pErrorA : "",
                     pFilePathA,
                     iLine

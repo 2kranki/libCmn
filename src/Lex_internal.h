@@ -543,6 +543,21 @@ struct Lex_data_s  {
 
     /*** @protected ***/
     /*!
+     Accept the lookahead char (chr2) from pData and request the next
+     cha
+     @param     this        object pointer
+     @param     pData       input data area pointer
+     @param     fAppend     true == Append the char to the string
+     @return    true if successful, otherwise false
+     */
+    bool            Lex_NextAccept(
+        LEX_DATA        *this,
+        LEX_PARSE_DATA  *pData,
+        bool            fAppend
+    );
+
+
+    /*!
      Advance to the next input token and get the lookahead just beyond it.
      @param     this        object pointer
      @param     pData       input data area pointer

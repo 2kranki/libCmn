@@ -1,0 +1,7 @@
+# vi:nu:et:sts=4 ts=4 sw=4 tw=90
+
+*   Dir_test.c counts the number of .txt files in this subdirectory. If you add any files
+    here, you must change the totals in Dir_test.c.
+
+
+

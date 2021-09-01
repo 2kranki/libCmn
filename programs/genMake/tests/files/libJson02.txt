@@ -1,0 +1,17 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+// This needs to match pGoodJsonB in Main_test.c
+{
+    "library": {
+        "name":"Cmn"
+    }
+    "objects": [
+        {name:"AStr", "json":true},
+        {name:"Appl", "srcDeps":["libCmn.h"]},
+        {name:"Xyzzy", os:["win32"]}
+    ],
+    "routines": [
+        {name:"dllist", "os":["win32"]},
+        {name:"str", "arch":["x86"]},
+    ]
+}
+

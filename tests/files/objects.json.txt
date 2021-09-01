@@ -110,13 +110,9 @@
         {name:"Lex01",      desc:"C Trigraphs Lexical Scanner",
                             deps:["Token.h","TokenList.h", "Lex.h"]
                             },
-/*
-    >>> Update to use Lex exits <<<
- 
-        {name:"Lex02",      desc:"C/C++ Lexical Scanner",
-                            deps:["Token.h","TokenList.h", "Lex.h"],
-                            },
- */
+        //{name:"Lex02",      desc:"C/C++ Lexical Scanner",
+        //                    deps:["Token.h","TokenList.h", "Lex.h"],
+        //                    },
         {name:"Lex03",      desc:"???? Lexical Scanner (Not Working)",
                             deps:["Token.h","TokenList.h", "Lex.h"] 
                             },

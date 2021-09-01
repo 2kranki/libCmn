@@ -1008,7 +1008,7 @@ extern "C" {
         pEnum = NodeEnum_New();
         if (pEnum) {
             eRc =   Blocks_ForEach(
-                                   (BLOCKS_DATA *)this,
+                                   NodeHash_getBlocks(this),
                                    (void *)NodeHash_EnumExit,
                                    this,
                                    pEnum

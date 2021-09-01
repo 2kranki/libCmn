@@ -2376,10 +2376,14 @@ int         test_Lex_Comment04(
     TOKEN_DATA      *pTokenLA;
     bool            fRc;
     PATH_DATA       *pPath = Path_NewA("abc");
+    static
+    const
+    char            *pInput = "/*** /** /* // */ **/ ***/";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
-    pBuf = AStr_NewA("/* /* */ */\n");
+    pBuf = AStr_NewA(pInput);
     XCTAssertFalse( (OBJ_NIL == pBuf) );
+    AStr_AppendA(pBuf, "\n");
     if (pBuf) {
 
         pSrc = SrcFile_NewFromAStr(pPath, pBuf, 1, 4);
@@ -2405,7 +2409,7 @@ int         test_Lex_Comment04(
                 XCTAssertTrue( (Token_Validate(pTokenLA)) );
                 {
                     char            *pStrA = Token_getTextA(pTokenLA);
-                    fprintf(stderr, "Should be: \"/* /* */ */\"\n");
+                    fprintf(stderr, "Should be: \"%s\"\n", pInput);
                     fprintf(stderr, "Got:       \"%s\"\n",  pStrA);
                     mem_Free(pStrA);
                     pStrA = NULL;
@@ -2414,7 +2418,7 @@ int         test_Lex_Comment04(
                 XCTAssertTrue( (LEX_COMMENT_MULTI == Token_getClass(pTokenLA)) );
                 {
                     ASTR_DATA *pWrk = Token_ToDataString(pTokenLA);
-                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, "/* /* */ */")) );
+                    XCTAssertTrue( (0 == AStr_CompareA(pWrk, pInput)) );
                     obj_Release(pWrk);
                     pWrk = OBJ_NIL;
                 }

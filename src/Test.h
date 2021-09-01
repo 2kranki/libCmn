@@ -71,12 +71,16 @@
         fprintf(stderr, "Test: %s failed!\n\n\n", name);\
         exit(200);\
     }
+#define TestForFail(error)\
+    Test_ForFail(this, eRc, error, __FILE__, __LINE__)
 #define TestForFalse(test, error)\
     Test_ForFalse(this, test, error, __FILE__, __LINE__)
 #define TestForNotNull(test, error)\
     Test_ForNotNull(this, test, error, __FILE__, __LINE__)
 #define TestForNull(test, error)\
     Test_ForNull(this, test, error, __FILE__, __LINE__)
+#define TestForSuccess(error)\
+    Test_ForSucess(this, eRc, error, __FILE__, __LINE__)
 #define TestForTrue(test, error)\
     Test_ForTrue(this, test, error, __FILE__, __LINE__)
 

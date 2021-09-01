@@ -1010,7 +1010,7 @@ extern "C" {
 
         AStr_AppendPrint(
             pStr,
-            "\t$(%s)/$(@F)\n\n",
+            "\t$(%s)/$(@F) --no_int3\n\n",
             Dict_GetA(pDict, tstBinVarID)
         );
 

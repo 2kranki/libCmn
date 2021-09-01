@@ -397,6 +397,7 @@ int         test_CsvFile_Input03(
     fprintf(stderr, "Performing: %s\n", pTestName);
     pPath = Path_NewA(TEST_FILES_DIR "/csv_e360_opcodes.txt");
     XCTAssertFalse( (OBJ_NIL == pPath) );
+    eRc = Path_Clean(pPath);
     eRc = Path_IsFile(pPath);
     if (ERESULT_FAILED(eRc)) {
         fprintf(stderr, "Warning: %s missing, test skipped.\n", Path_getData(pPath));

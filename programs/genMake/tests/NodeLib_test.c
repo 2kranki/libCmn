@@ -552,7 +552,7 @@ int             test_NodeLib_End01(
         "\t-cd $(LIBOBJ) ; [ -d $(LIB_FILENAME) ] && rm $(LIB_FILENAME)\n"
         "\tar rc $(LIB_PATH) $(OBJS)\n\n\n"
         ".PHONY: all\n"
-        "all:  clean create_dirs $(LIB_PATH)\n\n\n"
+        "all:  clean create_dirs $(LIB_PATH) check install\n\n\n"
         ".PHONY: build\n"
         "build:  create_dirs $(LIB_PATH)\n\n\n"
         ".PHONY: check\n"

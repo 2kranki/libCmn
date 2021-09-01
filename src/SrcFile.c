@@ -202,15 +202,25 @@ extern "C" {
         ERESULT         eRc;
         SRCFILE_DATA    *this = OBJ_NIL;
         TOKEN_DATA      *pToken;
+        PATH_DATA       *pWrk = OBJ_NIL;
+
+        pWrk = Path_Copy(pFilePath);
+        if (OBJ_NIL == pWrk) {
+            return OBJ_NIL;
+        }
+        Path_Clean(pWrk);
 
         this = SrcFile_New( );
         if (this) {
-            eRc = TextIn_SetupPath((TEXTIN_DATA *)this, pFilePath, fileIndex, tabSize);
+            eRc = TextIn_SetupPath((TEXTIN_DATA *)this, pWrk, fileIndex, tabSize);
             if (ERESULT_FAILED(eRc)) {
                 DEBUG_BREAK();
+                obj_Release(pWrk);
                 obj_Release(this);
                 return OBJ_NIL;
             }
+            obj_Release(pWrk);
+            pWrk = OBJ_NIL;
 
             obj_setSize(&this->curchr, sizeof(TOKEN_DATA));
             pToken = Token_Init(&this->curchr);

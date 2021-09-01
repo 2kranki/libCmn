@@ -233,15 +233,25 @@ extern "C" {
     {
         TEXTIN_DATA     *this = OBJ_NIL;
         ERESULT         eRc;
+        PATH_DATA       *pWrk = OBJ_NIL;
+
+        pWrk = Path_Copy(pFilePath);
+        if (OBJ_NIL == pWrk) {
+            return OBJ_NIL;
+        }
+        Path_Clean(pWrk);
 
         this = TextIn_New( );
         if (this) {
-            eRc = TextIn_SetupPath(this, pFilePath, fileIndex, tabSize);
+            eRc = TextIn_SetupPath(this, pWrk, fileIndex, tabSize);
             if (ERESULT_FAILED(eRc)) {
+                obj_Release(pWrk);
                 obj_Release(this);
                 this = OBJ_NIL;
             }
         }
+        obj_Release(pWrk);
+        pWrk = OBJ_NIL;
 
         return this;
     }

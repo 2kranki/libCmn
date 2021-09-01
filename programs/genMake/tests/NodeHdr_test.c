@@ -24,6 +24,9 @@
 
 #include    <tinytest.h>
 #include    <cmn_defs.h>
+#include    <JsonIn.h>
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 #include    <trace.h>
 #include    <NodeHdr_internal.h>
 
@@ -52,6 +55,9 @@ int             tearDown(
     // test method in the class.
 
     
+    SrcErrors_SharedReset( );
+    szTbl_SharedReset();
+    JsonIn_RegisterReset();
     trace_SharedReset( ); 
     if (mem_Dump( ) ) {
         fprintf(

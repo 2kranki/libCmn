@@ -130,11 +130,6 @@ struct Dict_data_s	{
     );
 
 
-    ASTR_DATA *     Dict_ToJSON (
-        DICT_DATA      *this
-    );
-
-
 
 
 #ifdef NDEBUG
