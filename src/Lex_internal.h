@@ -102,7 +102,7 @@ extern "C" {
     // first token.
     typedef struct Lex_Parse_Data_s {
         TOKEN_DATA      *pOutput;
-        W32STR_DATA     *pStr;      // String from accumulated tokens
+        W32STR_DATA     *pStr;      // String for accumulated tokens
         int32_t         clsNew;
         bool            fFinalize;
         bool            fSavStr;
@@ -161,6 +161,7 @@ struct Lex_data_s  {
                                    LEX_PARSE_DATA * // Current Parse Data Ptr
                     );
     OBJ_ID          pParserDfltExitObj;
+
     // The pre-process exit is called before the first token is analyzed
     // allowing default parsing to be overridden.
     int             (*pParserPreExit)(
@@ -169,13 +170,14 @@ struct Lex_data_s  {
                                    LEX_PARSE_DATA * // Current Parse Data Ptr
                     );
     OBJ_ID          pParserPreExitObj;
+
     // The post-process exit is called when the default parser is about
     // to finalize a token. This exit may ignore the token or continue
     // with the finalization.  Ignoring the token causes the parser to
     // start all over again scanning the next token. This exit could
     // manipulate the internal save token save string if needed.
     // Return codes:
-    //      0 == Keep token as is
+    //      0 == Keep token/clsNew as is
     //      1 == Reset data area and scan next char
     //      2 == Keep data as is and scan next char
     int             (*pParserPostExit)(

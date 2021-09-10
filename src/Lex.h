@@ -566,7 +566,7 @@ extern "C" {
     );
 
 
-    W32STR_DATA *   Lex_getString (
+    W32STR_DATA *   Lex_getStr (
         LEX_DATA        *this
     );
 

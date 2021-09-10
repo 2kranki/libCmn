@@ -64,6 +64,7 @@ extern "C" {
         char            *pStr;
     } LEXJ_CLASS2STR;
     
+    static
     LEXJ_CLASS2STR      Cls2Str[] = {
         {LEXJ_CLASS_EOF,            "LEXJ_CLASS_EOF"},
         {LEXJ_CONSTANT_CHAR,        "LEXJ_CONSTANT_CHAR"},
@@ -89,6 +90,8 @@ extern "C" {
     int             cCls2Str = sizeof(Cls2Str) / sizeof(LEXJ_CLASS2STR);
 
  
+
+
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
@@ -995,7 +998,7 @@ extern "C" {
     //                P a r s e  P r e  E x i t
     //--------------------------------------------------------------
 
-    /* ParseToken() gets the next token from the source file. It
+    /* ParserPreExit() gets the next token from the source file. It
      * saves that token for the file/line/col numbers and then
      * proceeds to build upon it. It accumulates tokens until
      * based on the class/type. When it finds a token which does

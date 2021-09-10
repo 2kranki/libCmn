@@ -92,7 +92,7 @@ struct Money64_data_s  {
     //---------------------------------------------------------------
 
 #ifdef  MONEY64_SINGLETON
-    MONEY64_DATA *     Money64_getSingleton (
+    MONEY64_DATA *  Money64_getSingleton (
         void
     );
 
@@ -108,7 +108,7 @@ struct Money64_data_s  {
     //---------------------------------------------------------------
 
     OBJ_IUNKNOWN *  Money64_getSuperVtbl (
-        MONEY64_DATA     *this
+        MONEY64_DATA    *this
     );
 
 
@@ -118,8 +118,8 @@ struct Money64_data_s  {
     );
 
 
-    MONEY64_DATA *       Money64_Copy (
-        MONEY64_DATA     *this
+    MONEY64_DATA *  Money64_Copy (
+        MONEY64_DATA    *this
     );
 
 

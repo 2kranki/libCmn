@@ -307,26 +307,18 @@ extern "C" {
         OBJ_IDENT_LEX_CLASS,
         OBJ_IDENT_LEX00,                // Whitespace and NL Lexical Scanner
         OBJ_IDENT_LEX00_CLASS,
-        OBJ_IDENT_LEX01,                // ??? Lexical Scanner
+        OBJ_IDENT_LEX01,                // Whitespace and NL Lexical Scanner
         OBJ_IDENT_LEX01_CLASS,
-        OBJ_IDENT_LEX02,                // ??? Lexical Scanner
-        OBJ_IDENT_LEX02_CLASS,
-        OBJ_IDENT_LEX03,                // ??? Lexical Scanner
-        OBJ_IDENT_LEX03_CLASS,
-        OBJ_IDENT_LEX04,                // ??? Lexical Scanner
-        OBJ_IDENT_LEX04_CLASS,
-        OBJ_IDENT_LEX05,                // ??? Lexical Scanner
-        OBJ_IDENT_LEX05_CLASS,
-        OBJ_IDENT_LEX06,                // ??? Lexical Scanner
-        OBJ_IDENT_LEX06_CLASS,
-        OBJ_IDENT_LEX07,                // ??? Lexical Scanner
-        OBJ_IDENT_LEX07_CLASS,
+        OBJ_IDENT_LEXC,                 // C Lexical Scanner
+        OBJ_IDENT_LEXC_CLASS,
         OBJ_IDENT_LEXJ,                 // Simple Lexical Scanner for HJSON
         OBJ_IDENT_LEXJ_CLASS,
         OBJ_IDENT_LEXKW,                // Keyword Lexical Scanner
         OBJ_IDENT_LEXKW_CLASS,
         OBJ_IDENT_LEXS,                 // Simple Lexical Scanner for JSON, CSV, etc
         OBJ_IDENT_LEXS_CLASS,
+        OBJ_IDENT_LEXTRI,               // C TrigraphLexical Scanner
+        OBJ_IDENT_LEXTRI_CLASS,
         OBJ_IDENT_LINEINDEX,            // Line Index into File or Buffer
         OBJ_IDENT_LINEINDEX_CLASS,
         OBJ_IDENT_LISTDL,               // Generic Doubly-linked List

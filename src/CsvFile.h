@@ -88,6 +88,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <AStrArray.h>
 #include        <ObjArray.h>
 #include        <Path.h>
 
@@ -222,7 +223,7 @@ extern "C" {
 
     bool            CsvFile_setRecordProcess (
         CSVFILE_DATA    *this,
-        bool            (*pRecordProcess)(void *pRecordData, OBJARRAY_DATA *pRecord),
+        bool            (*pRecordProcess)(void *pRecordData, ASTRARRAY_DATA *pRecord),
         void            *pRecordData
     );
 
@@ -241,7 +242,7 @@ extern "C" {
 
     /*!
      Parse the string/file given and return an object array of records where
-     each record is an object array of fields. The fields are always strings.
+     each record is an AStr array of fields. The fields are always strings.
      @return:   If successful, an ObjArray object which must be released,
                 otherwise OBJ_NIL.
      */

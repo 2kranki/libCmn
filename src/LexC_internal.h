@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Lex07_internal.h
- *  Generated 05/30/2020 14:53:23
+ * File:   LexC_internal.h
+ *  Generated 09/02/2021 08:48:25
  *
  * Notes:
  *  --  N/A
@@ -39,13 +39,13 @@
 
 
 
-#include        <Lex07.h>
+#include        <LexC.h>
 #include        <JsonIn.h>
 #include        <Lex_internal.h>
 
 
-#ifndef LEX07_INTERNAL_H
-#define LEX07_INTERNAL_H
+#ifndef LEXC_INTERNAL_H
+#define LEXC_INTERNAL_H
 
 
 
@@ -63,26 +63,26 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Lex07_data_s  {
+struct LexC_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     LEX_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    ASTR_DATA       *pStr;
     uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
 
 };
 #pragma pack(pop)
 
     extern
-    struct Lex07_class_data_s  Lex07_ClassObj;
+    struct LexC_class_data_s  LexC_ClassObj;
 
     extern
     const
-    LEX07_VTBL         Lex07_Vtbl;
+    LEXC_VTBL         LexC_Vtbl;
 
 
 
@@ -90,13 +90,13 @@ struct Lex07_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  LEX07_SINGLETON
-    LEX07_DATA *     Lex07_getSingleton (
+#ifdef  LEXC_SINGLETON
+    LEXC_DATA *     LexC_getSingleton (
         void
     );
 
-    bool            Lex07_setSingleton (
-     LEX07_DATA       *pValue
+    bool            LexC_setSingleton (
+     LEXC_DATA       *pValue
 );
 #endif
 
@@ -106,35 +106,40 @@ struct Lex07_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  Lex07_getSuperVtbl (
-        LEX07_DATA     *this
+    OBJ_IUNKNOWN *  LexC_getSuperVtbl (
+        LEXC_DATA       *this
     );
 
 
-    ERESULT         Lex07_Assign (
-        LEX07_DATA    *this,
-        LEX07_DATA    *pOther
+    ERESULT         LexC_Assign (
+        LEXC_DATA       *this,
+        LEXC_DATA       *pOther
     );
 
 
-    LEX07_DATA *    Lex07_Copy (
-        LEX07_DATA     *this
+    LEXC_DATA *     LexC_Copy (
+        LEXC_DATA       *this
     );
 
 
-    void            Lex07_Dealloc (
+    void            LexC_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  LEX07_JSON_SUPPORT
+    LEXC_DATA *     LexC_DeepCopy (
+        LEXC_DATA       *this
+    );
+
+
+#ifdef  LEXC_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    LEX07_DATA *       Lex07_ParseJsonObject (
+    LEXC_DATA *     LexC_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -148,40 +153,68 @@ struct Lex07_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex07_ParseJsonFields (
+    ERESULT         LexC_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        LEX07_DATA      *pObject
+        LEXC_DATA       *pObject
     );
 #endif
 
 
-    ERESULT         Lex07_ParseToken(
-        LEX07_DATA      *this
+    // The post-process exit is called when the default parser is about
+    // to finalize a token. This exit may ignore the token or continue
+    // with the finalization.  Ignoring the token causes the parser to
+    // start all over again scanning the next token. This exit could
+    // manipulate the internal save token save string if needed.
+    // Return codes:
+    //      0 == Keep token/clsNew as is
+    //      1 == Reset data area and scan next char
+    //      2 == Keep data as is and scan next char
+    int             LexC_ParserPostExit (
+        LEXC_DATA       *this,
+        LEX_DATA        *pLex,              // LEX Object Ptr
+        LEX_PARSE_DATA  *pData              // Current Parse Data Ptr
     );
 
 
-    void *          Lex07_QueryInfo (
+    /*
+     This exit allows the entire lexical scan to be over-ridden.
+     The exit can call:
+            Lex_TokenAppendStringW32(this, data.chr2);
+            fRc = Lex_NextInput(this, &data, false);
+     as needed to do its own scan if desired. It should return:
+        0 == Accept what exit scanned
+        1 == Skip to next token and continue scan.
+        2 == Continue with default scanner.
+     */
+    int             LexC_ParserPreExit (
+        LEXC_DATA       *this,
+        LEX_DATA        *pLex,              // LEX Object Ptr
+        LEX_PARSE_DATA  *pData              // Current Parse Data Ptr
+    );
+
+
+    void *          LexC_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  LEX07_JSON_SUPPORT
+#ifdef  LEXC_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Lex07_ToJson(this);
+     ASTR_DATA      *pDesc = LexC_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Lex07_ToJson (
-        LEX07_DATA      *this
+    ASTR_DATA *     LexC_ToJson (
+        LEXC_DATA       *this
     );
 
 
@@ -194,8 +227,8 @@ struct Lex07_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex07_ToJsonFields (
-        LEX07_DATA     *this,
+    ERESULT         LexC_ToJsonFields (
+        LEXC_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -205,8 +238,8 @@ struct Lex07_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            Lex07_Validate (
-        LEX07_DATA       *this
+    bool            LexC_Validate (
+        LEXC_DATA       *this
     );
 #endif
 
@@ -216,5 +249,5 @@ struct Lex07_data_s  {
 }
 #endif
 
-#endif  /* LEX07_INTERNAL_H */
+#endif  /* LEXC_INTERNAL_H */
 

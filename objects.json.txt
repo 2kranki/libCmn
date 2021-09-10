@@ -62,8 +62,6 @@
         {name:"dec",            json:true},
         {name:"Dir",            deps:["dirEntry.h","Path.h"], json:true},
         {name:"DirEntry",       deps:["dateTime.h","Path.h"], json:true},
-        {name:"disk",           deps:["Path.h"]},
-        {name:"disks",          deps:["Path.h"]},
         {name:"Ebcdic"},
         {name:"endian"},
         {name:"enum"},
@@ -104,37 +102,16 @@
          */
         {name:"Lex",        deps:["Token.h","TokenList.h"], 
                             desc:"Base Lexical Scanner"},
-        {name:"Lex00",      desc:"HJSON Lexical Scanner (Not Working)",
-                            deps:["Token.h","TokenList.h", "Lex.h"]
-                            },
         {name:"Lex01",      desc:"C Trigraphs Lexical Scanner",
                             deps:["Token.h","TokenList.h", "Lex.h"]
                             },
-/*
-    >>> Update to use Lex exits <<<
- 
-        {name:"Lex02",      desc:"C/C++ Lexical Scanner",
+        {name:"LexC",       desc:"C Lexical Scanner",
                             deps:["Token.h","TokenList.h", "Lex.h"],
                             },
- */
-        {name:"Lex03",      desc:"???? Lexical Scanner (Not Working)",
-                            deps:["Token.h","TokenList.h", "Lex.h"] 
-                            },
-        {name:"Lex04",      desc:"Assembler Lexical Scanner (Not Working)",
-                            deps:["Token.h","TokenList.h", "Lex.h"],
-                            },
-        {name:"Lex05",      desc:"LL1 Lexical Scanner (Not Working)",
-                            deps:["Token.h","TokenList.h", "Lex.h"], 
-                            },
-        {name:"Lex06",      desc:"??? Lexical Scanner (Not Working)",
-                            deps:["Token.h","TokenList.h", "Lex.h"], 
-                            },
-        {name:"Lex07",      desc:"??? Lexical Scanner (Not Working)",
-                            deps:["Token.h","TokenList.h", "Lex.h"], 
-                            },
-        {name:"LexJ"},
+        {name:"LexJ",       desc:"HJSON Lexical Scanner"},
         {name:"LexKW",      deps:["Token.h","TokenList.h", "Lex.h"], 
                             desc:"Keyword Lexical Scanner"},
+        {name:"LexTri",     desc:"C Trigraph Lexical Scanner"},
         {name:"LineIndex",  desc:"Line Index into File or Buffer", deps:["SrcLoc.h"], json:true},
         {name:"lru", deps:["listdl.h"]},
         /* ========== Add back into here and Xcode testCmn when FileIO is completed ======

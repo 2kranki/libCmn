@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  LL1 Lexical Scanner (Lex05) Header
+//                  C Lexical Scanner (LexC) Header
 //****************************************************************
 /*
  * Program
- *          LL1 Lexical Scanner (Lex05)
+ *          C Lexical Scanner (LexC)
  * Purpose
- *          This object provides a standardized way of handling
- *          a separate Lex05 to run things without complications
- *          of interfering with the main Lex05. A Lex05 may be 
- *          called a Lex05 on other O/S's.
+ *          This object provides a basic C/C++ style lexical
+ *          scanner.
  *
  * Remarks
- *  1.      None
+ *  1.      This lexical scanner differs from the ANSI standard in
+ *          that embedded multi-line comments are allowed.
  *
  * History
  *  05/30/2020 Generated
+ *  09/02/2021 Regenerated from Lex02 and upgraded to new Lex
  */
 
 
@@ -54,15 +54,17 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Lex.h>
+#include        <SrcErrors.h>
+#include        <SrcFile.h>
 
 
-#ifndef         LEX05_H
-#define         LEX05_H
+#ifndef         LEXC_H
+#define         LEXC_H
 
 
-//#define   LEX05_IS_IMMUTABLE     1
-//#define   LEX05_JSON_SUPPORT     1
-//#define   LEX05_SINGLETON        1
+//#define   LEXC_IS_IMMUTABLE     1
+//#define   LEXC_JSON_SUPPORT     1
+//#define   LEXC_SINGLETON        1
 
 
 
@@ -78,26 +80,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Lex05_data_s  LEX05_DATA;            // Inherits from OBJ
-    typedef struct Lex05_class_data_s LEX05_CLASS_DATA;   // Inherits from OBJ
+    typedef struct LexC_data_s  LEXC_DATA;            // Inherits from OBJ
+    typedef struct LexC_class_data_s LEXC_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Lex05_vtbl_s  {
+    typedef struct LexC_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Lex05_object.c.
+        // method names to the vtbl definition in LexC_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(LEX05_DATA *);
-    } LEX05_VTBL;
+        //bool        (*pIsEnabled)(LEXC_DATA *);
+    } LEXC_VTBL;
 
-    typedef struct Lex05_class_vtbl_s    {
+    typedef struct LexC_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Lex05_object.c.
+        // method names to the vtbl definition in LexC_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(LEX05_DATA *);
-    } LEX05_CLASS_VTBL;
+        //bool        (*pIsEnabled)(LEXC_DATA *);
+    } LEXC_CLASS_VTBL;
 
 
 
@@ -111,12 +113,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  LEX05_SINGLETON
-    LEX05_DATA *     Lex05_Shared (
+#ifdef  LEXC_SINGLETON
+    LEXC_DATA *     LexC_Shared (
         void
     );
 
-    void            Lex05_SharedReset (
+    void            LexC_SharedReset (
         void
     );
 #endif
@@ -126,29 +128,48 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Lex05 object if successful, otherwise OBJ_NIL.
+     @return    pointer to LexC object if successful, otherwise OBJ_NIL.
      */
-    LEX05_DATA *     Lex05_Alloc (
+    LEXC_DATA *     LexC_Alloc (
         void
     );
     
     
-    OBJ_ID          Lex05_Class (
+    OBJ_ID          LexC_Class (
         void
     );
     
     
-    LEX05_DATA *     Lex05_New (
+    /*!
+        Given a lexical value class translate that to a printable string,
+        mostly to be used for debugging purposes.
+        @return     pointer to string if successful, otherwise
+                    "LEX_CLASS_UNKNOWN".
+      */
+    const
+    char *          LexC_ClassToString(
+        int32_t         value
+    );
+
+
+    LEXC_DATA *     LexC_New (
         void
     );
     
     
-#ifdef  LEX05_JSON_SUPPORT
-    LEX05_DATA *   Lex05_NewFromJsonString (
+    LEXC_DATA *     LexC_NewFromStrA (
+        PATH_DATA       *pPath,
+        const
+        char            *pStringA
+    );
+
+
+#ifdef  LEXC_JSON_SUPPORT
+    LEXC_DATA *     LexC_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    LEX05_DATA *   Lex05_NewFromJsonStringA (
+    LEXC_DATA *     LexC_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -160,6 +181,10 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    LEX_DATA *      LexC_getLex (
+        LEXC_DATA       *this
+    );
+
 
 
     
@@ -167,41 +192,54 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Lex05_Disable (
-        LEX05_DATA       *this
+    LEXC_DATA *     LexC_Init (
+        LEXC_DATA       *this
     );
 
 
-    ERESULT     Lex05_Enable (
-        LEX05_DATA       *this
+    /*!
+     Advance in the output token stream num tokens, refilling the
+     empty positions in the parsed output queue.
+     @param     this    object pointer
+     @param     num     number of tokens to advance
+     @return:   If successful, a token which must NOT be released,
+                otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    LexC_TokenAdvance(
+        LEXC_DATA       *this,
+        uint16_t        num
     );
 
-   
-    LEX05_DATA *   Lex05_Init (
-        LEX05_DATA     *this
+
+    /*!
+     Look Ahead in the output token stream to the num'th token in the
+     parsed output queue.
+     @param     this    object pointer
+     @param     num     number of tokens to lookahead to
+     @return:   If successful, a token which must NOT be released,
+                otherwise OBJ_NIL.
+     */
+    TOKEN_DATA *    LexC_TokenLookAhead(
+        LEXC_DATA       *this,
+        uint16_t        num
     );
 
 
-    ERESULT     Lex05_IsEnabled (
-        LEX05_DATA       *this
-    );
-    
- 
-#ifdef  LEX05_JSON_SUPPORT
+#ifdef  LEXC_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Lex05_ToJson(this);
+     ASTR_DATA      *pDesc = LexC_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Lex05_ToJson (
-        LEX05_DATA   *this
+    ASTR_DATA *     LexC_ToJson (
+        LEXC_DATA   *this
     );
 #endif
 
@@ -210,7 +248,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Lex05_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = LexC_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -218,8 +256,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Lex05_ToDebugString (
-        LEX05_DATA     *this,
+    ASTR_DATA *     LexC_ToDebugString (
+        LEXC_DATA     *this,
         int             indent
     );
     
@@ -230,5 +268,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* LEX05_H */
+#endif  /* LEXC_H */
 

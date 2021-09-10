@@ -21,28 +21,10 @@
 		C40333C8259BE1A7007E0277 /* Cmd_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C40333C2259BE1A7007E0277 /* Cmd_json.c */; };
 		C40334A625A36DCE007E0277 /* U32Index.c in Sources */ = {isa = PBXBuildFile; fileRef = C40334A225A36DCE007E0277 /* U32Index.c */; };
 		C40334A725A36DCE007E0277 /* U32Index_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40334A325A36DCE007E0277 /* U32Index_object.c */; };
-		C406601C2184DE8A004CF223 /* disk.c in Sources */ = {isa = PBXBuildFile; fileRef = C40660152184DE83004CF223 /* disk.c */; };
-		C406601D2184DE8A004CF223 /* disk_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40660162184DE84004CF223 /* disk_object.c */; };
-		C406601E2184DE8A004CF223 /* disks_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40660172184DE85004CF223 /* disks_object.c */; };
-		C406601F2184DE8A004CF223 /* disks.c in Sources */ = {isa = PBXBuildFile; fileRef = C406601A2184DE88004CF223 /* disks.c */; };
 		C40F053624805B1000D66F9B /* Lex_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F053424805B0F00D66F9B /* Lex_object.c */; };
 		C40F053724805B1000D66F9B /* Lex.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F053524805B1000D66F9B /* Lex.c */; };
-		C40F055D2482E55A00D66F9B /* Lex02.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F053F2482E54800D66F9B /* Lex02.c */; };
-		C40F055E2482E55A00D66F9B /* Lex06_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F05412482E54900D66F9B /* Lex06_object.c */; };
-		C40F05602482E55A00D66F9B /* Lex03_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F05432482E54B00D66F9B /* Lex03_object.c */; };
-		C40F05612482E55A00D66F9B /* Lex04.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F05462482E54C00D66F9B /* Lex04.c */; };
-		C40F05622482E55A00D66F9B /* Lex04_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F05472482E54D00D66F9B /* Lex04_object.c */; };
-		C40F05632482E55A00D66F9B /* Lex00_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F05482482E54E00D66F9B /* Lex00_object.c */; };
-		C40F05642482E55A00D66F9B /* Lex03.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F05492482E54E00D66F9B /* Lex03.c */; };
-		C40F05652482E55A00D66F9B /* Lex05_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F054B2482E54F00D66F9B /* Lex05_object.c */; };
 		C40F05662482E55A00D66F9B /* Lex01.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F054D2482E55100D66F9B /* Lex01.c */; };
-		C40F05672482E55A00D66F9B /* Lex07.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F054E2482E55100D66F9B /* Lex07.c */; };
-		C40F05682482E55A00D66F9B /* Lex06.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F05502482E55300D66F9B /* Lex06.c */; };
 		C40F05692482E55A00D66F9B /* Lex01_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F05512482E55300D66F9B /* Lex01_object.c */; };
-		C40F056A2482E55A00D66F9B /* Lex00.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F05562482E55600D66F9B /* Lex00.c */; };
-		C40F056B2482E55A00D66F9B /* Lex07_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F05592482E55800D66F9B /* Lex07_object.c */; };
-		C40F056C2482E55A00D66F9B /* Lex05.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F055A2482E55800D66F9B /* Lex05.c */; };
-		C40F056D2482E55A00D66F9B /* Lex02_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40F055B2482E55900D66F9B /* Lex02_object.c */; };
 		C4120786268F927500784C90 /* NetMIME.c in Sources */ = {isa = PBXBuildFile; fileRef = C412077A268F927400784C90 /* NetMIME.c */; };
 		C4120787268F927500784C90 /* NetIO_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C412077C268F927400784C90 /* NetIO_object.c */; };
 		C4120788268F927500784C90 /* NetIO.c in Sources */ = {isa = PBXBuildFile; fileRef = C412077E268F927400784C90 /* NetIO.c */; };
@@ -91,7 +73,7 @@
 		C43204C1239170060078124D /* TextOut_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C43204BE239170050078124D /* TextOut_object.c */; };
 		C434C06826AE32A200C903C1 /* consumer_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C434C06426AE32A200C903C1 /* consumer_object.c */; };
 		C434C06926AE32A200C903C1 /* consumer.c in Sources */ = {isa = PBXBuildFile; fileRef = C434C06626AE32A200C903C1 /* consumer.c */; };
-		C434C0C326B0E41900C903C1 /* Dir_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C434C0C226B0E41900C903C1 /* Dir_test.c */; };
+		C434C0C326B0E41900C903C1 /* LexTri_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C434C0C226B0E41900C903C1 /* LexTri_test.c */; };
 		C43584E023AFBF9D0069B103 /* BlkdRcds16.c in Sources */ = {isa = PBXBuildFile; fileRef = C43584DD23AFBF9C0069B103 /* BlkdRcds16.c */; };
 		C43584E123AFBF9D0069B103 /* BlkdRcds16_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C43584DF23AFBF9D0069B103 /* BlkdRcds16_object.c */; };
 		C435854B23B7A55D0069B103 /* SrcError_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C435854623B7A55B0069B103 /* SrcError_object.c */; };
@@ -208,6 +190,10 @@
 		C459802C21B02298001B8375 /* rbt_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = C459802B21B02297001B8375 /* rbt_tree.c */; };
 		C45A9F902300827500785895 /* AStrCReader_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C45A9F8C2300827300785895 /* AStrCReader_object.c */; };
 		C45A9F912300827500785895 /* AStrCReader.c in Sources */ = {isa = PBXBuildFile; fileRef = C45A9F8E2300827400785895 /* AStrCReader.c */; };
+		C46C1C1226E103AA00168E36 /* LexC_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C46C1C0E26E103A900168E36 /* LexC_object.c */; };
+		C46C1C1326E103AA00168E36 /* LexC.c in Sources */ = {isa = PBXBuildFile; fileRef = C46C1C1126E103AA00168E36 /* LexC.c */; };
+		C46C1C1926E1A5A700168E36 /* LexTri.c in Sources */ = {isa = PBXBuildFile; fileRef = C46C1C1526E1A5A600168E36 /* LexTri.c */; };
+		C46C1C1A26E1A5A700168E36 /* LexTri_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C46C1C1726E1A5A600168E36 /* LexTri_object.c */; };
 		C47048BE2121394D0026E795 /* u32Matrix.c in Sources */ = {isa = PBXBuildFile; fileRef = C47048BB2121394A0026E795 /* u32Matrix.c */; };
 		C47048BF2121394D0026E795 /* u32Matrix_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47048BC2121394B0026E795 /* u32Matrix_object.c */; };
 		C4714375240CA7980073AADC /* ObjBT_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4714371240CA7960073AADC /* ObjBT_object.c */; };
@@ -478,50 +464,14 @@
 		C40334A325A36DCE007E0277 /* U32Index_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = U32Index_object.c; sourceTree = "<group>"; };
 		C40334A425A36DCE007E0277 /* U32Index_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = U32Index_internal.h; sourceTree = "<group>"; };
 		C40334A525A36DCE007E0277 /* U32Index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = U32Index.h; sourceTree = "<group>"; };
-		C40660142184DE82004CF223 /* disks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = disks.h; sourceTree = "<group>"; };
-		C40660152184DE83004CF223 /* disk.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = disk.c; sourceTree = "<group>"; };
-		C40660162184DE84004CF223 /* disk_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = disk_object.c; sourceTree = "<group>"; };
-		C40660172184DE85004CF223 /* disks_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = disks_object.c; sourceTree = "<group>"; };
-		C40660182184DE86004CF223 /* disk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = disk.h; sourceTree = "<group>"; };
-		C40660192184DE87004CF223 /* disk_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = disk_internal.h; sourceTree = "<group>"; };
-		C406601A2184DE88004CF223 /* disks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = disks.c; sourceTree = "<group>"; };
-		C406601B2184DE89004CF223 /* disks_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = disks_internal.h; sourceTree = "<group>"; };
 		C40F053224805B0E00D66F9B /* Lex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex.h; sourceTree = "<group>"; };
 		C40F053324805B0F00D66F9B /* Lex_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex_internal.h; sourceTree = "<group>"; };
 		C40F053424805B0F00D66F9B /* Lex_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex_object.c; sourceTree = "<group>"; };
 		C40F053524805B1000D66F9B /* Lex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex.c; sourceTree = "<group>"; };
-		C40F053C2482E54600D66F9B /* Lex04.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex04.h; sourceTree = "<group>"; };
-		C40F053D2482E54700D66F9B /* Lex02.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex02.h; sourceTree = "<group>"; };
-		C40F053E2482E54800D66F9B /* Lex06.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex06.h; sourceTree = "<group>"; };
-		C40F053F2482E54800D66F9B /* Lex02.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex02.c; sourceTree = "<group>"; };
-		C40F05402482E54900D66F9B /* Lex00_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex00_internal.h; sourceTree = "<group>"; };
-		C40F05412482E54900D66F9B /* Lex06_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex06_object.c; sourceTree = "<group>"; };
-		C40F05432482E54B00D66F9B /* Lex03_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex03_object.c; sourceTree = "<group>"; };
-		C40F05442482E54B00D66F9B /* Lex00.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex00.h; sourceTree = "<group>"; };
-		C40F05452482E54C00D66F9B /* Lex02_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex02_internal.h; sourceTree = "<group>"; };
-		C40F05462482E54C00D66F9B /* Lex04.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex04.c; sourceTree = "<group>"; };
-		C40F05472482E54D00D66F9B /* Lex04_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex04_object.c; sourceTree = "<group>"; };
-		C40F05482482E54E00D66F9B /* Lex00_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex00_object.c; sourceTree = "<group>"; };
-		C40F05492482E54E00D66F9B /* Lex03.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex03.c; sourceTree = "<group>"; };
-		C40F054A2482E54F00D66F9B /* Lex06_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex06_internal.h; sourceTree = "<group>"; };
-		C40F054B2482E54F00D66F9B /* Lex05_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex05_object.c; sourceTree = "<group>"; };
-		C40F054C2482E55000D66F9B /* Lex04_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex04_internal.h; sourceTree = "<group>"; };
 		C40F054D2482E55100D66F9B /* Lex01.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex01.c; sourceTree = "<group>"; };
-		C40F054E2482E55100D66F9B /* Lex07.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex07.c; sourceTree = "<group>"; };
 		C40F054F2482E55200D66F9B /* Lex01.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex01.h; sourceTree = "<group>"; };
-		C40F05502482E55300D66F9B /* Lex06.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex06.c; sourceTree = "<group>"; };
 		C40F05512482E55300D66F9B /* Lex01_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex01_object.c; sourceTree = "<group>"; };
-		C40F05522482E55400D66F9B /* Lex03.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex03.h; sourceTree = "<group>"; };
 		C40F05532482E55400D66F9B /* Lex01_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex01_internal.h; sourceTree = "<group>"; };
-		C40F05542482E55500D66F9B /* Lex05.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex05.h; sourceTree = "<group>"; };
-		C40F05552482E55600D66F9B /* Lex07_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex07_internal.h; sourceTree = "<group>"; };
-		C40F05562482E55600D66F9B /* Lex00.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex00.c; sourceTree = "<group>"; };
-		C40F05572482E55700D66F9B /* Lex07.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex07.h; sourceTree = "<group>"; };
-		C40F05582482E55700D66F9B /* Lex05_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex05_internal.h; sourceTree = "<group>"; };
-		C40F05592482E55800D66F9B /* Lex07_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex07_object.c; sourceTree = "<group>"; };
-		C40F055A2482E55800D66F9B /* Lex05.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex05.c; sourceTree = "<group>"; };
-		C40F055B2482E55900D66F9B /* Lex02_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lex02_object.c; sourceTree = "<group>"; };
-		C40F055C2482E55900D66F9B /* Lex03_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lex03_internal.h; sourceTree = "<group>"; };
 		C412077A268F927400784C90 /* NetMIME.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NetMIME.c; sourceTree = "<group>"; };
 		C412077B268F927400784C90 /* NetHTTP_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetHTTP_internal.h; sourceTree = "<group>"; };
 		C412077C268F927400784C90 /* NetIO_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NetIO_object.c; sourceTree = "<group>"; };
@@ -613,7 +563,7 @@
 		C434C06526AE32A200C903C1 /* consumer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = consumer.h; sourceTree = "<group>"; };
 		C434C06626AE32A200C903C1 /* consumer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = consumer.c; sourceTree = "<group>"; };
 		C434C06726AE32A200C903C1 /* consumer_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = consumer_internal.h; sourceTree = "<group>"; };
-		C434C0C226B0E41900C903C1 /* Dir_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Dir_test.c; sourceTree = "<group>"; };
+		C434C0C226B0E41900C903C1 /* LexTri_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LexTri_test.c; sourceTree = "<group>"; };
 		C43584DC23AFBF9C0069B103 /* BlkdRcds16_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlkdRcds16_internal.h; sourceTree = "<group>"; };
 		C43584DD23AFBF9C0069B103 /* BlkdRcds16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BlkdRcds16.c; sourceTree = "<group>"; };
 		C43584DE23AFBF9D0069B103 /* BlkdRcds16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlkdRcds16.h; sourceTree = "<group>"; };
@@ -848,6 +798,15 @@
 		C45A9F8E2300827400785895 /* AStrCReader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AStrCReader.c; sourceTree = "<group>"; };
 		C45A9F8F2300827400785895 /* AStrCReader_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AStrCReader_internal.h; sourceTree = "<group>"; };
 		C45A9F92230082AD00785895 /* w32Reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = w32Reader.h; sourceTree = "<group>"; };
+		C46C1C0E26E103A900168E36 /* LexC_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LexC_object.c; sourceTree = "<group>"; };
+		C46C1C0F26E103A900168E36 /* LexC_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LexC_internal.h; sourceTree = "<group>"; };
+		C46C1C1026E103AA00168E36 /* LexC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LexC.h; sourceTree = "<group>"; };
+		C46C1C1126E103AA00168E36 /* LexC.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LexC.c; sourceTree = "<group>"; };
+		C46C1C1426E1782900168E36 /* test_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = test_defs.h; sourceTree = "<group>"; };
+		C46C1C1526E1A5A600168E36 /* LexTri.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LexTri.c; sourceTree = "<group>"; };
+		C46C1C1626E1A5A600168E36 /* LexTri.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LexTri.h; sourceTree = "<group>"; };
+		C46C1C1726E1A5A600168E36 /* LexTri_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LexTri_object.c; sourceTree = "<group>"; };
+		C46C1C1826E1A5A600168E36 /* LexTri_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LexTri_internal.h; sourceTree = "<group>"; };
 		C47048BA212139490026E795 /* u32Matrix_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = u32Matrix_internal.h; sourceTree = "<group>"; };
 		C47048BB2121394A0026E795 /* u32Matrix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = u32Matrix.c; sourceTree = "<group>"; };
 		C47048BC2121394B0026E795 /* u32Matrix_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = u32Matrix_object.c; sourceTree = "<group>"; };
@@ -1285,7 +1244,8 @@
 		C43599331FC9C2F200CA858E /* testCmn */ = {
 			isa = PBXGroup;
 			children = (
-				C434C0C226B0E41900C903C1 /* Dir_test.c */,
+				C434C0C226B0E41900C903C1 /* LexTri_test.c */,
+				C46C1C1426E1782900168E36 /* test_defs.h */,
 				C4FF85C121590FE500264EE7 /* objTest_object.c */,
 				C4B0465823E4C79000162B4F /* objTest_internal.h */,
 				C4FF85C021590FE400264EE7 /* objTest.c */,
@@ -1463,14 +1423,6 @@
 				C4B045ED23E1480200162B4F /* DirEntry_object.c */,
 				C4B045EB23E1480100162B4F /* DirEntry.c */,
 				C4B045EA23E1480100162B4F /* DirEntry.h */,
-				C40660192184DE87004CF223 /* disk_internal.h */,
-				C40660162184DE84004CF223 /* disk_object.c */,
-				C40660152184DE83004CF223 /* disk.c */,
-				C40660182184DE86004CF223 /* disk.h */,
-				C406601B2184DE89004CF223 /* disks_internal.h */,
-				C40660172184DE85004CF223 /* disks_object.c */,
-				C406601A2184DE88004CF223 /* disks.c */,
-				C40660142184DE82004CF223 /* disks.h */,
 				C4B045C323DCD1F500162B4F /* Ebcdic_internal.h */,
 				C4B045C223DCD1F500162B4F /* Ebcdic_object.c */,
 				C4B045C123DCD1F400162B4F /* Ebcdic.c */,
@@ -1580,38 +1532,14 @@
 				C40F053424805B0F00D66F9B /* Lex_object.c */,
 				C40F053524805B1000D66F9B /* Lex.c */,
 				C40F053224805B0E00D66F9B /* Lex.h */,
-				C40F05402482E54900D66F9B /* Lex00_internal.h */,
-				C40F05482482E54E00D66F9B /* Lex00_object.c */,
-				C40F05562482E55600D66F9B /* Lex00.c */,
-				C40F05442482E54B00D66F9B /* Lex00.h */,
 				C40F05532482E55400D66F9B /* Lex01_internal.h */,
 				C40F05512482E55300D66F9B /* Lex01_object.c */,
 				C40F054D2482E55100D66F9B /* Lex01.c */,
 				C40F054F2482E55200D66F9B /* Lex01.h */,
-				C40F05452482E54C00D66F9B /* Lex02_internal.h */,
-				C40F055B2482E55900D66F9B /* Lex02_object.c */,
-				C40F053F2482E54800D66F9B /* Lex02.c */,
-				C40F053D2482E54700D66F9B /* Lex02.h */,
-				C40F055C2482E55900D66F9B /* Lex03_internal.h */,
-				C40F05432482E54B00D66F9B /* Lex03_object.c */,
-				C40F05492482E54E00D66F9B /* Lex03.c */,
-				C40F05522482E55400D66F9B /* Lex03.h */,
-				C40F054C2482E55000D66F9B /* Lex04_internal.h */,
-				C40F05472482E54D00D66F9B /* Lex04_object.c */,
-				C40F05462482E54C00D66F9B /* Lex04.c */,
-				C40F053C2482E54600D66F9B /* Lex04.h */,
-				C40F05582482E55700D66F9B /* Lex05_internal.h */,
-				C40F054B2482E54F00D66F9B /* Lex05_object.c */,
-				C40F055A2482E55800D66F9B /* Lex05.c */,
-				C40F05542482E55500D66F9B /* Lex05.h */,
-				C40F054A2482E54F00D66F9B /* Lex06_internal.h */,
-				C40F05412482E54900D66F9B /* Lex06_object.c */,
-				C40F05502482E55300D66F9B /* Lex06.c */,
-				C40F053E2482E54800D66F9B /* Lex06.h */,
-				C40F05552482E55600D66F9B /* Lex07_internal.h */,
-				C40F05592482E55800D66F9B /* Lex07_object.c */,
-				C40F054E2482E55100D66F9B /* Lex07.c */,
-				C40F05572482E55700D66F9B /* Lex07.h */,
+				C46C1C0F26E103A900168E36 /* LexC_internal.h */,
+				C46C1C0E26E103A900168E36 /* LexC_object.c */,
+				C46C1C1126E103AA00168E36 /* LexC.c */,
+				C46C1C1026E103AA00168E36 /* LexC.h */,
 				C4E4F8652581DB950085E74E /* LexJ_internal.h */,
 				C4E4F8642581DB950085E74E /* LexJ_object.c */,
 				C4E4F8632581DB950085E74E /* LexJ.c */,
@@ -1620,6 +1548,10 @@
 				C4A096872613F7C2005E97F0 /* LexKW_object.c */,
 				C4A096892613F7C2005E97F0 /* LexKW.c */,
 				C4A0968A2613F7C2005E97F0 /* LexKW.h */,
+				C46C1C1826E1A5A600168E36 /* LexTri_internal.h */,
+				C46C1C1726E1A5A600168E36 /* LexTri_object.c */,
+				C46C1C1526E1A5A600168E36 /* LexTri.c */,
+				C46C1C1626E1A5A600168E36 /* LexTri.h */,
 				C48045F724894194008935B7 /* LineIndex_internal.h */,
 				C48045F424894192008935B7 /* LineIndex_json.c */,
 				C48045F524894193008935B7 /* LineIndex_object.c */,
@@ -2195,7 +2127,6 @@
 				C4359BEC1FC9C48400CA858E /* u8Array.c in Sources */,
 				C43599C81FC9C36800CA858E /* cb32.c in Sources */,
 				C4359BFA1FC9C48400CA858E /* szTbl.c in Sources */,
-				C40F05602482E55A00D66F9B /* Lex03_object.c in Sources */,
 				C4E137E223BBE6F30095EABE /* Value_object.c in Sources */,
 				C4B045F923E2047800162B4F /* Path_json.c in Sources */,
 				C43A106B239B4FFB0033158E /* FileRef_object.c in Sources */,
@@ -2215,8 +2146,8 @@
 				C4B75F5823FD82E800701E77 /* I16Matrix.c in Sources */,
 				C451F3DD26DBC0B600D9CC69 /* Test.c in Sources */,
 				C4359BFC1FC9C48400CA858E /* trace.c in Sources */,
-				C40F05642482E55A00D66F9B /* Lex03.c in Sources */,
 				C4B75F8D24020A8C00701E77 /* Syms_json.c in Sources */,
+				C46C1C1A26E1A5A700168E36 /* LexTri_object.c in Sources */,
 				C4EBE2BD23C90143008E9EE8 /* NodeList.c in Sources */,
 				C4359B551FC9C42700CA858E /* psxMutex_object.c in Sources */,
 				C4D463812425261F00AF453D /* U8VlArray_json.c in Sources */,
@@ -2238,7 +2169,6 @@
 				C4359BCB1FC9C48400CA858E /* W32StrC.c in Sources */,
 				C4E1383423BE91570095EABE /* TokenList_json.c in Sources */,
 				C4359BD41FC9C48400CA858E /* utf8.c in Sources */,
-				C40F056D2482E55A00D66F9B /* Lex02_object.c in Sources */,
 				C4359B4F1FC9C42700CA858E /* psxLock.c in Sources */,
 				C4B0464023E47E1C00162B4F /* Dir.c in Sources */,
 				C4359B0D1FC9C3D800CA858E /* lru.c in Sources */,
@@ -2264,16 +2194,13 @@
 				C434C06826AE32A200C903C1 /* consumer_object.c in Sources */,
 				C4120789268F927500784C90 /* NetMIME_object.c in Sources */,
 				C48EA14023A7FFE600CCAF2B /* NodeEnum.c in Sources */,
-				C40F05622482E55A00D66F9B /* Lex04_object.c in Sources */,
 				C4359BE41FC9C48400CA858E /* trctbl_object.c in Sources */,
 				C4359BF21FC9C48400CA858E /* timer_object.c in Sources */,
 				C4359B4C1FC9C42700CA858E /* psxThread.c in Sources */,
 				C4D463122419275C00AF453D /* False.c in Sources */,
 				C4120786268F927500784C90 /* NetMIME.c in Sources */,
-				C40F05682482E55A00D66F9B /* Lex06.c in Sources */,
 				C4EBE1F423C19BF6008E9EE8 /* Compiler.c in Sources */,
 				C47D7C322662B8E500E2A280 /* Money64_object.c in Sources */,
-				C40F056B2482E55A00D66F9B /* Lex07_object.c in Sources */,
 				C47D7C312662B8E500E2A280 /* Money64_json.c in Sources */,
 				C47DD28B238D887600EA9388 /* SrcLoc_object.c in Sources */,
 				C479C00223ADB9310057A017 /* szTbl_json.c in Sources */,
@@ -2313,6 +2240,7 @@
 				C4404DDF254349D100A6787F /* SQLiteCurs.c in Sources */,
 				C4359BDF1FC9C48400CA858E /* trctbl.c in Sources */,
 				C4359B081FC9C3D800CA858E /* listdl.c in Sources */,
+				C46C1C1326E103AA00168E36 /* LexC.c in Sources */,
 				C4EBE2B523C90111008E9EE8 /* NodeArray_json.c in Sources */,
 				C4359A5B1FC9C38800CA858E /* fbsi.c in Sources */,
 				C403339925991F6C007E0277 /* Sect_object.c in Sources */,
@@ -2331,7 +2259,6 @@
 				C4A0968B2613F7C2005E97F0 /* LexKW_object.c in Sources */,
 				C47048BE2121394D0026E795 /* u32Matrix.c in Sources */,
 				C4B0464B23E4A73700162B4F /* Appl_object.c in Sources */,
-				C406601D2184DE8A004CF223 /* disk_object.c in Sources */,
 				C4359A561FC9C38800CA858E /* execArray.c in Sources */,
 				C41209C1269B3AF700784C90 /* bpt32idx.c in Sources */,
 				C48607F226A288E500EAD725 /* CsvRcd_object.c in Sources */,
@@ -2341,7 +2268,6 @@
 				C435999F1FC9C36800CA858E /* AStrC_object.c in Sources */,
 				C40333C7259BE1A7007E0277 /* CmdProc_json.c in Sources */,
 				C49D985323A6ACE9003A25FD /* ObjList_object.c in Sources */,
-				C40F056C2482E55A00D66F9B /* Lex05.c in Sources */,
 				C4804609248BE39A008935B7 /* SrcFile.c in Sources */,
 				C4EC06342535FE7A00C0F25A /* Uri_object.c in Sources */,
 				C4B0460123E2083800162B4F /* DateTime_object.c in Sources */,
@@ -2361,7 +2287,6 @@
 				C440262B202B4252009B7806 /* szData_object.c in Sources */,
 				C412078A268F927500784C90 /* NetHTTP.c in Sources */,
 				C4359B561FC9C42700CA858E /* ptrArray.c in Sources */,
-				C40F05652482E55A00D66F9B /* Lex05_object.c in Sources */,
 				C4B045D923DD340900162B4F /* JsonPP.c in Sources */,
 				C4B75F5923FD82E800701E77 /* I16Matrix_json.c in Sources */,
 				C412079026907BF100784C90 /* Net.c in Sources */,
@@ -2413,7 +2338,6 @@
 				C41B751223A927CF00C7DEBD /* NodeScan_object.c in Sources */,
 				C4EC06292533B43400C0F25A /* SQLite.c in Sources */,
 				C4FF85C321590FE500264EE7 /* objTest_object.c in Sources */,
-				C40F055D2482E55A00D66F9B /* Lex02.c in Sources */,
 				C4B0460023E2083800162B4F /* DateTime.c in Sources */,
 				C41B752D23AA5AD100C7DEBD /* BitSet_object.c in Sources */,
 				C451F3DE26DBC0B600D9CC69 /* Test_object.c in Sources */,
@@ -2434,7 +2358,6 @@
 				C4D463112419275C00AF453D /* False_object.c in Sources */,
 				C4EBE2CB23C927E2008E9EE8 /* NodeBT_json.c in Sources */,
 				C40333C6259BE1A7007E0277 /* Cmd_object.c in Sources */,
-				C40F05612482E55A00D66F9B /* Lex04.c in Sources */,
 				C4E1383C23BF84520095EABE /* ObjList_json.c in Sources */,
 				C4714397241098F10073AADC /* Scanner.c in Sources */,
 				C417411923CE75F0008B50A5 /* ObjVLink.c in Sources */,
@@ -2446,7 +2369,6 @@
 				C4D463192419277600AF453D /* Null_json.c in Sources */,
 				C4359B4E1FC9C42700CA858E /* psxThread_object.c in Sources */,
 				C4B045DA23DD340900162B4F /* JsonPP_object.c in Sources */,
-				C406601E2184DE8A004CF223 /* disks_object.c in Sources */,
 				C4359A3C1FC9C38800CA858E /* endian.c in Sources */,
 				C480462B24A8DAD8008935B7 /* AudioCW_object.c in Sources */,
 				C4B0467F23E71AAA00162B4F /* ObjHash_json.c in Sources */,
@@ -2454,11 +2376,9 @@
 				C41209C0269B3AF700784C90 /* bpt32idx_object.c in Sources */,
 				C4D463832425261F00AF453D /* U8VlArray.c in Sources */,
 				C4EBE2F523CA1B22008E9EE8 /* Name_object.c in Sources */,
-				C40F05672482E55A00D66F9B /* Lex07.c in Sources */,
 				C4B045B123D7F39100162B4F /* TextIn_object.c in Sources */,
 				C456B61A2454F14C00EB541A /* SqlCol.c in Sources */,
 				C4AA73AB1FE2B740001FACEC /* hjson.c in Sources */,
-				C40F056A2482E55A00D66F9B /* Lex00.c in Sources */,
 				C47DD28A238D887600EA9388 /* SrcLoc_json.c in Sources */,
 				C4B045F823E2047800162B4F /* Path_object.c in Sources */,
 				C4E4F8672581DB950085E74E /* LexJ_object.c in Sources */,
@@ -2485,9 +2405,8 @@
 				C459802C21B02298001B8375 /* rbt_tree.c in Sources */,
 				C4359BD81FC9C48400CA858E /* szTbl_object.c in Sources */,
 				C4804608248BE39A008935B7 /* SrcFile_object.c in Sources */,
-				C406601C2184DE8A004CF223 /* disk.c in Sources */,
 				C4B7605B240A16F200701E77 /* Opcodes_json.c in Sources */,
-				C434C0C326B0E41900C903C1 /* Dir_test.c in Sources */,
+				C434C0C326B0E41900C903C1 /* LexTri_test.c in Sources */,
 				C4B7605D240A16F200701E77 /* Opcode.c in Sources */,
 				C4B75F4823FC4E1300701E77 /* U16Array_object.c in Sources */,
 				C43599CB1FC9C36800CA858E /* array_object.c in Sources */,
@@ -2510,6 +2429,7 @@
 				C43599B41FC9C36800CA858E /* AStrC.c in Sources */,
 				C4EBE2AB23C8E3F4008E9EE8 /* Blocks.c in Sources */,
 				C4404DE0254349D100A6787F /* SQLiteCurs_object.c in Sources */,
+				C46C1C1226E103AA00168E36 /* LexC_object.c in Sources */,
 				C4EBE2DC23C95883008E9EE8 /* NodeTree_json.c in Sources */,
 				C417411823CE75F0008B50A5 /* ObjVLink_object.c in Sources */,
 				C48045FB24894195008935B7 /* LineIndex.c in Sources */,
@@ -2524,7 +2444,7 @@
 				C435855423B7CE810069B103 /* SrcError_json.c in Sources */,
 				C4EC06362535FE7A00C0F25A /* Uri.c in Sources */,
 				C4359A3E1FC9C38800CA858E /* dec_object.c in Sources */,
-				C40F055E2482E55A00D66F9B /* Lex06_object.c in Sources */,
+				C46C1C1926E1A5A700168E36 /* LexTri.c in Sources */,
 				C47DD28C238D887600EA9388 /* SrcLoc.c in Sources */,
 				C4B045D723DD340900162B4F /* JsonOut.c in Sources */,
 				C4A0968C2613F7C2005E97F0 /* LexKW.c in Sources */,
@@ -2540,7 +2460,6 @@
 				C47D7DF5267BCD6A00E2A280 /* ValueArray_json.c in Sources */,
 				C4AA73631FDBB245001FACEC /* genObj_object.c in Sources */,
 				C4D46324241927B200AF453D /* True_json.c in Sources */,
-				C40F05632482E55A00D66F9B /* Lex00_object.c in Sources */,
 				C43A106A239B4FFB0033158E /* FileRef.c in Sources */,
 				C4714388240F0DA90073AADC /* Expr_object.c in Sources */,
 				C43599BE1FC9C36800CA858E /* block16.c in Sources */,
@@ -2582,7 +2501,6 @@
 				C4E23D9322F9FA790048FECD /* stackTraces.c in Sources */,
 				C47048BF2121394D0026E795 /* u32Matrix_object.c in Sources */,
 				C4A096932613F96A005E97F0 /* HtmlOut_object.c in Sources */,
-				C406601F2184DE8A004CF223 /* disks.c in Sources */,
 				C456B6182454F14C00EB541A /* SqlCol_json.c in Sources */,
 				C4E4F8662581DB950085E74E /* LexJ.c in Sources */,
 				C4EBE2DD23C95883008E9EE8 /* NodeTree_object.c in Sources */,

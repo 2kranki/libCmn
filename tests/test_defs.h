@@ -34,7 +34,8 @@
  */
 
 
-#include        <cmn_defs.h>
+#include    <cmn_defs.h>
+#include    <Test_internal.h>
 
 
 #ifndef     TEST_DEFS_H

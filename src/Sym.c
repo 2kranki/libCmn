@@ -154,8 +154,7 @@ extern "C" {
 
         this = Sym_New( );
         if (this) {
-            memmove(&this->entry, pEntry, sizeof(SYM_ENTRY));
-            Sym_UpdateName(this);
+            Sym_setEntry(this, pEntry);
         }
 
         return this;
@@ -491,6 +490,27 @@ extern "C" {
 #endif
 
         return &this->entry;
+    }
+
+
+    bool            Sym_setEntry (
+        SYM_DATA        *this,
+        SYM_ENTRY       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        memmove(&this->entry, pValue, sizeof(SYM_ENTRY));
+        Sym_UpdateName(this);       // Setup the new name in the node part
+                                    // of this object.
+
+        return true;
     }
 
 

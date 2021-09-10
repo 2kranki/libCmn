@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   disks.c
- *	Generated 10/27/2018 13:52:11
+ * File:   LexTri.c
+ *  Generated 09/02/2021 20:32:47
  *
  */
 
@@ -41,103 +41,64 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <disks_internal.h>
+#include        <LexTri_internal.h>
+#include        <JsonIn.h>
 #include        <trace.h>
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-#   include        <sys/param.h>
-#   include        <sys/ucred.h>
-#   include        <sys/mount.h>
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-#endif
+#include        <utf8.h>
 
 
 
-#ifdef	__cplusplus
+
+
+
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
 
     
+    //****************************************************************
+    // * * * * * * * * * * *    Internal Data    * * * * * * * * * * *
+    //****************************************************************
+
+    // Place constant internal data here. Generally, it should be
+    // 'static' so that it does not interfere with other objects.
 
 
-    
-    
  
+    /****************************************************************
+    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
+    ****************************************************************/
+
+
+
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
 #ifdef XYZZY
     static
-    void            disks_task_body(
+    void            LexTri_task_body (
         void            *pData
     )
     {
-        //DISKS_DATA  *this = pData;
+        //LEXTRI_DATA  *this = pData;
         
     }
 #endif
 
 
 
-    void            disks_GetAllInfo(
-        DISKS_DATA      *this
-    )
-    {
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-        int             numStats = 0;
-        int             bufSize = 0;
-        int             i;
-        struct statfs   *pBufs = NULL;
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-#endif
-
-#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
-        numStats = getfsstat(NULL, 0, MNT_NOWAIT);
-        if (numStats) {
-            bufSize = numStats * sizeof(struct statfs);
-            pBufs = mem_Malloc(bufSize);
-            if (pBufs) {
-                numStats = getfsstat(pBufs, bufSize, MNT_NOWAIT);
-#ifdef NDEBUG
-#else
-                if (obj_Flag(this, OBJ_FLAG_TRACE)) {
-                    for(i=0; i<numStats; ++i) {
-                        fprintf(stderr, "Disk = %d\n", i);
-                        fprintf(stderr, "\tfs type = %s\n", pBufs[i].f_fstypename);
-                        fprintf(stderr, "\tmount on name = %s\n", pBufs[i].f_mntonname);
-                        fprintf(stderr, "\tmount from name = %s\n", pBufs[i].f_mntfromname);
-                    }
-                }
-#endif
-                mem_Free(pBufs);
-                pBufs = NULL;
-            }
-        }
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-#endif
-    }
-
-    
-    
-    /****************************************************************
-    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
-    ****************************************************************/
-
-
     //===============================================================
     //                      *** Class Methods ***
     //===============================================================
 
-    DISKS_DATA *     disks_Alloc(
+    LEXTRI_DATA *     LexTri_Alloc (
         void
     )
     {
-        DISKS_DATA      *this;
-        uint32_t        cbSize = sizeof(DISKS_DATA);
+        LEXTRI_DATA       *this;
+        uint32_t        cbSize = sizeof(LEXTRI_DATA);
         
         // Do initialization.
         
@@ -149,15 +110,15 @@ extern "C" {
 
 
 
-    DISKS_DATA *     disks_New(
+    LEXTRI_DATA *     LexTri_New (
         void
     )
     {
-        DISKS_DATA       *this;
+        LEXTRI_DATA       *this;
         
-        this = disks_Alloc( );
+        this = LexTri_Alloc( );
         if (this) {
-            this = disks_Init(this);
+            this = LexTri_Init(this);
         } 
         return this;
     }
@@ -171,18 +132,88 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                          P r i o r i t y
+    //               L e x i c a l  S c a n n e r
     //---------------------------------------------------------------
-    
-    uint16_t        disks_getPriority(
-        DISKS_DATA     *this
+
+    LEX_DATA *      LexTri_getLex (
+        LEXTRI_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if( !LexTri_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (LEX_DATA *)this;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      P a r s e r
+    //---------------------------------------------------------------
+
+    bool            LexTri_setParserPostExit(
+        LEXTRI_DATA     *this,
+        ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
+        OBJ_ID          pParseObj
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!LexTri_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pParserPostExit = pParser;
+        this->pParserPostExitObj = pParseObj;
+
+        return true;
+    }
+
+
+    bool            LexTri_setParserPreExit(
+        LEXTRI_DATA     *this,
+        ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
+        OBJ_ID          pParseObj
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!LexTri_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pParserPreExit = pParser;
+        this->pParserPreExitObj = pParseObj;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          P r i o r i t y
+    //---------------------------------------------------------------
+    
+    uint16_t        LexTri_getPriority (
+        LEXTRI_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -193,14 +224,14 @@ extern "C" {
     }
 
 
-    bool            disks_setPriority(
-        DISKS_DATA     *this,
+    bool            LexTri_setPriority (
+        LEXTRI_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -217,13 +248,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        disks_getSize(
-        DISKS_DATA       *this
+    uint32_t        LexTri_getSize (
+        LEXTRI_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -238,15 +269,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * disks_getStr(
-        DISKS_DATA     *this
+    ASTR_DATA * LexTri_getStr (
+        LEXTRI_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -256,14 +287,14 @@ extern "C" {
     }
     
     
-    bool        disks_setStr(
-        DISKS_DATA     *this,
+    bool        LexTri_setStr (
+        LEXTRI_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -284,15 +315,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  disks_getSuperVtbl(
-        DISKS_DATA     *this
+    OBJ_IUNKNOWN *  LexTri_getSuperVtbl (
+        LEXTRI_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -321,16 +352,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = disks_Assign(this,pOther);
+        ERESULT eRc = LexTri_Assign(this,pOther);
      @endcode 
-     @param     this    DISKS object pointer
-     @param     pOther  a pointer to another DISKS object
+     @param     this    object pointer
+     @param     pOther  a pointer to another LEXTRI object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         disks_Assign(
-        DISKS_DATA		*this,
-        DISKS_DATA     *pOther
+    ERESULT         LexTri_Assign (
+        LEXTRI_DATA       *this,
+        LEXTRI_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -338,15 +369,25 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( !disks_Validate(pOther) ) {
+        if (!LexTri_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -371,8 +412,7 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        //pOther->x     = this->x; 
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -394,39 +434,40 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             disks_Compare (
-        DISKS_DATA      *this,
-        DISKS_DATA      *pOther
+    int             LexTri_Compare (
+        LEXTRI_DATA     *this,
+        LEXTRI_DATA     *pOther
     )
     {
-        int             iRc = 0;
-
+        int             iRc = -1;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
 #ifdef NDEBUG
 #else
-        if (!disks_Validate(this)) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!disks_Validate(pOther)) {
+        if (!LexTri_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
         }
 #endif
 
-#ifdef  xyzzy
-        if (this->token == pOther->token) {
-            return iRc;
-        }
-        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
-#endif
-
+        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+     
         return iRc;
     }
-
-
     
+   
+ 
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -435,40 +476,44 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        disks      *pCopy = disks_Copy(this);
+        LexTri      *pCopy = LexTri_Copy(this);
      @endcode 
-     @param     this    DISKS object pointer
-     @return    If successful, a DISKS object which must be 
+     @param     this    object pointer
+     @return    If successful, a LEXTRI object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    DISKS_DATA *     disks_Copy(
-        DISKS_DATA       *this
+    LEXTRI_DATA *     LexTri_Copy (
+        LEXTRI_DATA       *this
     )
     {
-        DISKS_DATA       *pOther = OBJ_NIL;
+        LEXTRI_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = disks_New( );
+#ifdef LEXTRI_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
+        pOther = LexTri_New( );
         if (pOther) {
-            eRc = disks_Assign(this, pOther);
+            eRc = LexTri_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -478,11 +523,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            disks_Dealloc(
+    void            LexTri_Dealloc (
         OBJ_ID          objId
     )
     {
-        DISKS_DATA   *this = objId;
+        LEXTRI_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -490,7 +536,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -498,11 +544,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((DISKS_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((LEXTRI_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        disks_setStr(this, OBJ_NIL);
+        LexTri_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -516,29 +562,84 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        LexTri      *pDeepCopy = LexTri_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a LEXTRI object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    LEXTRI_DATA *     LexTri_DeepCopy (
+        LEXTRI_DATA       *this
+    )
+    {
+        LEXTRI_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!LexTri_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = LexTri_New( );
+        if (pOther) {
+            eRc = LexTri_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
-    ERESULT         disks_Disable(
-        DISKS_DATA		*this
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         LexTri_Disable (
+        LEXTRI_DATA       *this
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !disks_Validate(this) ) {
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -547,26 +648,35 @@ extern "C" {
     //                          E n a b l e
     //---------------------------------------------------------------
 
-    ERESULT         disks_Enable(
-        DISKS_DATA		*this
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         LexTri_Enable (
+        LEXTRI_DATA       *this
     )
     {
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if( !disks_Validate(this) ) {
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -575,11 +685,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    DISKS_DATA *   disks_Init(
-        DISKS_DATA       *this
+    LEXTRI_DATA *   LexTri_Init (
+        LEXTRI_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(DISKS_DATA);
+        uint32_t        cbSize = sizeof(LEXTRI_DATA);
+        //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -595,33 +706,48 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_DISKS);
+        this = (OBJ_ID)Lex_Init((LEX_DATA *)this);         // Needed for Inheritance
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of LexTri_object.c
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_LEXTRI);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
-        //obj_setIdent((OBJ_ID)this, OBJ_IDENT_DISKS);         // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&disks_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&LexTri_Vtbl);
+#ifdef  LEXTRI_JSON_SUPPORT
+        JsonIn_RegisterClass(LexTri_Class());
+#endif
         
-        //this->stackSize = obj_getMisc1(this);
-        //this->pArray = ObjArray_New( );
-
-    #ifdef NDEBUG
-    #else
-        if( !disks_Validate(this) ) {
+        /*
+        this->pArray = ObjArray_New( );
+        if (OBJ_NIL == this->pArray) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        fprintf(stderr, "disks::sizeof(DISKS_DATA) = %lu\n", sizeof(DISKS_DATA));
+        */
+
+#ifdef NDEBUG
+#else
+        if (!LexTri_Validate(this)) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "LexTri::sizeof(LEXTRI_DATA) = %lu\n", 
+                sizeof(LEXTRI_DATA)
+        );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(DISKS_DATA));
-    #endif
+        BREAK_NOT_BOUNDARY4(sizeof(LEXTRI_DATA));
+#endif
 
         return this;
     }
@@ -629,18 +755,19 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         disks_IsEnabled(
-        DISKS_DATA		*this
+    ERESULT         LexTri_IsEnabled (
+        LEXTRI_DATA       *this
     )
     {
+        //ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -656,6 +783,107 @@ extern "C" {
     
     
     
+    int             LexTri_ParserPreExit (
+        LEXTRI_DATA     *this,
+        LEX_DATA        *pLex,              // LEX Object Ptr
+        LEX_PARSE_DATA  *pData              // Current Parse Data Ptr
+    )
+    {
+        //ERESULT         eRc;
+        bool            fRc;
+        int             iRc = 2;            // Accept the possibly modified character
+        TOKEN_DATA      *pToken;
+        int32_t         cls;
+        char            chr = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !LexTri_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        TRC_OBJ(this, "LexTri_ParserPreExit:\n");
+
+        switch (pData->chr1) {
+
+            case '?':           /*** '?' ***/
+                TRC_OBJ(this, "\tFound 1st ?\n");
+                if( '?' == pData->chr2) {
+                    TRC_OBJ(this, "\tFound 2nd ?\n");
+                    pToken = Lex_InputLookAhead(pLex, 2);
+                    cls = Token_getClass(pToken);
+                    TRC_OBJ(this, "\t3rd %d('%c')\n",
+                            cls,
+                            ((cls >= ' ') && (cls <0x7F) ? cls : ' ')
+                            );
+                    switch (cls) {
+                        case '(':
+                            chr = '[';
+                            goto setupChr;
+                            break;
+
+                        case '/':
+                            chr = '\\';
+                            goto setupChr;
+                            break;
+
+                        case ')':
+                            chr = ']';
+                            goto setupChr;
+                            break;
+
+                        case '\'':
+                            chr = '^';
+                            goto setupChr;
+                            break;
+
+                        case '<':
+                            chr = '{';
+                            goto setupChr;
+                            break;
+
+                        case '!':
+                            chr = '|';
+                            goto setupChr;
+                            break;
+
+                        case '>':
+                            chr = '}';
+                            goto setupChr;
+                            break;
+
+                        case '-':
+                            chr = '~';
+                            goto setupChr;
+                            break;
+
+                        case '=':
+                            chr = '#';
+                        setupChr:
+                            TRC_OBJ(this, "\tFound ??%c -> %c\n", cls, chr);
+                            pData->clsNew = chr;
+                            fRc = Lex_NextInput(pLex, pData, false);
+                            fRc = Lex_NextInput(pLex, pData, false);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        // Return to caller.
+        return iRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -667,14 +895,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = disks_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = LexTri_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "disks", prefix,
+                        the object name, "LexTri", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -682,13 +910,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          disks_QueryInfo(
+    void *          LexTri_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        DISKS_DATA     *this = objId;
+        LEXTRI_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -697,7 +925,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -705,29 +933,29 @@ extern "C" {
         
         switch (type) {
                 
-            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)disks_Class();
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(LEXTRI_DATA);
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+            
+            case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
+                return (void *)LexTri_Class();
+                break;
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -736,23 +964,39 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return disks_Disable;
+                            return LexTri_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return disks_Enable;
+                            return LexTri_Enable;
                         }
+                        break;
+
+                    case 'P':
+#ifdef  LEXTRI_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return LexTri_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return LexTri_ParseJsonObject;
+                        }
+#endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return disks_ToDebugString;
+                            return LexTri_ToDebugString;
+                        }
+#ifdef  LEXTRI_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return LexTri_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return disks_ToJSON;
+                            return LexTri_ToJson;
                         }
+#endif
                         break;
                         
                     default:
@@ -761,10 +1005,12 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == disks_ToDebugString)
+                if (pData == LexTri_ToDebugString)
                     return "ToDebugString";
-                if (pData == disks_ToJSON)
+#ifdef  LEXTRI_JSON_SUPPORT
+                if (pData == LexTri_ToJson)
                     return "ToJson";
+#endif
                 break;
                 
             default:
@@ -777,43 +1023,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-     ASTR_DATA *     disks_ToJSON(
-        DISKS_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if( !disks_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        eRc =   AStr_AppendPrint(
-                    pStr,
-                    "{\"objectType\":\"%s\"",
-                    pInfo->pClassName
-                );
-        
-        AStr_AppendA(pStr, "}\n");
-        
-        return pStr;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -821,32 +1030,31 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = disks_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = LexTri_ToDebugString(this,4);
      @endcode 
-     @param     this    DISKS object pointer
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     disks_ToDebugString(
-        DISKS_DATA      *this,
+    ASTR_DATA *     LexTri_ToDebugString (
+        LEXTRI_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
-#ifdef  XYZZY        
-        ASTR_DATA       *pWrkStr;
-#endif
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        //uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !disks_Validate(this) ) {
+        if (!LexTri_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -864,10 +1072,11 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d\n",
+                    "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    disks_getSize(this)
+                    LexTri_getSize(this),
+                    obj_getRetainCount(this)
             );
 
 #ifdef  XYZZY        
@@ -877,8 +1086,10 @@ extern "C" {
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -902,17 +1113,17 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
-    bool            disks_Validate(
-        DISKS_DATA      *this
+#ifdef NDEBUG
+#else
+    bool            LexTri_Validate (
+        LEXTRI_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
-       if( this ) {
-            if ( obj_IsKindOf(this, OBJ_IDENT_DISKS) )
+       if (this) {
+            if (obj_IsKindOf(this, OBJ_IDENT_LEXTRI))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -928,20 +1139,20 @@ extern "C" {
         // 'this'.
 
 
-        if( !(obj_getSize(this) >= sizeof(DISKS_DATA)) ) {
+        if (!(obj_getSize(this) >= sizeof(LEXTRI_DATA))) {
             return false;
         }
 
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

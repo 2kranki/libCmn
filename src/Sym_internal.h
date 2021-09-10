@@ -109,6 +109,11 @@ struct Sym_data_s	{
         SYM_DATA        *this
     );
 
+    bool            Sym_setEntry (
+        SYM_DATA        *this,
+        SYM_ENTRY       *pValue
+    );
+
 
     bool            Sym_setNameA (
         SYM_DATA        *this,

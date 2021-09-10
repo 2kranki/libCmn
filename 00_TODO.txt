@@ -3,10 +3,20 @@
 The following are things that are being thought about. Whether they get done or not
 will depend upon time and resources.
 
--- grep -rn --include="*.c" "ERESULT_SUCCESS_GREATER_THAN" .
--- grep -rn --include="*.c" "ERESULT_SUCCESS_LESS_THAN" .
+--  Convert CB to allow size changes if needed optionally.
 
--- Finish Net* to create a web server.
+--  Find tests that have waits in them and rewrite new tests that the wait can be bypassed in.
+    --  msgBus_test.c
+    --  consumer_test.c
+    --  ObjCb_test.c
+    --  cb_test.c
+
+--  Finish and debug LexTri. When done, delete/remove Lex01.
+
+--  grep -rn --include="*.c" "ERESULT_SUCCESS_GREATER_THAN" .
+--  grep -rn --include="*.c" "ERESULT_SUCCESS_LESS_THAN" .
+
+--  Finish Net* to create a web server.
     * Net
     * NetHTTP
     * NetHTTPA
@@ -59,13 +69,6 @@ will depend upon time and resources.
         * Linux
         * Win32/Win64
 
--- Lex:
-    *   Rewrite Lex to support W32Str for accumulation.
-    *   Rewrite Lex to do a non-destructive scan until a complete Lexical token is matched.  
-    This will require a much larger LookAhead queue however unless we change to not
-    tokenize until Lex output. So, input would be straight from the file. Restarting
-    at the line level can be done by combining Sidxe into TextIn (???)
-  
 -- Finish MsgData_ParseJsonObject() and add to JsonIn_ParseObject().
 -- Finish MsgData_ToJson().
 

@@ -82,7 +82,7 @@ struct CsvFile_data_s	{
     uint16_t        lenFld;             // Used Length in pFld excluding NUL
     W32CHR_T        *pFld;              // Work String
     
-    bool            (*pRecordProcess)(void *pRecordData, OBJARRAY_DATA *pRecord);
+    bool            (*pRecordProcess)(void *pRecordData, ASTRARRAY_DATA *pRecord);
     //                                  // Returns: true == Add Record to Records
     //                                  //          false == Don't add Record
     void            *pRecordData;
@@ -157,7 +157,7 @@ struct CsvFile_data_s	{
 #endif
 
 
-    OBJARRAY_DATA * CsvFile_ParseRecord(
+    ASTRARRAY_DATA * CsvFile_ParseRecord(
         CSVFILE_DATA    *this
     );
     

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Lex05_internal.h
- *  Generated 05/30/2020 14:52:54
+ * File:   LexTri_internal.h
+ *  Generated 09/02/2021 20:32:47
  *
  * Notes:
  *  --  N/A
@@ -39,13 +39,13 @@
 
 
 
-#include        <Lex05.h>
+#include        <LexTri.h>
 #include        <JsonIn.h>
 #include        <Lex_internal.h>
 
 
-#ifndef LEX05_INTERNAL_H
-#define LEX05_INTERNAL_H
+#ifndef LEXTRI_INTERNAL_H
+#define LEXTRI_INTERNAL_H
 
 
 
@@ -63,26 +63,52 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Lex05_data_s  {
+struct LexTri_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     LEX_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    ASTR_DATA       *pStr;
     uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
-    ASTR_DATA       *pStr;
+
+    // The post-process exit is called when the default parser is about
+    // to finalize a token. This exit may ignore the token or continue
+    // with the finalization.  Ignoring the token causes the parser to
+    // start all over again scanning the next token. This exit could
+    // manipulate the internal save token save string if needed.
+    // Return codes:
+    //      0 == Keep token/clsNew as is
+    //      1 == Reset data area and scan next char
+    //      2 == Keep data as is and scan next char
+    int             (*pParserPostExit)(
+                                   OBJ_ID,          // pParserExitObj
+                                   LEX_DATA *,      // LEX Object Ptr
+                                   LEX_PARSE_DATA * // Current Parse Data Ptr
+                    );
+    OBJ_ID          pParserPostExitObj;
+
+
+    // The pre-process exit is called before the first token is analyzed
+    // allowing default parsing to be overridden.
+    int             (*pParserPreExit)(
+                                   OBJ_ID,          // pParserExitObj
+                                   LEX_DATA *,      // LEX Object Ptr
+                                   LEX_PARSE_DATA * // Current Parse Data Ptr
+                    );
+    OBJ_ID          pParserPreExitObj;
 
 };
 #pragma pack(pop)
 
     extern
-    struct Lex05_class_data_s  Lex05_ClassObj;
+    struct LexTri_class_data_s  LexTri_ClassObj;
 
     extern
     const
-    LEX05_VTBL         Lex05_Vtbl;
+    LEXTRI_VTBL         LexTri_Vtbl;
 
 
 
@@ -90,13 +116,13 @@ struct Lex05_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  LEX05_SINGLETON
-    LEX05_DATA *     Lex05_getSingleton (
+#ifdef  LEXTRI_SINGLETON
+    LEXTRI_DATA *    LexTri_getSingleton (
         void
     );
 
-    bool            Lex05_setSingleton (
-     LEX05_DATA       *pValue
+    bool            LexTri_setSingleton (
+     LEXTRI_DATA        *pValue
 );
 #endif
 
@@ -106,35 +132,54 @@ struct Lex05_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  Lex05_getSuperVtbl (
-        LEX05_DATA     *this
+    bool            Lex_setParserPostExit(
+        LEX_DATA        *this,
+        ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
+        OBJ_ID          pParseObj
     );
 
 
-    ERESULT         Lex05_Assign (
-        LEX05_DATA    *this,
-        LEX05_DATA    *pOther
+    bool            Lex_setParserPreExit(
+        LEX_DATA        *this,
+        ERESULT         (*pParser)(OBJ_ID, LEX_DATA *, LEX_PARSE_DATA *),
+        OBJ_ID          pParseObj
     );
 
 
-    LEX05_DATA *    Lex05_Copy (
-        LEX05_DATA     *this
+    OBJ_IUNKNOWN *  LexTri_getSuperVtbl (
+        LEXTRI_DATA     *this
     );
 
 
-    void            Lex05_Dealloc (
+    ERESULT         LexTri_Assign (
+        LEXTRI_DATA     *this,
+        LEXTRI_DATA     *pOther
+    );
+
+
+    LEXTRI_DATA *   LexTri_Copy (
+        LEXTRI_DATA     *this
+    );
+
+
+    void            LexTri_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  LEX05_JSON_SUPPORT
+    LEXTRI_DATA *     LexTri_DeepCopy (
+        LEXTRI_DATA       *this
+    );
+
+
+#ifdef  LEXTRI_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    LEX05_DATA *       Lex05_ParseJsonObject (
+    LEXTRI_DATA *   LexTri_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -148,40 +193,35 @@ struct Lex05_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex05_ParseJsonFields (
+    ERESULT         LexTri_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        LEX05_DATA     *pObject
+        LEXTRI_DATA     *pObject
     );
 #endif
 
 
-    ERESULT         Lex05_ParseToken(
-        LEX05_DATA      *this
-    );
-
-
-    void *          Lex05_QueryInfo (
+    void *          LexTri_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  LEX05_JSON_SUPPORT
+#ifdef  LEXTRI_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Lex05_ToJson(this);
+     ASTR_DATA      *pDesc = LexTri_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Lex05_ToJson (
-        LEX05_DATA      *this
+    ASTR_DATA *     LexTri_ToJson (
+        LEXTRI_DATA      *this
     );
 
 
@@ -194,8 +234,8 @@ struct Lex05_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex05_ToJsonFields (
-        LEX05_DATA     *this,
+    ERESULT         LexTri_ToJsonFields (
+        LEXTRI_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -205,8 +245,8 @@ struct Lex05_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            Lex05_Validate (
-        LEX05_DATA       *this
+    bool            LexTri_Validate (
+        LEXTRI_DATA       *this
     );
 #endif
 
@@ -216,5 +256,5 @@ struct Lex05_data_s  {
 }
 #endif
 
-#endif  /* LEX05_INTERNAL_H */
+#endif  /* LEXTRI_INTERNAL_H */
 

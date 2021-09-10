@@ -236,6 +236,17 @@ extern "C" {
     );
 
 
+    ERESULT         Test_ForSucess (
+        TEST_DATA       *this,
+        ERESULT         eRc2,
+        const
+        char            *pErrorA,
+        const
+        char            *pFilePathA,
+        size_t          iLine
+    );
+
+
     ERESULT         Test_ForTrue (
         TEST_DATA       *this,
         bool            fValue,
@@ -316,6 +327,21 @@ extern "C" {
     );
     
     
+    /*!
+     Wait in the current thread for msWait milli-seconds. The wait is
+     controlled by Test_getAllowInt3(). If it is true, the wait occurs;
+     otherwise, it is skipped.
+     @param     this    object pointer
+     @param     msWait  number of milli-seconds to wait (> 0)
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Test_Wait (
+        TEST_DATA       *this,
+        uint32_t        msWait
+    );
+
+
 
     
 #ifdef  __cplusplus

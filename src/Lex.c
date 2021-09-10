@@ -60,7 +60,7 @@ extern "C" {
     
     typedef struct xlate_entry_s {
         int32_t     value;                    /* Lexical Scan Value */
-        char        *kwd;                    /* Key Word */
+        char        kwd[32];                  /* Key Word */
     } XLATE_ENTRY;
 
     static

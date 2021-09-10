@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//  Class Object Metods and Tables for 'Lex07'
-//  Generated 05/30/2020 14:53:23
+//  Class Object Metods and Tables for 'LexC'
+//  Generated 09/02/2021 08:48:25
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define         LEX07_OBJECT_C       1
-#include        <Lex07_internal.h>
-#ifdef  LEX07_SINGLETON
+#define         LEXC_OBJECT_C       1
+#include        <LexC_internal.h>
+#ifdef  LEXC_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct Lex07_class_data_s    {
+struct LexC_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  LEX07_SINGLETON
+#ifdef  LEXC_SINGLETON
     volatile
-    LEX07_DATA       *pSingleton;
+    LEXC_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct Lex07_class_data_s    {
 
 
 static
-void *          Lex07Class_QueryInfo (
+void *          LexCClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          Lex07Class_QueryInfo (
 
 static
 const
-OBJ_INFO        Lex07_Info;            // Forward Reference
+OBJ_INFO        LexC_Info;            // Forward Reference
 
 
 
 
 static
-bool            Lex07Class_IsKindOf (
+bool            LexCClass_IsKindOf (
     uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_LEX07_CLASS == classID) {
+    if (OBJ_IDENT_LEXC_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(Lex07_Class())->pClassSuperObject;
+    pObj = obj_getInfo(LexC_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            Lex07Class_IsKindOf (
 
 
 static
-uint16_t        Lex07Class_WhoAmI (
+uint16_t        LexCClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_LEX07_CLASS;
+    return OBJ_IDENT_LEXC_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t        Lex07Class_WhoAmI (
 
 static
 const
-LEX07_CLASS_VTBL    class_Vtbl = {
+LEXC_CLASS_VTBL    class_Vtbl = {
     {
-        &Lex07_Info,
-        Lex07Class_IsKindOf,
+        &LexC_Info,
+        LexCClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        Lex07_Class,
-        Lex07Class_WhoAmI,
-        (P_OBJ_QUERYINFO)Lex07Class_QueryInfo,
-        NULL                        // Lex07Class_ToDebugString
+        LexC_Class,
+        LexCClass_WhoAmI,
+        (P_OBJ_QUERYINFO)LexCClass_QueryInfo,
+        NULL                        // LexCClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ LEX07_CLASS_VTBL    class_Vtbl = {
 //                      Class Object
 //-----------------------------------------------------------
 
-LEX07_CLASS_DATA  Lex07_ClassObj = {
+LEXC_CLASS_DATA  LexC_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(LEX07_CLASS_DATA),                  // cbSize
+        sizeof(LEXC_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,22 +162,22 @@ LEX07_CLASS_DATA  Lex07_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  LEX07_SINGLETON
+#ifdef  LEXC_SINGLETON
 extern
 const
-LEX07_VTBL       Lex07_VtblShared;
+LEXC_VTBL       LexC_VtblShared;
 
 
-LEX07_DATA *     Lex07_getSingleton (
+LEXC_DATA *     LexC_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(Lex07_ClassObj.pSingleton);
+    return (OBJ_ID)(LexC_ClassObj.pSingleton);
 }
 
 
-bool            Lex07_setSingleton (
-    LEX07_DATA       *pValue
+bool            LexC_setSingleton (
+    LEXC_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -197,10 +197,10 @@ bool            Lex07_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (Lex07_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(Lex07_ClassObj.pSingleton));
+    if (LexC_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(LexC_ClassObj.pSingleton));
     }
-    Lex07_ClassObj.pSingleton = pValue;
+    LexC_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -210,18 +210,18 @@ bool            Lex07_setSingleton (
 
 
 
-LEX07_DATA *     Lex07_Shared (
+LEXC_DATA *     LexC_Shared (
     void
 )
 {
-    LEX07_DATA       *this = (OBJ_ID)(Lex07_ClassObj.pSingleton);
+    LEXC_DATA       *this = (OBJ_ID)(LexC_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = Lex07_New( );
-        obj_setVtbl(this, (void *)&Lex07_VtblShared);
-        Lex07_setSingleton(this);
+        this = LexC_New( );
+        obj_setVtbl(this, (void *)&LexC_VtblShared);
+        LexC_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // Lex07_ClassObj.pSingleton = OBJ_NIL;
+        // LexC_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -229,16 +229,16 @@ LEX07_DATA *     Lex07_Shared (
 
 
 
-void            Lex07_SharedReset (
+void            LexC_SharedReset (
     void
 )
 {
-    LEX07_DATA       *this = (OBJ_ID)(Lex07_ClassObj.pSingleton);
+    LEXC_DATA       *this = (OBJ_ID)(LexC_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&Lex07_Vtbl);
+        obj_setVtbl(this, (void *)&LexC_Vtbl);
         obj_Release(this);
-        Lex07_ClassObj.pSingleton = OBJ_NIL;
+        LexC_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -254,13 +254,13 @@ void            Lex07_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          Lex07Class_QueryInfo (
+void *          LexCClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    LEX07_CLASS_DATA *this = objId;
+    LEXC_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -271,7 +271,7 @@ void *          Lex07Class_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(LEX07_DATA);
+            return (void *)sizeof(LEXC_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -284,13 +284,13 @@ void *          Lex07Class_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&Lex07_Info;
+                        return (void *)&LexC_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&Lex07_Info.pClassSuperObject;
+                        return (void *)&LexC_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -308,35 +308,35 @@ void *          Lex07Class_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return Lex07_New;
+                        return LexC_New;
                     }
                     break;
                     
                 case 'P':
-#ifdef  LEX07_JSON_SUPPORT
+#ifdef  LEXC_JSON_SUPPORT
                     if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                        return Lex07_ParseJsonFields;
+                        return LexC_ParseJsonFields;
                     }
                     if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return Lex07_ParseJsonObject;
+                        return LexC_ParseJsonObject;
                     }
 #endif
                     break;
 
                 case 'T':
-#ifdef  LEX07_JSON_SUPPORT
+#ifdef  LEXC_JSON_SUPPORT
                     if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                        return Lex07_ToJsonFields;
+                        return LexC_ToJsonFields;
                     }
                     if (str_Compare("ToJson", (char *)pStr) == 0) {
-                        return Lex07_ToJson;
+                        return LexC_ToJson;
                     }
 #endif
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return Lex07Class_WhoAmI;
+                        return LexCClass_WhoAmI;
                     }
                     break;
                     
@@ -356,7 +356,7 @@ void *          Lex07Class_QueryInfo (
 
 
 static
-bool            Lex07_IsKindOf (
+bool            LexC_IsKindOf (
     uint16_t        classID
 )
 {
@@ -364,14 +364,14 @@ bool            Lex07_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_LEX07 == classID) {
+    if (OBJ_IDENT_LEXC == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(Lex07_Class())->pClassSuperObject;
+    pObj = obj_getInfo(LexC_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -385,25 +385,25 @@ bool            Lex07_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            Lex07_Dealloc (
+void            LexC_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          Lex07_Class (
+OBJ_ID          LexC_Class (
     void
 )
 {
-    return (OBJ_ID)&Lex07_ClassObj;
+    return (OBJ_ID)&LexC_ClassObj;
 }
 
 
 static
-uint16_t        Lex07_WhoAmI (
+uint16_t        LexC_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_LEX07;
+    return OBJ_IDENT_LEXC;
 }
 
 
@@ -414,35 +414,35 @@ uint16_t        Lex07_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  LEX07_SINGLETON
+#ifdef  LEXC_SINGLETON
 // A Shared object ignores Retain() and Release() except for
 // initialization and termination. So, there must be an
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-LEX07_VTBL     Lex07_VtblShared = {
+LEXC_VTBL     LexC_VtblShared = {
     {
-        &Lex07_Info,
-        Lex07_IsKindOf,
+        &LexC_Info,
+        LexC_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        Lex07_Dealloc,
-        Lex07_Class,
-        Lex07_WhoAmI,
-        (P_OBJ_QUERYINFO)Lex07_QueryInfo,
-        (P_OBJ_TOSTRING)Lex07_ToDebugString,
-        NULL,           // Lex07_Enable,
-        NULL,           // Lex07_Disable,
-        NULL,           // (P_OBJ_ASSIGN)Lex07_Assign,
-        NULL,           // (P_OBJ_COMPARE)Lex07_Compare,
-        NULL,           // (P_OBJ_PTR)Lex07_Copy,
-        NULL,           // (P_OBJ_PTR)Lex07_DeepCopy,
-        NULL            // (P_OBJ_HASH)Lex07_Hash,
+        LexC_Dealloc,
+        LexC_Class,
+        LexC_WhoAmI,
+        (P_OBJ_QUERYINFO)LexC_QueryInfo,
+        (P_OBJ_TOSTRING)LexC_ToDebugString,
+        NULL,           // LexC_Enable,
+        NULL,           // LexC_Disable,
+        NULL,           // (P_OBJ_ASSIGN)LexC_Assign,
+        NULL,           // (P_OBJ_COMPARE)LexC_Compare,
+        NULL,           // (P_OBJ_PTR)LexC_Copy,
+        NULL,           // (P_OBJ_PTR)LexC_DeepCopy,
+        NULL            // (P_OBJ_HASH)LexC_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Lex07_IsEnabled,
+    //LexC_IsEnabled,
  
 };
 #endif
@@ -454,29 +454,29 @@ LEX07_VTBL     Lex07_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-LEX07_VTBL     Lex07_Vtbl = {
+LEXC_VTBL     LexC_Vtbl = {
     {
-        &Lex07_Info,
-        Lex07_IsKindOf,
+        &LexC_Info,
+        LexC_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        Lex07_Dealloc,
-        Lex07_Class,
-        Lex07_WhoAmI,
-        (P_OBJ_QUERYINFO)Lex07_QueryInfo,
-        (P_OBJ_TOSTRING)Lex07_ToDebugString,
-        NULL,           // Lex07_Enable,
-        NULL,           // Lex07_Disable,
-        NULL,           // (P_OBJ_ASSIGN)Lex07_Assign,
-        NULL,           // (P_OBJ_COMPARE)Lex07_Compare,
-        NULL,           // (P_OBJ_PTR)Lex07_Copy,
-        NULL,           // (P_OBJ_PTR)Lex07_DeepCopy,
-        NULL            // (P_OBJ_HASH)Lex07_Hash,
+        LexC_Dealloc,
+        LexC_Class,
+        LexC_WhoAmI,
+        (P_OBJ_QUERYINFO)LexC_QueryInfo,
+        (P_OBJ_TOSTRING)LexC_ToDebugString,
+        NULL,           // LexC_Enable,
+        NULL,           // LexC_Disable,
+        NULL,           // (P_OBJ_ASSIGN)LexC_Assign,
+        NULL,           // (P_OBJ_COMPARE)LexC_Compare,
+        NULL,           // (P_OBJ_PTR)LexC_Copy,
+        NULL,           // (P_OBJ_PTR)LexC_DeepCopy,
+        NULL            // (P_OBJ_HASH)LexC_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Lex07_IsEnabled,
+    //LexC_IsEnabled,
  
 };
 
@@ -484,13 +484,13 @@ LEX07_VTBL     Lex07_Vtbl = {
 
 static
 const
-OBJ_INFO        Lex07_Info = {
-    "Lex07",
-    "Lex07",
-    (OBJ_DATA *)&Lex07_ClassObj,
+OBJ_INFO        LexC_Info = {
+    "LexC",
+    "C Lexical Scanner",
+    (OBJ_DATA *)&LexC_ClassObj,
     (OBJ_DATA *)&Lex_ClassObj,
-    (OBJ_IUNKNOWN *)&Lex07_Vtbl,
-    sizeof(LEX07_DATA)
+    (OBJ_IUNKNOWN *)&LexC_Vtbl,
+    sizeof(LEXC_DATA)
 };
 
 

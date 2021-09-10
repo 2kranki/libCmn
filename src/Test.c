@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include        <Test_internal.h>
 #include        <JsonIn.h>
+#include        <psxThread.h>
 #include        <SrcErrors.h>
 #include        <szTbl.h>
 #include        <trace.h>
@@ -1016,7 +1017,7 @@ extern "C" {
                 if (cmn_AmIBeingDebugged() && Test_getAllowInt3(this)) {
                     __asm__("int $3\n" : : );
                 }
-                exit(this->iExitCode);
+                exit(8);
             }
         }
 
@@ -1469,7 +1470,38 @@ extern "C" {
 
 
     
-    
+    //---------------------------------------------------------------
+    //                          W a i t
+    //---------------------------------------------------------------
+
+    ERESULT         Test_Wait (
+        TEST_DATA       *this,
+        uint32_t        msWait
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (Test_getAllowInt3(this)) {
+            psxThread_Wait(msWait);
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+
     
 #ifdef  __cplusplus
 }

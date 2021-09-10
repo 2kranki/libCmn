@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Lex07.c
- *  Generated 05/30/2020 14:53:23
+ * File:   LexC.c
+ *  Generated 09/02/2021 08:48:25
  *
  */
 
@@ -41,8 +41,11 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <Lex07_internal.h>
+#include        <LexC_internal.h>
+#include        <JsonIn.h>
+#include        <misc.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
@@ -55,41 +58,125 @@ extern "C" {
     
 
     
+    //****************************************************************
+    // * * * * * * * * * * *    Internal Data    * * * * * * * * * * *
+    //****************************************************************
+
+    // Place constant internal data here. Generally, it should be
+    // 'static' so that it does not interfere with other objects.
+
+    typedef struct Lex_Keyword2Tok_s {
+        const
+        char            str[16];
+        int32_t         cls;
+    } LEX_KEYWORD2TOK;
+
+    static
+    const
+    LEX_KEYWORD2TOK      Kwd2Tok[] = {
+        {"bool",        LEX_KWD_BOOL},
+        {"break",       LEX_KWD_BREAK},
+        {"case",        LEX_KWD_CASE},
+        {"char",        LEX_KWD_CHAR},
+        {"const",       LEX_KWD_CONST},
+        {"continue",    LEX_KWD_CONTINUE},
+        {"default",     LEX_KWD_DEFAULT},
+        {"do",          LEX_KWD_DO},
+        {"enum",        LEX_KWD_ENUM},
+        {"else",        LEX_KWD_ELSE},
+        {"extern",      LEX_KWD_EXTERN},
+        {"false",       LEX_KWD_FALSE},
+        {"for",         LEX_KWD_FOR},
+        {"goto",        LEX_KWD_GOTO},
+        {"if",          LEX_KWD_IF},
+        {"int",         LEX_KWD_INT},
+        {"long",        LEX_KWD_LONG},
+        {"offset",      LEX_KWD_OFFSETOF},
+        {"register",    LEX_KWD_REGISTER},
+        {"return",      LEX_KWD_RETURN},
+        {"short",       LEX_KWD_SHORT},
+        {"signed",      LEX_KWD_SIGNED},
+        {"sizeof",      LEX_KWD_SIZEOF},
+        {"static",      LEX_KWD_STATIC},
+        {"struct",      LEX_KWD_STRUCT},
+        {"switch",      LEX_KWD_SWITCH},
+        {"true",        LEX_KWD_TRUE},
+        {"typedef",     LEX_KWD_TYPEDEF},
+        {"union",       LEX_KWD_UNION},
+        {"unsigned",    LEX_KWD_UNSIGNED},
+        {"void",        LEX_KWD_VOID},
+        {"volatile",    LEX_KWD_VOLATILE},
+        {"while",       LEX_KWD_WHILE},
+    };
+    static
+    const
+    int             cKwd2Tok = sizeof(Kwd2Tok) / sizeof(LEX_KEYWORD2TOK);
 
 
- 
+
+
+
+    /****************************************************************
+    * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
+    ****************************************************************/
+
+    int32_t         LexC_Keyword2Token (
+        W32STR_DATA     *pStrW32
+    )
+    {
+        int32_t         iRc = 0;
+        char            *pStrA = NULL;
+        LEX_KEYWORD2TOK *pEntry;
+
+
+        pStrA = W32Str_CStringA(pStrW32, 0);
+        if (pStrA) {
+            pEntry =    misc_SearchBinary(
+                                          (void *)pStrA,
+                                          (void *)Kwd2Tok,
+                                          cKwd2Tok,
+                                          sizeof(LEX_KEYWORD2TOK),
+                                          offsetof(LEX_KEYWORD2TOK, str),
+                                          (void *)strcmp
+                        );
+            if (pEntry) {
+                iRc = pEntry->cls;
+            }
+            mem_Free(pStrA);
+            pStrA = NULL;
+        }
+
+        return iRc;
+    }
+
+
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
 #ifdef XYZZY
     static
-    void            Lex07_task_body (
+    void            LexC_task_body (
         void            *pData
     )
     {
-        //LEX07_DATA  *this = pData;
+        //LEXC_DATA  *this = pData;
         
     }
 #endif
 
 
 
-    /****************************************************************
-    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
-    ****************************************************************/
-
-
     //===============================================================
     //                      *** Class Methods ***
     //===============================================================
 
-    LEX07_DATA *     Lex07_Alloc (
+    LEXC_DATA *     LexC_Alloc (
         void
     )
     {
-        LEX07_DATA       *this;
-        uint32_t        cbSize = sizeof(LEX07_DATA);
+        LEXC_DATA       *this;
+        uint32_t        cbSize = sizeof(LEXC_DATA);
         
         // Do initialization.
         
@@ -101,15 +188,47 @@ extern "C" {
 
 
 
-    LEX07_DATA *     Lex07_New (
+    const
+    char *          LexC_ClassToString(
+        int32_t         value
+    )
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+        const
+        LEX_KEYWORD2TOK *pEntry;
+
+        if (-1 == value) {
+            return "LEX_CLASS_EOF";
+        }
+        if (0 == value) {
+            return "LEX_CLASS_UNKNOWN";
+        }
+        if ((value > 0) && (value < 256)) {
+            return "LEX_CLASS_CHAR";
+        }
+        iMax = cKwd2Tok;
+        for (i=0; i<iMax; ++i) {
+            pEntry = &Kwd2Tok[i];
+            if (pEntry->cls == value ) {
+                return pEntry->str;
+            };
+        }
+
+        return  Lex_ClassToString(value);
+    }
+
+
+
+    LEXC_DATA *     LexC_New (
         void
     )
     {
-        LEX07_DATA       *this;
+        LEXC_DATA       *this;
         
-        this = Lex07_Alloc( );
+        this = LexC_Alloc( );
         if (this) {
-            this = Lex07_Init(this);
+            this = LexC_Init(this);
         } 
         return this;
     }
@@ -123,59 +242,18 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                      F l a g s
-    //---------------------------------------------------------------
-
-    uint32_t        Lex07_getFlags(
-        LEX07_DATA      *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !Lex07_Validate(this) ) {
-            DEBUG_BREAK();
-        }
-#endif
-
-        return Lex_getFlags((LEX_DATA *)this);
-    }
-
-
-    bool            Lex07_setFlags(
-        LEX07_DATA      *this,
-        uint32_t        value
-    )
-    {
-        bool            fRc;
-
-#ifdef NDEBUG
-#else
-        if( !Lex07_Validate(this) ) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        fRc = Lex_setFlags((LEX_DATA *)this, value);
-
-        return fRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //               L e x i c a l  S c a n n e r
     //---------------------------------------------------------------
 
-    LEX_DATA *      Lex07_getLex(
-        LEX07_DATA      *this
+    LEX_DATA *      LexC_getLex (
+        LEXC_DATA       *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if( !Lex07_Validate(this) ) {
+        if( !LexC_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -190,15 +268,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        Lex07_getPriority (
-        LEX07_DATA     *this
+    uint16_t        LexC_getPriority (
+        LEXC_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -209,14 +287,14 @@ extern "C" {
     }
 
 
-    bool            Lex07_setPriority (
-        LEX07_DATA     *this,
+    bool            LexC_setPriority (
+        LEXC_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -233,13 +311,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        Lex07_getSize (
-        LEX07_DATA       *this
+    uint32_t        LexC_getSize (
+        LEXC_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -254,15 +332,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * Lex07_getStr (
-        LEX07_DATA     *this
+    ASTR_DATA * LexC_getStr (
+        LEXC_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -272,14 +350,14 @@ extern "C" {
     }
     
     
-    bool        Lex07_setStr (
-        LEX07_DATA     *this,
+    bool        LexC_setStr (
+        LEXC_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -300,15 +378,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Lex07_getSuperVtbl (
-        LEX07_DATA     *this
+    OBJ_IUNKNOWN *  LexC_getSuperVtbl (
+        LEXC_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -337,16 +415,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = Lex07_Assign(this,pOther);
+        ERESULT eRc = LexC_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another LEX07 object
+     @param     pOther  a pointer to another LEXC object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         Lex07_Assign (
-        LEX07_DATA       *this,
-        LEX07_DATA     *pOther
+    ERESULT         LexC_Assign (
+        LEXC_DATA       *this,
+        LEXC_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -354,11 +432,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Lex07_Validate(pOther)) {
+        if (!LexC_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -419,37 +497,38 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             Lex07_Compare (
-        LEX07_DATA      *this,
-        LEX07_DATA      *pOther
+    int             LexC_Compare (
+        LEXC_DATA     *this,
+        LEXC_DATA     *pOther
     )
     {
-        int             iRc = 0;
-
+        int             iRc = -1;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!Lex07_Validate(pOther)) {
+        if (!LexC_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
         }
 #endif
 
-#ifdef  xyzzy
-        if (this->token == pOther->token) {
-            return iRc;
-        }
-        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
-#endif
-
+        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+     
         return iRc;
     }
-
+    
    
  
     //---------------------------------------------------------------
@@ -460,36 +539,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Lex07      *pCopy = Lex07_Copy(this);
+        LexC      *pCopy = LexC_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a LEX07 object which must be 
+     @return    If successful, a LEXC object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    LEX07_DATA *     Lex07_Copy (
-        LEX07_DATA       *this
+    LEXC_DATA *     LexC_Copy (
+        LEXC_DATA       *this
     )
     {
-        LEX07_DATA       *pOther = OBJ_NIL;
+        LEXC_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef LEX07_IS_IMMUTABLE
+#ifdef LEXC_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = Lex07_New( );
+        pOther = LexC_New( );
         if (pOther) {
-            eRc = Lex07_Assign(this, pOther);
+            eRc = LexC_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -507,11 +586,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            Lex07_Dealloc (
+    void            LexC_Dealloc (
         OBJ_ID          objId
     )
     {
-        LEX07_DATA   *this = objId;
+        LEXC_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -520,7 +599,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -528,11 +607,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((LEX07_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((LEXC_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        Lex07_setStr(this, OBJ_NIL);
+        LexC_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -553,32 +632,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Lex07      *pDeepCopy = Lex07_Copy(this);
+        LexC      *pDeepCopy = LexC_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a LEX07 object which must be 
+     @return    If successful, a LEXC object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    LEX07_DATA *     Lex07_DeepyCopy (
-        LEX07_DATA       *this
+    LEXC_DATA *     LexC_DeepCopy (
+        LEXC_DATA       *this
     )
     {
-        LEX07_DATA       *pOther = OBJ_NIL;
+        LEXC_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = Lex07_New( );
+        pOther = LexC_New( );
         if (pOther) {
-            eRc = Lex07_Assign(this, pOther);
+            eRc = LexC_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -601,16 +680,17 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex07_Disable (
-        LEX07_DATA       *this
+    ERESULT         LexC_Disable (
+        LEXC_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -618,6 +698,7 @@ extern "C" {
 
         // Put code here...
 
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Disable(this);
         
         // Return to caller.
@@ -636,21 +717,23 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Lex07_Enable (
-        LEX07_DATA       *this
+    ERESULT         LexC_Enable (
+        LEXC_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Enable(this);
 
         // Put code here...
@@ -665,11 +748,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    LEX07_DATA *   Lex07_Init (
-        LEX07_DATA       *this
+    LEXC_DATA *   LexC_Init (
+        LEXC_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(LEX07_DATA);
+        uint32_t        cbSize = sizeof(LEXC_DATA);
         //ERESULT         eRc;
         bool            fRc;
         
@@ -688,7 +771,9 @@ extern "C" {
         }
 
         this = (OBJ_ID)Lex_Init((LEX_DATA *)this);          // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_LEX07);
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of LexC_object.c
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_LEXC);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -696,21 +781,15 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Lex07_Vtbl);
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&LexC_Vtbl);
+#ifdef  LEXC_JSON_SUPPORT
+        JsonIn_RegisterClass(LexC_Class());
+#endif
         
-        /*
-        this->pArray = objArray_New( );
-        if (OBJ_NIL == this->pArray) {
-            DEBUG_BREAK();
-            obj_Release(this);
-            return OBJ_NIL;
-        }
-        */
-
-        fRc =   Lex_setParserFunction(
-                                (LEX_DATA *)this,
-                                (void *)Lex07_ParseToken,
-                                this
+        fRc =   Lex_setParserPostExit(
+                            (LEX_DATA *)this,
+                            (void *)LexC_ParserPostExit,
+                            this
                 );
         if (!fRc) {
             DEBUG_BREAK();
@@ -720,7 +799,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -729,11 +808,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "Lex07::sizeof(LEX07_DATA) = %lu\n", 
-                sizeof(LEX07_DATA)
+                "LexC::sizeof(LEXC_DATA) = %lu\n", 
+                sizeof(LEXC_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(LEX07_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(LEXC_DATA));
 #endif
 
         return this;
@@ -742,11 +821,11 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Lex07_IsEnabled (
-        LEX07_DATA       *this
+    ERESULT         LexC_IsEnabled (
+        LEXC_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -754,7 +833,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -771,10 +850,58 @@ extern "C" {
     
     
     //--------------------------------------------------------------
-    //                      P a r s e  T o k e n
+    //                    P a r s e r  E x i t s
     //--------------------------------------------------------------
 
-    /* ParseToken() gets the next token from the source file. It
+    /*
+     This exit is called just before an output token if finalized and
+     allows aspects of it to be over-ridden or even skipped.
+     The exist can call:
+            Lex_TokenAppendStringW32(this, data.chr2);
+            fRc = Lex_NextInput(this, &data, false);
+     as needed to do its own scan if desired. It should return:
+        0 == Accept token as scanned,
+        1 == Reset data accumulated and scan next char.
+        2 == Keep data as it is and scan next char.
+
+     */
+    int             LexC_ParserPostExit (
+        LEXC_DATA       *this,
+        LEX_DATA        *pLex,              // LEX Object Ptr
+        LEX_PARSE_DATA  *pData              // Current Parse Data Ptr
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        //bool            fRc = false;
+        int             iRc = 0;
+        int             cls;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !LexC_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        TRC_OBJ(this, "LexC_ParserPostExit:\n");
+
+        switch (pData->clsNew) {
+            case LEX_IDENTIFIER:
+                cls = LexC_Keyword2Token(pData->pStr);
+                if (cls) {
+                    pData->clsNew = cls;
+                }
+                break;
+            default:
+                break;
+        }
+
+        return iRc;
+    }
+
+
+    /* ParserPreExit() gets the next token from the source file. It
      * saves that token for the file/line/col numbers and then
      * proceeds to build upon it. It accumulates tokens until
      * based on the class/type. When it finds a token which does
@@ -786,90 +913,61 @@ extern "C" {
      * character.
      */
 
-    ERESULT         Lex07_ParseToken(
-        LEX07_DATA      *this
+    /*
+     This exit allows the entire lexical scan to be over-ridden.
+     The exit can call:
+            Lex_TokenAppendStringW32(this, data.chr2);
+            fRc = Lex_NextInput(this, &data, false);
+     as needed to do its own scan if desired. It should return:
+        0 == Accept what exit scanned
+        1 == Skip to next token and continue scan.
+        2 == Continue with default scanner.
+     */
+    int             LexC_ParserPreExit (
+        LEXC_DATA       *this,
+        LEX_DATA        *pLex,              // LEX Object Ptr
+        LEX_PARSE_DATA  *pData              // Current Parse Data Ptr
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
-        TOKEN_DATA      *pInput;
-        //int32_t         cls;
-        //bool            fMore = true;
+        //bool            fRc = false;
+        //uint32_t        i;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if( !Lex07_Validate(this) ) {
+        if( !LexC_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
+        TRC_OBJ(this, "LexC_ParserPreExit:\n");
 
-#ifdef XYZZY
-        while (fMore) {
-            pInput = Lex_InputLookAhead((LEX_DATA *)this, 1);
-            if (pInput) {
-                cls = Token_getClass(pInput);
-            }
-            else {
-                pInput = Lex_ParseEOF((LEX_DATA *)this);
-                cls = Token_getClass(pInput);
-                DEBUG_BREAK();
-            }
-            eRc = Lex_ParseTokenSetup((LEX_DATA *)this, pInput);
-            if (cls == LEX_CLASS_EOF) {
+#ifdef NOT_IMPLEMENTED_YET
+        switch (cls1) {
+            // Note: Unless EOF is reached in a case, each case must leave the input
+            // stream with an advance to be made for the first char of the following
+            // token.
+
+            case '}':           /*** '}' ***/
+                data.clsNew = LEX_SEP_RBRACE;
                 break;
-            }
 
-            switch (cls) {
+            case '~':           /*** '~' ***/
+                data.clsNew = LEX_OP_NEG;
+                break;
 
-                case '?':           /*** '?' ***/
-                    pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
-                    cls = Token_getClass(pInput);
-                    if( '?' == cls) {
-                        pInput = Lex_InputLookAhead((LEX_DATA *)this, 3);
-                        cls = Token_getClass(pInput);
-                        if( '(' == cls) {
-                            Token_setClass(&this->super.token, '[');
-                            Token_setChrW32(&this->super.token, '[');
-                            Lex_InputAdvance((LEX_DATA *)this, 3);
-                            cls = '[';
-                            fMore = false;
-                            break;
-                        }
-                        if( '=' == cls) {
-                            Token_setClass(&this->super.token, '#');
-                            Token_setChrW32(&this->super.token, '#');
-                            Lex_InputAdvance((LEX_DATA *)this, 3);
-                            cls = '#';
-                            fMore = false;
-                            break;
-                        }
-                    }
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
-                    fMore = false;
-                    break;
-                default:
-                    Token_Assign(pInput, &this->super.token); //???
-                    Lex_InputAdvance((LEX_DATA *)this, 1);
-                    break;
-            }
-            fMore = false;
-            break;
+           default:
+                break;
         }
-#else
-        pInput = Lex_InputLookAhead((LEX_DATA *)this, 2);
-        Token_Assign(pInput, &this->super.token);
-        Lex_InputAdvance((LEX_DATA *)this, 1);
 #endif
 
         // Return to caller.
-        //eRc = lex_ParseTokenFinalize((LEX_DATA *)this, newCls, fSaveStr);
-        //BREAK_FALSE(ERESULT_IS_SUCCESSFUL(eRc));
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
-            ASTR_DATA       *pStr = Token_ToString(Lex_getToken(Lex07_getLex(this)));
-            TRC_OBJ(this, "...Lex07_ParseToken token=%s", AStr_getData(pStr));
+            ASTR_DATA       *pStr = Token_ToString(Lex_getToken(pLex));
+            TRC_OBJ(this, "...LexC_ParseToken found token=%s", AStr_getData(pStr));
             obj_Release(pStr);
         }
 #endif
@@ -889,14 +987,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = Lex07_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = LexC_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "Lex07", prefix,
+                        the object name, "LexC", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -904,13 +1002,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          Lex07_QueryInfo (
+    void *          LexC_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        LEX07_DATA     *this = objId;
+        LEXC_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -919,7 +1017,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -928,11 +1026,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(LEX07_DATA);
+                return (void *)sizeof(LEXC_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)Lex07_Class();
+                return (void *)LexC_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -958,37 +1056,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return Lex07_Disable;
+                            return LexC_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return Lex07_Enable;
+                            return LexC_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  LEX07_JSON_SUPPORT
+#ifdef  LEXC_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return Lex07_ParseJsonFields;
+                            return LexC_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return Lex07_ParseJsonObject;
+                            return LexC_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return Lex07_ToDebugString;
+                            return LexC_ToDebugString;
                         }
-#ifdef  LEX07_JSON_SUPPORT
+#ifdef  LEXC_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return Lex07_ToJsonFields;
+                            return LexC_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return Lex07_ToJson;
+                            return LexC_ToJson;
                         }
 #endif
                         break;
@@ -999,10 +1097,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == Lex07_ToDebugString)
+                if (pData == LexC_ToDebugString)
                     return "ToDebugString";
-#ifdef  LEX07_JSON_SUPPORT
-                if (pData == Lex07_ToJson)
+#ifdef  LEXC_JSON_SUPPORT
+                if (pData == LexC_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1024,7 +1122,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Lex07_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = LexC_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1032,8 +1130,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Lex07_ToDebugString (
-        LEX07_DATA      *this,
+    ASTR_DATA *     LexC_ToDebugString (
+        LEXC_DATA      *this,
         int             indent
     )
     {
@@ -1048,7 +1146,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Lex07_Validate(this)) {
+        if (!LexC_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1069,7 +1167,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    Lex07_getSize(this),
+                    LexC_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1109,15 +1207,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            Lex07_Validate (
-        LEX07_DATA      *this
+    bool            LexC_Validate (
+        LEXC_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_LEX07))
+            if (obj_IsKindOf(this, OBJ_IDENT_LEXC))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1133,7 +1231,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(LEX07_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(LEXC_DATA))) {
             return false;
         }
 

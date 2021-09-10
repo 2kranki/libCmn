@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <CsvFile_internal.h>
+#include        <AStrArray.h>
 #include        <ascii.h>
 #include        <SrcErrors.h>
 #include        <trace.h>
@@ -216,13 +217,13 @@ extern "C" {
 
 
 
-    OBJARRAY_DATA * CsvFile_ParseRcd(
+    ASTRARRAY_DATA * CsvFile_ParseRcd(
         CSVFILE_DATA    *this
     )
     {
         int             fieldNo = 0;
         ERESULT         eRc;
-        OBJARRAY_DATA   *pRecord = OBJ_NIL;
+        ASTRARRAY_DATA  *pRecord = OBJ_NIL;
         ASTR_DATA       *pStr;
 
         // Validate the input parameters.
@@ -246,7 +247,7 @@ extern "C" {
         }
         ++fieldNo;
 
-        pRecord = ObjArray_New();
+        pRecord = AStrArray_New();
         if (pRecord == OBJ_NIL) {
             TOKEN_DATA      *pToken;
             pToken = SrcFile_InputLookAhead(this->pSrc, 1);
@@ -258,7 +259,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        eRc = ObjArray_AppendObj(pRecord, pStr, NULL);
+        eRc = AStrArray_AppendStr(pRecord, pStr, NULL);
         if (ERESULT_HAS_FAILED(eRc)) {
             TOKEN_DATA      *pToken;
             pToken = SrcFile_InputLookAhead(this->pSrc, 1);
@@ -288,7 +289,7 @@ extern "C" {
                 return OBJ_NIL;
             }
             ++fieldNo;
-            eRc = ObjArray_AppendObj(pRecord, pStr, NULL);
+            eRc = AStrArray_AppendStr(pRecord, pStr, NULL);
             if (ERESULT_HAS_FAILED(eRc)) {
                 TOKEN_DATA      *pToken;
                 pToken = SrcFile_InputLookAhead(this->pSrc, 1);
@@ -325,7 +326,7 @@ extern "C" {
         int             recordNo = 0;
         ERESULT         eRc;
         OBJARRAY_DATA   *pRecords = OBJ_NIL;
-        OBJARRAY_DATA   *pRecord = OBJ_NIL;
+        ASTRARRAY_DATA  *pRecord = OBJ_NIL;
         bool            fRc = true;;
 
         // Validate the input parameters.
@@ -810,7 +811,7 @@ extern "C" {
 
     bool            CsvFile_setRecordProcess(
         CSVFILE_DATA    *this,
-        bool            (*pRecordProcess)(void *pRecordData, OBJARRAY_DATA *pRecord),
+        bool            (*pRecordProcess)(void *pRecordData, ASTRARRAY_DATA *pRecord),
         void            *pRecordData
     )
     {

@@ -1,22 +1,27 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Assembler Lexical Scanner (Lex04) Header
+//                  C Trigraph Lexical Scanner (LexTri) Header
 //****************************************************************
 /*
  * Program
- *          Assembler Lexical Scanner (Lex04)
+ *          C Trigraph Lexical Scanner (LexTri)
  * Purpose
- *          This object provides a standardized way of handling
- *          a separate Lex04 to run things without complications
- *          of interfering with the main Lex04. A Lex04 may be 
- *          called a Lex04 on other O/S's.
+ *          This object serves as a filter to convert all C
+ *          trigraphs back into normal C letters. Most source
+ *          tokens are just passed through this. When a trigraph
+ *          is recognized, it is converted into one token from
+ *          three input tokens.
+ *
+ *          Trigraphs were created because systems such as IBM
+ *          EBCDIC terminals did not have the ASCII character set.
  *
  * Remarks
  *  1.      None
  *
  * History
- *  05/30/2020 Generated
+ *  05/30/2020 Generated as Lex01
+ *  09/02/2021 Regenerated
  */
 
 
@@ -56,13 +61,13 @@
 #include        <Lex.h>
 
 
-#ifndef         LEX04_H
-#define         LEX04_H
+#ifndef         LEXTRI_H
+#define         LEXTRI_H
 
 
-//#define   LEX04_IS_IMMUTABLE     1
-//#define   LEX04_JSON_SUPPORT     1
-//#define   LEX04_SINGLETON        1
+//#define   LEXTRI_IS_IMMUTABLE     1
+//#define   LEXTRI_JSON_SUPPORT     1
+//#define   LEXTRI_SINGLETON        1
 
 
 
@@ -78,26 +83,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Lex04_data_s  LEX04_DATA;            // Inherits from OBJ
-    typedef struct Lex04_class_data_s LEX04_CLASS_DATA;   // Inherits from OBJ
+    typedef struct LexTri_data_s  LEXTRI_DATA;            // Inherits from OBJ
+    typedef struct LexTri_class_data_s LEXTRI_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Lex04_vtbl_s  {
+    typedef struct LexTri_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Lex04_object.c.
+        // method names to the vtbl definition in LexTri_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(LEX04_DATA *);
-    } LEX04_VTBL;
+        //bool        (*pIsEnabled)(LEXTRI_DATA *);
+    } LEXTRI_VTBL;
 
-    typedef struct Lex04_class_vtbl_s    {
+    typedef struct LexTri_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Lex04_object.c.
+        // method names to the vtbl definition in LexTri_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(LEX04_DATA *);
-    } LEX04_CLASS_VTBL;
+        //bool        (*pIsEnabled)(LEXTRI_DATA *);
+    } LEXTRI_CLASS_VTBL;
 
 
 
@@ -111,12 +116,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  LEX04_SINGLETON
-    LEX04_DATA *    Lex04_Shared (
+#ifdef  LEXTRI_SINGLETON
+    LEXTRI_DATA *     LexTri_Shared (
         void
     );
 
-    void            Lex04_SharedReset (
+    void            LexTri_SharedReset (
         void
     );
 #endif
@@ -126,29 +131,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Lex04 object if successful, otherwise OBJ_NIL.
+     @return    pointer to LexTri object if successful, otherwise OBJ_NIL.
      */
-    LEX04_DATA *    Lex04_Alloc (
+    LEXTRI_DATA *     LexTri_Alloc (
         void
     );
     
     
-    OBJ_ID          Lex04_Class (
+    OBJ_ID          LexTri_Class (
         void
     );
     
     
-    LEX04_DATA *    Lex04_New (
+    LEXTRI_DATA *     LexTri_New (
         void
     );
     
     
-#ifdef  LEX04_JSON_SUPPORT
-    LEX04_DATA *   Lex04_NewFromJsonString (
+#ifdef  LEXTRI_JSON_SUPPORT
+    LEXTRI_DATA *   LexTri_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    LEX04_DATA *   Lex04_NewFromJsonStringA (
+    LEXTRI_DATA *   LexTri_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -167,41 +172,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         Lex04_Disable (
-        LEX04_DATA      *this
+    ERESULT     LexTri_Disable (
+        LEXTRI_DATA       *this
     );
 
 
-    ERESULT         Lex04_Enable (
-        LEX04_DATA      *this
+    ERESULT     LexTri_Enable (
+        LEXTRI_DATA       *this
     );
 
    
-    LEX04_DATA *    Lex04_Init (
-        LEX04_DATA      *this
+    LEXTRI_DATA *   LexTri_Init (
+        LEXTRI_DATA     *this
     );
 
 
-    ERESULT     Lex04_IsEnabled (
-        LEX04_DATA      *this
+    ERESULT     LexTri_IsEnabled (
+        LEXTRI_DATA       *this
     );
     
  
-#ifdef  LEX04_JSON_SUPPORT
+#ifdef  LEXTRI_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Lex04_ToJson(this);
+     ASTR_DATA      *pDesc = LexTri_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA * Lex04_ToJson (
-        LEX04_DATA      *this
+    ASTR_DATA *     LexTri_ToJson (
+        LEXTRI_DATA   *this
     );
 #endif
 
@@ -210,7 +215,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Lex04_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = LexTri_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -218,8 +223,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Lex04_ToDebugString (
-        LEX04_DATA      *this,
+    ASTR_DATA *     LexTri_ToDebugString (
+        LEXTRI_DATA     *this,
         int             indent
     );
     
@@ -230,5 +235,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* LEX04_H */
+#endif  /* LEXTRI_H */
 

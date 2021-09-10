@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//  Class Object Metods and Tables for 'Lex04'
-//  Generated 05/30/2020 14:52:33
+//  Class Object Metods and Tables for 'LexTri'
+//  Generated 09/02/2021 20:32:47
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define         LEX04_OBJECT_C       1
-#include        <Lex04_internal.h>
-#ifdef  LEX04_SINGLETON
+#define         LEXTRI_OBJECT_C       1
+#include        <LexTri_internal.h>
+#ifdef  LEXTRI_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct Lex04_class_data_s    {
+struct LexTri_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  LEX04_SINGLETON
+#ifdef  LEXTRI_SINGLETON
     volatile
-    LEX04_DATA       *pSingleton;
+    LEXTRI_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct Lex04_class_data_s    {
 
 
 static
-void *          Lex04Class_QueryInfo (
+void *          LexTriClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          Lex04Class_QueryInfo (
 
 static
 const
-OBJ_INFO        Lex04_Info;            // Forward Reference
+OBJ_INFO        LexTri_Info;            // Forward Reference
 
 
 
 
 static
-bool            Lex04Class_IsKindOf (
+bool            LexTriClass_IsKindOf (
     uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_LEX04_CLASS == classID) {
+    if (OBJ_IDENT_LEXTRI_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(Lex04_Class())->pClassSuperObject;
+    pObj = obj_getInfo(LexTri_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            Lex04Class_IsKindOf (
 
 
 static
-uint16_t        Lex04Class_WhoAmI (
+uint16_t        LexTriClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_LEX04_CLASS;
+    return OBJ_IDENT_LEXTRI_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t        Lex04Class_WhoAmI (
 
 static
 const
-LEX04_CLASS_VTBL    class_Vtbl = {
+LEXTRI_CLASS_VTBL    class_Vtbl = {
     {
-        &Lex04_Info,
-        Lex04Class_IsKindOf,
+        &LexTri_Info,
+        LexTriClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        Lex04_Class,
-        Lex04Class_WhoAmI,
-        (P_OBJ_QUERYINFO)Lex04Class_QueryInfo,
-        NULL                        // Lex04Class_ToDebugString
+        LexTri_Class,
+        LexTriClass_WhoAmI,
+        (P_OBJ_QUERYINFO)LexTriClass_QueryInfo,
+        NULL                        // LexTriClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ LEX04_CLASS_VTBL    class_Vtbl = {
 //                      Class Object
 //-----------------------------------------------------------
 
-LEX04_CLASS_DATA  Lex04_ClassObj = {
+LEXTRI_CLASS_DATA  LexTri_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(LEX04_CLASS_DATA),                  // cbSize
+        sizeof(LEXTRI_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,22 +162,22 @@ LEX04_CLASS_DATA  Lex04_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  LEX04_SINGLETON
+#ifdef  LEXTRI_SINGLETON
 extern
 const
-LEX04_VTBL       Lex04_VtblShared;
+LEXTRI_VTBL       LexTri_VtblShared;
 
 
-LEX04_DATA *     Lex04_getSingleton (
+LEXTRI_DATA *     LexTri_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(Lex04_ClassObj.pSingleton);
+    return (OBJ_ID)(LexTri_ClassObj.pSingleton);
 }
 
 
-bool            Lex04_setSingleton (
-    LEX04_DATA       *pValue
+bool            LexTri_setSingleton (
+    LEXTRI_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -197,10 +197,10 @@ bool            Lex04_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (Lex04_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(Lex04_ClassObj.pSingleton));
+    if (LexTri_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(LexTri_ClassObj.pSingleton));
     }
-    Lex04_ClassObj.pSingleton = pValue;
+    LexTri_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -210,18 +210,18 @@ bool            Lex04_setSingleton (
 
 
 
-LEX04_DATA *     Lex04_Shared (
+LEXTRI_DATA *     LexTri_Shared (
     void
 )
 {
-    LEX04_DATA       *this = (OBJ_ID)(Lex04_ClassObj.pSingleton);
+    LEXTRI_DATA       *this = (OBJ_ID)(LexTri_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = Lex04_New( );
-        obj_setVtbl(this, (void *)&Lex04_VtblShared);
-        Lex04_setSingleton(this);
+        this = LexTri_New( );
+        obj_setVtbl(this, (void *)&LexTri_VtblShared);
+        LexTri_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // Lex04_ClassObj.pSingleton = OBJ_NIL;
+        // LexTri_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -229,16 +229,16 @@ LEX04_DATA *     Lex04_Shared (
 
 
 
-void            Lex04_SharedReset (
+void            LexTri_SharedReset (
     void
 )
 {
-    LEX04_DATA       *this = (OBJ_ID)(Lex04_ClassObj.pSingleton);
+    LEXTRI_DATA       *this = (OBJ_ID)(LexTri_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&Lex04_Vtbl);
+        obj_setVtbl(this, (void *)&LexTri_Vtbl);
         obj_Release(this);
-        Lex04_ClassObj.pSingleton = OBJ_NIL;
+        LexTri_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -254,13 +254,13 @@ void            Lex04_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          Lex04Class_QueryInfo (
+void *          LexTriClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    LEX04_CLASS_DATA *this = objId;
+    LEXTRI_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -271,7 +271,7 @@ void *          Lex04Class_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(LEX04_DATA);
+            return (void *)sizeof(LEXTRI_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -284,13 +284,13 @@ void *          Lex04Class_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&Lex04_Info;
+                        return (void *)&LexTri_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&Lex04_Info.pClassSuperObject;
+                        return (void *)&LexTri_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -308,35 +308,35 @@ void *          Lex04Class_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return Lex04_New;
+                        return LexTri_New;
                     }
                     break;
                     
                 case 'P':
-#ifdef  LEX04_JSON_SUPPORT
+#ifdef  LEXTRI_JSON_SUPPORT
                     if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                        return Lex04_ParseJsonFields;
+                        return LexTri_ParseJsonFields;
                     }
                     if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return Lex04_ParseJsonObject;
+                        return LexTri_ParseJsonObject;
                     }
 #endif
                     break;
 
                 case 'T':
-#ifdef  LEX04_JSON_SUPPORT
+#ifdef  LEXTRI_JSON_SUPPORT
                     if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                        return Lex04_ToJsonFields;
+                        return LexTri_ToJsonFields;
                     }
                     if (str_Compare("ToJson", (char *)pStr) == 0) {
-                        return Lex04_ToJson;
+                        return LexTri_ToJson;
                     }
 #endif
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return Lex04Class_WhoAmI;
+                        return LexTriClass_WhoAmI;
                     }
                     break;
                     
@@ -356,7 +356,7 @@ void *          Lex04Class_QueryInfo (
 
 
 static
-bool            Lex04_IsKindOf (
+bool            LexTri_IsKindOf (
     uint16_t        classID
 )
 {
@@ -364,14 +364,14 @@ bool            Lex04_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_LEX04 == classID) {
+    if (OBJ_IDENT_LEXTRI == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(Lex04_Class())->pClassSuperObject;
+    pObj = obj_getInfo(LexTri_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -385,25 +385,25 @@ bool            Lex04_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            Lex04_Dealloc (
+void            LexTri_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          Lex04_Class (
+OBJ_ID          LexTri_Class (
     void
 )
 {
-    return (OBJ_ID)&Lex04_ClassObj;
+    return (OBJ_ID)&LexTri_ClassObj;
 }
 
 
 static
-uint16_t        Lex04_WhoAmI (
+uint16_t        LexTri_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_LEX04;
+    return OBJ_IDENT_LEXTRI;
 }
 
 
@@ -414,35 +414,35 @@ uint16_t        Lex04_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  LEX04_SINGLETON
+#ifdef  LEXTRI_SINGLETON
 // A Shared object ignores Retain() and Release() except for
 // initialization and termination. So, there must be an
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-LEX04_VTBL     Lex04_VtblShared = {
+LEXTRI_VTBL     LexTri_VtblShared = {
     {
-        &Lex04_Info,
-        Lex04_IsKindOf,
+        &LexTri_Info,
+        LexTri_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        Lex04_Dealloc,
-        Lex04_Class,
-        Lex04_WhoAmI,
-        (P_OBJ_QUERYINFO)Lex04_QueryInfo,
-        (P_OBJ_TOSTRING)Lex04_ToDebugString,
-        NULL,           // Lex04_Enable,
-        NULL,           // Lex04_Disable,
-        NULL,           // (P_OBJ_ASSIGN)Lex04_Assign,
-        NULL,           // (P_OBJ_COMPARE)Lex04_Compare,
-        NULL,           // (P_OBJ_PTR)Lex04_Copy,
-        NULL,           // (P_OBJ_PTR)Lex04_DeepCopy,
-        NULL            // (P_OBJ_HASH)Lex04_Hash,
+        LexTri_Dealloc,
+        LexTri_Class,
+        LexTri_WhoAmI,
+        (P_OBJ_QUERYINFO)LexTri_QueryInfo,
+        (P_OBJ_TOSTRING)LexTri_ToDebugString,
+        NULL,           // LexTri_Enable,
+        NULL,           // LexTri_Disable,
+        NULL,           // (P_OBJ_ASSIGN)LexTri_Assign,
+        NULL,           // (P_OBJ_COMPARE)LexTri_Compare,
+        NULL,           // (P_OBJ_PTR)LexTri_Copy,
+        NULL,           // (P_OBJ_PTR)LexTri_DeepCopy,
+        NULL            // (P_OBJ_HASH)LexTri_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Lex04_IsEnabled,
+    //LexTri_IsEnabled,
  
 };
 #endif
@@ -454,29 +454,29 @@ LEX04_VTBL     Lex04_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-LEX04_VTBL     Lex04_Vtbl = {
+LEXTRI_VTBL     LexTri_Vtbl = {
     {
-        &Lex04_Info,
-        Lex04_IsKindOf,
+        &LexTri_Info,
+        LexTri_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        Lex04_Dealloc,
-        Lex04_Class,
-        Lex04_WhoAmI,
-        (P_OBJ_QUERYINFO)Lex04_QueryInfo,
-        (P_OBJ_TOSTRING)Lex04_ToDebugString,
-        NULL,           // Lex04_Enable,
-        NULL,           // Lex04_Disable,
-        NULL,           // (P_OBJ_ASSIGN)Lex04_Assign,
-        NULL,           // (P_OBJ_COMPARE)Lex04_Compare,
-        NULL,           // (P_OBJ_PTR)Lex04_Copy,
-        NULL,           // (P_OBJ_PTR)Lex04_DeepCopy,
-        NULL            // (P_OBJ_HASH)Lex04_Hash,
+        LexTri_Dealloc,
+        LexTri_Class,
+        LexTri_WhoAmI,
+        (P_OBJ_QUERYINFO)LexTri_QueryInfo,
+        (P_OBJ_TOSTRING)LexTri_ToDebugString,
+        NULL,           // LexTri_Enable,
+        NULL,           // LexTri_Disable,
+        NULL,           // (P_OBJ_ASSIGN)LexTri_Assign,
+        NULL,           // (P_OBJ_COMPARE)LexTri_Compare,
+        NULL,           // (P_OBJ_PTR)LexTri_Copy,
+        NULL,           // (P_OBJ_PTR)LexTri_DeepCopy,
+        NULL            // (P_OBJ_HASH)LexTri_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Lex04_IsEnabled,
+    //LexTri_IsEnabled,
  
 };
 
@@ -484,13 +484,13 @@ LEX04_VTBL     Lex04_Vtbl = {
 
 static
 const
-OBJ_INFO        Lex04_Info = {
-    "Lex04",
-    "Assembler Lexical Scanner",
-    (OBJ_DATA *)&Lex04_ClassObj,
+OBJ_INFO        LexTri_Info = {
+    "LexTri",
+    "C Trigraph Lexical Scanner",
+    (OBJ_DATA *)&LexTri_ClassObj,
     (OBJ_DATA *)&Lex_ClassObj,
-    (OBJ_IUNKNOWN *)&Lex04_Vtbl,
-    sizeof(LEX04_DATA)
+    (OBJ_IUNKNOWN *)&LexTri_Vtbl,
+    sizeof(LEXTRI_DATA)
 };
 
 

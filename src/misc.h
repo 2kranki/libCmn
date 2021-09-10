@@ -264,9 +264,10 @@ extern "C" {
     /*!    Generic Search for an Element in a Sorted Array
      This routine performs a Binary Search on a provided sorted
      array trying to located a specific entry.  It is assumed
-     that the array is in ascending order by key.  Also, if the
-     array is small, a simple search is performed rather than a
-     binary one.
+     that the array is in ascending order by key and that the
+     key is embedded in the table (not a pointer to the key).
+     Also, if the array is small, a simple search is performed
+     rather than a binary one.
      @param     pKey    Key pointer with same type as key within element
      @param     pArray  Address of Sorted Array
      @param     Num     Number of elements in the Sorted Array
@@ -291,7 +292,7 @@ extern "C" {
 
 
 
-    
+
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------

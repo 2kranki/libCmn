@@ -143,7 +143,7 @@ int         test_CsvFile_Input01(
     uint32_t        iMax;
     uint32_t        j;
     uint32_t        jMax;
-    OBJARRAY_DATA   *pRecord;
+    ASTRARRAY_DATA  *pRecord;
     OBJARRAY_DATA   *pRecords;
     ASTR_DATA       *pField;
 
@@ -170,9 +170,9 @@ int         test_CsvFile_Input01(
                 pRecord = ObjArray_Get(pRecords,i);
                 XCTAssertFalse( (OBJ_NIL == pRecord) );
                 if (pRecord) {
-                    jMax = ObjArray_getSize(pRecord);
+                    jMax = AStrArray_getSize(pRecord);
                     for (j=1; j<=jMax; ++j) {
-                        pField = ObjArray_Get(pRecord,j);
+                        pField = AStrArray_Get(pRecord,j);
                         XCTAssertFalse( (OBJ_NIL == pField) );
                         if (pField) {
                             fprintf(
@@ -242,7 +242,7 @@ int         test_CsvFile_Input02(
     uint32_t        iMax;
     uint32_t        j;
     uint32_t        jMax;
-    OBJARRAY_DATA   *pRecord;
+    ASTRARRAY_DATA  *pRecord;
     OBJARRAY_DATA   *pRecords;
     ASTR_DATA       *pField;
 
@@ -265,9 +265,9 @@ int         test_CsvFile_Input02(
                 pRecord = ObjArray_Get(pRecords,i);
                 XCTAssertFalse( (OBJ_NIL == pRecord) );
                 if (pRecord) {
-                    jMax = ObjArray_getSize(pRecord);
+                    jMax = AStrArray_getSize(pRecord);
                     for (j=1; j<=jMax; ++j) {
-                        pField = ObjArray_Get(pRecord,j);
+                        pField = AStrArray_Get(pRecord,j);
                         XCTAssertFalse( (OBJ_NIL == pField) );
                         if (pField) {
                             fprintf(
@@ -388,7 +388,7 @@ int         test_CsvFile_Input03(
     uint32_t        iMax;
     uint32_t        j;
     uint32_t        jMax;
-    OBJARRAY_DATA   *pRecord;
+    ASTRARRAY_DATA  *pRecord;
     OBJARRAY_DATA   *pRecords;
     ASTR_DATA       *pField;
     ERESULT         eRc;
@@ -416,9 +416,9 @@ int         test_CsvFile_Input03(
                 pRecord = ObjArray_Get(pRecords,i);
                 XCTAssertFalse( (OBJ_NIL == pRecord) );
                 if (pRecord) {
-                    jMax = ObjArray_getSize(pRecord);
+                    jMax = AStrArray_getSize(pRecord);
                     for (j=1; j<=jMax; ++j) {
-                        pField = ObjArray_Get(pRecord,j);
+                        pField = AStrArray_Get(pRecord,j);
                         XCTAssertFalse( (OBJ_NIL == pField) );
                         if (pField) {
                             fprintf(
@@ -466,7 +466,7 @@ int         test_CsvFile_Input04(
     uint32_t        iMax;
     uint32_t        j;
     uint32_t        jMax;
-    OBJARRAY_DATA   *pRecord;
+    ASTRARRAY_DATA  *pRecord;
     OBJARRAY_DATA   *pRecords;
     ASTR_DATA       *pField;
 
@@ -493,9 +493,9 @@ int         test_CsvFile_Input04(
                 pRecord = ObjArray_Get(pRecords,i);
                 XCTAssertFalse( (OBJ_NIL == pRecord) );
                 if (pRecord) {
-                    jMax = ObjArray_getSize(pRecord);
+                    jMax = AStrArray_getSize(pRecord);
                     for (j=1; j<=jMax; ++j) {
-                        pField = ObjArray_Get(pRecord,j);
+                        pField = AStrArray_Get(pRecord,j);
                         XCTAssertFalse( (OBJ_NIL == pField) );
                         if (pField) {
                             fprintf(

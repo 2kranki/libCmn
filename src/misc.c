@@ -258,7 +258,8 @@ extern "C" {
     /*    * * *  Search for an Element in an Array    * * *
      * This routine performs a Binary Search on a provided
      * array trying to located a specific entry.  It is as-
-     * sumed that the array is in ascending order by key.
+     * sumed that the array is in ascending order by key
+     * and that the keys are embedded in the entry.
      */
     void  *         misc_SearchBinary(
         void            *pKey,
