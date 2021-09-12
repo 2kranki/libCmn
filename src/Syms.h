@@ -217,6 +217,13 @@ extern "C" {
     );
 
 
+    SYM_DATA *      Syms_FindAddr (
+        SYMS_DATA       *this,
+        uint32_t        section,            // Section/Segment Identifier (0 == none)
+        uint32_t        addr                // Address within Section/Segment
+    );
+
+
     SYMS_DATA *     Syms_Init (
         SYMS_DATA       *this
     );

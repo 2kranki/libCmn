@@ -130,6 +130,14 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! @property   Big Endian Flag
+     If true, then U16, U32, etc are stored in large/big endian order.
+     Otherwise, they are stored in little endian order.
+     */
+    bool            u8Array_getBigEndian(
+        U8ARRAY_DATA    *this
+    );
+
     bool            u8Array_setBigEndian(
         U8ARRAY_DATA    *this,
         bool            value

@@ -1944,7 +1944,48 @@ extern "C" {
     }
     
     
-    
+    ASTR_DATA *     AStr_CopySpcl(
+        ASTR_DATA       *this,
+        W32CHR_T        (*pSpcl)(W32CHR_T) // Applies this routine to character
+                                           // being copied.
+    )
+    {
+        ASTR_DATA      *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        uint32_t        i;
+        W32CHR_T        chr;
+        uint32_t        len;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        len = AStr_getSize(this);
+
+        pOther = AStr_New();
+        if (pOther) {
+            for (i=0; i<len; i++) {
+                chr = AStr_CharGetW32(this, i+1);
+                if (pSpcl)
+                    chr = pSpcl(chr);
+                eRc = AStr_AppendCharW32(pOther, chr);
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    obj_Release(pOther);
+                    pOther = OBJ_NIL;
+                }
+            }
+        }
+
+        // Return to caller.
+        return pOther;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       C S t r i n g A
     //---------------------------------------------------------------

@@ -1000,7 +1000,7 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        fprintf(stderr, "\tfValue: %d\n", fValue);
+
         if (!fValue) {
             fprintf(
                     stderr,

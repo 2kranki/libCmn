@@ -916,17 +916,17 @@ char *          str_DupA(
 	size_t          outLen;			/* Output Buffer Length */
 
 	// Do initialization.
-    if( NULL == pszIn )
+    if (NULL == pszIn)
         return NULL;
 
     outLen = str_LengthA( pszIn );
-    pszOut = (char *)mem_Malloc( outLen+1 );
+    pszOut = (char *)mem_Malloc( outLen + 1 );
     if( NULL == pszOut )
         return NULL;
     pszCur = pszOut;
 
 	// Copy the String.
-	for( i=0; i < outLen; i++ ) {
+	for( i=0; i<outLen; i++ ) {
 		*pszCur++ = *pszIn++;
 	}
 
@@ -936,7 +936,47 @@ char *          str_DupA(
 	}
 
 	// Return to caller.
-	return( pszOut );
+	return pszOut;
+}
+
+
+char *          str_DupSpclA(
+    const
+    char            *pszIn,         /* Input String Pointer */
+    char            (*pSpcl)(char)  // Applies this routine to character
+                                    // being copied.
+)
+{
+    int             i;
+    char            *pszOut;        /* Output Buffer Pointer */
+    char            *pszCur;        /* Output Buffer Pointer */
+    size_t          outLen;            /* Output Buffer Length */
+
+    // Do initialization.
+    if (NULL == pszIn)
+        return NULL;
+
+    outLen = str_LengthA( pszIn );
+    pszOut = (char *)mem_Malloc( outLen + 1 );
+    if( NULL == pszOut )
+        return NULL;
+    pszCur = pszOut;
+
+    // Copy the String.
+    for( i=0; i<outLen; i++ ) {
+        if (pSpcl)
+        *pszCur++ = pSpcl(*pszIn++);
+        else
+        *pszCur++ = *pszIn++;
+    }
+
+    //    Zero-fill the remainder of the output string.
+    for( ; (i < outLen+1); i++ ) {
+        *pszCur++ = '\0';
+    }
+
+    // Return to caller.
+    return pszOut;
 }
 
 
@@ -975,6 +1015,46 @@ W32CHR_T *      str_DupW32(
         *pszCur++ = 0;
     }
     
+    // Return to caller.
+    return( pszOut );
+}
+
+
+W32CHR_T *      str_DupSpclW32(
+    const
+    W32CHR_T        *pszIn,         /* Input String Pointer */
+    W32CHR_T        (*pSpcl)(W32CHR_T) // Applies this routine to character
+                                       // being copied.
+)
+{
+    int             i;
+    W32CHR_T        *pszOut;        /* Output Buffer Pointer */
+    W32CHR_T        *pszCur;        /* Output Buffer Pointer */
+    size_t          outLen;            /* Output Buffer Length */
+
+    // Do initialization.
+    if( NULL == pszIn )
+        return NULL;
+
+    outLen = str_LengthW32( pszIn );
+    pszOut = (W32CHR_T *)mem_Malloc( (outLen + 1) * sizeof(W32CHR_T) );
+    if( NULL == pszOut )
+        return NULL;
+    pszCur = pszOut;
+
+    // Copy the String.
+    for( i=0; i < outLen; i++ ) {
+        if (pSpcl)
+            *pszCur++ = pSpcl(*pszIn++);
+        else
+            *pszCur++ = *pszIn++;
+    }
+
+    //    Zero-fill the remainder of the output string.
+    for( ; (i < outLen+1); i++ ) {
+        *pszCur++ = 0;
+    }
+
     // Return to caller.
     return( pszOut );
 }

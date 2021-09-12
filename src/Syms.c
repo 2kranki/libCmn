@@ -791,6 +791,46 @@ extern "C" {
     }
 
 
+    SYM_DATA *      Syms_FindAddr (
+        SYMS_DATA       *this,
+        uint32_t        section,            // Section/Segment Identifier (0 == none)
+        uint32_t        addr                // Address within Section/Segment
+    )
+    {
+        ERESULT         eRc;
+        SYM_DATA        *pSym = OBJ_NIL;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pEnum = Syms_Enum(this);
+        if (pEnum) {
+            for (;;) {
+                eRc = ObjEnum_Next(pEnum, 1, (OBJ_ID *)&pSym, NULL);
+                if (ERESULT_FAILED(eRc)) {
+                    pSym = OBJ_NIL;
+                    break;
+                }
+                if ((section == Sym_getSection(pSym)) && (section == Sym_getSection(pSym)))
+                    break;
+            }
+            obj_Release(pEnum);
+            pEnum = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return pSym;
+    }
+
+
 
     //---------------------------------------------------------------
     //                          I n i t

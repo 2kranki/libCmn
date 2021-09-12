@@ -274,9 +274,23 @@ char *          str_DupA(
 	char            *pszIn          /* Input String Pointer */
 );
 
+char *          str_DupSpclA(
+    const
+    char            *pszIn,         /* Input String Pointer */
+    char            (*pSpcl)(char)  // Applies this routine to character
+                                    // being copied.
+);
+
 W32CHR_T *      str_DupW32(
     const
     W32CHR_T        *pszIn          /* Input String Pointer */
+);
+
+W32CHR_T *      str_DupSpclW32(
+    const
+    W32CHR_T        *pszIn,         /* Input String Pointer */
+    W32CHR_T        (*pSpcl)(W32CHR_T) // Applies this routine to character
+                                       // being copied.
 );
 
 

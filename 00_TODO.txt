@@ -18,11 +18,34 @@ will depend upon time and resources.
 
 --  Finish Net* to create a web server.
     * Net
+        *   ???
     * NetHTTP
+        *   ???
     * NetHTTPA
+        *   ???
     * NetHTTPR
+        *   ???
     * NetIO
+        *   ???
     * NetMime
+        *   ???
+
+-- Sect
+    *   AppendAnn where nn is 16, 24, 32
+        *   Appends data given (value) (nn == length)
+        *   add it to relocatable dictionary
+    *   GetUnn where nn is 8, 16, 24, 32
+    *   PutUnn where nn is 8, 16, 24, 32
+    *   AddExtern
+    *   AddPublic
+    *   FindExtern
+    *   FindPublic
+    *   DeleteExtern
+    *   DeletePublic
+    *   Enumerate:
+        *   externs
+        *   publics
+        *   relocatable table
 
 -- Finish mkAll.
 
@@ -250,12 +273,6 @@ The following are things that need to be followed up on:
 
 
 
--- Simplified Regular Expression Grammar
-    e = e '|' t | t ;
-    t = t f | f ;
-    p = '(' e ')' | OPERAND
-
-
 -- AStrC
     -- Finish
     -- Adjust AStr to fit AStrC/AStr using NSString
@@ -331,20 +348,6 @@ The following are things that need to be followed up on:
 
 
 
--- pplex
-    -- phase 1 - handle special characters and continued lines
-    -- phase 2 - break up into tokens for everything including
-                whitespace and comments
-        -- Finish numbers
-        -- Finish fatal errors
-        -- make '\n's their own token, so phase 3 sees "\\\n" as
-            line continuation
-    -- phase 3 - combine tokens as needed such as '@' + "class"
-                for keyword "@class" also L 'x' or L "xx"
-    -- each phase feeds tokens into the next phase.
-
-
-
 - DBFile
     - Finish as only the field descriptor, make other objects for the other elements
       of the dbase file system
@@ -358,33 +361,10 @@ The following are things that need to be followed up on:
 
 
 
-- j1939_mon
-    - create as j1939_mon.c and put back in cmnLib for ECU and TCU
-    - add command to add tc, er or en ca
-    - add CAM display
-    - add CA display
-    - add ability to turn on/off conxmt of messages transmitted
-
-
-
 - LCD
     - Finish initial implementation
     - Add announcement msg with version for ecu, tcu, canfun
     - Create LCD Simulator for OSX
-
-
-- SRC
-    - Change to use FBSI or fopen w/setvbuf or memory buffer
-
-
-
-- pplex2
-    - Create option and code to pass through whitespace as PPLEX_SPCL_WHITESPACE
-    - make the reserved word table optional and supplied at execution time
-    - pplex should work for Macro and LL1 if set up properly.
-    - Finish using old version in "Needs to be updated" and merge in bldtok.c
-        support from macro
-
 
 
 - GREG
@@ -393,80 +373,6 @@ The following are things that need to be followed up on:
     - day of week
     - ordinal day number
     - days in year (class method)
-
-
-
-- CT
-    - (Check out interrupt routines and open/close, enable/disable
-    - check WAIT_MS() and WAIT_US() for accuracy.
-
-
-
-- DMA
-    - create routines for each of the 8 dma ports and one for the CRC module
-
-
-
-- PMP 
-    - Finish for LCD
-
-
-
-- LCD
-    - Create using PMP
-
-
-
-- RTCC 
-    - Finish
-
-
-
-- UART - Move to OBJ
-
-
-
-- MON 
-    - look at table-izing the command structure with help part of the table.
-
-
-
-- CAN/UART 
-    - figure out if it is better to use TNeoKernel in interrupts or
-        leave alone
-    - Need to try opening a second peripheral/module that uses the pins of
-        something that is active to see what happens
-
-
-
-- PIC32
-    - tracks pins being used for uart,can,pmp,dma,etc to avoid conflicts on 
-        opening peripherals
-
-
-
-- CAN 
-    - Implement interrupts on send (??)
-    - figure out if it is better to use TNeoKernel in interrupts or leave alone
-    - Initialization sequence:
-        open
-        enable (?)
-        add fifos required
-            transmit
-            receive
-            RTR (if needed)
-        calculate space needed for buffer and allocate
-        set mode (?) to put CAN Module into operation
-        begin operation
-            activate appropriate interrupts for each fifo and module global
-            collect fifo queue beginning addresses or calculate
-
-
-
-- CAN - Do we buffer in Fifo queues 
-            (equal ones on receive just rollover)
-            (treat as one big queue -- not easy)
-            (callback per fifo queue ??)
 
 
 
@@ -482,14 +388,5 @@ The following are things that need to be followed up on:
 
 
 
-- sym
-    - use hash and stm. get it done so that we can use it like a dict or call it a dict!
-    - hashsz gives us data of void with string key
-    - nodeHash gives us an data object with a bstr key
-    - don't need a simple dict like symbol table with the above.
 
-
-
-- passtr
-    - create and debug
-            
+           

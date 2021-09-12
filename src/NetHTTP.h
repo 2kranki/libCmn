@@ -166,23 +166,23 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     NetHTTP_Disable (
-        NETHTTP_DATA       *this
+    ERESULT         NetHTTP_Disable (
+        NETHTTP_DATA    *this
     );
 
 
-    ERESULT     NetHTTP_Enable (
-        NETHTTP_DATA       *this
+    ERESULT         NetHTTP_Enable (
+        NETHTTP_DATA    *this
     );
 
    
-    NETHTTP_DATA *   NetHTTP_Init (
-        NETHTTP_DATA     *this
+    NETHTTP_DATA *  NetHTTP_Init (
+        NETHTTP_DATA    *this
     );
 
 
-    ERESULT     NetHTTP_IsEnabled (
-        NETHTTP_DATA       *this
+    ERESULT         NetHTTP_IsEnabled (
+        NETHTTP_DATA    *this
     );
     
  

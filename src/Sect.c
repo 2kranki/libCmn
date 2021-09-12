@@ -229,6 +229,46 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                   B i g  E n d i a n
+    //---------------------------------------------------------------
+
+    bool            Sect_getBigEndian (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return u8Array_getBigEndian(this->pData);
+    }
+
+
+    bool            Sect_setBigEndian (
+        SECT_DATA       *this,
+        bool            value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        return u8Array_setBigEndian(this->pData, value);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        D a t a
     //---------------------------------------------------------------
 
@@ -536,6 +576,48 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       S e c t i o n
+    //---------------------------------------------------------------
+
+    uint32_t        Sect_getSection (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->section;
+    }
+
+
+    bool            Sect_setSection (
+        SECT_DATA       *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->section = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -627,6 +709,111 @@ extern "C" {
     //===============================================================
     //                          M e t h o d s
     //===============================================================
+
+
+    //---------------------------------------------------------------
+    //                      A p p e n d
+    //---------------------------------------------------------------
+
+    ERESULT         Sect_AppendU8 (
+        SECT_DATA       *this,
+        uint8_t         data
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = u8Array_PutU8(this->pData, this->offset, data);
+        this->offset += 1;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Sect_AppendU16 (
+        SECT_DATA       *this,
+        uint16_t        data
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = u8Array_PutU16(this->pData, this->offset, data);
+        this->offset += 2;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Sect_AppendU24 (
+        SECT_DATA       *this,
+        uint32_t        data
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = u8Array_PutU24(this->pData, this->offset, data);
+        this->offset += 3;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Sect_AppendU32 (
+        SECT_DATA       *this,
+        uint32_t        data
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = u8Array_PutU32(this->pData, this->offset, data);
+        this->offset += 4;
+
+        // Return to caller.
+        return eRc;
+    }
+
 
 
     //---------------------------------------------------------------

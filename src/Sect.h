@@ -187,6 +187,20 @@ extern "C" {
     );
 
 
+    /*! @property   Big Endian Flag
+     If true, then U16, U32, etc are stored in large/big endian order.
+     Otherwise, they are stored in little endian order.
+     */
+    bool            Sect_getBigEndian(
+        SECT_DATA       *this
+    );
+
+    bool            Sect_setBigEndian(
+        SECT_DATA       *this,
+        bool            value
+    );
+
+
     char            Sect_getIdent (
         SECT_DATA       *this
     );
@@ -227,6 +241,16 @@ extern "C" {
     );
 
 
+    uint32_t        Sect_getSection (
+        SECT_DATA       *this
+    );
+
+    bool            Sect_setSection (
+        SECT_DATA       *this,
+        uint32_t        value
+    );
+
+
     char            Sect_getType (
         SECT_DATA       *this
     );
@@ -241,6 +265,33 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Append the given data to the end of the array breaking it up
+     into multiple bytes using the Endian Property Setting.
+     @return    If successful, ERESULT_SUCCESS, otherwise an
+                ERESULT_* error.
+     */
+    ERESULT         Sect_AppendU8 (
+        SECT_DATA       *this,
+        uint8_t         data
+    );
+
+    ERESULT         Sect_AppendU16 (
+        SECT_DATA       *this,
+        uint16_t        data
+    );
+
+    ERESULT         Sect_AppendU24 (
+        SECT_DATA       *this,
+        uint32_t        data
+    );
+
+    ERESULT         Sect_AppendU32 (
+        SECT_DATA       *this,
+        uint32_t        data
+    );
+
 
     /*!
      Assign the contents of this object to the other object (ie

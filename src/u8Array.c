@@ -159,6 +159,21 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    bool            u8Array_getBigEndian(
+        U8ARRAY_DATA    *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        return obj_FlagOn(this, U8ARRAY_FLAG_BIGENDIAN);
+    }
+
+
     bool            u8Array_setBigEndian(
         U8ARRAY_DATA    *this,
         bool            value

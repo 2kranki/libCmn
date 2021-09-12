@@ -118,6 +118,32 @@ extern "C" {
     } SYM_PRIMITIVE;
 
 
+    // Storage Type
+    /*
+     Note: Signed Types are even, unsigned types are odd.
+     */
+    typedef enum Sym_storage_types_e {
+        SYM_STOR_TYPE_UNKNOWN=0,
+        SYM_STOR_TYPE_PUBLIC=0x8000,
+        SYM_STOR_TYPE_EXTERN=0x4000,
+        // If not public or not extern,
+        // then local/private.
+        SYM_STOR_TYPE_STATIC=0x2000,
+
+        // Storage Type Modifiers
+        SYM_STOR_TYPE_CONSTANT=0x0800,
+        SYM_STOR_TYPE_VOLATILE=0x0400,
+        SYM_STOR_TYPE_RESTRICT=0x0200,
+
+        //
+        SYM_STOR_TYPE_AUTO=0x0080,
+        SYM_STOR_TYPE_BSS=0x0040,
+        SYM_STOR_TYPE_CODE=0x0020,
+        SYM_STOR_TYPE_DATA=0x0010,
+        SYM_STOR_TYPE_REGISTER=0x0008,
+    } SYM_STORAGE_TYPES;
+
+
 
 // WARNING: Objects that inherit from this one cannot expand entry.
 //          Those fields must be added here.
@@ -130,11 +156,11 @@ extern "C" {
         #define SYM_FLGS1_ACT       0x80        // Active Entry
         #define SYM_FLGS1_ABS       0x40        // Absolute Address
         #define SYM_FLGS1_REL       0x20        // Relocatable Address
-        #define SYM_FLGS1_VOLATILE  0x10        // Asynchronously Accessed
-        #define SYM_FLGS1_REGISTER  0x08        // Symbol's value in register
-        #define SYM_FLGS1_UNUSED6   0x04        // Unused Flag 1
-        #define SYM_FLGS1_UNUSED7   0x02        // Unused Flag 2
-        #define SYM_FLGS1_UNUSED8   0x01        // Unused Flag 3
+        #define SYM_FLGS1_UNUSED4   0x10        // Unused Flag 1
+        #define SYM_FLGS1_UNUSED5   0x08        // Unused Flag 2
+        #define SYM_FLGS1_UNUSED6   0x04        // Unused Flag 3
+        #define SYM_FLGS1_UNUSED7   0x02        // Unused Flag 4
+        #define SYM_FLGS1_UNUSED8   0x01        // Unused Flag 5
         uint8_t         fFlgs2;             // Flags
         #define SYM_FLGS2_UNUSED1   0x10        // Unused Flag
         #define SYM_FLGS2_UNUSED2   0x10        // Unused Flag
@@ -150,6 +176,7 @@ extern "C" {
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
         uint32_t        strct;              // Struct Identifier (0 == none)
+        uint32_t        storcls;            // Storage Class (See SYM_STORAGE_TYPES)
         uint32_t        section;            // Section/Segment Identifier (0 == none)
         uint32_t        addr;               // Address within Section/Segment
         int32_t         value;
@@ -169,7 +196,7 @@ extern "C" {
         //                                  //  true  == Register Number Assignment
         //                                  //  false == Base Register
         uint32_t        disp;               // Displacement in Base Register
-        uint8_t         extra2[136];        // Used as needed (Initialized
+        uint8_t         extra2[132];        // Used as needed (Initialized
         //                                  // for U8VlArray)
     } SYM_ENTRY;
 #pragma pack(pop)
@@ -544,18 +571,6 @@ extern "C" {
     );
 
 
-    /*! Property: Variable is allocated to a register
-     */
-    bool            Sym_getRegister (
-        SYM_DATA        *this
-    );
-
-    bool            Sym_setRegister (
-        SYM_DATA        *this,
-        bool            value
-    );
-
-
     /*! Property: Base Register/Register
      */
     uint16_t        Sym_getReg (
@@ -604,7 +619,19 @@ extern "C" {
     );
 
 
-    /*! Property: Section
+    /*! Property: Storage Class
+     */
+    uint32_t        Sym_getStorageClass (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setStorageClass (
+        SYM_DATA        *this,
+        uint32_t        value
+    );
+
+
+    /*! Property: Structure Identifier
      */
     uint32_t        Sym_getStructID (
         SYM_DATA        *this
@@ -649,19 +676,6 @@ extern "C" {
     bool            Sym_setValue (
         SYM_DATA        *this,
         int32_t         value
-    );
-
-
-    /*! Property: Value is volatile.
-     This is used if a variable is being used by multiple threads.
-     */
-    bool            Sym_getVolatile (
-        SYM_DATA        *this
-    );
-
-    bool            Sym_setVolatile (
-        SYM_DATA        *this,
-        bool            value
     );
 
 

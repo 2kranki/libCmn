@@ -519,7 +519,13 @@ extern "C" {
         ASTR_DATA       *this
     );
     
-    
+    ASTR_DATA *     AStr_CopySpcl(
+        ASTR_DATA       *this,
+        W32CHR_T        (*pSpcl)(W32CHR_T) // Applies this routine to each character
+                                           // being copied.
+    );
+
+
     char *          AStr_CStringA(
         ASTR_DATA		*this,
         uint32_t        *pLen       // Optional returned string length

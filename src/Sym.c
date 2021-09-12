@@ -1335,53 +1335,6 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                    R e g i s t e r
-    //---------------------------------------------------------------
-
-    bool            Sym_getRegister (
-        SYM_DATA        *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        //return this->priority;
-        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_REGISTER) ? true : false;
-    }
-
-
-    bool            Sym_setRegister (
-        SYM_DATA        *this,
-        bool            value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        if (value) {
-            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_REGISTER;
-        } else {
-            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_REGISTER;
-        }
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                 R e g i s t e r  N u m b e r
     //---------------------------------------------------------------
 
@@ -1576,6 +1529,48 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      S t o r a g e  C l a s s
+    //---------------------------------------------------------------
+
+    uint32_t        Sym_getStorageClass (
+        SYM_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->storcls;
+    }
+
+
+    bool            Sym_setStorageClass (
+        SYM_DATA        *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->storcls = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                S t r u c t  I d e n t i f i e r
     //---------------------------------------------------------------
 
@@ -1762,52 +1757,6 @@ extern "C" {
 #endif
 
         Sym_getEntry(this)->value = value;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                         V o l a t i l e
-    //---------------------------------------------------------------
-
-    bool            Sym_getVolatile (
-        SYM_DATA        *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_VOLATILE) ? true : false;
-    }
-
-
-    bool            Sym_setVolatile (
-        SYM_DATA        *this,
-        bool            value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        if (value) {
-            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_VOLATILE;
-        } else {
-            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_VOLATILE;
-        }
 
         return true;
     }

@@ -7,9 +7,14 @@
  * Program
  *          TCP/IP Network Support (Net)
  * Purpose
- *          This object provides the primary interface to crreating
+ *          This object provides the primary interface to creating
  *          a TCP/IP Server/Client.  It is designed to work with
- *          several submodules.
+ *          several submodules:
+ *              NetHTTP  - Network HTTP Support
+ *              NetHTTPA - TCP/IP Network HTTP Response/Answer
+ *              NetHTTPR - TCP/IP Network HTTP Request
+ *              NetIO    - Network I/O using Unix Sockets
+ *              NetMIME  - Network MIME Support
  *
  * Remarks
  *  1.      None
@@ -17,7 +22,8 @@
  * References
  *  1.      "Advanced Programming in the UNIX Environment, 3rd Edition",
  *          W. Stevens, Addison-Wesley Professional, 2013
- *  2.      "Beej Guide to Network Programming", http://beej.us/guide/bgnet/
+ *  2.      "Beej Guide to Network Programming",
+ *          http://beej.us/guide/bgnet/
  *
  * History
  *  07/03/2021 Generated

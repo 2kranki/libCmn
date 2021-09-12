@@ -71,9 +71,10 @@ struct Sect_data_s  {
 
     // Common Data
     char            ident;
-    uint8_t         rsvd8_1;        // Used to make type a c string
     char            type;
-    uint8_t         rsvd8_2;        // Used to make type a c string
+    uint8_t         rsvd8_1;
+    uint8_t         rsvd8_2;
+    uint32_t        section;        // Section Identifier (Used in Symbols)
     uint32_t        esid;           // Internal Identifier
     uint32_t        addr;           // address
     uint32_t        len;            //
