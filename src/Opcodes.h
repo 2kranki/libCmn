@@ -89,7 +89,11 @@ extern "C" {
         // method names to the vtbl definition in Opcodes_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(OPCODES_DATA *);
+        OPCODE_DATA *   (*pFindA) (
+            OPCODES_DATA    *this,
+            const
+            char            *pNameA
+        );
     } OPCODES_VTBL;
 
     typedef struct Opcodes_class_vtbl_s	{

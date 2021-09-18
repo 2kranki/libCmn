@@ -82,7 +82,7 @@ extern "C" {
         
 #pragma pack(push, 1)
     typedef struct data_block_s {
-        uint16_t        cbSize;         // Total Size of BLock excluding this header
+        uint16_t        cbSize;         // Total Size of BLock including this header
 #define DATA_BLOCK_MAX_SIZE 0x7FFF
 #define DATA_BLOCK_SPLIT    0x8000
         uint16_t        unusedSize;     // Amount of Data Unused

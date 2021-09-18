@@ -420,7 +420,7 @@ OPCODES_VTBL     Opcodes_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Opcodes_IsEnabled,
+    Opcodes_FindA,
  
 };
 

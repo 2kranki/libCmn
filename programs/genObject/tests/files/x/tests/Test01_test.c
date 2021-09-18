@@ -49,10 +49,21 @@
 
 
 
+/*
+ TestForFail(error_sttring)         <= Tests eRc for failure
+ TestForFalse(test, error_sttring)
+ TestForNotNull(test, error)
+ TestForNull(test, error)
+ TestForSuccess(error)              <= Tests eRc for success
+ TestForTrue(test, error)
+ */
+
+
 
 
 
 #include    <test_defs.h>
+#include    <Test_internal.h>
 #include    <trace.h>
 #include    <Test01_internal.h>
 #include    <JsonIn.h>

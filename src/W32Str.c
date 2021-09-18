@@ -3113,7 +3113,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     ERESULT         W32Str_SpanW32(
-        W32STR_DATA        *this,
+        W32STR_DATA     *this,
         uint32_t        *pIndex,
         const
         W32CHR_T        *pSetStr

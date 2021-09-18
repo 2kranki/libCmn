@@ -420,7 +420,8 @@ SYMS_VTBL     Syms_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Syms_IsEnabled,
+    Syms_FindA,
+    Syms_FindAddr,
  
 };
 

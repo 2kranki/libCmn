@@ -182,6 +182,14 @@ extern "C" {
     );
 
 
+    TEXTIN_DATA *   TextIn_NewFromW32Str (
+        PATH_DATA       *pFilePath,
+        W32STR_DATA     *pStr,          // Buffer of file data
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
+
 #ifdef  TEXTIN_JSON_SUPPORT
     TEXTIN_DATA *   TextIn_NewFromJsonString(
         ASTR_DATA       *pString

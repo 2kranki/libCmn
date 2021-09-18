@@ -2,7 +2,7 @@
 /*
  * File:   Test01_json.c
  *
- *  Generated 08/29/2021 20:10:59
+ *  Generated 09/14/2021 08:52:23
  *
  */
 
@@ -103,9 +103,10 @@ extern "C" {
         eRc = JsonIn_FindUtf8NodeInHashA(pParser, "name", &pData, &len);
         eRc = JsonIn_SubObjectInHash(pParser, "errorStr");
         if (ERESULT_OK(eRc)) {
-            pWrk = AStr_ParseJsonObject(pParser);
+            ASTR_DATA       *pWrk = AStr_ParseJsonObject(pParser);
             if (pWrk) {
-                pObject->pErrorStr = pWrk;
+                Test01_setErrorStr(pObject, pWrk);
+                obj_Release(pWrk);
             }
             JsonIn_SubObjectEnd(pParser);
         }

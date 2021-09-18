@@ -72,6 +72,7 @@ struct Sects_data_s  {
 
     // Common Data
     SZBT_DATA       *pTree;
+    uint32_t        unique;
 
 };
 #pragma pack(pop)

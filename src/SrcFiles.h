@@ -225,10 +225,17 @@ extern "C" {
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
 
-
     ERESULT         SrcFiles_NewSrcFromPath(
         SRCFILES_DATA   *this,
         PATH_DATA       *pFilePath,
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
+    ERESULT         SrcFiles_NewSrcFromW32Str(
+        SRCFILES_DATA   *this,
+        PATH_DATA       *pFilePath,
+        W32STR_DATA     *pStr,          // Buffer of file data
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );

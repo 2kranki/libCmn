@@ -88,7 +88,17 @@ extern "C" {
         // method names to the vtbl definition in Syms_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SYMS_DATA *);
+        SYM_DATA *      (*pFindA) (
+            SYMS_DATA       *this,
+            int32_t         cls,
+            const
+            char            *pNameA
+        );
+        SYM_DATA *      (*pFindAddr) (
+            SYMS_DATA       *this,
+            uint32_t        section,            // Section/Segment Identifier (0 == none)
+            uint32_t        addr                // Address within Section/Segment
+        );
     } SYMS_VTBL;
 
     typedef struct Syms_class_vtbl_s	{

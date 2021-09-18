@@ -184,6 +184,13 @@ extern "C" {
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
 
+    SRCFILE_DATA *  SrcFile_NewFromW32Str(
+        PATH_DATA       *pFilePath,     // Optoinal File Path used for Documentation Purposes
+        W32STR_DATA     *pStr,          // Buffer of file data
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    );
+
 
 #ifdef  SRCFILE_JSON_SUPPORT
     SRCFILE_DATA *  SrcFile_NewFromJsonString (

@@ -35,14 +35,17 @@
         {name:"block16"},
         {name:"block32"},
         {name:"Blocks",         deps:["listdl.h"]},
+
         /*  'bpt32', 'bpt32idx' and 'bpt32lf' provide a B-Plus Tree using a 32-bit
             index, uint32_t. It is designed to use with 'rrds' and 'lru' to provide
-            fast indexed file system.
+            fast indexed file system indexed by a number such as the record number.
          */
         //TODO:    === TODO: Rewrite to new naming convention ===
+        /*
         {name:"bpt32",          desc:"32-Bit Index B-Plus Tree", deps:["bpt32idx.h","bpt32lf.h","rrds.h"]},
         {name:"bpt32idx",       desc:"32-Bit Index B-Plus Tree Index Block", test:false}, 
         {name:"bpt32lf",        desc:"32-Bit Index B-Plus Tree Leaf Block"},
+        */
 
         {name:"cb",             desc:"Generic Circular Buffer", 
                                 test:{srcs:["objTest.c", "objTest_object.c"]}},

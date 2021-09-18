@@ -179,6 +179,7 @@ extern "C" {
         return this;
     }
 
+
     TEXTIN_DATA *   TextIn_NewFromAStr (
         PATH_DATA       *pFilePath,
         ASTR_DATA       *pStr,          // Buffer of file data
@@ -271,6 +272,29 @@ extern "C" {
         this = TextIn_New( );
         if (this) {
             eRc = TextIn_SetupStrA(this, pFilePath, pStrA, fileIndex, tabSize);
+            if (ERESULT_FAILED(eRc)) {
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+
+        return this;
+    }
+
+
+    TEXTIN_DATA *   TextIn_NewFromW32Str (
+        PATH_DATA       *pFilePath,
+        W32STR_DATA     *pStr,          // Buffer of file data
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        TEXTIN_DATA     *this = OBJ_NIL;
+        ERESULT         eRc;
+
+        this = TextIn_New( );
+        if (this) {
+            eRc = TextIn_SetupW32Str(this, pFilePath, pStr, fileIndex, tabSize);
             if (ERESULT_FAILED(eRc)) {
                 obj_Release(this);
                 this = OBJ_NIL;

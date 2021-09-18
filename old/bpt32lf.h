@@ -20,6 +20,9 @@
  *          block is created.  Whereas, an index block has fixed
  *          sized nodes.
  *
+ *          Leaf blocks do not support spanning data records between
+ *          blocks.  The data must be able to fit within the block.
+ *
  * Remarks
  *	1.      None
  *

@@ -828,6 +828,38 @@ extern "C" {
     }
 
 
+    ERESULT         SrcFiles_NewSrcFromW32Str (
+        SRCFILES_DATA   *this,
+        PATH_DATA       *pFilePath,     // [in] doc only
+        W32STR_DATA     *pStr,          // Buffer of file data
+        uint16_t        fileIndex,      // File Path Index for a separate path table
+        uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
+    )
+    {
+        SRCFILE_DATA    *pSrc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SrcFiles_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pSrc = SrcFile_NewFromW32Str(pFilePath, pStr, fileIndex, tabSize);
+        if (OBJ_NIL == pSrc) {
+            obj_Release(this);
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        SrcFiles_StackPush(this, pSrc);
+        obj_Release(pSrc);
+        pSrc = OBJ_NIL;
+
+        return ERESULT_SUCCESS;
+    }
+
+
 
     //---------------------------------------------------------------
     //                         P a t h

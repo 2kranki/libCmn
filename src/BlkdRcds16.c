@@ -3,6 +3,10 @@
  * File:   BlkdRcds16.c
  *	Generated 12/22/2019 10:06:17
  *
+ * Notes:
+ *  1.  We must store the actual blocksze within the block as the
+ *      first field. So, that outside applications can look only
+ *      at that to know its size.
  */
 
  
@@ -1460,6 +1464,62 @@ extern "C" {
     }
 
      
+
+    //---------------------------------------------------------------
+    //                          S p l i t
+    //---------------------------------------------------------------
+
+    ERESULT         BlkdRcds16_Split (
+        BLKDRCDS16_DATA *this,
+        BLKDRCDS16_DATA **ppLower,
+        BLKDRCDS16_DATA **ppUpper
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        minSize;
+        uint32_t        i;
+        uint32_t        amt = 0;
+        BLKDRCDS16_DATA *pLower = OBJ_NIL;
+        BLKDRCDS16_DATA *pUpper = OBJ_NIL;
+        uint16_t        rcdSize;
+        uint16_t        cRcds;
+
+        #ifdef NDEBUG
+        #else
+                if (!BlkdRcds16_Validate(this)) {
+                    DEBUG_BREAK();
+                    return ERESULT_INVALID_OBJECT;
+                }
+        #endif
+
+        minSize = this->blockSize / 2;
+        for (i=0; i<this->pBlock->numRecords; i++) {
+            rcdSize = 0;
+            eRc = BlkdRcds16_RecordGetSize(this, i+1, &rcdSize);
+            if (ERESULT_OK(eRc)) {
+                if ((amt + rcdSize) > minSize)
+                    break;
+                amt += rcdSize;
+            }
+        }
+        cRcds = i + 1;
+
+        if (amt) {
+
+        }
+
+        if (ppLower)
+            *ppLower = pLower;
+        else
+            obj_Release(pLower);
+        if (ppUpper)
+            *ppUpper = pUpper;
+        else
+            obj_Release(pUpper);
+        return ERESULT_SUCCESS;
+    }
+
+
 
     //---------------------------------------------------------------
     //                       T o  J S O N
